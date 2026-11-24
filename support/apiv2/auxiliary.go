@@ -17,9 +17,18 @@
 package support
 
 import (
+	"iter"
+
 	supportpb "cloud.google.com/go/support/apiv2/supportpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AttachmentIterator) All() iter.Seq2[*supportpb.Attachment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // AttachmentIterator manages a stream of *supportpb.Attachment.
 type AttachmentIterator struct {
@@ -66,6 +75,12 @@ func (it *AttachmentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CaseClassificationIterator) All() iter.Seq2[*supportpb.CaseClassification, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // CaseClassificationIterator manages a stream of *supportpb.CaseClassification.
@@ -115,6 +130,12 @@ func (it *CaseClassificationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CaseIterator) All() iter.Seq2[*supportpb.Case, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CaseIterator manages a stream of *supportpb.Case.
 type CaseIterator struct {
 	items    []*supportpb.Case
@@ -162,6 +183,12 @@ func (it *CaseIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CommentIterator) All() iter.Seq2[*supportpb.Comment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CommentIterator manages a stream of *supportpb.Comment.
 type CommentIterator struct {
 	items    []*supportpb.Comment
@@ -207,6 +234,12 @@ func (it *CommentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SupportEventSubscriptionIterator) All() iter.Seq2[*supportpb.SupportEventSubscription, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SupportEventSubscriptionIterator manages a stream of *supportpb.SupportEventSubscription.

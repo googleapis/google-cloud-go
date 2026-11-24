@@ -751,6 +751,67 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.DeleteGuestPolicy = append(client.CallOptions.DeleteGuestPolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.LookupEffectiveGuestPolicy = append(client.CallOptions.LookupEffectiveGuestPolicy, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "osconfig",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/osconfig/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "osconfig.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ExecutePatchJob = append(client.CallOptions.ExecutePatchJob, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPatchJob = append(client.CallOptions.GetPatchJob, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelPatchJob = append(client.CallOptions.CancelPatchJob, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPatchJobs = append(client.CallOptions.ListPatchJobs, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPatchJobInstanceDetails = append(client.CallOptions.ListPatchJobInstanceDetails, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePatchDeployment = append(client.CallOptions.CreatePatchDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPatchDeployment = append(client.CallOptions.GetPatchDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPatchDeployments = append(client.CallOptions.ListPatchDeployments, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePatchDeployment = append(client.CallOptions.DeletePatchDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePatchDeployment = append(client.CallOptions.UpdatePatchDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.PausePatchDeployment = append(client.CallOptions.PausePatchDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.ResumePatchDeployment = append(client.CallOptions.ResumePatchDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateGuestPolicy = append(client.CallOptions.CreateGuestPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.GetGuestPolicy = append(client.CallOptions.GetGuestPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.ListGuestPolicies = append(client.CallOptions.ListGuestPolicies, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateGuestPolicy = append(client.CallOptions.UpdateGuestPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteGuestPolicy = append(client.CallOptions.DeleteGuestPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.LookupEffectiveGuestPolicy = append(client.CallOptions.LookupEffectiveGuestPolicy, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "osconfig",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/osconfig/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "osconfig.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ExecutePatchJob = append(client.CallOptions.ExecutePatchJob, gax.WithClientLogging(logging))
+		client.CallOptions.GetPatchJob = append(client.CallOptions.GetPatchJob, gax.WithClientLogging(logging))
+		client.CallOptions.CancelPatchJob = append(client.CallOptions.CancelPatchJob, gax.WithClientLogging(logging))
+		client.CallOptions.ListPatchJobs = append(client.CallOptions.ListPatchJobs, gax.WithClientLogging(logging))
+		client.CallOptions.ListPatchJobInstanceDetails = append(client.CallOptions.ListPatchJobInstanceDetails, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePatchDeployment = append(client.CallOptions.CreatePatchDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.GetPatchDeployment = append(client.CallOptions.GetPatchDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.ListPatchDeployments = append(client.CallOptions.ListPatchDeployments, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePatchDeployment = append(client.CallOptions.DeletePatchDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePatchDeployment = append(client.CallOptions.UpdatePatchDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.PausePatchDeployment = append(client.CallOptions.PausePatchDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.ResumePatchDeployment = append(client.CallOptions.ResumePatchDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.CreateGuestPolicy = append(client.CallOptions.CreateGuestPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.GetGuestPolicy = append(client.CallOptions.GetGuestPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.ListGuestPolicies = append(client.CallOptions.ListGuestPolicies, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateGuestPolicy = append(client.CallOptions.UpdateGuestPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteGuestPolicy = append(client.CallOptions.DeleteGuestPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.LookupEffectiveGuestPolicy = append(client.CallOptions.LookupEffectiveGuestPolicy, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -861,6 +922,67 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.UpdateGuestPolicy = append(callOpts.UpdateGuestPolicy, gax.WithClientMetrics(metrics))
 		callOpts.DeleteGuestPolicy = append(callOpts.DeleteGuestPolicy, gax.WithClientMetrics(metrics))
 		callOpts.LookupEffectiveGuestPolicy = append(callOpts.LookupEffectiveGuestPolicy, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "osconfig",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/osconfig/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "osconfig.googleapis.com",
+			}),
+		)
+
+		callOpts.ExecutePatchJob = append(callOpts.ExecutePatchJob, gax.WithClientTracing(tracing))
+		callOpts.GetPatchJob = append(callOpts.GetPatchJob, gax.WithClientTracing(tracing))
+		callOpts.CancelPatchJob = append(callOpts.CancelPatchJob, gax.WithClientTracing(tracing))
+		callOpts.ListPatchJobs = append(callOpts.ListPatchJobs, gax.WithClientTracing(tracing))
+		callOpts.ListPatchJobInstanceDetails = append(callOpts.ListPatchJobInstanceDetails, gax.WithClientTracing(tracing))
+		callOpts.CreatePatchDeployment = append(callOpts.CreatePatchDeployment, gax.WithClientTracing(tracing))
+		callOpts.GetPatchDeployment = append(callOpts.GetPatchDeployment, gax.WithClientTracing(tracing))
+		callOpts.ListPatchDeployments = append(callOpts.ListPatchDeployments, gax.WithClientTracing(tracing))
+		callOpts.DeletePatchDeployment = append(callOpts.DeletePatchDeployment, gax.WithClientTracing(tracing))
+		callOpts.UpdatePatchDeployment = append(callOpts.UpdatePatchDeployment, gax.WithClientTracing(tracing))
+		callOpts.PausePatchDeployment = append(callOpts.PausePatchDeployment, gax.WithClientTracing(tracing))
+		callOpts.ResumePatchDeployment = append(callOpts.ResumePatchDeployment, gax.WithClientTracing(tracing))
+		callOpts.CreateGuestPolicy = append(callOpts.CreateGuestPolicy, gax.WithClientTracing(tracing))
+		callOpts.GetGuestPolicy = append(callOpts.GetGuestPolicy, gax.WithClientTracing(tracing))
+		callOpts.ListGuestPolicies = append(callOpts.ListGuestPolicies, gax.WithClientTracing(tracing))
+		callOpts.UpdateGuestPolicy = append(callOpts.UpdateGuestPolicy, gax.WithClientTracing(tracing))
+		callOpts.DeleteGuestPolicy = append(callOpts.DeleteGuestPolicy, gax.WithClientTracing(tracing))
+		callOpts.LookupEffectiveGuestPolicy = append(callOpts.LookupEffectiveGuestPolicy, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "osconfig",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/osconfig/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "osconfig.googleapis.com",
+			}),
+		)
+
+		callOpts.ExecutePatchJob = append(callOpts.ExecutePatchJob, gax.WithClientLogging(logging))
+		callOpts.GetPatchJob = append(callOpts.GetPatchJob, gax.WithClientLogging(logging))
+		callOpts.CancelPatchJob = append(callOpts.CancelPatchJob, gax.WithClientLogging(logging))
+		callOpts.ListPatchJobs = append(callOpts.ListPatchJobs, gax.WithClientLogging(logging))
+		callOpts.ListPatchJobInstanceDetails = append(callOpts.ListPatchJobInstanceDetails, gax.WithClientLogging(logging))
+		callOpts.CreatePatchDeployment = append(callOpts.CreatePatchDeployment, gax.WithClientLogging(logging))
+		callOpts.GetPatchDeployment = append(callOpts.GetPatchDeployment, gax.WithClientLogging(logging))
+		callOpts.ListPatchDeployments = append(callOpts.ListPatchDeployments, gax.WithClientLogging(logging))
+		callOpts.DeletePatchDeployment = append(callOpts.DeletePatchDeployment, gax.WithClientLogging(logging))
+		callOpts.UpdatePatchDeployment = append(callOpts.UpdatePatchDeployment, gax.WithClientLogging(logging))
+		callOpts.PausePatchDeployment = append(callOpts.PausePatchDeployment, gax.WithClientLogging(logging))
+		callOpts.ResumePatchDeployment = append(callOpts.ResumePatchDeployment, gax.WithClientLogging(logging))
+		callOpts.CreateGuestPolicy = append(callOpts.CreateGuestPolicy, gax.WithClientLogging(logging))
+		callOpts.GetGuestPolicy = append(callOpts.GetGuestPolicy, gax.WithClientLogging(logging))
+		callOpts.ListGuestPolicies = append(callOpts.ListGuestPolicies, gax.WithClientLogging(logging))
+		callOpts.UpdateGuestPolicy = append(callOpts.UpdateGuestPolicy, gax.WithClientLogging(logging))
+		callOpts.DeleteGuestPolicy = append(callOpts.DeleteGuestPolicy, gax.WithClientLogging(logging))
+		callOpts.LookupEffectiveGuestPolicy = append(callOpts.LookupEffectiveGuestPolicy, gax.WithClientLogging(logging))
 	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
@@ -1198,9 +1320,6 @@ func (c *gRPCClient) PausePatchDeployment(ctx context.Context, req *osconfigpb.P
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1beta.OsConfigService/PausePatchDeployment")
 	}
@@ -1222,9 +1341,6 @@ func (c *gRPCClient) ResumePatchDeployment(ctx context.Context, req *osconfigpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1beta.OsConfigService/ResumePatchDeployment")
 	}
@@ -1246,9 +1362,6 @@ func (c *gRPCClient) CreateGuestPolicy(ctx context.Context, req *osconfigpb.Crea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1beta.OsConfigService/CreateGuestPolicy")
 	}
@@ -1270,9 +1383,6 @@ func (c *gRPCClient) GetGuestPolicy(ctx context.Context, req *osconfigpb.GetGues
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1beta.OsConfigService/GetGuestPolicy")
 	}
@@ -1294,9 +1404,6 @@ func (c *gRPCClient) ListGuestPolicies(ctx context.Context, req *osconfigpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1beta.OsConfigService/ListGuestPolicies")
 	}
@@ -1367,9 +1474,6 @@ func (c *gRPCClient) DeleteGuestPolicy(ctx context.Context, req *osconfigpb.Dele
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1beta.OsConfigService/DeleteGuestPolicy")
 	}
@@ -1413,6 +1517,11 @@ func (c *restClient) ExecutePatchJob(ctx context.Context, req *osconfigpb.Execut
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/patchJobs:execute", req.GetParent())
@@ -1468,6 +1577,11 @@ func (c *restClient) ExecutePatchJob(ctx context.Context, req *osconfigpb.Execut
 func (c *restClient) GetPatchJob(ctx context.Context, req *osconfigpb.GetPatchJobRequest, opts ...gax.CallOption) (*osconfigpb.PatchJob, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1529,6 +1643,11 @@ func (c *restClient) CancelPatchJob(ctx context.Context, req *osconfigpb.CancelP
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
@@ -1596,6 +1715,11 @@ func (c *restClient) ListPatchJobs(ctx context.Context, req *osconfigpb.ListPatc
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/patchJobs", req.GetParent())
@@ -1679,6 +1803,11 @@ func (c *restClient) ListPatchJobInstanceDetails(ctx context.Context, req *oscon
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/instanceDetails", req.GetParent())
 
 		params := url.Values{}
@@ -1754,6 +1883,11 @@ func (c *restClient) CreatePatchDeployment(ctx context.Context, req *osconfigpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/patchDeployments", req.GetParent())
 
 	params := url.Values{}
@@ -1807,6 +1941,11 @@ func (c *restClient) CreatePatchDeployment(ctx context.Context, req *osconfigpb.
 func (c *restClient) GetPatchDeployment(ctx context.Context, req *osconfigpb.GetPatchDeploymentRequest, opts ...gax.CallOption) (*osconfigpb.PatchDeployment, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1876,6 +2015,11 @@ func (c *restClient) ListPatchDeployments(ctx context.Context, req *osconfigpb.L
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/patchDeployments", req.GetParent())
 
 		params := url.Values{}
@@ -1941,6 +2085,11 @@ func (c *restClient) DeletePatchDeployment(ctx context.Context, req *osconfigpb.
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -1985,6 +2134,11 @@ func (c *restClient) UpdatePatchDeployment(ctx context.Context, req *osconfigpb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPatchDeployment().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetPatchDeployment().GetName())
@@ -2055,6 +2209,11 @@ func (c *restClient) PausePatchDeployment(ctx context.Context, req *osconfigpb.P
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:pause", req.GetName())
 
 	params := url.Values{}
@@ -2068,9 +2227,6 @@ func (c *restClient) PausePatchDeployment(ctx context.Context, req *osconfigpb.P
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1beta.OsConfigService/PausePatchDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/patchDeployments/*}:pause")
@@ -2119,6 +2275,11 @@ func (c *restClient) ResumePatchDeployment(ctx context.Context, req *osconfigpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:resume", req.GetName())
 
 	params := url.Values{}
@@ -2132,9 +2293,6 @@ func (c *restClient) ResumePatchDeployment(ctx context.Context, req *osconfigpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1beta.OsConfigService/ResumePatchDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/patchDeployments/*}:resume")
@@ -2183,6 +2341,11 @@ func (c *restClient) CreateGuestPolicy(ctx context.Context, req *osconfigpb.Crea
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/guestPolicies", req.GetParent())
 
 	params := url.Values{}
@@ -2197,9 +2360,6 @@ func (c *restClient) CreateGuestPolicy(ctx context.Context, req *osconfigpb.Crea
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1beta.OsConfigService/CreateGuestPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*}/guestPolicies")
@@ -2241,6 +2401,11 @@ func (c *restClient) GetGuestPolicy(ctx context.Context, req *osconfigpb.GetGues
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -2254,9 +2419,6 @@ func (c *restClient) GetGuestPolicy(ctx context.Context, req *osconfigpb.GetGues
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1beta.OsConfigService/GetGuestPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/guestPolicies/*}")
@@ -2309,6 +2471,11 @@ func (c *restClient) ListGuestPolicies(ctx context.Context, req *osconfigpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/guestPolicies", req.GetParent())
@@ -2383,6 +2550,11 @@ func (c *restClient) UpdateGuestPolicy(ctx context.Context, req *osconfigpb.Upda
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetGuestPolicy().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetGuestPolicy().GetName())
 
 	params := url.Values{}
@@ -2444,6 +2616,11 @@ func (c *restClient) DeleteGuestPolicy(ctx context.Context, req *osconfigpb.Dele
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -2457,9 +2634,6 @@ func (c *restClient) DeleteGuestPolicy(ctx context.Context, req *osconfigpb.Dele
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1beta.OsConfigService/DeleteGuestPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/guestPolicies/*}")
@@ -2491,6 +2665,11 @@ func (c *restClient) LookupEffectiveGuestPolicy(ctx context.Context, req *osconf
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInstance(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:lookupEffectiveGuestPolicy", req.GetInstance())

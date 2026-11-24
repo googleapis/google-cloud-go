@@ -7125,50 +7125,50 @@ var File_google_cloud_bigquery_v2_model_proto protoreflect.FileDescriptor
 
 const file_google_cloud_bigquery_v2_model_proto_rawDesc = "" +
 	"\n" +
-	"$google/cloud/bigquery/v2/model.proto\x12\x18google.cloud.bigquery.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a0google/cloud/bigquery/v2/encryption_config.proto\x1a.google/cloud/bigquery/v2/model_reference.proto\x1a+google/cloud/bigquery/v2/standard_sql.proto\x1a.google/cloud/bigquery/v2/table_reference.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xa9\x04\n" +
-	"\x0fRemoteModelInfo\x12!\n" +
-	"\bendpoint\x18\x01 \x01(\tB\x03\xe0A\x03H\x00R\bendpoint\x12r\n" +
-	"\x13remote_service_type\x18\x02 \x01(\x0e2;.google.cloud.bigquery.v2.RemoteModelInfo.RemoteServiceTypeB\x03\xe0A\x03H\x00R\x11remoteServiceType\x12#\n" +
+	"$google/cloud/bigquery/v2/model.proto\x12\x18google.cloud.bigquery.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a0google/cloud/bigquery/v2/encryption_config.proto\x1a.google/cloud/bigquery/v2/model_reference.proto\x1a+google/cloud/bigquery/v2/standard_sql.proto\x1a.google/cloud/bigquery/v2/table_reference.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xaf\x04\n" +
+	"\x0fRemoteModelInfo\x12\"\n" +
+	"\bendpoint\x18\x01 \x01(\tB\x04\xe2A\x01\x03H\x00R\bendpoint\x12s\n" +
+	"\x13remote_service_type\x18\x02 \x01(\x0e2;.google.cloud.bigquery.v2.RemoteModelInfo.RemoteServiceTypeB\x04\xe2A\x01\x03H\x00R\x11remoteServiceType\x12$\n" +
 	"\n" +
-	"connection\x18\x03 \x01(\tB\x03\xe0A\x03R\n" +
-	"connection\x12/\n" +
-	"\x11max_batching_rows\x18\x04 \x01(\x03B\x03\xe0A\x03R\x0fmaxBatchingRows\x125\n" +
-	"\x14remote_model_version\x18\x05 \x01(\tB\x03\xe0A\x03R\x12remoteModelVersion\x120\n" +
-	"\x11speech_recognizer\x18\a \x01(\tB\x03\xe0A\x03R\x10speechRecognizer\"\xad\x01\n" +
+	"connection\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"connection\x120\n" +
+	"\x11max_batching_rows\x18\x04 \x01(\x03B\x04\xe2A\x01\x03R\x0fmaxBatchingRows\x126\n" +
+	"\x14remote_model_version\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x12remoteModelVersion\x121\n" +
+	"\x11speech_recognizer\x18\a \x01(\tB\x04\xe2A\x01\x03R\x10speechRecognizer\"\xad\x01\n" +
 	"\x11RemoteServiceType\x12#\n" +
 	"\x1fREMOTE_SERVICE_TYPE_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15CLOUD_AI_TRANSLATE_V3\x10\x01\x12\x16\n" +
 	"\x12CLOUD_AI_VISION_V1\x10\x02\x12 \n" +
 	"\x1cCLOUD_AI_NATURAL_LANGUAGE_V1\x10\x03\x12\x1e\n" +
 	"\x1aCLOUD_AI_SPEECH_TO_TEXT_V2\x10\aB\x10\n" +
-	"\x0eremote_service\"\x9c\x01\n" +
-	"\x0fTransformColumn\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12F\n" +
-	"\x04type\x18\x02 \x01(\v2-.google.cloud.bigquery.v2.StandardSqlDataTypeB\x03\xe0A\x03R\x04type\x12(\n" +
-	"\rtransform_sql\x18\x03 \x01(\tB\x03\xe0A\x03R\ftransformSql\"\xc3\xca\x01\n" +
-	"\x05Model\x12\x17\n" +
-	"\x04etag\x18\x01 \x01(\tB\x03\xe0A\x03R\x04etag\x12V\n" +
-	"\x0fmodel_reference\x18\x02 \x01(\v2(.google.cloud.bigquery.v2.ModelReferenceB\x03\xe0A\x02R\x0emodelReference\x12(\n" +
-	"\rcreation_time\x18\x05 \x01(\x03B\x03\xe0A\x03R\fcreationTime\x121\n" +
-	"\x12last_modified_time\x18\x06 \x01(\x03B\x03\xe0A\x03R\x10lastModifiedTime\x12%\n" +
-	"\vdescription\x18\f \x01(\tB\x03\xe0A\x01R\vdescription\x12(\n" +
-	"\rfriendly_name\x18\x0e \x01(\tB\x03\xe0A\x01R\ffriendlyName\x12C\n" +
-	"\x06labels\x18\x0f \x03(\v2+.google.cloud.bigquery.v2.Model.LabelsEntryR\x06labels\x12,\n" +
-	"\x0fexpiration_time\x18\x10 \x01(\x03B\x03\xe0A\x01R\x0eexpirationTime\x12\x1f\n" +
-	"\blocation\x18\r \x01(\tB\x03\xe0A\x03R\blocation\x12l\n" +
-	"\x18encryption_configuration\x18\x11 \x01(\v21.google.cloud.bigquery.v2.EncryptionConfigurationR\x17encryptionConfiguration\x12M\n" +
+	"\x0eremote_service\"\x9f\x01\n" +
+	"\x0fTransformColumn\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12G\n" +
+	"\x04type\x18\x02 \x01(\v2-.google.cloud.bigquery.v2.StandardSqlDataTypeB\x04\xe2A\x01\x03R\x04type\x12)\n" +
+	"\rtransform_sql\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\ftransformSql\"\xdd\xca\x01\n" +
+	"\x05Model\x12\x18\n" +
+	"\x04etag\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12W\n" +
+	"\x0fmodel_reference\x18\x02 \x01(\v2(.google.cloud.bigquery.v2.ModelReferenceB\x04\xe2A\x01\x02R\x0emodelReference\x12)\n" +
+	"\rcreation_time\x18\x05 \x01(\x03B\x04\xe2A\x01\x03R\fcreationTime\x122\n" +
+	"\x12last_modified_time\x18\x06 \x01(\x03B\x04\xe2A\x01\x03R\x10lastModifiedTime\x12&\n" +
+	"\vdescription\x18\f \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12)\n" +
+	"\rfriendly_name\x18\x0e \x01(\tB\x04\xe2A\x01\x01R\ffriendlyName\x12C\n" +
+	"\x06labels\x18\x0f \x03(\v2+.google.cloud.bigquery.v2.Model.LabelsEntryR\x06labels\x12-\n" +
+	"\x0fexpiration_time\x18\x10 \x01(\x03B\x04\xe2A\x01\x01R\x0eexpirationTime\x12 \n" +
+	"\blocation\x18\r \x01(\tB\x04\xe2A\x01\x03R\blocation\x12l\n" +
+	"\x18encryption_configuration\x18\x11 \x01(\v21.google.cloud.bigquery.v2.EncryptionConfigurationR\x17encryptionConfiguration\x12N\n" +
 	"\n" +
-	"model_type\x18\a \x01(\x0e2).google.cloud.bigquery.v2.Model.ModelTypeB\x03\xe0A\x03R\tmodelType\x12P\n" +
-	"\rtraining_runs\x18\t \x03(\v2+.google.cloud.bigquery.v2.Model.TrainingRunR\ftrainingRuns\x12X\n" +
+	"model_type\x18\a \x01(\x0e2).google.cloud.bigquery.v2.Model.ModelTypeB\x04\xe2A\x01\x03R\tmodelType\x12P\n" +
+	"\rtraining_runs\x18\t \x03(\v2+.google.cloud.bigquery.v2.Model.TrainingRunR\ftrainingRuns\x12Y\n" +
 	"\x0ffeature_columns\x18\n" +
-	" \x03(\v2*.google.cloud.bigquery.v2.StandardSqlFieldB\x03\xe0A\x03R\x0efeatureColumns\x12T\n" +
-	"\rlabel_columns\x18\v \x03(\v2*.google.cloud.bigquery.v2.StandardSqlFieldB\x03\xe0A\x03R\flabelColumns\x12[\n" +
-	"\x11transform_columns\x18\x1a \x03(\v2).google.cloud.bigquery.v2.TransformColumnB\x03\xe0A\x03R\x10transformColumns\x12i\n" +
-	"\x14hparam_search_spaces\x18\x12 \x01(\v22.google.cloud.bigquery.v2.Model.HparamSearchSpacesB\x03\xe0A\x03R\x12hparamSearchSpaces\x12-\n" +
-	"\x10default_trial_id\x18\x15 \x01(\x03B\x03\xe0A\x03R\x0edefaultTrialId\x12[\n" +
-	"\rhparam_trials\x18\x14 \x03(\v21.google.cloud.bigquery.v2.Model.HparamTuningTrialB\x03\xe0A\x03R\fhparamTrials\x12/\n" +
-	"\x11optimal_trial_ids\x18\x16 \x03(\x03B\x03\xe0A\x03R\x0foptimalTrialIds\x12Z\n" +
-	"\x11remote_model_info\x18\x19 \x01(\v2).google.cloud.bigquery.v2.RemoteModelInfoB\x03\xe0A\x03R\x0fremoteModelInfo\x1a\xac\x01\n" +
+	" \x03(\v2*.google.cloud.bigquery.v2.StandardSqlFieldB\x04\xe2A\x01\x03R\x0efeatureColumns\x12U\n" +
+	"\rlabel_columns\x18\v \x03(\v2*.google.cloud.bigquery.v2.StandardSqlFieldB\x04\xe2A\x01\x03R\flabelColumns\x12\\\n" +
+	"\x11transform_columns\x18\x1a \x03(\v2).google.cloud.bigquery.v2.TransformColumnB\x04\xe2A\x01\x03R\x10transformColumns\x12j\n" +
+	"\x14hparam_search_spaces\x18\x12 \x01(\v22.google.cloud.bigquery.v2.Model.HparamSearchSpacesB\x04\xe2A\x01\x03R\x12hparamSearchSpaces\x12.\n" +
+	"\x10default_trial_id\x18\x15 \x01(\x03B\x04\xe2A\x01\x03R\x0edefaultTrialId\x12\\\n" +
+	"\rhparam_trials\x18\x14 \x03(\v21.google.cloud.bigquery.v2.Model.HparamTuningTrialB\x04\xe2A\x01\x03R\fhparamTrials\x120\n" +
+	"\x11optimal_trial_ids\x18\x16 \x03(\x03B\x04\xe2A\x01\x03R\x0foptimalTrialIds\x12[\n" +
+	"\x11remote_model_info\x18\x19 \x01(\v2).google.cloud.bigquery.v2.RemoteModelInfoB\x04\xe2A\x01\x03R\x0fremoteModelInfo\x1a\xac\x01\n" +
 	"\x0eSeasonalPeriod\"\x99\x01\n" +
 	"\x12SeasonalPeriodType\x12$\n" +
 	" SEASONAL_PERIOD_TYPE_UNSPECIFIED\x10\x00\x12\x12\n" +
@@ -7356,18 +7356,18 @@ const file_google_cloud_bigquery_v2_model_proto_rawDesc = "" +
 	"\x18ModelRegistryOptionEnums\">\n" +
 	"\rModelRegistry\x12\x1e\n" +
 	"\x1aMODEL_REGISTRY_UNSPECIFIED\x10\x00\x12\r\n" +
-	"\tVERTEX_AI\x10\x01\x1a\xdcQ\n" +
-	"\vTrainingRun\x12k\n" +
-	"\x10training_options\x18\x01 \x01(\v2;.google.cloud.bigquery.v2.Model.TrainingRun.TrainingOptionsB\x03\xe0A\x03R\x0ftrainingOptions\x12>\n" +
+	"\tVERTEX_AI\x10\x01\x1a\xe5Q\n" +
+	"\vTrainingRun\x12l\n" +
+	"\x10training_options\x18\x01 \x01(\v2;.google.cloud.bigquery.v2.Model.TrainingRun.TrainingOptionsB\x04\xe2A\x01\x03R\x0ftrainingOptions\x12?\n" +
 	"\n" +
-	"start_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12Z\n" +
-	"\aresults\x18\x06 \x03(\v2;.google.cloud.bigquery.v2.Model.TrainingRun.IterationResultB\x03\xe0A\x03R\aresults\x12e\n" +
-	"\x12evaluation_metrics\x18\a \x01(\v21.google.cloud.bigquery.v2.Model.EvaluationMetricsB\x03\xe0A\x03R\x11evaluationMetrics\x12`\n" +
-	"\x11data_split_result\x18\t \x01(\v2/.google.cloud.bigquery.v2.Model.DataSplitResultB\x03\xe0A\x03R\x0fdataSplitResult\x12{\n" +
-	"\x1emodel_level_global_explanation\x18\v \x01(\v21.google.cloud.bigquery.v2.Model.GlobalExplanationB\x03\xe0A\x03R\x1bmodelLevelGlobalExplanation\x12}\n" +
-	"\x1fclass_level_global_explanations\x18\f \x03(\v21.google.cloud.bigquery.v2.Model.GlobalExplanationB\x03\xe0A\x03R\x1cclassLevelGlobalExplanations\x12+\n" +
-	"\x12vertex_ai_model_id\x18\x0e \x01(\tR\x0fvertexAiModelId\x12:\n" +
-	"\x17vertex_ai_model_version\x18\x0f \x01(\tB\x03\xe0A\x03R\x14vertexAiModelVersion\x1a\xb57\n" +
+	"start_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12[\n" +
+	"\aresults\x18\x06 \x03(\v2;.google.cloud.bigquery.v2.Model.TrainingRun.IterationResultB\x04\xe2A\x01\x03R\aresults\x12f\n" +
+	"\x12evaluation_metrics\x18\a \x01(\v21.google.cloud.bigquery.v2.Model.EvaluationMetricsB\x04\xe2A\x01\x03R\x11evaluationMetrics\x12a\n" +
+	"\x11data_split_result\x18\t \x01(\v2/.google.cloud.bigquery.v2.Model.DataSplitResultB\x04\xe2A\x01\x03R\x0fdataSplitResult\x12|\n" +
+	"\x1emodel_level_global_explanation\x18\v \x01(\v21.google.cloud.bigquery.v2.Model.GlobalExplanationB\x04\xe2A\x01\x03R\x1bmodelLevelGlobalExplanation\x12~\n" +
+	"\x1fclass_level_global_explanations\x18\f \x03(\v21.google.cloud.bigquery.v2.Model.GlobalExplanationB\x04\xe2A\x01\x03R\x1cclassLevelGlobalExplanations\x12+\n" +
+	"\x12vertex_ai_model_id\x18\x0e \x01(\tR\x0fvertexAiModelId\x12;\n" +
+	"\x17vertex_ai_model_version\x18\x0f \x01(\tB\x04\xe2A\x01\x03R\x14vertexAiModelVersion\x1a\xb67\n" +
 	"\x0fTrainingOptions\x12%\n" +
 	"\x0emax_iterations\x18\x01 \x01(\x03R\rmaxIterations\x12E\n" +
 	"\tloss_type\x18\x02 \x01(\x0e2(.google.cloud.bigquery.v2.Model.LossTypeR\blossType\x12\x1d\n" +
@@ -7471,8 +7471,8 @@ const file_google_cloud_bigquery_v2_model_proto_rawDesc = "" +
 	"\x14standardize_features\x18^ \x01(\v2\x1a.google.protobuf.BoolValueR\x13standardizeFeatures\x12*\n" +
 	"\x11l1_reg_activation\x18_ \x01(\x01R\x0fl1RegActivation\x12m\n" +
 	"\x0emodel_registry\x18` \x01(\x0e2F.google.cloud.bigquery.v2.Model.ModelRegistryOptionEnums.ModelRegistryR\rmodelRegistry\x12D\n" +
-	"\x1fvertex_ai_model_version_aliases\x18a \x03(\tR\x1bvertexAiModelVersionAliases\x125\n" +
-	"\x14dimension_id_columns\x18h \x03(\tB\x03\xe0A\x01R\x12dimensionIdColumns\x124\n" +
+	"\x1fvertex_ai_model_version_aliases\x18a \x03(\tR\x1bvertexAiModelVersionAliases\x126\n" +
+	"\x14dimension_id_columns\x18h \x03(\tB\x04\xe2A\x01\x01R\x12dimensionIdColumns\x124\n" +
 	"\x13contribution_metric\x18i \x01(\tH\x01R\x12contributionMetric\x88\x01\x01\x12)\n" +
 	"\x0eis_test_column\x18j \x01(\tH\x02R\fisTestColumn\x88\x01\x01\x123\n" +
 	"\x13min_apriori_support\x18k \x01(\x01H\x03R\x11minAprioriSupport\x88\x01\x01\x123\n" +
@@ -7790,31 +7790,31 @@ const file_google_cloud_bigquery_v2_model_proto_rawDesc = "" +
 	"\fFeedbackType\x12\x1d\n" +
 	"\x19FEEDBACK_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bIMPLICIT\x10\x01\x12\f\n" +
-	"\bEXPLICIT\x10\x02\"y\n" +
-	"\x0fGetModelRequest\x12\"\n" +
+	"\bEXPLICIT\x10\x02\"|\n" +
+	"\x0fGetModelRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12\x1e\n" +
-	"\bmodel_id\x18\x03 \x01(\tB\x03\xe0A\x02R\amodelId\"\xb7\x01\n" +
-	"\x11PatchModelRequest\x12\"\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12\x1f\n" +
+	"\bmodel_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\amodelId\"\xbb\x01\n" +
+	"\x11PatchModelRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12\x1e\n" +
-	"\bmodel_id\x18\x03 \x01(\tB\x03\xe0A\x02R\amodelId\x12:\n" +
-	"\x05model\x18\x04 \x01(\v2\x1f.google.cloud.bigquery.v2.ModelB\x03\xe0A\x02R\x05model\"|\n" +
-	"\x12DeleteModelRequest\x12\"\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12\x1f\n" +
+	"\bmodel_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\amodelId\x12;\n" +
+	"\x05model\x18\x04 \x01(\v2\x1f.google.cloud.bigquery.v2.ModelB\x04\xe2A\x01\x02R\x05model\"\x7f\n" +
+	"\x12DeleteModelRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12\x1e\n" +
-	"\bmodel_id\x18\x03 \x01(\tB\x03\xe0A\x02R\amodelId\"\xb9\x01\n" +
-	"\x11ListModelsRequest\x12\"\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12\x1f\n" +
+	"\bmodel_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\amodelId\"\xbb\x01\n" +
+	"\x11ListModelsRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12=\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12=\n" +
 	"\vmax_results\x18\x03 \x01(\v2\x1c.google.protobuf.UInt32ValueR\n" +
 	"maxResults\x12\x1d\n" +
 	"\n" +

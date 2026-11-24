@@ -279,6 +279,37 @@ func NewImageClient(ctx context.Context, opts ...option.ClientOption) (*ImageCli
 		client.CallOptions.RemoveProductImageBackground = append(client.CallOptions.RemoveProductImageBackground, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpscaleProductImage = append(client.CallOptions.UpscaleProductImage, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GenerateProductImageBackground = append(client.CallOptions.GenerateProductImageBackground, gax.WithClientTracing(tracing))
+		client.CallOptions.RemoveProductImageBackground = append(client.CallOptions.RemoveProductImageBackground, gax.WithClientTracing(tracing))
+		client.CallOptions.UpscaleProductImage = append(client.CallOptions.UpscaleProductImage, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GenerateProductImageBackground = append(client.CallOptions.GenerateProductImageBackground, gax.WithClientLogging(logging))
+		client.CallOptions.RemoveProductImageBackground = append(client.CallOptions.RemoveProductImageBackground, gax.WithClientLogging(logging))
+		client.CallOptions.UpscaleProductImage = append(client.CallOptions.UpscaleProductImage, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -372,6 +403,37 @@ func NewImageRESTClient(ctx context.Context, opts ...option.ClientOption) (*Imag
 		callOpts.GenerateProductImageBackground = append(callOpts.GenerateProductImageBackground, gax.WithClientMetrics(metrics))
 		callOpts.RemoveProductImageBackground = append(callOpts.RemoveProductImageBackground, gax.WithClientMetrics(metrics))
 		callOpts.UpscaleProductImage = append(callOpts.UpscaleProductImage, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GenerateProductImageBackground = append(callOpts.GenerateProductImageBackground, gax.WithClientTracing(tracing))
+		callOpts.RemoveProductImageBackground = append(callOpts.RemoveProductImageBackground, gax.WithClientTracing(tracing))
+		callOpts.UpscaleProductImage = append(callOpts.UpscaleProductImage, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GenerateProductImageBackground = append(callOpts.GenerateProductImageBackground, gax.WithClientLogging(logging))
+		callOpts.RemoveProductImageBackground = append(callOpts.RemoveProductImageBackground, gax.WithClientLogging(logging))
+		callOpts.UpscaleProductImage = append(callOpts.UpscaleProductImage, gax.WithClientLogging(logging))
 	}
 
 	return &ImageClient{internalClient: c, CallOptions: callOpts}, nil
@@ -491,6 +553,11 @@ func (c *imageRESTClient) GenerateProductImageBackground(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/productstudio/v1alpha/%v/generatedImages:generateProductImageBackground", req.GetName())
 
 	params := url.Values{}
@@ -552,6 +619,11 @@ func (c *imageRESTClient) RemoveProductImageBackground(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/productstudio/v1alpha/%v/generatedImages:removeProductImageBackground", req.GetName())
 
 	params := url.Values{}
@@ -611,6 +683,11 @@ func (c *imageRESTClient) UpscaleProductImage(ctx context.Context, req *products
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/productstudio/v1alpha/%v/generatedImages:upscaleProductImage", req.GetName())

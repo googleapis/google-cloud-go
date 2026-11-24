@@ -215,6 +215,33 @@ func NewLfpSaleClient(ctx context.Context, opts ...option.ClientOption) (*LfpSal
 
 		client.CallOptions.InsertLfpSale = append(client.CallOptions.InsertLfpSale, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/lfp/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.InsertLfpSale = append(client.CallOptions.InsertLfpSale, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/lfp/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.InsertLfpSale = append(client.CallOptions.InsertLfpSale, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -308,6 +335,33 @@ func NewLfpSaleRESTClient(ctx context.Context, opts ...option.ClientOption) (*Lf
 
 		callOpts.InsertLfpSale = append(callOpts.InsertLfpSale, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/lfp/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.InsertLfpSale = append(callOpts.InsertLfpSale, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/lfp/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.InsertLfpSale = append(callOpts.InsertLfpSale, gax.WithClientLogging(logging))
+	}
 
 	return &LfpSaleClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -381,6 +435,11 @@ func (c *lfpSaleRESTClient) InsertLfpSale(ctx context.Context, req *lfppb.Insert
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/lfp/v1beta/%v/lfpSales:insert", req.GetParent())

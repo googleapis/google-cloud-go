@@ -293,6 +293,37 @@ func NewProductInputsClient(ctx context.Context, opts ...option.ClientOption) (*
 		client.CallOptions.UpdateProductInput = append(client.CallOptions.UpdateProductInput, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteProductInput = append(client.CallOptions.DeleteProductInput, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/products/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.InsertProductInput = append(client.CallOptions.InsertProductInput, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateProductInput = append(client.CallOptions.UpdateProductInput, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteProductInput = append(client.CallOptions.DeleteProductInput, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/products/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.InsertProductInput = append(client.CallOptions.InsertProductInput, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateProductInput = append(client.CallOptions.UpdateProductInput, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteProductInput = append(client.CallOptions.DeleteProductInput, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -386,6 +417,37 @@ func NewProductInputsRESTClient(ctx context.Context, opts ...option.ClientOption
 		callOpts.UpdateProductInput = append(callOpts.UpdateProductInput, gax.WithClientMetrics(metrics))
 		callOpts.DeleteProductInput = append(callOpts.DeleteProductInput, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/products/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.InsertProductInput = append(callOpts.InsertProductInput, gax.WithClientTracing(tracing))
+		callOpts.UpdateProductInput = append(callOpts.UpdateProductInput, gax.WithClientTracing(tracing))
+		callOpts.DeleteProductInput = append(callOpts.DeleteProductInput, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/products/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.InsertProductInput = append(callOpts.InsertProductInput, gax.WithClientLogging(logging))
+		callOpts.UpdateProductInput = append(callOpts.UpdateProductInput, gax.WithClientLogging(logging))
+		callOpts.DeleteProductInput = append(callOpts.DeleteProductInput, gax.WithClientLogging(logging))
+	}
 
 	return &ProductInputsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -432,9 +494,6 @@ func (c *productInputsGRPCClient) InsertProductInput(ctx context.Context, req *p
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.products.v1.ProductInputsService/InsertProductInput")
 	}
@@ -477,9 +536,6 @@ func (c *productInputsGRPCClient) DeleteProductInput(ctx context.Context, req *p
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.products.v1.ProductInputsService/DeleteProductInput")
 	}
@@ -517,6 +573,11 @@ func (c *productInputsRESTClient) InsertProductInput(ctx context.Context, req *p
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/products/v1/%v/productInputs:insert", req.GetParent())
 
 	params := url.Values{}
@@ -531,9 +592,6 @@ func (c *productInputsRESTClient) InsertProductInput(ctx context.Context, req *p
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.products.v1.ProductInputsService/InsertProductInput")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/products/v1/{parent=accounts/*}/productInputs:insert")
@@ -585,6 +643,11 @@ func (c *productInputsRESTClient) UpdateProductInput(ctx context.Context, req *p
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProductInput().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/products/v1/%v", req.GetProductInput().GetName())
@@ -652,6 +715,11 @@ func (c *productInputsRESTClient) DeleteProductInput(ctx context.Context, req *p
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/products/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -666,9 +734,6 @@ func (c *productInputsRESTClient) DeleteProductInput(ctx context.Context, req *p
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.products.v1.ProductInputsService/DeleteProductInput")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/products/v1/{name=accounts/*/productInputs/*}")

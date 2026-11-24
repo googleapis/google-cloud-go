@@ -154,13 +154,13 @@ var File_google_ai_generativelanguage_v1alpha_prediction_service_proto protorefl
 
 const file_google_ai_generativelanguage_v1alpha_prediction_service_proto_rawDesc = "" +
 	"\n" +
-	"=google/ai/generativelanguage/v1alpha/prediction_service.proto\x12$google.ai.generativelanguage.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xcf\x01\n" +
-	"\x0ePredictRequest\x12E\n" +
-	"\x05model\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'generativelanguage.googleapis.com/ModelR\x05model\x129\n" +
-	"\tinstances\x18\x02 \x03(\v2\x16.google.protobuf.ValueB\x03\xe0A\x02R\tinstances\x12;\n" +
+	"=google/ai/generativelanguage/v1alpha/prediction_service.proto\x12$google.ai.generativelanguage.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xd2\x01\n" +
+	"\x0ePredictRequest\x12F\n" +
+	"\x05model\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'generativelanguage.googleapis.com/ModelR\x05model\x12:\n" +
+	"\tinstances\x18\x02 \x03(\v2\x16.google.protobuf.ValueB\x04\xe2A\x01\x02R\tinstances\x12<\n" +
 	"\n" +
-	"parameters\x18\x03 \x01(\v2\x16.google.protobuf.ValueB\x03\xe0A\x01R\n" +
+	"parameters\x18\x03 \x01(\v2\x16.google.protobuf.ValueB\x04\xe2A\x01\x01R\n" +
 	"parameters\"K\n" +
 	"\x0fPredictResponse\x128\n" +
 	"\vpredictions\x18\x01 \x03(\v2\x16.google.protobuf.ValueR\vpredictions2\xf2\x01\n" +

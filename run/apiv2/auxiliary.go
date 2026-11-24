@@ -18,12 +18,14 @@ package run
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	runpb "cloud.google.com/go/run/apiv2/runpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -923,6 +925,70 @@ func (op *StopInstanceOperation) Name() string {
 	return op.lro.Name()
 }
 
+// UpdateInstanceOperation manages a long-running operation from UpdateInstance.
+type UpdateInstanceOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*runpb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp runpb.Instance
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*runpb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp runpb.Instance
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateInstanceOperation) Metadata() (*runpb.Instance, error) {
+	var meta runpb.Instance
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateInstanceOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateInstanceOperation) Name() string {
+	return op.lro.Name()
+}
+
 // UpdateJobOperation manages a long-running operation from UpdateJob.
 type UpdateJobOperation struct {
 	lro      *longrunning.Operation
@@ -1115,6 +1181,12 @@ func (op *UpdateWorkerPoolOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ExecutionIterator) All() iter.Seq2[*runpb.Execution, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ExecutionIterator manages a stream of *runpb.Execution.
 type ExecutionIterator struct {
 	items    []*runpb.Execution
@@ -1160,6 +1232,12 @@ func (it *ExecutionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceIterator) All() iter.Seq2[*runpb.Instance, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // InstanceIterator manages a stream of *runpb.Instance.
@@ -1209,6 +1287,12 @@ func (it *InstanceIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *JobIterator) All() iter.Seq2[*runpb.Job, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // JobIterator manages a stream of *runpb.Job.
 type JobIterator struct {
 	items    []*runpb.Job
@@ -1254,6 +1338,12 @@ func (it *JobIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -1303,6 +1393,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RevisionIterator) All() iter.Seq2[*runpb.Revision, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RevisionIterator manages a stream of *runpb.Revision.
 type RevisionIterator struct {
 	items    []*runpb.Revision
@@ -1348,6 +1444,12 @@ func (it *RevisionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServiceIterator) All() iter.Seq2[*runpb.Service, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ServiceIterator manages a stream of *runpb.Service.
@@ -1397,6 +1499,12 @@ func (it *ServiceIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TaskIterator) All() iter.Seq2[*runpb.Task, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TaskIterator manages a stream of *runpb.Task.
 type TaskIterator struct {
 	items    []*runpb.Task
@@ -1442,6 +1550,12 @@ func (it *TaskIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WorkerPoolIterator) All() iter.Seq2[*runpb.WorkerPool, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // WorkerPoolIterator manages a stream of *runpb.WorkerPool.

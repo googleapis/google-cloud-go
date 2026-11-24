@@ -323,7 +323,7 @@ func (c *consumer) process(_ context.Context, m *pubsub.Message) {
 
 	var delay time.Duration
 	if c.processingDelay == nil {
-		delay = time.Duration(rand.Intn(int(ackDeadline * 3)))
+		delay = time.Duration(rand.Int63n(int64(ackDeadline * 3)))
 	} else {
 		delay = c.processingDelay()
 	}

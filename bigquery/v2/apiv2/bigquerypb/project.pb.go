@@ -142,10 +142,10 @@ var File_google_cloud_bigquery_v2_project_proto protoreflect.FileDescriptor
 
 const file_google_cloud_bigquery_v2_project_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/bigquery/v2/project.proto\x12\x18google.cloud.bigquery.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\">\n" +
-	"\x18GetServiceAccountRequest\x12\"\n" +
+	"&google/cloud/bigquery/v2/project.proto\x12\x18google.cloud.bigquery.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\"?\n" +
+	"\x18GetServiceAccountRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\"E\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\"E\n" +
 	"\x19GetServiceAccountResponse\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email2\xfd\x02\n" +

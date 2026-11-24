@@ -172,7 +172,7 @@ func defaultBackendServicesRESTCallOptions() *BackendServicesCallOptions {
 	}
 }
 
-// internalBackendServicesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalBackendServicesClient is an interface that defines the methods available from Compute Engine API.
 type internalBackendServicesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -196,10 +196,12 @@ type internalBackendServicesClient interface {
 	Update(context.Context, *computepb.UpdateBackendServiceRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// BackendServicesClient is a client for interacting with Google Compute Engine API.
+// BackendServicesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The BackendServices API.
+//
+// This client uses BackendServices version 2026-09-01.
 type BackendServicesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalBackendServicesClient
@@ -298,7 +300,10 @@ func (c *BackendServicesClient) List(ctx context.Context, req *computepb.ListBac
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// ListUsable retrieves a list of all usable backend services in the specified project.
+// ListUsable retrieves a list of all usable backend services for Application Load
+// Balancers and Proxy Network Load Balancers in the specified project.
+// Backend services for external and internal passthrough Network Load
+// Balancers are not included in the response.
 func (c *BackendServicesClient) ListUsable(ctx context.Context, req *computepb.ListUsableBackendServicesRequest, opts ...gax.CallOption) *BackendServiceIterator {
 	return c.internalClient.ListUsable(ctx, req, opts...)
 }
@@ -421,6 +426,65 @@ func NewBackendServicesRESTClient(ctx context.Context, opts ...option.ClientOpti
 		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
 		callOpts.Update = append(callOpts.Update, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddSignedUrlKey = append(callOpts.AddSignedUrlKey, gax.WithClientTracing(tracing))
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.DeleteSignedUrlKey = append(callOpts.DeleteSignedUrlKey, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.GetEffectiveSecurityPolicies = append(callOpts.GetEffectiveSecurityPolicies, gax.WithClientTracing(tracing))
+		callOpts.GetHealth = append(callOpts.GetHealth, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.ListUsable = append(callOpts.ListUsable, gax.WithClientTracing(tracing))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientTracing(tracing))
+		callOpts.SetEdgeSecurityPolicy = append(callOpts.SetEdgeSecurityPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetSecurityPolicy = append(callOpts.SetSecurityPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.Update = append(callOpts.Update, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddSignedUrlKey = append(callOpts.AddSignedUrlKey, gax.WithClientLogging(logging))
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.DeleteSignedUrlKey = append(callOpts.DeleteSignedUrlKey, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.GetEffectiveSecurityPolicies = append(callOpts.GetEffectiveSecurityPolicies, gax.WithClientLogging(logging))
+		callOpts.GetHealth = append(callOpts.GetHealth, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.ListUsable = append(callOpts.ListUsable, gax.WithClientLogging(logging))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientLogging(logging))
+		callOpts.SetEdgeSecurityPolicy = append(callOpts.SetEdgeSecurityPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetSecurityPolicy = append(callOpts.SetSecurityPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.Update = append(callOpts.Update, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -455,6 +519,7 @@ func (c *backendServicesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
@@ -490,6 +555,12 @@ func (c *backendServicesRESTClient) AddSignedUrlKey(ctx context.Context, req *co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetBackendService(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v/addSignedUrlKey", req.GetProject(), req.GetBackendService())
 
 	params := url.Values{}
@@ -505,9 +576,6 @@ func (c *backendServicesRESTClient) AddSignedUrlKey(ctx context.Context, req *co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.BackendServices/AddSignedUrlKey")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/backendServices/{backend_service}/addSignedUrlKey")
@@ -573,6 +641,11 @@ func (c *backendServicesRESTClient) AggregatedList(ctx context.Context, req *com
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/backendServices", req.GetProject())
 
 		params := url.Values{}
@@ -590,9 +663,6 @@ func (c *backendServicesRESTClient) AggregatedList(ctx context.Context, req *com
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 		if req != nil && req.ServiceProjectNumber != nil {
 			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
@@ -659,6 +729,12 @@ func (c *backendServicesRESTClient) Delete(ctx context.Context, req *computepb.D
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetBackendService(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService())
 
 	params := url.Values{}
@@ -674,9 +750,6 @@ func (c *backendServicesRESTClient) Delete(ctx context.Context, req *computepb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.BackendServices/Delete")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/backendServices/{backend_service}")
@@ -726,6 +799,12 @@ func (c *backendServicesRESTClient) DeleteSignedUrlKey(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetBackendService(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v/deleteSignedUrlKey", req.GetProject(), req.GetBackendService())
 
 	params := url.Values{}
@@ -742,9 +821,6 @@ func (c *backendServicesRESTClient) DeleteSignedUrlKey(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.BackendServices/DeleteSignedUrlKey")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/backendServices/{backend_service}/deleteSignedUrlKey")
@@ -793,6 +869,12 @@ func (c *backendServicesRESTClient) Get(ctx context.Context, req *computepb.GetB
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetBackendService(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService())
 
 	// Build HTTP headers from client and context metadata.
@@ -801,9 +883,6 @@ func (c *backendServicesRESTClient) Get(ctx context.Context, req *computepb.GetB
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.BackendServices/Get")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/backendServices/{backend_service}")
@@ -845,6 +924,12 @@ func (c *backendServicesRESTClient) GetEffectiveSecurityPolicies(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetBackendService(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v/getEffectiveSecurityPolicies", req.GetProject(), req.GetBackendService())
 
 	// Build HTTP headers from client and context metadata.
@@ -853,9 +938,6 @@ func (c *backendServicesRESTClient) GetEffectiveSecurityPolicies(ctx context.Con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.BackendServices/GetEffectiveSecurityPolicies")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/backendServices/{backend_service}/getEffectiveSecurityPolicies")
@@ -911,6 +993,12 @@ func (c *backendServicesRESTClient) GetHealth(ctx context.Context, req *computep
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetBackendService(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v/getHealth", req.GetProject(), req.GetBackendService())
 
 	// Build HTTP headers from client and context metadata.
@@ -919,9 +1007,6 @@ func (c *backendServicesRESTClient) GetHealth(ctx context.Context, req *computep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.BackendServices/GetHealth")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/backendServices/{backend_service}/getHealth")
@@ -964,6 +1049,12 @@ func (c *backendServicesRESTClient) GetIamPolicy(ctx context.Context, req *compu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v/getIamPolicy", req.GetProject(), req.GetResource())
 
 	params := url.Values{}
@@ -979,9 +1070,6 @@ func (c *backendServicesRESTClient) GetIamPolicy(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/backendServices/%v", req.GetProject(), req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.BackendServices/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/backendServices/{resource}/getIamPolicy")
@@ -1032,6 +1120,11 @@ func (c *backendServicesRESTClient) Insert(ctx context.Context, req *computepb.I
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices", req.GetProject())
 
 	params := url.Values{}
@@ -1047,9 +1140,6 @@ func (c *backendServicesRESTClient) Insert(ctx context.Context, req *computepb.I
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.BackendServices/Insert")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/backendServices")
@@ -1112,6 +1202,11 @@ func (c *backendServicesRESTClient) List(ctx context.Context, req *computepb.Lis
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices", req.GetProject())
 
 		params := url.Values{}
@@ -1126,9 +1221,6 @@ func (c *backendServicesRESTClient) List(ctx context.Context, req *computepb.Lis
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1179,7 +1271,10 @@ func (c *backendServicesRESTClient) List(ctx context.Context, req *computepb.Lis
 	return it
 }
 
-// ListUsable retrieves a list of all usable backend services in the specified project.
+// ListUsable retrieves a list of all usable backend services for Application Load
+// Balancers and Proxy Network Load Balancers in the specified project.
+// Backend services for external and internal passthrough Network Load
+// Balancers are not included in the response.
 func (c *backendServicesRESTClient) ListUsable(ctx context.Context, req *computepb.ListUsableBackendServicesRequest, opts ...gax.CallOption) *BackendServiceIterator {
 	it := &BackendServiceIterator{}
 	req = proto.CloneOf(req)
@@ -1198,6 +1293,11 @@ func (c *backendServicesRESTClient) ListUsable(ctx context.Context, req *compute
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/listUsable", req.GetProject())
 
 		params := url.Values{}
@@ -1212,9 +1312,6 @@ func (c *backendServicesRESTClient) ListUsable(ctx context.Context, req *compute
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1282,6 +1379,12 @@ func (c *backendServicesRESTClient) Patch(ctx context.Context, req *computepb.Pa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetBackendService(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService())
 
 	params := url.Values{}
@@ -1297,9 +1400,6 @@ func (c *backendServicesRESTClient) Patch(ctx context.Context, req *computepb.Pa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.BackendServices/Patch")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/backendServices/{backend_service}")
@@ -1355,6 +1455,12 @@ func (c *backendServicesRESTClient) SetEdgeSecurityPolicy(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetBackendService(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v/setEdgeSecurityPolicy", req.GetProject(), req.GetBackendService())
 
 	params := url.Values{}
@@ -1370,9 +1476,6 @@ func (c *backendServicesRESTClient) SetEdgeSecurityPolicy(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.BackendServices/SetEdgeSecurityPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/backendServices/{backend_service}/setEdgeSecurityPolicy")
@@ -1429,6 +1532,12 @@ func (c *backendServicesRESTClient) SetIamPolicy(ctx context.Context, req *compu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v/setIamPolicy", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -1437,9 +1546,6 @@ func (c *backendServicesRESTClient) SetIamPolicy(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/backendServices/%v", req.GetProject(), req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.BackendServices/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/backendServices/{resource}/setIamPolicy")
@@ -1490,6 +1596,12 @@ func (c *backendServicesRESTClient) SetSecurityPolicy(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetBackendService(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v/setSecurityPolicy", req.GetProject(), req.GetBackendService())
 
 	params := url.Values{}
@@ -1505,9 +1617,6 @@ func (c *backendServicesRESTClient) SetSecurityPolicy(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.BackendServices/SetSecurityPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/backendServices/{backend_service}/setSecurityPolicy")
@@ -1563,6 +1672,12 @@ func (c *backendServicesRESTClient) TestIamPermissions(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v/testIamPermissions", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
@@ -1571,9 +1686,6 @@ func (c *backendServicesRESTClient) TestIamPermissions(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/backendServices/%v", req.GetProject(), req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.BackendServices/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/backendServices/{resource}/testIamPermissions")
@@ -1624,6 +1736,12 @@ func (c *backendServicesRESTClient) Update(ctx context.Context, req *computepb.U
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetBackendService(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService())
 
 	params := url.Values{}
@@ -1639,9 +1757,6 @@ func (c *backendServicesRESTClient) Update(ctx context.Context, req *computepb.U
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.BackendServices/Update")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/backendServices/{backend_service}")

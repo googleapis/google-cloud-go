@@ -89,9 +89,9 @@ var File_google_cloud_securitycenter_v2_org_policy_proto protoreflect.FileDescri
 
 const file_google_cloud_securitycenter_v2_org_policy_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/securitycenter/v2/org_policy.proto\x12\x1egoogle.cloud.securitycenter.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xe1\x01\n" +
-	"\tOrgPolicy\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name:\xba\x01\xeaA\xb6\x01\n" +
+	"/google/cloud/securitycenter/v2/org_policy.proto\x12\x1egoogle.cloud.securitycenter.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xe2\x01\n" +
+	"\tOrgPolicy\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name:\xba\x01\xeaA\xb6\x01\n" +
 	"\x1forgpolicy.googleapis.com/Policy\x127organizations/{organization}/policies/{constraint_name}\x12+folders/{folder}/policies/{constraint_name}\x12-projects/{project}/policies/{constraint_name}B\xe8\x01\n" +
 	"\"com.google.cloud.securitycenter.v2B\x0eOrgPolicyProtoP\x01ZJcloud.google.com/go/securitycenter/apiv2/securitycenterpb;securitycenterpb\xaa\x02\x1eGoogle.Cloud.SecurityCenter.V2\xca\x02\x1eGoogle\\Cloud\\SecurityCenter\\V2\xea\x02!Google::Cloud::SecurityCenter::V2b\x06proto3"
 

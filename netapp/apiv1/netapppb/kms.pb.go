@@ -657,7 +657,7 @@ func (x *VerifyKmsConfigResponse) GetInstructions() string {
 // KmsConfig is the customer-managed encryption key(CMEK) configuration.
 type KmsConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Identifier. Name of the KmsConfig.
+	// Identifier. Name of the `KmsConfig`.
 	// Format: `projects/{project}/locations/{location}/kmsConfigs/{kms_config}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. Customer-managed crypto key resource full name. Format:
@@ -780,12 +780,12 @@ var File_google_cloud_netapp_v1_kms_proto protoreflect.FileDescriptor
 
 const file_google_cloud_netapp_v1_kms_proto_rawDesc = "" +
 	"\n" +
-	" google/cloud/netapp/v1/kms.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"R\n" +
-	"\x13GetKmsConfigRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fnetapp.googleapis.com/KmsConfigR\x04name\"\xc7\x01\n" +
-	"\x15ListKmsConfigsRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fnetapp.googleapis.com/KmsConfigR\x06parent\x12\x1b\n" +
+	" google/cloud/netapp/v1/kms.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"S\n" +
+	"\x13GetKmsConfigRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fnetapp.googleapis.com/KmsConfigR\x04name\"\xc8\x01\n" +
+	"\x15ListKmsConfigsRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fnetapp.googleapis.com/KmsConfigR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x19\n" +
@@ -795,41 +795,42 @@ const file_google_cloud_netapp_v1_kms_proto_rawDesc = "" +
 	"\vkms_configs\x18\x01 \x03(\v2!.google.cloud.netapp.v1.KmsConfigR\n" +
 	"kmsConfigs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xc9\x01\n" +
-	"\x16CreateKmsConfigRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fnetapp.googleapis.com/KmsConfigR\x06parent\x12'\n" +
-	"\rkms_config_id\x18\x02 \x01(\tB\x03\xe0A\x02R\vkmsConfigId\x12E\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xcc\x01\n" +
+	"\x16CreateKmsConfigRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fnetapp.googleapis.com/KmsConfigR\x06parent\x12(\n" +
+	"\rkms_config_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vkmsConfigId\x12F\n" +
 	"\n" +
-	"kms_config\x18\x03 \x01(\v2!.google.cloud.netapp.v1.KmsConfigB\x03\xe0A\x02R\tkmsConfig\"\xa1\x01\n" +
-	"\x16UpdateKmsConfigRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12E\n" +
+	"kms_config\x18\x03 \x01(\v2!.google.cloud.netapp.v1.KmsConfigB\x04\xe2A\x01\x02R\tkmsConfig\"\xa3\x01\n" +
+	"\x16UpdateKmsConfigRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12F\n" +
 	"\n" +
-	"kms_config\x18\x02 \x01(\v2!.google.cloud.netapp.v1.KmsConfigB\x03\xe0A\x02R\tkmsConfig\"U\n" +
-	"\x16DeleteKmsConfigRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fnetapp.googleapis.com/KmsConfigR\x04name\"T\n" +
-	"\x15EncryptVolumesRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"kms_config\x18\x02 \x01(\v2!.google.cloud.netapp.v1.KmsConfigB\x04\xe2A\x01\x02R\tkmsConfig\"V\n" +
+	"\x16DeleteKmsConfigRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fnetapp.googleapis.com/KmsConfigR\x04name\"U\n" +
-	"\x16VerifyKmsConfigRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fnetapp.googleapis.com/KmsConfigR\x04name\"\x89\x01\n" +
-	"\x17VerifyKmsConfigResponse\x12\x1d\n" +
-	"\ahealthy\x18\x01 \x01(\bB\x03\xe0A\x03R\ahealthy\x12&\n" +
-	"\fhealth_error\x18\x02 \x01(\tB\x03\xe0A\x03R\vhealthError\x12'\n" +
-	"\finstructions\x18\x03 \x01(\tB\x03\xe0A\x03R\finstructions\"\xc1\x06\n" +
-	"\tKmsConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12+\n" +
-	"\x0fcrypto_key_name\x18\x02 \x01(\tB\x03\xe0A\x02R\rcryptoKeyName\x12B\n" +
-	"\x05state\x18\x03 \x01(\x0e2'.google.cloud.netapp.v1.KmsConfig.StateB\x03\xe0A\x03R\x05state\x12(\n" +
-	"\rstate_details\x18\x04 \x01(\tB\x03\xe0A\x03R\fstateDetails\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x15EncryptVolumesRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fnetapp.googleapis.com/KmsConfigR\x04name\"V\n" +
+	"\x16VerifyKmsConfigRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fnetapp.googleapis.com/KmsConfigR\x04name\"\x8c\x01\n" +
+	"\x17VerifyKmsConfigResponse\x12\x1e\n" +
+	"\ahealthy\x18\x01 \x01(\bB\x04\xe2A\x01\x03R\ahealthy\x12'\n" +
+	"\fhealth_error\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vhealthError\x12(\n" +
+	"\finstructions\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\finstructions\"\xee\x06\n" +
+	"\tKmsConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12R\n" +
+	"\x0fcrypto_key_name\x18\x02 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\rcryptoKeyName\x12C\n" +
+	"\x05state\x18\x03 \x01(\x0e2'.google.cloud.netapp.v1.KmsConfig.StateB\x04\xe2A\x01\x03R\x05state\x12)\n" +
+	"\rstate_details\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\fstateDetails\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\x12 \n" +
 	"\vdescription\x18\x06 \x01(\tR\vdescription\x12E\n" +
-	"\x06labels\x18\a \x03(\v2-.google.cloud.netapp.v1.KmsConfig.LabelsEntryR\x06labels\x12'\n" +
-	"\finstructions\x18\b \x01(\tB\x03\xe0A\x03R\finstructions\x12,\n" +
-	"\x0fservice_account\x18\t \x01(\tB\x03\xe0A\x03R\x0eserviceAccount\x1a9\n" +
+	"\x06labels\x18\a \x03(\v2-.google.cloud.netapp.v1.KmsConfig.LabelsEntryR\x06labels\x12(\n" +
+	"\finstructions\x18\b \x01(\tB\x04\xe2A\x01\x03R\finstructions\x12-\n" +
+	"\x0fservice_account\x18\t \x01(\tB\x04\xe2A\x01\x03R\x0eserviceAccount\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xc4\x01\n" +
@@ -849,7 +850,8 @@ const file_google_cloud_netapp_v1_kms_proto_rawDesc = "" +
 	"\x12\r\n" +
 	"\tMIGRATING\x10\v:|\xeaAy\n" +
 	"\x1fnetapp.googleapis.com/KmsConfig\x12?projects/{project}/locations/{location}/kmsConfigs/{kms_config}*\n" +
-	"kmsConfigs2\tkmsConfigB\xd4\x02\xeaA\xa6\x01\n" +
+	"kmsConfigs2\tkmsConfigB\xcf\x03\xeaAx\n" +
+	"!cloudkms.googleapis.com/CryptoKey\x12Sprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}\xeaA\xa6\x01\n" +
 	"(cloudkms.googleapis.com/CryptoKeyVersion\x12zprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}/cryptoKeyVersions/{crypto_key_version}\n" +
 	"\x1acom.google.cloud.netapp.v1B\bKmsProtoP\x01Z2cloud.google.com/go/netapp/apiv1/netapppb;netapppb\xaa\x02\x16Google.Cloud.NetApp.V1\xca\x02\x16Google\\Cloud\\NetApp\\V1\xea\x02\x19Google::Cloud::NetApp::V1b\x06proto3"
 

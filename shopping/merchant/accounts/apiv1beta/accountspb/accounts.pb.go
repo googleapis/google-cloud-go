@@ -793,59 +793,59 @@ var File_google_shopping_merchant_accounts_v1beta_accounts_proto protoreflect.Fi
 
 const file_google_shopping_merchant_accounts_v1beta_accounts_proto_rawDesc = "" +
 	"\n" +
-	"7google/shopping/merchant/accounts/v1beta/accounts.proto\x12(google.shopping.merchant.accounts.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a>google/shopping/merchant/accounts/v1beta/accountservices.proto\x1a3google/shopping/merchant/accounts/v1beta/user.proto\x1a\x1agoogle/type/datetime.proto\"\xdb\x02\n" +
-	"\aAccount\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\"\n" +
+	"7google/shopping/merchant/accounts/v1beta/accounts.proto\x12(google.shopping.merchant.accounts.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a>google/shopping/merchant/accounts/v1beta/accountservices.proto\x1a3google/shopping/merchant/accounts/v1beta/user.proto\x1a\x1agoogle/type/datetime.proto\"\xe1\x02\n" +
+	"\aAccount\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12#\n" +
 	"\n" +
-	"account_id\x18\x02 \x01(\x03B\x03\xe0A\x03R\taccountId\x12&\n" +
-	"\faccount_name\x18\x03 \x01(\tB\x03\xe0A\x02R\vaccountName\x12#\n" +
-	"\radult_content\x18\x04 \x01(\bR\fadultContent\x12&\n" +
-	"\ftest_account\x18\x05 \x01(\bB\x03\xe0A\x03R\vtestAccount\x127\n" +
-	"\ttime_zone\x18\x06 \x01(\v2\x15.google.type.TimeZoneB\x03\xe0A\x02R\btimeZone\x12(\n" +
-	"\rlanguage_code\x18\a \x01(\tB\x03\xe0A\x02R\flanguageCode:;\xeaA8\n" +
-	"\"merchantapi.googleapis.com/Account\x12\x12accounts/{account}\"S\n" +
-	"\x11GetAccountRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/AccountR\x04name\"\xff\x06\n" +
-	" CreateAndConfigureAccountRequest\x12P\n" +
-	"\aaccount\x18\x01 \x01(\v21.google.shopping.merchant.accounts.v1beta.AccountB\x03\xe0A\x02R\aaccount\x12V\n" +
-	"\x05users\x18\x02 \x03(\v2;.google.shopping.merchant.accounts.v1beta.CreateUserRequestB\x03\xe0A\x01R\x05users\x12\xa0\x01\n" +
-	"\x17accept_terms_of_service\x18\x03 \x01(\v2_.google.shopping.merchant.accounts.v1beta.CreateAndConfigureAccountRequest.AcceptTermsOfServiceB\x03\xe0A\x01H\x00R\x14acceptTermsOfService\x88\x01\x01\x12{\n" +
-	"\aservice\x18\x04 \x03(\v2\\.google.shopping.merchant.accounts.v1beta.CreateAndConfigureAccountRequest.AddAccountServiceB\x03\xe0A\x02R\aservice\x1a\x83\x01\n" +
-	"\x14AcceptTermsOfService\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")merchantapi.googleapis.com/TermsOfServiceR\x04name\x12$\n" +
-	"\vregion_code\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
-	"regionCode\x1a\xee\x01\n" +
+	"account_id\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\taccountId\x12'\n" +
+	"\faccount_name\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vaccountName\x12#\n" +
+	"\radult_content\x18\x04 \x01(\bR\fadultContent\x12'\n" +
+	"\ftest_account\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\vtestAccount\x128\n" +
+	"\ttime_zone\x18\x06 \x01(\v2\x15.google.type.TimeZoneB\x04\xe2A\x01\x02R\btimeZone\x12)\n" +
+	"\rlanguage_code\x18\a \x01(\tB\x04\xe2A\x01\x02R\flanguageCode:;\xeaA8\n" +
+	"\"merchantapi.googleapis.com/Account\x12\x12accounts/{account}\"T\n" +
+	"\x11GetAccountRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/AccountR\x04name\"\x86\a\n" +
+	" CreateAndConfigureAccountRequest\x12Q\n" +
+	"\aaccount\x18\x01 \x01(\v21.google.shopping.merchant.accounts.v1beta.AccountB\x04\xe2A\x01\x02R\aaccount\x12W\n" +
+	"\x05users\x18\x02 \x03(\v2;.google.shopping.merchant.accounts.v1beta.CreateUserRequestB\x04\xe2A\x01\x01R\x05users\x12\xa1\x01\n" +
+	"\x17accept_terms_of_service\x18\x03 \x01(\v2_.google.shopping.merchant.accounts.v1beta.CreateAndConfigureAccountRequest.AcceptTermsOfServiceB\x04\xe2A\x01\x01H\x00R\x14acceptTermsOfService\x88\x01\x01\x12|\n" +
+	"\aservice\x18\x04 \x03(\v2\\.google.shopping.merchant.accounts.v1beta.CreateAndConfigureAccountRequest.AddAccountServiceB\x04\xe2A\x01\x02R\aservice\x1a\x85\x01\n" +
+	"\x14AcceptTermsOfService\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")merchantapi.googleapis.com/TermsOfServiceR\x04name\x12%\n" +
+	"\vregion_code\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"regionCode\x1a\xef\x01\n" +
 	"\x11AddAccountService\x12o\n" +
-	"\x13account_aggregation\x18g \x01(\v2<.google.shopping.merchant.accounts.v1beta.AccountAggregationH\x00R\x12accountAggregation\x12K\n" +
-	"\bprovider\x18\x01 \x01(\tB*\xe0A\x01\xfaA$\n" +
+	"\x13account_aggregation\x18g \x01(\v2<.google.shopping.merchant.accounts.v1beta.AccountAggregationH\x00R\x12accountAggregation\x12L\n" +
+	"\bprovider\x18\x01 \x01(\tB+\xe2A\x01\x01\xfaA$\n" +
 	"\"merchantapi.googleapis.com/AccountH\x01R\bprovider\x88\x01\x01B\x0e\n" +
 	"\fservice_typeB\v\n" +
 	"\t_providerB\x1a\n" +
-	"\x18_accept_terms_of_service\"q\n" +
-	"\x14DeleteAccountRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/AccountR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\xaa\x01\n" +
-	"\x14UpdateAccountRequest\x12P\n" +
-	"\aaccount\x18\x01 \x01(\v21.google.shopping.merchant.accounts.v1beta.AccountB\x03\xe0A\x02R\aaccount\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"x\n" +
-	"\x13ListAccountsRequest\x12 \n" +
-	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x18_accept_terms_of_service\"s\n" +
+	"\x14DeleteAccountRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/AccountR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xac\x01\n" +
+	"\x14UpdateAccountRequest\x12Q\n" +
+	"\aaccount\x18\x01 \x01(\v21.google.shopping.merchant.accounts.v1beta.AccountB\x04\xe2A\x01\x02R\aaccount\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"{\n" +
+	"\x13ListAccountsRequest\x12!\n" +
+	"\tpage_size\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\"\x8d\x01\n" +
+	"page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x8d\x01\n" +
 	"\x14ListAccountsResponse\x12M\n" +
 	"\baccounts\x18\x01 \x03(\v21.google.shopping.merchant.accounts.v1beta.AccountR\baccounts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa6\x01\n" +
-	"\x16ListSubAccountsRequest\x12F\n" +
-	"\bprovider\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/AccountR\bprovider\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa9\x01\n" +
+	"\x16ListSubAccountsRequest\x12G\n" +
+	"\bprovider\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/AccountR\bprovider\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x90\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x90\x01\n" +
 	"\x17ListSubAccountsResponse\x12M\n" +
 	"\baccounts\x18\x01 \x03(\v21.google.shopping.merchant.accounts.v1beta.AccountR\baccounts\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xee\t\n" +

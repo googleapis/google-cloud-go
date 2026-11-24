@@ -1080,9 +1080,9 @@ var File_google_cloud_baremetalsolution_v2_volume_proto protoreflect.FileDescrip
 
 const file_google_cloud_baremetalsolution_v2_volume_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/baremetalsolution/v2/volume.proto\x12!google.cloud.baremetalsolution.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/baremetalsolution/v2/common.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xab\x12\n" +
-	"\x06Volume\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x0e\n" +
+	".google/cloud/baremetalsolution/v2/volume.proto\x12!google.cloud.baremetalsolution.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/baremetalsolution/v2/common.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb4\x12\n" +
+	"\x06Volume\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x0e\n" +
 	"\x02id\x18\v \x01(\tR\x02id\x12X\n" +
 	"\fstorage_type\x18\x02 \x01(\x0e25.google.cloud.baremetalsolution.v2.Volume.StorageTypeR\vstorageType\x12E\n" +
 	"\x05state\x18\x03 \x01(\x0e2/.google.cloud.baremetalsolution.v2.Volume.StateR\x05state\x12,\n" +
@@ -1097,19 +1097,19 @@ const file_google_cloud_baremetalsolution_v2_volume_proto_rawDesc = "" +
 	"\x1bsnapshot_reservation_detail\x18\b \x01(\v2C.google.cloud.baremetalsolution.v2.Volume.SnapshotReservationDetailR\x19snapshotReservationDetail\x12\x87\x01\n" +
 	"\x1dsnapshot_auto_delete_behavior\x18\t \x01(\x0e2D.google.cloud.baremetalsolution.v2.Volume.SnapshotAutoDeleteBehaviorR\x1asnapshotAutoDeleteBehavior\x12M\n" +
 	"\x06labels\x18\f \x03(\v25.google.cloud.baremetalsolution.v2.Volume.LabelsEntryR\x06labels\x12)\n" +
-	"\x10snapshot_enabled\x18\r \x01(\bR\x0fsnapshotEnabled\x12\x15\n" +
-	"\x03pod\x18\x0f \x01(\tB\x03\xe0A\x05R\x03pod\x12S\n" +
-	"\bprotocol\x18\x12 \x01(\x0e22.google.cloud.baremetalsolution.v2.Volume.ProtocolB\x03\xe0A\x03R\bprotocol\x12$\n" +
-	"\vboot_volume\x18\x13 \x01(\bB\x03\xe0A\x03R\n" +
-	"bootVolume\x12h\n" +
-	"\x10performance_tier\x18\x14 \x01(\x0e28.google.cloud.baremetalsolution.v2.VolumePerformanceTierB\x03\xe0A\x05R\x0fperformanceTier\x12\x19\n" +
-	"\x05notes\x18\x15 \x01(\tB\x03\xe0A\x04R\x05notes\x12d\n" +
-	"\x10workload_profile\x18\x16 \x01(\x0e29.google.cloud.baremetalsolution.v2.Volume.WorkloadProfileR\x0fworkloadProfile\x12@\n" +
-	"\vexpire_time\x18\x18 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12O\n" +
-	"\tinstances\x18\x19 \x03(\tB1\xe0A\x03\xfaA+\n" +
-	")baremetalsolution.googleapis.com/InstanceR\tinstances\x12\x1f\n" +
-	"\battached\x18\x1a \x01(\bB\x03\xe0A\x03R\battached\x1a\xff\x01\n" +
+	"\x10snapshot_enabled\x18\r \x01(\bR\x0fsnapshotEnabled\x12\x16\n" +
+	"\x03pod\x18\x0f \x01(\tB\x04\xe2A\x01\x05R\x03pod\x12T\n" +
+	"\bprotocol\x18\x12 \x01(\x0e22.google.cloud.baremetalsolution.v2.Volume.ProtocolB\x04\xe2A\x01\x03R\bprotocol\x12%\n" +
+	"\vboot_volume\x18\x13 \x01(\bB\x04\xe2A\x01\x03R\n" +
+	"bootVolume\x12i\n" +
+	"\x10performance_tier\x18\x14 \x01(\x0e28.google.cloud.baremetalsolution.v2.VolumePerformanceTierB\x04\xe2A\x01\x05R\x0fperformanceTier\x12\x1a\n" +
+	"\x05notes\x18\x15 \x01(\tB\x04\xe2A\x01\x04R\x05notes\x12d\n" +
+	"\x10workload_profile\x18\x16 \x01(\x0e29.google.cloud.baremetalsolution.v2.Volume.WorkloadProfileR\x0fworkloadProfile\x12A\n" +
+	"\vexpire_time\x18\x18 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12P\n" +
+	"\tinstances\x18\x19 \x03(\tB2\xe2A\x01\x03\xfaA+\n" +
+	")baremetalsolution.googleapis.com/InstanceR\tinstances\x12 \n" +
+	"\battached\x18\x1a \x01(\bB\x04\xe2A\x01\x03R\battached\x1a\xff\x01\n" +
 	"\x19SnapshotReservationDetail\x12,\n" +
 	"\x12reserved_space_gib\x18\x01 \x01(\x03R\x10reservedSpaceGib\x12=\n" +
 	"\x1breserved_space_used_percent\x18\x02 \x01(\x05R\x18reservedSpaceUsedPercent\x12?\n" +
@@ -1142,12 +1142,12 @@ const file_google_cloud_baremetalsolution_v2_volume_proto_rawDesc = "" +
 	"\x1cWORKLOAD_PROFILE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aGENERIC\x10\x01\x12\b\n" +
 	"\x04HANA\x10\x02:f\xeaAc\n" +
-	"'baremetalsolution.googleapis.com/Volume\x128projects/{project}/locations/{location}/volumes/{volume}\"W\n" +
-	"\x10GetVolumeRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'baremetalsolution.googleapis.com/VolumeR\x04name\"\xab\x01\n" +
-	"\x12ListVolumesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"'baremetalsolution.googleapis.com/Volume\x128projects/{project}/locations/{location}/volumes/{volume}\"X\n" +
+	"\x10GetVolumeRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'baremetalsolution.googleapis.com/VolumeR\x04name\"\xac\x01\n" +
+	"\x12ListVolumesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -1156,20 +1156,20 @@ const file_google_cloud_baremetalsolution_v2_volume_proto_rawDesc = "" +
 	"\x13ListVolumesResponse\x12C\n" +
 	"\avolumes\x18\x01 \x03(\v2).google.cloud.baremetalsolution.v2.VolumeR\avolumes\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x9a\x01\n" +
-	"\x13UpdateVolumeRequest\x12F\n" +
-	"\x06volume\x18\x01 \x01(\v2).google.cloud.baremetalsolution.v2.VolumeB\x03\xe0A\x02R\x06volume\x12;\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x9b\x01\n" +
+	"\x13UpdateVolumeRequest\x12G\n" +
+	"\x06volume\x18\x01 \x01(\v2).google.cloud.baremetalsolution.v2.VolumeB\x04\xe2A\x01\x02R\x06volume\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\x83\x01\n" +
-	"\x13RenameVolumeRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'baremetalsolution.googleapis.com/VolumeR\x04name\x12'\n" +
-	"\rnew_volume_id\x18\x02 \x01(\tB\x03\xe0A\x02R\vnewVolumeId\"Y\n" +
-	"\x12EvictVolumeRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'baremetalsolution.googleapis.com/VolumeR\x04name\"y\n" +
-	"\x13ResizeVolumeRequest\x12G\n" +
-	"\x06volume\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"updateMask\"\x85\x01\n" +
+	"\x13RenameVolumeRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'baremetalsolution.googleapis.com/VolumeR\x04name\x12(\n" +
+	"\rnew_volume_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vnewVolumeId\"Z\n" +
+	"\x12EvictVolumeRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'baremetalsolution.googleapis.com/VolumeR\x04name\"z\n" +
+	"\x13ResizeVolumeRequest\x12H\n" +
+	"\x06volume\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'baremetalsolution.googleapis.com/VolumeR\x06volume\x12\x19\n" +
 	"\bsize_gib\x18\x02 \x01(\x03R\asizeGibB\xfa\x01\n" +
 	"%com.google.cloud.baremetalsolution.v2B\vVolumeProtoP\x01ZScloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb;baremetalsolutionpb\xaa\x02!Google.Cloud.BareMetalSolution.V2\xca\x02!Google\\Cloud\\BareMetalSolution\\V2\xea\x02$Google::Cloud::BareMetalSolution::V2b\x06proto3"

@@ -1485,6 +1485,107 @@ func NewCertificateAuthorityClient(ctx context.Context, opts ...option.ClientOpt
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "privateca",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/security/privateca/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "privateca.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateCertificate = append(client.CallOptions.CreateCertificate, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCertificate = append(client.CallOptions.GetCertificate, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCertificates = append(client.CallOptions.ListCertificates, gax.WithClientTracing(tracing))
+		client.CallOptions.RevokeCertificate = append(client.CallOptions.RevokeCertificate, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCertificate = append(client.CallOptions.UpdateCertificate, gax.WithClientTracing(tracing))
+		client.CallOptions.ActivateCertificateAuthority = append(client.CallOptions.ActivateCertificateAuthority, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCertificateAuthority = append(client.CallOptions.CreateCertificateAuthority, gax.WithClientTracing(tracing))
+		client.CallOptions.DisableCertificateAuthority = append(client.CallOptions.DisableCertificateAuthority, gax.WithClientTracing(tracing))
+		client.CallOptions.EnableCertificateAuthority = append(client.CallOptions.EnableCertificateAuthority, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchCertificateAuthorityCsr = append(client.CallOptions.FetchCertificateAuthorityCsr, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCertificateAuthority = append(client.CallOptions.GetCertificateAuthority, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCertificateAuthorities = append(client.CallOptions.ListCertificateAuthorities, gax.WithClientTracing(tracing))
+		client.CallOptions.UndeleteCertificateAuthority = append(client.CallOptions.UndeleteCertificateAuthority, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCertificateAuthority = append(client.CallOptions.DeleteCertificateAuthority, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCertificateAuthority = append(client.CallOptions.UpdateCertificateAuthority, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCaPool = append(client.CallOptions.CreateCaPool, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCaPool = append(client.CallOptions.UpdateCaPool, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCaPool = append(client.CallOptions.GetCaPool, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCaPools = append(client.CallOptions.ListCaPools, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCaPool = append(client.CallOptions.DeleteCaPool, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchCaCerts = append(client.CallOptions.FetchCaCerts, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCertificateRevocationList = append(client.CallOptions.GetCertificateRevocationList, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCertificateRevocationLists = append(client.CallOptions.ListCertificateRevocationLists, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCertificateRevocationList = append(client.CallOptions.UpdateCertificateRevocationList, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCertificateTemplate = append(client.CallOptions.CreateCertificateTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCertificateTemplate = append(client.CallOptions.DeleteCertificateTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCertificateTemplate = append(client.CallOptions.GetCertificateTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCertificateTemplates = append(client.CallOptions.ListCertificateTemplates, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCertificateTemplate = append(client.CallOptions.UpdateCertificateTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "privateca",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/security/privateca/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "privateca.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateCertificate = append(client.CallOptions.CreateCertificate, gax.WithClientLogging(logging))
+		client.CallOptions.GetCertificate = append(client.CallOptions.GetCertificate, gax.WithClientLogging(logging))
+		client.CallOptions.ListCertificates = append(client.CallOptions.ListCertificates, gax.WithClientLogging(logging))
+		client.CallOptions.RevokeCertificate = append(client.CallOptions.RevokeCertificate, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCertificate = append(client.CallOptions.UpdateCertificate, gax.WithClientLogging(logging))
+		client.CallOptions.ActivateCertificateAuthority = append(client.CallOptions.ActivateCertificateAuthority, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCertificateAuthority = append(client.CallOptions.CreateCertificateAuthority, gax.WithClientLogging(logging))
+		client.CallOptions.DisableCertificateAuthority = append(client.CallOptions.DisableCertificateAuthority, gax.WithClientLogging(logging))
+		client.CallOptions.EnableCertificateAuthority = append(client.CallOptions.EnableCertificateAuthority, gax.WithClientLogging(logging))
+		client.CallOptions.FetchCertificateAuthorityCsr = append(client.CallOptions.FetchCertificateAuthorityCsr, gax.WithClientLogging(logging))
+		client.CallOptions.GetCertificateAuthority = append(client.CallOptions.GetCertificateAuthority, gax.WithClientLogging(logging))
+		client.CallOptions.ListCertificateAuthorities = append(client.CallOptions.ListCertificateAuthorities, gax.WithClientLogging(logging))
+		client.CallOptions.UndeleteCertificateAuthority = append(client.CallOptions.UndeleteCertificateAuthority, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCertificateAuthority = append(client.CallOptions.DeleteCertificateAuthority, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCertificateAuthority = append(client.CallOptions.UpdateCertificateAuthority, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCaPool = append(client.CallOptions.CreateCaPool, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCaPool = append(client.CallOptions.UpdateCaPool, gax.WithClientLogging(logging))
+		client.CallOptions.GetCaPool = append(client.CallOptions.GetCaPool, gax.WithClientLogging(logging))
+		client.CallOptions.ListCaPools = append(client.CallOptions.ListCaPools, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCaPool = append(client.CallOptions.DeleteCaPool, gax.WithClientLogging(logging))
+		client.CallOptions.FetchCaCerts = append(client.CallOptions.FetchCaCerts, gax.WithClientLogging(logging))
+		client.CallOptions.GetCertificateRevocationList = append(client.CallOptions.GetCertificateRevocationList, gax.WithClientLogging(logging))
+		client.CallOptions.ListCertificateRevocationLists = append(client.CallOptions.ListCertificateRevocationLists, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCertificateRevocationList = append(client.CallOptions.UpdateCertificateRevocationList, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCertificateTemplate = append(client.CallOptions.CreateCertificateTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCertificateTemplate = append(client.CallOptions.DeleteCertificateTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.GetCertificateTemplate = append(client.CallOptions.GetCertificateTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.ListCertificateTemplates = append(client.CallOptions.ListCertificateTemplates, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCertificateTemplate = append(client.CallOptions.UpdateCertificateTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1631,6 +1732,107 @@ func NewCertificateAuthorityRESTClient(ctx context.Context, opts ...option.Clien
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "privateca",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/security/privateca/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "privateca.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateCertificate = append(callOpts.CreateCertificate, gax.WithClientTracing(tracing))
+		callOpts.GetCertificate = append(callOpts.GetCertificate, gax.WithClientTracing(tracing))
+		callOpts.ListCertificates = append(callOpts.ListCertificates, gax.WithClientTracing(tracing))
+		callOpts.RevokeCertificate = append(callOpts.RevokeCertificate, gax.WithClientTracing(tracing))
+		callOpts.UpdateCertificate = append(callOpts.UpdateCertificate, gax.WithClientTracing(tracing))
+		callOpts.ActivateCertificateAuthority = append(callOpts.ActivateCertificateAuthority, gax.WithClientTracing(tracing))
+		callOpts.CreateCertificateAuthority = append(callOpts.CreateCertificateAuthority, gax.WithClientTracing(tracing))
+		callOpts.DisableCertificateAuthority = append(callOpts.DisableCertificateAuthority, gax.WithClientTracing(tracing))
+		callOpts.EnableCertificateAuthority = append(callOpts.EnableCertificateAuthority, gax.WithClientTracing(tracing))
+		callOpts.FetchCertificateAuthorityCsr = append(callOpts.FetchCertificateAuthorityCsr, gax.WithClientTracing(tracing))
+		callOpts.GetCertificateAuthority = append(callOpts.GetCertificateAuthority, gax.WithClientTracing(tracing))
+		callOpts.ListCertificateAuthorities = append(callOpts.ListCertificateAuthorities, gax.WithClientTracing(tracing))
+		callOpts.UndeleteCertificateAuthority = append(callOpts.UndeleteCertificateAuthority, gax.WithClientTracing(tracing))
+		callOpts.DeleteCertificateAuthority = append(callOpts.DeleteCertificateAuthority, gax.WithClientTracing(tracing))
+		callOpts.UpdateCertificateAuthority = append(callOpts.UpdateCertificateAuthority, gax.WithClientTracing(tracing))
+		callOpts.CreateCaPool = append(callOpts.CreateCaPool, gax.WithClientTracing(tracing))
+		callOpts.UpdateCaPool = append(callOpts.UpdateCaPool, gax.WithClientTracing(tracing))
+		callOpts.GetCaPool = append(callOpts.GetCaPool, gax.WithClientTracing(tracing))
+		callOpts.ListCaPools = append(callOpts.ListCaPools, gax.WithClientTracing(tracing))
+		callOpts.DeleteCaPool = append(callOpts.DeleteCaPool, gax.WithClientTracing(tracing))
+		callOpts.FetchCaCerts = append(callOpts.FetchCaCerts, gax.WithClientTracing(tracing))
+		callOpts.GetCertificateRevocationList = append(callOpts.GetCertificateRevocationList, gax.WithClientTracing(tracing))
+		callOpts.ListCertificateRevocationLists = append(callOpts.ListCertificateRevocationLists, gax.WithClientTracing(tracing))
+		callOpts.UpdateCertificateRevocationList = append(callOpts.UpdateCertificateRevocationList, gax.WithClientTracing(tracing))
+		callOpts.CreateCertificateTemplate = append(callOpts.CreateCertificateTemplate, gax.WithClientTracing(tracing))
+		callOpts.DeleteCertificateTemplate = append(callOpts.DeleteCertificateTemplate, gax.WithClientTracing(tracing))
+		callOpts.GetCertificateTemplate = append(callOpts.GetCertificateTemplate, gax.WithClientTracing(tracing))
+		callOpts.ListCertificateTemplates = append(callOpts.ListCertificateTemplates, gax.WithClientTracing(tracing))
+		callOpts.UpdateCertificateTemplate = append(callOpts.UpdateCertificateTemplate, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "privateca",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/security/privateca/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "privateca.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateCertificate = append(callOpts.CreateCertificate, gax.WithClientLogging(logging))
+		callOpts.GetCertificate = append(callOpts.GetCertificate, gax.WithClientLogging(logging))
+		callOpts.ListCertificates = append(callOpts.ListCertificates, gax.WithClientLogging(logging))
+		callOpts.RevokeCertificate = append(callOpts.RevokeCertificate, gax.WithClientLogging(logging))
+		callOpts.UpdateCertificate = append(callOpts.UpdateCertificate, gax.WithClientLogging(logging))
+		callOpts.ActivateCertificateAuthority = append(callOpts.ActivateCertificateAuthority, gax.WithClientLogging(logging))
+		callOpts.CreateCertificateAuthority = append(callOpts.CreateCertificateAuthority, gax.WithClientLogging(logging))
+		callOpts.DisableCertificateAuthority = append(callOpts.DisableCertificateAuthority, gax.WithClientLogging(logging))
+		callOpts.EnableCertificateAuthority = append(callOpts.EnableCertificateAuthority, gax.WithClientLogging(logging))
+		callOpts.FetchCertificateAuthorityCsr = append(callOpts.FetchCertificateAuthorityCsr, gax.WithClientLogging(logging))
+		callOpts.GetCertificateAuthority = append(callOpts.GetCertificateAuthority, gax.WithClientLogging(logging))
+		callOpts.ListCertificateAuthorities = append(callOpts.ListCertificateAuthorities, gax.WithClientLogging(logging))
+		callOpts.UndeleteCertificateAuthority = append(callOpts.UndeleteCertificateAuthority, gax.WithClientLogging(logging))
+		callOpts.DeleteCertificateAuthority = append(callOpts.DeleteCertificateAuthority, gax.WithClientLogging(logging))
+		callOpts.UpdateCertificateAuthority = append(callOpts.UpdateCertificateAuthority, gax.WithClientLogging(logging))
+		callOpts.CreateCaPool = append(callOpts.CreateCaPool, gax.WithClientLogging(logging))
+		callOpts.UpdateCaPool = append(callOpts.UpdateCaPool, gax.WithClientLogging(logging))
+		callOpts.GetCaPool = append(callOpts.GetCaPool, gax.WithClientLogging(logging))
+		callOpts.ListCaPools = append(callOpts.ListCaPools, gax.WithClientLogging(logging))
+		callOpts.DeleteCaPool = append(callOpts.DeleteCaPool, gax.WithClientLogging(logging))
+		callOpts.FetchCaCerts = append(callOpts.FetchCaCerts, gax.WithClientLogging(logging))
+		callOpts.GetCertificateRevocationList = append(callOpts.GetCertificateRevocationList, gax.WithClientLogging(logging))
+		callOpts.ListCertificateRevocationLists = append(callOpts.ListCertificateRevocationLists, gax.WithClientLogging(logging))
+		callOpts.UpdateCertificateRevocationList = append(callOpts.UpdateCertificateRevocationList, gax.WithClientLogging(logging))
+		callOpts.CreateCertificateTemplate = append(callOpts.CreateCertificateTemplate, gax.WithClientLogging(logging))
+		callOpts.DeleteCertificateTemplate = append(callOpts.DeleteCertificateTemplate, gax.WithClientLogging(logging))
+		callOpts.GetCertificateTemplate = append(callOpts.GetCertificateTemplate, gax.WithClientLogging(logging))
+		callOpts.ListCertificateTemplates = append(callOpts.ListCertificateTemplates, gax.WithClientLogging(logging))
+		callOpts.UpdateCertificateTemplate = append(callOpts.UpdateCertificateTemplate, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1687,9 +1889,6 @@ func (c *certificateAuthorityGRPCClient) CreateCertificate(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/CreateCertificate")
 	}
@@ -1711,9 +1910,6 @@ func (c *certificateAuthorityGRPCClient) GetCertificate(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/GetCertificate")
 	}
@@ -1735,9 +1931,6 @@ func (c *certificateAuthorityGRPCClient) ListCertificates(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/ListCertificates")
 	}
@@ -1787,9 +1980,6 @@ func (c *certificateAuthorityGRPCClient) RevokeCertificate(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/RevokeCertificate")
 	}
@@ -1832,9 +2022,6 @@ func (c *certificateAuthorityGRPCClient) ActivateCertificateAuthority(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/ActivateCertificateAuthority")
 	}
@@ -1862,9 +2049,6 @@ func (c *certificateAuthorityGRPCClient) CreateCertificateAuthority(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/CreateCertificateAuthority")
 	}
@@ -1892,9 +2076,6 @@ func (c *certificateAuthorityGRPCClient) DisableCertificateAuthority(ctx context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/DisableCertificateAuthority")
 	}
@@ -1922,9 +2103,6 @@ func (c *certificateAuthorityGRPCClient) EnableCertificateAuthority(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/EnableCertificateAuthority")
 	}
@@ -1952,9 +2130,6 @@ func (c *certificateAuthorityGRPCClient) FetchCertificateAuthorityCsr(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/FetchCertificateAuthorityCsr")
 	}
@@ -1976,9 +2151,6 @@ func (c *certificateAuthorityGRPCClient) GetCertificateAuthority(ctx context.Con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/GetCertificateAuthority")
 	}
@@ -2000,9 +2172,6 @@ func (c *certificateAuthorityGRPCClient) ListCertificateAuthorities(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/ListCertificateAuthorities")
 	}
@@ -2052,9 +2221,6 @@ func (c *certificateAuthorityGRPCClient) UndeleteCertificateAuthority(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/UndeleteCertificateAuthority")
 	}
@@ -2082,9 +2248,6 @@ func (c *certificateAuthorityGRPCClient) DeleteCertificateAuthority(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/DeleteCertificateAuthority")
 	}
@@ -2139,9 +2302,6 @@ func (c *certificateAuthorityGRPCClient) CreateCaPool(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/CreateCaPool")
 	}
@@ -2196,9 +2356,6 @@ func (c *certificateAuthorityGRPCClient) GetCaPool(ctx context.Context, req *pri
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/GetCaPool")
 	}
@@ -2220,9 +2377,6 @@ func (c *certificateAuthorityGRPCClient) ListCaPools(ctx context.Context, req *p
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/ListCaPools")
 	}
@@ -2272,9 +2426,6 @@ func (c *certificateAuthorityGRPCClient) DeleteCaPool(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/DeleteCaPool")
 	}
@@ -2302,9 +2453,6 @@ func (c *certificateAuthorityGRPCClient) FetchCaCerts(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetCaPool()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/FetchCaCerts")
 	}
@@ -2326,9 +2474,6 @@ func (c *certificateAuthorityGRPCClient) GetCertificateRevocationList(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/GetCertificateRevocationList")
 	}
@@ -2350,9 +2495,6 @@ func (c *certificateAuthorityGRPCClient) ListCertificateRevocationLists(ctx cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/ListCertificateRevocationLists")
 	}
@@ -2429,9 +2571,6 @@ func (c *certificateAuthorityGRPCClient) CreateCertificateTemplate(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/CreateCertificateTemplate")
 	}
@@ -2459,9 +2598,6 @@ func (c *certificateAuthorityGRPCClient) DeleteCertificateTemplate(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/DeleteCertificateTemplate")
 	}
@@ -2489,9 +2625,6 @@ func (c *certificateAuthorityGRPCClient) GetCertificateTemplate(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/GetCertificateTemplate")
 	}
@@ -2513,9 +2646,6 @@ func (c *certificateAuthorityGRPCClient) ListCertificateTemplates(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/ListCertificateTemplates")
 	}
@@ -2662,9 +2792,6 @@ func (c *certificateAuthorityGRPCClient) GetIamPolicy(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 	}
@@ -2686,9 +2813,6 @@ func (c *certificateAuthorityGRPCClient) SetIamPolicy(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 	}
@@ -2710,9 +2834,6 @@ func (c *certificateAuthorityGRPCClient) TestIamPermissions(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 	}
@@ -2848,6 +2969,11 @@ func (c *certificateAuthorityRESTClient) CreateCertificate(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/certificates", req.GetParent())
 
 	params := url.Values{}
@@ -2873,9 +2999,6 @@ func (c *certificateAuthorityRESTClient) CreateCertificate(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/CreateCertificate")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/caPools/*}/certificates")
@@ -2917,6 +3040,11 @@ func (c *certificateAuthorityRESTClient) GetCertificate(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2930,9 +3058,6 @@ func (c *certificateAuthorityRESTClient) GetCertificate(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/GetCertificate")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*/certificates/*}")
@@ -2985,6 +3110,11 @@ func (c *certificateAuthorityRESTClient) ListCertificates(ctx context.Context, r
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/certificates", req.GetParent())
@@ -3064,6 +3194,11 @@ func (c *certificateAuthorityRESTClient) RevokeCertificate(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:revoke", req.GetName())
 
 	params := url.Values{}
@@ -3077,9 +3212,6 @@ func (c *certificateAuthorityRESTClient) RevokeCertificate(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/RevokeCertificate")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*/certificates/*}:revoke")
@@ -3128,6 +3260,11 @@ func (c *certificateAuthorityRESTClient) UpdateCertificate(ctx context.Context, 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCertificate().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCertificate().GetName())
@@ -3209,6 +3346,11 @@ func (c *certificateAuthorityRESTClient) ActivateCertificateAuthority(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:activate", req.GetName())
 
 	params := url.Values{}
@@ -3222,9 +3364,6 @@ func (c *certificateAuthorityRESTClient) ActivateCertificateAuthority(ctx contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/ActivateCertificateAuthority")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*/certificateAuthorities/*}:activate")
@@ -3282,6 +3421,11 @@ func (c *certificateAuthorityRESTClient) CreateCertificateAuthority(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/certificateAuthorities", req.GetParent())
 
 	params := url.Values{}
@@ -3299,9 +3443,6 @@ func (c *certificateAuthorityRESTClient) CreateCertificateAuthority(ctx context.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/CreateCertificateAuthority")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/caPools/*}/certificateAuthorities")
@@ -3357,6 +3498,11 @@ func (c *certificateAuthorityRESTClient) DisableCertificateAuthority(ctx context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:disable", req.GetName())
 
 	params := url.Values{}
@@ -3370,9 +3516,6 @@ func (c *certificateAuthorityRESTClient) DisableCertificateAuthority(ctx context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/DisableCertificateAuthority")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*/certificateAuthorities/*}:disable")
@@ -3428,6 +3571,11 @@ func (c *certificateAuthorityRESTClient) EnableCertificateAuthority(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:enable", req.GetName())
 
 	params := url.Values{}
@@ -3441,9 +3589,6 @@ func (c *certificateAuthorityRESTClient) EnableCertificateAuthority(ctx context.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/EnableCertificateAuthority")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*/certificateAuthorities/*}:enable")
@@ -3502,6 +3647,11 @@ func (c *certificateAuthorityRESTClient) FetchCertificateAuthorityCsr(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:fetch", req.GetName())
 
 	params := url.Values{}
@@ -3515,9 +3665,6 @@ func (c *certificateAuthorityRESTClient) FetchCertificateAuthorityCsr(ctx contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/FetchCertificateAuthorityCsr")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*/certificateAuthorities/*}:fetch")
@@ -3560,6 +3707,11 @@ func (c *certificateAuthorityRESTClient) GetCertificateAuthority(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3573,9 +3725,6 @@ func (c *certificateAuthorityRESTClient) GetCertificateAuthority(ctx context.Con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/GetCertificateAuthority")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*/certificateAuthorities/*}")
@@ -3629,6 +3778,11 @@ func (c *certificateAuthorityRESTClient) ListCertificateAuthorities(ctx context.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/certificateAuthorities", req.GetParent())
@@ -3710,6 +3864,11 @@ func (c *certificateAuthorityRESTClient) UndeleteCertificateAuthority(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:undelete", req.GetName())
 
 	params := url.Values{}
@@ -3723,9 +3882,6 @@ func (c *certificateAuthorityRESTClient) UndeleteCertificateAuthority(ctx contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/UndeleteCertificateAuthority")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*/certificateAuthorities/*}:undelete")
@@ -3775,6 +3931,11 @@ func (c *certificateAuthorityRESTClient) DeleteCertificateAuthority(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3800,9 +3961,6 @@ func (c *certificateAuthorityRESTClient) DeleteCertificateAuthority(ctx context.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/DeleteCertificateAuthority")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*/certificateAuthorities/*}")
@@ -3857,6 +4015,11 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateAuthority(ctx context.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCertificateAuthority().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCertificateAuthority().GetName())
@@ -3937,6 +4100,11 @@ func (c *certificateAuthorityRESTClient) CreateCaPool(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/caPools", req.GetParent())
 
 	params := url.Values{}
@@ -3954,9 +4122,6 @@ func (c *certificateAuthorityRESTClient) CreateCaPool(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/CreateCaPool")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/caPools")
@@ -4010,6 +4175,11 @@ func (c *certificateAuthorityRESTClient) UpdateCaPool(ctx context.Context, req *
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCaPool().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCaPool().GetName())
@@ -4083,6 +4253,11 @@ func (c *certificateAuthorityRESTClient) GetCaPool(ctx context.Context, req *pri
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4096,9 +4271,6 @@ func (c *certificateAuthorityRESTClient) GetCaPool(ctx context.Context, req *pri
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/GetCaPool")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*}")
@@ -4151,6 +4323,11 @@ func (c *certificateAuthorityRESTClient) ListCaPools(ctx context.Context, req *p
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/caPools", req.GetParent())
@@ -4224,6 +4401,11 @@ func (c *certificateAuthorityRESTClient) DeleteCaPool(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4243,9 +4425,6 @@ func (c *certificateAuthorityRESTClient) DeleteCaPool(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/DeleteCaPool")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*}")
@@ -4303,6 +4482,11 @@ func (c *certificateAuthorityRESTClient) FetchCaCerts(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCaPool(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:fetchCaCerts", req.GetCaPool())
 
 	params := url.Values{}
@@ -4316,9 +4500,6 @@ func (c *certificateAuthorityRESTClient) FetchCaCerts(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetCaPool()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/FetchCaCerts")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{ca_pool=projects/*/locations/*/caPools/*}:fetchCaCerts")
@@ -4361,6 +4542,11 @@ func (c *certificateAuthorityRESTClient) GetCertificateRevocationList(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4374,9 +4560,6 @@ func (c *certificateAuthorityRESTClient) GetCertificateRevocationList(ctx contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/GetCertificateRevocationList")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*/certificateAuthorities/*/certificateRevocationLists/*}")
@@ -4430,6 +4613,11 @@ func (c *certificateAuthorityRESTClient) ListCertificateRevocationLists(ctx cont
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/certificateRevocationLists", req.GetParent())
@@ -4509,6 +4697,11 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateRevocationList(ctx con
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCertificateRevocationList().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCertificateRevocationList().GetName())
@@ -4591,6 +4784,11 @@ func (c *certificateAuthorityRESTClient) CreateCertificateTemplate(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/certificateTemplates", req.GetParent())
 
 	params := url.Values{}
@@ -4608,9 +4806,6 @@ func (c *certificateAuthorityRESTClient) CreateCertificateTemplate(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/CreateCertificateTemplate")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/certificateTemplates")
@@ -4660,6 +4855,11 @@ func (c *certificateAuthorityRESTClient) DeleteCertificateTemplate(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4676,9 +4876,6 @@ func (c *certificateAuthorityRESTClient) DeleteCertificateTemplate(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/DeleteCertificateTemplate")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/certificateTemplates/*}")
@@ -4728,6 +4925,11 @@ func (c *certificateAuthorityRESTClient) GetCertificateTemplate(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4741,9 +4943,6 @@ func (c *certificateAuthorityRESTClient) GetCertificateTemplate(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privateca.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/GetCertificateTemplate")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/certificateTemplates/*}")
@@ -4797,6 +4996,11 @@ func (c *certificateAuthorityRESTClient) ListCertificateTemplates(ctx context.Co
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/certificateTemplates", req.GetParent())
@@ -4878,6 +5082,11 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateTemplate(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetCertificateTemplate().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCertificateTemplate().GetName())
 
 	params := url.Values{}
@@ -4947,6 +5156,11 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateTemplate(ctx context.C
 func (c *certificateAuthorityRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5031,6 +5245,11 @@ func (c *certificateAuthorityRESTClient) ListLocations(ctx context.Context, req 
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -5100,6 +5319,11 @@ func (c *certificateAuthorityRESTClient) GetIamPolicy(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -5116,9 +5340,6 @@ func (c *certificateAuthorityRESTClient) GetIamPolicy(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/caPools/*}:getIamPolicy")
@@ -5170,6 +5391,11 @@ func (c *certificateAuthorityRESTClient) SetIamPolicy(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -5183,9 +5409,6 @@ func (c *certificateAuthorityRESTClient) SetIamPolicy(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/caPools/*}:setIamPolicy")
@@ -5239,6 +5462,11 @@ func (c *certificateAuthorityRESTClient) TestIamPermissions(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -5252,9 +5480,6 @@ func (c *certificateAuthorityRESTClient) TestIamPermissions(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/caPools/*}:testIamPermissions")
@@ -5302,6 +5527,11 @@ func (c *certificateAuthorityRESTClient) CancelOperation(ctx context.Context, re
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -5341,6 +5571,11 @@ func (c *certificateAuthorityRESTClient) DeleteOperation(ctx context.Context, re
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5378,6 +5613,11 @@ func (c *certificateAuthorityRESTClient) DeleteOperation(ctx context.Context, re
 func (c *certificateAuthorityRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5445,6 +5685,11 @@ func (c *certificateAuthorityRESTClient) ListOperations(ctx context.Context, req
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

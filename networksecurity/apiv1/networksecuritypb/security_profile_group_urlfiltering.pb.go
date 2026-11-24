@@ -208,14 +208,14 @@ var File_google_cloud_networksecurity_v1_security_profile_group_urlfiltering_pro
 
 const file_google_cloud_networksecurity_v1_security_profile_group_urlfiltering_proto_rawDesc = "" +
 	"\n" +
-	"Igoogle/cloud/networksecurity/v1/security_profile_group_urlfiltering.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1fgoogle/api/field_behavior.proto\"g\n" +
-	"\x13UrlFilteringProfile\x12P\n" +
-	"\vurl_filters\x18\x01 \x03(\v2*.google.cloud.networksecurity.v1.UrlFilterB\x03\xe0A\x01R\n" +
-	"urlFilters\"\x97\x02\n" +
-	"\tUrlFilter\x12m\n" +
-	"\x10filtering_action\x18\x01 \x01(\x0e2=.google.cloud.networksecurity.v1.UrlFilter.UrlFilteringActionB\x03\xe0A\x02R\x0ffilteringAction\x12\x17\n" +
-	"\x04urls\x18\x02 \x03(\tB\x03\xe0A\x02R\x04urls\x12$\n" +
-	"\bpriority\x18\x03 \x01(\x05B\x03\xe0A\x02H\x00R\bpriority\x88\x01\x01\"O\n" +
+	"Igoogle/cloud/networksecurity/v1/security_profile_group_urlfiltering.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1fgoogle/api/field_behavior.proto\"h\n" +
+	"\x13UrlFilteringProfile\x12Q\n" +
+	"\vurl_filters\x18\x01 \x03(\v2*.google.cloud.networksecurity.v1.UrlFilterB\x04\xe2A\x01\x01R\n" +
+	"urlFilters\"\x9a\x02\n" +
+	"\tUrlFilter\x12n\n" +
+	"\x10filtering_action\x18\x01 \x01(\x0e2=.google.cloud.networksecurity.v1.UrlFilter.UrlFilteringActionB\x04\xe2A\x01\x02R\x0ffilteringAction\x12\x18\n" +
+	"\x04urls\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x04urls\x12%\n" +
+	"\bpriority\x18\x03 \x01(\x05B\x04\xe2A\x01\x02H\x00R\bpriority\x88\x01\x01\"O\n" +
 	"\x12UrlFilteringAction\x12$\n" +
 	" URL_FILTERING_ACTION_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05ALLOW\x10\x01\x12\b\n" +

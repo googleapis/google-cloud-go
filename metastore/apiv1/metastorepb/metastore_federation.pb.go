@@ -820,22 +820,22 @@ var File_google_cloud_metastore_v1_metastore_federation_proto protoreflect.FileD
 
 const file_google_cloud_metastore_v1_metastore_federation_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/metastore/v1/metastore_federation.proto\x12\x19google.cloud.metastore.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/metastore/v1/metastore.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xac\a\n" +
+	"4google/cloud/metastore/v1/metastore_federation.proto\x12\x19google.cloud.metastore.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/metastore/v1/metastore.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb4\a\n" +
 	"\n" +
-	"Federation\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"Federation\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12I\n" +
-	"\x06labels\x18\x04 \x03(\v21.google.cloud.metastore.v1.Federation.LabelsEntryR\x06labels\x12\x1d\n" +
-	"\aversion\x18\x05 \x01(\tB\x03\xe0A\x05R\aversion\x12k\n" +
-	"\x12backend_metastores\x18\x06 \x03(\v2<.google.cloud.metastore.v1.Federation.BackendMetastoresEntryR\x11backendMetastores\x12&\n" +
-	"\fendpoint_uri\x18\a \x01(\tB\x03\xe0A\x03R\vendpointUri\x12F\n" +
-	"\x05state\x18\b \x01(\x0e2+.google.cloud.metastore.v1.Federation.StateB\x03\xe0A\x03R\x05state\x12(\n" +
-	"\rstate_message\x18\t \x01(\tB\x03\xe0A\x03R\fstateMessage\x12\x15\n" +
+	"\x06labels\x18\x04 \x03(\v21.google.cloud.metastore.v1.Federation.LabelsEntryR\x06labels\x12\x1e\n" +
+	"\aversion\x18\x05 \x01(\tB\x04\xe2A\x01\x05R\aversion\x12k\n" +
+	"\x12backend_metastores\x18\x06 \x03(\v2<.google.cloud.metastore.v1.Federation.BackendMetastoresEntryR\x11backendMetastores\x12'\n" +
+	"\fendpoint_uri\x18\a \x01(\tB\x04\xe2A\x01\x03R\vendpointUri\x12G\n" +
+	"\x05state\x18\b \x01(\x0e2+.google.cloud.metastore.v1.Federation.StateB\x04\xe2A\x01\x03R\x05state\x12)\n" +
+	"\rstate_message\x18\t \x01(\tB\x04\xe2A\x01\x03R\fstateMessage\x12\x16\n" +
 	"\x03uid\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x03uid\x1a9\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x03uid\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aq\n" +
@@ -857,42 +857,42 @@ const file_google_cloud_metastore_v1_metastore_federation_proto_rawDesc = "" +
 	"\rMetastoreType\x12\x1e\n" +
 	"\x1aMETASTORE_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bBIGQUERY\x10\x02\x12\x16\n" +
-	"\x12DATAPROC_METASTORE\x10\x03\"\xe0\x01\n" +
-	"\x16ListFederationsRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#metastore.googleapis.com/FederationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x12DATAPROC_METASTORE\x10\x03\"\xe5\x01\n" +
+	"\x16ListFederationsRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#metastore.googleapis.com/FederationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xac\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xac\x01\n" +
 	"\x17ListFederationsResponse\x12G\n" +
 	"\vfederations\x18\x01 \x03(\v2%.google.cloud.metastore.v1.FederationR\vfederations\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"W\n" +
-	"\x14GetFederationRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#metastore.googleapis.com/FederationR\x04name\"\xf8\x01\n" +
-	"\x17CreateFederationRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#metastore.googleapis.com/FederationR\x06parent\x12(\n" +
-	"\rfederation_id\x18\x02 \x01(\tB\x03\xe0A\x02R\ffederationId\x12J\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"X\n" +
+	"\x14GetFederationRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#metastore.googleapis.com/FederationR\x04name\"\xfc\x01\n" +
+	"\x17CreateFederationRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#metastore.googleapis.com/FederationR\x06parent\x12)\n" +
+	"\rfederation_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\ffederationId\x12K\n" +
 	"\n" +
-	"federation\x18\x03 \x01(\v2%.google.cloud.metastore.v1.FederationB\x03\xe0A\x02R\n" +
-	"federation\x12\"\n" +
+	"federation\x18\x03 \x01(\v2%.google.cloud.metastore.v1.FederationB\x04\xe2A\x01\x02R\n" +
+	"federation\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xcb\x01\n" +
-	"\x17UpdateFederationRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12J\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xce\x01\n" +
+	"\x17UpdateFederationRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12K\n" +
 	"\n" +
-	"federation\x18\x02 \x01(\v2%.google.cloud.metastore.v1.FederationB\x03\xe0A\x02R\n" +
-	"federation\x12\"\n" +
+	"federation\x18\x02 \x01(\v2%.google.cloud.metastore.v1.FederationB\x04\xe2A\x01\x02R\n" +
+	"federation\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"~\n" +
-	"\x17DeleteFederationRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#metastore.googleapis.com/FederationR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x80\x01\n" +
+	"\x17DeleteFederationRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#metastore.googleapis.com/FederationR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId2\xdc\t\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId2\xdc\t\n" +
 	"\x1bDataprocMetastoreFederation\x12\xba\x01\n" +
 	"\x0fListFederations\x121.google.cloud.metastore.v1.ListFederationsRequest\x1a2.google.cloud.metastore.v1.ListFederationsResponse\"@\xdaA\x06parent\x82\xd3\xe4\x93\x021\x12//v1/{parent=projects/*/locations/*}/federations\x12\xa7\x01\n" +
 	"\rGetFederation\x12/.google.cloud.metastore.v1.GetFederationRequest\x1a%.google.cloud.metastore.v1.Federation\">\xdaA\x04name\x82\xd3\xe4\x93\x021\x12//v1/{name=projects/*/locations/*/federations/*}\x12\x89\x02\n" +

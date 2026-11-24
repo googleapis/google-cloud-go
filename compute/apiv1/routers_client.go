@@ -45,8 +45,10 @@ var newRoutersClientHook clientHook
 type RoutersCallOptions struct {
 	AggregatedList    []gax.CallOption
 	Delete            []gax.CallOption
+	DeleteNamedSet    []gax.CallOption
 	DeleteRoutePolicy []gax.CallOption
 	Get               []gax.CallOption
+	GetNamedSet       []gax.CallOption
 	GetNatIpInfo      []gax.CallOption
 	GetNatMappingInfo []gax.CallOption
 	GetRoutePolicy    []gax.CallOption
@@ -54,11 +56,14 @@ type RoutersCallOptions struct {
 	Insert            []gax.CallOption
 	List              []gax.CallOption
 	ListBgpRoutes     []gax.CallOption
+	ListNamedSets     []gax.CallOption
 	ListRoutePolicies []gax.CallOption
 	Patch             []gax.CallOption
+	PatchNamedSet     []gax.CallOption
 	PatchRoutePolicy  []gax.CallOption
 	Preview           []gax.CallOption
 	Update            []gax.CallOption
+	UpdateNamedSet    []gax.CallOption
 	UpdateRoutePolicy []gax.CallOption
 }
 
@@ -79,10 +84,25 @@ func defaultRoutersRESTCallOptions() *RoutersCallOptions {
 		Delete: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		DeleteNamedSet: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		DeleteRoutePolicy: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetNamedSet: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -169,6 +189,18 @@ func defaultRoutersRESTCallOptions() *RoutersCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		ListNamedSets: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		ListRoutePolicies: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -184,6 +216,9 @@ func defaultRoutersRESTCallOptions() *RoutersCallOptions {
 		Patch: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		PatchNamedSet: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		PatchRoutePolicy: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -193,21 +228,26 @@ func defaultRoutersRESTCallOptions() *RoutersCallOptions {
 		Update: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		UpdateNamedSet: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		UpdateRoutePolicy: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 	}
 }
 
-// internalRoutersClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRoutersClient is an interface that defines the methods available from Compute Engine API.
 type internalRoutersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AggregatedList(context.Context, *computepb.AggregatedListRoutersRequest, ...gax.CallOption) *RoutersScopedListPairIterator
 	Delete(context.Context, *computepb.DeleteRouterRequest, ...gax.CallOption) (*Operation, error)
+	DeleteNamedSet(context.Context, *computepb.DeleteNamedSetRouterRequest, ...gax.CallOption) (*Operation, error)
 	DeleteRoutePolicy(context.Context, *computepb.DeleteRoutePolicyRouterRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetRouterRequest, ...gax.CallOption) (*computepb.Router, error)
+	GetNamedSet(context.Context, *computepb.GetNamedSetRouterRequest, ...gax.CallOption) (*computepb.RoutersGetNamedSetResponse, error)
 	GetNatIpInfo(context.Context, *computepb.GetNatIpInfoRouterRequest, ...gax.CallOption) (*computepb.NatIpInfoResponse, error)
 	GetNatMappingInfo(context.Context, *computepb.GetNatMappingInfoRoutersRequest, ...gax.CallOption) *VmEndpointNatMappingsIterator
 	GetRoutePolicy(context.Context, *computepb.GetRoutePolicyRouterRequest, ...gax.CallOption) (*computepb.RoutersGetRoutePolicyResponse, error)
@@ -215,18 +255,23 @@ type internalRoutersClient interface {
 	Insert(context.Context, *computepb.InsertRouterRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListRoutersRequest, ...gax.CallOption) *RouterIterator
 	ListBgpRoutes(context.Context, *computepb.ListBgpRoutesRoutersRequest, ...gax.CallOption) *BgpRouteIterator
+	ListNamedSets(context.Context, *computepb.ListNamedSetsRoutersRequest, ...gax.CallOption) *NamedSetIterator
 	ListRoutePolicies(context.Context, *computepb.ListRoutePoliciesRoutersRequest, ...gax.CallOption) *RoutePolicyIterator
 	Patch(context.Context, *computepb.PatchRouterRequest, ...gax.CallOption) (*Operation, error)
+	PatchNamedSet(context.Context, *computepb.PatchNamedSetRouterRequest, ...gax.CallOption) (*Operation, error)
 	PatchRoutePolicy(context.Context, *computepb.PatchRoutePolicyRouterRequest, ...gax.CallOption) (*Operation, error)
 	Preview(context.Context, *computepb.PreviewRouterRequest, ...gax.CallOption) (*computepb.RoutersPreviewResponse, error)
 	Update(context.Context, *computepb.UpdateRouterRequest, ...gax.CallOption) (*Operation, error)
+	UpdateNamedSet(context.Context, *computepb.UpdateNamedSetRouterRequest, ...gax.CallOption) (*Operation, error)
 	UpdateRoutePolicy(context.Context, *computepb.UpdateRoutePolicyRouterRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// RoutersClient is a client for interacting with Google Compute Engine API.
+// RoutersClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The Routers API.
+//
+// This client uses Routers version 2026-09-01.
 type RoutersClient struct {
 	// The internal transport-dependent client.
 	internalClient internalRoutersClient
@@ -271,6 +316,11 @@ func (c *RoutersClient) Delete(ctx context.Context, req *computepb.DeleteRouterR
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
+// DeleteNamedSet deletes Named Set
+func (c *RoutersClient) DeleteNamedSet(ctx context.Context, req *computepb.DeleteNamedSetRouterRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.DeleteNamedSet(ctx, req, opts...)
+}
+
 // DeleteRoutePolicy deletes Route Policy
 func (c *RoutersClient) DeleteRoutePolicy(ctx context.Context, req *computepb.DeleteRoutePolicyRouterRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.DeleteRoutePolicy(ctx, req, opts...)
@@ -279,6 +329,11 @@ func (c *RoutersClient) DeleteRoutePolicy(ctx context.Context, req *computepb.De
 // Get returns the specified Router resource.
 func (c *RoutersClient) Get(ctx context.Context, req *computepb.GetRouterRequest, opts ...gax.CallOption) (*computepb.Router, error) {
 	return c.internalClient.Get(ctx, req, opts...)
+}
+
+// GetNamedSet returns specified Named Set
+func (c *RoutersClient) GetNamedSet(ctx context.Context, req *computepb.GetNamedSetRouterRequest, opts ...gax.CallOption) (*computepb.RoutersGetNamedSetResponse, error) {
+	return c.internalClient.GetNamedSet(ctx, req, opts...)
 }
 
 // GetNatIpInfo retrieves runtime NAT IP information.
@@ -317,6 +372,12 @@ func (c *RoutersClient) ListBgpRoutes(ctx context.Context, req *computepb.ListBg
 	return c.internalClient.ListBgpRoutes(ctx, req, opts...)
 }
 
+// ListNamedSets retrieves a list of router named set subresources available to the
+// specified project.
+func (c *RoutersClient) ListNamedSets(ctx context.Context, req *computepb.ListNamedSetsRoutersRequest, opts ...gax.CallOption) *NamedSetIterator {
+	return c.internalClient.ListNamedSets(ctx, req, opts...)
+}
+
 // ListRoutePolicies retrieves a list of router route policy subresources available to the
 // specified project.
 func (c *RoutersClient) ListRoutePolicies(ctx context.Context, req *computepb.ListRoutePoliciesRoutersRequest, opts ...gax.CallOption) *RoutePolicyIterator {
@@ -329,6 +390,11 @@ func (c *RoutersClient) ListRoutePolicies(ctx context.Context, req *computepb.Li
 // patch format and processing rules.
 func (c *RoutersClient) Patch(ctx context.Context, req *computepb.PatchRouterRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
+}
+
+// PatchNamedSet patches Named Set
+func (c *RoutersClient) PatchNamedSet(ctx context.Context, req *computepb.PatchNamedSetRouterRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.PatchNamedSet(ctx, req, opts...)
 }
 
 // PatchRoutePolicy patches Route Policy
@@ -348,6 +414,11 @@ func (c *RoutersClient) Preview(ctx context.Context, req *computepb.PreviewRoute
 // representation enclosed in the request message payload.
 func (c *RoutersClient) Update(ctx context.Context, req *computepb.UpdateRouterRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
+}
+
+// UpdateNamedSet updates or creates new Named Set
+func (c *RoutersClient) UpdateNamedSet(ctx context.Context, req *computepb.UpdateNamedSetRouterRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.UpdateNamedSet(ctx, req, opts...)
 }
 
 // UpdateRoutePolicy updates or creates new Route Policy
@@ -418,8 +489,10 @@ func NewRoutersRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ro
 
 		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientMetrics(metrics))
 		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.DeleteNamedSet = append(callOpts.DeleteNamedSet, gax.WithClientMetrics(metrics))
 		callOpts.DeleteRoutePolicy = append(callOpts.DeleteRoutePolicy, gax.WithClientMetrics(metrics))
 		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.GetNamedSet = append(callOpts.GetNamedSet, gax.WithClientMetrics(metrics))
 		callOpts.GetNatIpInfo = append(callOpts.GetNatIpInfo, gax.WithClientMetrics(metrics))
 		callOpts.GetNatMappingInfo = append(callOpts.GetNatMappingInfo, gax.WithClientMetrics(metrics))
 		callOpts.GetRoutePolicy = append(callOpts.GetRoutePolicy, gax.WithClientMetrics(metrics))
@@ -427,12 +500,84 @@ func NewRoutersRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ro
 		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
 		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
 		callOpts.ListBgpRoutes = append(callOpts.ListBgpRoutes, gax.WithClientMetrics(metrics))
+		callOpts.ListNamedSets = append(callOpts.ListNamedSets, gax.WithClientMetrics(metrics))
 		callOpts.ListRoutePolicies = append(callOpts.ListRoutePolicies, gax.WithClientMetrics(metrics))
 		callOpts.Patch = append(callOpts.Patch, gax.WithClientMetrics(metrics))
+		callOpts.PatchNamedSet = append(callOpts.PatchNamedSet, gax.WithClientMetrics(metrics))
 		callOpts.PatchRoutePolicy = append(callOpts.PatchRoutePolicy, gax.WithClientMetrics(metrics))
 		callOpts.Preview = append(callOpts.Preview, gax.WithClientMetrics(metrics))
 		callOpts.Update = append(callOpts.Update, gax.WithClientMetrics(metrics))
+		callOpts.UpdateNamedSet = append(callOpts.UpdateNamedSet, gax.WithClientMetrics(metrics))
 		callOpts.UpdateRoutePolicy = append(callOpts.UpdateRoutePolicy, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.DeleteNamedSet = append(callOpts.DeleteNamedSet, gax.WithClientTracing(tracing))
+		callOpts.DeleteRoutePolicy = append(callOpts.DeleteRoutePolicy, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.GetNamedSet = append(callOpts.GetNamedSet, gax.WithClientTracing(tracing))
+		callOpts.GetNatIpInfo = append(callOpts.GetNatIpInfo, gax.WithClientTracing(tracing))
+		callOpts.GetNatMappingInfo = append(callOpts.GetNatMappingInfo, gax.WithClientTracing(tracing))
+		callOpts.GetRoutePolicy = append(callOpts.GetRoutePolicy, gax.WithClientTracing(tracing))
+		callOpts.GetRouterStatus = append(callOpts.GetRouterStatus, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.ListBgpRoutes = append(callOpts.ListBgpRoutes, gax.WithClientTracing(tracing))
+		callOpts.ListNamedSets = append(callOpts.ListNamedSets, gax.WithClientTracing(tracing))
+		callOpts.ListRoutePolicies = append(callOpts.ListRoutePolicies, gax.WithClientTracing(tracing))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientTracing(tracing))
+		callOpts.PatchNamedSet = append(callOpts.PatchNamedSet, gax.WithClientTracing(tracing))
+		callOpts.PatchRoutePolicy = append(callOpts.PatchRoutePolicy, gax.WithClientTracing(tracing))
+		callOpts.Preview = append(callOpts.Preview, gax.WithClientTracing(tracing))
+		callOpts.Update = append(callOpts.Update, gax.WithClientTracing(tracing))
+		callOpts.UpdateNamedSet = append(callOpts.UpdateNamedSet, gax.WithClientTracing(tracing))
+		callOpts.UpdateRoutePolicy = append(callOpts.UpdateRoutePolicy, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.DeleteNamedSet = append(callOpts.DeleteNamedSet, gax.WithClientLogging(logging))
+		callOpts.DeleteRoutePolicy = append(callOpts.DeleteRoutePolicy, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.GetNamedSet = append(callOpts.GetNamedSet, gax.WithClientLogging(logging))
+		callOpts.GetNatIpInfo = append(callOpts.GetNatIpInfo, gax.WithClientLogging(logging))
+		callOpts.GetNatMappingInfo = append(callOpts.GetNatMappingInfo, gax.WithClientLogging(logging))
+		callOpts.GetRoutePolicy = append(callOpts.GetRoutePolicy, gax.WithClientLogging(logging))
+		callOpts.GetRouterStatus = append(callOpts.GetRouterStatus, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.ListBgpRoutes = append(callOpts.ListBgpRoutes, gax.WithClientLogging(logging))
+		callOpts.ListNamedSets = append(callOpts.ListNamedSets, gax.WithClientLogging(logging))
+		callOpts.ListRoutePolicies = append(callOpts.ListRoutePolicies, gax.WithClientLogging(logging))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientLogging(logging))
+		callOpts.PatchNamedSet = append(callOpts.PatchNamedSet, gax.WithClientLogging(logging))
+		callOpts.PatchRoutePolicy = append(callOpts.PatchRoutePolicy, gax.WithClientLogging(logging))
+		callOpts.Preview = append(callOpts.Preview, gax.WithClientLogging(logging))
+		callOpts.Update = append(callOpts.Update, gax.WithClientLogging(logging))
+		callOpts.UpdateNamedSet = append(callOpts.UpdateNamedSet, gax.WithClientLogging(logging))
+		callOpts.UpdateRoutePolicy = append(callOpts.UpdateRoutePolicy, gax.WithClientLogging(logging))
 	}
 
 	o := []option.ClientOption{
@@ -468,6 +613,7 @@ func (c *routersRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
@@ -511,6 +657,11 @@ func (c *routersRESTClient) AggregatedList(ctx context.Context, req *computepb.A
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/routers", req.GetProject())
 
 		params := url.Values{}
@@ -528,9 +679,6 @@ func (c *routersRESTClient) AggregatedList(ctx context.Context, req *computepb.A
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 		if req != nil && req.ServiceProjectNumber != nil {
 			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
@@ -597,6 +745,13 @@ func (c *routersRESTClient) Delete(ctx context.Context, req *computepb.DeleteRou
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter())
 
 	params := url.Values{}
@@ -612,9 +767,6 @@ func (c *routersRESTClient) Delete(ctx context.Context, req *computepb.DeleteRou
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Routers/Delete")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/routers/{router}")
@@ -658,10 +810,91 @@ func (c *routersRESTClient) Delete(ctx context.Context, req *computepb.DeleteRou
 	return op, nil
 }
 
+// DeleteNamedSet deletes Named Set
+func (c *routersRESTClient) DeleteNamedSet(ctx context.Context, req *computepb.DeleteNamedSetRouterRequest, opts ...gax.CallOption) (*Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/deleteNamedSet", req.GetProject(), req.GetRegion(), req.GetRouter())
+
+	params := url.Values{}
+	if req != nil && req.NamedSet != nil {
+		params.Add("namedSet", fmt.Sprintf("%v", req.GetNamedSet()))
+	}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "router", url.QueryEscape(req.GetRouter()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Routers/DeleteNamedSet")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/routers/{router}/deleteNamedSet")
+	}
+	opts = append((*c.CallOptions).DeleteNamedSet[0:len((*c.CallOptions).DeleteNamedSet):len((*c.CallOptions).DeleteNamedSet)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteNamedSet")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
+	return op, nil
+}
+
 // DeleteRoutePolicy deletes Route Policy
 func (c *routersRESTClient) DeleteRoutePolicy(ctx context.Context, req *computepb.DeleteRoutePolicyRouterRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/deleteRoutePolicy", req.GetProject(), req.GetRegion(), req.GetRouter())
@@ -682,9 +915,6 @@ func (c *routersRESTClient) DeleteRoutePolicy(ctx context.Context, req *computep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Routers/DeleteRoutePolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/routers/{router}/deleteRoutePolicy")
@@ -734,6 +964,13 @@ func (c *routersRESTClient) Get(ctx context.Context, req *computepb.GetRouterReq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter())
 
 	// Build HTTP headers from client and context metadata.
@@ -742,9 +979,6 @@ func (c *routersRESTClient) Get(ctx context.Context, req *computepb.GetRouterReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Routers/Get")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/routers/{router}")
@@ -780,10 +1014,80 @@ func (c *routersRESTClient) Get(ctx context.Context, req *computepb.GetRouterReq
 	return resp, nil
 }
 
+// GetNamedSet returns specified Named Set
+func (c *routersRESTClient) GetNamedSet(ctx context.Context, req *computepb.GetNamedSetRouterRequest, opts ...gax.CallOption) (*computepb.RoutersGetNamedSetResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/getNamedSet", req.GetProject(), req.GetRegion(), req.GetRouter())
+
+	params := url.Values{}
+	if req != nil && req.NamedSet != nil {
+		params.Add("namedSet", fmt.Sprintf("%v", req.GetNamedSet()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "router", url.QueryEscape(req.GetRouter()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Routers/GetNamedSet")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/routers/{router}/getNamedSet")
+	}
+	opts = append((*c.CallOptions).GetNamedSet[0:len((*c.CallOptions).GetNamedSet):len((*c.CallOptions).GetNamedSet)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.RoutersGetNamedSetResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetNamedSet")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetNatIpInfo retrieves runtime NAT IP information.
 func (c *routersRESTClient) GetNatIpInfo(ctx context.Context, req *computepb.GetNatIpInfoRouterRequest, opts ...gax.CallOption) (*computepb.NatIpInfoResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/getNatIpInfo", req.GetProject(), req.GetRegion(), req.GetRouter())
@@ -801,9 +1105,6 @@ func (c *routersRESTClient) GetNatIpInfo(ctx context.Context, req *computepb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Routers/GetNatIpInfo")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/routers/{router}/getNatIpInfo")
@@ -858,6 +1159,13 @@ func (c *routersRESTClient) GetNatMappingInfo(ctx context.Context, req *computep
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+			req.GetRouter(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/getNatMappingInfo", req.GetProject(), req.GetRegion(), req.GetRouter())
 
 		params := url.Values{}
@@ -875,9 +1183,6 @@ func (c *routersRESTClient) GetNatMappingInfo(ctx context.Context, req *computep
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -934,6 +1239,13 @@ func (c *routersRESTClient) GetRoutePolicy(ctx context.Context, req *computepb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/getRoutePolicy", req.GetProject(), req.GetRegion(), req.GetRouter())
 
 	params := url.Values{}
@@ -949,9 +1261,6 @@ func (c *routersRESTClient) GetRoutePolicy(ctx context.Context, req *computepb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Routers/GetRoutePolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/routers/{router}/getRoutePolicy")
@@ -993,6 +1302,13 @@ func (c *routersRESTClient) GetRouterStatus(ctx context.Context, req *computepb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/getRouterStatus", req.GetProject(), req.GetRegion(), req.GetRouter())
 
 	// Build HTTP headers from client and context metadata.
@@ -1001,9 +1317,6 @@ func (c *routersRESTClient) GetRouterStatus(ctx context.Context, req *computepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Routers/GetRouterStatus")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/routers/{router}/getRouterStatus")
@@ -1053,6 +1366,12 @@ func (c *routersRESTClient) Insert(ctx context.Context, req *computepb.InsertRou
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
@@ -1068,9 +1387,6 @@ func (c *routersRESTClient) Insert(ctx context.Context, req *computepb.InsertRou
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/regions/%v", req.GetProject(), req.GetRegion()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Routers/Insert")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/routers")
@@ -1133,6 +1449,12 @@ func (c *routersRESTClient) List(ctx context.Context, req *computepb.ListRouters
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
@@ -1147,9 +1469,6 @@ func (c *routersRESTClient) List(ctx context.Context, req *computepb.ListRouters
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1219,6 +1538,13 @@ func (c *routersRESTClient) ListBgpRoutes(ctx context.Context, req *computepb.Li
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+			req.GetRouter(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/listBgpRoutes", req.GetProject(), req.GetRegion(), req.GetRouter())
 
 		params := url.Values{}
@@ -1245,9 +1571,6 @@ func (c *routersRESTClient) ListBgpRoutes(ctx context.Context, req *computepb.Li
 		}
 		if req != nil && req.PolicyApplied != nil {
 			params.Add("policyApplied", fmt.Sprintf("%v", req.GetPolicyApplied()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 		if req != nil && req.RouteType != nil {
 			params.Add("routeType", fmt.Sprintf("%v", req.GetRouteType()))
@@ -1301,6 +1624,97 @@ func (c *routersRESTClient) ListBgpRoutes(ctx context.Context, req *computepb.Li
 	return it
 }
 
+// ListNamedSets retrieves a list of router named set subresources available to the
+// specified project.
+func (c *routersRESTClient) ListNamedSets(ctx context.Context, req *computepb.ListNamedSetsRoutersRequest, opts ...gax.CallOption) *NamedSetIterator {
+	it := &NamedSetIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.NamedSet, string, error) {
+		resp := &computepb.RoutersListNamedSets{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(uint32(math.MaxInt32))
+		} else if pageSize != 0 {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+			req.GetRouter(),
+		); err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/listNamedSets", req.GetProject(), req.GetRegion(), req.GetRouter())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListNamedSets")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetResult(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // ListRoutePolicies retrieves a list of router route policy subresources available to the
 // specified project.
 func (c *routersRESTClient) ListRoutePolicies(ctx context.Context, req *computepb.ListRoutePoliciesRoutersRequest, opts ...gax.CallOption) *RoutePolicyIterator {
@@ -1321,6 +1735,13 @@ func (c *routersRESTClient) ListRoutePolicies(ctx context.Context, req *computep
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+			req.GetRegion(),
+			req.GetRouter(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/listRoutePolicies", req.GetProject(), req.GetRegion(), req.GetRouter())
 
 		params := url.Values{}
@@ -1335,9 +1756,6 @@ func (c *routersRESTClient) ListRoutePolicies(ctx context.Context, req *computep
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1404,6 +1822,13 @@ func (c *routersRESTClient) Patch(ctx context.Context, req *computepb.PatchRoute
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter())
 
 	params := url.Values{}
@@ -1419,9 +1844,6 @@ func (c *routersRESTClient) Patch(ctx context.Context, req *computepb.PatchRoute
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Routers/Patch")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/routers/{router}")
@@ -1465,6 +1887,84 @@ func (c *routersRESTClient) Patch(ctx context.Context, req *computepb.PatchRoute
 	return op, nil
 }
 
+// PatchNamedSet patches Named Set
+func (c *routersRESTClient) PatchNamedSet(ctx context.Context, req *computepb.PatchNamedSetRouterRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetNamedSetResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/patchNamedSet", req.GetProject(), req.GetRegion(), req.GetRouter())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "router", url.QueryEscape(req.GetRouter()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Routers/PatchNamedSet")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/routers/{router}/patchNamedSet")
+	}
+	opts = append((*c.CallOptions).PatchNamedSet[0:len((*c.CallOptions).PatchNamedSet):len((*c.CallOptions).PatchNamedSet)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PatchNamedSet")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
+	return op, nil
+}
+
 // PatchRoutePolicy patches Route Policy
 func (c *routersRESTClient) PatchRoutePolicy(ctx context.Context, req *computepb.PatchRoutePolicyRouterRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
@@ -1476,6 +1976,13 @@ func (c *routersRESTClient) PatchRoutePolicy(ctx context.Context, req *computepb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/patchRoutePolicy", req.GetProject(), req.GetRegion(), req.GetRouter())
@@ -1493,9 +2000,6 @@ func (c *routersRESTClient) PatchRoutePolicy(ctx context.Context, req *computepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Routers/PatchRoutePolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/routers/{router}/patchRoutePolicy")
@@ -1553,6 +2057,13 @@ func (c *routersRESTClient) Preview(ctx context.Context, req *computepb.PreviewR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/preview", req.GetProject(), req.GetRegion(), req.GetRouter())
 
 	// Build HTTP headers from client and context metadata.
@@ -1561,9 +2072,6 @@ func (c *routersRESTClient) Preview(ctx context.Context, req *computepb.PreviewR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Routers/Preview")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/routers/{router}/preview")
@@ -1615,6 +2123,13 @@ func (c *routersRESTClient) Update(ctx context.Context, req *computepb.UpdateRou
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter())
 
 	params := url.Values{}
@@ -1630,9 +2145,6 @@ func (c *routersRESTClient) Update(ctx context.Context, req *computepb.UpdateRou
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Routers/Update")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/routers/{router}")
@@ -1676,6 +2188,84 @@ func (c *routersRESTClient) Update(ctx context.Context, req *computepb.UpdateRou
 	return op, nil
 }
 
+// UpdateNamedSet updates or creates new Named Set
+func (c *routersRESTClient) UpdateNamedSet(ctx context.Context, req *computepb.UpdateNamedSetRouterRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetNamedSetResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/updateNamedSet", req.GetProject(), req.GetRegion(), req.GetRouter())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "router", url.QueryEscape(req.GetRouter()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Routers/UpdateNamedSet")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/routers/{router}/updateNamedSet")
+	}
+	opts = append((*c.CallOptions).UpdateNamedSet[0:len((*c.CallOptions).UpdateNamedSet):len((*c.CallOptions).UpdateNamedSet)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateNamedSet")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
+	return op, nil
+}
+
 // UpdateRoutePolicy updates or creates new Route Policy
 func (c *routersRESTClient) UpdateRoutePolicy(ctx context.Context, req *computepb.UpdateRoutePolicyRouterRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
@@ -1687,6 +2277,13 @@ func (c *routersRESTClient) UpdateRoutePolicy(ctx context.Context, req *computep
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRegion(),
+		req.GetRouter(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/updateRoutePolicy", req.GetProject(), req.GetRegion(), req.GetRouter())
@@ -1704,9 +2301,6 @@ func (c *routersRESTClient) UpdateRoutePolicy(ctx context.Context, req *computep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Routers/UpdateRoutePolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/routers/{router}/updateRoutePolicy")

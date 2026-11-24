@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -96,9 +96,13 @@ type BigQueryExport struct {
 	MostRecentEditor string `protobuf:"bytes,7,opt,name=most_recent_editor,json=mostRecentEditor,proto3" json:"most_recent_editor,omitempty"`
 	// Output only. The service account that needs permission to create table and
 	// upload data to the BigQuery dataset.
-	Principal     string `protobuf:"bytes,8,opt,name=principal,proto3" json:"principal,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Principal string `protobuf:"bytes,8,opt,name=principal,proto3" json:"principal,omitempty"`
+	// Optional. Indicates whether the notifications will be sent for deleted
+	// findings. When enabled, the filter is still respected when sending deletion
+	// notifications.
+	DeletionNotificationsEnabled bool `protobuf:"varint,10,opt,name=deletion_notifications_enabled,json=deletionNotificationsEnabled,proto3" json:"deletion_notifications_enabled,omitempty"`
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
 }
 
 func (x *BigQueryExport) Reset() {
@@ -187,22 +191,31 @@ func (x *BigQueryExport) GetPrincipal() string {
 	return ""
 }
 
+func (x *BigQueryExport) GetDeletionNotificationsEnabled() bool {
+	if x != nil {
+		return x.DeletionNotificationsEnabled
+	}
+	return false
+}
+
 var File_google_cloud_securitycenter_v2_bigquery_export_proto protoreflect.FileDescriptor
 
 const file_google_cloud_securitycenter_v2_bigquery_export_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/securitycenter/v2/bigquery_export.proto\x12\x1egoogle.cloud.securitycenter.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfb\x04\n" +
-	"\x0eBigQueryExport\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12 \n" +
+	"4google/cloud/securitycenter/v2/bigquery_export.proto\x12\x1egoogle.cloud.securitycenter.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcc\x05\n" +
+	"\x0eBigQueryExport\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x18\n" +
-	"\adataset\x18\x04 \x01(\tR\adataset\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x121\n" +
-	"\x12most_recent_editor\x18\a \x01(\tB\x03\xe0A\x03R\x10mostRecentEditor\x12!\n" +
-	"\tprincipal\x18\b \x01(\tB\x03\xe0A\x03R\tprincipal:\xa1\x02\xeaA\x9d\x02\n" +
+	"\adataset\x18\x04 \x01(\tR\adataset\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x122\n" +
+	"\x12most_recent_editor\x18\a \x01(\tB\x04\xe2A\x01\x03R\x10mostRecentEditor\x12\"\n" +
+	"\tprincipal\x18\b \x01(\tB\x04\xe2A\x01\x03R\tprincipal\x12J\n" +
+	"\x1edeletion_notifications_enabled\x18\n" +
+	" \x01(\bB\x04\xe2A\x01\x01R\x1cdeletionNotificationsEnabled:\xa1\x02\xeaA\x9d\x02\n" +
 	",securitycenter.googleapis.com/BigQueryExport\x12Jorganizations/{organization}/locations/{location}/bigQueryExports/{export}\x12>folders/{folder}/locations/{location}/bigQueryExports/{export}\x12@projects/{project}/locations/{location}/bigQueryExports/{export}*\x0fbigQueryExports2\x0ebigQueryExportB\xed\x01\n" +
 	"\"com.google.cloud.securitycenter.v2B\x13BigQueryExportProtoP\x01ZJcloud.google.com/go/securitycenter/apiv2/securitycenterpb;securitycenterpb\xaa\x02\x1eGoogle.Cloud.SecurityCenter.V2\xca\x02\x1eGoogle\\Cloud\\SecurityCenter\\V2\xea\x02!Google::Cloud::SecurityCenter::V2b\x06proto3"
 

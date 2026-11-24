@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -98,16 +98,22 @@ func (ServingState) EnumDescriptor() ([]byte, []int) {
 type Certificate_Scope int32
 
 const (
-	// Certificates with default scope are served from core Google data centers.
-	// If unsure, choose this option.
+	// Use the DEFAULT scope if you plan to use the certificate with global
+	// external Application Load Balancer, global external proxy Network
+	// Load Balancer, or any of the regional Google Cloud services.
 	Certificate_DEFAULT Certificate_Scope = 0
-	// Certificates with scope EDGE_CACHE are special-purposed certificates,
-	// served from Edge Points of Presence.
+	// Use the EDGE_CACHE scope if you plan to use the certificate with Media
+	// CDN.
+	// The certificates are served from Edge Points of Presence.
 	// See https://cloud.google.com/vpc/docs/edge-locations.
 	Certificate_EDGE_CACHE Certificate_Scope = 1
-	// Certificates with ALL_REGIONS scope are served from all Google Cloud
+	// Use the ALL_REGIONS scope if you plan to use the certificate with
+	// cross-region internal Application Load Balancer.
+	// The certificates are served from all Google Cloud
 	// regions. See https://cloud.google.com/compute/docs/regions-zones.
 	Certificate_ALL_REGIONS Certificate_Scope = 2
+	// Associated with certificates used as client certificates in Backend mTLS.
+	Certificate_CLIENT_AUTH Certificate_Scope = 3
 )
 
 // Enum value maps for Certificate_Scope.
@@ -116,11 +122,13 @@ var (
 		0: "DEFAULT",
 		1: "EDGE_CACHE",
 		2: "ALL_REGIONS",
+		3: "CLIENT_AUTH",
 	}
 	Certificate_Scope_value = map[string]int32{
 		"DEFAULT":     0,
 		"EDGE_CACHE":  1,
 		"ALL_REGIONS": 2,
+		"CLIENT_AUTH": 3,
 	}
 )
 
@@ -391,6 +399,74 @@ func (Certificate_ManagedCertificate_AuthorizationAttemptInfo_FailureReason) Enu
 	return file_google_cloud_certificatemanager_v1_certificate_manager_proto_rawDescGZIP(), []int{25, 1, 1, 1}
 }
 
+// The issue discovered during the authorization attempt.
+type Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_Issue int32
+
+const (
+	// Issue is unspecified.
+	Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_ISSUE_UNSPECIFIED Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_Issue = 0
+	// The resolved CNAME value doesn't match the expected CNAME.
+	Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_CNAME_MISMATCH Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_Issue = 1
+	// Domain has A/AAAA records that point to IPs, where the certificate
+	// is not attached.
+	Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_RESOLVED_TO_NOT_SERVING Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_Issue = 2
+	// Domain has A/AAAA records that point to IPs, where the certificate
+	// is attached, but port 443 is not open.
+	Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_RESOLVED_TO_SERVING_ON_ALT_PORTS Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_Issue = 3
+	// Domain doesn't have any A/AAAA records.
+	Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_NO_RESOLVED_IPS Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_Issue = 4
+	// Certificate is not configured to be served from any IPs (e.g.
+	// Certificate is not attached to any load balancer).
+	Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_CERTIFICATE_NOT_ATTACHED Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_Issue = 5
+)
+
+// Enum value maps for Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_Issue.
+var (
+	Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_Issue_name = map[int32]string{
+		0: "ISSUE_UNSPECIFIED",
+		1: "CNAME_MISMATCH",
+		2: "RESOLVED_TO_NOT_SERVING",
+		3: "RESOLVED_TO_SERVING_ON_ALT_PORTS",
+		4: "NO_RESOLVED_IPS",
+		5: "CERTIFICATE_NOT_ATTACHED",
+	}
+	Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_Issue_value = map[string]int32{
+		"ISSUE_UNSPECIFIED":                0,
+		"CNAME_MISMATCH":                   1,
+		"RESOLVED_TO_NOT_SERVING":          2,
+		"RESOLVED_TO_SERVING_ON_ALT_PORTS": 3,
+		"NO_RESOLVED_IPS":                  4,
+		"CERTIFICATE_NOT_ATTACHED":         5,
+	}
+)
+
+func (x Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_Issue) Enum() *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_Issue {
+	p := new(Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_Issue)
+	*p = x
+	return p
+}
+
+func (x Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_Issue) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_Issue) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_certificatemanager_v1_certificate_manager_proto_enumTypes[6].Descriptor()
+}
+
+func (Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_Issue) Type() protoreflect.EnumType {
+	return &file_google_cloud_certificatemanager_v1_certificate_manager_proto_enumTypes[6]
+}
+
+func (x Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_Issue) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_Issue.Descriptor instead.
+func (Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_Issue) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_certificatemanager_v1_certificate_manager_proto_rawDescGZIP(), []int{25, 1, 1, 0, 0}
+}
+
 // Defines predefined cases other than SNI-hostname match when this
 // configuration should be applied.
 type CertificateMapEntry_Matcher int32
@@ -426,11 +502,11 @@ func (x CertificateMapEntry_Matcher) String() string {
 }
 
 func (CertificateMapEntry_Matcher) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_certificatemanager_v1_certificate_manager_proto_enumTypes[6].Descriptor()
+	return file_google_cloud_certificatemanager_v1_certificate_manager_proto_enumTypes[7].Descriptor()
 }
 
 func (CertificateMapEntry_Matcher) Type() protoreflect.EnumType {
-	return &file_google_cloud_certificatemanager_v1_certificate_manager_proto_enumTypes[6]
+	return &file_google_cloud_certificatemanager_v1_certificate_manager_proto_enumTypes[7]
 }
 
 func (x CertificateMapEntry_Matcher) Number() protoreflect.EnumNumber {
@@ -481,11 +557,11 @@ func (x DnsAuthorization_Type) String() string {
 }
 
 func (DnsAuthorization_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_certificatemanager_v1_certificate_manager_proto_enumTypes[7].Descriptor()
+	return file_google_cloud_certificatemanager_v1_certificate_manager_proto_enumTypes[8].Descriptor()
 }
 
 func (DnsAuthorization_Type) Type() protoreflect.EnumType {
-	return &file_google_cloud_certificatemanager_v1_certificate_manager_proto_enumTypes[7]
+	return &file_google_cloud_certificatemanager_v1_certificate_manager_proto_enumTypes[8]
 }
 
 func (x DnsAuthorization_Type) Number() protoreflect.EnumNumber {
@@ -503,17 +579,17 @@ type ListCertificatesRequest struct {
 	// Required. The project and location from which the certificate should be
 	// listed, specified in the format `projects/*/locations/*`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Maximum number of certificates to return per call.
+	// Optional. Maximum number of certificates to return per call.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// The value returned by the last `ListCertificatesResponse`. Indicates that
-	// this is a continuation of a prior `ListCertificates` call, and that the
-	// system should return the next page of data.
+	// Optional. The value returned by the last `ListCertificatesResponse`.
+	// Indicates that this is a continuation of a prior `ListCertificates` call,
+	// and that the system should return the next page of data.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
-	// Filter expression to restrict the Certificates returned.
+	// Optional. Filter expression to restrict the Certificates returned.
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
-	// A list of Certificate field names used to specify the order of the returned
-	// results. The default sorting order is ascending. To specify descending
-	// order for a field, add a suffix `" desc"`.
+	// Optional. A list of Certificate field names used to specify the order of
+	// the returned results. The default sorting order is ascending. To specify
+	// descending order for a field, add a suffix `" desc"`.
 	OrderBy       string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -872,16 +948,16 @@ type ListCertificateMapsRequest struct {
 	// Required. The project and location from which the certificate maps should
 	// be listed, specified in the format `projects/*/locations/*`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Maximum number of certificate maps to return per call.
+	// Optional. Maximum number of certificate maps to return per call.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// The value returned by the last `ListCertificateMapsResponse`. Indicates
-	// that this is a continuation of a prior `ListCertificateMaps` call, and that
-	// the system should return the next page of data.
+	// Optional. The value returned by the last `ListCertificateMapsResponse`.
+	// Indicates that this is a continuation of a prior `ListCertificateMaps`
+	// call, and that the system should return the next page of data.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
-	// Filter expression to restrict the Certificates Maps returned.
+	// Optional. Filter expression to restrict the Certificates Maps returned.
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
-	// A list of Certificate Map field names used to specify the order of the
-	// returned results. The default sorting order is ascending. To specify
+	// Optional. A list of Certificate Map field names used to specify the order
+	// of the returned results. The default sorting order is ascending. To specify
 	// descending order for a field, add a suffix `" desc"`.
 	OrderBy       string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -1242,19 +1318,20 @@ type ListCertificateMapEntriesRequest struct {
 	// certificate map entries should be listed, specified in the format
 	// `projects/*/locations/*/certificateMaps/*`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Maximum number of certificate map entries to return. The service may return
-	// fewer than this value.
-	// If unspecified, at most 50 certificate map entries will be returned.
-	// The maximum value is 1000; values above 1000 will be coerced to 1000.
+	// Optional. Maximum number of certificate map entries to return. The service
+	// may return fewer than this value. If unspecified, at most 50 certificate
+	// map entries will be returned. The maximum value is 1000; values above 1000
+	// will be coerced to 1000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// The value returned by the last `ListCertificateMapEntriesResponse`.
-	// Indicates that this is a continuation of a prior
-	// `ListCertificateMapEntries` call, and that the system should return the
-	// next page of data.
+	// Optional. The value returned by the last
+	// `ListCertificateMapEntriesResponse`. Indicates that this is a continuation
+	// of a prior `ListCertificateMapEntries` call, and that the system should
+	// return the next page of data.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
-	// Filter expression to restrict the returned Certificate Map Entries.
+	// Optional. Filter expression to restrict the returned Certificate Map
+	// Entries.
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
-	// A list of Certificate Map Entry field names used to specify
+	// Optional. A list of Certificate Map Entry field names used to specify
 	// the order of the returned results. The default sorting order is ascending.
 	// To specify descending order for a field, add a suffix `" desc"`.
 	OrderBy       string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
@@ -1615,16 +1692,16 @@ type ListDnsAuthorizationsRequest struct {
 	// Required. The project and location from which the dns authorizations should
 	// be listed, specified in the format `projects/*/locations/*`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Maximum number of dns authorizations to return per call.
+	// Optional. Maximum number of dns authorizations to return per call.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// The value returned by the last `ListDnsAuthorizationsResponse`. Indicates
-	// that this is a continuation of a prior `ListDnsAuthorizations` call, and
-	// that the system should return the next page of data.
+	// Optional. The value returned by the last `ListDnsAuthorizationsResponse`.
+	// Indicates that this is a continuation of a prior `ListDnsAuthorizations`
+	// call, and that the system should return the next page of data.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
-	// Filter expression to restrict the Dns Authorizations returned.
+	// Optional. Filter expression to restrict the Dns Authorizations returned.
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
-	// A list of Dns Authorization field names used to specify the order of the
-	// returned results. The default sorting order is ascending. To specify
+	// Optional. A list of Dns Authorization field names used to specify the order
+	// of the returned results. The default sorting order is ascending. To specify
 	// descending order for a field, add a suffix `" desc"`.
 	OrderBy       string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -1993,9 +2070,10 @@ type OperationMetadata struct {
 	StatusMessage string `protobuf:"bytes,5,opt,name=status_message,json=statusMessage,proto3" json:"status_message,omitempty"`
 	// Identifies whether the user has requested cancellation
 	// of the operation. Operations that have successfully been cancelled
-	// have [Operation.error][] value with a
-	// [google.rpc.Status.code][google.rpc.Status.code] of 1, corresponding to
-	// `Code.CANCELLED`.
+	// have
+	// [google.longrunning.Operation.error][google.longrunning.Operation.error]
+	// value with a [google.rpc.Status.code][google.rpc.Status.code] of `1`,
+	// corresponding to `Code.CANCELLED`.
 	RequestedCancellation bool `protobuf:"varint,6,opt,name=requested_cancellation,json=requestedCancellation,proto3" json:"requested_cancellation,omitempty"`
 	// API version used to start the operation.
 	ApiVersion    string `protobuf:"bytes,7,opt,name=api_version,json=apiVersion,proto3" json:"api_version,omitempty"`
@@ -2085,21 +2163,25 @@ func (x *OperationMetadata) GetApiVersion() string {
 // Defines TLS certificate.
 type Certificate struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// A user-defined name of the certificate. Certificate names must be unique
-	// globally and match pattern `projects/*/locations/*/certificates/*`.
+	// Identifier. A user-defined name of the certificate. Certificate names must
+	// be unique globally and match pattern
+	// `projects/*/locations/*/certificates/*`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// One or more paragraphs of text description of a certificate.
+	// Optional. One or more paragraphs of text description of a certificate.
 	Description string `protobuf:"bytes,8,opt,name=description,proto3" json:"description,omitempty"`
 	// Output only. The creation timestamp of a Certificate.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Output only. The last update timestamp of a Certificate.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	// Set of labels associated with a Certificate.
+	// Optional. Set of labels associated with a Certificate.
 	Labels map[string]string `protobuf:"bytes,4,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Type of the certificate. Required.
+	//
 	// Types that are valid to be assigned to Type:
 	//
 	//	*Certificate_SelfManaged
 	//	*Certificate_Managed
+	//	*Certificate_ManagedIdentity
 	Type isCertificate_Type `protobuf_oneof:"type"`
 	// Output only. The list of Subject Alternative Names of dnsName type defined
 	// in the certificate (see RFC 5280 4.2.1.6). Managed certificates that
@@ -2110,8 +2192,16 @@ type Certificate struct {
 	PemCertificate string `protobuf:"bytes,9,opt,name=pem_certificate,json=pemCertificate,proto3" json:"pem_certificate,omitempty"`
 	// Output only. The expiry timestamp of a Certificate.
 	ExpireTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=expire_time,json=expireTime,proto3" json:"expire_time,omitempty"`
-	// Immutable. The scope of the certificate.
-	Scope         Certificate_Scope `protobuf:"varint,12,opt,name=scope,proto3,enum=google.cloud.certificatemanager.v1.Certificate_Scope" json:"scope,omitempty"`
+	// Optional. Immutable. The scope of the certificate.
+	Scope Certificate_Scope `protobuf:"varint,12,opt,name=scope,proto3,enum=google.cloud.certificatemanager.v1.Certificate_Scope" json:"scope,omitempty"`
+	// Output only. The list of resources that use this Certificate.
+	UsedBy []*Certificate_UsedBy `protobuf:"bytes,15,rep,name=used_by,json=usedBy,proto3" json:"used_by,omitempty"`
+	// Optional. Input only. Immutable. Tag keys/values directly bound to this
+	// resource. For example:
+	//
+	//	"123/environment": "production",
+	//	"123/costCenter": "marketing"
+	Tags          map[string]string `protobuf:"bytes,17,rep,name=tags,proto3" json:"tags,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2206,6 +2296,15 @@ func (x *Certificate) GetManaged() *Certificate_ManagedCertificate {
 	return nil
 }
 
+func (x *Certificate) GetManagedIdentity() *Certificate_ManagedIdentityCertificate {
+	if x != nil {
+		if x, ok := x.Type.(*Certificate_ManagedIdentity); ok {
+			return x.ManagedIdentity
+		}
+	}
+	return nil
+}
+
 func (x *Certificate) GetSanDnsnames() []string {
 	if x != nil {
 		return x.SanDnsnames
@@ -2234,6 +2333,20 @@ func (x *Certificate) GetScope() Certificate_Scope {
 	return Certificate_DEFAULT
 }
 
+func (x *Certificate) GetUsedBy() []*Certificate_UsedBy {
+	if x != nil {
+		return x.UsedBy
+	}
+	return nil
+}
+
+func (x *Certificate) GetTags() map[string]string {
+	if x != nil {
+		return x.Tags
+	}
+	return nil
+}
+
 type isCertificate_Type interface {
 	isCertificate_Type()
 }
@@ -2248,29 +2361,43 @@ type Certificate_Managed struct {
 	Managed *Certificate_ManagedCertificate `protobuf:"bytes,11,opt,name=managed,proto3,oneof"`
 }
 
+type Certificate_ManagedIdentity struct {
+	// If set, contains configuration and state of a managed identity
+	// certificate.
+	ManagedIdentity *Certificate_ManagedIdentityCertificate `protobuf:"bytes,18,opt,name=managed_identity,json=managedIdentity,proto3,oneof"`
+}
+
 func (*Certificate_SelfManaged) isCertificate_Type() {}
 
 func (*Certificate_Managed) isCertificate_Type() {}
 
+func (*Certificate_ManagedIdentity) isCertificate_Type() {}
+
 // Defines a collection of certificate configurations.
 type CertificateMap struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// A user-defined name of the Certificate Map. Certificate Map names must be
-	// unique globally and match pattern
+	// Identifier. A user-defined name of the Certificate Map. Certificate Map
+	// names must be unique globally and match pattern
 	// `projects/*/locations/*/certificateMaps/*`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// One or more paragraphs of text description of a certificate map.
+	// Optional. One or more paragraphs of text description of a certificate map.
 	Description string `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
 	// Output only. The creation timestamp of a Certificate Map.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Output only. The update timestamp of a Certificate Map.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	// Set of labels associated with a Certificate Map.
+	// Optional. Set of labels associated with a Certificate Map.
 	Labels map[string]string `protobuf:"bytes,3,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// Output only. A list of GCLB targets that use this Certificate Map.
 	// A Target Proxy is only present on this list if it's attached to a
 	// Forwarding Rule.
-	GclbTargets   []*CertificateMap_GclbTarget `protobuf:"bytes,4,rep,name=gclb_targets,json=gclbTargets,proto3" json:"gclb_targets,omitempty"`
+	GclbTargets []*CertificateMap_GclbTarget `protobuf:"bytes,4,rep,name=gclb_targets,json=gclbTargets,proto3" json:"gclb_targets,omitempty"`
+	// Optional. Input only. Immutable. Tag keys/values directly bound to this
+	// resource. For example:
+	//
+	//	"123/environment": "production",
+	//	"123/costCenter": "marketing"
+	Tags          map[string]string `protobuf:"bytes,7,rep,name=tags,proto3" json:"tags,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2347,28 +2474,38 @@ func (x *CertificateMap) GetGclbTargets() []*CertificateMap_GclbTarget {
 	return nil
 }
 
+func (x *CertificateMap) GetTags() map[string]string {
+	if x != nil {
+		return x.Tags
+	}
+	return nil
+}
+
 // Defines a certificate map entry.
 type CertificateMapEntry struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// A user-defined name of the Certificate Map Entry. Certificate Map Entry
-	// names must be unique globally and match pattern
+	// Identifier. A user-defined name of the Certificate Map Entry. Certificate
+	// Map Entry names must be unique globally and match pattern
 	// `projects/*/locations/*/certificateMaps/*/certificateMapEntries/*`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// One or more paragraphs of text description of a certificate map entry.
+	// Optional. One or more paragraphs of text description of a certificate map
+	// entry.
 	Description string `protobuf:"bytes,9,opt,name=description,proto3" json:"description,omitempty"`
 	// Output only. The creation timestamp of a Certificate Map Entry.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Output only. The update timestamp of a Certificate Map Entry.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	// Set of labels associated with a Certificate Map Entry.
+	// Optional. Set of labels associated with a Certificate Map Entry.
 	Labels map[string]string `protobuf:"bytes,4,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// The matcher for this certificate map entry. Required.
+	//
 	// Types that are valid to be assigned to Match:
 	//
 	//	*CertificateMapEntry_Hostname
 	//	*CertificateMapEntry_Matcher_
 	Match isCertificateMapEntry_Match `protobuf_oneof:"match"`
-	// A set of Certificates defines for the given `hostname`. There can be
-	// defined up to four certificates in each Certificate Map Entry. Each
+	// Optional. A set of Certificates defines for the given `hostname`. There can
+	// be defined up to four certificates in each Certificate Map Entry. Each
 	// certificate must match pattern `projects/*/locations/*/certificates/*`.
 	Certificates []string `protobuf:"bytes,7,rep,name=certificates,proto3" json:"certificates,omitempty"`
 	// Output only. A serving state of this Certificate Map Entry.
@@ -2505,17 +2642,17 @@ func (*CertificateMapEntry_Matcher_) isCertificateMapEntry_Match() {}
 // for certificate issuance.
 type DnsAuthorization struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// A user-defined name of the dns authorization. DnsAuthorization names must
-	// be unique globally and match pattern
+	// Identifier. A user-defined name of the dns authorization. DnsAuthorization
+	// names must be unique globally and match pattern
 	// `projects/*/locations/*/dnsAuthorizations/*`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. The creation timestamp of a DnsAuthorization.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Output only. The last update timestamp of a DnsAuthorization.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	// Set of labels associated with a DnsAuthorization.
+	// Optional. Set of labels associated with a DnsAuthorization.
 	Labels map[string]string `protobuf:"bytes,4,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// One or more paragraphs of text description of a DnsAuthorization.
+	// Optional. One or more paragraphs of text description of a DnsAuthorization.
 	Description string `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
 	// Required. Immutable. A domain that is being authorized. A DnsAuthorization
 	// resource covers a single domain and its wildcard, e.g. authorization for
@@ -2525,10 +2662,17 @@ type DnsAuthorization struct {
 	// Output only. DNS Resource Record that needs to be added to DNS
 	// configuration.
 	DnsResourceRecord *DnsAuthorization_DnsResourceRecord `protobuf:"bytes,10,opt,name=dns_resource_record,json=dnsResourceRecord,proto3" json:"dns_resource_record,omitempty"`
-	// Immutable. Type of DnsAuthorization. If unset during resource creation the
-	// following default will be used:
-	// - in location global: FIXED_RECORD.
-	Type          DnsAuthorization_Type `protobuf:"varint,11,opt,name=type,proto3,enum=google.cloud.certificatemanager.v1.DnsAuthorization_Type" json:"type,omitempty"`
+	// Optional. Immutable. Type of DnsAuthorization. If unset during resource
+	// creation the following default will be used:
+	// - in location `global`: FIXED_RECORD,
+	// - in other locations: PER_PROJECT_RECORD.
+	Type DnsAuthorization_Type `protobuf:"varint,11,opt,name=type,proto3,enum=google.cloud.certificatemanager.v1.DnsAuthorization_Type" json:"type,omitempty"`
+	// Optional. Input only. Immutable. Tag keys/values directly bound to this
+	// resource. For example:
+	//
+	//	"123/environment": "production",
+	//	"123/costCenter": "marketing"
+	Tags          map[string]string `protobuf:"bytes,12,rep,name=tags,proto3" json:"tags,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2619,15 +2763,23 @@ func (x *DnsAuthorization) GetType() DnsAuthorization_Type {
 	return DnsAuthorization_TYPE_UNSPECIFIED
 }
 
+func (x *DnsAuthorization) GetTags() map[string]string {
+	if x != nil {
+		return x.Tags
+	}
+	return nil
+}
+
 // Certificate data for a SelfManaged Certificate.
 // SelfManaged Certificates are uploaded by the user. Updating such
 // certificates before they expire remains the user's responsibility.
 type Certificate_SelfManagedCertificate struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Input only. The PEM-encoded certificate chain.
+	// Optional. Input only. The PEM-encoded certificate chain.
 	// Leaf certificate comes first, followed by intermediate ones if any.
 	PemCertificate string `protobuf:"bytes,1,opt,name=pem_certificate,json=pemCertificate,proto3" json:"pem_certificate,omitempty"`
-	// Input only. The PEM-encoded private key of the leaf certificate.
+	// Optional. Input only. The PEM-encoded private key of the leaf
+	// certificate.
 	PemPrivateKey string `protobuf:"bytes,2,opt,name=pem_private_key,json=pemPrivateKey,proto3" json:"pem_private_key,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2682,14 +2834,14 @@ func (x *Certificate_SelfManagedCertificate) GetPemPrivateKey() string {
 // automatically, for as long as it's authorized to do so.
 type Certificate_ManagedCertificate struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Immutable. The domains for which a managed SSL certificate will be
-	// generated. Wildcard domains are only supported with DNS challenge
+	// Optional. Immutable. The domains for which a managed SSL certificate will
+	// be generated. Wildcard domains are only supported with DNS challenge
 	// resolution.
 	Domains []string `protobuf:"bytes,1,rep,name=domains,proto3" json:"domains,omitempty"`
-	// Immutable. Authorizations that will be used for performing domain
-	// authorization.
+	// Optional. Immutable. Authorizations that will be used for performing
+	// domain authorization.
 	DnsAuthorizations []string `protobuf:"bytes,2,rep,name=dns_authorizations,json=dnsAuthorizations,proto3" json:"dns_authorizations,omitempty"`
-	// Immutable. The resource name for a
+	// Optional. Immutable. The resource name for a
 	// [CertificateIssuanceConfig][google.cloud.certificatemanager.v1.CertificateIssuanceConfig]
 	// used to configure private PKI certificates in the format
 	// `projects/*/locations/*/certificateIssuanceConfigs/*`.
@@ -2781,6 +2933,124 @@ func (x *Certificate_ManagedCertificate) GetAuthorizationAttemptInfo() []*Certif
 	return nil
 }
 
+// Configuration and state of a Managed Identity Certificate.
+// Certificate Manager provisions and renews Managed Identity Certificates
+// automatically, for as long as it's authorized to do so.
+type Certificate_ManagedIdentityCertificate struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Immutable. SPIFFE ID of the Managed Identity used for this
+	// certificate.
+	Identity string `protobuf:"bytes,1,opt,name=identity,proto3" json:"identity,omitempty"`
+	// Output only. State of the managed certificate resource.
+	State Certificate_ManagedCertificate_State `protobuf:"varint,2,opt,name=state,proto3,enum=google.cloud.certificatemanager.v1.Certificate_ManagedCertificate_State" json:"state,omitempty"`
+	// Output only. Information about issues with provisioning a managed
+	// certificate.
+	ProvisioningIssue *Certificate_ManagedCertificate_ProvisioningIssue `protobuf:"bytes,3,opt,name=provisioning_issue,json=provisioningIssue,proto3" json:"provisioning_issue,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *Certificate_ManagedIdentityCertificate) Reset() {
+	*x = Certificate_ManagedIdentityCertificate{}
+	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Certificate_ManagedIdentityCertificate) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Certificate_ManagedIdentityCertificate) ProtoMessage() {}
+
+func (x *Certificate_ManagedIdentityCertificate) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Certificate_ManagedIdentityCertificate.ProtoReflect.Descriptor instead.
+func (*Certificate_ManagedIdentityCertificate) Descriptor() ([]byte, []int) {
+	return file_google_cloud_certificatemanager_v1_certificate_manager_proto_rawDescGZIP(), []int{25, 2}
+}
+
+func (x *Certificate_ManagedIdentityCertificate) GetIdentity() string {
+	if x != nil {
+		return x.Identity
+	}
+	return ""
+}
+
+func (x *Certificate_ManagedIdentityCertificate) GetState() Certificate_ManagedCertificate_State {
+	if x != nil {
+		return x.State
+	}
+	return Certificate_ManagedCertificate_STATE_UNSPECIFIED
+}
+
+func (x *Certificate_ManagedIdentityCertificate) GetProvisioningIssue() *Certificate_ManagedCertificate_ProvisioningIssue {
+	if x != nil {
+		return x.ProvisioningIssue
+	}
+	return nil
+}
+
+// Defines a resource that uses the certificate.
+type Certificate_UsedBy struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. Full name of the resource
+	// https://google.aip.dev/122#full-resource-names, e.g.
+	// `//certificatemanager.googleapis.com/projects/*/locations/*/certificateMaps/*/certificateMapEntries/*`
+	// or
+	// `//compute.googleapis.com/projects/*/locations/*/targetHttpsProxies/*`.
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Certificate_UsedBy) Reset() {
+	*x = Certificate_UsedBy{}
+	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Certificate_UsedBy) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Certificate_UsedBy) ProtoMessage() {}
+
+func (x *Certificate_UsedBy) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Certificate_UsedBy.ProtoReflect.Descriptor instead.
+func (*Certificate_UsedBy) Descriptor() ([]byte, []int) {
+	return file_google_cloud_certificatemanager_v1_certificate_manager_proto_rawDescGZIP(), []int{25, 3}
+}
+
+func (x *Certificate_UsedBy) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
 // Information about issues with provisioning a Managed Certificate.
 type Certificate_ManagedCertificate_ProvisioningIssue struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2796,7 +3066,7 @@ type Certificate_ManagedCertificate_ProvisioningIssue struct {
 
 func (x *Certificate_ManagedCertificate_ProvisioningIssue) Reset() {
 	*x = Certificate_ManagedCertificate_ProvisioningIssue{}
-	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[32]
+	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2808,7 +3078,7 @@ func (x *Certificate_ManagedCertificate_ProvisioningIssue) String() string {
 func (*Certificate_ManagedCertificate_ProvisioningIssue) ProtoMessage() {}
 
 func (x *Certificate_ManagedCertificate_ProvisioningIssue) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[32]
+	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2842,7 +3112,7 @@ func (x *Certificate_ManagedCertificate_ProvisioningIssue) GetDetails() string {
 // issuance.
 type Certificate_ManagedCertificate_AuthorizationAttemptInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Domain name of the authorization attempt.
+	// Output only. Domain name of the authorization attempt.
 	Domain string `protobuf:"bytes,1,opt,name=domain,proto3" json:"domain,omitempty"`
 	// Output only. State of the domain for managed certificate issuance.
 	State Certificate_ManagedCertificate_AuthorizationAttemptInfo_State `protobuf:"varint,2,opt,name=state,proto3,enum=google.cloud.certificatemanager.v1.Certificate_ManagedCertificate_AuthorizationAttemptInfo_State" json:"state,omitempty"`
@@ -2852,14 +3122,19 @@ type Certificate_ManagedCertificate_AuthorizationAttemptInfo struct {
 	// Output only. Human readable explanation for reaching the state.
 	// Provided to help address the configuration issues. Not guaranteed to be
 	// stable. For programmatic access use FailureReason enum.
-	Details       string `protobuf:"bytes,4,opt,name=details,proto3" json:"details,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Details string `protobuf:"bytes,4,opt,name=details,proto3" json:"details,omitempty"`
+	// Output only. The timestamp, when the authorization attempt was made.
+	AttemptTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=attempt_time,json=attemptTime,proto3" json:"attempt_time,omitempty"`
+	// Output only. Troubleshooting information for the authorization attempt.
+	// This field is only populated if the authorization attempt failed.
+	Troubleshooting *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting `protobuf:"bytes,6,opt,name=troubleshooting,proto3" json:"troubleshooting,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo) Reset() {
 	*x = Certificate_ManagedCertificate_AuthorizationAttemptInfo{}
-	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[33]
+	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2871,7 +3146,7 @@ func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo) String() strin
 func (*Certificate_ManagedCertificate_AuthorizationAttemptInfo) ProtoMessage() {}
 
 func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[33]
+	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2915,6 +3190,225 @@ func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo) GetDetails() s
 	return ""
 }
 
+func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo) GetAttemptTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.AttemptTime
+	}
+	return nil
+}
+
+func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo) GetTroubleshooting() *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting {
+	if x != nil {
+		return x.Troubleshooting
+	}
+	return nil
+}
+
+// Troubleshooting information for the authorization attempt.
+type Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The list of issues discovered during the authorization
+	// attempt.
+	Issues []Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_Issue `protobuf:"varint,1,rep,packed,name=issues,proto3,enum=google.cloud.certificatemanager.v1.Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_Issue" json:"issues,omitempty"`
+	// Output only. CNAME troubleshooting information.
+	Cname *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_CNAME `protobuf:"bytes,2,opt,name=cname,proto3" json:"cname,omitempty"`
+	// Output only. IPs troubleshooting information.
+	Ips           *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_IPs `protobuf:"bytes,3,opt,name=ips,proto3" json:"ips,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting) Reset() {
+	*x = Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting{}
+	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[37]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting) ProtoMessage() {}
+
+func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[37]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting.ProtoReflect.Descriptor instead.
+func (*Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting) Descriptor() ([]byte, []int) {
+	return file_google_cloud_certificatemanager_v1_certificate_manager_proto_rawDescGZIP(), []int{25, 1, 1, 0}
+}
+
+func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting) GetIssues() []Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_Issue {
+	if x != nil {
+		return x.Issues
+	}
+	return nil
+}
+
+func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting) GetCname() *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_CNAME {
+	if x != nil {
+		return x.Cname
+	}
+	return nil
+}
+
+func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting) GetIps() *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_IPs {
+	if x != nil {
+		return x.Ips
+	}
+	return nil
+}
+
+// CNAME troubleshooting information.
+type Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_CNAME struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The name of the CNAME record for the domain, equals to
+	// `dns_resource_record.name` in the corresponding `DnsAuthorization`.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Output only. The expected value of the CNAME record for the domain,
+	// equals to `dns_resource_record.data` in the corresponding
+	// `DnsAuthorization`.
+	ExpectedData string `protobuf:"bytes,2,opt,name=expected_data,json=expectedData,proto3" json:"expected_data,omitempty"`
+	// Output only. The resolved CNAME chain.
+	// Empty list if the CNAME record for `CNAME.name` is not found.
+	// Otherwise the first item is the value of the CNAME record for
+	// `CNAME.name`.
+	// If the CNAME chain is longer, the second item is the value of the
+	// CNAME record for the first item, and so on.
+	ResolvedData  []string `protobuf:"bytes,3,rep,name=resolved_data,json=resolvedData,proto3" json:"resolved_data,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_CNAME) Reset() {
+	*x = Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_CNAME{}
+	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[38]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_CNAME) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_CNAME) ProtoMessage() {
+}
+
+func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_CNAME) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[38]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_CNAME.ProtoReflect.Descriptor instead.
+func (*Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_CNAME) Descriptor() ([]byte, []int) {
+	return file_google_cloud_certificatemanager_v1_certificate_manager_proto_rawDescGZIP(), []int{25, 1, 1, 0, 0}
+}
+
+func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_CNAME) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_CNAME) GetExpectedData() string {
+	if x != nil {
+		return x.ExpectedData
+	}
+	return ""
+}
+
+func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_CNAME) GetResolvedData() []string {
+	if x != nil {
+		return x.ResolvedData
+	}
+	return nil
+}
+
+// IPs troubleshooting information.
+type Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_IPs struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The list of IP addresses, where the certificate is
+	// attached and port 443 is open.
+	Serving []string `protobuf:"bytes,1,rep,name=serving,proto3" json:"serving,omitempty"`
+	// Output only. The list of IP addresses, where the certificate is
+	// attached, but port 443 is not open.
+	ServingOnAltPorts []string `protobuf:"bytes,2,rep,name=serving_on_alt_ports,json=servingOnAltPorts,proto3" json:"serving_on_alt_ports,omitempty"`
+	// Output only. The list of IP addresses resolved from the domain's
+	// A/AAAA records. Can contain both ipv4 and ipv6 addresses.
+	Resolved      []string `protobuf:"bytes,3,rep,name=resolved,proto3" json:"resolved,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_IPs) Reset() {
+	*x = Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_IPs{}
+	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[39]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_IPs) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_IPs) ProtoMessage() {}
+
+func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_IPs) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[39]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_IPs.ProtoReflect.Descriptor instead.
+func (*Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_IPs) Descriptor() ([]byte, []int) {
+	return file_google_cloud_certificatemanager_v1_certificate_manager_proto_rawDescGZIP(), []int{25, 1, 1, 0, 1}
+}
+
+func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_IPs) GetServing() []string {
+	if x != nil {
+		return x.Serving
+	}
+	return nil
+}
+
+func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_IPs) GetServingOnAltPorts() []string {
+	if x != nil {
+		return x.ServingOnAltPorts
+	}
+	return nil
+}
+
+func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_IPs) GetResolved() []string {
+	if x != nil {
+		return x.Resolved
+	}
+	return nil
+}
+
 // Describes a Target Proxy that uses this Certificate Map.
 type CertificateMap_GclbTarget struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2934,7 +3428,7 @@ type CertificateMap_GclbTarget struct {
 
 func (x *CertificateMap_GclbTarget) Reset() {
 	*x = CertificateMap_GclbTarget{}
-	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[34]
+	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2946,7 +3440,7 @@ func (x *CertificateMap_GclbTarget) String() string {
 func (*CertificateMap_GclbTarget) ProtoMessage() {}
 
 func (x *CertificateMap_GclbTarget) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[34]
+	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3029,7 +3523,7 @@ type CertificateMap_GclbTarget_IpConfig struct {
 
 func (x *CertificateMap_GclbTarget_IpConfig) Reset() {
 	*x = CertificateMap_GclbTarget_IpConfig{}
-	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[36]
+	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3041,7 +3535,7 @@ func (x *CertificateMap_GclbTarget_IpConfig) String() string {
 func (*CertificateMap_GclbTarget_IpConfig) ProtoMessage() {}
 
 func (x *CertificateMap_GclbTarget_IpConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[36]
+	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3090,7 +3584,7 @@ type DnsAuthorization_DnsResourceRecord struct {
 
 func (x *DnsAuthorization_DnsResourceRecord) Reset() {
 	*x = DnsAuthorization_DnsResourceRecord{}
-	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[38]
+	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3102,7 +3596,7 @@ func (x *DnsAuthorization_DnsResourceRecord) String() string {
 func (*DnsAuthorization_DnsResourceRecord) ProtoMessage() {}
 
 func (x *DnsAuthorization_DnsResourceRecord) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[38]
+	mi := &file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3143,114 +3637,114 @@ var File_google_cloud_certificatemanager_v1_certificate_manager_proto protorefle
 
 const file_google_cloud_certificatemanager_v1_certificate_manager_proto_rawDesc = "" +
 	"\n" +
-	"<google/cloud/certificatemanager/v1/certificate_manager.proto\x12\"google.cloud.certificatemanager.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aDgoogle/cloud/certificatemanager/v1/certificate_issuance_config.proto\x1a5google/cloud/certificatemanager/v1/trust_config.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcb\x01\n" +
-	"\x17ListCertificatesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"<google/cloud/certificatemanager/v1/certificate_manager.proto\x12\"google.cloud.certificatemanager.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1aDgoogle/cloud/certificatemanager/v1/certificate_issuance_config.proto\x1a5google/cloud/certificatemanager/v1/trust_config.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe4\x01\n" +
+	"\x17ListCertificatesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
-	"\x06filter\x18\x04 \x01(\tR\x06filter\x12\x19\n" +
-	"\border_by\x18\x05 \x01(\tR\aorderBy\"\xb9\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xb9\x01\n" +
 	"\x18ListCertificatesResponse\x12S\n" +
 	"\fcertificates\x18\x01 \x03(\v2/.google.cloud.certificatemanager.v1.CertificateR\fcertificates\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"b\n" +
-	"\x15GetCertificateRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-certificatemanager.googleapis.com/CertificateR\x04name\"\xe1\x01\n" +
-	"\x18CreateCertificateRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12*\n" +
-	"\x0ecertificate_id\x18\x02 \x01(\tB\x03\xe0A\x02R\rcertificateId\x12V\n" +
-	"\vcertificate\x18\x03 \x01(\v2/.google.cloud.certificatemanager.v1.CertificateB\x03\xe0A\x02R\vcertificate\"\xb4\x01\n" +
-	"\x18UpdateCertificateRequest\x12V\n" +
-	"\vcertificate\x18\x01 \x01(\v2/.google.cloud.certificatemanager.v1.CertificateB\x03\xe0A\x02R\vcertificate\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"e\n" +
-	"\x18DeleteCertificateRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-certificatemanager.googleapis.com/CertificateR\x04name\"\xce\x01\n" +
-	"\x1aListCertificateMapsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"c\n" +
+	"\x15GetCertificateRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-certificatemanager.googleapis.com/CertificateR\x04name\"\xe4\x01\n" +
+	"\x18CreateCertificateRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12+\n" +
+	"\x0ecertificate_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rcertificateId\x12W\n" +
+	"\vcertificate\x18\x03 \x01(\v2/.google.cloud.certificatemanager.v1.CertificateB\x04\xe2A\x01\x02R\vcertificate\"\xb6\x01\n" +
+	"\x18UpdateCertificateRequest\x12W\n" +
+	"\vcertificate\x18\x01 \x01(\v2/.google.cloud.certificatemanager.v1.CertificateB\x04\xe2A\x01\x02R\vcertificate\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"f\n" +
+	"\x18DeleteCertificateRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-certificatemanager.googleapis.com/CertificateR\x04name\"\xe7\x01\n" +
+	"\x1aListCertificateMapsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
-	"\x06filter\x18\x04 \x01(\tR\x06filter\x12\x19\n" +
-	"\border_by\x18\x05 \x01(\tR\aorderBy\"\xc6\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xc6\x01\n" +
 	"\x1bListCertificateMapsResponse\x12]\n" +
 	"\x10certificate_maps\x18\x01 \x03(\v22.google.cloud.certificatemanager.v1.CertificateMapR\x0fcertificateMaps\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"h\n" +
-	"\x18GetCertificateMapRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0certificatemanager.googleapis.com/CertificateMapR\x04name\"\xf5\x01\n" +
-	"\x1bCreateCertificateMapRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x121\n" +
-	"\x12certificate_map_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x10certificateMapId\x12`\n" +
-	"\x0fcertificate_map\x18\x03 \x01(\v22.google.cloud.certificatemanager.v1.CertificateMapB\x03\xe0A\x02R\x0ecertificateMap\"\xc1\x01\n" +
-	"\x1bUpdateCertificateMapRequest\x12`\n" +
-	"\x0fcertificate_map\x18\x01 \x01(\v22.google.cloud.certificatemanager.v1.CertificateMapB\x03\xe0A\x02R\x0ecertificateMap\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"k\n" +
-	"\x1bDeleteCertificateMapRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0certificatemanager.googleapis.com/CertificateMapR\x04name\"\xe3\x01\n" +
-	" ListCertificateMapEntriesRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0certificatemanager.googleapis.com/CertificateMapR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"i\n" +
+	"\x18GetCertificateMapRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0certificatemanager.googleapis.com/CertificateMapR\x04name\"\xf8\x01\n" +
+	"\x1bCreateCertificateMapRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x122\n" +
+	"\x12certificate_map_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x10certificateMapId\x12a\n" +
+	"\x0fcertificate_map\x18\x03 \x01(\v22.google.cloud.certificatemanager.v1.CertificateMapB\x04\xe2A\x01\x02R\x0ecertificateMap\"\xc3\x01\n" +
+	"\x1bUpdateCertificateMapRequest\x12a\n" +
+	"\x0fcertificate_map\x18\x01 \x01(\v22.google.cloud.certificatemanager.v1.CertificateMapB\x04\xe2A\x01\x02R\x0ecertificateMap\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"l\n" +
+	"\x1bDeleteCertificateMapRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0certificatemanager.googleapis.com/CertificateMapR\x04name\"\xfc\x01\n" +
+	" ListCertificateMapEntriesRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0certificatemanager.googleapis.com/CertificateMapR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
-	"\x06filter\x18\x04 \x01(\tR\x06filter\x12\x19\n" +
-	"\border_by\x18\x05 \x01(\tR\aorderBy\"\xde\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xde\x01\n" +
 	"!ListCertificateMapEntriesResponse\x12o\n" +
 	"\x17certificate_map_entries\x18\x01 \x03(\v27.google.cloud.certificatemanager.v1.CertificateMapEntryR\x15certificateMapEntries\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"r\n" +
-	"\x1dGetCertificateMapEntryRequest\x12Q\n" +
-	"\x04name\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\n" +
-	"5certificatemanager.googleapis.com/CertificateMapEntryR\x04name\"\xa4\x02\n" +
-	" CreateCertificateMapEntryRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0certificatemanager.googleapis.com/CertificateMapR\x06parent\x12<\n" +
-	"\x18certificate_map_entry_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x15certificateMapEntryId\x12p\n" +
-	"\x15certificate_map_entry\x18\x03 \x01(\v27.google.cloud.certificatemanager.v1.CertificateMapEntryB\x03\xe0A\x02R\x13certificateMapEntry\"\xd6\x01\n" +
-	" UpdateCertificateMapEntryRequest\x12p\n" +
-	"\x15certificate_map_entry\x18\x01 \x01(\v27.google.cloud.certificatemanager.v1.CertificateMapEntryB\x03\xe0A\x02R\x13certificateMapEntry\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"u\n" +
-	" DeleteCertificateMapEntryRequest\x12Q\n" +
-	"\x04name\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\n" +
-	"5certificatemanager.googleapis.com/CertificateMapEntryR\x04name\"\xd0\x01\n" +
-	"\x1cListDnsAuthorizationsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"s\n" +
+	"\x1dGetCertificateMapEntryRequest\x12R\n" +
+	"\x04name\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\n" +
+	"5certificatemanager.googleapis.com/CertificateMapEntryR\x04name\"\xa7\x02\n" +
+	" CreateCertificateMapEntryRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0certificatemanager.googleapis.com/CertificateMapR\x06parent\x12=\n" +
+	"\x18certificate_map_entry_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x15certificateMapEntryId\x12q\n" +
+	"\x15certificate_map_entry\x18\x03 \x01(\v27.google.cloud.certificatemanager.v1.CertificateMapEntryB\x04\xe2A\x01\x02R\x13certificateMapEntry\"\xd8\x01\n" +
+	" UpdateCertificateMapEntryRequest\x12q\n" +
+	"\x15certificate_map_entry\x18\x01 \x01(\v27.google.cloud.certificatemanager.v1.CertificateMapEntryB\x04\xe2A\x01\x02R\x13certificateMapEntry\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"v\n" +
+	" DeleteCertificateMapEntryRequest\x12R\n" +
+	"\x04name\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\n" +
+	"5certificatemanager.googleapis.com/CertificateMapEntryR\x04name\"\xe9\x01\n" +
+	"\x1cListDnsAuthorizationsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
-	"\x06filter\x18\x04 \x01(\tR\x06filter\x12\x19\n" +
-	"\border_by\x18\x05 \x01(\tR\aorderBy\"\xce\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xce\x01\n" +
 	"\x1dListDnsAuthorizationsResponse\x12c\n" +
 	"\x12dns_authorizations\x18\x01 \x03(\v24.google.cloud.certificatemanager.v1.DnsAuthorizationR\x11dnsAuthorizations\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"l\n" +
-	"\x1aGetDnsAuthorizationRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2certificatemanager.googleapis.com/DnsAuthorizationR\x04name\"\x81\x02\n" +
-	"\x1dCreateDnsAuthorizationRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x125\n" +
-	"\x14dns_authorization_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x12dnsAuthorizationId\x12f\n" +
-	"\x11dns_authorization\x18\x03 \x01(\v24.google.cloud.certificatemanager.v1.DnsAuthorizationB\x03\xe0A\x02R\x10dnsAuthorization\"\xc9\x01\n" +
-	"\x1dUpdateDnsAuthorizationRequest\x12f\n" +
-	"\x11dns_authorization\x18\x01 \x01(\v24.google.cloud.certificatemanager.v1.DnsAuthorizationB\x03\xe0A\x02R\x10dnsAuthorization\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"o\n" +
-	"\x1dDeleteDnsAuthorizationRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"m\n" +
+	"\x1aGetDnsAuthorizationRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2certificatemanager.googleapis.com/DnsAuthorizationR\x04name\"\x84\x02\n" +
+	"\x1dCreateDnsAuthorizationRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x126\n" +
+	"\x14dns_authorization_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12dnsAuthorizationId\x12g\n" +
+	"\x11dns_authorization\x18\x03 \x01(\v24.google.cloud.certificatemanager.v1.DnsAuthorizationB\x04\xe2A\x01\x02R\x10dnsAuthorization\"\xcb\x01\n" +
+	"\x1dUpdateDnsAuthorizationRequest\x12g\n" +
+	"\x11dns_authorization\x18\x01 \x01(\v24.google.cloud.certificatemanager.v1.DnsAuthorizationB\x04\xe2A\x01\x02R\x10dnsAuthorization\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"p\n" +
+	"\x1dDeleteDnsAuthorizationRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
 	"2certificatemanager.googleapis.com/DnsAuthorizationR\x04name\"\xb2\x02\n" +
 	"\x11OperationMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
@@ -3261,46 +3755,70 @@ const file_google_cloud_certificatemanager_v1_certificate_manager_proto_rawDesc 
 	"\x0estatus_message\x18\x05 \x01(\tR\rstatusMessage\x125\n" +
 	"\x16requested_cancellation\x18\x06 \x01(\bR\x15requestedCancellation\x12\x1f\n" +
 	"\vapi_version\x18\a \x01(\tR\n" +
-	"apiVersion\"\xaf\x14\n" +
-	"\vCertificate\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
-	"\vdescription\x18\b \x01(\tR\vdescription\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12S\n" +
-	"\x06labels\x18\x04 \x03(\v2;.google.cloud.certificatemanager.v1.Certificate.LabelsEntryR\x06labels\x12k\n" +
+	"apiVersion\"\x8d#\n" +
+	"\vCertificate\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12&\n" +
+	"\vdescription\x18\b \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12Y\n" +
+	"\x06labels\x18\x04 \x03(\v2;.google.cloud.certificatemanager.v1.Certificate.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12k\n" +
 	"\fself_managed\x18\x05 \x01(\v2F.google.cloud.certificatemanager.v1.Certificate.SelfManagedCertificateH\x00R\vselfManaged\x12^\n" +
-	"\amanaged\x18\v \x01(\v2B.google.cloud.certificatemanager.v1.Certificate.ManagedCertificateH\x00R\amanaged\x12&\n" +
-	"\fsan_dnsnames\x18\x06 \x03(\tB\x03\xe0A\x03R\vsanDnsnames\x12,\n" +
-	"\x0fpem_certificate\x18\t \x01(\tB\x03\xe0A\x03R\x0epemCertificate\x12@\n" +
-	"\vexpire_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12P\n" +
-	"\x05scope\x18\f \x01(\x0e25.google.cloud.certificatemanager.v1.Certificate.ScopeB\x03\xe0A\x05R\x05scope\x1as\n" +
-	"\x16SelfManagedCertificate\x12,\n" +
-	"\x0fpem_certificate\x18\x01 \x01(\tB\x03\xe0A\x04R\x0epemCertificate\x12+\n" +
-	"\x0fpem_private_key\x18\x02 \x01(\tB\x03\xe0A\x04R\rpemPrivateKey\x1a\xf2\v\n" +
-	"\x12ManagedCertificate\x12\x1d\n" +
-	"\adomains\x18\x01 \x03(\tB\x03\xe0A\x05R\adomains\x12i\n" +
-	"\x12dns_authorizations\x18\x02 \x03(\tB:\xe0A\x05\xfaA4\n" +
-	"2certificatemanager.googleapis.com/DnsAuthorizationR\x11dnsAuthorizations\x12l\n" +
-	"\x0fissuance_config\x18\x06 \x01(\tBC\xe0A\x05\xfaA=\n" +
-	";certificatemanager.googleapis.com/CertificateIssuanceConfigR\x0eissuanceConfig\x12c\n" +
-	"\x05state\x18\x04 \x01(\x0e2H.google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.StateB\x03\xe0A\x03R\x05state\x12\x88\x01\n" +
-	"\x12provisioning_issue\x18\x03 \x01(\v2T.google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.ProvisioningIssueB\x03\xe0A\x03R\x11provisioningIssue\x12\x9e\x01\n" +
-	"\x1aauthorization_attempt_info\x18\x05 \x03(\v2[.google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfoB\x03\xe0A\x03R\x18authorizationAttemptInfo\x1a\xf9\x01\n" +
-	"\x11ProvisioningIssue\x12x\n" +
-	"\x06reason\x18\x01 \x01(\x0e2[.google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.ProvisioningIssue.ReasonB\x03\xe0A\x03R\x06reason\x12\x1d\n" +
-	"\adetails\x18\x02 \x01(\tB\x03\xe0A\x03R\adetails\"K\n" +
+	"\amanaged\x18\v \x01(\v2B.google.cloud.certificatemanager.v1.Certificate.ManagedCertificateH\x00R\amanaged\x12w\n" +
+	"\x10managed_identity\x18\x12 \x01(\v2J.google.cloud.certificatemanager.v1.Certificate.ManagedIdentityCertificateH\x00R\x0fmanagedIdentity\x12'\n" +
+	"\fsan_dnsnames\x18\x06 \x03(\tB\x04\xe2A\x01\x03R\vsanDnsnames\x12-\n" +
+	"\x0fpem_certificate\x18\t \x01(\tB\x04\xe2A\x01\x03R\x0epemCertificate\x12A\n" +
+	"\vexpire_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12R\n" +
+	"\x05scope\x18\f \x01(\x0e25.google.cloud.certificatemanager.v1.Certificate.ScopeB\x05\xe2A\x02\x05\x01R\x05scope\x12U\n" +
+	"\aused_by\x18\x0f \x03(\v26.google.cloud.certificatemanager.v1.Certificate.UsedByB\x04\xe2A\x01\x03R\x06usedBy\x12U\n" +
+	"\x04tags\x18\x11 \x03(\v29.google.cloud.certificatemanager.v1.Certificate.TagsEntryB\x06\xe2A\x03\x04\x05\x01R\x04tags\x1aw\n" +
+	"\x16SelfManagedCertificate\x12.\n" +
+	"\x0fpem_certificate\x18\x01 \x01(\tB\x05\xe2A\x02\x04\x01R\x0epemCertificate\x12-\n" +
+	"\x0fpem_private_key\x18\x02 \x01(\tB\x05\xe2A\x02\x04\x01R\rpemPrivateKey\x1a\xcd\x14\n" +
+	"\x12ManagedCertificate\x12\x1f\n" +
+	"\adomains\x18\x01 \x03(\tB\x05\xe2A\x02\x05\x01R\adomains\x12k\n" +
+	"\x12dns_authorizations\x18\x02 \x03(\tB<\xe2A\x02\x05\x01\xfaA4\n" +
+	"2certificatemanager.googleapis.com/DnsAuthorizationR\x11dnsAuthorizations\x12n\n" +
+	"\x0fissuance_config\x18\x06 \x01(\tBE\xe2A\x02\x05\x01\xfaA=\n" +
+	";certificatemanager.googleapis.com/CertificateIssuanceConfigR\x0eissuanceConfig\x12d\n" +
+	"\x05state\x18\x04 \x01(\x0e2H.google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.StateB\x04\xe2A\x01\x03R\x05state\x12\x89\x01\n" +
+	"\x12provisioning_issue\x18\x03 \x01(\v2T.google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.ProvisioningIssueB\x04\xe2A\x01\x03R\x11provisioningIssue\x12\x9f\x01\n" +
+	"\x1aauthorization_attempt_info\x18\x05 \x03(\v2[.google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfoB\x04\xe2A\x01\x03R\x18authorizationAttemptInfo\x1a\xfb\x01\n" +
+	"\x11ProvisioningIssue\x12y\n" +
+	"\x06reason\x18\x01 \x01(\x0e2[.google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.ProvisioningIssue.ReasonB\x04\xe2A\x01\x03R\x06reason\x12\x1e\n" +
+	"\adetails\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\adetails\"K\n" +
 	"\x06Reason\x12\x16\n" +
 	"\x12REASON_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13AUTHORIZATION_ISSUE\x10\x01\x12\x10\n" +
-	"\fRATE_LIMITED\x10\x02\x1a\x8c\x04\n" +
-	"\x18AuthorizationAttemptInfo\x12\x16\n" +
-	"\x06domain\x18\x01 \x01(\tR\x06domain\x12|\n" +
-	"\x05state\x18\x02 \x01(\x0e2a.google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.StateB\x03\xe0A\x03R\x05state\x12\x95\x01\n" +
-	"\x0efailure_reason\x18\x03 \x01(\x0e2i.google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.FailureReasonB\x03\xe0A\x03R\rfailureReason\x12\x1d\n" +
-	"\adetails\x18\x04 \x01(\tB\x03\xe0A\x03R\adetails\"K\n" +
+	"\fRATE_LIMITED\x10\x02\x1a\xdc\f\n" +
+	"\x18AuthorizationAttemptInfo\x12\x1c\n" +
+	"\x06domain\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06domain\x12}\n" +
+	"\x05state\x18\x02 \x01(\x0e2a.google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.StateB\x04\xe2A\x01\x03R\x05state\x12\x96\x01\n" +
+	"\x0efailure_reason\x18\x03 \x01(\x0e2i.google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.FailureReasonB\x04\xe2A\x01\x03R\rfailureReason\x12\x1e\n" +
+	"\adetails\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\adetails\x12C\n" +
+	"\fattempt_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\vattemptTime\x12\x9b\x01\n" +
+	"\x0ftroubleshooting\x18\x06 \x01(\v2k.google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.TroubleshootingB\x04\xe2A\x01\x03R\x0ftroubleshooting\x1a\xe1\x06\n" +
+	"\x0fTroubleshooting\x12\x8f\x01\n" +
+	"\x06issues\x18\x01 \x03(\x0e2q.google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.Troubleshooting.IssueB\x04\xe2A\x01\x03R\x06issues\x12\x8d\x01\n" +
+	"\x05cname\x18\x02 \x01(\v2q.google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.Troubleshooting.CNAMEB\x04\xe2A\x01\x03R\x05cname\x12\x87\x01\n" +
+	"\x03ips\x18\x03 \x01(\v2o.google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.Troubleshooting.IPsB\x04\xe2A\x01\x03R\x03ips\x1aw\n" +
+	"\x05CNAME\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12)\n" +
+	"\rexpected_data\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\fexpectedData\x12)\n" +
+	"\rresolved_data\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\fresolvedData\x1a~\n" +
+	"\x03IPs\x12\x1e\n" +
+	"\aserving\x18\x01 \x03(\tB\x04\xe2A\x01\x03R\aserving\x125\n" +
+	"\x14serving_on_alt_ports\x18\x02 \x03(\tB\x04\xe2A\x01\x03R\x11servingOnAltPorts\x12 \n" +
+	"\bresolved\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\bresolved\"\xa8\x01\n" +
+	"\x05Issue\x12\x15\n" +
+	"\x11ISSUE_UNSPECIFIED\x10\x00\x12\x12\n" +
+	"\x0eCNAME_MISMATCH\x10\x01\x12\x1b\n" +
+	"\x17RESOLVED_TO_NOT_SERVING\x10\x02\x12$\n" +
+	" RESOLVED_TO_SERVING_ON_ALT_PORTS\x10\x03\x12\x13\n" +
+	"\x0fNO_RESOLVED_IPS\x10\x04\x12\x1c\n" +
+	"\x18CERTIFICATE_NOT_ATTACHED\x10\x05\"K\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vAUTHORIZING\x10\x01\x12\x0e\n" +
@@ -3320,92 +3838,110 @@ const file_google_cloud_certificatemanager_v1_certificate_manager_proto_rawDesc 
 	"\n" +
 	"\x06FAILED\x10\x02\x12\n" +
 	"\n" +
-	"\x06ACTIVE\x10\x03\x1a9\n" +
+	"\x06ACTIVE\x10\x03\x1a\xb1\x02\n" +
+	"\x1aManagedIdentityCertificate\x12!\n" +
+	"\bidentity\x18\x01 \x01(\tB\x05\xe2A\x02\x05\x02R\bidentity\x12d\n" +
+	"\x05state\x18\x02 \x01(\x0e2H.google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.StateB\x04\xe2A\x01\x03R\x05state\x12\x89\x01\n" +
+	"\x12provisioning_issue\x18\x03 \x01(\v2T.google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.ProvisioningIssueB\x04\xe2A\x01\x03R\x11provisioningIssue\x1a\"\n" +
+	"\x06UsedBy\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"5\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a7\n" +
+	"\tTagsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"F\n" +
 	"\x05Scope\x12\v\n" +
 	"\aDEFAULT\x10\x00\x12\x0e\n" +
 	"\n" +
 	"EDGE_CACHE\x10\x01\x12\x0f\n" +
-	"\vALL_REGIONS\x10\x02:v\xeaAs\n" +
-	"-certificatemanager.googleapis.com/Certificate\x12Bprojects/{project}/locations/{location}/certificates/{certificate}B\x06\n" +
-	"\x04type\"\x83\a\n" +
-	"\x0eCertificateMap\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
-	"\vdescription\x18\x05 \x01(\tR\vdescription\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12V\n" +
-	"\x06labels\x18\x03 \x03(\v2>.google.cloud.certificatemanager.v1.CertificateMap.LabelsEntryR\x06labels\x12e\n" +
-	"\fgclb_targets\x18\x04 \x03(\v2=.google.cloud.certificatemanager.v1.CertificateMap.GclbTargetB\x03\xe0A\x03R\vgclbTargets\x1a\xb9\x02\n" +
+	"\vALL_REGIONS\x10\x02\x12\x0f\n" +
+	"\vCLIENT_AUTH\x10\x03:\x92\x01\xeaA\x8e\x01\n" +
+	"-certificatemanager.googleapis.com/Certificate\x12Bprojects/{project}/locations/{location}/certificates/{certificate}*\fcertificates2\vcertificateB\x06\n" +
+	"\x04type\"\xda\b\n" +
+	"\x0eCertificateMap\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\\\n" +
+	"\x06labels\x18\x03 \x03(\v2>.google.cloud.certificatemanager.v1.CertificateMap.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12f\n" +
+	"\fgclb_targets\x18\x04 \x03(\v2=.google.cloud.certificatemanager.v1.CertificateMap.GclbTargetB\x04\xe2A\x01\x03R\vgclbTargets\x12X\n" +
+	"\x04tags\x18\a \x03(\v2<.google.cloud.certificatemanager.v1.CertificateMap.TagsEntryB\x06\xe2A\x03\x04\x05\x01R\x04tags\x1a\xc6\x02\n" +
 	"\n" +
-	"GclbTarget\x123\n" +
-	"\x12target_https_proxy\x18\x01 \x01(\tB\x03\xe0A\x03H\x00R\x10targetHttpsProxy\x12/\n" +
-	"\x10target_ssl_proxy\x18\x03 \x01(\tB\x03\xe0A\x03H\x00R\x0etargetSslProxy\x12j\n" +
+	"GclbTarget\x124\n" +
+	"\x12target_https_proxy\x18\x01 \x01(\tB\x04\xe2A\x01\x03H\x00R\x10targetHttpsProxy\x120\n" +
+	"\x10target_ssl_proxy\x18\x03 \x01(\tB\x04\xe2A\x01\x03H\x00R\x0etargetSslProxy\x12k\n" +
 	"\n" +
-	"ip_configs\x18\x02 \x03(\v2F.google.cloud.certificatemanager.v1.CertificateMap.GclbTarget.IpConfigB\x03\xe0A\x03R\tipConfigs\x1aI\n" +
-	"\bIpConfig\x12\"\n" +
+	"ip_configs\x18\x02 \x03(\v2F.google.cloud.certificatemanager.v1.CertificateMap.GclbTarget.IpConfigB\x04\xe2A\x01\x03R\tipConfigs\x1aS\n" +
+	"\bIpConfig\x12+\n" +
 	"\n" +
-	"ip_address\x18\x01 \x01(\tB\x03\xe0A\x03R\tipAddress\x12\x19\n" +
-	"\x05ports\x18\x03 \x03(\rB\x03\xe0A\x03R\x05portsB\x0e\n" +
+	"ip_address\x18\x01 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x04R\tipAddress\x12\x1a\n" +
+	"\x05ports\x18\x03 \x03(\rB\x04\xe2A\x01\x03R\x05portsB\x0e\n" +
 	"\ftarget_proxy\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x80\x01\xeaA}\n" +
-	"0certificatemanager.googleapis.com/CertificateMap\x12Iprojects/{project}/locations/{location}/certificateMaps/{certificate_map}\"\xf8\x06\n" +
-	"\x13CertificateMapEntry\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
-	"\vdescription\x18\t \x01(\tR\vdescription\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12[\n" +
-	"\x06labels\x18\x04 \x03(\v2C.google.cloud.certificatemanager.v1.CertificateMapEntry.LabelsEntryR\x06labels\x12\x1c\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a7\n" +
+	"\tTagsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xa2\x01\xeaA\x9e\x01\n" +
+	"0certificatemanager.googleapis.com/CertificateMap\x12Iprojects/{project}/locations/{location}/certificateMaps/{certificate_map}*\x0fcertificateMaps2\x0ecertificateMap\"\xbd\a\n" +
+	"\x13CertificateMapEntry\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12&\n" +
+	"\vdescription\x18\t \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12a\n" +
+	"\x06labels\x18\x04 \x03(\v2C.google.cloud.certificatemanager.v1.CertificateMapEntry.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12\x1c\n" +
 	"\bhostname\x18\x05 \x01(\tH\x00R\bhostname\x12[\n" +
 	"\amatcher\x18\n" +
-	" \x01(\x0e2?.google.cloud.certificatemanager.v1.CertificateMapEntry.MatcherH\x00R\amatcher\x12V\n" +
-	"\fcertificates\x18\a \x03(\tB2\xfaA/\n" +
-	"-certificatemanager.googleapis.com/CertificateR\fcertificates\x12K\n" +
-	"\x05state\x18\b \x01(\x0e20.google.cloud.certificatemanager.v1.ServingStateB\x03\xe0A\x03R\x05state\x1a9\n" +
+	" \x01(\x0e2?.google.cloud.certificatemanager.v1.CertificateMapEntry.MatcherH\x00R\amatcher\x12Z\n" +
+	"\fcertificates\x18\a \x03(\tB6\xe2A\x01\x01\xfaA/\n" +
+	"-certificatemanager.googleapis.com/CertificateR\fcertificates\x12L\n" +
+	"\x05state\x18\b \x01(\x0e20.google.cloud.certificatemanager.v1.ServingStateB\x04\xe2A\x01\x03R\x05state\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"/\n" +
 	"\aMatcher\x12\x17\n" +
 	"\x13MATCHER_UNSPECIFIED\x10\x00\x12\v\n" +
-	"\aPRIMARY\x10\x01:\xb4\x01\xeaA\xb0\x01\n" +
-	"5certificatemanager.googleapis.com/CertificateMapEntry\x12wprojects/{project}/locations/{location}/certificateMaps/{certificate_map}/certificateMapEntries/{certificate_map_entry}B\a\n" +
-	"\x05match\"\x84\a\n" +
-	"\x10DnsAuthorization\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12X\n" +
-	"\x06labels\x18\x04 \x03(\v2@.google.cloud.certificatemanager.v1.DnsAuthorization.LabelsEntryR\x06labels\x12 \n" +
-	"\vdescription\x18\x05 \x01(\tR\vdescription\x12\x1e\n" +
-	"\x06domain\x18\x06 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x06domain\x12{\n" +
+	"\aPRIMARY\x10\x01:\xe0\x01\xeaA\xdc\x01\n" +
+	"5certificatemanager.googleapis.com/CertificateMapEntry\x12wprojects/{project}/locations/{location}/certificateMaps/{certificate_map}/certificateMapEntries/{certificate_map_entry}*\x15certificateMapEntries2\x13certificateMapEntryB\a\n" +
+	"\x05match\"\xd7\b\n" +
+	"\x10DnsAuthorization\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12^\n" +
+	"\x06labels\x18\x04 \x03(\v2@.google.cloud.certificatemanager.v1.DnsAuthorization.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x1d\n" +
+	"\x06domain\x18\x06 \x01(\tB\x05\xe2A\x02\x02\x05R\x06domain\x12|\n" +
 	"\x13dns_resource_record\x18\n" +
-	" \x01(\v2F.google.cloud.certificatemanager.v1.DnsAuthorization.DnsResourceRecordB\x03\xe0A\x03R\x11dnsResourceRecord\x12R\n" +
-	"\x04type\x18\v \x01(\x0e29.google.cloud.certificatemanager.v1.DnsAuthorization.TypeB\x03\xe0A\x05R\x04type\x1a^\n" +
-	"\x11DnsResourceRecord\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x17\n" +
-	"\x04type\x18\x02 \x01(\tB\x03\xe0A\x03R\x04type\x12\x17\n" +
-	"\x04data\x18\x03 \x01(\tB\x03\xe0A\x03R\x04data\x1a9\n" +
+	" \x01(\v2F.google.cloud.certificatemanager.v1.DnsAuthorization.DnsResourceRecordB\x04\xe2A\x01\x03R\x11dnsResourceRecord\x12T\n" +
+	"\x04type\x18\v \x01(\x0e29.google.cloud.certificatemanager.v1.DnsAuthorization.TypeB\x05\xe2A\x02\x05\x01R\x04type\x12Z\n" +
+	"\x04tags\x18\f \x03(\v2>.google.cloud.certificatemanager.v1.DnsAuthorization.TagsEntryB\x06\xe2A\x03\x04\x05\x01R\x04tags\x1aa\n" +
+	"\x11DnsResourceRecord\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x18\n" +
+	"\x04type\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x04type\x12\x18\n" +
+	"\x04data\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x04data\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a7\n" +
+	"\tTagsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"F\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fFIXED_RECORD\x10\x01\x12\x16\n" +
-	"\x12PER_PROJECT_RECORD\x10\x02:\x87\x01\xeaA\x83\x01\n" +
-	"2certificatemanager.googleapis.com/DnsAuthorization\x12Mprojects/{project}/locations/{location}/dnsAuthorizations/{dns_authorization}*F\n" +
+	"\x12PER_PROJECT_RECORD\x10\x02:\xac\x01\xeaA\xa8\x01\n" +
+	"2certificatemanager.googleapis.com/DnsAuthorization\x12Mprojects/{project}/locations/{location}/dnsAuthorizations/{dns_authorization}*\x11dnsAuthorizations2\x10dnsAuthorization*F\n" +
 	"\fServingState\x12\x1d\n" +
 	"\x19SERVING_STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06ACTIVE\x10\x01\x12\v\n" +
-	"\aPENDING\x10\x022\xd6:\n" +
+	"\aPENDING\x10\x022\xc2=\n" +
 	"\x12CertificateManager\x12\xd0\x01\n" +
 	"\x10ListCertificates\x12;.google.cloud.certificatemanager.v1.ListCertificatesRequest\x1a<.google.cloud.certificatemanager.v1.ListCertificatesResponse\"A\xdaA\x06parent\x82\xd3\xe4\x93\x022\x120/v1/{parent=projects/*/locations/*}/certificates\x12\xbd\x01\n" +
 	"\x0eGetCertificate\x129.google.cloud.certificatemanager.v1.GetCertificateRequest\x1a/.google.cloud.certificatemanager.v1.Certificate\"?\xdaA\x04name\x82\xd3\xe4\x93\x022\x120/v1/{name=projects/*/locations/*/certificates/*}\x12\xff\x01\n" +
@@ -3442,7 +3978,9 @@ const file_google_cloud_certificatemanager_v1_certificate_manager_proto_rawDesc 
 	"\x1eListCertificateIssuanceConfigs\x12I.google.cloud.certificatemanager.v1.ListCertificateIssuanceConfigsRequest\x1aJ.google.cloud.certificatemanager.v1.ListCertificateIssuanceConfigsResponse\"O\xdaA\x06parent\x82\xd3\xe4\x93\x02@\x12>/v1/{parent=projects/*/locations/*}/certificateIssuanceConfigs\x12\xf5\x01\n" +
 	"\x1cGetCertificateIssuanceConfig\x12G.google.cloud.certificatemanager.v1.GetCertificateIssuanceConfigRequest\x1a=.google.cloud.certificatemanager.v1.CertificateIssuanceConfig\"M\xdaA\x04name\x82\xd3\xe4\x93\x02@\x12>/v1/{name=projects/*/locations/*/certificateIssuanceConfigs/*}\x12\xe7\x02\n" +
 	"\x1fCreateCertificateIssuanceConfig\x12J.google.cloud.certificatemanager.v1.CreateCertificateIssuanceConfigRequest\x1a\x1d.google.longrunning.Operation\"\xd8\x01\xcaA.\n" +
-	"\x19CertificateIssuanceConfig\x12\x11OperationMetadata\xdaAAparent,certificate_issuance_config,certificate_issuance_config_id\x82\xd3\xe4\x93\x02]:\x1bcertificate_issuance_config\">/v1/{parent=projects/*/locations/*}/certificateIssuanceConfigs\x12\x88\x02\n" +
+	"\x19CertificateIssuanceConfig\x12\x11OperationMetadata\xdaAAparent,certificate_issuance_config,certificate_issuance_config_id\x82\xd3\xe4\x93\x02]:\x1bcertificate_issuance_config\">/v1/{parent=projects/*/locations/*}/certificateIssuanceConfigs\x12\xe9\x02\n" +
+	"\x1fUpdateCertificateIssuanceConfig\x12J.google.cloud.certificatemanager.v1.UpdateCertificateIssuanceConfigRequest\x1a\x1d.google.longrunning.Operation\"\xda\x01\xcaA.\n" +
+	"\x19CertificateIssuanceConfig\x12\x11OperationMetadata\xdaA'certificate_issuance_config,update_mask\x82\xd3\xe4\x93\x02y:\x1bcertificate_issuance_config2Z/v1/{certificate_issuance_config.name=projects/*/locations/*/certificateIssuanceConfigs/*}\x12\x88\x02\n" +
 	"\x1fDeleteCertificateIssuanceConfig\x12J.google.cloud.certificatemanager.v1.DeleteCertificateIssuanceConfigRequest\x1a\x1d.google.longrunning.Operation\"z\xcaA*\n" +
 	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02@*>/v1/{name=projects/*/locations/*/certificateIssuanceConfigs/*}\x12\xd0\x01\n" +
 	"\x10ListTrustConfigs\x12;.google.cloud.certificatemanager.v1.ListTrustConfigsRequest\x1a<.google.cloud.certificatemanager.v1.ListTrustConfigsResponse\"A\xdaA\x06parent\x82\xd3\xe4\x93\x022\x120/v1/{parent=projects/*/locations/*}/trustConfigs\x12\xbd\x01\n" +
@@ -3467,184 +4005,208 @@ func file_google_cloud_certificatemanager_v1_certificate_manager_proto_rawDescGZ
 	return file_google_cloud_certificatemanager_v1_certificate_manager_proto_rawDescData
 }
 
-var file_google_cloud_certificatemanager_v1_certificate_manager_proto_enumTypes = make([]protoimpl.EnumInfo, 8)
-var file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes = make([]protoimpl.MessageInfo, 40)
+var file_google_cloud_certificatemanager_v1_certificate_manager_proto_enumTypes = make([]protoimpl.EnumInfo, 9)
+var file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes = make([]protoimpl.MessageInfo, 48)
 var file_google_cloud_certificatemanager_v1_certificate_manager_proto_goTypes = []any{
-	(ServingState)(0),                                                          // 0: google.cloud.certificatemanager.v1.ServingState
-	(Certificate_Scope)(0),                                                     // 1: google.cloud.certificatemanager.v1.Certificate.Scope
-	(Certificate_ManagedCertificate_State)(0),                                  // 2: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.State
-	(Certificate_ManagedCertificate_ProvisioningIssue_Reason)(0),               // 3: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.ProvisioningIssue.Reason
-	(Certificate_ManagedCertificate_AuthorizationAttemptInfo_State)(0),         // 4: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.State
-	(Certificate_ManagedCertificate_AuthorizationAttemptInfo_FailureReason)(0), // 5: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.FailureReason
-	(CertificateMapEntry_Matcher)(0),                                           // 6: google.cloud.certificatemanager.v1.CertificateMapEntry.Matcher
-	(DnsAuthorization_Type)(0),                                                 // 7: google.cloud.certificatemanager.v1.DnsAuthorization.Type
-	(*ListCertificatesRequest)(nil),                                            // 8: google.cloud.certificatemanager.v1.ListCertificatesRequest
-	(*ListCertificatesResponse)(nil),                                           // 9: google.cloud.certificatemanager.v1.ListCertificatesResponse
-	(*GetCertificateRequest)(nil),                                              // 10: google.cloud.certificatemanager.v1.GetCertificateRequest
-	(*CreateCertificateRequest)(nil),                                           // 11: google.cloud.certificatemanager.v1.CreateCertificateRequest
-	(*UpdateCertificateRequest)(nil),                                           // 12: google.cloud.certificatemanager.v1.UpdateCertificateRequest
-	(*DeleteCertificateRequest)(nil),                                           // 13: google.cloud.certificatemanager.v1.DeleteCertificateRequest
-	(*ListCertificateMapsRequest)(nil),                                         // 14: google.cloud.certificatemanager.v1.ListCertificateMapsRequest
-	(*ListCertificateMapsResponse)(nil),                                        // 15: google.cloud.certificatemanager.v1.ListCertificateMapsResponse
-	(*GetCertificateMapRequest)(nil),                                           // 16: google.cloud.certificatemanager.v1.GetCertificateMapRequest
-	(*CreateCertificateMapRequest)(nil),                                        // 17: google.cloud.certificatemanager.v1.CreateCertificateMapRequest
-	(*UpdateCertificateMapRequest)(nil),                                        // 18: google.cloud.certificatemanager.v1.UpdateCertificateMapRequest
-	(*DeleteCertificateMapRequest)(nil),                                        // 19: google.cloud.certificatemanager.v1.DeleteCertificateMapRequest
-	(*ListCertificateMapEntriesRequest)(nil),                                   // 20: google.cloud.certificatemanager.v1.ListCertificateMapEntriesRequest
-	(*ListCertificateMapEntriesResponse)(nil),                                  // 21: google.cloud.certificatemanager.v1.ListCertificateMapEntriesResponse
-	(*GetCertificateMapEntryRequest)(nil),                                      // 22: google.cloud.certificatemanager.v1.GetCertificateMapEntryRequest
-	(*CreateCertificateMapEntryRequest)(nil),                                   // 23: google.cloud.certificatemanager.v1.CreateCertificateMapEntryRequest
-	(*UpdateCertificateMapEntryRequest)(nil),                                   // 24: google.cloud.certificatemanager.v1.UpdateCertificateMapEntryRequest
-	(*DeleteCertificateMapEntryRequest)(nil),                                   // 25: google.cloud.certificatemanager.v1.DeleteCertificateMapEntryRequest
-	(*ListDnsAuthorizationsRequest)(nil),                                       // 26: google.cloud.certificatemanager.v1.ListDnsAuthorizationsRequest
-	(*ListDnsAuthorizationsResponse)(nil),                                      // 27: google.cloud.certificatemanager.v1.ListDnsAuthorizationsResponse
-	(*GetDnsAuthorizationRequest)(nil),                                         // 28: google.cloud.certificatemanager.v1.GetDnsAuthorizationRequest
-	(*CreateDnsAuthorizationRequest)(nil),                                      // 29: google.cloud.certificatemanager.v1.CreateDnsAuthorizationRequest
-	(*UpdateDnsAuthorizationRequest)(nil),                                      // 30: google.cloud.certificatemanager.v1.UpdateDnsAuthorizationRequest
-	(*DeleteDnsAuthorizationRequest)(nil),                                      // 31: google.cloud.certificatemanager.v1.DeleteDnsAuthorizationRequest
-	(*OperationMetadata)(nil),                                                  // 32: google.cloud.certificatemanager.v1.OperationMetadata
-	(*Certificate)(nil),                                                        // 33: google.cloud.certificatemanager.v1.Certificate
-	(*CertificateMap)(nil),                                                     // 34: google.cloud.certificatemanager.v1.CertificateMap
-	(*CertificateMapEntry)(nil),                                                // 35: google.cloud.certificatemanager.v1.CertificateMapEntry
-	(*DnsAuthorization)(nil),                                                   // 36: google.cloud.certificatemanager.v1.DnsAuthorization
-	(*Certificate_SelfManagedCertificate)(nil),                                 // 37: google.cloud.certificatemanager.v1.Certificate.SelfManagedCertificate
-	(*Certificate_ManagedCertificate)(nil),                                     // 38: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate
-	nil,                                                                        // 39: google.cloud.certificatemanager.v1.Certificate.LabelsEntry
-	(*Certificate_ManagedCertificate_ProvisioningIssue)(nil),                   // 40: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.ProvisioningIssue
-	(*Certificate_ManagedCertificate_AuthorizationAttemptInfo)(nil),            // 41: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo
-	(*CertificateMap_GclbTarget)(nil),                                          // 42: google.cloud.certificatemanager.v1.CertificateMap.GclbTarget
-	nil,                                                                        // 43: google.cloud.certificatemanager.v1.CertificateMap.LabelsEntry
-	(*CertificateMap_GclbTarget_IpConfig)(nil),                                 // 44: google.cloud.certificatemanager.v1.CertificateMap.GclbTarget.IpConfig
-	nil, // 45: google.cloud.certificatemanager.v1.CertificateMapEntry.LabelsEntry
-	(*DnsAuthorization_DnsResourceRecord)(nil), // 46: google.cloud.certificatemanager.v1.DnsAuthorization.DnsResourceRecord
-	nil,                           // 47: google.cloud.certificatemanager.v1.DnsAuthorization.LabelsEntry
-	(*fieldmaskpb.FieldMask)(nil), // 48: google.protobuf.FieldMask
-	(*timestamppb.Timestamp)(nil), // 49: google.protobuf.Timestamp
-	(*ListCertificateIssuanceConfigsRequest)(nil),  // 50: google.cloud.certificatemanager.v1.ListCertificateIssuanceConfigsRequest
-	(*GetCertificateIssuanceConfigRequest)(nil),    // 51: google.cloud.certificatemanager.v1.GetCertificateIssuanceConfigRequest
-	(*CreateCertificateIssuanceConfigRequest)(nil), // 52: google.cloud.certificatemanager.v1.CreateCertificateIssuanceConfigRequest
-	(*DeleteCertificateIssuanceConfigRequest)(nil), // 53: google.cloud.certificatemanager.v1.DeleteCertificateIssuanceConfigRequest
-	(*ListTrustConfigsRequest)(nil),                // 54: google.cloud.certificatemanager.v1.ListTrustConfigsRequest
-	(*GetTrustConfigRequest)(nil),                  // 55: google.cloud.certificatemanager.v1.GetTrustConfigRequest
-	(*CreateTrustConfigRequest)(nil),               // 56: google.cloud.certificatemanager.v1.CreateTrustConfigRequest
-	(*UpdateTrustConfigRequest)(nil),               // 57: google.cloud.certificatemanager.v1.UpdateTrustConfigRequest
-	(*DeleteTrustConfigRequest)(nil),               // 58: google.cloud.certificatemanager.v1.DeleteTrustConfigRequest
-	(*longrunningpb.Operation)(nil),                // 59: google.longrunning.Operation
-	(*ListCertificateIssuanceConfigsResponse)(nil), // 60: google.cloud.certificatemanager.v1.ListCertificateIssuanceConfigsResponse
-	(*CertificateIssuanceConfig)(nil),              // 61: google.cloud.certificatemanager.v1.CertificateIssuanceConfig
-	(*ListTrustConfigsResponse)(nil),               // 62: google.cloud.certificatemanager.v1.ListTrustConfigsResponse
-	(*TrustConfig)(nil),                            // 63: google.cloud.certificatemanager.v1.TrustConfig
+	(ServingState)(0),                                                                  // 0: google.cloud.certificatemanager.v1.ServingState
+	(Certificate_Scope)(0),                                                             // 1: google.cloud.certificatemanager.v1.Certificate.Scope
+	(Certificate_ManagedCertificate_State)(0),                                          // 2: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.State
+	(Certificate_ManagedCertificate_ProvisioningIssue_Reason)(0),                       // 3: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.ProvisioningIssue.Reason
+	(Certificate_ManagedCertificate_AuthorizationAttemptInfo_State)(0),                 // 4: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.State
+	(Certificate_ManagedCertificate_AuthorizationAttemptInfo_FailureReason)(0),         // 5: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.FailureReason
+	(Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_Issue)(0), // 6: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.Troubleshooting.Issue
+	(CertificateMapEntry_Matcher)(0),                                                   // 7: google.cloud.certificatemanager.v1.CertificateMapEntry.Matcher
+	(DnsAuthorization_Type)(0),                                                         // 8: google.cloud.certificatemanager.v1.DnsAuthorization.Type
+	(*ListCertificatesRequest)(nil),                                                    // 9: google.cloud.certificatemanager.v1.ListCertificatesRequest
+	(*ListCertificatesResponse)(nil),                                                   // 10: google.cloud.certificatemanager.v1.ListCertificatesResponse
+	(*GetCertificateRequest)(nil),                                                      // 11: google.cloud.certificatemanager.v1.GetCertificateRequest
+	(*CreateCertificateRequest)(nil),                                                   // 12: google.cloud.certificatemanager.v1.CreateCertificateRequest
+	(*UpdateCertificateRequest)(nil),                                                   // 13: google.cloud.certificatemanager.v1.UpdateCertificateRequest
+	(*DeleteCertificateRequest)(nil),                                                   // 14: google.cloud.certificatemanager.v1.DeleteCertificateRequest
+	(*ListCertificateMapsRequest)(nil),                                                 // 15: google.cloud.certificatemanager.v1.ListCertificateMapsRequest
+	(*ListCertificateMapsResponse)(nil),                                                // 16: google.cloud.certificatemanager.v1.ListCertificateMapsResponse
+	(*GetCertificateMapRequest)(nil),                                                   // 17: google.cloud.certificatemanager.v1.GetCertificateMapRequest
+	(*CreateCertificateMapRequest)(nil),                                                // 18: google.cloud.certificatemanager.v1.CreateCertificateMapRequest
+	(*UpdateCertificateMapRequest)(nil),                                                // 19: google.cloud.certificatemanager.v1.UpdateCertificateMapRequest
+	(*DeleteCertificateMapRequest)(nil),                                                // 20: google.cloud.certificatemanager.v1.DeleteCertificateMapRequest
+	(*ListCertificateMapEntriesRequest)(nil),                                           // 21: google.cloud.certificatemanager.v1.ListCertificateMapEntriesRequest
+	(*ListCertificateMapEntriesResponse)(nil),                                          // 22: google.cloud.certificatemanager.v1.ListCertificateMapEntriesResponse
+	(*GetCertificateMapEntryRequest)(nil),                                              // 23: google.cloud.certificatemanager.v1.GetCertificateMapEntryRequest
+	(*CreateCertificateMapEntryRequest)(nil),                                           // 24: google.cloud.certificatemanager.v1.CreateCertificateMapEntryRequest
+	(*UpdateCertificateMapEntryRequest)(nil),                                           // 25: google.cloud.certificatemanager.v1.UpdateCertificateMapEntryRequest
+	(*DeleteCertificateMapEntryRequest)(nil),                                           // 26: google.cloud.certificatemanager.v1.DeleteCertificateMapEntryRequest
+	(*ListDnsAuthorizationsRequest)(nil),                                               // 27: google.cloud.certificatemanager.v1.ListDnsAuthorizationsRequest
+	(*ListDnsAuthorizationsResponse)(nil),                                              // 28: google.cloud.certificatemanager.v1.ListDnsAuthorizationsResponse
+	(*GetDnsAuthorizationRequest)(nil),                                                 // 29: google.cloud.certificatemanager.v1.GetDnsAuthorizationRequest
+	(*CreateDnsAuthorizationRequest)(nil),                                              // 30: google.cloud.certificatemanager.v1.CreateDnsAuthorizationRequest
+	(*UpdateDnsAuthorizationRequest)(nil),                                              // 31: google.cloud.certificatemanager.v1.UpdateDnsAuthorizationRequest
+	(*DeleteDnsAuthorizationRequest)(nil),                                              // 32: google.cloud.certificatemanager.v1.DeleteDnsAuthorizationRequest
+	(*OperationMetadata)(nil),                                                          // 33: google.cloud.certificatemanager.v1.OperationMetadata
+	(*Certificate)(nil),                                                                // 34: google.cloud.certificatemanager.v1.Certificate
+	(*CertificateMap)(nil),                                                             // 35: google.cloud.certificatemanager.v1.CertificateMap
+	(*CertificateMapEntry)(nil),                                                        // 36: google.cloud.certificatemanager.v1.CertificateMapEntry
+	(*DnsAuthorization)(nil),                                                           // 37: google.cloud.certificatemanager.v1.DnsAuthorization
+	(*Certificate_SelfManagedCertificate)(nil),                                         // 38: google.cloud.certificatemanager.v1.Certificate.SelfManagedCertificate
+	(*Certificate_ManagedCertificate)(nil),                                             // 39: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate
+	(*Certificate_ManagedIdentityCertificate)(nil),                                     // 40: google.cloud.certificatemanager.v1.Certificate.ManagedIdentityCertificate
+	(*Certificate_UsedBy)(nil),                                                         // 41: google.cloud.certificatemanager.v1.Certificate.UsedBy
+	nil,                                                                                // 42: google.cloud.certificatemanager.v1.Certificate.LabelsEntry
+	nil,                                                                                // 43: google.cloud.certificatemanager.v1.Certificate.TagsEntry
+	(*Certificate_ManagedCertificate_ProvisioningIssue)(nil),                           // 44: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.ProvisioningIssue
+	(*Certificate_ManagedCertificate_AuthorizationAttemptInfo)(nil),                    // 45: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo
+	(*Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting)(nil),    // 46: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.Troubleshooting
+	(*Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_CNAME)(nil), // 47: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.Troubleshooting.CNAME
+	(*Certificate_ManagedCertificate_AuthorizationAttemptInfo_Troubleshooting_IPs)(nil),   // 48: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.Troubleshooting.IPs
+	(*CertificateMap_GclbTarget)(nil), // 49: google.cloud.certificatemanager.v1.CertificateMap.GclbTarget
+	nil,                               // 50: google.cloud.certificatemanager.v1.CertificateMap.LabelsEntry
+	nil,                               // 51: google.cloud.certificatemanager.v1.CertificateMap.TagsEntry
+	(*CertificateMap_GclbTarget_IpConfig)(nil), // 52: google.cloud.certificatemanager.v1.CertificateMap.GclbTarget.IpConfig
+	nil, // 53: google.cloud.certificatemanager.v1.CertificateMapEntry.LabelsEntry
+	(*DnsAuthorization_DnsResourceRecord)(nil), // 54: google.cloud.certificatemanager.v1.DnsAuthorization.DnsResourceRecord
+	nil,                           // 55: google.cloud.certificatemanager.v1.DnsAuthorization.LabelsEntry
+	nil,                           // 56: google.cloud.certificatemanager.v1.DnsAuthorization.TagsEntry
+	(*fieldmaskpb.FieldMask)(nil), // 57: google.protobuf.FieldMask
+	(*timestamppb.Timestamp)(nil), // 58: google.protobuf.Timestamp
+	(*ListCertificateIssuanceConfigsRequest)(nil),  // 59: google.cloud.certificatemanager.v1.ListCertificateIssuanceConfigsRequest
+	(*GetCertificateIssuanceConfigRequest)(nil),    // 60: google.cloud.certificatemanager.v1.GetCertificateIssuanceConfigRequest
+	(*CreateCertificateIssuanceConfigRequest)(nil), // 61: google.cloud.certificatemanager.v1.CreateCertificateIssuanceConfigRequest
+	(*UpdateCertificateIssuanceConfigRequest)(nil), // 62: google.cloud.certificatemanager.v1.UpdateCertificateIssuanceConfigRequest
+	(*DeleteCertificateIssuanceConfigRequest)(nil), // 63: google.cloud.certificatemanager.v1.DeleteCertificateIssuanceConfigRequest
+	(*ListTrustConfigsRequest)(nil),                // 64: google.cloud.certificatemanager.v1.ListTrustConfigsRequest
+	(*GetTrustConfigRequest)(nil),                  // 65: google.cloud.certificatemanager.v1.GetTrustConfigRequest
+	(*CreateTrustConfigRequest)(nil),               // 66: google.cloud.certificatemanager.v1.CreateTrustConfigRequest
+	(*UpdateTrustConfigRequest)(nil),               // 67: google.cloud.certificatemanager.v1.UpdateTrustConfigRequest
+	(*DeleteTrustConfigRequest)(nil),               // 68: google.cloud.certificatemanager.v1.DeleteTrustConfigRequest
+	(*longrunningpb.Operation)(nil),                // 69: google.longrunning.Operation
+	(*ListCertificateIssuanceConfigsResponse)(nil), // 70: google.cloud.certificatemanager.v1.ListCertificateIssuanceConfigsResponse
+	(*CertificateIssuanceConfig)(nil),              // 71: google.cloud.certificatemanager.v1.CertificateIssuanceConfig
+	(*ListTrustConfigsResponse)(nil),               // 72: google.cloud.certificatemanager.v1.ListTrustConfigsResponse
+	(*TrustConfig)(nil),                            // 73: google.cloud.certificatemanager.v1.TrustConfig
 }
 var file_google_cloud_certificatemanager_v1_certificate_manager_proto_depIdxs = []int32{
-	33, // 0: google.cloud.certificatemanager.v1.ListCertificatesResponse.certificates:type_name -> google.cloud.certificatemanager.v1.Certificate
-	33, // 1: google.cloud.certificatemanager.v1.CreateCertificateRequest.certificate:type_name -> google.cloud.certificatemanager.v1.Certificate
-	33, // 2: google.cloud.certificatemanager.v1.UpdateCertificateRequest.certificate:type_name -> google.cloud.certificatemanager.v1.Certificate
-	48, // 3: google.cloud.certificatemanager.v1.UpdateCertificateRequest.update_mask:type_name -> google.protobuf.FieldMask
-	34, // 4: google.cloud.certificatemanager.v1.ListCertificateMapsResponse.certificate_maps:type_name -> google.cloud.certificatemanager.v1.CertificateMap
-	34, // 5: google.cloud.certificatemanager.v1.CreateCertificateMapRequest.certificate_map:type_name -> google.cloud.certificatemanager.v1.CertificateMap
-	34, // 6: google.cloud.certificatemanager.v1.UpdateCertificateMapRequest.certificate_map:type_name -> google.cloud.certificatemanager.v1.CertificateMap
-	48, // 7: google.cloud.certificatemanager.v1.UpdateCertificateMapRequest.update_mask:type_name -> google.protobuf.FieldMask
-	35, // 8: google.cloud.certificatemanager.v1.ListCertificateMapEntriesResponse.certificate_map_entries:type_name -> google.cloud.certificatemanager.v1.CertificateMapEntry
-	35, // 9: google.cloud.certificatemanager.v1.CreateCertificateMapEntryRequest.certificate_map_entry:type_name -> google.cloud.certificatemanager.v1.CertificateMapEntry
-	35, // 10: google.cloud.certificatemanager.v1.UpdateCertificateMapEntryRequest.certificate_map_entry:type_name -> google.cloud.certificatemanager.v1.CertificateMapEntry
-	48, // 11: google.cloud.certificatemanager.v1.UpdateCertificateMapEntryRequest.update_mask:type_name -> google.protobuf.FieldMask
-	36, // 12: google.cloud.certificatemanager.v1.ListDnsAuthorizationsResponse.dns_authorizations:type_name -> google.cloud.certificatemanager.v1.DnsAuthorization
-	36, // 13: google.cloud.certificatemanager.v1.CreateDnsAuthorizationRequest.dns_authorization:type_name -> google.cloud.certificatemanager.v1.DnsAuthorization
-	36, // 14: google.cloud.certificatemanager.v1.UpdateDnsAuthorizationRequest.dns_authorization:type_name -> google.cloud.certificatemanager.v1.DnsAuthorization
-	48, // 15: google.cloud.certificatemanager.v1.UpdateDnsAuthorizationRequest.update_mask:type_name -> google.protobuf.FieldMask
-	49, // 16: google.cloud.certificatemanager.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	49, // 17: google.cloud.certificatemanager.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	49, // 18: google.cloud.certificatemanager.v1.Certificate.create_time:type_name -> google.protobuf.Timestamp
-	49, // 19: google.cloud.certificatemanager.v1.Certificate.update_time:type_name -> google.protobuf.Timestamp
-	39, // 20: google.cloud.certificatemanager.v1.Certificate.labels:type_name -> google.cloud.certificatemanager.v1.Certificate.LabelsEntry
-	37, // 21: google.cloud.certificatemanager.v1.Certificate.self_managed:type_name -> google.cloud.certificatemanager.v1.Certificate.SelfManagedCertificate
-	38, // 22: google.cloud.certificatemanager.v1.Certificate.managed:type_name -> google.cloud.certificatemanager.v1.Certificate.ManagedCertificate
-	49, // 23: google.cloud.certificatemanager.v1.Certificate.expire_time:type_name -> google.protobuf.Timestamp
-	1,  // 24: google.cloud.certificatemanager.v1.Certificate.scope:type_name -> google.cloud.certificatemanager.v1.Certificate.Scope
-	49, // 25: google.cloud.certificatemanager.v1.CertificateMap.create_time:type_name -> google.protobuf.Timestamp
-	49, // 26: google.cloud.certificatemanager.v1.CertificateMap.update_time:type_name -> google.protobuf.Timestamp
-	43, // 27: google.cloud.certificatemanager.v1.CertificateMap.labels:type_name -> google.cloud.certificatemanager.v1.CertificateMap.LabelsEntry
-	42, // 28: google.cloud.certificatemanager.v1.CertificateMap.gclb_targets:type_name -> google.cloud.certificatemanager.v1.CertificateMap.GclbTarget
-	49, // 29: google.cloud.certificatemanager.v1.CertificateMapEntry.create_time:type_name -> google.protobuf.Timestamp
-	49, // 30: google.cloud.certificatemanager.v1.CertificateMapEntry.update_time:type_name -> google.protobuf.Timestamp
-	45, // 31: google.cloud.certificatemanager.v1.CertificateMapEntry.labels:type_name -> google.cloud.certificatemanager.v1.CertificateMapEntry.LabelsEntry
-	6,  // 32: google.cloud.certificatemanager.v1.CertificateMapEntry.matcher:type_name -> google.cloud.certificatemanager.v1.CertificateMapEntry.Matcher
-	0,  // 33: google.cloud.certificatemanager.v1.CertificateMapEntry.state:type_name -> google.cloud.certificatemanager.v1.ServingState
-	49, // 34: google.cloud.certificatemanager.v1.DnsAuthorization.create_time:type_name -> google.protobuf.Timestamp
-	49, // 35: google.cloud.certificatemanager.v1.DnsAuthorization.update_time:type_name -> google.protobuf.Timestamp
-	47, // 36: google.cloud.certificatemanager.v1.DnsAuthorization.labels:type_name -> google.cloud.certificatemanager.v1.DnsAuthorization.LabelsEntry
-	46, // 37: google.cloud.certificatemanager.v1.DnsAuthorization.dns_resource_record:type_name -> google.cloud.certificatemanager.v1.DnsAuthorization.DnsResourceRecord
-	7,  // 38: google.cloud.certificatemanager.v1.DnsAuthorization.type:type_name -> google.cloud.certificatemanager.v1.DnsAuthorization.Type
-	2,  // 39: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.state:type_name -> google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.State
-	40, // 40: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.provisioning_issue:type_name -> google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.ProvisioningIssue
-	41, // 41: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.authorization_attempt_info:type_name -> google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo
-	3,  // 42: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.ProvisioningIssue.reason:type_name -> google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.ProvisioningIssue.Reason
-	4,  // 43: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.state:type_name -> google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.State
-	5,  // 44: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.failure_reason:type_name -> google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.FailureReason
-	44, // 45: google.cloud.certificatemanager.v1.CertificateMap.GclbTarget.ip_configs:type_name -> google.cloud.certificatemanager.v1.CertificateMap.GclbTarget.IpConfig
-	8,  // 46: google.cloud.certificatemanager.v1.CertificateManager.ListCertificates:input_type -> google.cloud.certificatemanager.v1.ListCertificatesRequest
-	10, // 47: google.cloud.certificatemanager.v1.CertificateManager.GetCertificate:input_type -> google.cloud.certificatemanager.v1.GetCertificateRequest
-	11, // 48: google.cloud.certificatemanager.v1.CertificateManager.CreateCertificate:input_type -> google.cloud.certificatemanager.v1.CreateCertificateRequest
-	12, // 49: google.cloud.certificatemanager.v1.CertificateManager.UpdateCertificate:input_type -> google.cloud.certificatemanager.v1.UpdateCertificateRequest
-	13, // 50: google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificate:input_type -> google.cloud.certificatemanager.v1.DeleteCertificateRequest
-	14, // 51: google.cloud.certificatemanager.v1.CertificateManager.ListCertificateMaps:input_type -> google.cloud.certificatemanager.v1.ListCertificateMapsRequest
-	16, // 52: google.cloud.certificatemanager.v1.CertificateManager.GetCertificateMap:input_type -> google.cloud.certificatemanager.v1.GetCertificateMapRequest
-	17, // 53: google.cloud.certificatemanager.v1.CertificateManager.CreateCertificateMap:input_type -> google.cloud.certificatemanager.v1.CreateCertificateMapRequest
-	18, // 54: google.cloud.certificatemanager.v1.CertificateManager.UpdateCertificateMap:input_type -> google.cloud.certificatemanager.v1.UpdateCertificateMapRequest
-	19, // 55: google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificateMap:input_type -> google.cloud.certificatemanager.v1.DeleteCertificateMapRequest
-	20, // 56: google.cloud.certificatemanager.v1.CertificateManager.ListCertificateMapEntries:input_type -> google.cloud.certificatemanager.v1.ListCertificateMapEntriesRequest
-	22, // 57: google.cloud.certificatemanager.v1.CertificateManager.GetCertificateMapEntry:input_type -> google.cloud.certificatemanager.v1.GetCertificateMapEntryRequest
-	23, // 58: google.cloud.certificatemanager.v1.CertificateManager.CreateCertificateMapEntry:input_type -> google.cloud.certificatemanager.v1.CreateCertificateMapEntryRequest
-	24, // 59: google.cloud.certificatemanager.v1.CertificateManager.UpdateCertificateMapEntry:input_type -> google.cloud.certificatemanager.v1.UpdateCertificateMapEntryRequest
-	25, // 60: google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificateMapEntry:input_type -> google.cloud.certificatemanager.v1.DeleteCertificateMapEntryRequest
-	26, // 61: google.cloud.certificatemanager.v1.CertificateManager.ListDnsAuthorizations:input_type -> google.cloud.certificatemanager.v1.ListDnsAuthorizationsRequest
-	28, // 62: google.cloud.certificatemanager.v1.CertificateManager.GetDnsAuthorization:input_type -> google.cloud.certificatemanager.v1.GetDnsAuthorizationRequest
-	29, // 63: google.cloud.certificatemanager.v1.CertificateManager.CreateDnsAuthorization:input_type -> google.cloud.certificatemanager.v1.CreateDnsAuthorizationRequest
-	30, // 64: google.cloud.certificatemanager.v1.CertificateManager.UpdateDnsAuthorization:input_type -> google.cloud.certificatemanager.v1.UpdateDnsAuthorizationRequest
-	31, // 65: google.cloud.certificatemanager.v1.CertificateManager.DeleteDnsAuthorization:input_type -> google.cloud.certificatemanager.v1.DeleteDnsAuthorizationRequest
-	50, // 66: google.cloud.certificatemanager.v1.CertificateManager.ListCertificateIssuanceConfigs:input_type -> google.cloud.certificatemanager.v1.ListCertificateIssuanceConfigsRequest
-	51, // 67: google.cloud.certificatemanager.v1.CertificateManager.GetCertificateIssuanceConfig:input_type -> google.cloud.certificatemanager.v1.GetCertificateIssuanceConfigRequest
-	52, // 68: google.cloud.certificatemanager.v1.CertificateManager.CreateCertificateIssuanceConfig:input_type -> google.cloud.certificatemanager.v1.CreateCertificateIssuanceConfigRequest
-	53, // 69: google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificateIssuanceConfig:input_type -> google.cloud.certificatemanager.v1.DeleteCertificateIssuanceConfigRequest
-	54, // 70: google.cloud.certificatemanager.v1.CertificateManager.ListTrustConfigs:input_type -> google.cloud.certificatemanager.v1.ListTrustConfigsRequest
-	55, // 71: google.cloud.certificatemanager.v1.CertificateManager.GetTrustConfig:input_type -> google.cloud.certificatemanager.v1.GetTrustConfigRequest
-	56, // 72: google.cloud.certificatemanager.v1.CertificateManager.CreateTrustConfig:input_type -> google.cloud.certificatemanager.v1.CreateTrustConfigRequest
-	57, // 73: google.cloud.certificatemanager.v1.CertificateManager.UpdateTrustConfig:input_type -> google.cloud.certificatemanager.v1.UpdateTrustConfigRequest
-	58, // 74: google.cloud.certificatemanager.v1.CertificateManager.DeleteTrustConfig:input_type -> google.cloud.certificatemanager.v1.DeleteTrustConfigRequest
-	9,  // 75: google.cloud.certificatemanager.v1.CertificateManager.ListCertificates:output_type -> google.cloud.certificatemanager.v1.ListCertificatesResponse
-	33, // 76: google.cloud.certificatemanager.v1.CertificateManager.GetCertificate:output_type -> google.cloud.certificatemanager.v1.Certificate
-	59, // 77: google.cloud.certificatemanager.v1.CertificateManager.CreateCertificate:output_type -> google.longrunning.Operation
-	59, // 78: google.cloud.certificatemanager.v1.CertificateManager.UpdateCertificate:output_type -> google.longrunning.Operation
-	59, // 79: google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificate:output_type -> google.longrunning.Operation
-	15, // 80: google.cloud.certificatemanager.v1.CertificateManager.ListCertificateMaps:output_type -> google.cloud.certificatemanager.v1.ListCertificateMapsResponse
-	34, // 81: google.cloud.certificatemanager.v1.CertificateManager.GetCertificateMap:output_type -> google.cloud.certificatemanager.v1.CertificateMap
-	59, // 82: google.cloud.certificatemanager.v1.CertificateManager.CreateCertificateMap:output_type -> google.longrunning.Operation
-	59, // 83: google.cloud.certificatemanager.v1.CertificateManager.UpdateCertificateMap:output_type -> google.longrunning.Operation
-	59, // 84: google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificateMap:output_type -> google.longrunning.Operation
-	21, // 85: google.cloud.certificatemanager.v1.CertificateManager.ListCertificateMapEntries:output_type -> google.cloud.certificatemanager.v1.ListCertificateMapEntriesResponse
-	35, // 86: google.cloud.certificatemanager.v1.CertificateManager.GetCertificateMapEntry:output_type -> google.cloud.certificatemanager.v1.CertificateMapEntry
-	59, // 87: google.cloud.certificatemanager.v1.CertificateManager.CreateCertificateMapEntry:output_type -> google.longrunning.Operation
-	59, // 88: google.cloud.certificatemanager.v1.CertificateManager.UpdateCertificateMapEntry:output_type -> google.longrunning.Operation
-	59, // 89: google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificateMapEntry:output_type -> google.longrunning.Operation
-	27, // 90: google.cloud.certificatemanager.v1.CertificateManager.ListDnsAuthorizations:output_type -> google.cloud.certificatemanager.v1.ListDnsAuthorizationsResponse
-	36, // 91: google.cloud.certificatemanager.v1.CertificateManager.GetDnsAuthorization:output_type -> google.cloud.certificatemanager.v1.DnsAuthorization
-	59, // 92: google.cloud.certificatemanager.v1.CertificateManager.CreateDnsAuthorization:output_type -> google.longrunning.Operation
-	59, // 93: google.cloud.certificatemanager.v1.CertificateManager.UpdateDnsAuthorization:output_type -> google.longrunning.Operation
-	59, // 94: google.cloud.certificatemanager.v1.CertificateManager.DeleteDnsAuthorization:output_type -> google.longrunning.Operation
-	60, // 95: google.cloud.certificatemanager.v1.CertificateManager.ListCertificateIssuanceConfigs:output_type -> google.cloud.certificatemanager.v1.ListCertificateIssuanceConfigsResponse
-	61, // 96: google.cloud.certificatemanager.v1.CertificateManager.GetCertificateIssuanceConfig:output_type -> google.cloud.certificatemanager.v1.CertificateIssuanceConfig
-	59, // 97: google.cloud.certificatemanager.v1.CertificateManager.CreateCertificateIssuanceConfig:output_type -> google.longrunning.Operation
-	59, // 98: google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificateIssuanceConfig:output_type -> google.longrunning.Operation
-	62, // 99: google.cloud.certificatemanager.v1.CertificateManager.ListTrustConfigs:output_type -> google.cloud.certificatemanager.v1.ListTrustConfigsResponse
-	63, // 100: google.cloud.certificatemanager.v1.CertificateManager.GetTrustConfig:output_type -> google.cloud.certificatemanager.v1.TrustConfig
-	59, // 101: google.cloud.certificatemanager.v1.CertificateManager.CreateTrustConfig:output_type -> google.longrunning.Operation
-	59, // 102: google.cloud.certificatemanager.v1.CertificateManager.UpdateTrustConfig:output_type -> google.longrunning.Operation
-	59, // 103: google.cloud.certificatemanager.v1.CertificateManager.DeleteTrustConfig:output_type -> google.longrunning.Operation
-	75, // [75:104] is the sub-list for method output_type
-	46, // [46:75] is the sub-list for method input_type
-	46, // [46:46] is the sub-list for extension type_name
-	46, // [46:46] is the sub-list for extension extendee
-	0,  // [0:46] is the sub-list for field type_name
+	34, // 0: google.cloud.certificatemanager.v1.ListCertificatesResponse.certificates:type_name -> google.cloud.certificatemanager.v1.Certificate
+	34, // 1: google.cloud.certificatemanager.v1.CreateCertificateRequest.certificate:type_name -> google.cloud.certificatemanager.v1.Certificate
+	34, // 2: google.cloud.certificatemanager.v1.UpdateCertificateRequest.certificate:type_name -> google.cloud.certificatemanager.v1.Certificate
+	57, // 3: google.cloud.certificatemanager.v1.UpdateCertificateRequest.update_mask:type_name -> google.protobuf.FieldMask
+	35, // 4: google.cloud.certificatemanager.v1.ListCertificateMapsResponse.certificate_maps:type_name -> google.cloud.certificatemanager.v1.CertificateMap
+	35, // 5: google.cloud.certificatemanager.v1.CreateCertificateMapRequest.certificate_map:type_name -> google.cloud.certificatemanager.v1.CertificateMap
+	35, // 6: google.cloud.certificatemanager.v1.UpdateCertificateMapRequest.certificate_map:type_name -> google.cloud.certificatemanager.v1.CertificateMap
+	57, // 7: google.cloud.certificatemanager.v1.UpdateCertificateMapRequest.update_mask:type_name -> google.protobuf.FieldMask
+	36, // 8: google.cloud.certificatemanager.v1.ListCertificateMapEntriesResponse.certificate_map_entries:type_name -> google.cloud.certificatemanager.v1.CertificateMapEntry
+	36, // 9: google.cloud.certificatemanager.v1.CreateCertificateMapEntryRequest.certificate_map_entry:type_name -> google.cloud.certificatemanager.v1.CertificateMapEntry
+	36, // 10: google.cloud.certificatemanager.v1.UpdateCertificateMapEntryRequest.certificate_map_entry:type_name -> google.cloud.certificatemanager.v1.CertificateMapEntry
+	57, // 11: google.cloud.certificatemanager.v1.UpdateCertificateMapEntryRequest.update_mask:type_name -> google.protobuf.FieldMask
+	37, // 12: google.cloud.certificatemanager.v1.ListDnsAuthorizationsResponse.dns_authorizations:type_name -> google.cloud.certificatemanager.v1.DnsAuthorization
+	37, // 13: google.cloud.certificatemanager.v1.CreateDnsAuthorizationRequest.dns_authorization:type_name -> google.cloud.certificatemanager.v1.DnsAuthorization
+	37, // 14: google.cloud.certificatemanager.v1.UpdateDnsAuthorizationRequest.dns_authorization:type_name -> google.cloud.certificatemanager.v1.DnsAuthorization
+	57, // 15: google.cloud.certificatemanager.v1.UpdateDnsAuthorizationRequest.update_mask:type_name -> google.protobuf.FieldMask
+	58, // 16: google.cloud.certificatemanager.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	58, // 17: google.cloud.certificatemanager.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	58, // 18: google.cloud.certificatemanager.v1.Certificate.create_time:type_name -> google.protobuf.Timestamp
+	58, // 19: google.cloud.certificatemanager.v1.Certificate.update_time:type_name -> google.protobuf.Timestamp
+	42, // 20: google.cloud.certificatemanager.v1.Certificate.labels:type_name -> google.cloud.certificatemanager.v1.Certificate.LabelsEntry
+	38, // 21: google.cloud.certificatemanager.v1.Certificate.self_managed:type_name -> google.cloud.certificatemanager.v1.Certificate.SelfManagedCertificate
+	39, // 22: google.cloud.certificatemanager.v1.Certificate.managed:type_name -> google.cloud.certificatemanager.v1.Certificate.ManagedCertificate
+	40, // 23: google.cloud.certificatemanager.v1.Certificate.managed_identity:type_name -> google.cloud.certificatemanager.v1.Certificate.ManagedIdentityCertificate
+	58, // 24: google.cloud.certificatemanager.v1.Certificate.expire_time:type_name -> google.protobuf.Timestamp
+	1,  // 25: google.cloud.certificatemanager.v1.Certificate.scope:type_name -> google.cloud.certificatemanager.v1.Certificate.Scope
+	41, // 26: google.cloud.certificatemanager.v1.Certificate.used_by:type_name -> google.cloud.certificatemanager.v1.Certificate.UsedBy
+	43, // 27: google.cloud.certificatemanager.v1.Certificate.tags:type_name -> google.cloud.certificatemanager.v1.Certificate.TagsEntry
+	58, // 28: google.cloud.certificatemanager.v1.CertificateMap.create_time:type_name -> google.protobuf.Timestamp
+	58, // 29: google.cloud.certificatemanager.v1.CertificateMap.update_time:type_name -> google.protobuf.Timestamp
+	50, // 30: google.cloud.certificatemanager.v1.CertificateMap.labels:type_name -> google.cloud.certificatemanager.v1.CertificateMap.LabelsEntry
+	49, // 31: google.cloud.certificatemanager.v1.CertificateMap.gclb_targets:type_name -> google.cloud.certificatemanager.v1.CertificateMap.GclbTarget
+	51, // 32: google.cloud.certificatemanager.v1.CertificateMap.tags:type_name -> google.cloud.certificatemanager.v1.CertificateMap.TagsEntry
+	58, // 33: google.cloud.certificatemanager.v1.CertificateMapEntry.create_time:type_name -> google.protobuf.Timestamp
+	58, // 34: google.cloud.certificatemanager.v1.CertificateMapEntry.update_time:type_name -> google.protobuf.Timestamp
+	53, // 35: google.cloud.certificatemanager.v1.CertificateMapEntry.labels:type_name -> google.cloud.certificatemanager.v1.CertificateMapEntry.LabelsEntry
+	7,  // 36: google.cloud.certificatemanager.v1.CertificateMapEntry.matcher:type_name -> google.cloud.certificatemanager.v1.CertificateMapEntry.Matcher
+	0,  // 37: google.cloud.certificatemanager.v1.CertificateMapEntry.state:type_name -> google.cloud.certificatemanager.v1.ServingState
+	58, // 38: google.cloud.certificatemanager.v1.DnsAuthorization.create_time:type_name -> google.protobuf.Timestamp
+	58, // 39: google.cloud.certificatemanager.v1.DnsAuthorization.update_time:type_name -> google.protobuf.Timestamp
+	55, // 40: google.cloud.certificatemanager.v1.DnsAuthorization.labels:type_name -> google.cloud.certificatemanager.v1.DnsAuthorization.LabelsEntry
+	54, // 41: google.cloud.certificatemanager.v1.DnsAuthorization.dns_resource_record:type_name -> google.cloud.certificatemanager.v1.DnsAuthorization.DnsResourceRecord
+	8,  // 42: google.cloud.certificatemanager.v1.DnsAuthorization.type:type_name -> google.cloud.certificatemanager.v1.DnsAuthorization.Type
+	56, // 43: google.cloud.certificatemanager.v1.DnsAuthorization.tags:type_name -> google.cloud.certificatemanager.v1.DnsAuthorization.TagsEntry
+	2,  // 44: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.state:type_name -> google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.State
+	44, // 45: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.provisioning_issue:type_name -> google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.ProvisioningIssue
+	45, // 46: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.authorization_attempt_info:type_name -> google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo
+	2,  // 47: google.cloud.certificatemanager.v1.Certificate.ManagedIdentityCertificate.state:type_name -> google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.State
+	44, // 48: google.cloud.certificatemanager.v1.Certificate.ManagedIdentityCertificate.provisioning_issue:type_name -> google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.ProvisioningIssue
+	3,  // 49: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.ProvisioningIssue.reason:type_name -> google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.ProvisioningIssue.Reason
+	4,  // 50: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.state:type_name -> google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.State
+	5,  // 51: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.failure_reason:type_name -> google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.FailureReason
+	58, // 52: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.attempt_time:type_name -> google.protobuf.Timestamp
+	46, // 53: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.troubleshooting:type_name -> google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.Troubleshooting
+	6,  // 54: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.Troubleshooting.issues:type_name -> google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.Troubleshooting.Issue
+	47, // 55: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.Troubleshooting.cname:type_name -> google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.Troubleshooting.CNAME
+	48, // 56: google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.Troubleshooting.ips:type_name -> google.cloud.certificatemanager.v1.Certificate.ManagedCertificate.AuthorizationAttemptInfo.Troubleshooting.IPs
+	52, // 57: google.cloud.certificatemanager.v1.CertificateMap.GclbTarget.ip_configs:type_name -> google.cloud.certificatemanager.v1.CertificateMap.GclbTarget.IpConfig
+	9,  // 58: google.cloud.certificatemanager.v1.CertificateManager.ListCertificates:input_type -> google.cloud.certificatemanager.v1.ListCertificatesRequest
+	11, // 59: google.cloud.certificatemanager.v1.CertificateManager.GetCertificate:input_type -> google.cloud.certificatemanager.v1.GetCertificateRequest
+	12, // 60: google.cloud.certificatemanager.v1.CertificateManager.CreateCertificate:input_type -> google.cloud.certificatemanager.v1.CreateCertificateRequest
+	13, // 61: google.cloud.certificatemanager.v1.CertificateManager.UpdateCertificate:input_type -> google.cloud.certificatemanager.v1.UpdateCertificateRequest
+	14, // 62: google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificate:input_type -> google.cloud.certificatemanager.v1.DeleteCertificateRequest
+	15, // 63: google.cloud.certificatemanager.v1.CertificateManager.ListCertificateMaps:input_type -> google.cloud.certificatemanager.v1.ListCertificateMapsRequest
+	17, // 64: google.cloud.certificatemanager.v1.CertificateManager.GetCertificateMap:input_type -> google.cloud.certificatemanager.v1.GetCertificateMapRequest
+	18, // 65: google.cloud.certificatemanager.v1.CertificateManager.CreateCertificateMap:input_type -> google.cloud.certificatemanager.v1.CreateCertificateMapRequest
+	19, // 66: google.cloud.certificatemanager.v1.CertificateManager.UpdateCertificateMap:input_type -> google.cloud.certificatemanager.v1.UpdateCertificateMapRequest
+	20, // 67: google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificateMap:input_type -> google.cloud.certificatemanager.v1.DeleteCertificateMapRequest
+	21, // 68: google.cloud.certificatemanager.v1.CertificateManager.ListCertificateMapEntries:input_type -> google.cloud.certificatemanager.v1.ListCertificateMapEntriesRequest
+	23, // 69: google.cloud.certificatemanager.v1.CertificateManager.GetCertificateMapEntry:input_type -> google.cloud.certificatemanager.v1.GetCertificateMapEntryRequest
+	24, // 70: google.cloud.certificatemanager.v1.CertificateManager.CreateCertificateMapEntry:input_type -> google.cloud.certificatemanager.v1.CreateCertificateMapEntryRequest
+	25, // 71: google.cloud.certificatemanager.v1.CertificateManager.UpdateCertificateMapEntry:input_type -> google.cloud.certificatemanager.v1.UpdateCertificateMapEntryRequest
+	26, // 72: google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificateMapEntry:input_type -> google.cloud.certificatemanager.v1.DeleteCertificateMapEntryRequest
+	27, // 73: google.cloud.certificatemanager.v1.CertificateManager.ListDnsAuthorizations:input_type -> google.cloud.certificatemanager.v1.ListDnsAuthorizationsRequest
+	29, // 74: google.cloud.certificatemanager.v1.CertificateManager.GetDnsAuthorization:input_type -> google.cloud.certificatemanager.v1.GetDnsAuthorizationRequest
+	30, // 75: google.cloud.certificatemanager.v1.CertificateManager.CreateDnsAuthorization:input_type -> google.cloud.certificatemanager.v1.CreateDnsAuthorizationRequest
+	31, // 76: google.cloud.certificatemanager.v1.CertificateManager.UpdateDnsAuthorization:input_type -> google.cloud.certificatemanager.v1.UpdateDnsAuthorizationRequest
+	32, // 77: google.cloud.certificatemanager.v1.CertificateManager.DeleteDnsAuthorization:input_type -> google.cloud.certificatemanager.v1.DeleteDnsAuthorizationRequest
+	59, // 78: google.cloud.certificatemanager.v1.CertificateManager.ListCertificateIssuanceConfigs:input_type -> google.cloud.certificatemanager.v1.ListCertificateIssuanceConfigsRequest
+	60, // 79: google.cloud.certificatemanager.v1.CertificateManager.GetCertificateIssuanceConfig:input_type -> google.cloud.certificatemanager.v1.GetCertificateIssuanceConfigRequest
+	61, // 80: google.cloud.certificatemanager.v1.CertificateManager.CreateCertificateIssuanceConfig:input_type -> google.cloud.certificatemanager.v1.CreateCertificateIssuanceConfigRequest
+	62, // 81: google.cloud.certificatemanager.v1.CertificateManager.UpdateCertificateIssuanceConfig:input_type -> google.cloud.certificatemanager.v1.UpdateCertificateIssuanceConfigRequest
+	63, // 82: google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificateIssuanceConfig:input_type -> google.cloud.certificatemanager.v1.DeleteCertificateIssuanceConfigRequest
+	64, // 83: google.cloud.certificatemanager.v1.CertificateManager.ListTrustConfigs:input_type -> google.cloud.certificatemanager.v1.ListTrustConfigsRequest
+	65, // 84: google.cloud.certificatemanager.v1.CertificateManager.GetTrustConfig:input_type -> google.cloud.certificatemanager.v1.GetTrustConfigRequest
+	66, // 85: google.cloud.certificatemanager.v1.CertificateManager.CreateTrustConfig:input_type -> google.cloud.certificatemanager.v1.CreateTrustConfigRequest
+	67, // 86: google.cloud.certificatemanager.v1.CertificateManager.UpdateTrustConfig:input_type -> google.cloud.certificatemanager.v1.UpdateTrustConfigRequest
+	68, // 87: google.cloud.certificatemanager.v1.CertificateManager.DeleteTrustConfig:input_type -> google.cloud.certificatemanager.v1.DeleteTrustConfigRequest
+	10, // 88: google.cloud.certificatemanager.v1.CertificateManager.ListCertificates:output_type -> google.cloud.certificatemanager.v1.ListCertificatesResponse
+	34, // 89: google.cloud.certificatemanager.v1.CertificateManager.GetCertificate:output_type -> google.cloud.certificatemanager.v1.Certificate
+	69, // 90: google.cloud.certificatemanager.v1.CertificateManager.CreateCertificate:output_type -> google.longrunning.Operation
+	69, // 91: google.cloud.certificatemanager.v1.CertificateManager.UpdateCertificate:output_type -> google.longrunning.Operation
+	69, // 92: google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificate:output_type -> google.longrunning.Operation
+	16, // 93: google.cloud.certificatemanager.v1.CertificateManager.ListCertificateMaps:output_type -> google.cloud.certificatemanager.v1.ListCertificateMapsResponse
+	35, // 94: google.cloud.certificatemanager.v1.CertificateManager.GetCertificateMap:output_type -> google.cloud.certificatemanager.v1.CertificateMap
+	69, // 95: google.cloud.certificatemanager.v1.CertificateManager.CreateCertificateMap:output_type -> google.longrunning.Operation
+	69, // 96: google.cloud.certificatemanager.v1.CertificateManager.UpdateCertificateMap:output_type -> google.longrunning.Operation
+	69, // 97: google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificateMap:output_type -> google.longrunning.Operation
+	22, // 98: google.cloud.certificatemanager.v1.CertificateManager.ListCertificateMapEntries:output_type -> google.cloud.certificatemanager.v1.ListCertificateMapEntriesResponse
+	36, // 99: google.cloud.certificatemanager.v1.CertificateManager.GetCertificateMapEntry:output_type -> google.cloud.certificatemanager.v1.CertificateMapEntry
+	69, // 100: google.cloud.certificatemanager.v1.CertificateManager.CreateCertificateMapEntry:output_type -> google.longrunning.Operation
+	69, // 101: google.cloud.certificatemanager.v1.CertificateManager.UpdateCertificateMapEntry:output_type -> google.longrunning.Operation
+	69, // 102: google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificateMapEntry:output_type -> google.longrunning.Operation
+	28, // 103: google.cloud.certificatemanager.v1.CertificateManager.ListDnsAuthorizations:output_type -> google.cloud.certificatemanager.v1.ListDnsAuthorizationsResponse
+	37, // 104: google.cloud.certificatemanager.v1.CertificateManager.GetDnsAuthorization:output_type -> google.cloud.certificatemanager.v1.DnsAuthorization
+	69, // 105: google.cloud.certificatemanager.v1.CertificateManager.CreateDnsAuthorization:output_type -> google.longrunning.Operation
+	69, // 106: google.cloud.certificatemanager.v1.CertificateManager.UpdateDnsAuthorization:output_type -> google.longrunning.Operation
+	69, // 107: google.cloud.certificatemanager.v1.CertificateManager.DeleteDnsAuthorization:output_type -> google.longrunning.Operation
+	70, // 108: google.cloud.certificatemanager.v1.CertificateManager.ListCertificateIssuanceConfigs:output_type -> google.cloud.certificatemanager.v1.ListCertificateIssuanceConfigsResponse
+	71, // 109: google.cloud.certificatemanager.v1.CertificateManager.GetCertificateIssuanceConfig:output_type -> google.cloud.certificatemanager.v1.CertificateIssuanceConfig
+	69, // 110: google.cloud.certificatemanager.v1.CertificateManager.CreateCertificateIssuanceConfig:output_type -> google.longrunning.Operation
+	69, // 111: google.cloud.certificatemanager.v1.CertificateManager.UpdateCertificateIssuanceConfig:output_type -> google.longrunning.Operation
+	69, // 112: google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificateIssuanceConfig:output_type -> google.longrunning.Operation
+	72, // 113: google.cloud.certificatemanager.v1.CertificateManager.ListTrustConfigs:output_type -> google.cloud.certificatemanager.v1.ListTrustConfigsResponse
+	73, // 114: google.cloud.certificatemanager.v1.CertificateManager.GetTrustConfig:output_type -> google.cloud.certificatemanager.v1.TrustConfig
+	69, // 115: google.cloud.certificatemanager.v1.CertificateManager.CreateTrustConfig:output_type -> google.longrunning.Operation
+	69, // 116: google.cloud.certificatemanager.v1.CertificateManager.UpdateTrustConfig:output_type -> google.longrunning.Operation
+	69, // 117: google.cloud.certificatemanager.v1.CertificateManager.DeleteTrustConfig:output_type -> google.longrunning.Operation
+	88, // [88:118] is the sub-list for method output_type
+	58, // [58:88] is the sub-list for method input_type
+	58, // [58:58] is the sub-list for extension type_name
+	58, // [58:58] is the sub-list for extension extendee
+	0,  // [0:58] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_certificatemanager_v1_certificate_manager_proto_init() }
@@ -3657,12 +4219,13 @@ func file_google_cloud_certificatemanager_v1_certificate_manager_proto_init() {
 	file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[25].OneofWrappers = []any{
 		(*Certificate_SelfManaged)(nil),
 		(*Certificate_Managed)(nil),
+		(*Certificate_ManagedIdentity)(nil),
 	}
 	file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[27].OneofWrappers = []any{
 		(*CertificateMapEntry_Hostname)(nil),
 		(*CertificateMapEntry_Matcher_)(nil),
 	}
-	file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[34].OneofWrappers = []any{
+	file_google_cloud_certificatemanager_v1_certificate_manager_proto_msgTypes[40].OneofWrappers = []any{
 		(*CertificateMap_GclbTarget_TargetHttpsProxy)(nil),
 		(*CertificateMap_GclbTarget_TargetSslProxy)(nil),
 	}
@@ -3671,8 +4234,8 @@ func file_google_cloud_certificatemanager_v1_certificate_manager_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_certificatemanager_v1_certificate_manager_proto_rawDesc), len(file_google_cloud_certificatemanager_v1_certificate_manager_proto_rawDesc)),
-			NumEnums:      8,
-			NumMessages:   40,
+			NumEnums:      9,
+			NumMessages:   48,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

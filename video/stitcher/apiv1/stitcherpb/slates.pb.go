@@ -163,14 +163,14 @@ var File_google_cloud_video_stitcher_v1_slates_proto protoreflect.FileDescriptor
 
 const file_google_cloud_video_stitcher_v1_slates_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/video/stitcher/v1/slates.proto\x12\x1egoogle.cloud.video.stitcher.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xbb\x02\n" +
-	"\x05Slate\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x10\n" +
+	"+google/cloud/video/stitcher/v1/slates.proto\x12\x1egoogle.cloud.video.stitcher.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xbe\x02\n" +
+	"\x05Slate\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x10\n" +
 	"\x03uri\x18\x02 \x01(\tR\x03uri\x12K\n" +
-	"\tgam_slate\x18\x03 \x01(\v2..google.cloud.video.stitcher.v1.Slate.GamSlateR\bgamSlate\x1aY\n" +
-	"\bGamSlate\x12&\n" +
-	"\fnetwork_code\x18\x01 \x01(\tB\x03\xe0A\x02R\vnetworkCode\x12%\n" +
-	"\fgam_slate_id\x18\x02 \x01(\x03B\x03\xe0A\x03R\n" +
+	"\tgam_slate\x18\x03 \x01(\v2..google.cloud.video.stitcher.v1.Slate.GamSlateR\bgamSlate\x1a[\n" +
+	"\bGamSlate\x12'\n" +
+	"\fnetwork_code\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vnetworkCode\x12&\n" +
+	"\fgam_slate_id\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\n" +
 	"gamSlateId:_\xeaA\\\n" +
 	"\"videostitcher.googleapis.com/Slate\x126projects/{project}/locations/{location}/slates/{slate}Bs\n" +
 	"\"com.google.cloud.video.stitcher.v1B\vSlatesProtoP\x01Z>cloud.google.com/go/video/stitcher/apiv1/stitcherpb;stitcherpbb\x06proto3"

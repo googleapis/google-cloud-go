@@ -1083,37 +1083,37 @@ var File_google_cloud_discoveryengine_v1alpha_document_service_proto protoreflec
 
 const file_google_cloud_discoveryengine_v1alpha_document_service_proto_rawDesc = "" +
 	"\n" +
-	";google/cloud/discoveryengine/v1alpha/document_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a3google/cloud/discoveryengine/v1alpha/document.proto\x1a8google/cloud/discoveryengine/v1alpha/import_config.proto\x1a7google/cloud/discoveryengine/v1alpha/purge_config.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"Y\n" +
-	"\x12GetDocumentRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'discoveryengine.googleapis.com/DocumentR\x04name\"\x99\x01\n" +
-	"\x14ListDocumentsRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	";google/cloud/discoveryengine/v1alpha/document_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a3google/cloud/discoveryengine/v1alpha/document.proto\x1a8google/cloud/discoveryengine/v1alpha/import_config.proto\x1a7google/cloud/discoveryengine/v1alpha/purge_config.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"Z\n" +
+	"\x12GetDocumentRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'discoveryengine.googleapis.com/DocumentR\x04name\"\x9a\x01\n" +
+	"\x14ListDocumentsRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%discoveryengine.googleapis.com/BranchR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x8d\x01\n" +
 	"\x15ListDocumentsResponse\x12L\n" +
 	"\tdocuments\x18\x01 \x03(\v2..google.cloud.discoveryengine.v1alpha.DocumentR\tdocuments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd5\x01\n" +
-	"\x15CreateDocumentRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%discoveryengine.googleapis.com/BranchR\x06parent\x12O\n" +
-	"\bdocument\x18\x02 \x01(\v2..google.cloud.discoveryengine.v1alpha.DocumentB\x03\xe0A\x02R\bdocument\x12$\n" +
-	"\vdocument_id\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
-	"documentId\"\xca\x01\n" +
-	"\x15UpdateDocumentRequest\x12O\n" +
-	"\bdocument\x18\x01 \x01(\v2..google.cloud.discoveryengine.v1alpha.DocumentB\x03\xe0A\x02R\bdocument\x12#\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd8\x01\n" +
+	"\x15CreateDocumentRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%discoveryengine.googleapis.com/BranchR\x06parent\x12P\n" +
+	"\bdocument\x18\x02 \x01(\v2..google.cloud.discoveryengine.v1alpha.DocumentB\x04\xe2A\x01\x02R\bdocument\x12%\n" +
+	"\vdocument_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"documentId\"\xcb\x01\n" +
+	"\x15UpdateDocumentRequest\x12P\n" +
+	"\bdocument\x18\x01 \x01(\v2..google.cloud.discoveryengine.v1alpha.DocumentB\x04\xe2A\x01\x02R\bdocument\x12#\n" +
 	"\rallow_missing\x18\x02 \x01(\bR\fallowMissing\x12;\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\\\n" +
-	"\x15DeleteDocumentRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'discoveryengine.googleapis.com/DocumentR\x04name\"\xeb\x04\n" +
-	"\x1bGetProcessedDocumentRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'discoveryengine.googleapis.com/DocumentR\x04name\x12\x94\x01\n" +
-	"\x17processed_document_type\x18\x02 \x01(\x0e2W.google.cloud.discoveryengine.v1alpha.GetProcessedDocumentRequest.ProcessedDocumentTypeB\x03\xe0A\x02R\x15processedDocumentType\x12\x95\x01\n" +
+	"updateMask\"]\n" +
+	"\x15DeleteDocumentRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'discoveryengine.googleapis.com/DocumentR\x04name\"\xed\x04\n" +
+	"\x1bGetProcessedDocumentRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'discoveryengine.googleapis.com/DocumentR\x04name\x12\x95\x01\n" +
+	"\x17processed_document_type\x18\x02 \x01(\x0e2W.google.cloud.discoveryengine.v1alpha.GetProcessedDocumentRequest.ProcessedDocumentTypeB\x04\xe2A\x01\x02R\x15processedDocumentType\x12\x95\x01\n" +
 	"\x19processed_document_format\x18\x03 \x01(\x0e2Y.google.cloud.discoveryengine.v1alpha.GetProcessedDocumentRequest.ProcessedDocumentFormatR\x17processedDocumentFormat\"\x87\x01\n" +
 	"\x15ProcessedDocumentType\x12'\n" +
 	"#PROCESSED_DOCUMENT_TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
@@ -1122,11 +1122,11 @@ const file_google_cloud_discoveryengine_v1alpha_document_service_proto_rawDesc =
 	"\x16PNG_CONVERTED_DOCUMENT\x10\x03\"N\n" +
 	"\x17ProcessedDocumentFormat\x12)\n" +
 	"%PROCESSED_DOCUMENT_FORMAT_UNSPECIFIED\x10\x00\x12\b\n" +
-	"\x04JSON\x10\x01\"\x8b\x03\n" +
-	" BatchGetDocumentsMetadataRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%discoveryengine.googleapis.com/BranchR\x06parent\x12m\n" +
-	"\amatcher\x18\x02 \x01(\v2N.google.cloud.discoveryengine.v1alpha.BatchGetDocumentsMetadataRequest.MatcherB\x03\xe0A\x02R\amatcher\x1a!\n" +
+	"\x04JSON\x10\x01\"\x8d\x03\n" +
+	" BatchGetDocumentsMetadataRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%discoveryengine.googleapis.com/BranchR\x06parent\x12n\n" +
+	"\amatcher\x18\x02 \x01(\v2N.google.cloud.discoveryengine.v1alpha.BatchGetDocumentsMetadataRequest.MatcherB\x04\xe2A\x01\x02R\amatcher\x1a!\n" +
 	"\vUrisMatcher\x12\x12\n" +
 	"\x04uris\x18\x01 \x03(\tR\x04uris\x1a\x8d\x01\n" +
 	"\aMatcher\x12w\n" +

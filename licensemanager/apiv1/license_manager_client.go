@@ -591,6 +591,69 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "licensemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/licensemanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "licensemanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListConfigurations = append(client.CallOptions.ListConfigurations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetConfiguration = append(client.CallOptions.GetConfiguration, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateConfiguration = append(client.CallOptions.CreateConfiguration, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateConfiguration = append(client.CallOptions.UpdateConfiguration, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteConfiguration = append(client.CallOptions.DeleteConfiguration, gax.WithClientTracing(tracing))
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientTracing(tracing))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.DeactivateConfiguration = append(client.CallOptions.DeactivateConfiguration, gax.WithClientTracing(tracing))
+		client.CallOptions.ReactivateConfiguration = append(client.CallOptions.ReactivateConfiguration, gax.WithClientTracing(tracing))
+		client.CallOptions.QueryConfigurationLicenseUsage = append(client.CallOptions.QueryConfigurationLicenseUsage, gax.WithClientTracing(tracing))
+		client.CallOptions.AggregateUsage = append(client.CallOptions.AggregateUsage, gax.WithClientTracing(tracing))
+		client.CallOptions.ListProducts = append(client.CallOptions.ListProducts, gax.WithClientTracing(tracing))
+		client.CallOptions.GetProduct = append(client.CallOptions.GetProduct, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "licensemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/licensemanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "licensemanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListConfigurations = append(client.CallOptions.ListConfigurations, gax.WithClientLogging(logging))
+		client.CallOptions.GetConfiguration = append(client.CallOptions.GetConfiguration, gax.WithClientLogging(logging))
+		client.CallOptions.CreateConfiguration = append(client.CallOptions.CreateConfiguration, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateConfiguration = append(client.CallOptions.UpdateConfiguration, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteConfiguration = append(client.CallOptions.DeleteConfiguration, gax.WithClientLogging(logging))
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientLogging(logging))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientLogging(logging))
+		client.CallOptions.DeactivateConfiguration = append(client.CallOptions.DeactivateConfiguration, gax.WithClientLogging(logging))
+		client.CallOptions.ReactivateConfiguration = append(client.CallOptions.ReactivateConfiguration, gax.WithClientLogging(logging))
+		client.CallOptions.QueryConfigurationLicenseUsage = append(client.CallOptions.QueryConfigurationLicenseUsage, gax.WithClientLogging(logging))
+		client.CallOptions.AggregateUsage = append(client.CallOptions.AggregateUsage, gax.WithClientLogging(logging))
+		client.CallOptions.ListProducts = append(client.CallOptions.ListProducts, gax.WithClientLogging(logging))
+		client.CallOptions.GetProduct = append(client.CallOptions.GetProduct, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -716,6 +779,69 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "licensemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/licensemanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "licensemanager.googleapis.com",
+			}),
+		)
+
+		callOpts.ListConfigurations = append(callOpts.ListConfigurations, gax.WithClientTracing(tracing))
+		callOpts.GetConfiguration = append(callOpts.GetConfiguration, gax.WithClientTracing(tracing))
+		callOpts.CreateConfiguration = append(callOpts.CreateConfiguration, gax.WithClientTracing(tracing))
+		callOpts.UpdateConfiguration = append(callOpts.UpdateConfiguration, gax.WithClientTracing(tracing))
+		callOpts.DeleteConfiguration = append(callOpts.DeleteConfiguration, gax.WithClientTracing(tracing))
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientTracing(tracing))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientTracing(tracing))
+		callOpts.DeactivateConfiguration = append(callOpts.DeactivateConfiguration, gax.WithClientTracing(tracing))
+		callOpts.ReactivateConfiguration = append(callOpts.ReactivateConfiguration, gax.WithClientTracing(tracing))
+		callOpts.QueryConfigurationLicenseUsage = append(callOpts.QueryConfigurationLicenseUsage, gax.WithClientTracing(tracing))
+		callOpts.AggregateUsage = append(callOpts.AggregateUsage, gax.WithClientTracing(tracing))
+		callOpts.ListProducts = append(callOpts.ListProducts, gax.WithClientTracing(tracing))
+		callOpts.GetProduct = append(callOpts.GetProduct, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "licensemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/licensemanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "licensemanager.googleapis.com",
+			}),
+		)
+
+		callOpts.ListConfigurations = append(callOpts.ListConfigurations, gax.WithClientLogging(logging))
+		callOpts.GetConfiguration = append(callOpts.GetConfiguration, gax.WithClientLogging(logging))
+		callOpts.CreateConfiguration = append(callOpts.CreateConfiguration, gax.WithClientLogging(logging))
+		callOpts.UpdateConfiguration = append(callOpts.UpdateConfiguration, gax.WithClientLogging(logging))
+		callOpts.DeleteConfiguration = append(callOpts.DeleteConfiguration, gax.WithClientLogging(logging))
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientLogging(logging))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientLogging(logging))
+		callOpts.DeactivateConfiguration = append(callOpts.DeactivateConfiguration, gax.WithClientLogging(logging))
+		callOpts.ReactivateConfiguration = append(callOpts.ReactivateConfiguration, gax.WithClientLogging(logging))
+		callOpts.QueryConfigurationLicenseUsage = append(callOpts.QueryConfigurationLicenseUsage, gax.WithClientLogging(logging))
+		callOpts.AggregateUsage = append(callOpts.AggregateUsage, gax.WithClientLogging(logging))
+		callOpts.ListProducts = append(callOpts.ListProducts, gax.WithClientLogging(logging))
+		callOpts.GetProduct = append(callOpts.GetProduct, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -772,9 +898,6 @@ func (c *gRPCClient) ListConfigurations(ctx context.Context, req *licensemanager
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/ListConfigurations")
 	}
@@ -824,9 +947,6 @@ func (c *gRPCClient) GetConfiguration(ctx context.Context, req *licensemanagerpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/GetConfiguration")
 	}
@@ -848,9 +968,6 @@ func (c *gRPCClient) CreateConfiguration(ctx context.Context, req *licensemanage
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/CreateConfiguration")
 	}
@@ -905,9 +1022,6 @@ func (c *gRPCClient) DeleteConfiguration(ctx context.Context, req *licensemanage
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/DeleteConfiguration")
 	}
@@ -935,9 +1049,6 @@ func (c *gRPCClient) ListInstances(ctx context.Context, req *licensemanagerpb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/ListInstances")
 	}
@@ -987,9 +1098,6 @@ func (c *gRPCClient) GetInstance(ctx context.Context, req *licensemanagerpb.GetI
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/GetInstance")
 	}
@@ -1011,9 +1119,6 @@ func (c *gRPCClient) DeactivateConfiguration(ctx context.Context, req *licensema
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/DeactivateConfiguration")
 	}
@@ -1041,9 +1146,6 @@ func (c *gRPCClient) ReactivateConfiguration(ctx context.Context, req *licensema
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/ReactivateConfiguration")
 	}
@@ -1071,9 +1173,6 @@ func (c *gRPCClient) QueryConfigurationLicenseUsage(ctx context.Context, req *li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/QueryConfigurationLicenseUsage")
 	}
@@ -1095,9 +1194,6 @@ func (c *gRPCClient) AggregateUsage(ctx context.Context, req *licensemanagerpb.A
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/AggregateUsage")
 	}
@@ -1147,9 +1243,6 @@ func (c *gRPCClient) ListProducts(ctx context.Context, req *licensemanagerpb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/ListProducts")
 	}
@@ -1199,9 +1292,6 @@ func (c *gRPCClient) GetProduct(ctx context.Context, req *licensemanagerpb.GetPr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/GetProduct")
 	}
@@ -1411,6 +1501,11 @@ func (c *restClient) ListConfigurations(ctx context.Context, req *licensemanager
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/configurations", req.GetParent())
 
 		params := url.Values{}
@@ -1482,6 +1577,11 @@ func (c *restClient) GetConfiguration(ctx context.Context, req *licensemanagerpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1495,9 +1595,6 @@ func (c *restClient) GetConfiguration(ctx context.Context, req *licensemanagerpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/GetConfiguration")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/configurations/*}")
@@ -1546,6 +1643,11 @@ func (c *restClient) CreateConfiguration(ctx context.Context, req *licensemanage
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/configurations", req.GetParent())
 
 	params := url.Values{}
@@ -1563,9 +1665,6 @@ func (c *restClient) CreateConfiguration(ctx context.Context, req *licensemanage
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/CreateConfiguration")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/configurations")
@@ -1619,6 +1718,11 @@ func (c *restClient) UpdateConfiguration(ctx context.Context, req *licensemanage
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetConfiguration().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetConfiguration().GetName())
@@ -1692,6 +1796,11 @@ func (c *restClient) DeleteConfiguration(ctx context.Context, req *licensemanage
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1708,9 +1817,6 @@ func (c *restClient) DeleteConfiguration(ctx context.Context, req *licensemanage
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/DeleteConfiguration")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/configurations/*}")
@@ -1770,6 +1876,11 @@ func (c *restClient) ListInstances(ctx context.Context, req *licensemanagerpb.Li
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/instances", req.GetParent())
@@ -1843,6 +1954,11 @@ func (c *restClient) GetInstance(ctx context.Context, req *licensemanagerpb.GetI
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1856,9 +1972,6 @@ func (c *restClient) GetInstance(ctx context.Context, req *licensemanagerpb.GetI
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/GetInstance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*}")
@@ -1906,6 +2019,11 @@ func (c *restClient) DeactivateConfiguration(ctx context.Context, req *licensema
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:deactivate", req.GetName())
 
 	params := url.Values{}
@@ -1919,9 +2037,6 @@ func (c *restClient) DeactivateConfiguration(ctx context.Context, req *licensema
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/DeactivateConfiguration")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/configurations/*}:deactivate")
@@ -1976,6 +2091,11 @@ func (c *restClient) ReactivateConfiguration(ctx context.Context, req *licensema
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:reactivate", req.GetName())
 
 	params := url.Values{}
@@ -1989,9 +2109,6 @@ func (c *restClient) ReactivateConfiguration(ctx context.Context, req *licensema
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/ReactivateConfiguration")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/configurations/*}:reactivate")
@@ -2040,6 +2157,11 @@ func (c *restClient) QueryConfigurationLicenseUsage(ctx context.Context, req *li
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:queryLicenseUsage", req.GetName())
 
 	params := url.Values{}
@@ -2067,9 +2189,6 @@ func (c *restClient) QueryConfigurationLicenseUsage(ctx context.Context, req *li
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/QueryConfigurationLicenseUsage")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/configurations/*}:queryLicenseUsage")
@@ -2122,6 +2241,11 @@ func (c *restClient) AggregateUsage(ctx context.Context, req *licensemanagerpb.A
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:aggregateUsage", req.GetName())
@@ -2222,6 +2346,11 @@ func (c *restClient) ListProducts(ctx context.Context, req *licensemanagerpb.Lis
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/products", req.GetParent())
 
 		params := url.Values{}
@@ -2293,6 +2422,11 @@ func (c *restClient) GetProduct(ctx context.Context, req *licensemanagerpb.GetPr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2306,9 +2440,6 @@ func (c *restClient) GetProduct(ctx context.Context, req *licensemanagerpb.GetPr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/GetProduct")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/products/*}")
@@ -2348,6 +2479,11 @@ func (c *restClient) GetProduct(ctx context.Context, req *licensemanagerpb.GetPr
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2415,6 +2551,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -2491,6 +2632,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2530,6 +2676,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2567,6 +2718,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2634,6 +2790,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

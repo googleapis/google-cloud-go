@@ -106,11 +106,11 @@ var File_google_shopping_merchant_accounts_v1_customerservice_proto protoreflect
 
 const file_google_shopping_merchant_accounts_v1_customerservice_proto_rawDesc = "" +
 	"\n" +
-	":google/shopping/merchant/accounts/v1/customerservice.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/type/phone_number.proto\"\xa3\x01\n" +
-	"\x0fCustomerService\x12\x1a\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\x03uri\x88\x01\x01\x12\x1e\n" +
-	"\x05email\x18\x02 \x01(\tB\x03\xe0A\x01H\x01R\x05email\x88\x01\x01\x128\n" +
-	"\x05phone\x18\x03 \x01(\v2\x18.google.type.PhoneNumberB\x03\xe0A\x01H\x02R\x05phone\x88\x01\x01B\x06\n" +
+	":google/shopping/merchant/accounts/v1/customerservice.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/type/phone_number.proto\"\xa6\x01\n" +
+	"\x0fCustomerService\x12\x1b\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\x03uri\x88\x01\x01\x12\x1f\n" +
+	"\x05email\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x01R\x05email\x88\x01\x01\x129\n" +
+	"\x05phone\x18\x03 \x01(\v2\x18.google.type.PhoneNumberB\x04\xe2A\x01\x01H\x02R\x05phone\x88\x01\x01B\x06\n" +
 	"\x04_uriB\b\n" +
 	"\x06_emailB\b\n" +
 	"\x06_phoneB\x87\x02\n" +

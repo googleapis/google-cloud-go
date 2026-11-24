@@ -420,6 +420,53 @@ func NewMonitoringClient(ctx context.Context, opts ...option.ClientOption) (*Mon
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudsecuritycompliance",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudsecuritycompliance/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudsecuritycompliance.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListFrameworkComplianceSummaries = append(client.CallOptions.ListFrameworkComplianceSummaries, gax.WithClientTracing(tracing))
+		client.CallOptions.ListFindingSummaries = append(client.CallOptions.ListFindingSummaries, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchFrameworkComplianceReport = append(client.CallOptions.FetchFrameworkComplianceReport, gax.WithClientTracing(tracing))
+		client.CallOptions.ListControlComplianceSummaries = append(client.CallOptions.ListControlComplianceSummaries, gax.WithClientTracing(tracing))
+		client.CallOptions.AggregateFrameworkComplianceReport = append(client.CallOptions.AggregateFrameworkComplianceReport, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudsecuritycompliance",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudsecuritycompliance/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudsecuritycompliance.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListFrameworkComplianceSummaries = append(client.CallOptions.ListFrameworkComplianceSummaries, gax.WithClientLogging(logging))
+		client.CallOptions.ListFindingSummaries = append(client.CallOptions.ListFindingSummaries, gax.WithClientLogging(logging))
+		client.CallOptions.FetchFrameworkComplianceReport = append(client.CallOptions.FetchFrameworkComplianceReport, gax.WithClientLogging(logging))
+		client.CallOptions.ListControlComplianceSummaries = append(client.CallOptions.ListControlComplianceSummaries, gax.WithClientLogging(logging))
+		client.CallOptions.AggregateFrameworkComplianceReport = append(client.CallOptions.AggregateFrameworkComplianceReport, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -521,6 +568,53 @@ func NewMonitoringRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudsecuritycompliance",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudsecuritycompliance/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudsecuritycompliance.googleapis.com",
+			}),
+		)
+
+		callOpts.ListFrameworkComplianceSummaries = append(callOpts.ListFrameworkComplianceSummaries, gax.WithClientTracing(tracing))
+		callOpts.ListFindingSummaries = append(callOpts.ListFindingSummaries, gax.WithClientTracing(tracing))
+		callOpts.FetchFrameworkComplianceReport = append(callOpts.FetchFrameworkComplianceReport, gax.WithClientTracing(tracing))
+		callOpts.ListControlComplianceSummaries = append(callOpts.ListControlComplianceSummaries, gax.WithClientTracing(tracing))
+		callOpts.AggregateFrameworkComplianceReport = append(callOpts.AggregateFrameworkComplianceReport, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudsecuritycompliance",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudsecuritycompliance/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudsecuritycompliance.googleapis.com",
+			}),
+		)
+
+		callOpts.ListFrameworkComplianceSummaries = append(callOpts.ListFrameworkComplianceSummaries, gax.WithClientLogging(logging))
+		callOpts.ListFindingSummaries = append(callOpts.ListFindingSummaries, gax.WithClientLogging(logging))
+		callOpts.FetchFrameworkComplianceReport = append(callOpts.FetchFrameworkComplianceReport, gax.WithClientLogging(logging))
+		callOpts.ListControlComplianceSummaries = append(callOpts.ListControlComplianceSummaries, gax.WithClientLogging(logging))
+		callOpts.AggregateFrameworkComplianceReport = append(callOpts.AggregateFrameworkComplianceReport, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &MonitoringClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -567,9 +661,6 @@ func (c *monitoringGRPCClient) ListFrameworkComplianceSummaries(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsecuritycompliance.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudsecuritycompliance.v1.Monitoring/ListFrameworkComplianceSummaries")
 	}
@@ -619,9 +710,6 @@ func (c *monitoringGRPCClient) ListFindingSummaries(ctx context.Context, req *cl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsecuritycompliance.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudsecuritycompliance.v1.Monitoring/ListFindingSummaries")
 	}
@@ -671,9 +759,6 @@ func (c *monitoringGRPCClient) FetchFrameworkComplianceReport(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsecuritycompliance.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudsecuritycompliance.v1.Monitoring/FetchFrameworkComplianceReport")
 	}
@@ -695,9 +780,6 @@ func (c *monitoringGRPCClient) ListControlComplianceSummaries(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsecuritycompliance.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudsecuritycompliance.v1.Monitoring/ListControlComplianceSummaries")
 	}
@@ -747,9 +829,6 @@ func (c *monitoringGRPCClient) AggregateFrameworkComplianceReport(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsecuritycompliance.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudsecuritycompliance.v1.Monitoring/AggregateFrameworkComplianceReport")
 	}
@@ -959,6 +1038,11 @@ func (c *monitoringRESTClient) ListFrameworkComplianceSummaries(ctx context.Cont
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/frameworkComplianceSummaries", req.GetParent())
 
 		params := url.Values{}
@@ -1043,6 +1127,11 @@ func (c *monitoringRESTClient) ListFindingSummaries(ctx context.Context, req *cl
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/findingSummaries", req.GetParent())
 
 		params := url.Values{}
@@ -1118,6 +1207,11 @@ func (c *monitoringRESTClient) FetchFrameworkComplianceReport(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:fetch", req.GetName())
 
 	params := url.Values{}
@@ -1141,9 +1235,6 @@ func (c *monitoringRESTClient) FetchFrameworkComplianceReport(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsecuritycompliance.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudsecuritycompliance.v1.Monitoring/FetchFrameworkComplianceReport")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=organizations/*/locations/*/frameworkComplianceReports/*}:fetch")
@@ -1196,6 +1287,11 @@ func (c *monitoringRESTClient) ListControlComplianceSummaries(ctx context.Contex
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/controlComplianceSummaries", req.GetParent())
@@ -1273,6 +1369,11 @@ func (c *monitoringRESTClient) AggregateFrameworkComplianceReport(ctx context.Co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:aggregate", req.GetName())
 
 	params := url.Values{}
@@ -1303,9 +1404,6 @@ func (c *monitoringRESTClient) AggregateFrameworkComplianceReport(ctx context.Co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsecuritycompliance.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudsecuritycompliance.v1.Monitoring/AggregateFrameworkComplianceReport")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=organizations/*/locations/*/frameworkComplianceReports/*}:aggregate")
@@ -1345,6 +1443,11 @@ func (c *monitoringRESTClient) AggregateFrameworkComplianceReport(ctx context.Co
 func (c *monitoringRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1429,6 +1532,11 @@ func (c *monitoringRESTClient) ListLocations(ctx context.Context, req *locationp
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1503,6 +1611,11 @@ func (c *monitoringRESTClient) CancelOperation(ctx context.Context, req *longrun
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1542,6 +1655,11 @@ func (c *monitoringRESTClient) DeleteOperation(ctx context.Context, req *longrun
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1579,6 +1697,11 @@ func (c *monitoringRESTClient) DeleteOperation(ctx context.Context, req *longrun
 func (c *monitoringRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1646,6 +1769,11 @@ func (c *monitoringRESTClient) ListOperations(ctx context.Context, req *longrunn
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

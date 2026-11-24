@@ -911,10 +911,10 @@ const file_google_cloud_talent_v4beta1_filters_proto_rawDesc = "" +
 	"\"TELECOMMUTE_PREFERENCE_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x14TELECOMMUTE_EXCLUDED\x10\x01\x1a\x02\b\x01\x12\x17\n" +
 	"\x13TELECOMMUTE_ALLOWED\x10\x02\x12\x1d\n" +
-	"\x19TELECOMMUTE_JOBS_EXCLUDED\x10\x03\"\x8b\x04\n" +
-	"\x12CompensationFilter\x12S\n" +
-	"\x04type\x18\x01 \x01(\x0e2:.google.cloud.talent.v4beta1.CompensationFilter.FilterTypeB\x03\xe0A\x02R\x04type\x12Y\n" +
-	"\x05units\x18\x02 \x03(\x0e2>.google.cloud.talent.v4beta1.CompensationInfo.CompensationUnitB\x03\xe0A\x02R\x05units\x12U\n" +
+	"\x19TELECOMMUTE_JOBS_EXCLUDED\x10\x03\"\x8d\x04\n" +
+	"\x12CompensationFilter\x12T\n" +
+	"\x04type\x18\x01 \x01(\x0e2:.google.cloud.talent.v4beta1.CompensationFilter.FilterTypeB\x04\xe2A\x01\x02R\x04type\x12Z\n" +
+	"\x05units\x18\x02 \x03(\x0e2>.google.cloud.talent.v4beta1.CompensationInfo.CompensationUnitB\x04\xe2A\x01\x02R\x05units\x12U\n" +
 	"\x05range\x18\x03 \x01(\v2?.google.cloud.talent.v4beta1.CompensationInfo.CompensationRangeR\x05range\x12e\n" +
 	"0include_jobs_with_unspecified_compensation_range\x18\x04 \x01(\bR+includeJobsWithUnspecifiedCompensationRange\"\x86\x01\n" +
 	"\n" +
@@ -923,11 +923,11 @@ const file_google_cloud_talent_v4beta1_filters_proto_rawDesc = "" +
 	"\tUNIT_ONLY\x10\x01\x12\x13\n" +
 	"\x0fUNIT_AND_AMOUNT\x10\x02\x12\x1a\n" +
 	"\x16ANNUALIZED_BASE_AMOUNT\x10\x03\x12\x1b\n" +
-	"\x17ANNUALIZED_TOTAL_AMOUNT\x10\x04\"\xb1\x04\n" +
-	"\rCommuteFilter\x12V\n" +
-	"\x0ecommute_method\x18\x01 \x01(\x0e2*.google.cloud.talent.v4beta1.CommuteMethodB\x03\xe0A\x02R\rcommuteMethod\x12E\n" +
-	"\x11start_coordinates\x18\x02 \x01(\v2\x13.google.type.LatLngB\x03\xe0A\x02R\x10startCoordinates\x12G\n" +
-	"\x0ftravel_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x0etravelDuration\x12:\n" +
+	"\x17ANNUALIZED_TOTAL_AMOUNT\x10\x04\"\xb4\x04\n" +
+	"\rCommuteFilter\x12W\n" +
+	"\x0ecommute_method\x18\x01 \x01(\x0e2*.google.cloud.talent.v4beta1.CommuteMethodB\x04\xe2A\x01\x02R\rcommuteMethod\x12F\n" +
+	"\x11start_coordinates\x18\x02 \x01(\v2\x13.google.type.LatLngB\x04\xe2A\x01\x02R\x10startCoordinates\x12H\n" +
+	"\x0ftravel_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\x0etravelDuration\x12:\n" +
 	"\x19allow_imprecise_addresses\x18\x04 \x01(\bR\x17allowImpreciseAddresses\x12[\n" +
 	"\froad_traffic\x18\x05 \x01(\x0e26.google.cloud.talent.v4beta1.CommuteFilter.RoadTrafficH\x00R\vroadTraffic\x12?\n" +
 	"\x0edeparture_time\x18\x06 \x01(\v2\x16.google.type.TimeOfDayH\x00R\rdepartureTime\"L\n" +

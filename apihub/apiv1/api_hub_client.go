@@ -973,6 +973,119 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "apihub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apihub/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apihub.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateApi = append(callOpts.CreateApi, gax.WithClientTracing(tracing))
+		callOpts.GetApi = append(callOpts.GetApi, gax.WithClientTracing(tracing))
+		callOpts.ListApis = append(callOpts.ListApis, gax.WithClientTracing(tracing))
+		callOpts.UpdateApi = append(callOpts.UpdateApi, gax.WithClientTracing(tracing))
+		callOpts.DeleteApi = append(callOpts.DeleteApi, gax.WithClientTracing(tracing))
+		callOpts.CreateVersion = append(callOpts.CreateVersion, gax.WithClientTracing(tracing))
+		callOpts.GetVersion = append(callOpts.GetVersion, gax.WithClientTracing(tracing))
+		callOpts.ListVersions = append(callOpts.ListVersions, gax.WithClientTracing(tracing))
+		callOpts.UpdateVersion = append(callOpts.UpdateVersion, gax.WithClientTracing(tracing))
+		callOpts.DeleteVersion = append(callOpts.DeleteVersion, gax.WithClientTracing(tracing))
+		callOpts.CreateSpec = append(callOpts.CreateSpec, gax.WithClientTracing(tracing))
+		callOpts.GetSpec = append(callOpts.GetSpec, gax.WithClientTracing(tracing))
+		callOpts.GetSpecContents = append(callOpts.GetSpecContents, gax.WithClientTracing(tracing))
+		callOpts.ListSpecs = append(callOpts.ListSpecs, gax.WithClientTracing(tracing))
+		callOpts.UpdateSpec = append(callOpts.UpdateSpec, gax.WithClientTracing(tracing))
+		callOpts.DeleteSpec = append(callOpts.DeleteSpec, gax.WithClientTracing(tracing))
+		callOpts.CreateApiOperation = append(callOpts.CreateApiOperation, gax.WithClientTracing(tracing))
+		callOpts.GetApiOperation = append(callOpts.GetApiOperation, gax.WithClientTracing(tracing))
+		callOpts.ListApiOperations = append(callOpts.ListApiOperations, gax.WithClientTracing(tracing))
+		callOpts.UpdateApiOperation = append(callOpts.UpdateApiOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteApiOperation = append(callOpts.DeleteApiOperation, gax.WithClientTracing(tracing))
+		callOpts.GetDefinition = append(callOpts.GetDefinition, gax.WithClientTracing(tracing))
+		callOpts.CreateDeployment = append(callOpts.CreateDeployment, gax.WithClientTracing(tracing))
+		callOpts.GetDeployment = append(callOpts.GetDeployment, gax.WithClientTracing(tracing))
+		callOpts.ListDeployments = append(callOpts.ListDeployments, gax.WithClientTracing(tracing))
+		callOpts.UpdateDeployment = append(callOpts.UpdateDeployment, gax.WithClientTracing(tracing))
+		callOpts.DeleteDeployment = append(callOpts.DeleteDeployment, gax.WithClientTracing(tracing))
+		callOpts.CreateAttribute = append(callOpts.CreateAttribute, gax.WithClientTracing(tracing))
+		callOpts.GetAttribute = append(callOpts.GetAttribute, gax.WithClientTracing(tracing))
+		callOpts.UpdateAttribute = append(callOpts.UpdateAttribute, gax.WithClientTracing(tracing))
+		callOpts.DeleteAttribute = append(callOpts.DeleteAttribute, gax.WithClientTracing(tracing))
+		callOpts.ListAttributes = append(callOpts.ListAttributes, gax.WithClientTracing(tracing))
+		callOpts.SearchResources = append(callOpts.SearchResources, gax.WithClientTracing(tracing))
+		callOpts.CreateExternalApi = append(callOpts.CreateExternalApi, gax.WithClientTracing(tracing))
+		callOpts.GetExternalApi = append(callOpts.GetExternalApi, gax.WithClientTracing(tracing))
+		callOpts.UpdateExternalApi = append(callOpts.UpdateExternalApi, gax.WithClientTracing(tracing))
+		callOpts.DeleteExternalApi = append(callOpts.DeleteExternalApi, gax.WithClientTracing(tracing))
+		callOpts.ListExternalApis = append(callOpts.ListExternalApis, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "apihub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apihub/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apihub.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateApi = append(callOpts.CreateApi, gax.WithClientLogging(logging))
+		callOpts.GetApi = append(callOpts.GetApi, gax.WithClientLogging(logging))
+		callOpts.ListApis = append(callOpts.ListApis, gax.WithClientLogging(logging))
+		callOpts.UpdateApi = append(callOpts.UpdateApi, gax.WithClientLogging(logging))
+		callOpts.DeleteApi = append(callOpts.DeleteApi, gax.WithClientLogging(logging))
+		callOpts.CreateVersion = append(callOpts.CreateVersion, gax.WithClientLogging(logging))
+		callOpts.GetVersion = append(callOpts.GetVersion, gax.WithClientLogging(logging))
+		callOpts.ListVersions = append(callOpts.ListVersions, gax.WithClientLogging(logging))
+		callOpts.UpdateVersion = append(callOpts.UpdateVersion, gax.WithClientLogging(logging))
+		callOpts.DeleteVersion = append(callOpts.DeleteVersion, gax.WithClientLogging(logging))
+		callOpts.CreateSpec = append(callOpts.CreateSpec, gax.WithClientLogging(logging))
+		callOpts.GetSpec = append(callOpts.GetSpec, gax.WithClientLogging(logging))
+		callOpts.GetSpecContents = append(callOpts.GetSpecContents, gax.WithClientLogging(logging))
+		callOpts.ListSpecs = append(callOpts.ListSpecs, gax.WithClientLogging(logging))
+		callOpts.UpdateSpec = append(callOpts.UpdateSpec, gax.WithClientLogging(logging))
+		callOpts.DeleteSpec = append(callOpts.DeleteSpec, gax.WithClientLogging(logging))
+		callOpts.CreateApiOperation = append(callOpts.CreateApiOperation, gax.WithClientLogging(logging))
+		callOpts.GetApiOperation = append(callOpts.GetApiOperation, gax.WithClientLogging(logging))
+		callOpts.ListApiOperations = append(callOpts.ListApiOperations, gax.WithClientLogging(logging))
+		callOpts.UpdateApiOperation = append(callOpts.UpdateApiOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteApiOperation = append(callOpts.DeleteApiOperation, gax.WithClientLogging(logging))
+		callOpts.GetDefinition = append(callOpts.GetDefinition, gax.WithClientLogging(logging))
+		callOpts.CreateDeployment = append(callOpts.CreateDeployment, gax.WithClientLogging(logging))
+		callOpts.GetDeployment = append(callOpts.GetDeployment, gax.WithClientLogging(logging))
+		callOpts.ListDeployments = append(callOpts.ListDeployments, gax.WithClientLogging(logging))
+		callOpts.UpdateDeployment = append(callOpts.UpdateDeployment, gax.WithClientLogging(logging))
+		callOpts.DeleteDeployment = append(callOpts.DeleteDeployment, gax.WithClientLogging(logging))
+		callOpts.CreateAttribute = append(callOpts.CreateAttribute, gax.WithClientLogging(logging))
+		callOpts.GetAttribute = append(callOpts.GetAttribute, gax.WithClientLogging(logging))
+		callOpts.UpdateAttribute = append(callOpts.UpdateAttribute, gax.WithClientLogging(logging))
+		callOpts.DeleteAttribute = append(callOpts.DeleteAttribute, gax.WithClientLogging(logging))
+		callOpts.ListAttributes = append(callOpts.ListAttributes, gax.WithClientLogging(logging))
+		callOpts.SearchResources = append(callOpts.SearchResources, gax.WithClientLogging(logging))
+		callOpts.CreateExternalApi = append(callOpts.CreateExternalApi, gax.WithClientLogging(logging))
+		callOpts.GetExternalApi = append(callOpts.GetExternalApi, gax.WithClientLogging(logging))
+		callOpts.UpdateExternalApi = append(callOpts.UpdateExternalApi, gax.WithClientLogging(logging))
+		callOpts.DeleteExternalApi = append(callOpts.DeleteExternalApi, gax.WithClientLogging(logging))
+		callOpts.ListExternalApis = append(callOpts.ListExternalApis, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -1029,6 +1142,11 @@ func (c *restClient) CreateApi(ctx context.Context, req *apihubpb.CreateApiReque
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/apis", req.GetParent())
 
 	params := url.Values{}
@@ -1045,9 +1163,6 @@ func (c *restClient) CreateApi(ctx context.Context, req *apihubpb.CreateApiReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/CreateApi")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/apis")
@@ -1089,6 +1204,11 @@ func (c *restClient) GetApi(ctx context.Context, req *apihubpb.GetApiRequest, op
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1102,9 +1222,6 @@ func (c *restClient) GetApi(ctx context.Context, req *apihubpb.GetApiRequest, op
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/GetApi")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*}")
@@ -1157,6 +1274,11 @@ func (c *restClient) ListApis(ctx context.Context, req *apihubpb.ListApisRequest
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/apis", req.GetParent())
@@ -1262,6 +1384,11 @@ func (c *restClient) UpdateApi(ctx context.Context, req *apihubpb.UpdateApiReque
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetApi().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetApi().GetName())
 
 	params := url.Values{}
@@ -1324,6 +1451,11 @@ func (c *restClient) DeleteApi(ctx context.Context, req *apihubpb.DeleteApiReque
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1340,9 +1472,6 @@ func (c *restClient) DeleteApi(ctx context.Context, req *apihubpb.DeleteApiReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/DeleteApi")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*}")
@@ -1376,6 +1505,11 @@ func (c *restClient) CreateVersion(ctx context.Context, req *apihubpb.CreateVers
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/versions", req.GetParent())
 
 	params := url.Values{}
@@ -1392,9 +1526,6 @@ func (c *restClient) CreateVersion(ctx context.Context, req *apihubpb.CreateVers
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/CreateVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/apis/*}/versions")
@@ -1438,6 +1569,11 @@ func (c *restClient) GetVersion(ctx context.Context, req *apihubpb.GetVersionReq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1451,9 +1587,6 @@ func (c *restClient) GetVersion(ctx context.Context, req *apihubpb.GetVersionReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/GetVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*/versions/*}")
@@ -1506,6 +1639,11 @@ func (c *restClient) ListVersions(ctx context.Context, req *apihubpb.ListVersion
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/versions", req.GetParent())
@@ -1604,6 +1742,11 @@ func (c *restClient) UpdateVersion(ctx context.Context, req *apihubpb.UpdateVers
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetVersion().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetVersion().GetName())
 
 	params := url.Values{}
@@ -1666,6 +1809,11 @@ func (c *restClient) DeleteVersion(ctx context.Context, req *apihubpb.DeleteVers
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1682,9 +1830,6 @@ func (c *restClient) DeleteVersion(ctx context.Context, req *apihubpb.DeleteVers
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/DeleteVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*/versions/*}")
@@ -1738,6 +1883,11 @@ func (c *restClient) CreateSpec(ctx context.Context, req *apihubpb.CreateSpecReq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/specs", req.GetParent())
 
 	params := url.Values{}
@@ -1754,9 +1904,6 @@ func (c *restClient) CreateSpec(ctx context.Context, req *apihubpb.CreateSpecReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/CreateSpec")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/apis/*/versions/*}/specs")
@@ -1801,6 +1948,11 @@ func (c *restClient) GetSpec(ctx context.Context, req *apihubpb.GetSpecRequest, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1814,9 +1966,6 @@ func (c *restClient) GetSpec(ctx context.Context, req *apihubpb.GetSpecRequest, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/GetSpec")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*/versions/*/specs/*}")
@@ -1858,6 +2007,11 @@ func (c *restClient) GetSpecContents(ctx context.Context, req *apihubpb.GetSpecC
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:contents", req.GetName())
 
 	params := url.Values{}
@@ -1871,9 +2025,6 @@ func (c *restClient) GetSpecContents(ctx context.Context, req *apihubpb.GetSpecC
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/GetSpecContents")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*/versions/*/specs/*}:contents")
@@ -1926,6 +2077,11 @@ func (c *restClient) ListSpecs(ctx context.Context, req *apihubpb.ListSpecsReque
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/specs", req.GetParent())
@@ -2032,6 +2188,11 @@ func (c *restClient) UpdateSpec(ctx context.Context, req *apihubpb.UpdateSpecReq
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSpec().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSpec().GetName())
 
 	params := url.Values{}
@@ -2095,6 +2256,11 @@ func (c *restClient) DeleteSpec(ctx context.Context, req *apihubpb.DeleteSpecReq
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2108,9 +2274,6 @@ func (c *restClient) DeleteSpec(ctx context.Context, req *apihubpb.DeleteSpecReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/DeleteSpec")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*/versions/*/specs/*}")
@@ -2146,6 +2309,11 @@ func (c *restClient) CreateApiOperation(ctx context.Context, req *apihubpb.Creat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetParent())
 
 	params := url.Values{}
@@ -2162,9 +2330,6 @@ func (c *restClient) CreateApiOperation(ctx context.Context, req *apihubpb.Creat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/CreateApiOperation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/apis/*/versions/*}/operations")
@@ -2206,6 +2371,11 @@ func (c *restClient) GetApiOperation(ctx context.Context, req *apihubpb.GetApiOp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2219,9 +2389,6 @@ func (c *restClient) GetApiOperation(ctx context.Context, req *apihubpb.GetApiOp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/GetApiOperation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*/versions/*/operations/*}")
@@ -2274,6 +2441,11 @@ func (c *restClient) ListApiOperations(ctx context.Context, req *apihubpb.ListAp
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetParent())
@@ -2374,6 +2546,11 @@ func (c *restClient) UpdateApiOperation(ctx context.Context, req *apihubpb.Updat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetApiOperation().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetApiOperation().GetName())
 
 	params := url.Values{}
@@ -2437,6 +2614,11 @@ func (c *restClient) DeleteApiOperation(ctx context.Context, req *apihubpb.Delet
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2450,9 +2632,6 @@ func (c *restClient) DeleteApiOperation(ctx context.Context, req *apihubpb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/DeleteApiOperation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*/versions/*/operations/*}")
@@ -2479,6 +2658,11 @@ func (c *restClient) GetDefinition(ctx context.Context, req *apihubpb.GetDefinit
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2492,9 +2676,6 @@ func (c *restClient) GetDefinition(ctx context.Context, req *apihubpb.GetDefinit
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/GetDefinition")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*/versions/*/definitions/*}")
@@ -2545,6 +2726,11 @@ func (c *restClient) CreateDeployment(ctx context.Context, req *apihubpb.CreateD
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/deployments", req.GetParent())
 
 	params := url.Values{}
@@ -2561,9 +2747,6 @@ func (c *restClient) CreateDeployment(ctx context.Context, req *apihubpb.CreateD
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/CreateDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/deployments")
@@ -2605,6 +2788,11 @@ func (c *restClient) GetDeployment(ctx context.Context, req *apihubpb.GetDeploym
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2618,9 +2806,6 @@ func (c *restClient) GetDeployment(ctx context.Context, req *apihubpb.GetDeploym
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/GetDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/deployments/*}")
@@ -2673,6 +2858,11 @@ func (c *restClient) ListDeployments(ctx context.Context, req *apihubpb.ListDepl
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/deployments", req.GetParent())
@@ -2782,6 +2972,11 @@ func (c *restClient) UpdateDeployment(ctx context.Context, req *apihubpb.UpdateD
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDeployment().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDeployment().GetName())
 
 	params := url.Values{}
@@ -2843,6 +3038,11 @@ func (c *restClient) DeleteDeployment(ctx context.Context, req *apihubpb.DeleteD
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2856,9 +3056,6 @@ func (c *restClient) DeleteDeployment(ctx context.Context, req *apihubpb.DeleteD
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/DeleteDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/deployments/*}")
@@ -2898,6 +3095,11 @@ func (c *restClient) CreateAttribute(ctx context.Context, req *apihubpb.CreateAt
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/attributes", req.GetParent())
 
 	params := url.Values{}
@@ -2914,9 +3116,6 @@ func (c *restClient) CreateAttribute(ctx context.Context, req *apihubpb.CreateAt
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/CreateAttribute")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/attributes")
@@ -2958,6 +3157,11 @@ func (c *restClient) GetAttribute(ctx context.Context, req *apihubpb.GetAttribut
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2971,9 +3175,6 @@ func (c *restClient) GetAttribute(ctx context.Context, req *apihubpb.GetAttribut
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/GetAttribute")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/attributes/*}")
@@ -3047,6 +3248,11 @@ func (c *restClient) UpdateAttribute(ctx context.Context, req *apihubpb.UpdateAt
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAttribute().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAttribute().GetName())
 
 	params := url.Values{}
@@ -3112,6 +3318,11 @@ func (c *restClient) DeleteAttribute(ctx context.Context, req *apihubpb.DeleteAt
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3125,9 +3336,6 @@ func (c *restClient) DeleteAttribute(ctx context.Context, req *apihubpb.DeleteAt
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/DeleteAttribute")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/attributes/*}")
@@ -3165,6 +3373,11 @@ func (c *restClient) ListAttributes(ctx context.Context, req *apihubpb.ListAttri
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/attributes", req.GetParent())
@@ -3254,6 +3467,11 @@ func (c *restClient) SearchResources(ctx context.Context, req *apihubpb.SearchRe
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetLocation(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:searchResources", req.GetLocation())
 
 		params := url.Values{}
@@ -3320,6 +3538,11 @@ func (c *restClient) CreateExternalApi(ctx context.Context, req *apihubpb.Create
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/externalApis", req.GetParent())
 
 	params := url.Values{}
@@ -3336,9 +3559,6 @@ func (c *restClient) CreateExternalApi(ctx context.Context, req *apihubpb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/CreateExternalApi")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/externalApis")
@@ -3380,6 +3600,11 @@ func (c *restClient) GetExternalApi(ctx context.Context, req *apihubpb.GetExtern
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3393,9 +3618,6 @@ func (c *restClient) GetExternalApi(ctx context.Context, req *apihubpb.GetExtern
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/GetExternalApi")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/externalApis/*}")
@@ -3459,6 +3681,11 @@ func (c *restClient) UpdateExternalApi(ctx context.Context, req *apihubpb.Update
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetExternalApi().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetExternalApi().GetName())
 
 	params := url.Values{}
@@ -3520,6 +3747,11 @@ func (c *restClient) DeleteExternalApi(ctx context.Context, req *apihubpb.Delete
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3533,9 +3765,6 @@ func (c *restClient) DeleteExternalApi(ctx context.Context, req *apihubpb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/DeleteExternalApi")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/externalApis/*}")
@@ -3573,6 +3802,11 @@ func (c *restClient) ListExternalApis(ctx context.Context, req *apihubpb.ListExt
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/externalApis", req.GetParent())
@@ -3640,6 +3874,11 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3705,6 +3944,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -3781,6 +4025,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -3820,6 +4069,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3857,6 +4111,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3924,6 +4183,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

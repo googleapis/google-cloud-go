@@ -839,37 +839,37 @@ var File_google_cloud_oracledatabase_v1_exascale_db_storage_vault_proto protoref
 
 const file_google_cloud_oracledatabase_v1_exascale_db_storage_vault_proto_rawDesc = "" +
 	"\n" +
-	">google/cloud/oracledatabase/v1/exascale_db_storage_vault.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/datetime.proto\"\xbb\x06\n" +
-	"\x16ExascaleDbStorageVault\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12+\n" +
-	"\x0fgcp_oracle_zone\x18\x03 \x01(\tB\x03\xe0A\x01R\rgcpOracleZone\x12e\n" +
+	">google/cloud/oracledatabase/v1/exascale_db_storage_vault.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/datetime.proto\"\xc3\x06\n" +
+	"\x16ExascaleDbStorageVault\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12,\n" +
+	"\x0fgcp_oracle_zone\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\rgcpOracleZone\x12f\n" +
 	"\n" +
-	"properties\x18\x04 \x01(\v2@.google.cloud.oracledatabase.v1.ExascaleDbStorageVaultPropertiesB\x03\xe0A\x02R\n" +
-	"properties\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12*\n" +
-	"\x0eentitlement_id\x18\x06 \x01(\tB\x03\xe0A\x03R\rentitlementId\x12_\n" +
-	"\x06labels\x18\a \x03(\v2B.google.cloud.oracledatabase.v1.ExascaleDbStorageVault.LabelsEntryB\x03\xe0A\x01R\x06labels\x12w\n" +
-	"\x16exadata_infrastructure\x18\b \x01(\tB@\xe0A\x01\xfaA:\n" +
+	"properties\x18\x04 \x01(\v2@.google.cloud.oracledatabase.v1.ExascaleDbStorageVaultPropertiesB\x04\xe2A\x01\x02R\n" +
+	"properties\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12+\n" +
+	"\x0eentitlement_id\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\rentitlementId\x12`\n" +
+	"\x06labels\x18\a \x03(\v2B.google.cloud.oracledatabase.v1.ExascaleDbStorageVault.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12x\n" +
+	"\x16exadata_infrastructure\x18\b \x01(\tBA\xe2A\x01\x01\xfaA:\n" +
 	"8oracledatabase.googleapis.com/CloudExadataInfrastructureR\x15exadataInfrastructure\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xc8\x01\xeaA\xc4\x01\n" +
-	"4oracledatabase.googleapis.com/ExascaleDbStorageVault\x12[projects/{project}/locations/{location}/exascaleDbStorageVaults/{exascale_db_storage_vault}*\x17exascaleDbStorageVaults2\x16exascaleDbStorageVault\"\xbb\b\n" +
-	" ExascaleDbStorageVaultProperties\x12\x17\n" +
-	"\x04ocid\x18\x01 \x01(\tB\x03\xe0A\x03R\x04ocid\x127\n" +
-	"\ttime_zone\x18\x02 \x01(\v2\x15.google.type.TimeZoneB\x03\xe0A\x03R\btimeZone\x12|\n" +
-	"\x1bexascale_db_storage_details\x18\x03 \x01(\v28.google.cloud.oracledatabase.v1.ExascaleDbStorageDetailsB\x03\xe0A\x02R\x18exascaleDbStorageDetails\x12a\n" +
-	"\x05state\x18\x04 \x01(\x0e2F.google.cloud.oracledatabase.v1.ExascaleDbStorageVaultProperties.StateB\x03\xe0A\x03R\x05state\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12)\n" +
-	"\x0evm_cluster_ids\x18\x06 \x03(\tB\x03\xe0A\x03R\fvmClusterIds\x12-\n" +
-	"\x10vm_cluster_count\x18\t \x01(\x05B\x03\xe0A\x03R\x0evmClusterCount\x12H\n" +
-	"\x1eadditional_flash_cache_percent\x18\a \x01(\x05B\x03\xe0A\x01R\x1badditionalFlashCachePercent\x12\x1c\n" +
-	"\aoci_uri\x18\b \x01(\tB\x03\xe0A\x03R\x06ociUri\x12\x90\x01\n" +
+	"4oracledatabase.googleapis.com/ExascaleDbStorageVault\x12[projects/{project}/locations/{location}/exascaleDbStorageVaults/{exascale_db_storage_vault}*\x17exascaleDbStorageVaults2\x16exascaleDbStorageVault\"\xc6\b\n" +
+	" ExascaleDbStorageVaultProperties\x12\x18\n" +
+	"\x04ocid\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04ocid\x128\n" +
+	"\ttime_zone\x18\x02 \x01(\v2\x15.google.type.TimeZoneB\x04\xe2A\x01\x03R\btimeZone\x12}\n" +
+	"\x1bexascale_db_storage_details\x18\x03 \x01(\v28.google.cloud.oracledatabase.v1.ExascaleDbStorageDetailsB\x04\xe2A\x01\x02R\x18exascaleDbStorageDetails\x12b\n" +
+	"\x05state\x18\x04 \x01(\x0e2F.google.cloud.oracledatabase.v1.ExascaleDbStorageVaultProperties.StateB\x04\xe2A\x01\x03R\x05state\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12*\n" +
+	"\x0evm_cluster_ids\x18\x06 \x03(\tB\x04\xe2A\x01\x03R\fvmClusterIds\x12.\n" +
+	"\x10vm_cluster_count\x18\t \x01(\x05B\x04\xe2A\x01\x03R\x0evmClusterCount\x12I\n" +
+	"\x1eadditional_flash_cache_percent\x18\a \x01(\x05B\x04\xe2A\x01\x01R\x1badditionalFlashCachePercent\x12\x1d\n" +
+	"\aoci_uri\x18\b \x01(\tB\x04\xe2A\x01\x03R\x06ociUri\x12\x91\x01\n" +
 	"\x19attached_shape_attributes\x18\n" +
-	" \x03(\x0e2O.google.cloud.oracledatabase.v1.ExascaleDbStorageVaultProperties.ShapeAttributeB\x03\xe0A\x03R\x17attachedShapeAttributes\x12\x92\x01\n" +
-	"\x1aavailable_shape_attributes\x18\v \x03(\x0e2O.google.cloud.oracledatabase.v1.ExascaleDbStorageVaultProperties.ShapeAttributeB\x03\xe0A\x03R\x18availableShapeAttributes\"z\n" +
+	" \x03(\x0e2O.google.cloud.oracledatabase.v1.ExascaleDbStorageVaultProperties.ShapeAttributeB\x04\xe2A\x01\x03R\x17attachedShapeAttributes\x12\x93\x01\n" +
+	"\x1aavailable_shape_attributes\x18\v \x03(\x0e2O.google.cloud.oracledatabase.v1.ExascaleDbStorageVaultProperties.ShapeAttributeB\x04\xe2A\x01\x03R\x18availableShapeAttributes\"z\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fPROVISIONING\x10\x01\x12\r\n" +
@@ -883,35 +883,35 @@ const file_google_cloud_oracledatabase_v1_exascale_db_storage_vault_proto_rawDes
 	"\x0eShapeAttribute\x12\x1f\n" +
 	"\x1bSHAPE_ATTRIBUTE_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rSMART_STORAGE\x10\x01\x12\x11\n" +
-	"\rBLOCK_STORAGE\x10\x02\"x\n" +
-	"\x18ExascaleDbStorageDetails\x121\n" +
-	"\x12available_size_gbs\x18\x01 \x01(\x05B\x03\xe0A\x03R\x10availableSizeGbs\x12)\n" +
-	"\x0etotal_size_gbs\x18\x02 \x01(\x05B\x03\xe0A\x02R\ftotalSizeGbs\"t\n" +
-	" GetExascaleDbStorageVaultRequest\x12P\n" +
-	"\x04name\x18\x01 \x01(\tB<\xe0A\x02\xfaA6\n" +
-	"4oracledatabase.googleapis.com/ExascaleDbStorageVaultR\x04name\"\xfd\x01\n" +
-	"\"ListExascaleDbStorageVaultsRequest\x12T\n" +
-	"\x06parent\x18\x01 \x01(\tB<\xe0A\x02\xfaA6\x124oracledatabase.googleapis.com/ExascaleDbStorageVaultR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\rBLOCK_STORAGE\x10\x02\"z\n" +
+	"\x18ExascaleDbStorageDetails\x122\n" +
+	"\x12available_size_gbs\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\x10availableSizeGbs\x12*\n" +
+	"\x0etotal_size_gbs\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\ftotalSizeGbs\"u\n" +
+	" GetExascaleDbStorageVaultRequest\x12Q\n" +
+	"\x04name\x18\x01 \x01(\tB=\xe2A\x01\x02\xfaA6\n" +
+	"4oracledatabase.googleapis.com/ExascaleDbStorageVaultR\x04name\"\x82\x02\n" +
+	"\"ListExascaleDbStorageVaultsRequest\x12U\n" +
+	"\x06parent\x18\x01 \x01(\tB=\xe2A\x01\x02\xfaA6\x124oracledatabase.googleapis.com/ExascaleDbStorageVaultR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xe4\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xe4\x01\n" +
 	"#ListExascaleDbStorageVaultsResponse\x12s\n" +
 	"\x1aexascale_db_storage_vaults\x18\x01 \x03(\v26.google.cloud.oracledatabase.v1.ExascaleDbStorageVaultR\x17exascaleDbStorageVaults\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xe4\x02\n" +
-	"#CreateExascaleDbStorageVaultRequest\x12T\n" +
-	"\x06parent\x18\x01 \x01(\tB<\xe0A\x02\xfaA6\x124oracledatabase.googleapis.com/ExascaleDbStorageVaultR\x06parent\x12C\n" +
-	"\x1cexascale_db_storage_vault_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x18exascaleDbStorageVaultId\x12v\n" +
-	"\x19exascale_db_storage_vault\x18\x03 \x01(\v26.google.cloud.oracledatabase.v1.ExascaleDbStorageVaultB\x03\xe0A\x02R\x16exascaleDbStorageVault\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xe8\x02\n" +
+	"#CreateExascaleDbStorageVaultRequest\x12U\n" +
+	"\x06parent\x18\x01 \x01(\tB=\xe2A\x01\x02\xfaA6\x124oracledatabase.googleapis.com/ExascaleDbStorageVaultR\x06parent\x12D\n" +
+	"\x1cexascale_db_storage_vault_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x18exascaleDbStorageVaultId\x12w\n" +
+	"\x19exascale_db_storage_vault\x18\x03 \x01(\v26.google.cloud.oracledatabase.v1.ExascaleDbStorageVaultB\x04\xe2A\x01\x02R\x16exascaleDbStorageVault\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa3\x01\n" +
-	"#DeleteExascaleDbStorageVaultRequest\x12P\n" +
-	"\x04name\x18\x01 \x01(\tB<\xe0A\x02\xfaA6\n" +
-	"4oracledatabase.googleapis.com/ExascaleDbStorageVaultR\x04name\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa5\x01\n" +
+	"#DeleteExascaleDbStorageVaultRequest\x12Q\n" +
+	"\x04name\x18\x01 \x01(\tB=\xe2A\x01\x02\xfaA6\n" +
+	"4oracledatabase.googleapis.com/ExascaleDbStorageVaultR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\xf5\x01\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\xf5\x01\n" +
 	"\"com.google.cloud.oracledatabase.v1B\x1bExascaleDbStorageVaultProtoP\x01ZJcloud.google.com/go/oracledatabase/apiv1/oracledatabasepb;oracledatabasepb\xaa\x02\x1eGoogle.Cloud.OracleDatabase.V1\xca\x02\x1eGoogle\\Cloud\\OracleDatabase\\V1\xea\x02!Google::Cloud::OracleDatabase::V1b\x06proto3"
 
 var (

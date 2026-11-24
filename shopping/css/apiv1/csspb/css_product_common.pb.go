@@ -1443,13 +1443,13 @@ const file_google_shopping_css_v1_css_product_common_proto_rawDesc = "" +
 	"\rProductDetail\x12!\n" +
 	"\fsection_name\x18\x01 \x01(\tR\vsectionName\x12%\n" +
 	"\x0eattribute_name\x18\x02 \x01(\tR\rattributeName\x12'\n" +
-	"\x0fattribute_value\x18\x03 \x01(\tR\x0eattributeValue\"F\n" +
-	"\x10ProductDimension\x12\x19\n" +
-	"\x05value\x18\x01 \x01(\x01B\x03\xe0A\x02R\x05value\x12\x17\n" +
-	"\x04unit\x18\x02 \x01(\tB\x03\xe0A\x02R\x04unit\"C\n" +
-	"\rProductWeight\x12\x19\n" +
-	"\x05value\x18\x01 \x01(\x01B\x03\xe0A\x02R\x05value\x12\x17\n" +
-	"\x04unit\x18\x02 \x01(\tB\x03\xe0A\x02R\x04unit\"\xc4\a\n" +
+	"\x0fattribute_value\x18\x03 \x01(\tR\x0eattributeValue\"H\n" +
+	"\x10ProductDimension\x12\x1a\n" +
+	"\x05value\x18\x01 \x01(\x01B\x04\xe2A\x01\x02R\x05value\x12\x18\n" +
+	"\x04unit\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04unit\"E\n" +
+	"\rProductWeight\x12\x1a\n" +
+	"\x05value\x18\x01 \x01(\x01B\x04\xe2A\x01\x02R\x05value\x12\x18\n" +
+	"\x04unit\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04unit\"\xc4\a\n" +
 	"\x10CssProductStatus\x12m\n" +
 	"\x14destination_statuses\x18\x03 \x03(\v2:.google.shopping.css.v1.CssProductStatus.DestinationStatusR\x13destinationStatuses\x12c\n" +
 	"\x11item_level_issues\x18\x04 \x03(\v27.google.shopping.css.v1.CssProductStatus.ItemLevelIssueR\x0fitemLevelIssues\x12?\n" +

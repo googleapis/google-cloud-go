@@ -17,9 +17,18 @@
 package chat
 
 import (
+	"iter"
+
 	chatpb "cloud.google.com/go/chat/apiv1/chatpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CustomEmojiIterator) All() iter.Seq2[*chatpb.CustomEmoji, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // CustomEmojiIterator manages a stream of *chatpb.CustomEmoji.
 type CustomEmojiIterator struct {
@@ -66,6 +75,12 @@ func (it *CustomEmojiIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MembershipIterator) All() iter.Seq2[*chatpb.Membership, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // MembershipIterator manages a stream of *chatpb.Membership.
@@ -115,6 +130,12 @@ func (it *MembershipIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MessageIterator) All() iter.Seq2[*chatpb.Message, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // MessageIterator manages a stream of *chatpb.Message.
 type MessageIterator struct {
 	items    []*chatpb.Message
@@ -160,6 +181,65 @@ func (it *MessageIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MessagePinIterator) All() iter.Seq2[*chatpb.MessagePin, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// MessagePinIterator manages a stream of *chatpb.MessagePin.
+type MessagePinIterator struct {
+	items    []*chatpb.MessagePin
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*chatpb.MessagePin, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *MessagePinIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *MessagePinIterator) Next() (*chatpb.MessagePin, error) {
+	var item *chatpb.MessagePin
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *MessagePinIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *MessagePinIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReactionIterator) All() iter.Seq2[*chatpb.Reaction, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ReactionIterator manages a stream of *chatpb.Reaction.
@@ -209,6 +289,65 @@ func (it *ReactionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SearchMessageResultIterator) All() iter.Seq2[*chatpb.SearchMessageResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// SearchMessageResultIterator manages a stream of *chatpb.SearchMessageResult.
+type SearchMessageResultIterator struct {
+	items    []*chatpb.SearchMessageResult
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*chatpb.SearchMessageResult, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *SearchMessageResultIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *SearchMessageResultIterator) Next() (*chatpb.SearchMessageResult, error) {
+	var item *chatpb.SearchMessageResult
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *SearchMessageResultIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *SearchMessageResultIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SectionItemIterator) All() iter.Seq2[*chatpb.SectionItem, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SectionItemIterator manages a stream of *chatpb.SectionItem.
 type SectionItemIterator struct {
 	items    []*chatpb.SectionItem
@@ -254,6 +393,12 @@ func (it *SectionItemIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SectionIterator) All() iter.Seq2[*chatpb.Section, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SectionIterator manages a stream of *chatpb.Section.
@@ -303,6 +448,12 @@ func (it *SectionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SpaceEventIterator) All() iter.Seq2[*chatpb.SpaceEvent, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SpaceEventIterator manages a stream of *chatpb.SpaceEvent.
 type SpaceEventIterator struct {
 	items    []*chatpb.SpaceEvent
@@ -348,6 +499,12 @@ func (it *SpaceEventIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SpaceIterator) All() iter.Seq2[*chatpb.Space, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SpaceIterator manages a stream of *chatpb.Space.

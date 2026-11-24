@@ -423,9 +423,9 @@ const file_google_cloud_eventarc_publishing_v1_publisher_proto_rawDesc = "" +
 	"\x06events\x18\x02 \x03(\v2\x14.google.protobuf.AnyR\x06events\x12\x1f\n" +
 	"\vtext_events\x18\x03 \x03(\tR\n" +
 	"textEvents\"\x17\n" +
-	"\x15PublishEventsResponse\"\xe2\x01\n" +
-	"\x0ePublishRequest\x12$\n" +
-	"\vmessage_bus\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
+	"\x15PublishEventsResponse\"\xe3\x01\n" +
+	"\x0ePublishRequest\x12%\n" +
+	"\vmessage_bus\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"messageBus\x12V\n" +
 	"\rproto_message\x18\x02 \x01(\v2/.google.cloud.eventarc.publishing.v1.CloudEventH\x00R\fprotoMessage\x12#\n" +
 	"\fjson_message\x18\x03 \x01(\tH\x00R\vjsonMessage\x12#\n" +

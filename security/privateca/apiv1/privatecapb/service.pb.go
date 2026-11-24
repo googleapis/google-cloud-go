@@ -2926,214 +2926,214 @@ var File_google_cloud_security_privateca_v1_service_proto protoreflect.FileDescr
 
 const file_google_cloud_security_privateca_v1_service_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/security/privateca/v1/service.proto\x12\"google.cloud.security.privateca.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/security/privateca/v1/resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfb\x02\n" +
-	"\x18CreateCertificateRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fprivateca.googleapis.com/CaPoolR\x06parent\x12*\n" +
-	"\x0ecertificate_id\x18\x02 \x01(\tB\x03\xe0A\x01R\rcertificateId\x12V\n" +
-	"\vcertificate\x18\x03 \x01(\v2/.google.cloud.security.privateca.v1.CertificateB\x03\xe0A\x02R\vcertificate\x12\"\n" +
+	"0google/cloud/security/privateca/v1/service.proto\x12\"google.cloud.security.privateca.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/security/privateca/v1/resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x81\x03\n" +
+	"\x18CreateCertificateRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fprivateca.googleapis.com/CaPoolR\x06parent\x12+\n" +
+	"\x0ecertificate_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rcertificateId\x12W\n" +
+	"\vcertificate\x18\x03 \x01(\v2/.google.cloud.security.privateca.v1.CertificateB\x04\xe2A\x01\x02R\vcertificate\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12L\n" +
-	" issuing_certificate_authority_id\x18\x06 \x01(\tB\x03\xe0A\x01R\x1dissuingCertificateAuthorityId\"Y\n" +
-	"\x15GetCertificateRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$privateca.googleapis.com/CertificateR\x04name\"\xdd\x01\n" +
-	"\x17ListCertificatesRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fprivateca.googleapis.com/CaPoolR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12M\n" +
+	" issuing_certificate_authority_id\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x1dissuingCertificateAuthorityId\"Z\n" +
+	"\x15GetCertificateRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$privateca.googleapis.com/CertificateR\x04name\"\xe2\x01\n" +
+	"\x17ListCertificatesRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fprivateca.googleapis.com/CaPoolR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xb9\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xb9\x01\n" +
 	"\x18ListCertificatesResponse\x12S\n" +
 	"\fcertificates\x18\x01 \x03(\v2/.google.cloud.security.privateca.v1.CertificateR\fcertificates\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xd3\x01\n" +
-	"\x18RevokeCertificateRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$privateca.googleapis.com/CertificateR\x04name\x12Q\n" +
-	"\x06reason\x18\x02 \x01(\x0e24.google.cloud.security.privateca.v1.RevocationReasonB\x03\xe0A\x02R\x06reason\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xd6\x01\n" +
+	"\x18RevokeCertificateRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$privateca.googleapis.com/CertificateR\x04name\x12R\n" +
+	"\x06reason\x18\x02 \x01(\x0e24.google.cloud.security.privateca.v1.RevocationReasonB\x04\xe2A\x01\x02R\x06reason\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\xd8\x01\n" +
-	"\x18UpdateCertificateRequest\x12V\n" +
-	"\vcertificate\x18\x01 \x01(\v2/.google.cloud.security.privateca.v1.CertificateB\x03\xe0A\x02R\vcertificate\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xdb\x01\n" +
+	"\x18UpdateCertificateRequest\x12W\n" +
+	"\vcertificate\x18\x01 \x01(\v2/.google.cloud.security.privateca.v1.CertificateB\x04\xe2A\x01\x02R\vcertificate\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\xba\x02\n" +
-	"#ActivateCertificateAuthorityRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-privateca.googleapis.com/CertificateAuthorityR\x04name\x121\n" +
-	"\x12pem_ca_certificate\x18\x02 \x01(\tB\x03\xe0A\x02R\x10pemCaCertificate\x12i\n" +
-	"\x12subordinate_config\x18\x03 \x01(\v25.google.cloud.security.privateca.v1.SubordinateConfigB\x03\xe0A\x02R\x11subordinateConfig\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xbe\x02\n" +
+	"#ActivateCertificateAuthorityRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-privateca.googleapis.com/CertificateAuthorityR\x04name\x122\n" +
+	"\x12pem_ca_certificate\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x10pemCaCertificate\x12j\n" +
+	"\x12subordinate_config\x18\x03 \x01(\v25.google.cloud.security.privateca.v1.SubordinateConfigB\x04\xe2A\x01\x02R\x11subordinateConfig\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xbb\x02\n" +
-	"!CreateCertificateAuthorityRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fprivateca.googleapis.com/CaPoolR\x06parent\x12=\n" +
-	"\x18certificate_authority_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x16certificateAuthorityId\x12r\n" +
-	"\x15certificate_authority\x18\x03 \x01(\v28.google.cloud.security.privateca.v1.CertificateAuthorityB\x03\xe0A\x02R\x14certificateAuthority\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xbf\x02\n" +
+	"!CreateCertificateAuthorityRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fprivateca.googleapis.com/CaPoolR\x06parent\x12>\n" +
+	"\x18certificate_authority_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x16certificateAuthorityId\x12s\n" +
+	"\x15certificate_authority\x18\x03 \x01(\v28.google.cloud.security.privateca.v1.CertificateAuthorityB\x04\xe2A\x01\x02R\x14certificateAuthority\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xde\x01\n" +
-	"\"DisableCertificateAuthorityRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-privateca.googleapis.com/CertificateAuthorityR\x04name\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xe1\x01\n" +
+	"\"DisableCertificateAuthorityRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-privateca.googleapis.com/CertificateAuthorityR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12A\n" +
-	"\x1aignore_dependent_resources\x18\x03 \x01(\bB\x03\xe0A\x01R\x18ignoreDependentResources\"\x9a\x01\n" +
-	"!EnableCertificateAuthorityRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-privateca.googleapis.com/CertificateAuthorityR\x04name\x12*\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12B\n" +
+	"\x1aignore_dependent_resources\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x18ignoreDependentResources\"\x9c\x01\n" +
+	"!EnableCertificateAuthorityRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-privateca.googleapis.com/CertificateAuthorityR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"p\n" +
-	"#FetchCertificateAuthorityCsrRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-privateca.googleapis.com/CertificateAuthorityR\x04name\"D\n" +
-	"$FetchCertificateAuthorityCsrResponse\x12\x1c\n" +
-	"\apem_csr\x18\x01 \x01(\tB\x03\xe0A\x03R\x06pemCsr\"k\n" +
-	"\x1eGetCertificateAuthorityRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-privateca.googleapis.com/CertificateAuthorityR\x04name\"\xe7\x01\n" +
-	"!ListCertificateAuthoritiesRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fprivateca.googleapis.com/CaPoolR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"q\n" +
+	"#FetchCertificateAuthorityCsrRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-privateca.googleapis.com/CertificateAuthorityR\x04name\"E\n" +
+	"$FetchCertificateAuthorityCsrResponse\x12\x1d\n" +
+	"\apem_csr\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06pemCsr\"l\n" +
+	"\x1eGetCertificateAuthorityRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-privateca.googleapis.com/CertificateAuthorityR\x04name\"\xec\x01\n" +
+	"!ListCertificateAuthoritiesRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fprivateca.googleapis.com/CaPoolR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xe1\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xe1\x01\n" +
 	"\"ListCertificateAuthoritiesResponse\x12q\n" +
 	"\x17certificate_authorities\x18\x01 \x03(\v28.google.cloud.security.privateca.v1.CertificateAuthorityR\x16certificateAuthorities\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x9c\x01\n" +
-	"#UndeleteCertificateAuthorityRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-privateca.googleapis.com/CertificateAuthorityR\x04name\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x9e\x01\n" +
+	"#UndeleteCertificateAuthorityRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-privateca.googleapis.com/CertificateAuthorityR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd1\x02\n" +
-	"!DeleteCertificateAuthorityRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-privateca.googleapis.com/CertificateAuthorityR\x04name\x12*\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd6\x02\n" +
+	"!DeleteCertificateAuthorityRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-privateca.googleapis.com/CertificateAuthorityR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12A\n" +
-	"\x1aignore_active_certificates\x18\x04 \x01(\bB\x03\xe0A\x01R\x18ignoreActiveCertificates\x12/\n" +
-	"\x11skip_grace_period\x18\x05 \x01(\bB\x03\xe0A\x01R\x0fskipGracePeriod\x12A\n" +
-	"\x1aignore_dependent_resources\x18\x06 \x01(\bB\x03\xe0A\x01R\x18ignoreDependentResources\"\x85\x02\n" +
-	"!UpdateCertificateAuthorityRequest\x12r\n" +
-	"\x15certificate_authority\x18\x01 \x01(\v28.google.cloud.security.privateca.v1.CertificateAuthorityB\x03\xe0A\x02R\x14certificateAuthority\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12*\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12B\n" +
+	"\x1aignore_active_certificates\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x18ignoreActiveCertificates\x120\n" +
+	"\x11skip_grace_period\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x0fskipGracePeriod\x12B\n" +
+	"\x1aignore_dependent_resources\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x18ignoreDependentResources\"\x88\x02\n" +
+	"!UpdateCertificateAuthorityRequest\x12s\n" +
+	"\x15certificate_authority\x18\x01 \x01(\v28.google.cloud.security.privateca.v1.CertificateAuthorityB\x04\xe2A\x01\x02R\x14certificateAuthority\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xf1\x01\n" +
-	"\x13CreateCaPoolRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xf5\x01\n" +
+	"\x13CreateCaPoolRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12\"\n" +
 	"\n" +
-	"ca_pool_id\x18\x02 \x01(\tB\x03\xe0A\x02R\bcaPoolId\x12H\n" +
-	"\aca_pool\x18\x03 \x01(\v2*.google.cloud.security.privateca.v1.CaPoolB\x03\xe0A\x02R\x06caPool\x12*\n" +
+	"ca_pool_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bcaPoolId\x12I\n" +
+	"\aca_pool\x18\x03 \x01(\v2*.google.cloud.security.privateca.v1.CaPoolB\x04\xe2A\x01\x02R\x06caPool\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xcd\x01\n" +
-	"\x13UpdateCaPoolRequest\x12H\n" +
-	"\aca_pool\x18\x01 \x01(\v2*.google.cloud.security.privateca.v1.CaPoolB\x03\xe0A\x02R\x06caPool\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd0\x01\n" +
+	"\x13UpdateCaPoolRequest\x12I\n" +
+	"\aca_pool\x18\x01 \x01(\v2*.google.cloud.security.privateca.v1.CaPoolB\x04\xe2A\x01\x02R\x06caPool\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xc1\x01\n" +
-	"\x13DeleteCaPoolRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fprivateca.googleapis.com/CaPoolR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xc4\x01\n" +
+	"\x13DeleteCaPoolRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fprivateca.googleapis.com/CaPoolR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12A\n" +
-	"\x1aignore_dependent_resources\x18\x04 \x01(\bB\x03\xe0A\x01R\x18ignoreDependentResources\"{\n" +
-	"\x13FetchCaCertsRequest\x12@\n" +
-	"\aca_pool\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fprivateca.googleapis.com/CaPoolR\x06caPool\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12B\n" +
+	"\x1aignore_dependent_resources\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x18ignoreDependentResources\"}\n" +
+	"\x13FetchCaCertsRequest\x12A\n" +
+	"\aca_pool\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fprivateca.googleapis.com/CaPoolR\x06caPool\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xa6\x01\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xa6\x01\n" +
 	"\x14FetchCaCertsResponse\x12]\n" +
 	"\bca_certs\x18\x01 \x03(\v2B.google.cloud.security.privateca.v1.FetchCaCertsResponse.CertChainR\acaCerts\x1a/\n" +
 	"\tCertChain\x12\"\n" +
-	"\fcertificates\x18\x01 \x03(\tR\fcertificates\"O\n" +
-	"\x10GetCaPoolRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fprivateca.googleapis.com/CaPoolR\x04name\"\xda\x01\n" +
-	"\x12ListCaPoolsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\fcertificates\x18\x01 \x03(\tR\fcertificates\"P\n" +
+	"\x10GetCaPoolRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fprivateca.googleapis.com/CaPoolR\x04name\"\xdf\x01\n" +
+	"\x12ListCaPoolsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xa6\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xa6\x01\n" +
 	"\x13ListCaPoolsResponse\x12E\n" +
 	"\bca_pools\x18\x01 \x03(\v2*.google.cloud.security.privateca.v1.CaPoolR\acaPools\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"u\n" +
-	"#GetCertificateRevocationListRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2privateca.googleapis.com/CertificateRevocationListR\x04name\"\xf9\x01\n" +
-	"%ListCertificateRevocationListsRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-privateca.googleapis.com/CertificateAuthorityR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"v\n" +
+	"#GetCertificateRevocationListRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2privateca.googleapis.com/CertificateRevocationListR\x04name\"\xfe\x01\n" +
+	"%ListCertificateRevocationListsRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-privateca.googleapis.com/CertificateAuthorityR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xf3\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xf3\x01\n" +
 	"&ListCertificateRevocationListsResponse\x12\x7f\n" +
 	"\x1ccertificate_revocation_lists\x18\x01 \x03(\v2=.google.cloud.security.privateca.v1.CertificateRevocationListR\x1acertificateRevocationLists\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x93\x02\n" +
-	"&UpdateCertificateRevocationListRequest\x12\x82\x01\n" +
-	"\x1bcertificate_revocation_list\x18\x01 \x01(\v2=.google.cloud.security.privateca.v1.CertificateRevocationListB\x03\xe0A\x02R\x19certificateRevocationList\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x96\x02\n" +
+	"&UpdateCertificateRevocationListRequest\x12\x83\x01\n" +
+	"\x1bcertificate_revocation_list\x18\x01 \x01(\v2=.google.cloud.security.privateca.v1.CertificateRevocationListB\x04\xe2A\x01\x02R\x19certificateRevocationList\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\xbf\x02\n" +
-	" CreateCertificateTemplateRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12;\n" +
-	"\x17certificate_template_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x15certificateTemplateId\x12o\n" +
-	"\x14certificate_template\x18\x03 \x01(\v27.google.cloud.security.privateca.v1.CertificateTemplateB\x03\xe0A\x02R\x13certificateTemplate\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xc3\x02\n" +
+	" CreateCertificateTemplateRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12<\n" +
+	"\x17certificate_template_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x15certificateTemplateId\x12p\n" +
+	"\x14certificate_template\x18\x03 \x01(\v27.google.cloud.security.privateca.v1.CertificateTemplateB\x04\xe2A\x01\x02R\x13certificateTemplate\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x98\x01\n" +
-	" DeleteCertificateTemplateRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",privateca.googleapis.com/CertificateTemplateR\x04name\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x9a\x01\n" +
+	" DeleteCertificateTemplateRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",privateca.googleapis.com/CertificateTemplateR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"i\n" +
-	"\x1dGetCertificateTemplateRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",privateca.googleapis.com/CertificateTemplateR\x04name\"\xe7\x01\n" +
-	"\x1fListCertificateTemplatesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"j\n" +
+	"\x1dGetCertificateTemplateRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",privateca.googleapis.com/CertificateTemplateR\x04name\"\xec\x01\n" +
+	"\x1fListCertificateTemplatesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xda\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xda\x01\n" +
 	" ListCertificateTemplatesResponse\x12l\n" +
 	"\x15certificate_templates\x18\x01 \x03(\v27.google.cloud.security.privateca.v1.CertificateTemplateR\x14certificateTemplates\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x81\x02\n" +
-	" UpdateCertificateTemplateRequest\x12o\n" +
-	"\x14certificate_template\x18\x01 \x01(\v27.google.cloud.security.privateca.v1.CertificateTemplateB\x03\xe0A\x02R\x13certificateTemplate\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x84\x02\n" +
+	" UpdateCertificateTemplateRequest\x12p\n" +
+	"\x14certificate_template\x18\x01 \x01(\v27.google.cloud.security.privateca.v1.CertificateTemplateB\x04\xe2A\x01\x02R\x13certificateTemplate\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"apiVersion2\xfa;\n" +
 	"\x1bCertificateAuthorityService\x12\xf7\x01\n" +
 	"\x11CreateCertificate\x12<.google.cloud.security.privateca.v1.CreateCertificateRequest\x1a/.google.cloud.security.privateca.v1.Certificate\"s\xdaA!parent,certificate,certificate_id\x82\xd3\xe4\x93\x02I:\vcertificate\":/v1/{parent=projects/*/locations/*/caPools/*}/certificates\x12\xc7\x01\n" +

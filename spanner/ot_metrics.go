@@ -20,10 +20,12 @@ import (
 	"sync"
 
 	"cloud.google.com/go/spanner/internal"
+	"github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/trace"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -226,4 +228,21 @@ func recordGFELatencyMetricsOT(ctx context.Context, md metadata.MD, keyMethod st
 		otConfig.gfeLatency.Record(ctx, metrics[gfeTimingHeader].Milliseconds(), metric.WithAttributes(attr...))
 	}
 	return nil
+}
+
+// gfeLatencySinksEnabled reports whether any GFE latency sink consumes the
+// response headers of a call, either OpenCensus GFE latency metrics or
+// OpenTelemetry metrics.
+func gfeLatencySinksEnabled(hasOpenCensusContext bool, otConfig *openTelemetryConfig) bool {
+	return (getGFELatencyMetricsFlag() && hasOpenCensusContext) || (otConfig != nil && otConfig.enabled)
+}
+
+// gfeLatencyHeaderOptions returns the call options that capture the response
+// headers of a unary call into md when a GFE latency sink consumes them, and
+// no options otherwise.
+func gfeLatencyHeaderOptions(md *metadata.MD, hasOpenCensusContext bool, otConfig *openTelemetryConfig) []gax.CallOption {
+	if !gfeLatencySinksEnabled(hasOpenCensusContext, otConfig) {
+		return nil
+	}
+	return []gax.CallOption{gax.WithGRPCOptions(grpc.Header(md))}
 }

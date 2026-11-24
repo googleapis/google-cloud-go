@@ -577,9 +577,9 @@ var File_google_cloud_baremetalsolution_v2_lun_proto protoreflect.FileDescriptor
 
 const file_google_cloud_baremetalsolution_v2_lun_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/baremetalsolution/v2/lun.proto\x12!google.cloud.baremetalsolution.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd6\a\n" +
-	"\x03Lun\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x0e\n" +
+	"+google/cloud/baremetalsolution/v2/lun.proto\x12!google.cloud.baremetalsolution.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd9\a\n" +
+	"\x03Lun\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x0e\n" +
 	"\x02id\x18\n" +
 	" \x01(\tR\x02id\x12B\n" +
 	"\x05state\x18\x02 \x01(\x0e2,.google.cloud.baremetalsolution.v2.Lun.StateR\x05state\x12\x17\n" +
@@ -590,10 +590,10 @@ const file_google_cloud_baremetalsolution_v2_lun_proto_rawDesc = "" +
 	"\tshareable\x18\x06 \x01(\bR\tshareable\x12\x19\n" +
 	"\bboot_lun\x18\a \x01(\bR\abootLun\x12U\n" +
 	"\fstorage_type\x18\b \x01(\x0e22.google.cloud.baremetalsolution.v2.Lun.StorageTypeR\vstorageType\x12\x12\n" +
-	"\x04wwid\x18\t \x01(\tR\x04wwid\x12@\n" +
-	"\vexpire_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12O\n" +
-	"\tinstances\x18\f \x03(\tB1\xe0A\x03\xfaA+\n" +
+	"\x04wwid\x18\t \x01(\tR\x04wwid\x12A\n" +
+	"\vexpire_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12P\n" +
+	"\tinstances\x18\f \x03(\tB2\xe2A\x01\x03\xfaA+\n" +
 	")baremetalsolution.googleapis.com/InstanceR\tinstances\"a\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
@@ -609,12 +609,12 @@ const file_google_cloud_baremetalsolution_v2_lun_proto_rawDesc = "" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03SSD\x10\x01\x12\a\n" +
 	"\x03HDD\x10\x02:n\xeaAk\n" +
-	"$baremetalsolution.googleapis.com/Lun\x12Cprojects/{project}/locations/{location}/volumes/{volume}/luns/{lun}\"Q\n" +
-	"\rGetLunRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$baremetalsolution.googleapis.com/LunR\x04name\"\x96\x01\n" +
-	"\x0fListLunsRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"$baremetalsolution.googleapis.com/Lun\x12Cprojects/{project}/locations/{location}/volumes/{volume}/luns/{lun}\"R\n" +
+	"\rGetLunRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$baremetalsolution.googleapis.com/LunR\x04name\"\x97\x01\n" +
+	"\x0fListLunsRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'baremetalsolution.googleapis.com/VolumeR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -622,9 +622,9 @@ const file_google_cloud_baremetalsolution_v2_lun_proto_rawDesc = "" +
 	"\x10ListLunsResponse\x12:\n" +
 	"\x04luns\x18\x01 \x03(\v2&.google.cloud.baremetalsolution.v2.LunR\x04luns\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"S\n" +
-	"\x0fEvictLunRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"T\n" +
+	"\x0fEvictLunRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$baremetalsolution.googleapis.com/LunR\x04nameB\xf7\x01\n" +
 	"%com.google.cloud.baremetalsolution.v2B\bLunProtoP\x01ZScloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb;baremetalsolutionpb\xaa\x02!Google.Cloud.BareMetalSolution.V2\xca\x02!Google\\Cloud\\BareMetalSolution\\V2\xea\x02$Google::Cloud::BareMetalSolution::V2b\x06proto3"
 

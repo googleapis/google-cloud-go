@@ -180,14 +180,14 @@ func (n NullDateTime) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + CivilDateTimeString(n.DateTime) + `"`), nil
 }
 
-func nullstr(valid bool, v interface{}) string {
+func nullstr(valid bool, v any) string {
 	if !valid {
 		return "NULL"
 	}
 	return fmt.Sprint(v)
 }
 
-func nulljson(valid bool, v interface{}) ([]byte, error) {
+func nulljson(valid bool, v any) ([]byte, error) {
 	if !valid {
 		return jsonNull, nil
 	}
@@ -370,16 +370,16 @@ func (n *NullDateTime) UnmarshalJSON(b []byte) error {
 }
 
 var (
-	typeOfNullInt64     = reflect.TypeOf(NullInt64{})
-	typeOfNullFloat64   = reflect.TypeOf(NullFloat64{})
-	typeOfNullBool      = reflect.TypeOf(NullBool{})
-	typeOfNullString    = reflect.TypeOf(NullString{})
-	typeOfNullGeography = reflect.TypeOf(NullGeography{})
-	typeOfNullJSON      = reflect.TypeOf(NullJSON{})
-	typeOfNullTimestamp = reflect.TypeOf(NullTimestamp{})
-	typeOfNullDate      = reflect.TypeOf(NullDate{})
-	typeOfNullTime      = reflect.TypeOf(NullTime{})
-	typeOfNullDateTime  = reflect.TypeOf(NullDateTime{})
+	typeOfNullInt64     = reflect.TypeFor[NullInt64]()
+	typeOfNullFloat64   = reflect.TypeFor[NullFloat64]()
+	typeOfNullBool      = reflect.TypeFor[NullBool]()
+	typeOfNullString    = reflect.TypeFor[NullString]()
+	typeOfNullGeography = reflect.TypeFor[NullGeography]()
+	typeOfNullJSON      = reflect.TypeFor[NullJSON]()
+	typeOfNullTimestamp = reflect.TypeFor[NullTimestamp]()
+	typeOfNullDate      = reflect.TypeFor[NullDate]()
+	typeOfNullTime      = reflect.TypeFor[NullTime]()
+	typeOfNullDateTime  = reflect.TypeFor[NullDateTime]()
 )
 
 func nullableFieldType(t reflect.Type) FieldType {

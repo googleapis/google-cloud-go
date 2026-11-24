@@ -482,6 +482,57 @@ func NewDataObjectClient(ctx context.Context, opts ...option.ClientOption) (*Dat
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "vectorsearch",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vectorsearch/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "vectorsearch.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDataObject = append(client.CallOptions.CreateDataObject, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchCreateDataObjects = append(client.CallOptions.BatchCreateDataObjects, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDataObject = append(client.CallOptions.GetDataObject, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDataObject = append(client.CallOptions.UpdateDataObject, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchUpdateDataObjects = append(client.CallOptions.BatchUpdateDataObjects, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDataObject = append(client.CallOptions.DeleteDataObject, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchDeleteDataObjects = append(client.CallOptions.BatchDeleteDataObjects, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "vectorsearch",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vectorsearch/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "vectorsearch.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDataObject = append(client.CallOptions.CreateDataObject, gax.WithClientLogging(logging))
+		client.CallOptions.BatchCreateDataObjects = append(client.CallOptions.BatchCreateDataObjects, gax.WithClientLogging(logging))
+		client.CallOptions.GetDataObject = append(client.CallOptions.GetDataObject, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDataObject = append(client.CallOptions.UpdateDataObject, gax.WithClientLogging(logging))
+		client.CallOptions.BatchUpdateDataObjects = append(client.CallOptions.BatchUpdateDataObjects, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDataObject = append(client.CallOptions.DeleteDataObject, gax.WithClientLogging(logging))
+		client.CallOptions.BatchDeleteDataObjects = append(client.CallOptions.BatchDeleteDataObjects, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -585,6 +636,57 @@ func NewDataObjectRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "vectorsearch",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vectorsearch/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "vectorsearch.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDataObject = append(callOpts.CreateDataObject, gax.WithClientTracing(tracing))
+		callOpts.BatchCreateDataObjects = append(callOpts.BatchCreateDataObjects, gax.WithClientTracing(tracing))
+		callOpts.GetDataObject = append(callOpts.GetDataObject, gax.WithClientTracing(tracing))
+		callOpts.UpdateDataObject = append(callOpts.UpdateDataObject, gax.WithClientTracing(tracing))
+		callOpts.BatchUpdateDataObjects = append(callOpts.BatchUpdateDataObjects, gax.WithClientTracing(tracing))
+		callOpts.DeleteDataObject = append(callOpts.DeleteDataObject, gax.WithClientTracing(tracing))
+		callOpts.BatchDeleteDataObjects = append(callOpts.BatchDeleteDataObjects, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "vectorsearch",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vectorsearch/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "vectorsearch.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDataObject = append(callOpts.CreateDataObject, gax.WithClientLogging(logging))
+		callOpts.BatchCreateDataObjects = append(callOpts.BatchCreateDataObjects, gax.WithClientLogging(logging))
+		callOpts.GetDataObject = append(callOpts.GetDataObject, gax.WithClientLogging(logging))
+		callOpts.UpdateDataObject = append(callOpts.UpdateDataObject, gax.WithClientLogging(logging))
+		callOpts.BatchUpdateDataObjects = append(callOpts.BatchUpdateDataObjects, gax.WithClientLogging(logging))
+		callOpts.DeleteDataObject = append(callOpts.DeleteDataObject, gax.WithClientLogging(logging))
+		callOpts.BatchDeleteDataObjects = append(callOpts.BatchDeleteDataObjects, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &DataObjectClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -631,9 +733,6 @@ func (c *dataObjectGRPCClient) CreateDataObject(ctx context.Context, req *vector
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.DataObjectService/CreateDataObject")
 	}
@@ -655,9 +754,6 @@ func (c *dataObjectGRPCClient) BatchCreateDataObjects(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.DataObjectService/BatchCreateDataObjects")
 	}
@@ -679,9 +775,6 @@ func (c *dataObjectGRPCClient) GetDataObject(ctx context.Context, req *vectorsea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.DataObjectService/GetDataObject")
 	}
@@ -724,9 +817,6 @@ func (c *dataObjectGRPCClient) BatchUpdateDataObjects(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.DataObjectService/BatchUpdateDataObjects")
 	}
@@ -748,9 +838,6 @@ func (c *dataObjectGRPCClient) DeleteDataObject(ctx context.Context, req *vector
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.DataObjectService/DeleteDataObject")
 	}
@@ -768,9 +855,6 @@ func (c *dataObjectGRPCClient) BatchDeleteDataObjects(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.DataObjectService/BatchDeleteDataObjects")
 	}
@@ -970,6 +1054,11 @@ func (c *dataObjectRESTClient) CreateDataObject(ctx context.Context, req *vector
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/dataObjects", req.GetParent())
 
 	params := url.Values{}
@@ -984,9 +1073,6 @@ func (c *dataObjectRESTClient) CreateDataObject(ctx context.Context, req *vector
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.DataObjectService/CreateDataObject")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/collections/*}/dataObjects")
@@ -1034,6 +1120,11 @@ func (c *dataObjectRESTClient) BatchCreateDataObjects(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/dataObjects:batchCreate", req.GetParent())
 
 	params := url.Values{}
@@ -1047,9 +1138,6 @@ func (c *dataObjectRESTClient) BatchCreateDataObjects(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.DataObjectService/BatchCreateDataObjects")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/collections/*}/dataObjects:batchCreate")
@@ -1091,6 +1179,11 @@ func (c *dataObjectRESTClient) GetDataObject(ctx context.Context, req *vectorsea
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -1104,9 +1197,6 @@ func (c *dataObjectRESTClient) GetDataObject(ctx context.Context, req *vectorsea
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.DataObjectService/GetDataObject")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/collections/*/dataObjects/*}")
@@ -1153,6 +1243,11 @@ func (c *dataObjectRESTClient) UpdateDataObject(ctx context.Context, req *vector
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataObject().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetDataObject().GetName())
@@ -1222,6 +1317,11 @@ func (c *dataObjectRESTClient) BatchUpdateDataObjects(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/dataObjects:batchUpdate", req.GetParent())
 
 	params := url.Values{}
@@ -1235,9 +1335,6 @@ func (c *dataObjectRESTClient) BatchUpdateDataObjects(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.DataObjectService/BatchUpdateDataObjects")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/collections/*}/dataObjects:batchUpdate")
@@ -1279,6 +1376,11 @@ func (c *dataObjectRESTClient) DeleteDataObject(ctx context.Context, req *vector
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -1295,9 +1397,6 @@ func (c *dataObjectRESTClient) DeleteDataObject(ctx context.Context, req *vector
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.DataObjectService/DeleteDataObject")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/collections/*/dataObjects/*}")
@@ -1330,6 +1429,11 @@ func (c *dataObjectRESTClient) BatchDeleteDataObjects(ctx context.Context, req *
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/dataObjects:batchDelete", req.GetParent())
 
 	params := url.Values{}
@@ -1343,9 +1447,6 @@ func (c *dataObjectRESTClient) BatchDeleteDataObjects(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.DataObjectService/BatchDeleteDataObjects")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/collections/*}/dataObjects:batchDelete")
@@ -1370,6 +1471,11 @@ func (c *dataObjectRESTClient) BatchDeleteDataObjects(ctx context.Context, req *
 func (c *dataObjectRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1454,6 +1560,11 @@ func (c *dataObjectRESTClient) ListLocations(ctx context.Context, req *locationp
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1528,6 +1639,11 @@ func (c *dataObjectRESTClient) CancelOperation(ctx context.Context, req *longrun
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1567,6 +1683,11 @@ func (c *dataObjectRESTClient) DeleteOperation(ctx context.Context, req *longrun
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -1604,6 +1725,11 @@ func (c *dataObjectRESTClient) DeleteOperation(ctx context.Context, req *longrun
 func (c *dataObjectRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -1671,6 +1797,11 @@ func (c *dataObjectRESTClient) ListOperations(ctx context.Context, req *longrunn
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/operations", req.GetName())

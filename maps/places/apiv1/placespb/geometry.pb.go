@@ -101,10 +101,10 @@ var File_google_maps_places_v1_geometry_proto protoreflect.FileDescriptor
 
 const file_google_maps_places_v1_geometry_proto_rawDesc = "" +
 	"\n" +
-	"$google/maps/places/v1/geometry.proto\x12\x15google.maps.places.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x18google/type/latlng.proto\"W\n" +
-	"\x06Circle\x120\n" +
-	"\x06center\x18\x01 \x01(\v2\x13.google.type.LatLngB\x03\xe0A\x02R\x06center\x12\x1b\n" +
-	"\x06radius\x18\x02 \x01(\x01B\x03\xe0A\x02R\x06radiusB\x9e\x01\n" +
+	"$google/maps/places/v1/geometry.proto\x12\x15google.maps.places.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x18google/type/latlng.proto\"Y\n" +
+	"\x06Circle\x121\n" +
+	"\x06center\x18\x01 \x01(\v2\x13.google.type.LatLngB\x04\xe2A\x01\x02R\x06center\x12\x1c\n" +
+	"\x06radius\x18\x02 \x01(\x01B\x04\xe2A\x01\x02R\x06radiusB\x9e\x01\n" +
 	"\x19com.google.maps.places.v1B\rGeometryProtoP\x01Z7cloud.google.com/go/maps/places/apiv1/placespb;placespb\xa2\x02\x06GMPSV1\xaa\x02\x15Google.Maps.Places.V1\xca\x02\x15Google\\Maps\\Places\\V1b\x06proto3"
 
 var (

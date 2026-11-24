@@ -29,27 +29,46 @@ func TestVRpcDescriptor_Method(t *testing.T) {
 	if MUTATE_ROW.Method() != "MutateRow" {
 		t.Errorf("MUTATE_ROW.Method() = %q, want %q", MUTATE_ROW.Method(), "MutateRow")
 	}
-	if READ_ROW_AUTH_VIEW.Method() != "ReadRow" {
-		t.Errorf("READ_ROW_AUTH_VIEW.Method() = %q, want %q", READ_ROW_AUTH_VIEW.Method(), "ReadRow")
+	if CHECK_AND_MUTATE_ROW.Method() != "CheckAndMutateRow" {
+		t.Errorf("CHECK_AND_MUTATE_ROW.Method() = %q, want %q", CHECK_AND_MUTATE_ROW.Method(), "CheckAndMutateRow")
 	}
-	if MUTATE_ROW_AUTH_VIEW.Method() != "MutateRow" {
-		t.Errorf("MUTATE_ROW_AUTH_VIEW.Method() = %q, want %q", MUTATE_ROW_AUTH_VIEW.Method(), "MutateRow")
-	}
-	if READ_ROW_MAT_VIEW.Method() != "ReadRow" {
-		t.Errorf("READ_ROW_MAT_VIEW.Method() = %q, want %q", READ_ROW_MAT_VIEW.Method(), "ReadRow")
+	if READ_MODIFY_WRITE_ROW.Method() != "ReadModifyWriteRow" {
+		t.Errorf("READ_MODIFY_WRITE_ROW.Method() = %q, want %q", READ_MODIFY_WRITE_ROW.Method(), "ReadModifyWriteRow")
 	}
 }
 
-func TestTableDescriptors_ReadRow(t *testing.T) {
-	// 1. Test Encoding
-	args := ReadRowArgs{
-		RowKey: "row-key-1",
+func TestSessionType_Envelope(t *testing.T) {
+	cases := []struct {
+		st      SessionType
+		want    ResourceEnvelope
+		wantErr bool
+	}{
+		{SessionTypeTable, TableEnvelope, false},
+		{SessionTypeAuthorizedView, AuthorizedViewEnvelope, false},
+		{SessionTypeMaterializedView, MaterializedViewEnvelope, false},
+		{SessionType(999), nil, true},
+	}
+	for _, tc := range cases {
+		got, err := tc.st.Envelope()
+		if (err != nil) != tc.wantErr {
+			t.Errorf("SessionType(%v).Envelope() err = %v, wantErr %v", tc.st, err, tc.wantErr)
+			continue
+		}
+		if got != tc.want {
+			t.Errorf("SessionType(%v).Envelope() = %T, want %T", tc.st, got, tc.want)
+		}
+	}
+}
+
+func TestTableEnvelope_ReadRow(t *testing.T) {
+	req := &btpb.SessionReadRowRequest{
+		Key: []byte("row-key-1"),
 		Filter: &btpb.RowFilter{
 			Filter: &btpb.RowFilter_CellsPerRowLimitFilter{CellsPerRowLimitFilter: 1},
 		},
 	}
 
-	encodedBytes, err := READ_ROW.Encode(args)
+	encodedBytes, err := READ_ROW.Encode(TableEnvelope, req)
 	if err != nil {
 		t.Fatalf("Failed to encode READ_ROW: %v", err)
 	}
@@ -72,61 +91,66 @@ func TestTableDescriptors_ReadRow(t *testing.T) {
 		t.Errorf("Expected CellsPerRowLimitFilter = 1, got %v", readRowReq.Filter)
 	}
 
-	// 2. Test Decoding
-	row := &btpb.Row{
-		Key: []byte("row-key-1"),
-		Families: []*btpb.Family{
-			{Name: "cf1"},
-		},
-	}
-	innerResp := &btpb.SessionReadRowResponse{
-		Row: row,
-	}
 	respEnvelope := &btpb.TableResponse{
 		Payload: &btpb.TableResponse_ReadRow{
-			ReadRow: innerResp,
+			ReadRow: &btpb.SessionReadRowResponse{
+				Row: &btpb.Row{
+					Key:      []byte("row-key-1"),
+					Families: []*btpb.Family{{Name: "cf1"}},
+				},
+			},
 		},
 	}
-
 	envelopeBytes, err := proto.Marshal(respEnvelope)
 	if err != nil {
 		t.Fatalf("Failed to marshal TableResponse envelope: %v", err)
 	}
 
-	decoded, err := READ_ROW.Decode(envelopeBytes)
+	decoded, err := READ_ROW.Decode(TableEnvelope, envelopeBytes)
 	if err != nil {
 		t.Fatalf("Failed to decode READ_ROW: %v", err)
 	}
 
-	result, ok := decoded.(ReadRowResult)
+	result, ok := decoded.(*btpb.SessionReadRowResponse)
 	if !ok {
-		t.Fatalf("Expected decoded result to be ReadRowResult, got %T", decoded)
+		t.Fatalf("Expected decoded result to be *btpb.SessionReadRowResponse, got %T", decoded)
 	}
-
 	if !bytes.Equal(result.Row.Key, []byte("row-key-1")) {
 		t.Errorf("Decoded row key mismatch: expected %q, got %q", "row-key-1", string(result.Row.Key))
 	}
 	if len(result.Row.Families) != 1 || result.Row.Families[0].Name != "cf1" {
 		t.Errorf("Decoded row families mismatch: got %v", result.Row.Families)
 	}
+
+	// Row-not-found sets the ReadRow oneof arm to an empty SessionReadRowResponse{}.
+	notFoundBytes, err := proto.Marshal(&btpb.TableResponse{
+		Payload: &btpb.TableResponse_ReadRow{ReadRow: &btpb.SessionReadRowResponse{}},
+	})
+	if err != nil {
+		t.Fatalf("Failed to marshal row-not-found TableResponse: %v", err)
+	}
+	notFoundDecoded, err := READ_ROW.Decode(TableEnvelope, notFoundBytes)
+	if err != nil {
+		t.Fatalf("Decode(row-not-found) unexpected err: %v", err)
+	}
+	if nf, ok := notFoundDecoded.(*btpb.SessionReadRowResponse); !ok || nf == nil || nf.Row != nil {
+		t.Errorf("Decode(row-not-found) = %#v, want non-nil *SessionReadRowResponse with nil Row", notFoundDecoded)
+	}
 }
 
-func TestTableDescriptors_MutateRow(t *testing.T) {
-	// 1. Test Encoding
-	args := MutateRowArgs{
-		RowKey: "row-key-2",
+func TestTableEnvelope_MutateRow(t *testing.T) {
+	req := &btpb.SessionMutateRowRequest{
+		Key: []byte("row-key-2"),
 		Mutations: []*btpb.Mutation{
 			{
 				Mutation: &btpb.Mutation_DeleteFromFamily_{
-					DeleteFromFamily: &btpb.Mutation_DeleteFromFamily{
-						FamilyName: "cf2",
-					},
+					DeleteFromFamily: &btpb.Mutation_DeleteFromFamily{FamilyName: "cf2"},
 				},
 			},
 		},
 	}
 
-	encodedBytes, err := MUTATE_ROW.Encode(args)
+	encodedBytes, err := MUTATE_ROW.Encode(TableEnvelope, req)
 	if err != nil {
 		t.Fatalf("Failed to encode MUTATE_ROW: %v", err)
 	}
@@ -149,39 +173,142 @@ func TestTableDescriptors_MutateRow(t *testing.T) {
 		t.Errorf("Mutations list mismatch: got %v", mutateRowReq.Mutations)
 	}
 
-	// 2. Test Decoding
-	innerResp := &btpb.SessionMutateRowResponse{}
 	respEnvelope := &btpb.TableResponse{
 		Payload: &btpb.TableResponse_MutateRow{
-			MutateRow: innerResp,
+			MutateRow: &btpb.SessionMutateRowResponse{},
 		},
 	}
-
 	envelopeBytes, err := proto.Marshal(respEnvelope)
 	if err != nil {
 		t.Fatalf("Failed to marshal TableResponse envelope: %v", err)
 	}
 
-	decoded, err := MUTATE_ROW.Decode(envelopeBytes)
+	decoded, err := MUTATE_ROW.Decode(TableEnvelope, envelopeBytes)
 	if err != nil {
 		t.Fatalf("Failed to decode MUTATE_ROW: %v", err)
 	}
-
-	_, ok = decoded.(MutateRowResult)
-	if !ok {
-		t.Fatalf("Expected decoded result to be MutateRowResult, got %T", decoded)
+	if _, ok := decoded.(*btpb.SessionMutateRowResponse); !ok {
+		t.Fatalf("Expected decoded result to be *btpb.SessionMutateRowResponse, got %T", decoded)
 	}
 }
 
-func TestAuthorizedViewDescriptors_ReadRow(t *testing.T) {
-	// 1. Test Encoding
-	args := ReadRowArgs{
-		RowKey: "row-key-3",
+func TestTableEnvelope_CheckAndMutateRow(t *testing.T) {
+	req := &btpb.SessionCheckAndMutateRowRequest{
+		Key: []byte("row-key-cam"),
+		PredicateFilter: &btpb.RowFilter{
+			Filter: &btpb.RowFilter_PassAllFilter{PassAllFilter: true},
+		},
+		TrueMutations: []*btpb.Mutation{
+			{Mutation: &btpb.Mutation_DeleteFromRow_{DeleteFromRow: &btpb.Mutation_DeleteFromRow{}}},
+		},
+		FalseMutations: []*btpb.Mutation{
+			{Mutation: &btpb.Mutation_DeleteFromFamily_{DeleteFromFamily: &btpb.Mutation_DeleteFromFamily{FamilyName: "cf1"}}},
+		},
 	}
 
-	encodedBytes, err := READ_ROW_AUTH_VIEW.Encode(args)
+	encodedBytes, err := CHECK_AND_MUTATE_ROW.Encode(TableEnvelope, req)
 	if err != nil {
-		t.Fatalf("Failed to encode READ_ROW_AUTH_VIEW: %v", err)
+		t.Fatalf("Failed to encode CHECK_AND_MUTATE_ROW: %v", err)
+	}
+
+	var env btpb.TableRequest
+	if err := proto.Unmarshal(encodedBytes, &env); err != nil {
+		t.Fatalf("Failed to unmarshal TableRequest: %v", err)
+	}
+
+	gotReq := env.GetCheckAndMutateRow()
+	if gotReq == nil {
+		t.Fatalf("Expected CheckAndMutateRow payload, got %T", env.Payload)
+	}
+	if !bytes.Equal(gotReq.Key, []byte("row-key-cam")) {
+		t.Errorf("Key = %q, want %q", string(gotReq.Key), "row-key-cam")
+	}
+	if !gotReq.GetPredicateFilter().GetPassAllFilter() {
+		t.Errorf("PredicateFilter mismatch: %v", gotReq.GetPredicateFilter())
+	}
+	if len(gotReq.GetTrueMutations()) != 1 || len(gotReq.GetFalseMutations()) != 1 {
+		t.Errorf("Mutations mismatch: true=%d false=%d", len(gotReq.GetTrueMutations()), len(gotReq.GetFalseMutations()))
+	}
+
+	respEnvelope := &btpb.TableResponse{
+		Payload: &btpb.TableResponse_CheckAndMutateRow{
+			CheckAndMutateRow: &btpb.SessionCheckAndMutateRowResponse{PredicateMatched: true},
+		},
+	}
+	envelopeBytes, err := proto.Marshal(respEnvelope)
+	if err != nil {
+		t.Fatalf("Failed to marshal TableResponse: %v", err)
+	}
+	decoded, err := CHECK_AND_MUTATE_ROW.Decode(TableEnvelope, envelopeBytes)
+	if err != nil {
+		t.Fatalf("Failed to decode CHECK_AND_MUTATE_ROW: %v", err)
+	}
+	res, ok := decoded.(*btpb.SessionCheckAndMutateRowResponse)
+	if !ok || !res.GetPredicateMatched() {
+		t.Fatalf("Decoded result = %#v, want PredicateMatched=true", decoded)
+	}
+}
+
+func TestTableEnvelope_ReadModifyWriteRow(t *testing.T) {
+	req := &btpb.SessionReadModifyWriteRowRequest{
+		Key: []byte("row-key-rmw"),
+		Rules: []*btpb.ReadModifyWriteRule{
+			{
+				FamilyName:      "cf1",
+				ColumnQualifier: []byte("col"),
+				Rule:            &btpb.ReadModifyWriteRule_IncrementAmount{IncrementAmount: 5},
+			},
+		},
+	}
+
+	encodedBytes, err := READ_MODIFY_WRITE_ROW.Encode(TableEnvelope, req)
+	if err != nil {
+		t.Fatalf("Failed to encode READ_MODIFY_WRITE_ROW: %v", err)
+	}
+
+	var env btpb.TableRequest
+	if err := proto.Unmarshal(encodedBytes, &env); err != nil {
+		t.Fatalf("Failed to unmarshal TableRequest: %v", err)
+	}
+
+	gotReq := env.GetReadModifyWriteRow()
+	if gotReq == nil {
+		t.Fatalf("Expected ReadModifyWriteRow payload, got %T", env.Payload)
+	}
+	if !bytes.Equal(gotReq.Key, []byte("row-key-rmw")) {
+		t.Errorf("Key = %q, want %q", string(gotReq.Key), "row-key-rmw")
+	}
+	if len(gotReq.GetRules()) != 1 || gotReq.GetRules()[0].GetIncrementAmount() != 5 {
+		t.Errorf("Rules mismatch: %v", gotReq.GetRules())
+	}
+
+	respEnvelope := &btpb.TableResponse{
+		Payload: &btpb.TableResponse_ReadModifyWriteRow{
+			ReadModifyWriteRow: &btpb.SessionReadModifyWriteRowResponse{
+				Row: &btpb.Row{Key: []byte("row-key-rmw")},
+			},
+		},
+	}
+	envelopeBytes, err := proto.Marshal(respEnvelope)
+	if err != nil {
+		t.Fatalf("Failed to marshal TableResponse: %v", err)
+	}
+	decoded, err := READ_MODIFY_WRITE_ROW.Decode(TableEnvelope, envelopeBytes)
+	if err != nil {
+		t.Fatalf("Failed to decode READ_MODIFY_WRITE_ROW: %v", err)
+	}
+	res, ok := decoded.(*btpb.SessionReadModifyWriteRowResponse)
+	if !ok || string(res.GetRow().GetKey()) != "row-key-rmw" {
+		t.Fatalf("Decoded result = %#v", decoded)
+	}
+}
+
+func TestAuthorizedViewEnvelope_ReadRow(t *testing.T) {
+	req := &btpb.SessionReadRowRequest{Key: []byte("row-key-3")}
+
+	encodedBytes, err := READ_ROW.Encode(AuthorizedViewEnvelope, req)
+	if err != nil {
+		t.Fatalf("Failed to encode READ_ROW with AuthorizedViewEnvelope: %v", err)
 	}
 
 	var env btpb.AuthorizedViewRequest
@@ -193,54 +320,41 @@ func TestAuthorizedViewDescriptors_ReadRow(t *testing.T) {
 	if !ok {
 		t.Fatalf("Expected AuthorizedViewRequest_ReadRow payload, got %T", env.Payload)
 	}
-
-	readRowReq := payload.ReadRow
-	if !bytes.Equal(readRowReq.Key, []byte("row-key-3")) {
-		t.Errorf("Expected key %q, got %q", "row-key-3", string(readRowReq.Key))
+	if !bytes.Equal(payload.ReadRow.Key, []byte("row-key-3")) {
+		t.Errorf("Expected key %q, got %q", "row-key-3", string(payload.ReadRow.Key))
 	}
 
-	// 2. Test Decoding
-	row := &btpb.Row{
-		Key: []byte("row-key-3"),
-	}
-	innerResp := &btpb.SessionReadRowResponse{
-		Row: row,
-	}
 	respEnvelope := &btpb.AuthorizedViewResponse{
 		Payload: &btpb.AuthorizedViewResponse_ReadRow{
-			ReadRow: innerResp,
+			ReadRow: &btpb.SessionReadRowResponse{
+				Row: &btpb.Row{Key: []byte("row-key-3")},
+			},
 		},
 	}
-
 	envelopeBytes, err := proto.Marshal(respEnvelope)
 	if err != nil {
 		t.Fatalf("Failed to marshal AuthorizedViewResponse envelope: %v", err)
 	}
 
-	decoded, err := READ_ROW_AUTH_VIEW.Decode(envelopeBytes)
+	decoded, err := READ_ROW.Decode(AuthorizedViewEnvelope, envelopeBytes)
 	if err != nil {
-		t.Fatalf("Failed to decode READ_ROW_AUTH_VIEW: %v", err)
+		t.Fatalf("Failed to decode READ_ROW with AuthorizedViewEnvelope: %v", err)
 	}
-
-	result, ok := decoded.(ReadRowResult)
+	result, ok := decoded.(*btpb.SessionReadRowResponse)
 	if !ok {
-		t.Fatalf("Expected decoded result to be ReadRowResult, got %T", decoded)
+		t.Fatalf("Expected decoded result to be *btpb.SessionReadRowResponse, got %T", decoded)
 	}
-
 	if !bytes.Equal(result.Row.Key, []byte("row-key-3")) {
 		t.Errorf("Decoded row key mismatch: expected %q, got %q", "row-key-3", string(result.Row.Key))
 	}
 }
 
-func TestAuthorizedViewDescriptors_MutateRow(t *testing.T) {
-	// 1. Test Encoding
-	args := MutateRowArgs{
-		RowKey: "row-key-4",
-	}
+func TestAuthorizedViewEnvelope_MutateRow(t *testing.T) {
+	req := &btpb.SessionMutateRowRequest{Key: []byte("row-key-4")}
 
-	encodedBytes, err := MUTATE_ROW_AUTH_VIEW.Encode(args)
+	encodedBytes, err := MUTATE_ROW.Encode(AuthorizedViewEnvelope, req)
 	if err != nil {
-		t.Fatalf("Failed to encode MUTATE_ROW_AUTH_VIEW: %v", err)
+		t.Fatalf("Failed to encode MUTATE_ROW with AuthorizedViewEnvelope: %v", err)
 	}
 
 	var env btpb.AuthorizedViewRequest
@@ -252,45 +366,89 @@ func TestAuthorizedViewDescriptors_MutateRow(t *testing.T) {
 	if !ok {
 		t.Fatalf("Expected AuthorizedViewRequest_MutateRow payload, got %T", env.Payload)
 	}
-
-	mutateRowReq := payload.MutateRow
-	if !bytes.Equal(mutateRowReq.Key, []byte("row-key-4")) {
-		t.Errorf("Expected key %q, got %q", "row-key-4", string(mutateRowReq.Key))
+	if !bytes.Equal(payload.MutateRow.Key, []byte("row-key-4")) {
+		t.Errorf("Expected key %q, got %q", "row-key-4", string(payload.MutateRow.Key))
 	}
 
-	// 2. Test Decoding
-	innerResp := &btpb.SessionMutateRowResponse{}
 	respEnvelope := &btpb.AuthorizedViewResponse{
 		Payload: &btpb.AuthorizedViewResponse_MutateRow{
-			MutateRow: innerResp,
+			MutateRow: &btpb.SessionMutateRowResponse{},
 		},
 	}
-
 	envelopeBytes, err := proto.Marshal(respEnvelope)
 	if err != nil {
 		t.Fatalf("Failed to marshal AuthorizedViewResponse envelope: %v", err)
 	}
 
-	decoded, err := MUTATE_ROW_AUTH_VIEW.Decode(envelopeBytes)
+	decoded, err := MUTATE_ROW.Decode(AuthorizedViewEnvelope, envelopeBytes)
 	if err != nil {
-		t.Fatalf("Failed to decode MUTATE_ROW_AUTH_VIEW: %v", err)
+		t.Fatalf("Failed to decode MUTATE_ROW with AuthorizedViewEnvelope: %v", err)
 	}
-
-	_, ok = decoded.(MutateRowResult)
-	if !ok {
-		t.Fatalf("Expected decoded result to be MutateRowResult, got %T", decoded)
+	if _, ok := decoded.(*btpb.SessionMutateRowResponse); !ok {
+		t.Fatalf("Expected decoded result to be *btpb.SessionMutateRowResponse, got %T", decoded)
 	}
 }
 
-func TestMaterializedViewDescriptors_ReadRow(t *testing.T) {
-	// 1. Test Encoding
-	args := ReadRowArgs{
-		RowKey: "row-key-5",
-	}
-
-	encodedBytes, err := READ_ROW_MAT_VIEW.Encode(args)
+func TestAuthorizedViewEnvelope_CheckAndMutateRow(t *testing.T) {
+	camBytes, err := CHECK_AND_MUTATE_ROW.Encode(AuthorizedViewEnvelope, &btpb.SessionCheckAndMutateRowRequest{Key: []byte("av-cam")})
 	if err != nil {
-		t.Fatalf("Failed to encode READ_ROW_MAT_VIEW: %v", err)
+		t.Fatalf("CHECK_AND_MUTATE_ROW.Encode(AuthorizedViewEnvelope): %v", err)
+	}
+	var avReq btpb.AuthorizedViewRequest
+	if err := proto.Unmarshal(camBytes, &avReq); err != nil {
+		t.Fatalf("unmarshal AuthorizedViewRequest: %v", err)
+	}
+	if string(avReq.GetCheckAndMutateRow().GetKey()) != "av-cam" {
+		t.Errorf("got key %q, want av-cam", avReq.GetCheckAndMutateRow().GetKey())
+	}
+	camRespBytes, err := proto.Marshal(&btpb.AuthorizedViewResponse{
+		Payload: &btpb.AuthorizedViewResponse_CheckAndMutateRow{
+			CheckAndMutateRow: &btpb.SessionCheckAndMutateRowResponse{PredicateMatched: true},
+		},
+	})
+	if err != nil {
+		t.Fatalf("marshal AuthorizedViewResponse: %v", err)
+	}
+	camDecoded, err := CHECK_AND_MUTATE_ROW.Decode(AuthorizedViewEnvelope, camRespBytes)
+	if err != nil || !camDecoded.(*btpb.SessionCheckAndMutateRowResponse).GetPredicateMatched() {
+		t.Errorf("CHECK_AND_MUTATE_ROW.Decode(AuthorizedViewEnvelope) = %v, %v", camDecoded, err)
+	}
+}
+
+func TestAuthorizedViewEnvelope_ReadModifyWriteRow(t *testing.T) {
+	rmwBytes, err := READ_MODIFY_WRITE_ROW.Encode(AuthorizedViewEnvelope, &btpb.SessionReadModifyWriteRowRequest{Key: []byte("av-rmw")})
+	if err != nil {
+		t.Fatalf("READ_MODIFY_WRITE_ROW.Encode(AuthorizedViewEnvelope): %v", err)
+	}
+	var avReq btpb.AuthorizedViewRequest
+	if err := proto.Unmarshal(rmwBytes, &avReq); err != nil {
+		t.Fatalf("unmarshal AuthorizedViewRequest: %v", err)
+	}
+	if string(avReq.GetReadModifyWriteRow().GetKey()) != "av-rmw" {
+		t.Errorf("got key %q, want av-rmw", avReq.GetReadModifyWriteRow().GetKey())
+	}
+	rmwRespBytes, err := proto.Marshal(&btpb.AuthorizedViewResponse{
+		Payload: &btpb.AuthorizedViewResponse_ReadModifyWriteRow{
+			ReadModifyWriteRow: &btpb.SessionReadModifyWriteRowResponse{
+				Row: &btpb.Row{Key: []byte("av-rmw")},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("marshal AuthorizedViewResponse: %v", err)
+	}
+	rmwDecoded, err := READ_MODIFY_WRITE_ROW.Decode(AuthorizedViewEnvelope, rmwRespBytes)
+	if err != nil || string(rmwDecoded.(*btpb.SessionReadModifyWriteRowResponse).GetRow().GetKey()) != "av-rmw" {
+		t.Errorf("READ_MODIFY_WRITE_ROW.Decode(AuthorizedViewEnvelope) = %v, %v", rmwDecoded, err)
+	}
+}
+
+func TestMaterializedViewEnvelope_ReadRowAndRejectsWrites(t *testing.T) {
+	req := &btpb.SessionReadRowRequest{Key: []byte("row-key-5")}
+
+	encodedBytes, err := READ_ROW.Encode(MaterializedViewEnvelope, req)
+	if err != nil {
+		t.Fatalf("Failed to encode READ_ROW with MaterializedViewEnvelope: %v", err)
 	}
 
 	var env btpb.MaterializedViewRequest
@@ -302,41 +460,108 @@ func TestMaterializedViewDescriptors_ReadRow(t *testing.T) {
 	if !ok {
 		t.Fatalf("Expected MaterializedViewRequest_ReadRow payload, got %T", env.Payload)
 	}
-
-	readRowReq := payload.ReadRow
-	if !bytes.Equal(readRowReq.Key, []byte("row-key-5")) {
-		t.Errorf("Expected key %q, got %q", "row-key-5", string(readRowReq.Key))
+	if !bytes.Equal(payload.ReadRow.Key, []byte("row-key-5")) {
+		t.Errorf("Expected key %q, got %q", "row-key-5", string(payload.ReadRow.Key))
 	}
 
-	// 2. Test Decoding
-	row := &btpb.Row{
-		Key: []byte("row-key-5"),
-	}
-	innerResp := &btpb.SessionReadRowResponse{
-		Row: row,
-	}
 	respEnvelope := &btpb.MaterializedViewResponse{
 		Payload: &btpb.MaterializedViewResponse_ReadRow{
-			ReadRow: innerResp,
+			ReadRow: &btpb.SessionReadRowResponse{
+				Row: &btpb.Row{Key: []byte("row-key-5")},
+			},
 		},
 	}
-
 	envelopeBytes, err := proto.Marshal(respEnvelope)
 	if err != nil {
 		t.Fatalf("Failed to marshal MaterializedViewResponse envelope: %v", err)
 	}
 
-	decoded, err := READ_ROW_MAT_VIEW.Decode(envelopeBytes)
+	decoded, err := READ_ROW.Decode(MaterializedViewEnvelope, envelopeBytes)
 	if err != nil {
-		t.Fatalf("Failed to decode READ_ROW_MAT_VIEW: %v", err)
+		t.Fatalf("Failed to decode READ_ROW with MaterializedViewEnvelope: %v", err)
 	}
-
-	result, ok := decoded.(ReadRowResult)
+	result, ok := decoded.(*btpb.SessionReadRowResponse)
 	if !ok {
-		t.Fatalf("Expected decoded result to be ReadRowResult, got %T", decoded)
+		t.Fatalf("Expected decoded result to be *btpb.SessionReadRowResponse, got %T", decoded)
 	}
-
 	if !bytes.Equal(result.Row.Key, []byte("row-key-5")) {
 		t.Errorf("Decoded row key mismatch: expected %q, got %q", "row-key-5", string(result.Row.Key))
+	}
+
+	if _, err := MUTATE_ROW.Encode(MaterializedViewEnvelope, &btpb.SessionMutateRowRequest{Key: []byte("k")}); err == nil {
+		t.Errorf("MUTATE_ROW.Encode(MaterializedViewEnvelope) succeeded, want unsupported-payload error")
+	}
+	if _, err := CHECK_AND_MUTATE_ROW.Encode(MaterializedViewEnvelope, &btpb.SessionCheckAndMutateRowRequest{Key: []byte("k")}); err == nil {
+		t.Errorf("CHECK_AND_MUTATE_ROW.Encode(MaterializedViewEnvelope) succeeded, want unsupported-payload error")
+	}
+	if _, err := READ_MODIFY_WRITE_ROW.Encode(MaterializedViewEnvelope, &btpb.SessionReadModifyWriteRowRequest{Key: []byte("k")}); err == nil {
+		t.Errorf("READ_MODIFY_WRITE_ROW.Encode(MaterializedViewEnvelope) succeeded, want unsupported-payload error")
+	}
+}
+
+type stubEnvelope struct {
+	resp proto.Message
+}
+
+func (s stubEnvelope) WrapRequest(proto.Message) ([]byte, error) { return nil, nil }
+func (s stubEnvelope) UnwrapResponse([]byte) (proto.Message, error) {
+	return s.resp, nil
+}
+
+func TestVRpcDescriptor_ErrorCases(t *testing.T) {
+	if _, err := READ_ROW.Encode(nil, &btpb.SessionReadRowRequest{Key: []byte("k")}); err == nil {
+		t.Errorf("Encode(nil envelope) = nil, want error")
+	}
+	if _, err := READ_ROW.Decode(nil, nil); err == nil {
+		t.Errorf("Decode(nil envelope) = nil, want error")
+	}
+	if _, err := READ_ROW.Encode(TableEnvelope, (*btpb.SessionReadRowRequest)(nil)); err == nil {
+		t.Errorf("Encode(typed nil request) = nil, want error")
+	}
+	if _, err := READ_ROW.Encode(TableEnvelope, &btpb.SessionMutateRowRequest{Key: []byte("k")}); err == nil {
+		t.Errorf("Encode(wrong request type) = nil, want error")
+	}
+
+	// Direct ResourceEnvelope calls must reject both untyped nil and typed-nil protos
+	// on WrapRequest, and must reject unset response oneofs on UnwrapResponse.
+	for _, tc := range []struct {
+		name string
+		env  ResourceEnvelope
+	}{
+		{"table", TableEnvelope},
+		{"authorized_view", AuthorizedViewEnvelope},
+		{"materialized_view", MaterializedViewEnvelope},
+	} {
+		if _, err := tc.env.WrapRequest(nil); err == nil {
+			t.Errorf("%s.WrapRequest(nil) = nil, want error", tc.name)
+		}
+		if _, err := tc.env.WrapRequest((*btpb.SessionReadRowRequest)(nil)); err == nil {
+			t.Errorf("%s.WrapRequest(typed nil) = nil, want error", tc.name)
+		}
+		if _, err := tc.env.UnwrapResponse(nil); err == nil {
+			t.Errorf("%s.UnwrapResponse(empty) = nil, want error", tc.name)
+		}
+		if _, err := READ_ROW.Decode(tc.env, nil); err == nil {
+			t.Errorf("READ_ROW.Decode(%s, empty) = nil, want error", tc.name)
+		}
+	}
+
+	// Descriptor Decode rejects untyped nil and typed-nil responses even from custom envelopes.
+	if _, err := READ_ROW.Decode(stubEnvelope{resp: nil}, nil); err == nil {
+		t.Errorf("READ_ROW.Decode(untyped nil inner) = nil, want error")
+	}
+	if _, err := READ_ROW.Decode(stubEnvelope{resp: (*btpb.SessionReadRowResponse)(nil)}, nil); err == nil {
+		t.Errorf("READ_ROW.Decode(typed nil inner) = nil, want error")
+	}
+
+	// Mismatched response oneof (MutateRow response for ReadRow descriptor) errors.
+	mismatchBytes, err := proto.Marshal(&btpb.TableResponse{
+		Payload: &btpb.TableResponse_MutateRow{MutateRow: &btpb.SessionMutateRowResponse{}},
+	})
+	if err != nil {
+		t.Fatalf("proto.Marshal: %v", err)
+	}
+	if _, err := READ_ROW.Decode(TableEnvelope, mismatchBytes); err == nil {
+		t.Errorf("READ_ROW.Decode(MutateRow payload) = nil, want error")
 	}
 }

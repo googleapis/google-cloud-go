@@ -617,19 +617,19 @@ var File_google_cloud_capacityplanner_v1beta_resource_proto protoreflect.FileDes
 
 const file_google_cloud_capacityplanner_v1beta_resource_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/capacityplanner/v1beta/resource.proto\x12#google.cloud.capacityplanner.v1beta\x1a\x1fgoogle/api/field_behavior.proto\"\xb9\x01\n" +
+	"2google/cloud/capacityplanner/v1beta/resource.proto\x12#google.cloud.capacityplanner.v1beta\x1a\x1fgoogle/api/field_behavior.proto\"\xba\x01\n" +
 	"\x11ResourceContainer\x12O\n" +
-	"\x04type\x18\x01 \x01(\x0e2;.google.cloud.capacityplanner.v1beta.ResourceContainer.TypeR\x04type\x12\x13\n" +
-	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\">\n" +
+	"\x04type\x18\x01 \x01(\x0e2;.google.cloud.capacityplanner.v1beta.ResourceContainer.TypeR\x04type\x12\x14\n" +
+	"\x02id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x02id\">\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPROJECT\x10\x01\x12\n" +
 	"\n" +
 	"\x06FOLDER\x10\x02\x12\a\n" +
-	"\x03ORG\x10\x03\"\xab\x01\n" +
-	"\rResourceIdKey\x12*\n" +
-	"\rresource_code\x18\x02 \x01(\tB\x03\xe0A\x02H\x00R\fresourceCode\x12]\n" +
-	"\vresource_id\x18\x01 \x01(\v27.google.cloud.capacityplanner.v1beta.ResourceIdentifierB\x03\xe0A\x02R\n" +
+	"\x03ORG\x10\x03\"\xad\x01\n" +
+	"\rResourceIdKey\x12+\n" +
+	"\rresource_code\x18\x02 \x01(\tB\x04\xe2A\x01\x02H\x00R\fresourceCode\x12^\n" +
+	"\vresource_id\x18\x01 \x01(\v27.google.cloud.capacityplanner.v1beta.ResourceIdentifierB\x04\xe2A\x01\x02R\n" +
 	"resourceIdB\x0f\n" +
 	"\rdemand_fields\"\xc5\x01\n" +
 	"\x12ResourceIdentifier\x12!\n" +

@@ -370,11 +370,11 @@ const file_google_spanner_admin_database_v1_common_proto_rawDesc = "" +
 	"!cloudkms.googleapis.com/CryptoKeyR\n" +
 	"kmsKeyName\x12J\n" +
 	"\rkms_key_names\x18\x03 \x03(\tB&\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\vkmsKeyNames\"\xf3\x02\n" +
-	"\x0eEncryptionInfo\x12c\n" +
-	"\x0fencryption_type\x18\x03 \x01(\x0e25.google.spanner.admin.database.v1.EncryptionInfo.TypeB\x03\xe0A\x03R\x0eencryptionType\x12D\n" +
-	"\x11encryption_status\x18\x04 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x10encryptionStatus\x12X\n" +
-	"\x0fkms_key_version\x18\x02 \x01(\tB0\xe0A\x03\xfaA*\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\vkmsKeyNames\"\xf6\x02\n" +
+	"\x0eEncryptionInfo\x12d\n" +
+	"\x0fencryption_type\x18\x03 \x01(\x0e25.google.spanner.admin.database.v1.EncryptionInfo.TypeB\x04\xe2A\x01\x03R\x0eencryptionType\x12E\n" +
+	"\x11encryption_status\x18\x04 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x10encryptionStatus\x12Y\n" +
+	"\x0fkms_key_version\x18\x02 \x01(\tB1\xe2A\x01\x03\xfaA*\n" +
 	"(cloudkms.googleapis.com/CryptoKeyVersionR\rkmsKeyVersion\"\\\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x1d\n" +

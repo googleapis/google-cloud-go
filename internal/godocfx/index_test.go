@@ -52,6 +52,10 @@ func TestGet(t *testing.T) {
 			return
 		}
 		if numCalls == 2 {
+			http.Error(w, "something something rate limit", http.StatusTooManyRequests)
+			return
+		}
+		if numCalls == 3 {
 			resp := []byte(fmt.Sprintf(responses[1], lastTime))
 			w.Write(resp)
 			return

@@ -334,29 +334,29 @@ var File_google_cloud_baremetalsolution_v2_ssh_key_proto protoreflect.FileDescri
 
 const file_google_cloud_baremetalsolution_v2_ssh_key_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/baremetalsolution/v2/ssh_key.proto\x12!google.cloud.baremetalsolution.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xa9\x01\n" +
-	"\x06SSHKey\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1d\n" +
+	"/google/cloud/baremetalsolution/v2/ssh_key.proto\x12!google.cloud.baremetalsolution.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xaa\x01\n" +
+	"\x06SSHKey\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x1d\n" +
 	"\n" +
 	"public_key\x18\x02 \x01(\tR\tpublicKey:g\xeaAd\n" +
-	"'baremetalsolution.googleapis.com/SshKey\x129projects/{project}/locations/{location}/sshKeys/{ssh_key}\"\x93\x01\n" +
-	"\x12ListSSHKeysRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"'baremetalsolution.googleapis.com/SshKey\x129projects/{project}/locations/{location}/sshKeys/{ssh_key}\"\x94\x01\n" +
+	"\x12ListSSHKeysRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x83\x01\n" +
 	"\x13ListSSHKeysResponse\x12D\n" +
 	"\bssh_keys\x18\x01 \x03(\v2).google.cloud.baremetalsolution.v2.SSHKeyR\asshKeys\x12&\n" +
-	"\x0fnext_page_token\x18Z \x01(\tR\rnextPageToken\"\xc4\x01\n" +
-	"\x13CreateSSHKeyRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12G\n" +
-	"\assh_key\x18\x02 \x01(\v2).google.cloud.baremetalsolution.v2.SSHKeyB\x03\xe0A\x02R\x06sshKey\x12!\n" +
+	"\x0fnext_page_token\x18Z \x01(\tR\rnextPageToken\"\xc7\x01\n" +
+	"\x13CreateSSHKeyRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12H\n" +
+	"\assh_key\x18\x02 \x01(\v2).google.cloud.baremetalsolution.v2.SSHKeyB\x04\xe2A\x01\x02R\x06sshKey\x12\"\n" +
 	"\n" +
-	"ssh_key_id\x18\x03 \x01(\tB\x03\xe0A\x02R\bsshKeyId\"Z\n" +
-	"\x13DeleteSSHKeyRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"ssh_key_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\bsshKeyId\"[\n" +
+	"\x13DeleteSSHKeyRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'baremetalsolution.googleapis.com/SshKeyR\x04nameB\xfa\x01\n" +
 	"%com.google.cloud.baremetalsolution.v2B\vSshKeyProtoP\x01ZScloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb;baremetalsolutionpb\xaa\x02!Google.Cloud.BareMetalSolution.V2\xca\x02!Google\\Cloud\\BareMetalSolution\\V2\xea\x02$Google::Cloud::BareMetalSolution::V2b\x06proto3"
 

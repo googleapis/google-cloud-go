@@ -544,45 +544,45 @@ var File_google_cloud_dialogflow_cx_v3beta1_example_proto protoreflect.FileDescr
 
 const file_google_cloud_dialogflow_cx_v3beta1_example_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/dialogflow/cx/v3beta1/example.proto\x12\"google.cloud.dialogflow.cx.v3beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/dialogflow/cx/v3beta1/trace.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa5\x01\n" +
-	"\x14CreateExampleRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!dialogflow.googleapis.com/ExampleR\x06parent\x12J\n" +
-	"\aexample\x18\x02 \x01(\v2+.google.cloud.dialogflow.cx.v3beta1.ExampleB\x03\xe0A\x02R\aexample\"U\n" +
-	"\x14DeleteExampleRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dialogflow.googleapis.com/ExampleR\x04name\"\xc8\x01\n" +
-	"\x13ListExamplesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!dialogflow.googleapis.com/ExampleR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"0google/cloud/dialogflow/cx/v3beta1/example.proto\x12\"google.cloud.dialogflow.cx.v3beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/dialogflow/cx/v3beta1/trace.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa7\x01\n" +
+	"\x14CreateExampleRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!dialogflow.googleapis.com/ExampleR\x06parent\x12K\n" +
+	"\aexample\x18\x02 \x01(\v2+.google.cloud.dialogflow.cx.v3beta1.ExampleB\x04\xe2A\x01\x02R\aexample\"V\n" +
+	"\x14DeleteExampleRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dialogflow.googleapis.com/ExampleR\x04name\"\xcc\x01\n" +
+	"\x13ListExamplesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!dialogflow.googleapis.com/ExampleR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12(\n" +
-	"\rlanguage_code\x18\x04 \x01(\tB\x03\xe0A\x01R\flanguageCode\"\x87\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12)\n" +
+	"\rlanguage_code\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\"\x87\x01\n" +
 	"\x14ListExamplesResponse\x12G\n" +
 	"\bexamples\x18\x01 \x03(\v2+.google.cloud.dialogflow.cx.v3beta1.ExampleR\bexamples\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"R\n" +
-	"\x11GetExampleRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dialogflow.googleapis.com/ExampleR\x04name\"\xa4\x01\n" +
-	"\x14UpdateExampleRequest\x12J\n" +
-	"\aexample\x18\x01 \x01(\v2+.google.cloud.dialogflow.cx.v3beta1.ExampleB\x03\xe0A\x02R\aexample\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xce\x06\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"S\n" +
+	"\x11GetExampleRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dialogflow.googleapis.com/ExampleR\x04name\"\xa6\x01\n" +
+	"\x14UpdateExampleRequest\x12K\n" +
+	"\aexample\x18\x01 \x01(\v2+.google.cloud.dialogflow.cx.v3beta1.ExampleB\x04\xe2A\x01\x02R\aexample\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\xd8\x06\n" +
 	"\aExample\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12]\n" +
-	"\x0eplaybook_input\x18\x03 \x01(\v21.google.cloud.dialogflow.cx.v3beta1.PlaybookInputB\x03\xe0A\x01R\rplaybookInput\x12`\n" +
-	"\x0fplaybook_output\x18\x04 \x01(\v22.google.cloud.dialogflow.cx.v3beta1.PlaybookOutputB\x03\xe0A\x01R\x0eplaybookOutput\x12I\n" +
-	"\aactions\x18\x02 \x03(\v2*.google.cloud.dialogflow.cx.v3beta1.ActionB\x03\xe0A\x02R\aactions\x12&\n" +
-	"\fdisplay_name\x18\x06 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\b \x01(\tB\x03\xe0A\x01R\vdescription\x12$\n" +
-	"\vtoken_count\x18\t \x01(\x03B\x03\xe0A\x03R\n" +
-	"tokenCount\x12@\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12^\n" +
+	"\x0eplaybook_input\x18\x03 \x01(\v21.google.cloud.dialogflow.cx.v3beta1.PlaybookInputB\x04\xe2A\x01\x01R\rplaybookInput\x12a\n" +
+	"\x0fplaybook_output\x18\x04 \x01(\v22.google.cloud.dialogflow.cx.v3beta1.PlaybookOutputB\x04\xe2A\x01\x01R\x0eplaybookOutput\x12J\n" +
+	"\aactions\x18\x02 \x03(\v2*.google.cloud.dialogflow.cx.v3beta1.ActionB\x04\xe2A\x01\x02R\aactions\x12'\n" +
+	"\fdisplay_name\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\b \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12%\n" +
+	"\vtoken_count\x18\t \x01(\x03B\x04\xe2A\x01\x03R\n" +
+	"tokenCount\x12A\n" +
 	"\vcreate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12c\n" +
-	"\x12conversation_state\x18\f \x01(\x0e2/.google.cloud.dialogflow.cx.v3beta1.OutputStateB\x03\xe0A\x02R\x11conversationState\x12(\n" +
-	"\rlanguage_code\x18\r \x01(\tB\x03\xe0A\x01R\flanguageCode:\x9a\x01\xeaA\x96\x01\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12d\n" +
+	"\x12conversation_state\x18\f \x01(\x0e2/.google.cloud.dialogflow.cx.v3beta1.OutputStateB\x04\xe2A\x01\x02R\x11conversationState\x12)\n" +
+	"\rlanguage_code\x18\r \x01(\tB\x04\xe2A\x01\x01R\flanguageCode:\x9a\x01\xeaA\x96\x01\n" +
 	"!dialogflow.googleapis.com/Example\x12^projects/{project}/locations/{location}/agents/{agent}/playbooks/{playbook}/examples/{example}*\bexamples2\aexample2\xb9\t\n" +
 	"\bExamples\x12\xe0\x01\n" +
 	"\rCreateExample\x128.google.cloud.dialogflow.cx.v3beta1.CreateExampleRequest\x1a+.google.cloud.dialogflow.cx.v3beta1.Example\"h\xdaA\x0eparent,example\x82\xd3\xe4\x93\x02Q:\aexample\"F/v3beta1/{parent=projects/*/locations/*/agents/*/playbooks/*}/examples\x12\xb8\x01\n" +

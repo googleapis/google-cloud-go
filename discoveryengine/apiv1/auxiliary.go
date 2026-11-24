@@ -18,12 +18,14 @@ package discoveryengine
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	discoveryenginepb "cloud.google.com/go/discoveryengine/apiv1/discoveryenginepb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -589,6 +591,59 @@ func (op *DeleteCmekConfigOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *DeleteCmekConfigOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeleteCollectionOperation manages a long-running operation from DeleteCollection.
+type DeleteCollectionOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteCollectionOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteCollectionOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteCollectionOperation) Metadata() (*discoveryenginepb.DeleteCollectionMetadata, error) {
+	var meta discoveryenginepb.DeleteCollectionMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteCollectionOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteCollectionOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -1795,6 +1850,70 @@ func (op *RecrawlUrisOperation) Name() string {
 	return op.lro.Name()
 }
 
+// SetUpDataConnectorOperation manages a long-running operation from SetUpDataConnector.
+type SetUpDataConnectorOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *SetUpDataConnectorOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.DataConnector, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp discoveryenginepb.DataConnector
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *SetUpDataConnectorOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.DataConnector, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp discoveryenginepb.DataConnector
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *SetUpDataConnectorOperation) Metadata() (*discoveryenginepb.SetUpDataConnectorMetadata, error) {
+	var meta discoveryenginepb.SetUpDataConnectorMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *SetUpDataConnectorOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *SetUpDataConnectorOperation) Name() string {
+	return op.lro.Name()
+}
+
 // TrainCustomModelOperation manages a long-running operation from TrainCustomModel.
 type TrainCustomModelOperation struct {
 	lro      *longrunning.Operation
@@ -2051,6 +2170,65 @@ func (op *UpdateTargetSiteOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AssistantIterator) All() iter.Seq2[*discoveryenginepb.Assistant, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// AssistantIterator manages a stream of *discoveryenginepb.Assistant.
+type AssistantIterator struct {
+	items    []*discoveryenginepb.Assistant
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.Assistant, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *AssistantIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *AssistantIterator) Next() (*discoveryenginepb.Assistant, error) {
+	var item *discoveryenginepb.Assistant
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *AssistantIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *AssistantIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ControlIterator) All() iter.Seq2[*discoveryenginepb.Control, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ControlIterator manages a stream of *discoveryenginepb.Control.
 type ControlIterator struct {
 	items    []*discoveryenginepb.Control
@@ -2096,6 +2274,12 @@ func (it *ControlIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConversationIterator) All() iter.Seq2[*discoveryenginepb.Conversation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ConversationIterator manages a stream of *discoveryenginepb.Conversation.
@@ -2145,6 +2329,12 @@ func (it *ConversationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataStoreIterator) All() iter.Seq2[*discoveryenginepb.DataStore, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DataStoreIterator manages a stream of *discoveryenginepb.DataStore.
 type DataStoreIterator struct {
 	items    []*discoveryenginepb.DataStore
@@ -2190,6 +2380,12 @@ func (it *DataStoreIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DocumentIterator) All() iter.Seq2[*discoveryenginepb.Document, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DocumentIterator manages a stream of *discoveryenginepb.Document.
@@ -2239,6 +2435,12 @@ func (it *DocumentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EngineIterator) All() iter.Seq2[*discoveryenginepb.Engine, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EngineIterator manages a stream of *discoveryenginepb.Engine.
 type EngineIterator struct {
 	items    []*discoveryenginepb.Engine
@@ -2284,6 +2486,12 @@ func (it *EngineIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IdentityMappingEntryIterator) All() iter.Seq2[*discoveryenginepb.IdentityMappingEntry, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // IdentityMappingEntryIterator manages a stream of *discoveryenginepb.IdentityMappingEntry.
@@ -2333,6 +2541,12 @@ func (it *IdentityMappingEntryIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IdentityMappingStoreIterator) All() iter.Seq2[*discoveryenginepb.IdentityMappingStore, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // IdentityMappingStoreIterator manages a stream of *discoveryenginepb.IdentityMappingStore.
 type IdentityMappingStoreIterator struct {
 	items    []*discoveryenginepb.IdentityMappingStore
@@ -2378,6 +2592,65 @@ func (it *IdentityMappingStoreIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LicenseConfigIterator) All() iter.Seq2[*discoveryenginepb.LicenseConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// LicenseConfigIterator manages a stream of *discoveryenginepb.LicenseConfig.
+type LicenseConfigIterator struct {
+	items    []*discoveryenginepb.LicenseConfig
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.LicenseConfig, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *LicenseConfigIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *LicenseConfigIterator) Next() (*discoveryenginepb.LicenseConfig, error) {
+	var item *discoveryenginepb.LicenseConfig
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *LicenseConfigIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *LicenseConfigIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -2427,6 +2700,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SchemaIterator) All() iter.Seq2[*discoveryenginepb.Schema, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SchemaIterator manages a stream of *discoveryenginepb.Schema.
 type SchemaIterator struct {
 	items    []*discoveryenginepb.Schema
@@ -2472,6 +2751,12 @@ func (it *SchemaIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SearchResponse_SearchResultIterator) All() iter.Seq2[*discoveryenginepb.SearchResponse_SearchResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SearchResponse_SearchResultIterator manages a stream of *discoveryenginepb.SearchResponse_SearchResult.
@@ -2521,6 +2806,65 @@ func (it *SearchResponse_SearchResultIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServingConfigIterator) All() iter.Seq2[*discoveryenginepb.ServingConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// ServingConfigIterator manages a stream of *discoveryenginepb.ServingConfig.
+type ServingConfigIterator struct {
+	items    []*discoveryenginepb.ServingConfig
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.ServingConfig, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *ServingConfigIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ServingConfigIterator) Next() (*discoveryenginepb.ServingConfig, error) {
+	var item *discoveryenginepb.ServingConfig
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ServingConfigIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ServingConfigIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SessionIterator) All() iter.Seq2[*discoveryenginepb.Session, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SessionIterator manages a stream of *discoveryenginepb.Session.
 type SessionIterator struct {
 	items    []*discoveryenginepb.Session
@@ -2568,6 +2912,12 @@ func (it *SessionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TargetSiteIterator) All() iter.Seq2[*discoveryenginepb.TargetSite, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TargetSiteIterator manages a stream of *discoveryenginepb.TargetSite.
 type TargetSiteIterator struct {
 	items    []*discoveryenginepb.TargetSite
@@ -2613,6 +2963,12 @@ func (it *TargetSiteIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UserLicenseIterator) All() iter.Seq2[*discoveryenginepb.UserLicense, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // UserLicenseIterator manages a stream of *discoveryenginepb.UserLicense.

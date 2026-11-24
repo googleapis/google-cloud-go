@@ -319,26 +319,26 @@ var File_google_cloud_oracledatabase_v1_db_version_proto protoreflect.FileDescri
 
 const file_google_cloud_oracledatabase_v1_db_version_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/oracledatabase/v1/db_version.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x86\x02\n" +
-	"\tDbVersion\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12X\n" +
+	"/google/cloud/oracledatabase/v1/db_version.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x88\x02\n" +
+	"\tDbVersion\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12Y\n" +
 	"\n" +
-	"properties\x18\x02 \x01(\v23.google.cloud.oracledatabase.v1.DbVersionPropertiesB\x03\xe0A\x03R\n" +
+	"properties\x18\x02 \x01(\v23.google.cloud.oracledatabase.v1.DbVersionPropertiesB\x04\xe2A\x01\x03R\n" +
 	"properties:\x85\x01\xeaA\x81\x01\n" +
 	"'oracledatabase.googleapis.com/DbVersion\x12?projects/{project}/locations/{location}/dbVersions/{db_version}*\n" +
-	"dbVersions2\tdbVersion\"\x8e\x02\n" +
-	"\x13DbVersionProperties\x12\x1d\n" +
-	"\aversion\x18\x01 \x01(\tB\x03\xe0A\x03R\aversion\x12A\n" +
-	"\x1bis_latest_for_major_version\x18\x02 \x01(\bB\x03\xe0A\x03R\x17isLatestForMajorVersion\x12&\n" +
-	"\fsupports_pdb\x18\x03 \x01(\bB\x03\xe0A\x03R\vsupportsPdb\x126\n" +
-	"\x15is_preview_db_version\x18\x04 \x01(\bB\x03\xe0A\x03R\x12isPreviewDbVersion\x125\n" +
-	"\x14is_upgrade_supported\x18\x05 \x01(\bB\x03\xe0A\x03R\x12isUpgradeSupported\"\xc3\x01\n" +
-	"\x15ListDbVersionsRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'oracledatabase.googleapis.com/DbVersionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"dbVersions2\tdbVersion\"\x93\x02\n" +
+	"\x13DbVersionProperties\x12\x1e\n" +
+	"\aversion\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\aversion\x12B\n" +
+	"\x1bis_latest_for_major_version\x18\x02 \x01(\bB\x04\xe2A\x01\x03R\x17isLatestForMajorVersion\x12'\n" +
+	"\fsupports_pdb\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\vsupportsPdb\x127\n" +
+	"\x15is_preview_db_version\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\x12isPreviewDbVersion\x126\n" +
+	"\x14is_upgrade_supported\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\x12isUpgradeSupported\"\xc7\x01\n" +
+	"\x15ListDbVersionsRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'oracledatabase.googleapis.com/DbVersionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x8c\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x8c\x01\n" +
 	"\x16ListDbVersionsResponse\x12J\n" +
 	"\vdb_versions\x18\x01 \x03(\v2).google.cloud.oracledatabase.v1.DbVersionR\n" +
 	"dbVersions\x12&\n" +

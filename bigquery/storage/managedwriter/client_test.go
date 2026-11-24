@@ -16,6 +16,7 @@ package managedwriter
 
 import (
 	"context"
+	"slices"
 	"testing"
 
 	"github.com/googleapis/gax-go/v2"
@@ -73,13 +74,7 @@ func TestCreatePool_Location(t *testing.T) {
 	if !ok {
 		t.Fatalf("metadata key not present")
 	}
-	found := false
-	for _, v := range vals {
-		if v == "write_location=projects/myproj/locations/foo" {
-			found = true
-			break
-		}
-	}
+	found := slices.Contains(vals, "write_location=projects/myproj/locations/foo")
 	if !found {
 		t.Fatal("expected location header not found")
 	}

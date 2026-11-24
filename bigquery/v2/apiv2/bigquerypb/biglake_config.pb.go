@@ -218,14 +218,14 @@ var File_google_cloud_bigquery_v2_biglake_config_proto protoreflect.FileDescript
 
 const file_google_cloud_bigquery_v2_biglake_config_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/bigquery/v2/biglake_config.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"\x9d\x03\n" +
-	"\x14BigLakeConfiguration\x12(\n" +
-	"\rconnection_id\x18\x01 \x01(\tB\x03\xe0A\x01R\fconnectionId\x12$\n" +
-	"\vstorage_uri\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
-	"storageUri\x12_\n" +
-	"\vfile_format\x18\x03 \x01(\x0e29.google.cloud.bigquery.v2.BigLakeConfiguration.FileFormatB\x03\xe0A\x01R\n" +
-	"fileFormat\x12b\n" +
-	"\ftable_format\x18\x04 \x01(\x0e2:.google.cloud.bigquery.v2.BigLakeConfiguration.TableFormatB\x03\xe0A\x01R\vtableFormat\"6\n" +
+	"-google/cloud/bigquery/v2/biglake_config.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xa1\x03\n" +
+	"\x14BigLakeConfiguration\x12)\n" +
+	"\rconnection_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\fconnectionId\x12%\n" +
+	"\vstorage_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"storageUri\x12`\n" +
+	"\vfile_format\x18\x03 \x01(\x0e29.google.cloud.bigquery.v2.BigLakeConfiguration.FileFormatB\x04\xe2A\x01\x01R\n" +
+	"fileFormat\x12c\n" +
+	"\ftable_format\x18\x04 \x01(\x0e2:.google.cloud.bigquery.v2.BigLakeConfiguration.TableFormatB\x04\xe2A\x01\x01R\vtableFormat\"6\n" +
 	"\n" +
 	"FileFormat\x12\x1b\n" +
 	"\x17FILE_FORMAT_UNSPECIFIED\x10\x00\x12\v\n" +

@@ -286,6 +286,53 @@ func NewApiHubDependenciesRESTClient(ctx context.Context, opts ...option.ClientO
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "apihub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apihub/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apihub.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDependency = append(callOpts.CreateDependency, gax.WithClientTracing(tracing))
+		callOpts.GetDependency = append(callOpts.GetDependency, gax.WithClientTracing(tracing))
+		callOpts.UpdateDependency = append(callOpts.UpdateDependency, gax.WithClientTracing(tracing))
+		callOpts.DeleteDependency = append(callOpts.DeleteDependency, gax.WithClientTracing(tracing))
+		callOpts.ListDependencies = append(callOpts.ListDependencies, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "apihub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apihub/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apihub.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDependency = append(callOpts.CreateDependency, gax.WithClientLogging(logging))
+		callOpts.GetDependency = append(callOpts.GetDependency, gax.WithClientLogging(logging))
+		callOpts.UpdateDependency = append(callOpts.UpdateDependency, gax.WithClientLogging(logging))
+		callOpts.DeleteDependency = append(callOpts.DeleteDependency, gax.WithClientLogging(logging))
+		callOpts.ListDependencies = append(callOpts.ListDependencies, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &ApiHubDependenciesClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -341,6 +388,11 @@ func (c *apiHubDependenciesRESTClient) CreateDependency(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dependencies", req.GetParent())
 
 	params := url.Values{}
@@ -357,9 +409,6 @@ func (c *apiHubDependenciesRESTClient) CreateDependency(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubDependencies/CreateDependency")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/dependencies")
@@ -401,6 +450,11 @@ func (c *apiHubDependenciesRESTClient) GetDependency(ctx context.Context, req *a
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -414,9 +468,6 @@ func (c *apiHubDependenciesRESTClient) GetDependency(ctx context.Context, req *a
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubDependencies/GetDependency")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dependencies/*}")
@@ -470,6 +521,11 @@ func (c *apiHubDependenciesRESTClient) UpdateDependency(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDependency().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDependency().GetName())
@@ -533,6 +589,11 @@ func (c *apiHubDependenciesRESTClient) DeleteDependency(ctx context.Context, req
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -546,9 +607,6 @@ func (c *apiHubDependenciesRESTClient) DeleteDependency(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubDependencies/DeleteDependency")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dependencies/*}")
@@ -586,6 +644,11 @@ func (c *apiHubDependenciesRESTClient) ListDependencies(ctx context.Context, req
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dependencies", req.GetParent())
@@ -656,6 +719,11 @@ func (c *apiHubDependenciesRESTClient) GetLocation(ctx context.Context, req *loc
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -721,6 +789,11 @@ func (c *apiHubDependenciesRESTClient) ListLocations(ctx context.Context, req *l
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -797,6 +870,11 @@ func (c *apiHubDependenciesRESTClient) CancelOperation(ctx context.Context, req 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -836,6 +914,11 @@ func (c *apiHubDependenciesRESTClient) DeleteOperation(ctx context.Context, req 
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -873,6 +956,11 @@ func (c *apiHubDependenciesRESTClient) DeleteOperation(ctx context.Context, req 
 func (c *apiHubDependenciesRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -940,6 +1028,11 @@ func (c *apiHubDependenciesRESTClient) ListOperations(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

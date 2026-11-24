@@ -248,16 +248,16 @@ var File_google_cloud_baremetalsolution_v2_osimage_proto protoreflect.FileDescri
 
 const file_google_cloud_baremetalsolution_v2_osimage_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/baremetalsolution/v2/osimage.proto\x12!google.cloud.baremetalsolution.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xd3\x02\n" +
-	"\aOSImage\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x12\n" +
+	"/google/cloud/baremetalsolution/v2/osimage.proto\x12!google.cloud.baremetalsolution.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xd4\x02\n" +
+	"\aOSImage\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x12\n" +
 	"\x04code\x18\x02 \x01(\tR\x04code\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12:\n" +
 	"\x19applicable_instance_types\x18\x04 \x03(\tR\x17applicableInstanceTypes\x12>\n" +
 	"\x1bsupported_network_templates\x18\x05 \x03(\tR\x19supportedNetworkTemplates:}\xeaAz\n" +
-	"(baremetalsolution.googleapis.com/OsImage\x12;projects/{project}/locations/{location}/osImages/{os_image}*\bosImages2\aosImage\"\x94\x01\n" +
-	"\x13ListOSImagesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"(baremetalsolution.googleapis.com/OsImage\x12;projects/{project}/locations/{location}/osImages/{os_image}*\bosImages2\aosImage\"\x95\x01\n" +
+	"\x13ListOSImagesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +

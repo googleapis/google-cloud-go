@@ -107,14 +107,14 @@ var File_google_cloud_bigquery_v2_routine_reference_proto protoreflect.FileDescr
 
 const file_google_cloud_bigquery_v2_routine_reference_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/bigquery/v2/routine_reference.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"~\n" +
-	"\x10RoutineReference\x12\"\n" +
+	"0google/cloud/bigquery/v2/routine_reference.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"\x81\x01\n" +
+	"\x10RoutineReference\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12\"\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12#\n" +
 	"\n" +
-	"routine_id\x18\x03 \x01(\tB\x03\xe0A\x02R\troutineIdBr\n" +
+	"routine_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\troutineIdBr\n" +
 	"\x1ccom.google.cloud.bigquery.v2B\x15RoutineReferenceProtoZ;cloud.google.com/go/bigquery/v2/apiv2/bigquerypb;bigquerypbb\x06proto3"
 
 var (

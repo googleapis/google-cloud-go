@@ -783,16 +783,16 @@ var File_google_ai_generativelanguage_v1beta_text_service_proto protoreflect.Fil
 
 const file_google_ai_generativelanguage_v1beta_text_service_proto_rawDesc = "" +
 	"\n" +
-	"6google/ai/generativelanguage/v1beta/text_service.proto\x12#google.ai.generativelanguage.v1beta\x1a2google/ai/generativelanguage/v1beta/citation.proto\x1a0google/ai/generativelanguage/v1beta/safety.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xa8\x04\n" +
-	"\x13GenerateTextRequest\x12\x19\n" +
-	"\x05model\x18\x01 \x01(\tB\x03\xe0A\x02R\x05model\x12L\n" +
-	"\x06prompt\x18\x02 \x01(\v2/.google.ai.generativelanguage.v1beta.TextPromptB\x03\xe0A\x02R\x06prompt\x12*\n" +
-	"\vtemperature\x18\x03 \x01(\x02B\x03\xe0A\x01H\x00R\vtemperature\x88\x01\x01\x121\n" +
-	"\x0fcandidate_count\x18\x04 \x01(\x05B\x03\xe0A\x01H\x01R\x0ecandidateCount\x88\x01\x01\x124\n" +
-	"\x11max_output_tokens\x18\x05 \x01(\x05B\x03\xe0A\x01H\x02R\x0fmaxOutputTokens\x88\x01\x01\x12\x1d\n" +
-	"\x05top_p\x18\x06 \x01(\x02B\x03\xe0A\x01H\x03R\x04topP\x88\x01\x01\x12\x1d\n" +
-	"\x05top_k\x18\a \x01(\x05B\x03\xe0A\x01H\x04R\x04topK\x88\x01\x01\x12`\n" +
-	"\x0fsafety_settings\x18\b \x03(\v22.google.ai.generativelanguage.v1beta.SafetySettingB\x03\xe0A\x01R\x0esafetySettings\x12%\n" +
+	"6google/ai/generativelanguage/v1beta/text_service.proto\x12#google.ai.generativelanguage.v1beta\x1a2google/ai/generativelanguage/v1beta/citation.proto\x1a0google/ai/generativelanguage/v1beta/safety.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xb0\x04\n" +
+	"\x13GenerateTextRequest\x12\x1a\n" +
+	"\x05model\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05model\x12M\n" +
+	"\x06prompt\x18\x02 \x01(\v2/.google.ai.generativelanguage.v1beta.TextPromptB\x04\xe2A\x01\x02R\x06prompt\x12+\n" +
+	"\vtemperature\x18\x03 \x01(\x02B\x04\xe2A\x01\x01H\x00R\vtemperature\x88\x01\x01\x122\n" +
+	"\x0fcandidate_count\x18\x04 \x01(\x05B\x04\xe2A\x01\x01H\x01R\x0ecandidateCount\x88\x01\x01\x125\n" +
+	"\x11max_output_tokens\x18\x05 \x01(\x05B\x04\xe2A\x01\x01H\x02R\x0fmaxOutputTokens\x88\x01\x01\x12\x1e\n" +
+	"\x05top_p\x18\x06 \x01(\x02B\x04\xe2A\x01\x01H\x03R\x04topP\x88\x01\x01\x12\x1e\n" +
+	"\x05top_k\x18\a \x01(\x05B\x04\xe2A\x01\x01H\x04R\x04topK\x88\x01\x01\x12a\n" +
+	"\x0fsafety_settings\x18\b \x03(\v22.google.ai.generativelanguage.v1beta.SafetySettingB\x04\xe2A\x01\x01R\x0esafetySettings\x12%\n" +
 	"\x0estop_sequences\x18\t \x03(\tR\rstopSequencesB\x0e\n" +
 	"\f_temperatureB\x12\n" +
 	"\x10_candidate_countB\x14\n" +
@@ -804,38 +804,38 @@ const file_google_ai_generativelanguage_v1beta_text_service_proto_rawDesc = "" +
 	"candidates\x18\x01 \x03(\v23.google.ai.generativelanguage.v1beta.TextCompletionR\n" +
 	"candidates\x12L\n" +
 	"\afilters\x18\x03 \x03(\v22.google.ai.generativelanguage.v1beta.ContentFilterR\afilters\x12\\\n" +
-	"\x0fsafety_feedback\x18\x04 \x03(\v23.google.ai.generativelanguage.v1beta.SafetyFeedbackR\x0esafetyFeedback\"%\n" +
+	"\x0fsafety_feedback\x18\x04 \x03(\v23.google.ai.generativelanguage.v1beta.SafetyFeedbackR\x0esafetyFeedback\"&\n" +
 	"\n" +
-	"TextPrompt\x12\x17\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x02R\x04text\"\x8b\x02\n" +
-	"\x0eTextCompletion\x12\x1b\n" +
-	"\x06output\x18\x01 \x01(\tB\x03\xe0A\x03R\x06output\x12X\n" +
-	"\x0esafety_ratings\x18\x02 \x03(\v21.google.ai.generativelanguage.v1beta.SafetyRatingR\rsafetyRatings\x12l\n" +
-	"\x11citation_metadata\x18\x03 \x01(\v25.google.ai.generativelanguage.v1beta.CitationMetadataB\x03\xe0A\x03H\x00R\x10citationMetadata\x88\x01\x01B\x14\n" +
-	"\x12_citation_metadata\"r\n" +
-	"\x10EmbedTextRequest\x12E\n" +
-	"\x05model\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'generativelanguage.googleapis.com/ModelR\x05model\x12\x17\n" +
-	"\x04text\x18\x02 \x01(\tB\x03\xe0A\x01R\x04text\"y\n" +
-	"\x11EmbedTextResponse\x12V\n" +
-	"\tembedding\x18\x01 \x01(\v2..google.ai.generativelanguage.v1beta.EmbeddingB\x03\xe0A\x03H\x00R\tembedding\x88\x01\x01B\f\n" +
+	"TextPrompt\x12\x18\n" +
+	"\x04text\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04text\"\x8d\x02\n" +
+	"\x0eTextCompletion\x12\x1c\n" +
+	"\x06output\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06output\x12X\n" +
+	"\x0esafety_ratings\x18\x02 \x03(\v21.google.ai.generativelanguage.v1beta.SafetyRatingR\rsafetyRatings\x12m\n" +
+	"\x11citation_metadata\x18\x03 \x01(\v25.google.ai.generativelanguage.v1beta.CitationMetadataB\x04\xe2A\x01\x03H\x00R\x10citationMetadata\x88\x01\x01B\x14\n" +
+	"\x12_citation_metadata\"t\n" +
+	"\x10EmbedTextRequest\x12F\n" +
+	"\x05model\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'generativelanguage.googleapis.com/ModelR\x05model\x12\x18\n" +
+	"\x04text\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04text\"z\n" +
+	"\x11EmbedTextResponse\x12W\n" +
+	"\tembedding\x18\x01 \x01(\v2..google.ai.generativelanguage.v1beta.EmbeddingB\x04\xe2A\x01\x03H\x00R\tembedding\x88\x01\x01B\f\n" +
 	"\n" +
-	"_embedding\"\xd1\x01\n" +
-	"\x15BatchEmbedTextRequest\x12E\n" +
-	"\x05model\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'generativelanguage.googleapis.com/ModelR\x05model\x12\x19\n" +
-	"\x05texts\x18\x02 \x03(\tB\x03\xe0A\x01R\x05texts\x12V\n" +
-	"\brequests\x18\x03 \x03(\v25.google.ai.generativelanguage.v1beta.EmbedTextRequestB\x03\xe0A\x01R\brequests\"m\n" +
-	"\x16BatchEmbedTextResponse\x12S\n" +
+	"_embedding\"\xd4\x01\n" +
+	"\x15BatchEmbedTextRequest\x12F\n" +
+	"\x05model\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'generativelanguage.googleapis.com/ModelR\x05model\x12\x1a\n" +
+	"\x05texts\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x05texts\x12W\n" +
+	"\brequests\x18\x03 \x03(\v25.google.ai.generativelanguage.v1beta.EmbedTextRequestB\x04\xe2A\x01\x01R\brequests\"n\n" +
+	"\x16BatchEmbedTextResponse\x12T\n" +
 	"\n" +
-	"embeddings\x18\x01 \x03(\v2..google.ai.generativelanguage.v1beta.EmbeddingB\x03\xe0A\x03R\n" +
+	"embeddings\x18\x01 \x03(\v2..google.ai.generativelanguage.v1beta.EmbeddingB\x04\xe2A\x01\x03R\n" +
 	"embeddings\"!\n" +
 	"\tEmbedding\x12\x14\n" +
-	"\x05value\x18\x01 \x03(\x02R\x05value\"\xad\x01\n" +
-	"\x16CountTextTokensRequest\x12E\n" +
-	"\x05model\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'generativelanguage.googleapis.com/ModelR\x05model\x12L\n" +
-	"\x06prompt\x18\x02 \x01(\v2/.google.ai.generativelanguage.v1beta.TextPromptB\x03\xe0A\x02R\x06prompt\":\n" +
+	"\x05value\x18\x01 \x03(\x02R\x05value\"\xaf\x01\n" +
+	"\x16CountTextTokensRequest\x12F\n" +
+	"\x05model\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'generativelanguage.googleapis.com/ModelR\x05model\x12M\n" +
+	"\x06prompt\x18\x02 \x01(\v2/.google.ai.generativelanguage.v1beta.TextPromptB\x04\xe2A\x01\x02R\x06prompt\":\n" +
 	"\x17CountTextTokensResponse\x12\x1f\n" +
 	"\vtoken_count\x18\x01 \x01(\x05R\n" +
 	"tokenCount2\xc0\a\n" +

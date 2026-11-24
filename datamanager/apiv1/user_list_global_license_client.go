@@ -248,6 +248,41 @@ func NewUserListGlobalLicenseClient(ctx context.Context, opts ...option.ClientOp
 		client.CallOptions.ListUserListGlobalLicenses = append(client.CallOptions.ListUserListGlobalLicenses, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListUserListGlobalLicenseCustomerInfos = append(client.CallOptions.ListUserListGlobalLicenseCustomerInfos, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateUserListGlobalLicense = append(client.CallOptions.CreateUserListGlobalLicense, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateUserListGlobalLicense = append(client.CallOptions.UpdateUserListGlobalLicense, gax.WithClientTracing(tracing))
+		client.CallOptions.GetUserListGlobalLicense = append(client.CallOptions.GetUserListGlobalLicense, gax.WithClientTracing(tracing))
+		client.CallOptions.ListUserListGlobalLicenses = append(client.CallOptions.ListUserListGlobalLicenses, gax.WithClientTracing(tracing))
+		client.CallOptions.ListUserListGlobalLicenseCustomerInfos = append(client.CallOptions.ListUserListGlobalLicenseCustomerInfos, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateUserListGlobalLicense = append(client.CallOptions.CreateUserListGlobalLicense, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateUserListGlobalLicense = append(client.CallOptions.UpdateUserListGlobalLicense, gax.WithClientLogging(logging))
+		client.CallOptions.GetUserListGlobalLicense = append(client.CallOptions.GetUserListGlobalLicense, gax.WithClientLogging(logging))
+		client.CallOptions.ListUserListGlobalLicenses = append(client.CallOptions.ListUserListGlobalLicenses, gax.WithClientLogging(logging))
+		client.CallOptions.ListUserListGlobalLicenseCustomerInfos = append(client.CallOptions.ListUserListGlobalLicenseCustomerInfos, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -347,6 +382,41 @@ func NewUserListGlobalLicenseRESTClient(ctx context.Context, opts ...option.Clie
 		callOpts.ListUserListGlobalLicenses = append(callOpts.ListUserListGlobalLicenses, gax.WithClientMetrics(metrics))
 		callOpts.ListUserListGlobalLicenseCustomerInfos = append(callOpts.ListUserListGlobalLicenseCustomerInfos, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateUserListGlobalLicense = append(callOpts.CreateUserListGlobalLicense, gax.WithClientTracing(tracing))
+		callOpts.UpdateUserListGlobalLicense = append(callOpts.UpdateUserListGlobalLicense, gax.WithClientTracing(tracing))
+		callOpts.GetUserListGlobalLicense = append(callOpts.GetUserListGlobalLicense, gax.WithClientTracing(tracing))
+		callOpts.ListUserListGlobalLicenses = append(callOpts.ListUserListGlobalLicenses, gax.WithClientTracing(tracing))
+		callOpts.ListUserListGlobalLicenseCustomerInfos = append(callOpts.ListUserListGlobalLicenseCustomerInfos, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateUserListGlobalLicense = append(callOpts.CreateUserListGlobalLicense, gax.WithClientLogging(logging))
+		callOpts.UpdateUserListGlobalLicense = append(callOpts.UpdateUserListGlobalLicense, gax.WithClientLogging(logging))
+		callOpts.GetUserListGlobalLicense = append(callOpts.GetUserListGlobalLicense, gax.WithClientLogging(logging))
+		callOpts.ListUserListGlobalLicenses = append(callOpts.ListUserListGlobalLicenses, gax.WithClientLogging(logging))
+		callOpts.ListUserListGlobalLicenseCustomerInfos = append(callOpts.ListUserListGlobalLicenseCustomerInfos, gax.WithClientLogging(logging))
+	}
 
 	return &UserListGlobalLicenseClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -393,9 +463,6 @@ func (c *userListGlobalLicenseGRPCClient) CreateUserListGlobalLicense(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListGlobalLicenseService/CreateUserListGlobalLicense")
 	}
@@ -438,9 +505,6 @@ func (c *userListGlobalLicenseGRPCClient) GetUserListGlobalLicense(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListGlobalLicenseService/GetUserListGlobalLicense")
 	}
@@ -462,9 +526,6 @@ func (c *userListGlobalLicenseGRPCClient) ListUserListGlobalLicenses(ctx context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListGlobalLicenseService/ListUserListGlobalLicenses")
 	}
@@ -514,9 +575,6 @@ func (c *userListGlobalLicenseGRPCClient) ListUserListGlobalLicenseCustomerInfos
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListGlobalLicenseService/ListUserListGlobalLicenseCustomerInfos")
 	}
@@ -576,6 +634,11 @@ func (c *userListGlobalLicenseRESTClient) CreateUserListGlobalLicense(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/userListGlobalLicenses", req.GetParent())
 
 	params := url.Values{}
@@ -589,9 +652,6 @@ func (c *userListGlobalLicenseRESTClient) CreateUserListGlobalLicense(ctx contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListGlobalLicenseService/CreateUserListGlobalLicense")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=accountTypes/*/accounts/*}/userListGlobalLicenses")
@@ -640,6 +700,11 @@ func (c *userListGlobalLicenseRESTClient) UpdateUserListGlobalLicense(ctx contex
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetUserListGlobalLicense().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetUserListGlobalLicense().GetName())
@@ -705,6 +770,11 @@ func (c *userListGlobalLicenseRESTClient) GetUserListGlobalLicense(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -718,9 +788,6 @@ func (c *userListGlobalLicenseRESTClient) GetUserListGlobalLicense(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListGlobalLicenseService/GetUserListGlobalLicense")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accountTypes/*/accounts/*/userListGlobalLicenses/*}")
@@ -775,6 +842,11 @@ func (c *userListGlobalLicenseRESTClient) ListUserListGlobalLicenses(ctx context
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/userListGlobalLicenses", req.GetParent())
@@ -858,6 +930,11 @@ func (c *userListGlobalLicenseRESTClient) ListUserListGlobalLicenseCustomerInfos
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/userListGlobalLicenseCustomerInfos", req.GetParent())

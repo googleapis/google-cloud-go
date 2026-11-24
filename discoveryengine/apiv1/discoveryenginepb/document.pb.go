@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -82,11 +82,14 @@ type Document struct {
 	DerivedStructData *structpb.Struct `protobuf:"bytes,6,opt,name=derived_struct_data,json=derivedStructData,proto3" json:"derived_struct_data,omitempty"`
 	// Access control information for the document.
 	AclInfo *Document_AclInfo `protobuf:"bytes,11,opt,name=acl_info,json=aclInfo,proto3" json:"acl_info,omitempty"`
-	// Output only. The last time the document was indexed. If this field is set,
-	// the document could be returned in search results.
+	// Output only. The time when the document was last indexed.
 	//
-	// This field is OUTPUT_ONLY. If this field is not populated, it means the
-	// document has never been indexed.
+	// If this field is populated, it means the document has been indexed.
+	// While documents typically become searchable within seconds of indexing,
+	// it can sometimes take up to a few hours.
+	//
+	// If this field is not populated, it means the document has never been
+	// indexed.
 	IndexTime *timestamppb.Timestamp `protobuf:"bytes,13,opt,name=index_time,json=indexTime,proto3" json:"index_time,omitempty"`
 	// Output only. The index status of the document.
 	//
@@ -418,6 +421,8 @@ type Document_IndexStatus struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The time when the document was indexed.
 	// If this field is populated, it means the document has been indexed.
+	// While documents typically become searchable within seconds of indexing,
+	// it can sometimes take up to a few hours.
 	IndexTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=index_time,json=indexTime,proto3" json:"index_time,omitempty"`
 	// A sample of errors encountered while indexing the document.
 	// If this field is populated, the document is not indexed due to errors.
@@ -600,22 +605,22 @@ var File_google_cloud_discoveryengine_v1_document_proto protoreflect.FileDescrip
 
 const file_google_cloud_discoveryengine_v1_document_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/discoveryengine/v1/document.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/discoveryengine/v1/common.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x86\v\n" +
+	".google/cloud/discoveryengine/v1/document.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/discoveryengine/v1/common.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x8c\v\n" +
 	"\bDocument\x12:\n" +
 	"\vstruct_data\x18\x04 \x01(\v2\x17.google.protobuf.StructH\x00R\n" +
 	"structData\x12\x1d\n" +
-	"\tjson_data\x18\x05 \x01(\tH\x00R\bjsonData\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12\x13\n" +
-	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x05R\x02id\x12\x1b\n" +
+	"\tjson_data\x18\x05 \x01(\tH\x00R\bjsonData\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12\x14\n" +
+	"\x02id\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\x02id\x12\x1b\n" +
 	"\tschema_id\x18\x03 \x01(\tR\bschemaId\x12K\n" +
 	"\acontent\x18\n" +
 	" \x01(\v21.google.cloud.discoveryengine.v1.Document.ContentR\acontent\x12,\n" +
-	"\x12parent_document_id\x18\a \x01(\tR\x10parentDocumentId\x12L\n" +
-	"\x13derived_struct_data\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x03R\x11derivedStructData\x12L\n" +
-	"\bacl_info\x18\v \x01(\v21.google.cloud.discoveryengine.v1.Document.AclInfoR\aaclInfo\x12>\n" +
+	"\x12parent_document_id\x18\a \x01(\tR\x10parentDocumentId\x12M\n" +
+	"\x13derived_struct_data\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x03R\x11derivedStructData\x12L\n" +
+	"\bacl_info\x18\v \x01(\v21.google.cloud.discoveryengine.v1.Document.AclInfoR\aaclInfo\x12?\n" +
 	"\n" +
-	"index_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tindexTime\x12]\n" +
-	"\findex_status\x18\x0f \x01(\v25.google.cloud.discoveryengine.v1.Document.IndexStatusB\x03\xe0A\x03R\vindexStatus\x1ad\n" +
+	"index_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tindexTime\x12^\n" +
+	"\findex_status\x18\x0f \x01(\v25.google.cloud.discoveryengine.v1.Document.IndexStatusB\x04\xe2A\x01\x03R\vindexStatus\x1ad\n" +
 	"\aContent\x12\x1d\n" +
 	"\traw_bytes\x18\x02 \x01(\fH\x00R\brawBytes\x12\x12\n" +
 	"\x03uri\x18\x03 \x01(\tH\x00R\x03uri\x12\x1b\n" +
@@ -627,12 +632,12 @@ const file_google_cloud_discoveryengine_v1_document_proto_rawDesc = "" +
 	"\n" +
 	"principals\x18\x01 \x03(\v2*.google.cloud.discoveryengine.v1.PrincipalR\n" +
 	"principals\x12\x19\n" +
-	"\bidp_wide\x18\x02 \x01(\bR\aidpWide\x1a\xaf\x01\n" +
+	"\bidp_wide\x18\x02 \x01(\bR\aidpWide\x1a\xb0\x01\n" +
 	"\vIndexStatus\x129\n" +
 	"\n" +
 	"index_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\tindexTime\x127\n" +
-	"\rerror_samples\x18\x02 \x03(\v2\x12.google.rpc.StatusR\ferrorSamples\x12,\n" +
-	"\x0fpending_message\x18\x03 \x01(\tB\x03\xe0A\x05R\x0ependingMessage:\x96\x02\xeaA\x92\x02\n" +
+	"\rerror_samples\x18\x02 \x03(\v2\x12.google.rpc.StatusR\ferrorSamples\x12-\n" +
+	"\x0fpending_message\x18\x03 \x01(\tB\x04\xe2A\x01\x05R\x0ependingMessage:\x96\x02\xeaA\x92\x02\n" +
 	"'discoveryengine.googleapis.com/Document\x12fprojects/{project}/locations/{location}/dataStores/{data_store}/branches/{branch}/documents/{document}\x12\x7fprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/branches/{branch}/documents/{document}B\x06\n" +
 	"\x04dataB\x80\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B\rDocumentProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"

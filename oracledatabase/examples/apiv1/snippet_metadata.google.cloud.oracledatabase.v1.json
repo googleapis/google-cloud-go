@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/oracledatabase/apiv1",
-    "version": "1.4.0"
+    "version": "1.8.0"
   },
   "snippets": [
     {
@@ -522,6 +522,52 @@
           "fullName": "google.cloud.oracledatabase.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.oracledatabase.v1.Client.CreateOdbDnsZone",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.CreateOdbDnsZone",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "CreateOdbDnsZone"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.CreateOdbDnsZoneRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateOdbDnsZoneOperation",
+        "shortName": "CreateOdbDnsZone"
+      },
+      "description": "CreateOdbDnsZone creates a new ODB DNS Zone in a given ODB Network.",
+      "file": "Client/CreateOdbDnsZone/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_CreateOdbDnsZone_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase CreateOdbDnsZone Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.oracledatabase.v1.Client.CreateOdbNetwork",
         "method": {
           "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.CreateOdbNetwork",
@@ -1028,6 +1074,52 @@
           "fullName": "google.cloud.oracledatabase.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.oracledatabase.v1.Client.DeleteOdbDnsZone",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.DeleteOdbDnsZone",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "DeleteOdbDnsZone"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.DeleteOdbDnsZoneRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteOdbDnsZoneOperation",
+        "shortName": "DeleteOdbDnsZone"
+      },
+      "description": "DeleteOdbDnsZone deletes a single ODB DNS Zone.",
+      "file": "Client/DeleteOdbDnsZone/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_DeleteOdbDnsZone_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase DeleteOdbDnsZone Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.oracledatabase.v1.Client.DeleteOdbNetwork",
         "method": {
           "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.DeleteOdbNetwork",
@@ -1296,6 +1388,52 @@
         }
       ],
       "title": "oracledatabase GetAutonomousDatabase Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.oracledatabase.v1.Client.GetAutonomousDatabaseRefreshableClones",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.GetAutonomousDatabaseRefreshableClones",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "GetAutonomousDatabaseRefreshableClones"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.GetAutonomousDatabaseRefreshableClonesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*oracledatabasepb.AutonomousDatabaseRefreshableClones",
+        "shortName": "GetAutonomousDatabaseRefreshableClones"
+      },
+      "description": "GetAutonomousDatabaseRefreshableClones gets the refreshable clones for a given Autonomous Database.",
+      "file": "Client/GetAutonomousDatabaseRefreshableClones/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_GetAutonomousDatabaseRefreshableClones_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase GetAutonomousDatabaseRefreshableClones Sample"
     },
     {
       "clientMethod": {
@@ -1756,6 +1894,52 @@
         }
       ],
       "title": "oracledatabase GetLocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.oracledatabase.v1.Client.GetOdbDnsZone",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.GetOdbDnsZone",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "GetOdbDnsZone"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.GetOdbDnsZoneRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*oracledatabasepb.OdbDnsZone",
+        "shortName": "GetOdbDnsZone"
+      },
+      "description": "GetOdbDnsZone gets details of a single ODB DNS Zone.",
+      "file": "Client/GetOdbDnsZone/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_GetOdbDnsZone_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase GetOdbDnsZone Sample"
     },
     {
       "clientMethod": {
@@ -3189,6 +3373,52 @@
           "fullName": "google.cloud.oracledatabase.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.oracledatabase.v1.Client.ListOdbDnsZones",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.ListOdbDnsZones",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "ListOdbDnsZones"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.ListOdbDnsZonesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OdbDnsZoneIterator",
+        "shortName": "ListOdbDnsZones"
+      },
+      "description": "ListOdbDnsZones lists all the ODB DNS Zones in a given ODB Network.",
+      "file": "Client/ListOdbDnsZones/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_ListOdbDnsZones_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase ListOdbDnsZones Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.oracledatabase.v1.Client.ListOdbNetworks",
         "method": {
           "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.ListOdbNetworks",
@@ -3366,6 +3596,52 @@
         }
       ],
       "title": "oracledatabase ListPluggableDatabases Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.oracledatabase.v1.Client.RefreshAutonomousDatabase",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.RefreshAutonomousDatabase",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "RefreshAutonomousDatabase"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.RefreshAutonomousDatabaseRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RefreshAutonomousDatabaseOperation",
+        "shortName": "RefreshAutonomousDatabase"
+      },
+      "description": "RefreshAutonomousDatabase refreshes the refreshable clone of an Autonomous Database.",
+      "file": "Client/RefreshAutonomousDatabase/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_RefreshAutonomousDatabase_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase RefreshAutonomousDatabase Sample"
     },
     {
       "clientMethod": {

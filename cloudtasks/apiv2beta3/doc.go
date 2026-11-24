@@ -58,11 +58,16 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &cloudtaskspb.CreateQueueRequest{
+//	req := &cloudtaskspb.BatchCreateTasksRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#CreateQueueRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#BatchCreateTasksRequest.
 //	}
-//	resp, err := c.CreateQueue(ctx, req)
+//	op, err := c.BatchCreateTasks(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	resp, err := op.Wait(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

@@ -286,6 +286,39 @@ func NewInstancesClient(ctx context.Context, opts ...option.ClientOption) (*Inst
 		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientMetrics(metrics))
 		client.CallOptions.DebugInstance = append(client.CallOptions.DebugInstance, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientTracing(tracing))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.DebugInstance = append(client.CallOptions.DebugInstance, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientLogging(logging))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientLogging(logging))
+		client.CallOptions.DebugInstance = append(client.CallOptions.DebugInstance, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -395,6 +428,39 @@ func NewInstancesRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientMetrics(metrics))
 		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientMetrics(metrics))
 		callOpts.DebugInstance = append(callOpts.DebugInstance, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientTracing(tracing))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientTracing(tracing))
+		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientTracing(tracing))
+		callOpts.DebugInstance = append(callOpts.DebugInstance, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientLogging(logging))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientLogging(logging))
+		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientLogging(logging))
+		callOpts.DebugInstance = append(callOpts.DebugInstance, gax.WithClientLogging(logging))
 	}
 
 	lroOpts := []option.ClientOption{
@@ -593,6 +659,11 @@ func (c *instancesRESTClient) ListInstances(ctx context.Context, req *appenginep
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/instances", req.GetParent())
 
 		params := url.Values{}
@@ -658,6 +729,11 @@ func (c *instancesRESTClient) GetInstance(ctx context.Context, req *appenginepb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -721,6 +797,11 @@ func (c *instancesRESTClient) GetInstance(ctx context.Context, req *appenginepb.
 func (c *instancesRESTClient) DeleteInstance(ctx context.Context, req *appenginepb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -795,6 +876,11 @@ func (c *instancesRESTClient) DebugInstance(ctx context.Context, req *appenginep
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:debug", req.GetName())

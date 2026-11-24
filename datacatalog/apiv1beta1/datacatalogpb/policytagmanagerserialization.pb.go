@@ -507,35 +507,35 @@ var File_google_cloud_datacatalog_v1beta1_policytagmanagerserialization_proto pr
 
 const file_google_cloud_datacatalog_v1beta1_policytagmanagerserialization_proto_rawDesc = "" +
 	"\n" +
-	"Dgoogle/cloud/datacatalog/v1beta1/policytagmanagerserialization.proto\x12 google.cloud.datacatalog.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a7google/cloud/datacatalog/v1beta1/policytagmanager.proto\"\xa3\x02\n" +
-	"\x12SerializedTaxonomy\x12&\n" +
-	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12 \n" +
+	"Dgoogle/cloud/datacatalog/v1beta1/policytagmanagerserialization.proto\x12 google.cloud.datacatalog.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a7google/cloud/datacatalog/v1beta1/policytagmanager.proto\"\xa4\x02\n" +
+	"\x12SerializedTaxonomy\x12'\n" +
+	"\fdisplay_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12V\n" +
 	"\vpolicy_tags\x18\x03 \x03(\v25.google.cloud.datacatalog.v1beta1.SerializedPolicyTagR\n" +
 	"policyTags\x12k\n" +
-	"\x16activated_policy_types\x18\x04 \x03(\x0e25.google.cloud.datacatalog.v1beta1.Taxonomy.PolicyTypeR\x14activatedPolicyTypes\"\xe1\x01\n" +
+	"\x16activated_policy_types\x18\x04 \x03(\x0e25.google.cloud.datacatalog.v1beta1.Taxonomy.PolicyTypeR\x14activatedPolicyTypes\"\xe2\x01\n" +
 	"\x13SerializedPolicyTag\x12\x1d\n" +
 	"\n" +
-	"policy_tag\x18\x01 \x01(\tR\tpolicyTag\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12 \n" +
+	"policy_tag\x18\x01 \x01(\tR\tpolicyTag\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12a\n" +
-	"\x11child_policy_tags\x18\x04 \x03(\v25.google.cloud.datacatalog.v1beta1.SerializedPolicyTagR\x0fchildPolicyTags\"\xbf\x01\n" +
-	"\x17ImportTaxonomiesRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#datacatalog.googleapis.com/TaxonomyR\x06parent\x12U\n" +
+	"\x11child_policy_tags\x18\x04 \x03(\v25.google.cloud.datacatalog.v1beta1.SerializedPolicyTagR\x0fchildPolicyTags\"\xc0\x01\n" +
+	"\x17ImportTaxonomiesRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#datacatalog.googleapis.com/TaxonomyR\x06parent\x12U\n" +
 	"\rinline_source\x18\x02 \x01(\v2..google.cloud.datacatalog.v1beta1.InlineSourceH\x00R\finlineSourceB\b\n" +
-	"\x06source\"i\n" +
-	"\fInlineSource\x12Y\n" +
+	"\x06source\"j\n" +
+	"\fInlineSource\x12Z\n" +
 	"\n" +
-	"taxonomies\x18\x01 \x03(\v24.google.cloud.datacatalog.v1beta1.SerializedTaxonomyB\x03\xe0A\x02R\n" +
+	"taxonomies\x18\x01 \x03(\v24.google.cloud.datacatalog.v1beta1.SerializedTaxonomyB\x04\xe2A\x01\x02R\n" +
 	"taxonomies\"f\n" +
 	"\x18ImportTaxonomiesResponse\x12J\n" +
 	"\n" +
 	"taxonomies\x18\x01 \x03(\v2*.google.cloud.datacatalog.v1beta1.TaxonomyR\n" +
-	"taxonomies\"\xf1\x01\n" +
-	"\x17ExportTaxonomiesRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#datacatalog.googleapis.com/TaxonomyR\x06parent\x12K\n" +
+	"taxonomies\"\xf3\x01\n" +
+	"\x17ExportTaxonomiesRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#datacatalog.googleapis.com/TaxonomyR\x06parent\x12L\n" +
 	"\n" +
-	"taxonomies\x18\x02 \x03(\tB+\xe0A\x02\xfaA%\n" +
+	"taxonomies\x18\x02 \x03(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#datacatalog.googleapis.com/TaxonomyR\n" +
 	"taxonomies\x125\n" +
 	"\x15serialized_taxonomies\x18\x03 \x01(\bH\x00R\x14serializedTaxonomiesB\r\n" +

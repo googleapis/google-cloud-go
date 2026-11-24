@@ -286,6 +286,41 @@ func NewContainerAnalysisV1Beta1Client(ctx context.Context, opts ...option.Clien
 		client.CallOptions.GeneratePackagesSummary = append(client.CallOptions.GeneratePackagesSummary, gax.WithClientMetrics(metrics))
 		client.CallOptions.ExportSBOM = append(client.CallOptions.ExportSBOM, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "containeranalysis",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/containeranalysis/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "containeranalysis.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.GeneratePackagesSummary = append(client.CallOptions.GeneratePackagesSummary, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportSBOM = append(client.CallOptions.ExportSBOM, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "containeranalysis",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/containeranalysis/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "containeranalysis.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.GeneratePackagesSummary = append(client.CallOptions.GeneratePackagesSummary, gax.WithClientLogging(logging))
+		client.CallOptions.ExportSBOM = append(client.CallOptions.ExportSBOM, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -393,6 +428,41 @@ func NewContainerAnalysisV1Beta1RESTClient(ctx context.Context, opts ...option.C
 		callOpts.GeneratePackagesSummary = append(callOpts.GeneratePackagesSummary, gax.WithClientMetrics(metrics))
 		callOpts.ExportSBOM = append(callOpts.ExportSBOM, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "containeranalysis",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/containeranalysis/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "containeranalysis.googleapis.com",
+			}),
+		)
+
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.GeneratePackagesSummary = append(callOpts.GeneratePackagesSummary, gax.WithClientTracing(tracing))
+		callOpts.ExportSBOM = append(callOpts.ExportSBOM, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "containeranalysis",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/containeranalysis/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "containeranalysis.googleapis.com",
+			}),
+		)
+
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.GeneratePackagesSummary = append(callOpts.GeneratePackagesSummary, gax.WithClientLogging(logging))
+		callOpts.ExportSBOM = append(callOpts.ExportSBOM, gax.WithClientLogging(logging))
+	}
 
 	return &ContainerAnalysisV1Beta1Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -439,9 +509,6 @@ func (c *containerAnalysisV1Beta1GRPCClient) SetIamPolicy(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//containeranalysis.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1/SetIamPolicy")
 	}
@@ -463,9 +530,6 @@ func (c *containerAnalysisV1Beta1GRPCClient) GetIamPolicy(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//containeranalysis.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1/GetIamPolicy")
 	}
@@ -487,9 +551,6 @@ func (c *containerAnalysisV1Beta1GRPCClient) TestIamPermissions(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//containeranalysis.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1/TestIamPermissions")
 	}
@@ -567,6 +628,11 @@ func (c *containerAnalysisV1Beta1RESTClient) SetIamPolicy(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -580,9 +646,6 @@ func (c *containerAnalysisV1Beta1RESTClient) SetIamPolicy(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//containeranalysis.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{resource=projects/*/notes/*}:setIamPolicy")
@@ -637,6 +700,11 @@ func (c *containerAnalysisV1Beta1RESTClient) GetIamPolicy(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -650,9 +718,6 @@ func (c *containerAnalysisV1Beta1RESTClient) GetIamPolicy(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//containeranalysis.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{resource=projects/*/notes/*}:getIamPolicy")
@@ -706,6 +771,11 @@ func (c *containerAnalysisV1Beta1RESTClient) TestIamPermissions(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -719,9 +789,6 @@ func (c *containerAnalysisV1Beta1RESTClient) TestIamPermissions(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//containeranalysis.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.containeranalysis.v1beta1.ContainerAnalysisV1Beta1/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{resource=projects/*/notes/*}:testIamPermissions")
@@ -767,6 +834,11 @@ func (c *containerAnalysisV1Beta1RESTClient) GeneratePackagesSummary(ctx context
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:generatePackagesSummary", req.GetName())
@@ -827,6 +899,11 @@ func (c *containerAnalysisV1Beta1RESTClient) ExportSBOM(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:exportSBOM", req.GetName())

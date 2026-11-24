@@ -260,20 +260,20 @@ var File_google_cloud_securitycenter_v1_mute_config_proto protoreflect.FileDescr
 
 const file_google_cloud_securitycenter_v1_mute_config_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/securitycenter/v1/mute_config.proto\x12\x1egoogle.cloud.securitycenter.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcd\a\n" +
+	"0google/cloud/securitycenter/v1/mute_config.proto\x12\x1egoogle.cloud.securitycenter.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd3\a\n" +
 	"\n" +
 	"MuteConfig\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12%\n" +
 	"\fdisplay_name\x18\x02 \x01(\tB\x02\x18\x01R\vdisplayName\x12 \n" +
-	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x02R\x06filter\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x121\n" +
-	"\x12most_recent_editor\x18\a \x01(\tB\x03\xe0A\x03R\x10mostRecentEditor\x12R\n" +
-	"\x04type\x18\b \x01(\x0e29.google.cloud.securitycenter.v1.MuteConfig.MuteConfigTypeB\x03\xe0A\x01R\x04type\x12@\n" +
-	"\vexpiry_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x06filter\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x122\n" +
+	"\x12most_recent_editor\x18\a \x01(\tB\x04\xe2A\x01\x03R\x10mostRecentEditor\x12S\n" +
+	"\x04type\x18\b \x01(\x0e29.google.cloud.securitycenter.v1.MuteConfig.MuteConfigTypeB\x04\xe2A\x01\x01R\x04type\x12A\n" +
+	"\vexpiry_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\n" +
 	"expiryTime\"K\n" +
 	"\x0eMuteConfigType\x12 \n" +
 	"\x1cMUTE_CONFIG_TYPE_UNSPECIFIED\x10\x00\x12\n" +

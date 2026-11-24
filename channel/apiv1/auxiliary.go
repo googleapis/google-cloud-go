@@ -18,12 +18,14 @@ package channel
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	channelpb "cloud.google.com/go/channel/apiv1/channelpb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -773,6 +775,12 @@ func (op *TransferEntitlementsToGoogleOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BillableSkuIterator) All() iter.Seq2[*channelpb.BillableSku, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // BillableSkuIterator manages a stream of *channelpb.BillableSku.
 type BillableSkuIterator struct {
 	items    []*channelpb.BillableSku
@@ -818,6 +826,12 @@ func (it *BillableSkuIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ChannelPartnerLinkIterator) All() iter.Seq2[*channelpb.ChannelPartnerLink, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ChannelPartnerLinkIterator manages a stream of *channelpb.ChannelPartnerLink.
@@ -867,6 +881,12 @@ func (it *ChannelPartnerLinkIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ChannelPartnerRepricingConfigIterator) All() iter.Seq2[*channelpb.ChannelPartnerRepricingConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ChannelPartnerRepricingConfigIterator manages a stream of *channelpb.ChannelPartnerRepricingConfig.
 type ChannelPartnerRepricingConfigIterator struct {
 	items    []*channelpb.ChannelPartnerRepricingConfig
@@ -912,6 +932,12 @@ func (it *ChannelPartnerRepricingConfigIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CustomerIterator) All() iter.Seq2[*channelpb.Customer, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // CustomerIterator manages a stream of *channelpb.Customer.
@@ -961,6 +987,12 @@ func (it *CustomerIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CustomerRepricingConfigIterator) All() iter.Seq2[*channelpb.CustomerRepricingConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CustomerRepricingConfigIterator manages a stream of *channelpb.CustomerRepricingConfig.
 type CustomerRepricingConfigIterator struct {
 	items    []*channelpb.CustomerRepricingConfig
@@ -1006,6 +1038,12 @@ func (it *CustomerRepricingConfigIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EntitlementChangeIterator) All() iter.Seq2[*channelpb.EntitlementChange, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // EntitlementChangeIterator manages a stream of *channelpb.EntitlementChange.
@@ -1055,6 +1093,12 @@ func (it *EntitlementChangeIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EntitlementIterator) All() iter.Seq2[*channelpb.Entitlement, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EntitlementIterator manages a stream of *channelpb.Entitlement.
 type EntitlementIterator struct {
 	items    []*channelpb.Entitlement
@@ -1100,6 +1144,12 @@ func (it *EntitlementIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OfferIterator) All() iter.Seq2[*channelpb.Offer, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OfferIterator manages a stream of *channelpb.Offer.
@@ -1149,6 +1199,12 @@ func (it *OfferIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -1194,6 +1250,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProductIterator) All() iter.Seq2[*channelpb.Product, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ProductIterator manages a stream of *channelpb.Product.
@@ -1243,6 +1305,12 @@ func (it *ProductIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PurchasableOfferIterator) All() iter.Seq2[*channelpb.PurchasableOffer, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // PurchasableOfferIterator manages a stream of *channelpb.PurchasableOffer.
 type PurchasableOfferIterator struct {
 	items    []*channelpb.PurchasableOffer
@@ -1288,6 +1356,12 @@ func (it *PurchasableOfferIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PurchasableSkuIterator) All() iter.Seq2[*channelpb.PurchasableSku, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PurchasableSkuIterator manages a stream of *channelpb.PurchasableSku.
@@ -1337,6 +1411,12 @@ func (it *PurchasableSkuIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReportIterator) All() iter.Seq2[*channelpb.Report, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ReportIterator manages a stream of *channelpb.Report.
 type ReportIterator struct {
 	items    []*channelpb.Report
@@ -1382,6 +1462,12 @@ func (it *ReportIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RowIterator) All() iter.Seq2[*channelpb.Row, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // RowIterator manages a stream of *channelpb.Row.
@@ -1431,6 +1517,12 @@ func (it *RowIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SkuGroupIterator) All() iter.Seq2[*channelpb.SkuGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SkuGroupIterator manages a stream of *channelpb.SkuGroup.
 type SkuGroupIterator struct {
 	items    []*channelpb.SkuGroup
@@ -1476,6 +1568,12 @@ func (it *SkuGroupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SkuIterator) All() iter.Seq2[*channelpb.Sku, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SkuIterator manages a stream of *channelpb.Sku.
@@ -1525,6 +1623,12 @@ func (it *SkuIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StringIterator) All() iter.Seq2[string, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // StringIterator manages a stream of string.
 type StringIterator struct {
 	items    []string
@@ -1572,6 +1676,12 @@ func (it *StringIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TransferableOfferIterator) All() iter.Seq2[*channelpb.TransferableOffer, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TransferableOfferIterator manages a stream of *channelpb.TransferableOffer.
 type TransferableOfferIterator struct {
 	items    []*channelpb.TransferableOffer
@@ -1617,6 +1727,12 @@ func (it *TransferableOfferIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TransferableSkuIterator) All() iter.Seq2[*channelpb.TransferableSku, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TransferableSkuIterator manages a stream of *channelpb.TransferableSku.

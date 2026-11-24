@@ -637,13 +637,13 @@ var File_google_shopping_merchant_productstudio_v1alpha_textsuggestions_proto pr
 
 const file_google_shopping_merchant_productstudio_v1alpha_textsuggestions_proto_rawDesc = "" +
 	"\n" +
-	"Dgoogle/shopping/merchant/productstudio/v1alpha/textsuggestions.proto\x12.google.shopping.merchant.productstudio.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x86\x03\n" +
-	"%GenerateProductTextSuggestionsRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12c\n" +
-	"\fproduct_info\x18\x02 \x01(\v2;.google.shopping.merchant.productstudio.v1alpha.ProductInfoB\x03\xe0A\x02R\vproductInfo\x12e\n" +
-	"\voutput_spec\x18\x03 \x01(\v2:.google.shopping.merchant.productstudio.v1alpha.OutputSpecB\x03\xe0A\x01H\x00R\n" +
-	"outputSpec\x88\x01\x01\x12h\n" +
-	"\x0etitle_examples\x18\x04 \x03(\v2<.google.shopping.merchant.productstudio.v1alpha.TitleExampleB\x03\xe0A\x01R\rtitleExamplesB\x0e\n" +
+	"Dgoogle/shopping/merchant/productstudio/v1alpha/textsuggestions.proto\x12.google.shopping.merchant.productstudio.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x8a\x03\n" +
+	"%GenerateProductTextSuggestionsRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12d\n" +
+	"\fproduct_info\x18\x02 \x01(\v2;.google.shopping.merchant.productstudio.v1alpha.ProductInfoB\x04\xe2A\x01\x02R\vproductInfo\x12f\n" +
+	"\voutput_spec\x18\x03 \x01(\v2:.google.shopping.merchant.productstudio.v1alpha.OutputSpecB\x04\xe2A\x01\x01H\x00R\n" +
+	"outputSpec\x88\x01\x01\x12i\n" +
+	"\x0etitle_examples\x18\x04 \x03(\v2<.google.shopping.merchant.productstudio.v1alpha.TitleExampleB\x04\xe2A\x01\x01R\rtitleExamplesB\x0e\n" +
 	"\f_output_spec\"\xeb\x04\n" +
 	"&GenerateProductTextSuggestionsResponse\x12j\n" +
 	"\x05title\x18\x01 \x01(\v2O.google.shopping.merchant.productstudio.v1alpha.ProductTextGenerationSuggestionH\x00R\x05title\x88\x01\x01\x12v\n" +
@@ -657,12 +657,12 @@ const file_google_shopping_merchant_productstudio_v1alpha_textsuggestions_proto_
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\b\n" +
 	"\x06_titleB\x0e\n" +
 	"\f_descriptionB\v\n" +
-	"\t_metadata\"\x83\x04\n" +
-	"\fTitleExample\x12u\n" +
-	"\fproduct_info\x18\x01 \x03(\v2M.google.shopping.merchant.productstudio.v1alpha.TitleExample.ProductInfoEntryB\x03\xe0A\x02R\vproductInfo\x12$\n" +
-	"\bcategory\x18\x02 \x01(\tB\x03\xe0A\x02H\x00R\bcategory\x88\x01\x01\x12+\n" +
-	"\ftitle_format\x18\x03 \x01(\tB\x03\xe0A\x02H\x01R\vtitleFormat\x88\x01\x01\x12\x85\x01\n" +
-	"\x12final_product_info\x18\x04 \x03(\v2R.google.shopping.merchant.productstudio.v1alpha.TitleExample.FinalProductInfoEntryB\x03\xe0A\x02R\x10finalProductInfo\x1a>\n" +
+	"\t_metadata\"\x87\x04\n" +
+	"\fTitleExample\x12v\n" +
+	"\fproduct_info\x18\x01 \x03(\v2M.google.shopping.merchant.productstudio.v1alpha.TitleExample.ProductInfoEntryB\x04\xe2A\x01\x02R\vproductInfo\x12%\n" +
+	"\bcategory\x18\x02 \x01(\tB\x04\xe2A\x01\x02H\x00R\bcategory\x88\x01\x01\x12,\n" +
+	"\ftitle_format\x18\x03 \x01(\tB\x04\xe2A\x01\x02H\x01R\vtitleFormat\x88\x01\x01\x12\x86\x01\n" +
+	"\x12final_product_info\x18\x04 \x03(\v2R.google.shopping.merchant.productstudio.v1alpha.TitleExample.FinalProductInfoEntryB\x04\xe2A\x01\x02R\x10finalProductInfo\x1a>\n" +
 	"\x10ProductInfoEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aC\n" +
@@ -676,23 +676,23 @@ const file_google_shopping_merchant_productstudio_v1alpha_textsuggestions_proto_
 	"\x05Image\x12\x12\n" +
 	"\x03uri\x18\x01 \x01(\tH\x00R\x03uri\x12\x14\n" +
 	"\x04data\x18\x02 \x01(\fH\x00R\x04dataB\a\n" +
-	"\x05image\"\xd4\x02\n" +
-	"\vProductInfo\x12\x86\x01\n" +
-	"\x12product_attributes\x18\x01 \x03(\v2R.google.shopping.merchant.productstudio.v1alpha.ProductInfo.ProductAttributesEntryB\x03\xe0A\x02R\x11productAttributes\x12d\n" +
-	"\rproduct_image\x18\x02 \x01(\v25.google.shopping.merchant.productstudio.v1alpha.ImageB\x03\xe0A\x01H\x00R\fproductImage\x88\x01\x01\x1aD\n" +
+	"\x05image\"\xd6\x02\n" +
+	"\vProductInfo\x12\x87\x01\n" +
+	"\x12product_attributes\x18\x01 \x03(\v2R.google.shopping.merchant.productstudio.v1alpha.ProductInfo.ProductAttributesEntryB\x04\xe2A\x01\x02R\x11productAttributes\x12e\n" +
+	"\rproduct_image\x18\x02 \x01(\v25.google.shopping.merchant.productstudio.v1alpha.ImageB\x04\xe2A\x01\x01H\x00R\fproductImage\x88\x01\x01\x1aD\n" +
 	"\x16ProductAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x10\n" +
-	"\x0e_product_image\"\x83\x03\n" +
+	"\x0e_product_image\"\x89\x03\n" +
 	"\n" +
-	"OutputSpec\x12)\n" +
-	"\vworkflow_id\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\n" +
-	"workflowId\x88\x01\x01\x12\x1c\n" +
-	"\x04tone\x18\x02 \x01(\tB\x03\xe0A\x01H\x01R\x04tone\x88\x01\x01\x125\n" +
-	"\x11editorial_changes\x18\x03 \x01(\tB\x03\xe0A\x01H\x02R\x10editorialChanges\x88\x01\x01\x121\n" +
-	"\x0ftarget_language\x18\x04 \x01(\tB\x03\xe0A\x01H\x03R\x0etargetLanguage\x88\x01\x01\x12,\n" +
-	"\x0fattribute_order\x18\x05 \x03(\tB\x03\xe0A\x01R\x0eattributeOrder\x129\n" +
-	"\x13attribute_separator\x18\x06 \x01(\tB\x03\xe0A\x01H\x04R\x12attributeSeparator\x88\x01\x01B\x0e\n" +
+	"OutputSpec\x12*\n" +
+	"\vworkflow_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\n" +
+	"workflowId\x88\x01\x01\x12\x1d\n" +
+	"\x04tone\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x01R\x04tone\x88\x01\x01\x126\n" +
+	"\x11editorial_changes\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x02R\x10editorialChanges\x88\x01\x01\x122\n" +
+	"\x0ftarget_language\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x03R\x0etargetLanguage\x88\x01\x01\x12-\n" +
+	"\x0fattribute_order\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x0eattributeOrder\x12:\n" +
+	"\x13attribute_separator\x18\x06 \x01(\tB\x04\xe2A\x01\x01H\x04R\x12attributeSeparator\x88\x01\x01B\x0e\n" +
 	"\f_workflow_idB\a\n" +
 	"\x05_toneB\x14\n" +
 	"\x12_editorial_changesB\x12\n" +

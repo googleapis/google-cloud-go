@@ -503,34 +503,34 @@ var File_google_cloud_dialogflow_v2beta1_knowledge_base_proto protoreflect.FileD
 
 const file_google_cloud_dialogflow_v2beta1_knowledge_base_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/dialogflow/v2beta1/knowledge_base.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\x9d\x02\n" +
+	"4google/cloud/dialogflow/v2beta1/knowledge_base.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\x9e\x02\n" +
 	"\rKnowledgeBase\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12#\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12#\n" +
 	"\rlanguage_code\x18\x04 \x01(\tR\flanguageCode:\xaa\x01\xeaA\xa6\x01\n" +
-	"'dialogflow.googleapis.com/KnowledgeBase\x122projects/{project}/knowledgeBases/{knowledge_base}\x12Gprojects/{project}/locations/{location}/knowledgeBases/{knowledge_base}\"\xb8\x01\n" +
-	"\x19ListKnowledgeBasesRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'dialogflow.googleapis.com/KnowledgeBaseR\x06parent\x12\x1b\n" +
+	"'dialogflow.googleapis.com/KnowledgeBase\x122projects/{project}/knowledgeBases/{knowledge_base}\x12Gprojects/{project}/locations/{location}/knowledgeBases/{knowledge_base}\"\xb9\x01\n" +
+	"\x19ListKnowledgeBasesRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'dialogflow.googleapis.com/KnowledgeBaseR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
 	"\x06filter\x18\x04 \x01(\tR\x06filter\"\x9d\x01\n" +
 	"\x1aListKnowledgeBasesResponse\x12W\n" +
 	"\x0fknowledge_bases\x18\x01 \x03(\v2..google.cloud.dialogflow.v2beta1.KnowledgeBaseR\x0eknowledgeBases\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"^\n" +
-	"\x17GetKnowledgeBaseRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'dialogflow.googleapis.com/KnowledgeBaseR\x04name\"\xc1\x01\n" +
-	"\x1aCreateKnowledgeBaseRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'dialogflow.googleapis.com/KnowledgeBaseR\x06parent\x12Z\n" +
-	"\x0eknowledge_base\x18\x02 \x01(\v2..google.cloud.dialogflow.v2beta1.KnowledgeBaseB\x03\xe0A\x02R\rknowledgeBase\"|\n" +
-	"\x1aDeleteKnowledgeBaseRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'dialogflow.googleapis.com/KnowledgeBaseR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\xba\x01\n" +
-	"\x1aUpdateKnowledgeBaseRequest\x12Z\n" +
-	"\x0eknowledge_base\x18\x01 \x01(\v2..google.cloud.dialogflow.v2beta1.KnowledgeBaseB\x03\xe0A\x02R\rknowledgeBase\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"_\n" +
+	"\x17GetKnowledgeBaseRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'dialogflow.googleapis.com/KnowledgeBaseR\x04name\"\xc3\x01\n" +
+	"\x1aCreateKnowledgeBaseRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'dialogflow.googleapis.com/KnowledgeBaseR\x06parent\x12[\n" +
+	"\x0eknowledge_base\x18\x02 \x01(\v2..google.cloud.dialogflow.v2beta1.KnowledgeBaseB\x04\xe2A\x01\x02R\rknowledgeBase\"~\n" +
+	"\x1aDeleteKnowledgeBaseRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'dialogflow.googleapis.com/KnowledgeBaseR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xbc\x01\n" +
+	"\x1aUpdateKnowledgeBaseRequest\x12[\n" +
+	"\x0eknowledge_base\x18\x01 \x01(\v2..google.cloud.dialogflow.v2beta1.KnowledgeBaseB\x04\xe2A\x01\x02R\rknowledgeBase\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
 	"updateMask2\xbd\x0e\n" +
 	"\x0eKnowledgeBases\x12\xbd\x02\n" +
 	"\x12ListKnowledgeBases\x12:.google.cloud.dialogflow.v2beta1.ListKnowledgeBasesRequest\x1a;.google.cloud.dialogflow.v2beta1.ListKnowledgeBasesResponse\"\xad\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02\x9d\x01Z9\x127/v2beta1/{parent=projects/*/locations/*}/knowledgeBasesZ3\x121/v2beta1/{parent=projects/*/agent}/knowledgeBases\x12+/v2beta1/{parent=projects/*}/knowledgeBases\x12\xaa\x02\n" +

@@ -155,10 +155,10 @@ var File_google_cloud_financialservices_v1_bigquery_destination_proto protorefle
 
 const file_google_cloud_financialservices_v1_bigquery_destination_proto_rawDesc = "" +
 	"\n" +
-	"<google/cloud/financialservices/v1/bigquery_destination.proto\x12!google.cloud.financialservices.v1\x1a\x1fgoogle/api/field_behavior.proto\"\x8e\x02\n" +
-	"\x13BigQueryDestination\x12 \n" +
-	"\ttable_uri\x18\x01 \x01(\tB\x03\xe0A\x01R\btableUri\x12y\n" +
-	"\x11write_disposition\x18\x02 \x01(\x0e2G.google.cloud.financialservices.v1.BigQueryDestination.WriteDispositionB\x03\xe0A\x02R\x10writeDisposition\"Z\n" +
+	"<google/cloud/financialservices/v1/bigquery_destination.proto\x12!google.cloud.financialservices.v1\x1a\x1fgoogle/api/field_behavior.proto\"\x90\x02\n" +
+	"\x13BigQueryDestination\x12!\n" +
+	"\ttable_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\btableUri\x12z\n" +
+	"\x11write_disposition\x18\x02 \x01(\x0e2G.google.cloud.financialservices.v1.BigQueryDestination.WriteDispositionB\x04\xe2A\x01\x02R\x10writeDisposition\"Z\n" +
 	"\x10WriteDisposition\x12!\n" +
 	"\x1dWRITE_DISPOSITION_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vWRITE_EMPTY\x10\x01\x12\x12\n" +

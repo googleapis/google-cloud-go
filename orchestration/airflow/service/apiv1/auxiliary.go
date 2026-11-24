@@ -18,12 +18,14 @@ package service
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	servicepb "cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -464,6 +466,12 @@ func (op *UpdateEnvironmentOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EnvironmentIterator) All() iter.Seq2[*servicepb.Environment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EnvironmentIterator manages a stream of *servicepb.Environment.
 type EnvironmentIterator struct {
 	items    []*servicepb.Environment
@@ -509,6 +517,12 @@ func (it *EnvironmentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ImageVersionIterator) All() iter.Seq2[*servicepb.ImageVersion, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ImageVersionIterator manages a stream of *servicepb.ImageVersion.
@@ -558,6 +572,12 @@ func (it *ImageVersionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ListWorkloadsResponse_ComposerWorkloadIterator) All() iter.Seq2[*servicepb.ListWorkloadsResponse_ComposerWorkload, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ListWorkloadsResponse_ComposerWorkloadIterator manages a stream of *servicepb.ListWorkloadsResponse_ComposerWorkload.
 type ListWorkloadsResponse_ComposerWorkloadIterator struct {
 	items    []*servicepb.ListWorkloadsResponse_ComposerWorkload
@@ -603,6 +623,12 @@ func (it *ListWorkloadsResponse_ComposerWorkloadIterator) takeBuf() interface{} 
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -652,6 +678,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UserWorkloadsConfigMapIterator) All() iter.Seq2[*servicepb.UserWorkloadsConfigMap, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // UserWorkloadsConfigMapIterator manages a stream of *servicepb.UserWorkloadsConfigMap.
 type UserWorkloadsConfigMapIterator struct {
 	items    []*servicepb.UserWorkloadsConfigMap
@@ -697,6 +729,12 @@ func (it *UserWorkloadsConfigMapIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UserWorkloadsSecretIterator) All() iter.Seq2[*servicepb.UserWorkloadsSecret, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // UserWorkloadsSecretIterator manages a stream of *servicepb.UserWorkloadsSecret.

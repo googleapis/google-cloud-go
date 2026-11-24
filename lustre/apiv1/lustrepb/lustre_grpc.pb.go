@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,13 +35,23 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Lustre_ListInstances_FullMethodName  = "/google.cloud.lustre.v1.Lustre/ListInstances"
-	Lustre_GetInstance_FullMethodName    = "/google.cloud.lustre.v1.Lustre/GetInstance"
-	Lustre_CreateInstance_FullMethodName = "/google.cloud.lustre.v1.Lustre/CreateInstance"
-	Lustre_UpdateInstance_FullMethodName = "/google.cloud.lustre.v1.Lustre/UpdateInstance"
-	Lustre_DeleteInstance_FullMethodName = "/google.cloud.lustre.v1.Lustre/DeleteInstance"
-	Lustre_ImportData_FullMethodName     = "/google.cloud.lustre.v1.Lustre/ImportData"
-	Lustre_ExportData_FullMethodName     = "/google.cloud.lustre.v1.Lustre/ExportData"
+	Lustre_ListInstances_FullMethodName         = "/google.cloud.lustre.v1.Lustre/ListInstances"
+	Lustre_GetInstance_FullMethodName           = "/google.cloud.lustre.v1.Lustre/GetInstance"
+	Lustre_CreateInstance_FullMethodName        = "/google.cloud.lustre.v1.Lustre/CreateInstance"
+	Lustre_UpdateInstance_FullMethodName        = "/google.cloud.lustre.v1.Lustre/UpdateInstance"
+	Lustre_DeleteInstance_FullMethodName        = "/google.cloud.lustre.v1.Lustre/DeleteInstance"
+	Lustre_RescheduleMaintenance_FullMethodName = "/google.cloud.lustre.v1.Lustre/RescheduleMaintenance"
+	Lustre_ImportData_FullMethodName            = "/google.cloud.lustre.v1.Lustre/ImportData"
+	Lustre_ExportData_FullMethodName            = "/google.cloud.lustre.v1.Lustre/ExportData"
+	Lustre_CreateMirror_FullMethodName          = "/google.cloud.lustre.v1.Lustre/CreateMirror"
+	Lustre_UpdateMirror_FullMethodName          = "/google.cloud.lustre.v1.Lustre/UpdateMirror"
+	Lustre_DeleteMirror_FullMethodName          = "/google.cloud.lustre.v1.Lustre/DeleteMirror"
+	Lustre_GetMirror_FullMethodName             = "/google.cloud.lustre.v1.Lustre/GetMirror"
+	Lustre_ListMirrors_FullMethodName           = "/google.cloud.lustre.v1.Lustre/ListMirrors"
+	Lustre_CreateDirectoryPolicy_FullMethodName = "/google.cloud.lustre.v1.Lustre/CreateDirectoryPolicy"
+	Lustre_DeleteDirectoryPolicy_FullMethodName = "/google.cloud.lustre.v1.Lustre/DeleteDirectoryPolicy"
+	Lustre_GetDirectoryPolicy_FullMethodName    = "/google.cloud.lustre.v1.Lustre/GetDirectoryPolicy"
+	Lustre_ListDirectoryPolicies_FullMethodName = "/google.cloud.lustre.v1.Lustre/ListDirectoryPolicies"
 )
 
 // LustreClient is the client API for Lustre service.
@@ -58,10 +68,30 @@ type LustreClient interface {
 	UpdateInstance(ctx context.Context, in *UpdateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single instance.
 	DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Reschedules a planned maintenance event for a specific instance.
+	RescheduleMaintenance(ctx context.Context, in *RescheduleMaintenanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Imports data from Cloud Storage to a Managed Lustre instance.
 	ImportData(ctx context.Context, in *ImportDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Exports data from a Managed Lustre instance to Cloud Storage.
 	ExportData(ctx context.Context, in *ExportDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Creates a new mirror in a given instance.
+	CreateMirror(ctx context.Context, in *CreateMirrorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Updates the parameters of a single mirror.
+	UpdateMirror(ctx context.Context, in *UpdateMirrorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deletes a single mirror.
+	DeleteMirror(ctx context.Context, in *DeleteMirrorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Gets details of a single mirror.
+	GetMirror(ctx context.Context, in *GetMirrorRequest, opts ...grpc.CallOption) (*Mirror, error)
+	// Gets details of multiple mirrors under a given instance.
+	ListMirrors(ctx context.Context, in *ListMirrorsRequest, opts ...grpc.CallOption) (*ListMirrorsResponse, error)
+	// Creates a directory policy resource.
+	CreateDirectoryPolicy(ctx context.Context, in *CreateDirectoryPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deletes a directory policy resource.
+	DeleteDirectoryPolicy(ctx context.Context, in *DeleteDirectoryPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Gets details of a single directory policy.
+	GetDirectoryPolicy(ctx context.Context, in *GetDirectoryPolicyRequest, opts ...grpc.CallOption) (*DirectoryPolicy, error)
+	// Gets details of multiple directory policies under a given instance.
+	ListDirectoryPolicies(ctx context.Context, in *ListDirectoryPoliciesRequest, opts ...grpc.CallOption) (*ListDirectoryPoliciesResponse, error)
 }
 
 type lustreClient struct {
@@ -117,6 +147,15 @@ func (c *lustreClient) DeleteInstance(ctx context.Context, in *DeleteInstanceReq
 	return out, nil
 }
 
+func (c *lustreClient) RescheduleMaintenance(ctx context.Context, in *RescheduleMaintenanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Lustre_RescheduleMaintenance_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *lustreClient) ImportData(ctx context.Context, in *ImportDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, Lustre_ImportData_FullMethodName, in, out, opts...)
@@ -129,6 +168,87 @@ func (c *lustreClient) ImportData(ctx context.Context, in *ImportDataRequest, op
 func (c *lustreClient) ExportData(ctx context.Context, in *ExportDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, Lustre_ExportData_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *lustreClient) CreateMirror(ctx context.Context, in *CreateMirrorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Lustre_CreateMirror_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *lustreClient) UpdateMirror(ctx context.Context, in *UpdateMirrorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Lustre_UpdateMirror_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *lustreClient) DeleteMirror(ctx context.Context, in *DeleteMirrorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Lustre_DeleteMirror_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *lustreClient) GetMirror(ctx context.Context, in *GetMirrorRequest, opts ...grpc.CallOption) (*Mirror, error) {
+	out := new(Mirror)
+	err := c.cc.Invoke(ctx, Lustre_GetMirror_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *lustreClient) ListMirrors(ctx context.Context, in *ListMirrorsRequest, opts ...grpc.CallOption) (*ListMirrorsResponse, error) {
+	out := new(ListMirrorsResponse)
+	err := c.cc.Invoke(ctx, Lustre_ListMirrors_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *lustreClient) CreateDirectoryPolicy(ctx context.Context, in *CreateDirectoryPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Lustre_CreateDirectoryPolicy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *lustreClient) DeleteDirectoryPolicy(ctx context.Context, in *DeleteDirectoryPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Lustre_DeleteDirectoryPolicy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *lustreClient) GetDirectoryPolicy(ctx context.Context, in *GetDirectoryPolicyRequest, opts ...grpc.CallOption) (*DirectoryPolicy, error) {
+	out := new(DirectoryPolicy)
+	err := c.cc.Invoke(ctx, Lustre_GetDirectoryPolicy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *lustreClient) ListDirectoryPolicies(ctx context.Context, in *ListDirectoryPoliciesRequest, opts ...grpc.CallOption) (*ListDirectoryPoliciesResponse, error) {
+	out := new(ListDirectoryPoliciesResponse)
+	err := c.cc.Invoke(ctx, Lustre_ListDirectoryPolicies_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -149,10 +269,30 @@ type LustreServer interface {
 	UpdateInstance(context.Context, *UpdateInstanceRequest) (*longrunningpb.Operation, error)
 	// Deletes a single instance.
 	DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunningpb.Operation, error)
+	// Reschedules a planned maintenance event for a specific instance.
+	RescheduleMaintenance(context.Context, *RescheduleMaintenanceRequest) (*longrunningpb.Operation, error)
 	// Imports data from Cloud Storage to a Managed Lustre instance.
 	ImportData(context.Context, *ImportDataRequest) (*longrunningpb.Operation, error)
 	// Exports data from a Managed Lustre instance to Cloud Storage.
 	ExportData(context.Context, *ExportDataRequest) (*longrunningpb.Operation, error)
+	// Creates a new mirror in a given instance.
+	CreateMirror(context.Context, *CreateMirrorRequest) (*longrunningpb.Operation, error)
+	// Updates the parameters of a single mirror.
+	UpdateMirror(context.Context, *UpdateMirrorRequest) (*longrunningpb.Operation, error)
+	// Deletes a single mirror.
+	DeleteMirror(context.Context, *DeleteMirrorRequest) (*longrunningpb.Operation, error)
+	// Gets details of a single mirror.
+	GetMirror(context.Context, *GetMirrorRequest) (*Mirror, error)
+	// Gets details of multiple mirrors under a given instance.
+	ListMirrors(context.Context, *ListMirrorsRequest) (*ListMirrorsResponse, error)
+	// Creates a directory policy resource.
+	CreateDirectoryPolicy(context.Context, *CreateDirectoryPolicyRequest) (*longrunningpb.Operation, error)
+	// Deletes a directory policy resource.
+	DeleteDirectoryPolicy(context.Context, *DeleteDirectoryPolicyRequest) (*longrunningpb.Operation, error)
+	// Gets details of a single directory policy.
+	GetDirectoryPolicy(context.Context, *GetDirectoryPolicyRequest) (*DirectoryPolicy, error)
+	// Gets details of multiple directory policies under a given instance.
+	ListDirectoryPolicies(context.Context, *ListDirectoryPoliciesRequest) (*ListDirectoryPoliciesResponse, error)
 }
 
 // UnimplementedLustreServer should be embedded to have forward compatible implementations.
@@ -174,11 +314,41 @@ func (UnimplementedLustreServer) UpdateInstance(context.Context, *UpdateInstance
 func (UnimplementedLustreServer) DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteInstance not implemented")
 }
+func (UnimplementedLustreServer) RescheduleMaintenance(context.Context, *RescheduleMaintenanceRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RescheduleMaintenance not implemented")
+}
 func (UnimplementedLustreServer) ImportData(context.Context, *ImportDataRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ImportData not implemented")
 }
 func (UnimplementedLustreServer) ExportData(context.Context, *ExportDataRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExportData not implemented")
+}
+func (UnimplementedLustreServer) CreateMirror(context.Context, *CreateMirrorRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateMirror not implemented")
+}
+func (UnimplementedLustreServer) UpdateMirror(context.Context, *UpdateMirrorRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateMirror not implemented")
+}
+func (UnimplementedLustreServer) DeleteMirror(context.Context, *DeleteMirrorRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteMirror not implemented")
+}
+func (UnimplementedLustreServer) GetMirror(context.Context, *GetMirrorRequest) (*Mirror, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMirror not implemented")
+}
+func (UnimplementedLustreServer) ListMirrors(context.Context, *ListMirrorsRequest) (*ListMirrorsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListMirrors not implemented")
+}
+func (UnimplementedLustreServer) CreateDirectoryPolicy(context.Context, *CreateDirectoryPolicyRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateDirectoryPolicy not implemented")
+}
+func (UnimplementedLustreServer) DeleteDirectoryPolicy(context.Context, *DeleteDirectoryPolicyRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteDirectoryPolicy not implemented")
+}
+func (UnimplementedLustreServer) GetDirectoryPolicy(context.Context, *GetDirectoryPolicyRequest) (*DirectoryPolicy, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDirectoryPolicy not implemented")
+}
+func (UnimplementedLustreServer) ListDirectoryPolicies(context.Context, *ListDirectoryPoliciesRequest) (*ListDirectoryPoliciesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListDirectoryPolicies not implemented")
 }
 
 // UnsafeLustreServer may be embedded to opt out of forward compatibility for this service.
@@ -282,6 +452,24 @@ func _Lustre_DeleteInstance_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Lustre_RescheduleMaintenance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RescheduleMaintenanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LustreServer).RescheduleMaintenance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Lustre_RescheduleMaintenance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LustreServer).RescheduleMaintenance(ctx, req.(*RescheduleMaintenanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Lustre_ImportData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ImportDataRequest)
 	if err := dec(in); err != nil {
@@ -318,6 +506,168 @@ func _Lustre_ExportData_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Lustre_CreateMirror_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateMirrorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LustreServer).CreateMirror(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Lustre_CreateMirror_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LustreServer).CreateMirror(ctx, req.(*CreateMirrorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Lustre_UpdateMirror_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateMirrorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LustreServer).UpdateMirror(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Lustre_UpdateMirror_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LustreServer).UpdateMirror(ctx, req.(*UpdateMirrorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Lustre_DeleteMirror_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteMirrorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LustreServer).DeleteMirror(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Lustre_DeleteMirror_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LustreServer).DeleteMirror(ctx, req.(*DeleteMirrorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Lustre_GetMirror_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMirrorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LustreServer).GetMirror(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Lustre_GetMirror_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LustreServer).GetMirror(ctx, req.(*GetMirrorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Lustre_ListMirrors_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListMirrorsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LustreServer).ListMirrors(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Lustre_ListMirrors_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LustreServer).ListMirrors(ctx, req.(*ListMirrorsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Lustre_CreateDirectoryPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateDirectoryPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LustreServer).CreateDirectoryPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Lustre_CreateDirectoryPolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LustreServer).CreateDirectoryPolicy(ctx, req.(*CreateDirectoryPolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Lustre_DeleteDirectoryPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteDirectoryPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LustreServer).DeleteDirectoryPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Lustre_DeleteDirectoryPolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LustreServer).DeleteDirectoryPolicy(ctx, req.(*DeleteDirectoryPolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Lustre_GetDirectoryPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDirectoryPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LustreServer).GetDirectoryPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Lustre_GetDirectoryPolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LustreServer).GetDirectoryPolicy(ctx, req.(*GetDirectoryPolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Lustre_ListDirectoryPolicies_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListDirectoryPoliciesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LustreServer).ListDirectoryPolicies(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Lustre_ListDirectoryPolicies_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LustreServer).ListDirectoryPolicies(ctx, req.(*ListDirectoryPoliciesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Lustre_ServiceDesc is the grpc.ServiceDesc for Lustre service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -346,12 +696,52 @@ var Lustre_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Lustre_DeleteInstance_Handler,
 		},
 		{
+			MethodName: "RescheduleMaintenance",
+			Handler:    _Lustre_RescheduleMaintenance_Handler,
+		},
+		{
 			MethodName: "ImportData",
 			Handler:    _Lustre_ImportData_Handler,
 		},
 		{
 			MethodName: "ExportData",
 			Handler:    _Lustre_ExportData_Handler,
+		},
+		{
+			MethodName: "CreateMirror",
+			Handler:    _Lustre_CreateMirror_Handler,
+		},
+		{
+			MethodName: "UpdateMirror",
+			Handler:    _Lustre_UpdateMirror_Handler,
+		},
+		{
+			MethodName: "DeleteMirror",
+			Handler:    _Lustre_DeleteMirror_Handler,
+		},
+		{
+			MethodName: "GetMirror",
+			Handler:    _Lustre_GetMirror_Handler,
+		},
+		{
+			MethodName: "ListMirrors",
+			Handler:    _Lustre_ListMirrors_Handler,
+		},
+		{
+			MethodName: "CreateDirectoryPolicy",
+			Handler:    _Lustre_CreateDirectoryPolicy_Handler,
+		},
+		{
+			MethodName: "DeleteDirectoryPolicy",
+			Handler:    _Lustre_DeleteDirectoryPolicy_Handler,
+		},
+		{
+			MethodName: "GetDirectoryPolicy",
+			Handler:    _Lustre_GetDirectoryPolicy_Handler,
+		},
+		{
+			MethodName: "ListDirectoryPolicies",
+			Handler:    _Lustre_ListDirectoryPolicies_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

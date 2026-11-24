@@ -1371,15 +1371,15 @@ var File_google_devtools_cloudtrace_v2_trace_proto protoreflect.FileDescriptor
 
 const file_google_devtools_cloudtrace_v2_trace_proto_rawDesc = "" +
 	"\n" +
-	")google/devtools/cloudtrace/v2/trace.proto\x12\x1dgoogle.devtools.cloudtrace.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x17google/rpc/status.proto\"\xb0\x15\n" +
-	"\x04Span\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x1c\n" +
-	"\aspan_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x06spanId\x12$\n" +
-	"\x0eparent_span_id\x18\x03 \x01(\tR\fparentSpanId\x12X\n" +
-	"\fdisplay_name\x18\x04 \x01(\v20.google.devtools.cloudtrace.v2.TruncatableStringB\x03\xe0A\x02R\vdisplayName\x12>\n" +
+	")google/devtools/cloudtrace/v2/trace.proto\x12\x1dgoogle.devtools.cloudtrace.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x17google/rpc/status.proto\"\xb9\x15\n" +
+	"\x04Span\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x1d\n" +
+	"\aspan_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06spanId\x12$\n" +
+	"\x0eparent_span_id\x18\x03 \x01(\tR\fparentSpanId\x12Y\n" +
+	"\fdisplay_name\x18\x04 \x01(\v20.google.devtools.cloudtrace.v2.TruncatableStringB\x04\xe2A\x01\x02R\vdisplayName\x12?\n" +
 	"\n" +
-	"start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\tstartTime\x12:\n" +
-	"\bend_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\aendTime\x12N\n" +
+	"start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\tstartTime\x12;\n" +
+	"\bend_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\aendTime\x12N\n" +
 	"\n" +
 	"attributes\x18\a \x01(\v2..google.devtools.cloudtrace.v2.Span.AttributesR\n" +
 	"attributes\x12J\n" +
@@ -1388,11 +1388,11 @@ const file_google_devtools_cloudtrace_v2_trace_proto_rawDesc = "" +
 	"\vtime_events\x18\t \x01(\v2..google.devtools.cloudtrace.v2.Span.TimeEventsR\n" +
 	"timeEvents\x12?\n" +
 	"\x05links\x18\n" +
-	" \x01(\v2).google.devtools.cloudtrace.v2.Span.LinksR\x05links\x12/\n" +
-	"\x06status\x18\v \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x01R\x06status\x12]\n" +
-	"\x1bsame_process_as_parent_span\x18\f \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x17sameProcessAsParentSpan\x12J\n" +
-	"\x10child_span_count\x18\r \x01(\v2\x1b.google.protobuf.Int32ValueB\x03\xe0A\x01R\x0echildSpanCount\x12N\n" +
-	"\tspan_kind\x18\x0e \x01(\x0e2,.google.devtools.cloudtrace.v2.Span.SpanKindB\x03\xe0A\x01R\bspanKind\x1a\x9d\x02\n" +
+	" \x01(\v2).google.devtools.cloudtrace.v2.Span.LinksR\x05links\x120\n" +
+	"\x06status\x18\v \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x01R\x06status\x12^\n" +
+	"\x1bsame_process_as_parent_span\x18\f \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x17sameProcessAsParentSpan\x12K\n" +
+	"\x10child_span_count\x18\r \x01(\v2\x1b.google.protobuf.Int32ValueB\x04\xe2A\x01\x01R\x0echildSpanCount\x12O\n" +
+	"\tspan_kind\x18\x0e \x01(\x0e2,.google.devtools.cloudtrace.v2.Span.SpanKindB\x04\xe2A\x01\x01R\bspanKind\x1a\x9d\x02\n" +
 	"\n" +
 	"Attributes\x12e\n" +
 	"\rattribute_map\x18\x01 \x03(\v2@.google.devtools.cloudtrace.v2.Span.Attributes.AttributeMapEntryR\fattributeMap\x128\n" +

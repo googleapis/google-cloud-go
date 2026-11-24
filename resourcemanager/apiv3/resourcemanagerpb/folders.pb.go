@@ -1063,69 +1063,71 @@ var File_google_cloud_resourcemanager_v3_folders_proto protoreflect.FileDescript
 
 const file_google_cloud_resourcemanager_v3_folders_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/resourcemanager/v3/folders.proto\x12\x1fgoogle.cloud.resourcemanager.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x92\x04\n" +
-	"\x06Folder\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1b\n" +
-	"\x06parent\x18\x02 \x01(\tB\x03\xe0A\x02R\x06parent\x12!\n" +
-	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12H\n" +
-	"\x05state\x18\x04 \x01(\x0e2-.google.cloud.resourcemanager.v3.Folder.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12\x17\n" +
-	"\x04etag\x18\b \x01(\tB\x03\xe0A\x03R\x04etag\"@\n" +
+	"-google/cloud/resourcemanager/v3/folders.proto\x12\x1fgoogle.cloud.resourcemanager.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x99\x04\n" +
+	"\x06Folder\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x1c\n" +
+	"\x06parent\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12!\n" +
+	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12I\n" +
+	"\x05state\x18\x04 \x01(\x0e2-.google.cloud.resourcemanager.v3.Folder.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12\x18\n" +
+	"\x04etag\x18\b \x01(\tB\x04\xe2A\x01\x03R\x04etag\"@\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06ACTIVE\x10\x01\x12\x14\n" +
 	"\x10DELETE_REQUESTED\x10\x02:D\xeaAA\n" +
-	"*cloudresourcemanager.googleapis.com/Folder\x12\x10folders/{folder}R\x01\x01\"Z\n" +
-	"\x10GetFolderRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*cloudresourcemanager.googleapis.com/FolderR\x04name\"\xa5\x01\n" +
-	"\x12ListFoldersRequest\x12!\n" +
-	"\x06parent\x18\x01 \x01(\tB\t\xe0A\x02\xfaA\x03\x12\x01*R\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"*cloudresourcemanager.googleapis.com/Folder\x12\x10folders/{folder}R\x01\x01\"[\n" +
+	"\x10GetFolderRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*cloudresourcemanager.googleapis.com/FolderR\x04name\"\xa9\x01\n" +
+	"\x12ListFoldersRequest\x12\"\n" +
+	"\x06parent\x18\x01 \x01(\tB\n" +
+	"\xe2A\x01\x02\xfaA\x03\x12\x01*R\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12&\n" +
-	"\fshow_deleted\x18\x04 \x01(\bB\x03\xe0A\x01R\vshowDeleted\"\x80\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12'\n" +
+	"\fshow_deleted\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\vshowDeleted\"\x80\x01\n" +
 	"\x13ListFoldersResponse\x12A\n" +
 	"\afolders\x18\x01 \x03(\v2'.google.cloud.resourcemanager.v3.FolderR\afolders\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"w\n" +
-	"\x14SearchFoldersRequest\x12 \n" +
-	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"z\n" +
+	"\x14SearchFoldersRequest\x12!\n" +
+	"\tpage_size\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x19\n" +
-	"\x05query\x18\x03 \x01(\tB\x03\xe0A\x01R\x05query\"\x82\x01\n" +
+	"page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1a\n" +
+	"\x05query\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x05query\"\x82\x01\n" +
 	"\x15SearchFoldersResponse\x12A\n" +
 	"\afolders\x18\x01 \x03(\v2'.google.cloud.resourcemanager.v3.FolderR\afolders\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"[\n" +
-	"\x13CreateFolderRequest\x12D\n" +
-	"\x06folder\x18\x02 \x01(\v2'.google.cloud.resourcemanager.v3.FolderB\x03\xe0A\x02R\x06folder\"Q\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\\\n" +
+	"\x13CreateFolderRequest\x12E\n" +
+	"\x06folder\x18\x02 \x01(\v2'.google.cloud.resourcemanager.v3.FolderB\x04\xe2A\x01\x02R\x06folder\"Q\n" +
 	"\x14CreateFolderMetadata\x12!\n" +
 	"\fdisplay_name\x18\x01 \x01(\tR\vdisplayName\x12\x16\n" +
-	"\x06parent\x18\x02 \x01(\tR\x06parent\"\x9d\x01\n" +
-	"\x13UpdateFolderRequest\x12D\n" +
-	"\x06folder\x18\x01 \x01(\v2'.google.cloud.resourcemanager.v3.FolderB\x03\xe0A\x02R\x06folder\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"\x06parent\x18\x02 \x01(\tR\x06parent\"\x9f\x01\n" +
+	"\x13UpdateFolderRequest\x12E\n" +
+	"\x06folder\x18\x01 \x01(\v2'.google.cloud.resourcemanager.v3.FolderB\x04\xe2A\x01\x02R\x06folder\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
 	"updateMask\"\x16\n" +
-	"\x14UpdateFolderMetadata\"\x95\x01\n" +
-	"\x11MoveFolderRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*cloudresourcemanager.googleapis.com/FolderR\x04name\x128\n" +
-	"\x12destination_parent\x18\x02 \x01(\tB\t\xe0A\x02\xfaA\x03\x12\x01*R\x11destinationParent\"\x8b\x01\n" +
+	"\x14UpdateFolderMetadata\"\x97\x01\n" +
+	"\x11MoveFolderRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*cloudresourcemanager.googleapis.com/FolderR\x04name\x129\n" +
+	"\x12destination_parent\x18\x02 \x01(\tB\n" +
+	"\xe2A\x01\x02\xfaA\x03\x12\x01*R\x11destinationParent\"\x8b\x01\n" +
 	"\x12MoveFolderMetadata\x12!\n" +
 	"\fdisplay_name\x18\x01 \x01(\tR\vdisplayName\x12#\n" +
 	"\rsource_parent\x18\x02 \x01(\tR\fsourceParent\x12-\n" +
-	"\x12destination_parent\x18\x03 \x01(\tR\x11destinationParent\"]\n" +
-	"\x13DeleteFolderRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"\x12destination_parent\x18\x03 \x01(\tR\x11destinationParent\"^\n" +
+	"\x13DeleteFolderRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*cloudresourcemanager.googleapis.com/FolderR\x04name\"\x16\n" +
-	"\x14DeleteFolderMetadata\"_\n" +
-	"\x15UndeleteFolderRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"\x14DeleteFolderMetadata\"`\n" +
+	"\x15UndeleteFolderRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*cloudresourcemanager.googleapis.com/FolderR\x04name\"\x18\n" +
 	"\x16UndeleteFolderMetadata2\xde\x0f\n" +
 	"\aFolders\x12\x8c\x01\n" +

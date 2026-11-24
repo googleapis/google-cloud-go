@@ -412,11 +412,11 @@ var File_google_cloud_oracledatabase_v1_goldengate_connection_type_proto protore
 
 const file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_rawDesc = "" +
 	"\n" +
-	"?google/cloud/oracledatabase/v1/goldengate_connection_type.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xfa\a\n" +
-	"\x18GoldengateConnectionType\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12u\n" +
-	"\x0fconnection_type\x18\x02 \x01(\x0e2G.google.cloud.oracledatabase.v1.GoldengateConnectionType.ConnectionTypeB\x03\xe0A\x03R\x0econnectionType\x12.\n" +
-	"\x10technology_types\x18\x03 \x03(\tB\x03\xe0A\x03R\x0ftechnologyTypes\"\xc9\x04\n" +
+	"?google/cloud/oracledatabase/v1/goldengate_connection_type.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xfd\a\n" +
+	"\x18GoldengateConnectionType\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12v\n" +
+	"\x0fconnection_type\x18\x02 \x01(\x0e2G.google.cloud.oracledatabase.v1.GoldengateConnectionType.ConnectionTypeB\x04\xe2A\x01\x03R\x0econnectionType\x12/\n" +
+	"\x10technology_types\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\x0ftechnologyTypes\"\xc9\x04\n" +
 	"\x0eConnectionType\x12\x1f\n" +
 	"\x1bCONNECTION_TYPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
@@ -453,17 +453,17 @@ const file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_rawDe
 	"\rGOOGLE_PUBSUB\x10\x1b\x12\x14\n" +
 	"\x10MICROSOFT_FABRIC\x10\x1c\x12\v\n" +
 	"\aICEBERG\x10\x1d:\xd1\x01\xeaA\xcd\x01\n" +
-	"6oracledatabase.googleapis.com/GoldengateConnectionType\x12^projects/{project}/locations/{location}/goldengateConnectionTypes/{goldengate_connection_type}*\x19goldengateConnectionTypes2\x18goldengateConnectionType\"\xe1\x01\n" +
-	"$ListGoldengateConnectionTypesRequest\x12V\n" +
-	"\x06parent\x18\x01 \x01(\tB>\xe0A\x02\xfaA8\x126oracledatabase.googleapis.com/GoldengateConnectionTypeR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"6oracledatabase.googleapis.com/GoldengateConnectionType\x12^projects/{project}/locations/{location}/goldengateConnectionTypes/{goldengate_connection_type}*\x19goldengateConnectionTypes2\x18goldengateConnectionType\"\xe5\x01\n" +
+	"$ListGoldengateConnectionTypesRequest\x12W\n" +
+	"\x06parent\x18\x01 \x01(\tB?\xe2A\x01\x02\xfaA8\x126oracledatabase.googleapis.com/GoldengateConnectionTypeR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xf0\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xf1\x01\n" +
 	"%ListGoldengateConnectionTypesResponse\x12x\n" +
 	"\x1bgoldengate_connection_types\x18\x01 \x03(\v28.google.cloud.oracledatabase.v1.GoldengateConnectionTypeR\x19goldengateConnectionTypes\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachableB\xf7\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachableB\xf7\x01\n" +
 	"\"com.google.cloud.oracledatabase.v1B\x1dGoldengateConnectionTypeProtoP\x01ZJcloud.google.com/go/oracledatabase/apiv1/oracledatabasepb;oracledatabasepb\xaa\x02\x1eGoogle.Cloud.OracleDatabase.V1\xca\x02\x1eGoogle\\Cloud\\OracleDatabase\\V1\xea\x02!Google::Cloud::OracleDatabase::V1b\x06proto3"
 
 var (

@@ -1537,50 +1537,50 @@ var File_google_cloud_translate_v3_adaptive_mt_proto protoreflect.FileDescriptor
 
 const file_google_cloud_translate_v3_adaptive_mt_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/translate/v3/adaptive_mt.proto\x12\x1bgoogle.cloud.translation.v3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/translate/v3/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x82\x04\n" +
-	"\x11AdaptiveMtDataset\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"+google/cloud/translate/v3/adaptive_mt.proto\x12\x1bgoogle.cloud.translation.v3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/translate/v3/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x85\x04\n" +
+	"\x11AdaptiveMtDataset\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*translate.googleapis.com/AdaptiveMtDatasetR\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x120\n" +
 	"\x14source_language_code\x18\x03 \x01(\tR\x12sourceLanguageCode\x120\n" +
 	"\x14target_language_code\x18\x04 \x01(\tR\x12targetLanguageCode\x12#\n" +
-	"\rexample_count\x18\x05 \x01(\x05R\fexampleCount\x12@\n" +
-	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
+	"\rexample_count\x18\x05 \x01(\x05R\fexampleCount\x12A\n" +
+	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
 	"\vupdate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:u\xeaAr\n" +
-	"*translate.googleapis.com/AdaptiveMtDataset\x12Dprojects/{project}/locations/{location}/adaptiveMtDatasets/{dataset}\"\xc8\x01\n" +
-	"\x1eCreateAdaptiveMtDatasetRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12c\n" +
-	"\x13adaptive_mt_dataset\x18\x02 \x01(\v2..google.cloud.translation.v3.AdaptiveMtDatasetB\x03\xe0A\x02R\x11adaptiveMtDataset\"h\n" +
-	"\x1eDeleteAdaptiveMtDatasetRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*translate.googleapis.com/AdaptiveMtDatasetR\x04name\"e\n" +
-	"\x1bGetAdaptiveMtDatasetRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*translate.googleapis.com/AdaptiveMtDatasetR\x04name\"\xc5\x01\n" +
-	"\x1dListAdaptiveMtDatasetsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"*translate.googleapis.com/AdaptiveMtDataset\x12Dprojects/{project}/locations/{location}/adaptiveMtDatasets/{dataset}\"\xca\x01\n" +
+	"\x1eCreateAdaptiveMtDatasetRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12d\n" +
+	"\x13adaptive_mt_dataset\x18\x02 \x01(\v2..google.cloud.translation.v3.AdaptiveMtDatasetB\x04\xe2A\x01\x02R\x11adaptiveMtDataset\"i\n" +
+	"\x1eDeleteAdaptiveMtDatasetRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*translate.googleapis.com/AdaptiveMtDatasetR\x04name\"f\n" +
+	"\x1bGetAdaptiveMtDatasetRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*translate.googleapis.com/AdaptiveMtDatasetR\x04name\"\xc9\x01\n" +
+	"\x1dListAdaptiveMtDatasetsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xb4\x01\n" +
-	"\x1eListAdaptiveMtDatasetsResponse\x12e\n" +
-	"\x14adaptive_mt_datasets\x18\x01 \x03(\v2..google.cloud.translation.v3.AdaptiveMtDatasetB\x03\xe0A\x03R\x12adaptiveMtDatasets\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\rnextPageToken\"\x9e\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xb6\x01\n" +
+	"\x1eListAdaptiveMtDatasetsResponse\x12f\n" +
+	"\x14adaptive_mt_datasets\x18\x01 \x03(\v2..google.cloud.translation.v3.AdaptiveMtDatasetB\x04\xe2A\x01\x03R\x12adaptiveMtDatasets\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rnextPageToken\"\xa5\n" +
 	"\n" +
-	"\x1aAdaptiveMtTranslateRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12L\n" +
-	"\adataset\x18\x02 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*translate.googleapis.com/AdaptiveMtDatasetR\adataset\x12\x1d\n" +
-	"\acontent\x18\x03 \x03(\tB\x03\xe0A\x02R\acontent\x12\x1b\n" +
+	"\x1aAdaptiveMtTranslateRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12M\n" +
+	"\adataset\x18\x02 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*translate.googleapis.com/AdaptiveMtDatasetR\adataset\x12\x1e\n" +
+	"\acontent\x18\x03 \x03(\tB\x04\xe2A\x01\x02R\acontent\x12\x1b\n" +
 	"\tmime_type\x18\x04 \x01(\tR\bmimeType\x12\x90\x01\n" +
-	"\x19reference_sentence_config\x18\x06 \x01(\v2O.google.cloud.translation.v3.AdaptiveMtTranslateRequest.ReferenceSentenceConfigH\x00R\x17referenceSentenceConfig\x88\x01\x01\x12y\n" +
-	"\x0fglossary_config\x18\a \x01(\v2F.google.cloud.translation.v3.AdaptiveMtTranslateRequest.GlossaryConfigB\x03\xe0A\x01H\x01R\x0eglossaryConfig\x88\x01\x01\x1ai\n" +
+	"\x19reference_sentence_config\x18\x06 \x01(\v2O.google.cloud.translation.v3.AdaptiveMtTranslateRequest.ReferenceSentenceConfigH\x00R\x17referenceSentenceConfig\x88\x01\x01\x12z\n" +
+	"\x0fglossary_config\x18\a \x01(\v2F.google.cloud.translation.v3.AdaptiveMtTranslateRequest.GlossaryConfigB\x04\xe2A\x01\x01H\x01R\x0eglossaryConfig\x88\x01\x01\x1ai\n" +
 	"\x15ReferenceSentencePair\x12'\n" +
 	"\x0fsource_sentence\x18\x01 \x01(\tR\x0esourceSentence\x12'\n" +
 	"\x0ftarget_sentence\x18\x02 \x01(\tR\x0etargetSentence\x1a\xa5\x01\n" +
@@ -1589,74 +1589,74 @@ const file_google_cloud_translate_v3_adaptive_mt_proto_rawDesc = "" +
 	"\x17ReferenceSentenceConfig\x12\x94\x01\n" +
 	"\x1dreference_sentence_pair_lists\x18\x01 \x03(\v2Q.google.cloud.translation.v3.AdaptiveMtTranslateRequest.ReferenceSentencePairListR\x1areferenceSentencePairLists\x120\n" +
 	"\x14source_language_code\x18\x02 \x01(\tR\x12sourceLanguageCode\x120\n" +
-	"\x14target_language_code\x18\x03 \x01(\tR\x12targetLanguageCode\x1a\xc8\x01\n" +
-	"\x0eGlossaryConfig\x12E\n" +
-	"\bglossary\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!translate.googleapis.com/GlossaryR\bglossary\x12$\n" +
-	"\vignore_case\x18\x02 \x01(\bB\x03\xe0A\x01R\n" +
-	"ignoreCase\x12I\n" +
-	"\x1econtextual_translation_enabled\x18\x04 \x01(\bB\x03\xe0A\x01R\x1ccontextualTranslationEnabledB\x1c\n" +
+	"\x14target_language_code\x18\x03 \x01(\tR\x12targetLanguageCode\x1a\xcb\x01\n" +
+	"\x0eGlossaryConfig\x12F\n" +
+	"\bglossary\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!translate.googleapis.com/GlossaryR\bglossary\x12%\n" +
+	"\vignore_case\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"ignoreCase\x12J\n" +
+	"\x1econtextual_translation_enabled\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x1ccontextualTranslationEnabledB\x1c\n" +
 	"\x1a_reference_sentence_configB\x12\n" +
-	"\x10_glossary_config\"E\n" +
-	"\x15AdaptiveMtTranslation\x12,\n" +
-	"\x0ftranslated_text\x18\x01 \x01(\tB\x03\xe0A\x03R\x0etranslatedText\"\x8d\x02\n" +
-	"\x1bAdaptiveMtTranslateResponse\x12[\n" +
-	"\ftranslations\x18\x01 \x03(\v22.google.cloud.translation.v3.AdaptiveMtTranslationB\x03\xe0A\x03R\ftranslations\x12(\n" +
-	"\rlanguage_code\x18\x02 \x01(\tB\x03\xe0A\x03R\flanguageCode\x12g\n" +
-	"\x15glossary_translations\x18\x04 \x03(\v22.google.cloud.translation.v3.AdaptiveMtTranslationR\x14glossaryTranslations\"\xcb\x03\n" +
-	"\x0eAdaptiveMtFile\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"\x10_glossary_config\"F\n" +
+	"\x15AdaptiveMtTranslation\x12-\n" +
+	"\x0ftranslated_text\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x0etranslatedText\"\x8f\x02\n" +
+	"\x1bAdaptiveMtTranslateResponse\x12\\\n" +
+	"\ftranslations\x18\x01 \x03(\v22.google.cloud.translation.v3.AdaptiveMtTranslationB\x04\xe2A\x01\x03R\ftranslations\x12)\n" +
+	"\rlanguage_code\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\flanguageCode\x12g\n" +
+	"\x15glossary_translations\x18\x04 \x03(\v22.google.cloud.translation.v3.AdaptiveMtTranslationR\x14glossaryTranslations\"\xce\x03\n" +
+	"\x0eAdaptiveMtFile\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'translate.googleapis.com/AdaptiveMtFileR\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x1f\n" +
 	"\ventry_count\x18\x03 \x01(\x05R\n" +
-	"entryCount\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"entryCount\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:\xab\x01\xeaA\xa7\x01\n" +
-	"'translate.googleapis.com/AdaptiveMtFile\x12[projects/{project}/locations/{location}/adaptiveMtDatasets/{dataset}/adaptiveMtFiles/{file}*\x0fadaptiveMtFiles2\x0eadaptiveMtFile\"_\n" +
-	"\x18GetAdaptiveMtFileRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'translate.googleapis.com/AdaptiveMtFileR\x04name\"b\n" +
-	"\x1bDeleteAdaptiveMtFileRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'translate.googleapis.com/AdaptiveMtFileR\x04name\"\xa8\x02\n" +
-	"\x1bImportAdaptiveMtFileRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"'translate.googleapis.com/AdaptiveMtFile\x12[projects/{project}/locations/{location}/adaptiveMtDatasets/{dataset}/adaptiveMtFiles/{file}*\x0fadaptiveMtFiles2\x0eadaptiveMtFile\"`\n" +
+	"\x18GetAdaptiveMtFileRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'translate.googleapis.com/AdaptiveMtFileR\x04name\"c\n" +
+	"\x1bDeleteAdaptiveMtFileRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'translate.googleapis.com/AdaptiveMtFileR\x04name\"\xa9\x02\n" +
+	"\x1bImportAdaptiveMtFileRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*translate.googleapis.com/AdaptiveMtDatasetR\x06parent\x12Z\n" +
 	"\x11file_input_source\x18\x02 \x01(\v2,.google.cloud.translation.v3.FileInputSourceH\x00R\x0ffileInputSource\x12W\n" +
 	"\x10gcs_input_source\x18\x03 \x01(\v2+.google.cloud.translation.v3.GcsInputSourceH\x00R\x0egcsInputSourceB\b\n" +
-	"\x06source\"z\n" +
-	"\x1cImportAdaptiveMtFileResponse\x12Z\n" +
-	"\x10adaptive_mt_file\x18\x01 \x01(\v2+.google.cloud.translation.v3.AdaptiveMtFileB\x03\xe0A\x03R\x0eadaptiveMtFile\"\xae\x01\n" +
-	"\x1aListAdaptiveMtFilesRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*translate.googleapis.com/AdaptiveMtDatasetR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x06source\"{\n" +
+	"\x1cImportAdaptiveMtFileResponse\x12[\n" +
+	"\x10adaptive_mt_file\x18\x01 \x01(\v2+.google.cloud.translation.v3.AdaptiveMtFileB\x04\xe2A\x01\x03R\x0eadaptiveMtFile\"\xb1\x01\n" +
+	"\x1aListAdaptiveMtFilesRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*translate.googleapis.com/AdaptiveMtDatasetR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa8\x01\n" +
-	"\x1bListAdaptiveMtFilesResponse\x12\\\n" +
-	"\x11adaptive_mt_files\x18\x01 \x03(\v2+.google.cloud.translation.v3.AdaptiveMtFileB\x03\xe0A\x03R\x0fadaptiveMtFiles\x12+\n" +
-	"\x0fnext_page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\rnextPageToken\"\x96\x04\n" +
-	"\x12AdaptiveMtSentence\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+translate.googleapis.com/AdaptiveMtSentenceR\x04name\x12,\n" +
-	"\x0fsource_sentence\x18\x02 \x01(\tB\x03\xe0A\x02R\x0esourceSentence\x12,\n" +
-	"\x0ftarget_sentence\x18\x03 \x01(\tB\x03\xe0A\x02R\x0etargetSentence\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xaa\x01\n" +
+	"\x1bListAdaptiveMtFilesResponse\x12]\n" +
+	"\x11adaptive_mt_files\x18\x01 \x03(\v2+.google.cloud.translation.v3.AdaptiveMtFileB\x04\xe2A\x01\x03R\x0fadaptiveMtFiles\x12,\n" +
+	"\x0fnext_page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\rnextPageToken\"\x9b\x04\n" +
+	"\x12AdaptiveMtSentence\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+translate.googleapis.com/AdaptiveMtSentenceR\x04name\x12-\n" +
+	"\x0fsource_sentence\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0esourceSentence\x12-\n" +
+	"\x0ftarget_sentence\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0etargetSentence\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:\xd6\x01\xeaA\xd2\x01\n" +
-	"+translate.googleapis.com/AdaptiveMtSentence\x12zprojects/{project}/locations/{location}/adaptiveMtDatasets/{dataset}/adaptiveMtFiles/{file}/adaptiveMtSentences/{sentence}*\x13adaptiveMtSentences2\x12adaptiveMtSentence\"\xa5\x01\n" +
-	"\x1eListAdaptiveMtSentencesRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"+translate.googleapis.com/AdaptiveMtSentence\x12zprojects/{project}/locations/{location}/adaptiveMtDatasets/{dataset}/adaptiveMtFiles/{file}/adaptiveMtSentences/{sentence}*\x13adaptiveMtSentences2\x12adaptiveMtSentence\"\xa6\x01\n" +
+	"\x1eListAdaptiveMtSentencesRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'translate.googleapis.com/AdaptiveMtFileR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\"\xb8\x01\n" +
-	"\x1fListAdaptiveMtSentencesResponse\x12h\n" +
-	"\x15adaptive_mt_sentences\x18\x01 \x03(\v2/.google.cloud.translation.v3.AdaptiveMtSentenceB\x03\xe0A\x03R\x13adaptiveMtSentences\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\rnextPageTokenB\xc6\x01\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\"\xba\x01\n" +
+	"\x1fListAdaptiveMtSentencesResponse\x12i\n" +
+	"\x15adaptive_mt_sentences\x18\x01 \x03(\v2/.google.cloud.translation.v3.AdaptiveMtSentenceB\x04\xe2A\x01\x03R\x13adaptiveMtSentences\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rnextPageTokenB\xc6\x01\n" +
 	"\x1dcom.google.cloud.translate.v3B\x0fAdaptiveMtProtoP\x01Z;cloud.google.com/go/translate/apiv3/translatepb;translatepb\xaa\x02\x19Google.Cloud.Translate.V3\xca\x02\x19Google\\Cloud\\Translate\\V3\xea\x02\x1cGoogle::Cloud::Translate::V3b\x06proto3"
 
 var (

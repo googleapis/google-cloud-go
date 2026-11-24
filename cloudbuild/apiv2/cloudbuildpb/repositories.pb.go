@@ -2494,22 +2494,22 @@ var File_google_devtools_cloudbuild_v2_repositories_proto protoreflect.FileDescr
 
 const file_google_devtools_cloudbuild_v2_repositories_proto_rawDesc = "" +
 	"\n" +
-	"0google/devtools/cloudbuild/v2/repositories.proto\x12\x1dgoogle.devtools.cloudbuild.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1a.google/devtools/cloudbuild/v2/cloudbuild.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa9\t\n" +
+	"0google/devtools/cloudbuild/v2/repositories.proto\x12\x1dgoogle.devtools.cloudbuild.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1a.google/devtools/cloudbuild/v2/cloudbuild.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xae\t\n" +
 	"\n" +
-	"Connection\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"Connection\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12R\n" +
 	"\rgithub_config\x18\x05 \x01(\v2+.google.devtools.cloudbuild.v2.GitHubConfigH\x00R\fgithubConfig\x12q\n" +
 	"\x18github_enterprise_config\x18\x06 \x01(\v25.google.devtools.cloudbuild.v2.GitHubEnterpriseConfigH\x00R\x16githubEnterpriseConfig\x12R\n" +
 	"\rgitlab_config\x18\a \x01(\v2+.google.devtools.cloudbuild.v2.GitLabConfigH\x00R\fgitlabConfig\x12{\n" +
 	"\x1cbitbucket_data_center_config\x18\b \x01(\v28.google.devtools.cloudbuild.v2.BitbucketDataCenterConfigH\x00R\x19bitbucketDataCenterConfig\x12k\n" +
-	"\x16bitbucket_cloud_config\x18\t \x01(\v23.google.devtools.cloudbuild.v2.BitbucketCloudConfigH\x00R\x14bitbucketCloudConfig\x12d\n" +
-	"\x12installation_state\x18\f \x01(\v20.google.devtools.cloudbuild.v2.InstallationStateB\x03\xe0A\x03R\x11installationState\x12\x1a\n" +
-	"\bdisabled\x18\r \x01(\bR\bdisabled\x12%\n" +
-	"\vreconciling\x18\x0e \x01(\bB\x03\xe0A\x03R\vreconciling\x12\\\n" +
+	"\x16bitbucket_cloud_config\x18\t \x01(\v23.google.devtools.cloudbuild.v2.BitbucketCloudConfigH\x00R\x14bitbucketCloudConfig\x12e\n" +
+	"\x12installation_state\x18\f \x01(\v20.google.devtools.cloudbuild.v2.InstallationStateB\x04\xe2A\x01\x03R\x11installationState\x12\x1a\n" +
+	"\bdisabled\x18\r \x01(\bR\bdisabled\x12&\n" +
+	"\vreconciling\x18\x0e \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12\\\n" +
 	"\vannotations\x18\x0f \x03(\v2:.google.devtools.cloudbuild.v2.Connection.AnnotationsEntryR\vannotations\x12\x12\n" +
 	"\x04etag\x18\x10 \x01(\tR\x04etag\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
@@ -2517,22 +2517,22 @@ const file_google_devtools_cloudbuild_v2_repositories_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x88\x01\xeaA\x84\x01\n" +
 	"$cloudbuild.googleapis.com/Connection\x12@projects/{project}/locations/{location}/connections/{connection}*\vconnections2\n" +
 	"connectionR\x01\x01B\x13\n" +
-	"\x11connection_config\"\xa0\x02\n" +
-	"\x11InstallationState\x12Q\n" +
-	"\x05stage\x18\x01 \x01(\x0e26.google.devtools.cloudbuild.v2.InstallationState.StageB\x03\xe0A\x03R\x05stage\x12\x1d\n" +
-	"\amessage\x18\x02 \x01(\tB\x03\xe0A\x03R\amessage\x12\"\n" +
+	"\x11connection_config\"\xa3\x02\n" +
+	"\x11InstallationState\x12R\n" +
+	"\x05stage\x18\x01 \x01(\x0e26.google.devtools.cloudbuild.v2.InstallationState.StageB\x04\xe2A\x01\x03R\x05stage\x12\x1e\n" +
+	"\amessage\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\amessage\x12#\n" +
 	"\n" +
-	"action_uri\x18\x03 \x01(\tB\x03\xe0A\x03R\tactionUri\"u\n" +
+	"action_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\tactionUri\"u\n" +
 	"\x05Stage\x12\x15\n" +
 	"\x11STAGE_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12PENDING_CREATE_APP\x10\x01\x12\x16\n" +
 	"\x12PENDING_USER_OAUTH\x10\x02\x12\x17\n" +
 	"\x13PENDING_INSTALL_APP\x10\x03\x12\f\n" +
 	"\bCOMPLETE\x10\n" +
-	"\"\xac\x01\n" +
-	" FetchLinkableRepositoriesRequest\x12L\n" +
+	"\"\xad\x01\n" +
+	" FetchLinkableRepositoriesRequest\x12M\n" +
 	"\n" +
-	"connection\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"connection\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$cloudbuild.googleapis.com/ConnectionR\n" +
 	"connection\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
@@ -2543,10 +2543,10 @@ const file_google_devtools_cloudbuild_v2_repositories_proto_rawDesc = "" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa3\x01\n" +
 	"\fGitHubConfig\x12c\n" +
 	"\x15authorizer_credential\x18\x01 \x01(\v2..google.devtools.cloudbuild.v2.OAuthCredentialR\x14authorizerCredential\x12.\n" +
-	"\x13app_installation_id\x18\x02 \x01(\x03R\x11appInstallationId\"\xce\x04\n" +
-	"\x16GitHubEnterpriseConfig\x12\x1e\n" +
-	"\bhost_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\ahostUri\x12\x1c\n" +
-	"\aapi_key\x18\f \x01(\tB\x03\xe0A\x02R\x06apiKey\x12\x15\n" +
+	"\x13app_installation_id\x18\x02 \x01(\x03R\x11appInstallationId\"\xd1\x04\n" +
+	"\x16GitHubEnterpriseConfig\x12\x1f\n" +
+	"\bhost_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\ahostUri\x12\x1d\n" +
+	"\aapi_key\x18\f \x01(\tB\x04\xe2A\x01\x02R\x06apiKey\x12\x15\n" +
 	"\x06app_id\x18\x02 \x01(\x03R\x05appId\x12\x19\n" +
 	"\bapp_slug\x18\r \x01(\tR\aappSlug\x12l\n" +
 	"\x1aprivate_key_secret_version\x18\x04 \x01(\tB/\xfaA,\n" +
@@ -2556,129 +2556,129 @@ const file_google_devtools_cloudbuild_v2_repositories_proto_rawDesc = "" +
 	"\x13app_installation_id\x18\t \x01(\x03R\x11appInstallationId\x12o\n" +
 	"\x18service_directory_config\x18\n" +
 	" \x01(\v25.google.devtools.cloudbuild.v2.ServiceDirectoryConfigR\x16serviceDirectoryConfig\x12\x15\n" +
-	"\x06ssl_ca\x18\v \x01(\tR\x05sslCa\x12*\n" +
-	"\x0eserver_version\x18\x0e \x01(\tB\x03\xe0A\x03R\rserverVersion\"\xb2\x04\n" +
+	"\x06ssl_ca\x18\v \x01(\tR\x05sslCa\x12+\n" +
+	"\x0eserver_version\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\rserverVersion\"\xb4\x04\n" +
 	"\fGitLabConfig\x12\x19\n" +
-	"\bhost_uri\x18\x01 \x01(\tR\ahostUri\x12x\n" +
-	"\x1dwebhook_secret_secret_version\x18\x02 \x01(\tB5\xe0A\x02\xe0A\x05\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x12p\n" +
-	"\x1aread_authorizer_credential\x18\x03 \x01(\v2-.google.devtools.cloudbuild.v2.UserCredentialB\x03\xe0A\x02R\x18readAuthorizerCredential\x12g\n" +
-	"\x15authorizer_credential\x18\x04 \x01(\v2-.google.devtools.cloudbuild.v2.UserCredentialB\x03\xe0A\x02R\x14authorizerCredential\x12o\n" +
+	"\bhost_uri\x18\x01 \x01(\tR\ahostUri\x12w\n" +
+	"\x1dwebhook_secret_secret_version\x18\x02 \x01(\tB4\xe2A\x02\x02\x05\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x12q\n" +
+	"\x1aread_authorizer_credential\x18\x03 \x01(\v2-.google.devtools.cloudbuild.v2.UserCredentialB\x04\xe2A\x01\x02R\x18readAuthorizerCredential\x12h\n" +
+	"\x15authorizer_credential\x18\x04 \x01(\v2-.google.devtools.cloudbuild.v2.UserCredentialB\x04\xe2A\x01\x02R\x14authorizerCredential\x12o\n" +
 	"\x18service_directory_config\x18\x05 \x01(\v25.google.devtools.cloudbuild.v2.ServiceDirectoryConfigR\x16serviceDirectoryConfig\x12\x15\n" +
-	"\x06ssl_ca\x18\x06 \x01(\tR\x05sslCa\x12*\n" +
-	"\x0eserver_version\x18\a \x01(\tB\x03\xe0A\x03R\rserverVersion\"\xce\x04\n" +
-	"\x19BitbucketDataCenterConfig\x12\x1e\n" +
-	"\bhost_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\ahostUri\x12x\n" +
-	"\x1dwebhook_secret_secret_version\x18\x02 \x01(\tB5\xe0A\x02\xe0A\x05\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x12p\n" +
-	"\x1aread_authorizer_credential\x18\x03 \x01(\v2-.google.devtools.cloudbuild.v2.UserCredentialB\x03\xe0A\x02R\x18readAuthorizerCredential\x12g\n" +
-	"\x15authorizer_credential\x18\x04 \x01(\v2-.google.devtools.cloudbuild.v2.UserCredentialB\x03\xe0A\x02R\x14authorizerCredential\x12t\n" +
-	"\x18service_directory_config\x18\x05 \x01(\v25.google.devtools.cloudbuild.v2.ServiceDirectoryConfigB\x03\xe0A\x01R\x16serviceDirectoryConfig\x12\x1a\n" +
-	"\x06ssl_ca\x18\x06 \x01(\tB\x03\xe0A\x01R\x05sslCa\x12*\n" +
-	"\x0eserver_version\x18\a \x01(\tB\x03\xe0A\x03R\rserverVersion\"\x8b\x03\n" +
-	"\x14BitbucketCloudConfig\x12!\n" +
-	"\tworkspace\x18\x01 \x01(\tB\x03\xe0A\x02R\tworkspace\x12u\n" +
-	"\x1dwebhook_secret_secret_version\x18\x02 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x12p\n" +
-	"\x1aread_authorizer_credential\x18\x03 \x01(\v2-.google.devtools.cloudbuild.v2.UserCredentialB\x03\xe0A\x02R\x18readAuthorizerCredential\x12g\n" +
-	"\x15authorizer_credential\x18\x04 \x01(\v2-.google.devtools.cloudbuild.v2.UserCredentialB\x03\xe0A\x02R\x14authorizerCredential\"c\n" +
-	"\x16ServiceDirectoryConfig\x12I\n" +
-	"\aservice\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'servicedirectory.googleapis.com/ServiceR\aservice\"\xc9\x04\n" +
+	"\x06ssl_ca\x18\x06 \x01(\tR\x05sslCa\x12+\n" +
+	"\x0eserver_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\rserverVersion\"\xd3\x04\n" +
+	"\x19BitbucketDataCenterConfig\x12\x1f\n" +
+	"\bhost_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\ahostUri\x12w\n" +
+	"\x1dwebhook_secret_secret_version\x18\x02 \x01(\tB4\xe2A\x02\x02\x05\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x12q\n" +
+	"\x1aread_authorizer_credential\x18\x03 \x01(\v2-.google.devtools.cloudbuild.v2.UserCredentialB\x04\xe2A\x01\x02R\x18readAuthorizerCredential\x12h\n" +
+	"\x15authorizer_credential\x18\x04 \x01(\v2-.google.devtools.cloudbuild.v2.UserCredentialB\x04\xe2A\x01\x02R\x14authorizerCredential\x12u\n" +
+	"\x18service_directory_config\x18\x05 \x01(\v25.google.devtools.cloudbuild.v2.ServiceDirectoryConfigB\x04\xe2A\x01\x01R\x16serviceDirectoryConfig\x12\x1b\n" +
+	"\x06ssl_ca\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x05sslCa\x12+\n" +
+	"\x0eserver_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\rserverVersion\"\x8f\x03\n" +
+	"\x14BitbucketCloudConfig\x12\"\n" +
+	"\tworkspace\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tworkspace\x12v\n" +
+	"\x1dwebhook_secret_secret_version\x18\x02 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x12q\n" +
+	"\x1aread_authorizer_credential\x18\x03 \x01(\v2-.google.devtools.cloudbuild.v2.UserCredentialB\x04\xe2A\x01\x02R\x18readAuthorizerCredential\x12h\n" +
+	"\x15authorizer_credential\x18\x04 \x01(\v2-.google.devtools.cloudbuild.v2.UserCredentialB\x04\xe2A\x01\x02R\x14authorizerCredential\"d\n" +
+	"\x16ServiceDirectoryConfig\x12J\n" +
+	"\aservice\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'servicedirectory.googleapis.com/ServiceR\aservice\"\xce\x04\n" +
 	"\n" +
-	"Repository\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12\"\n" +
+	"Repository\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12#\n" +
 	"\n" +
-	"remote_uri\x18\x02 \x01(\tB\x03\xe0A\x02R\tremoteUri\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"remote_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tremoteUri\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12\\\n" +
 	"\vannotations\x18\x06 \x03(\v2:.google.devtools.cloudbuild.v2.Repository.AnnotationsEntryR\vannotations\x12\x12\n" +
-	"\x04etag\x18\a \x01(\tR\x04etag\x12\"\n" +
+	"\x04etag\x18\a \x01(\tR\x04etag\x12#\n" +
 	"\n" +
-	"webhook_id\x18\b \x01(\tB\x03\xe0A\x03R\twebhookId\x1a>\n" +
+	"webhook_id\x18\b \x01(\tB\x04\xe2A\x01\x03R\twebhookId\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xa3\x01\xeaA\x9f\x01\n" +
 	"$cloudbuild.googleapis.com/Repository\x12Zprojects/{project}/locations/{location}/connections/{connection}/repositories/{repository}*\frepositories2\n" +
-	"repositoryR\x01\x01\"\xa0\x01\n" +
+	"repositoryR\x01\x01\"\xa1\x01\n" +
 	"\x0fOAuthCredential\x12l\n" +
 	"\x1aoauth_token_secret_version\x18\x01 \x01(\tB/\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x17oauthTokenSecretVersion\x12\x1f\n" +
-	"\busername\x18\x02 \x01(\tB\x03\xe0A\x03R\busername\"\xa0\x01\n" +
-	"\x0eUserCredential\x12m\n" +
-	"\x19user_token_secret_version\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x16userTokenSecretVersion\x12\x1f\n" +
-	"\busername\x18\x02 \x01(\tB\x03\xe0A\x03R\busername\"\xd9\x01\n" +
-	"\x17CreateConnectionRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$cloudbuild.googleapis.com/ConnectionR\x06parent\x12N\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x17oauthTokenSecretVersion\x12 \n" +
+	"\busername\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\busername\"\xa2\x01\n" +
+	"\x0eUserCredential\x12n\n" +
+	"\x19user_token_secret_version\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x16userTokenSecretVersion\x12 \n" +
+	"\busername\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\busername\"\xdc\x01\n" +
+	"\x17CreateConnectionRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$cloudbuild.googleapis.com/ConnectionR\x06parent\x12O\n" +
 	"\n" +
-	"connection\x18\x02 \x01(\v2).google.devtools.cloudbuild.v2.ConnectionB\x03\xe0A\x02R\n" +
-	"connection\x12(\n" +
-	"\rconnection_id\x18\x03 \x01(\tB\x03\xe0A\x02R\fconnectionId\"X\n" +
-	"\x14GetConnectionRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$cloudbuild.googleapis.com/ConnectionR\x04name\"\x9a\x01\n" +
-	"\x16ListConnectionsRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$cloudbuild.googleapis.com/ConnectionR\x06parent\x12\x1b\n" +
+	"connection\x18\x02 \x01(\v2).google.devtools.cloudbuild.v2.ConnectionB\x04\xe2A\x01\x02R\n" +
+	"connection\x12)\n" +
+	"\rconnection_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\fconnectionId\"Y\n" +
+	"\x14GetConnectionRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$cloudbuild.googleapis.com/ConnectionR\x04name\"\x9b\x01\n" +
+	"\x16ListConnectionsRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$cloudbuild.googleapis.com/ConnectionR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x8e\x01\n" +
 	"\x17ListConnectionsResponse\x12K\n" +
 	"\vconnections\x18\x01 \x03(\v2).google.devtools.cloudbuild.v2.ConnectionR\vconnections\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xdf\x01\n" +
-	"\x17UpdateConnectionRequest\x12N\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe0\x01\n" +
+	"\x17UpdateConnectionRequest\x12O\n" +
 	"\n" +
-	"connection\x18\x01 \x01(\v2).google.devtools.cloudbuild.v2.ConnectionB\x03\xe0A\x02R\n" +
+	"connection\x18\x01 \x01(\v2).google.devtools.cloudbuild.v2.ConnectionB\x04\xe2A\x01\x02R\n" +
 	"connection\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\x12#\n" +
 	"\rallow_missing\x18\x03 \x01(\bR\fallowMissing\x12\x12\n" +
-	"\x04etag\x18\x04 \x01(\tR\x04etag\"\x94\x01\n" +
-	"\x17DeleteConnectionRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"\x04etag\x18\x04 \x01(\tR\x04etag\"\x95\x01\n" +
+	"\x17DeleteConnectionRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$cloudbuild.googleapis.com/ConnectionR\x04name\x12\x12\n" +
 	"\x04etag\x18\x02 \x01(\tR\x04etag\x12#\n" +
-	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\"\xd9\x01\n" +
-	"\x17CreateRepositoryRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$cloudbuild.googleapis.com/ConnectionR\x06parent\x12N\n" +
+	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\"\xdc\x01\n" +
+	"\x17CreateRepositoryRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$cloudbuild.googleapis.com/ConnectionR\x06parent\x12O\n" +
 	"\n" +
-	"repository\x18\x02 \x01(\v2).google.devtools.cloudbuild.v2.RepositoryB\x03\xe0A\x02R\n" +
-	"repository\x12(\n" +
-	"\rrepository_id\x18\x03 \x01(\tB\x03\xe0A\x02R\frepositoryId\"\xbf\x01\n" +
-	"\x1eBatchCreateRepositoriesRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$cloudbuild.googleapis.com/ConnectionR\x06parent\x12W\n" +
-	"\brequests\x18\x02 \x03(\v26.google.devtools.cloudbuild.v2.CreateRepositoryRequestB\x03\xe0A\x02R\brequests\"p\n" +
+	"repository\x18\x02 \x01(\v2).google.devtools.cloudbuild.v2.RepositoryB\x04\xe2A\x01\x02R\n" +
+	"repository\x12)\n" +
+	"\rrepository_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\frepositoryId\"\xc1\x01\n" +
+	"\x1eBatchCreateRepositoriesRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$cloudbuild.googleapis.com/ConnectionR\x06parent\x12X\n" +
+	"\brequests\x18\x02 \x03(\v26.google.devtools.cloudbuild.v2.CreateRepositoryRequestB\x04\xe2A\x01\x02R\brequests\"p\n" +
 	"\x1fBatchCreateRepositoriesResponse\x12M\n" +
-	"\frepositories\x18\x01 \x03(\v2).google.devtools.cloudbuild.v2.RepositoryR\frepositories\"X\n" +
-	"\x14GetRepositoryRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$cloudbuild.googleapis.com/RepositoryR\x04name\"\xb3\x01\n" +
-	"\x17ListRepositoriesRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$cloudbuild.googleapis.com/RepositoryR\x06parent\x12\x1b\n" +
+	"\frepositories\x18\x01 \x03(\v2).google.devtools.cloudbuild.v2.RepositoryR\frepositories\"Y\n" +
+	"\x14GetRepositoryRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$cloudbuild.googleapis.com/RepositoryR\x04name\"\xb4\x01\n" +
+	"\x17ListRepositoriesRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$cloudbuild.googleapis.com/RepositoryR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
 	"\x06filter\x18\x04 \x01(\tR\x06filter\"\x91\x01\n" +
 	"\x18ListRepositoriesResponse\x12M\n" +
 	"\frepositories\x18\x01 \x03(\v2).google.devtools.cloudbuild.v2.RepositoryR\frepositories\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x94\x01\n" +
-	"\x17DeleteRepositoryRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x95\x01\n" +
+	"\x17DeleteRepositoryRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$cloudbuild.googleapis.com/RepositoryR\x04name\x12\x12\n" +
 	"\x04etag\x18\x02 \x01(\tR\x04etag\x12#\n" +
-	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\"j\n" +
-	"\x1aFetchReadWriteTokenRequest\x12L\n" +
+	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\"k\n" +
+	"\x1aFetchReadWriteTokenRequest\x12M\n" +
 	"\n" +
-	"repository\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"repository\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$cloudbuild.googleapis.com/RepositoryR\n" +
-	"repository\"e\n" +
-	"\x15FetchReadTokenRequest\x12L\n" +
+	"repository\"f\n" +
+	"\x15FetchReadTokenRequest\x12M\n" +
 	"\n" +
-	"repository\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"repository\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$cloudbuild.googleapis.com/RepositoryR\n" +
 	"repository\"s\n" +
 	"\x16FetchReadTokenResponse\x12\x14\n" +
@@ -2686,15 +2686,15 @@ const file_google_devtools_cloudbuild_v2_repositories_proto_rawDesc = "" +
 	"\x0fexpiration_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x0eexpirationTime\"x\n" +
 	"\x1bFetchReadWriteTokenResponse\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\x12C\n" +
-	"\x0fexpiration_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x0eexpirationTime\"\xa8\x01\n" +
-	"\x15ProcessWebhookRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$cloudbuild.googleapis.com/ConnectionR\x06parent\x12(\n" +
+	"\x0fexpiration_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x0eexpirationTime\"\xa9\x01\n" +
+	"\x15ProcessWebhookRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$cloudbuild.googleapis.com/ConnectionR\x06parent\x12(\n" +
 	"\x04body\x18\x02 \x01(\v2\x14.google.api.HttpBodyR\x04body\x12\x1f\n" +
 	"\vwebhook_key\x18\x03 \x01(\tR\n" +
-	"webhookKey\"\xf4\x01\n" +
-	"\x13FetchGitRefsRequest\x12L\n" +
+	"webhookKey\"\xf5\x01\n" +
+	"\x13FetchGitRefsRequest\x12M\n" +
 	"\n" +
-	"repository\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"repository\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$cloudbuild.googleapis.com/RepositoryR\n" +
 	"repository\x12U\n" +
 	"\bref_type\x18\x02 \x01(\x0e2:.google.devtools.cloudbuild.v2.FetchGitRefsRequest.RefTypeR\arefType\"8\n" +

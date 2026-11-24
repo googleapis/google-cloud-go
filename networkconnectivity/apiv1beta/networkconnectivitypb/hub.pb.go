@@ -57,6 +57,9 @@ const (
 	// derived from Border Gateway Protocol (BGP) advertisements received from an
 	// NCC hybrid spoke.
 	RouteType_DYNAMIC_ROUTE RouteType = 3
+	// The route leads to a destination within the Private Service Connect
+	// Global Google API range of the VPC network.
+	RouteType_PSC_GLOBAL_GAPI RouteType = 4
 )
 
 // Enum value maps for RouteType.
@@ -66,12 +69,14 @@ var (
 		1: "VPC_PRIMARY_SUBNET",
 		2: "VPC_SECONDARY_SUBNET",
 		3: "DYNAMIC_ROUTE",
+		4: "PSC_GLOBAL_GAPI",
 	}
 	RouteType_value = map[string]int32{
 		"ROUTE_TYPE_UNSPECIFIED": 0,
 		"VPC_PRIMARY_SUBNET":     1,
 		"VPC_SECONDARY_SUBNET":   2,
 		"DYNAMIC_ROUTE":          3,
+		"PSC_GLOBAL_GAPI":        4,
 	}
 )
 
@@ -381,6 +386,8 @@ const (
 	LocationFeature_SITE_TO_SITE_SPOKES LocationFeature = 2
 	// Gateway spokes are supported in this location.
 	LocationFeature_GATEWAY_SPOKES LocationFeature = 3
+	// Supports transports in this location.
+	LocationFeature_TRANSPORTS LocationFeature = 4
 )
 
 // Enum value maps for LocationFeature.
@@ -390,12 +397,14 @@ var (
 		1: "SITE_TO_CLOUD_SPOKES",
 		2: "SITE_TO_SITE_SPOKES",
 		3: "GATEWAY_SPOKES",
+		4: "TRANSPORTS",
 	}
 	LocationFeature_value = map[string]int32{
 		"LOCATION_FEATURE_UNSPECIFIED": 0,
 		"SITE_TO_CLOUD_SPOKES":         1,
 		"SITE_TO_SITE_SPOKES":          2,
 		"GATEWAY_SPOKES":               3,
+		"TRANSPORTS":                   4,
 	}
 )
 
@@ -807,9 +816,12 @@ type Hub struct {
 	// for the hub. If true, Private Service Connect endpoints in VPC spokes
 	// attached to the hub are made accessible to other VPC spokes attached to the
 	// hub. The default value is false.
-	ExportPsc     *bool `protobuf:"varint,15,opt,name=export_psc,json=exportPsc,proto3,oneof" json:"export_psc,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	ExportPsc *bool `protobuf:"varint,15,opt,name=export_psc,json=exportPsc,proto3,oneof" json:"export_psc,omitempty"`
+	// Optional. Config for more granular control of Private Service Connect
+	// transitivity.
+	ExportPscConfig *Hub_ExportPscConfig `protobuf:"bytes,17,opt,name=export_psc_config,json=exportPscConfig,proto3" json:"export_psc_config,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *Hub) Reset() {
@@ -931,6 +943,13 @@ func (x *Hub) GetExportPsc() bool {
 		return *x.ExportPsc
 	}
 	return false
+}
+
+func (x *Hub) GetExportPscConfig() *Hub_ExportPscConfig {
+	if x != nil {
+		return x.ExportPscConfig
+	}
+	return nil
 }
 
 // RoutingVPC contains information about the VPC networks associated
@@ -4218,6 +4237,15 @@ type LinkedVpnTunnels struct {
 	// Optional. Hub routes fully encompassed by include import ranges are
 	// included during import from hub.
 	IncludeImportRanges []string `protobuf:"bytes,5,rep,name=include_import_ranges,json=includeImportRanges,proto3" json:"include_import_ranges,omitempty"`
+	// Optional. Hub routes overlapped/encompassed by exclude import ranges are
+	// excluded during import from hub.
+	ExcludeImportRanges []string `protobuf:"bytes,6,rep,name=exclude_import_ranges,json=excludeImportRanges,proto3" json:"exclude_import_ranges,omitempty"`
+	// Optional. Dynamic routes fully encompassed by include export ranges are
+	// included during export to hub.
+	IncludeExportRanges []string `protobuf:"bytes,7,rep,name=include_export_ranges,json=includeExportRanges,proto3" json:"include_export_ranges,omitempty"`
+	// Optional. Dynamic routes overlapped/encompassed by exclude export ranges
+	// are excluded during export to hub.
+	ExcludeExportRanges []string `protobuf:"bytes,8,rep,name=exclude_export_ranges,json=excludeExportRanges,proto3" json:"exclude_export_ranges,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -4280,6 +4308,27 @@ func (x *LinkedVpnTunnels) GetIncludeImportRanges() []string {
 	return nil
 }
 
+func (x *LinkedVpnTunnels) GetExcludeImportRanges() []string {
+	if x != nil {
+		return x.ExcludeImportRanges
+	}
+	return nil
+}
+
+func (x *LinkedVpnTunnels) GetIncludeExportRanges() []string {
+	if x != nil {
+		return x.IncludeExportRanges
+	}
+	return nil
+}
+
+func (x *LinkedVpnTunnels) GetExcludeExportRanges() []string {
+	if x != nil {
+		return x.ExcludeExportRanges
+	}
+	return nil
+}
+
 // A collection of VLAN attachment resources. These resources should
 // be redundant attachments that all advertise the same prefixes to Google
 // Cloud. Alternatively, in active/passive configurations, all attachments
@@ -4297,6 +4346,15 @@ type LinkedInterconnectAttachments struct {
 	// Optional. Hub routes fully encompassed by include import ranges are
 	// included during import from hub.
 	IncludeImportRanges []string `protobuf:"bytes,5,rep,name=include_import_ranges,json=includeImportRanges,proto3" json:"include_import_ranges,omitempty"`
+	// Optional. Hub routes overlapped/encompassed by exclude import ranges are
+	// excluded during import from hub.
+	ExcludeImportRanges []string `protobuf:"bytes,6,rep,name=exclude_import_ranges,json=excludeImportRanges,proto3" json:"exclude_import_ranges,omitempty"`
+	// Optional. Dynamic routes fully encompassed by include export ranges are
+	// included during export to hub.
+	IncludeExportRanges []string `protobuf:"bytes,7,rep,name=include_export_ranges,json=includeExportRanges,proto3" json:"include_export_ranges,omitempty"`
+	// Optional. Dynamic routes overlapped/encompassed by exclude export ranges
+	// are excluded during export to hub.
+	ExcludeExportRanges []string `protobuf:"bytes,8,rep,name=exclude_export_ranges,json=excludeExportRanges,proto3" json:"exclude_export_ranges,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -4359,6 +4417,27 @@ func (x *LinkedInterconnectAttachments) GetIncludeImportRanges() []string {
 	return nil
 }
 
+func (x *LinkedInterconnectAttachments) GetExcludeImportRanges() []string {
+	if x != nil {
+		return x.ExcludeImportRanges
+	}
+	return nil
+}
+
+func (x *LinkedInterconnectAttachments) GetIncludeExportRanges() []string {
+	if x != nil {
+		return x.IncludeExportRanges
+	}
+	return nil
+}
+
+func (x *LinkedInterconnectAttachments) GetExcludeExportRanges() []string {
+	if x != nil {
+		return x.ExcludeExportRanges
+	}
+	return nil
+}
+
 // A collection of router appliance instances. If you configure multiple router
 // appliance instances to receive data from the same set of sites outside of
 // Google Cloud, we recommend that you associate those instances with the same
@@ -4377,6 +4456,15 @@ type LinkedRouterApplianceInstances struct {
 	// Optional. Hub routes fully encompassed by include import ranges are
 	// included during import from hub.
 	IncludeImportRanges []string `protobuf:"bytes,5,rep,name=include_import_ranges,json=includeImportRanges,proto3" json:"include_import_ranges,omitempty"`
+	// Optional. Hub routes overlapped/encompassed by exclude import ranges are
+	// excluded during import from hub.
+	ExcludeImportRanges []string `protobuf:"bytes,6,rep,name=exclude_import_ranges,json=excludeImportRanges,proto3" json:"exclude_import_ranges,omitempty"`
+	// Optional. Dynamic routes fully encompassed by include export ranges are
+	// included during export to hub.
+	IncludeExportRanges []string `protobuf:"bytes,7,rep,name=include_export_ranges,json=includeExportRanges,proto3" json:"include_export_ranges,omitempty"`
+	// Optional. Dynamic routes overlapped/encompassed by exclude export ranges
+	// are excluded during export to hub.
+	ExcludeExportRanges []string `protobuf:"bytes,8,rep,name=exclude_export_ranges,json=excludeExportRanges,proto3" json:"exclude_export_ranges,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -4435,6 +4523,27 @@ func (x *LinkedRouterApplianceInstances) GetVpcNetwork() string {
 func (x *LinkedRouterApplianceInstances) GetIncludeImportRanges() []string {
 	if x != nil {
 		return x.IncludeImportRanges
+	}
+	return nil
+}
+
+func (x *LinkedRouterApplianceInstances) GetExcludeImportRanges() []string {
+	if x != nil {
+		return x.ExcludeImportRanges
+	}
+	return nil
+}
+
+func (x *LinkedRouterApplianceInstances) GetIncludeExportRanges() []string {
+	if x != nil {
+		return x.IncludeExportRanges
+	}
+	return nil
+}
+
+func (x *LinkedRouterApplianceInstances) GetExcludeExportRanges() []string {
+	if x != nil {
+		return x.ExcludeExportRanges
 	}
 	return nil
 }
@@ -5928,6 +6037,67 @@ func (x *UpdateGroupRequest) GetRequestId() string {
 	return ""
 }
 
+// Configuration for more granular control of Private Service Connect
+// connection propagation.
+// This allows enabling or disabling connection propagation for specific types
+// of Private Service Connect endpoints.
+type Hub_ExportPscConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Controls whether Private Service Connect endpoints for regional
+	// ILBs and regional Google APIs should be propagated. Default value is true
+	// if export_psc is true. Otherwise, the default value is false.
+	PublishedServicesAndRegionalGoogleApis *bool `protobuf:"varint,1,opt,name=published_services_and_regional_google_apis,json=publishedServicesAndRegionalGoogleApis,proto3,oneof" json:"published_services_and_regional_google_apis,omitempty"`
+	// Optional. Controls whether Private Service Connect endpoints for global
+	// Google APIs should be propagated. The default value is false.
+	GlobalGoogleApis *bool `protobuf:"varint,2,opt,name=global_google_apis,json=globalGoogleApis,proto3,oneof" json:"global_google_apis,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *Hub_ExportPscConfig) Reset() {
+	*x = Hub_ExportPscConfig{}
+	mi := &file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[64]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Hub_ExportPscConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Hub_ExportPscConfig) ProtoMessage() {}
+
+func (x *Hub_ExportPscConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[64]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Hub_ExportPscConfig.ProtoReflect.Descriptor instead.
+func (*Hub_ExportPscConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_networkconnectivity_v1beta_hub_proto_rawDescGZIP(), []int{0, 0}
+}
+
+func (x *Hub_ExportPscConfig) GetPublishedServicesAndRegionalGoogleApis() bool {
+	if x != nil && x.PublishedServicesAndRegionalGoogleApis != nil {
+		return *x.PublishedServicesAndRegionalGoogleApis
+	}
+	return false
+}
+
+func (x *Hub_ExportPscConfig) GetGlobalGoogleApis() bool {
+	if x != nil && x.GlobalGoogleApis != nil {
+		return *x.GlobalGoogleApis
+	}
+	return false
+}
+
 // The reason for the current state of the spoke.
 type Spoke_StateReason struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -5943,7 +6113,7 @@ type Spoke_StateReason struct {
 
 func (x *Spoke_StateReason) Reset() {
 	*x = Spoke_StateReason{}
-	mi := &file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[65]
+	mi := &file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5955,7 +6125,7 @@ func (x *Spoke_StateReason) String() string {
 func (*Spoke_StateReason) ProtoMessage() {}
 
 func (x *Spoke_StateReason) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[65]
+	mi := &file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6007,7 +6177,7 @@ type Gateway_IpRangeReservation struct {
 
 func (x *Gateway_IpRangeReservation) Reset() {
 	*x = Gateway_IpRangeReservation{}
-	mi := &file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[70]
+	mi := &file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6019,7 +6189,7 @@ func (x *Gateway_IpRangeReservation) String() string {
 func (*Gateway_IpRangeReservation) ProtoMessage() {}
 
 func (x *Gateway_IpRangeReservation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[70]
+	mi := &file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6058,7 +6228,7 @@ type SpokeSummary_SpokeTypeCount struct {
 
 func (x *SpokeSummary_SpokeTypeCount) Reset() {
 	*x = SpokeSummary_SpokeTypeCount{}
-	mi := &file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[72]
+	mi := &file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6070,7 +6240,7 @@ func (x *SpokeSummary_SpokeTypeCount) String() string {
 func (*SpokeSummary_SpokeTypeCount) ProtoMessage() {}
 
 func (x *SpokeSummary_SpokeTypeCount) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[72]
+	mi := &file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6115,7 +6285,7 @@ type SpokeSummary_SpokeStateCount struct {
 
 func (x *SpokeSummary_SpokeStateCount) Reset() {
 	*x = SpokeSummary_SpokeStateCount{}
-	mi := &file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[73]
+	mi := &file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6127,7 +6297,7 @@ func (x *SpokeSummary_SpokeStateCount) String() string {
 func (*SpokeSummary_SpokeStateCount) ProtoMessage() {}
 
 func (x *SpokeSummary_SpokeStateCount) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[73]
+	mi := &file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6171,7 +6341,7 @@ type SpokeSummary_SpokeStateReasonCount struct {
 
 func (x *SpokeSummary_SpokeStateReasonCount) Reset() {
 	*x = SpokeSummary_SpokeStateReasonCount{}
-	mi := &file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[74]
+	mi := &file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6183,7 +6353,7 @@ func (x *SpokeSummary_SpokeStateReasonCount) String() string {
 func (*SpokeSummary_SpokeStateReasonCount) ProtoMessage() {}
 
 func (x *SpokeSummary_SpokeStateReasonCount) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[74]
+	mi := &file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6217,61 +6387,68 @@ var File_google_cloud_networkconnectivity_v1beta_hub_proto protoreflect.FileDesc
 
 const file_google_cloud_networkconnectivity_v1beta_hub_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/networkconnectivity/v1beta/hub.proto\x12'google.cloud.networkconnectivity.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/networkconnectivity/v1beta/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x80\b\n" +
-	"\x03Hub\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12P\n" +
-	"\x06labels\x18\x04 \x03(\v28.google.cloud.networkconnectivity.v1beta.Hub.LabelsEntryR\x06labels\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12 \n" +
-	"\tunique_id\x18\b \x01(\tB\x03\xe0A\x03R\buniqueId\x12I\n" +
-	"\x05state\x18\t \x01(\x0e2..google.cloud.networkconnectivity.v1beta.StateB\x03\xe0A\x03R\x05state\x12[\n" +
-	"\frouting_vpcs\x18\n" +
-	" \x03(\v23.google.cloud.networkconnectivity.v1beta.RoutingVPCB\x03\xe0A\x03R\vroutingVpcs\x12&\n" +
-	"\froute_tables\x18\v \x03(\tB\x03\xe0A\x03R\vrouteTables\x12_\n" +
-	"\rspoke_summary\x18\f \x01(\v25.google.cloud.networkconnectivity.v1beta.SpokeSummaryB\x03\xe0A\x03R\fspokeSummary\x12Y\n" +
-	"\vpolicy_mode\x18\r \x01(\x0e23.google.cloud.networkconnectivity.v1beta.PolicyModeB\x03\xe0A\x01R\n" +
-	"policyMode\x12e\n" +
-	"\x0fpreset_topology\x18\x0e \x01(\x0e27.google.cloud.networkconnectivity.v1beta.PresetTopologyB\x03\xe0A\x01R\x0epresetTopology\x12'\n" +
+	"1google/cloud/networkconnectivity/v1beta/hub.proto\x12'google.cloud.networkconnectivity.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/networkconnectivity/v1beta/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf8\n" +
 	"\n" +
-	"export_psc\x18\x0f \x01(\bB\x03\xe0A\x01H\x00R\texportPsc\x88\x01\x01\x1a9\n" +
+	"\x03Hub\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12P\n" +
+	"\x06labels\x18\x04 \x03(\v28.google.cloud.networkconnectivity.v1beta.Hub.LabelsEntryR\x06labels\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12!\n" +
+	"\tunique_id\x18\b \x01(\tB\x04\xe2A\x01\x03R\buniqueId\x12J\n" +
+	"\x05state\x18\t \x01(\x0e2..google.cloud.networkconnectivity.v1beta.StateB\x04\xe2A\x01\x03R\x05state\x12\\\n" +
+	"\frouting_vpcs\x18\n" +
+	" \x03(\v23.google.cloud.networkconnectivity.v1beta.RoutingVPCB\x04\xe2A\x01\x03R\vroutingVpcs\x12'\n" +
+	"\froute_tables\x18\v \x03(\tB\x04\xe2A\x01\x03R\vrouteTables\x12`\n" +
+	"\rspoke_summary\x18\f \x01(\v25.google.cloud.networkconnectivity.v1beta.SpokeSummaryB\x04\xe2A\x01\x03R\fspokeSummary\x12Z\n" +
+	"\vpolicy_mode\x18\r \x01(\x0e23.google.cloud.networkconnectivity.v1beta.PolicyModeB\x04\xe2A\x01\x01R\n" +
+	"policyMode\x12f\n" +
+	"\x0fpreset_topology\x18\x0e \x01(\x0e27.google.cloud.networkconnectivity.v1beta.PresetTopologyB\x04\xe2A\x01\x01R\x0epresetTopology\x12(\n" +
+	"\n" +
+	"export_psc\x18\x0f \x01(\bB\x04\xe2A\x01\x01H\x00R\texportPsc\x88\x01\x01\x12n\n" +
+	"\x11export_psc_config\x18\x11 \x01(\v2<.google.cloud.networkconnectivity.v1beta.Hub.ExportPscConfigB\x04\xe2A\x01\x01R\x0fexportPscConfig\x1a\xf9\x01\n" +
+	"\x0fExportPscConfig\x12f\n" +
+	"+published_services_and_regional_google_apis\x18\x01 \x01(\bB\x04\xe2A\x01\x01H\x00R&publishedServicesAndRegionalGoogleApis\x88\x01\x01\x127\n" +
+	"\x12global_google_apis\x18\x02 \x01(\bB\x04\xe2A\x01\x01H\x01R\x10globalGoogleApis\x88\x01\x01B.\n" +
+	",_published_services_and_regional_google_apisB\x15\n" +
+	"\x13_global_google_apis\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:[\xeaAX\n" +
 	"&networkconnectivity.googleapis.com/Hub\x12.projects/{project}/locations/global/hubs/{hub}B\r\n" +
-	"\v_export_psc\"\xb0\x01\n" +
+	"\v_export_psc\"\xb1\x01\n" +
 	"\n" +
 	"RoutingVPC\x125\n" +
 	"\x03uri\x18\x01 \x01(\tB#\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\x03uri\x12k\n" +
-	"2required_for_new_site_to_site_data_transfer_spokes\x18\x02 \x01(\bB\x03\xe0A\x03R*requiredForNewSiteToSiteDataTransferSpokes\"\xe9\x0f\n" +
-	"\x05Spoke\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x1ecompute.googleapis.com/NetworkR\x03uri\x12l\n" +
+	"2required_for_new_site_to_site_data_transfer_spokes\x18\x02 \x01(\bB\x04\xe2A\x01\x03R*requiredForNewSiteToSiteDataTransferSpokes\"\xfb\x0f\n" +
+	"\x05Spoke\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12R\n" +
-	"\x06labels\x18\x04 \x03(\v2:.google.cloud.networkconnectivity.v1beta.Spoke.LabelsEntryR\x06labels\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\x03hub\x18\x06 \x01(\tB.\xe0A\x05\xfaA(\n" +
-	"&networkconnectivity.googleapis.com/HubR\x03hub\x12F\n" +
-	"\x05group\x18\x17 \x01(\tB0\xe0A\x01\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/GroupR\x05group\x12l\n" +
-	"\x12linked_vpn_tunnels\x18\x11 \x01(\v29.google.cloud.networkconnectivity.v1beta.LinkedVpnTunnelsB\x03\xe0A\x01R\x10linkedVpnTunnels\x12\x93\x01\n" +
-	"\x1flinked_interconnect_attachments\x18\x12 \x01(\v2F.google.cloud.networkconnectivity.v1beta.LinkedInterconnectAttachmentsB\x03\xe0A\x01R\x1dlinkedInterconnectAttachments\x12\x97\x01\n" +
-	"!linked_router_appliance_instances\x18\x13 \x01(\v2G.google.cloud.networkconnectivity.v1beta.LinkedRouterApplianceInstancesB\x03\xe0A\x01R\x1elinkedRouterApplianceInstances\x12l\n" +
-	"\x12linked_vpc_network\x18\x14 \x01(\v29.google.cloud.networkconnectivity.v1beta.LinkedVpcNetworkB\x03\xe0A\x01R\x10linkedVpcNetwork\x12O\n" +
-	"\agateway\x18\x18 \x01(\v20.google.cloud.networkconnectivity.v1beta.GatewayB\x03\xe0A\x01R\agateway\x12\x85\x01\n" +
-	"\x1blinked_producer_vpc_network\x18\x1a \x01(\v2A.google.cloud.networkconnectivity.v1beta.LinkedProducerVpcNetworkB\x03\xe0A\x01R\x18linkedProducerVpcNetwork\x12 \n" +
-	"\tunique_id\x18\v \x01(\tB\x03\xe0A\x03R\buniqueId\x12I\n" +
-	"\x05state\x18\x0f \x01(\x0e2..google.cloud.networkconnectivity.v1beta.StateB\x03\xe0A\x03R\x05state\x12Y\n" +
-	"\areasons\x18\x15 \x03(\v2:.google.cloud.networkconnectivity.v1beta.Spoke.StateReasonB\x03\xe0A\x03R\areasons\x12V\n" +
+	"\x06labels\x18\x04 \x03(\v2:.google.cloud.networkconnectivity.v1beta.Spoke.LabelsEntryR\x06labels\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\x03hub\x18\x06 \x01(\tB/\xe2A\x01\x05\xfaA(\n" +
+	"&networkconnectivity.googleapis.com/HubR\x03hub\x12G\n" +
+	"\x05group\x18\x17 \x01(\tB1\xe2A\x01\x01\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/GroupR\x05group\x12m\n" +
+	"\x12linked_vpn_tunnels\x18\x11 \x01(\v29.google.cloud.networkconnectivity.v1beta.LinkedVpnTunnelsB\x04\xe2A\x01\x01R\x10linkedVpnTunnels\x12\x94\x01\n" +
+	"\x1flinked_interconnect_attachments\x18\x12 \x01(\v2F.google.cloud.networkconnectivity.v1beta.LinkedInterconnectAttachmentsB\x04\xe2A\x01\x01R\x1dlinkedInterconnectAttachments\x12\x98\x01\n" +
+	"!linked_router_appliance_instances\x18\x13 \x01(\v2G.google.cloud.networkconnectivity.v1beta.LinkedRouterApplianceInstancesB\x04\xe2A\x01\x01R\x1elinkedRouterApplianceInstances\x12m\n" +
+	"\x12linked_vpc_network\x18\x14 \x01(\v29.google.cloud.networkconnectivity.v1beta.LinkedVpcNetworkB\x04\xe2A\x01\x01R\x10linkedVpcNetwork\x12P\n" +
+	"\agateway\x18\x18 \x01(\v20.google.cloud.networkconnectivity.v1beta.GatewayB\x04\xe2A\x01\x01R\agateway\x12\x86\x01\n" +
+	"\x1blinked_producer_vpc_network\x18\x1a \x01(\v2A.google.cloud.networkconnectivity.v1beta.LinkedProducerVpcNetworkB\x04\xe2A\x01\x01R\x18linkedProducerVpcNetwork\x12!\n" +
+	"\tunique_id\x18\v \x01(\tB\x04\xe2A\x01\x03R\buniqueId\x12J\n" +
+	"\x05state\x18\x0f \x01(\x0e2..google.cloud.networkconnectivity.v1beta.StateB\x04\xe2A\x01\x03R\x05state\x12Z\n" +
+	"\areasons\x18\x15 \x03(\v2:.google.cloud.networkconnectivity.v1beta.Spoke.StateReasonB\x04\xe2A\x01\x03R\areasons\x12W\n" +
 	"\n" +
-	"spoke_type\x18\x16 \x01(\x0e22.google.cloud.networkconnectivity.v1beta.SpokeTypeB\x03\xe0A\x03R\tspokeType\x12\x17\n" +
-	"\x04etag\x18\x1b \x01(\tB\x03\xe0A\x01R\x04etag\x12@\n" +
-	"\x1afield_paths_pending_update\x18\x1c \x03(\tB\x03\xe0A\x01R\x17fieldPathsPendingUpdate\x1a\xbb\x02\n" +
+	"spoke_type\x18\x16 \x01(\x0e22.google.cloud.networkconnectivity.v1beta.SpokeTypeB\x04\xe2A\x01\x03R\tspokeType\x12\x18\n" +
+	"\x04etag\x18\x1b \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12A\n" +
+	"\x1afield_paths_pending_update\x18\x1c \x03(\tB\x04\xe2A\x01\x01R\x17fieldPathsPendingUpdate\x1a\xbb\x02\n" +
 	"\vStateReason\x12S\n" +
 	"\x04code\x18\x01 \x01(\x0e2?.google.cloud.networkconnectivity.v1beta.Spoke.StateReason.CodeR\x04code\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12!\n" +
@@ -6290,72 +6467,72 @@ const file_google_cloud_networkconnectivity_v1beta_hub_proto_rawDesc = "" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:e\xeaAb\n" +
-	"(networkconnectivity.googleapis.com/Spoke\x126projects/{project}/locations/{location}/spokes/{spoke}\"\xbf\x04\n" +
+	"(networkconnectivity.googleapis.com/Spoke\x126projects/{project}/locations/{location}/spokes/{spoke}\"\xc4\x04\n" +
 	"\n" +
-	"RouteTable\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"RouteTable\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12W\n" +
 	"\x06labels\x18\x04 \x03(\v2?.google.cloud.networkconnectivity.v1beta.RouteTable.LabelsEntryR\x06labels\x12 \n" +
-	"\vdescription\x18\x05 \x01(\tR\vdescription\x12\x15\n" +
-	"\x03uid\x18\x06 \x01(\tB\x03\xe0A\x03R\x03uid\x12I\n" +
-	"\x05state\x18\a \x01(\x0e2..google.cloud.networkconnectivity.v1beta.StateB\x03\xe0A\x03R\x05state\x1a9\n" +
+	"\vdescription\x18\x05 \x01(\tR\vdescription\x12\x16\n" +
+	"\x03uid\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12J\n" +
+	"\x05state\x18\a \x01(\x0e2..google.cloud.networkconnectivity.v1beta.StateB\x04\xe2A\x01\x03R\x05state\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:|\xeaAy\n" +
-	"-networkconnectivity.googleapis.com/RouteTable\x12Hprojects/{project}/locations/global/hubs/{hub}/routeTables/{route_table}\"\xb4\v\n" +
-	"\x05Route\x12\x17\n" +
-	"\x04name\x18\x03 \x01(\tB\x03\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"-networkconnectivity.googleapis.com/RouteTable\x12Hprojects/{project}/locations/global/hubs/{hub}/routeTables/{route_table}\"\xc2\v\n" +
+	"\x05Route\x12\x18\n" +
+	"\x04name\x18\x03 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12\"\n" +
-	"\rip_cidr_range\x18\x01 \x01(\tR\vipCidrRange\x12K\n" +
+	"\rip_cidr_range\x18\x01 \x01(\tR\vipCidrRange\x12L\n" +
 	"\x04type\x18\n" +
-	" \x01(\x0e22.google.cloud.networkconnectivity.v1beta.RouteTypeB\x03\xe0A\x03R\x04type\x12p\n" +
-	"\x14next_hop_vpc_network\x18\x02 \x01(\v2:.google.cloud.networkconnectivity.v1beta.NextHopVpcNetworkB\x03\xe0A\x05R\x11nextHopVpcNetwork\x12R\n" +
+	" \x01(\x0e22.google.cloud.networkconnectivity.v1beta.RouteTypeB\x04\xe2A\x01\x03R\x04type\x12q\n" +
+	"\x14next_hop_vpc_network\x18\x02 \x01(\v2:.google.cloud.networkconnectivity.v1beta.NextHopVpcNetworkB\x04\xe2A\x01\x05R\x11nextHopVpcNetwork\x12R\n" +
 	"\x06labels\x18\x06 \x03(\v2:.google.cloud.networkconnectivity.v1beta.Route.LabelsEntryR\x06labels\x12 \n" +
-	"\vdescription\x18\a \x01(\tR\vdescription\x12\x15\n" +
-	"\x03uid\x18\b \x01(\tB\x03\xe0A\x03R\x03uid\x12I\n" +
-	"\x05state\x18\t \x01(\x0e2..google.cloud.networkconnectivity.v1beta.StateB\x03\xe0A\x03R\x05state\x12F\n" +
-	"\x05spoke\x18\v \x01(\tB0\xe0A\x05\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/SpokeR\x05spoke\x12\x1f\n" +
-	"\blocation\x18\f \x01(\tB\x03\xe0A\x03R\blocation\x12\x1f\n" +
-	"\bpriority\x18\r \x01(\x03B\x03\xe0A\x03R\bpriority\x12m\n" +
-	"\x13next_hop_vpn_tunnel\x18\x0e \x01(\v29.google.cloud.networkconnectivity.v1beta.NextHopVPNTunnelB\x03\xe0A\x05R\x10nextHopVpnTunnel\x12\x98\x01\n" +
-	"\"next_hop_router_appliance_instance\x18\x0f \x01(\v2G.google.cloud.networkconnectivity.v1beta.NextHopRouterApplianceInstanceB\x03\xe0A\x05R\x1enextHopRouterApplianceInstance\x12\x94\x01\n" +
-	" next_hop_interconnect_attachment\x18\x10 \x01(\v2F.google.cloud.networkconnectivity.v1beta.NextHopInterconnectAttachmentB\x03\xe0A\x05R\x1dnextHopInterconnectAttachment\x12`\n" +
-	"\x0enext_hop_spoke\x18\x12 \x01(\v25.google.cloud.networkconnectivity.v1beta.NextHopSpokeB\x03\xe0A\x05R\fnextHopSpoke\x1a9\n" +
+	"\vdescription\x18\a \x01(\tR\vdescription\x12\x16\n" +
+	"\x03uid\x18\b \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12J\n" +
+	"\x05state\x18\t \x01(\x0e2..google.cloud.networkconnectivity.v1beta.StateB\x04\xe2A\x01\x03R\x05state\x12G\n" +
+	"\x05spoke\x18\v \x01(\tB1\xe2A\x01\x05\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/SpokeR\x05spoke\x12 \n" +
+	"\blocation\x18\f \x01(\tB\x04\xe2A\x01\x03R\blocation\x12 \n" +
+	"\bpriority\x18\r \x01(\x03B\x04\xe2A\x01\x03R\bpriority\x12n\n" +
+	"\x13next_hop_vpn_tunnel\x18\x0e \x01(\v29.google.cloud.networkconnectivity.v1beta.NextHopVPNTunnelB\x04\xe2A\x01\x05R\x10nextHopVpnTunnel\x12\x99\x01\n" +
+	"\"next_hop_router_appliance_instance\x18\x0f \x01(\v2G.google.cloud.networkconnectivity.v1beta.NextHopRouterApplianceInstanceB\x04\xe2A\x01\x05R\x1enextHopRouterApplianceInstance\x12\x95\x01\n" +
+	" next_hop_interconnect_attachment\x18\x10 \x01(\v2F.google.cloud.networkconnectivity.v1beta.NextHopInterconnectAttachmentB\x04\xe2A\x01\x05R\x1dnextHopInterconnectAttachment\x12a\n" +
+	"\x0enext_hop_spoke\x18\x12 \x01(\v25.google.cloud.networkconnectivity.v1beta.NextHopSpokeB\x04\xe2A\x01\x05R\fnextHopSpoke\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x8a\x01\xeaA\x86\x01\n" +
-	"+networkconnectivity.googleapis.com/HubRoute\x12Wprojects/{project}/locations/global/hubs/{hub}/routeTables/{route_table}/routes/{route}\"\xe2\x05\n" +
-	"\x05Group\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12W\n" +
-	"\x06labels\x18\x04 \x03(\v2:.google.cloud.networkconnectivity.v1beta.Group.LabelsEntryB\x03\xe0A\x01R\x06labels\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x15\n" +
-	"\x03uid\x18\x06 \x01(\tB\x03\xe0A\x03R\x03uid\x12I\n" +
-	"\x05state\x18\a \x01(\x0e2..google.cloud.networkconnectivity.v1beta.StateB\x03\xe0A\x03R\x05state\x12Y\n" +
-	"\vauto_accept\x18\b \x01(\v23.google.cloud.networkconnectivity.v1beta.AutoAcceptB\x03\xe0A\x01R\n" +
-	"autoAccept\x12V\n" +
-	"\vroute_table\x18\t \x01(\tB5\xe0A\x03\xfaA/\n" +
+	"+networkconnectivity.googleapis.com/HubRoute\x12Wprojects/{project}/locations/global/hubs/{hub}/routeTables/{route_table}/routes/{route}\"\xeb\x05\n" +
+	"\x05Group\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12X\n" +
+	"\x06labels\x18\x04 \x03(\v2:.google.cloud.networkconnectivity.v1beta.Group.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x16\n" +
+	"\x03uid\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12J\n" +
+	"\x05state\x18\a \x01(\x0e2..google.cloud.networkconnectivity.v1beta.StateB\x04\xe2A\x01\x03R\x05state\x12Z\n" +
+	"\vauto_accept\x18\b \x01(\v23.google.cloud.networkconnectivity.v1beta.AutoAcceptB\x04\xe2A\x01\x01R\n" +
+	"autoAccept\x12W\n" +
+	"\vroute_table\x18\t \x01(\tB6\xe2A\x01\x03\xfaA/\n" +
 	"-networkconnectivity.googleapis.com/RouteTableR\n" +
 	"routeTable\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:l\xeaAi\n" +
-	"(networkconnectivity.googleapis.com/Group\x12=projects/{project}/locations/global/hubs/{hub}/groups/{group}\"C\n" +
+	"(networkconnectivity.googleapis.com/Group\x12=projects/{project}/locations/global/hubs/{hub}/groups/{group}\"D\n" +
 	"\n" +
-	"AutoAccept\x125\n" +
-	"\x14auto_accept_projects\x18\x01 \x03(\tB\x03\xe0A\x01R\x12autoAcceptProjects\"\xc3\x01\n" +
-	"\x0fListHubsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"AutoAccept\x126\n" +
+	"\x14auto_accept_projects\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x12autoAcceptProjects\"\xc4\x01\n" +
+	"\x0fListHubsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -6365,30 +6542,30 @@ const file_google_cloud_networkconnectivity_v1beta_hub_proto_rawDesc = "" +
 	"\x10ListHubsResponse\x12@\n" +
 	"\x04hubs\x18\x01 \x03(\v2,.google.cloud.networkconnectivity.v1beta.HubR\x04hubs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"S\n" +
-	"\rGetHubRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&networkconnectivity.googleapis.com/HubR\x04name\"\xda\x01\n" +
-	"\x10CreateHubRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\x1a\n" +
-	"\x06hub_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x05hubId\x12C\n" +
-	"\x03hub\x18\x03 \x01(\v2,.google.cloud.networkconnectivity.v1beta.HubB\x03\xe0A\x02R\x03hub\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"T\n" +
+	"\rGetHubRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&networkconnectivity.googleapis.com/HubR\x04name\"\xde\x01\n" +
+	"\x10CreateHubRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
+	"\x06hub_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05hubId\x12D\n" +
+	"\x03hub\x18\x03 \x01(\v2,.google.cloud.networkconnectivity.v1beta.HubB\x04\xe2A\x01\x02R\x03hub\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xbd\x01\n" +
-	"\x10UpdateHubRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12C\n" +
-	"\x03hub\x18\x02 \x01(\v2,.google.cloud.networkconnectivity.v1beta.HubB\x03\xe0A\x02R\x03hub\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xc0\x01\n" +
+	"\x10UpdateHubRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12D\n" +
+	"\x03hub\x18\x02 \x01(\v2,.google.cloud.networkconnectivity.v1beta.HubB\x04\xe2A\x01\x02R\x03hub\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"z\n" +
-	"\x10DeleteHubRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&networkconnectivity.googleapis.com/HubR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"|\n" +
+	"\x10DeleteHubRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&networkconnectivity.googleapis.com/HubR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\x91\x03\n" +
-	"\x14ListHubSpokesRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x92\x03\n" +
+	"\x14ListHubSpokesRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&networkconnectivity.googleapis.com/HubR\x04name\x12'\n" +
 	"\x0fspoke_locations\x18\x02 \x03(\tR\x0espokeLocations\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
@@ -6404,16 +6581,16 @@ const file_google_cloud_networkconnectivity_v1beta_hub_proto_rawDesc = "" +
 	"\x15ListHubSpokesResponse\x12F\n" +
 	"\x06spokes\x18\x01 \x03(\v2..google.cloud.networkconnectivity.v1beta.SpokeR\x06spokes\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xfe\x01\n" +
-	"\x15QueryHubStatusRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&networkconnectivity.googleapis.com/HubR\x04name\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x84\x02\n" +
+	"\x15QueryHubStatusRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&networkconnectivity.googleapis.com/HubR\x04name\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\x12\x1e\n" +
-	"\bgroup_by\x18\x06 \x01(\tB\x03\xe0A\x01R\agroupBy\"\xa7\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12\x1f\n" +
+	"\bgroup_by\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\agroupBy\"\xa7\x01\n" +
 	"\x16QueryHubStatusResponse\x12e\n" +
 	"\x12hub_status_entries\x18\x01 \x03(\v27.google.cloud.networkconnectivity.v1beta.HubStatusEntryR\x10hubStatusEntries\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb6\x01\n" +
@@ -6436,9 +6613,9 @@ const file_google_cloud_networkconnectivity_v1beta_hub_proto_rawDesc = "" +
 	"3ERROR_PRODUCER_PROPAGATED_CONNECTION_LIMIT_EXCEEDED\x10\x03\x12)\n" +
 	"%ERROR_PRODUCER_NAT_IP_SPACE_EXHAUSTED\x10\x04\x12!\n" +
 	"\x1dERROR_PRODUCER_QUOTA_EXCEEDED\x10\x05\x12!\n" +
-	"\x1dERROR_CONSUMER_QUOTA_EXCEEDED\x10\x06\"\xc5\x01\n" +
-	"\x11ListSpokesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x1dERROR_CONSUMER_QUOTA_EXCEEDED\x10\x06\"\xc6\x01\n" +
+	"\x11ListSpokesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -6448,78 +6625,78 @@ const file_google_cloud_networkconnectivity_v1beta_hub_proto_rawDesc = "" +
 	"\x12ListSpokesResponse\x12F\n" +
 	"\x06spokes\x18\x01 \x03(\v2..google.cloud.networkconnectivity.v1beta.SpokeR\x06spokes\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"W\n" +
-	"\x0fGetSpokeRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/SpokeR\x04name\"\xe6\x01\n" +
-	"\x12CreateSpokeRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\x1e\n" +
-	"\bspoke_id\x18\x02 \x01(\tB\x03\xe0A\x02R\aspokeId\x12I\n" +
-	"\x05spoke\x18\x03 \x01(\v2..google.cloud.networkconnectivity.v1beta.SpokeB\x03\xe0A\x02R\x05spoke\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"X\n" +
+	"\x0fGetSpokeRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/SpokeR\x04name\"\xea\x01\n" +
+	"\x12CreateSpokeRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12\x1f\n" +
+	"\bspoke_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aspokeId\x12J\n" +
+	"\x05spoke\x18\x03 \x01(\v2..google.cloud.networkconnectivity.v1beta.SpokeB\x04\xe2A\x01\x02R\x05spoke\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xc5\x01\n" +
-	"\x12UpdateSpokeRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12I\n" +
-	"\x05spoke\x18\x02 \x01(\v2..google.cloud.networkconnectivity.v1beta.SpokeB\x03\xe0A\x02R\x05spoke\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xc8\x01\n" +
+	"\x12UpdateSpokeRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12J\n" +
+	"\x05spoke\x18\x02 \x01(\v2..google.cloud.networkconnectivity.v1beta.SpokeB\x04\xe2A\x01\x02R\x05spoke\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"~\n" +
-	"\x12DeleteSpokeRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/SpokeR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x80\x01\n" +
+	"\x12DeleteSpokeRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/SpokeR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xce\x01\n" +
-	"\x15AcceptHubSpokeRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&networkconnectivity.googleapis.com/HubR\x04name\x12M\n" +
-	"\tspoke_uri\x18\x02 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/SpokeR\bspokeUri\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xd1\x01\n" +
+	"\x15AcceptHubSpokeRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&networkconnectivity.googleapis.com/HubR\x04name\x12N\n" +
+	"\tspoke_uri\x18\x02 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/SpokeR\bspokeUri\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"^\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"^\n" +
 	"\x16AcceptHubSpokeResponse\x12D\n" +
-	"\x05spoke\x18\x01 \x01(\v2..google.cloud.networkconnectivity.v1beta.SpokeR\x05spoke\"\xed\x01\n" +
-	"\x15RejectHubSpokeRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&networkconnectivity.googleapis.com/HubR\x04name\x12M\n" +
-	"\tspoke_uri\x18\x02 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/SpokeR\bspokeUri\x12\"\n" +
+	"\x05spoke\x18\x01 \x01(\v2..google.cloud.networkconnectivity.v1beta.SpokeR\x05spoke\"\xf1\x01\n" +
+	"\x15RejectHubSpokeRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&networkconnectivity.googleapis.com/HubR\x04name\x12N\n" +
+	"\tspoke_uri\x18\x02 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/SpokeR\bspokeUri\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\x12\x1d\n" +
-	"\adetails\x18\x04 \x01(\tB\x03\xe0A\x01R\adetails\"^\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12\x1e\n" +
+	"\adetails\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\adetails\"^\n" +
 	"\x16RejectHubSpokeResponse\x12D\n" +
-	"\x05spoke\x18\x01 \x01(\v2..google.cloud.networkconnectivity.v1beta.SpokeR\x05spoke\"\xfd\x01\n" +
-	"\x18AcceptSpokeUpdateRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&networkconnectivity.googleapis.com/HubR\x04name\x12M\n" +
-	"\tspoke_uri\x18\x02 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/SpokeR\bspokeUri\x12\"\n" +
+	"\x05spoke\x18\x01 \x01(\v2..google.cloud.networkconnectivity.v1beta.SpokeR\x05spoke\"\x81\x02\n" +
+	"\x18AcceptSpokeUpdateRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&networkconnectivity.googleapis.com/HubR\x04name\x12N\n" +
+	"\tspoke_uri\x18\x02 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/SpokeR\bspokeUri\x12#\n" +
 	"\n" +
-	"spoke_etag\x18\x03 \x01(\tB\x03\xe0A\x02R\tspokeEtag\x12*\n" +
+	"spoke_etag\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tspokeEtag\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"a\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"a\n" +
 	"\x19AcceptSpokeUpdateResponse\x12D\n" +
-	"\x05spoke\x18\x01 \x01(\v2..google.cloud.networkconnectivity.v1beta.SpokeR\x05spoke\"\x9c\x02\n" +
-	"\x18RejectSpokeUpdateRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&networkconnectivity.googleapis.com/HubR\x04name\x12M\n" +
-	"\tspoke_uri\x18\x02 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/SpokeR\bspokeUri\x12\"\n" +
+	"\x05spoke\x18\x01 \x01(\v2..google.cloud.networkconnectivity.v1beta.SpokeR\x05spoke\"\xa1\x02\n" +
+	"\x18RejectSpokeUpdateRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&networkconnectivity.googleapis.com/HubR\x04name\x12N\n" +
+	"\tspoke_uri\x18\x02 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/SpokeR\bspokeUri\x12#\n" +
 	"\n" +
-	"spoke_etag\x18\x03 \x01(\tB\x03\xe0A\x02R\tspokeEtag\x12\x1d\n" +
-	"\adetails\x18\x04 \x01(\tB\x03\xe0A\x01R\adetails\x12*\n" +
+	"spoke_etag\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tspokeEtag\x12\x1e\n" +
+	"\adetails\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\adetails\x12+\n" +
 	"\n" +
-	"request_id\x18\x05 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"a\n" +
+	"request_id\x18\x05 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"a\n" +
 	"\x19RejectSpokeUpdateResponse\x12D\n" +
-	"\x05spoke\x18\x01 \x01(\v2..google.cloud.networkconnectivity.v1beta.SpokeR\x05spoke\"a\n" +
-	"\x14GetRouteTableRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-networkconnectivity.googleapis.com/RouteTableR\x04name\"Z\n" +
-	"\x0fGetRouteRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+networkconnectivity.googleapis.com/HubRouteR\x04name\"\xd1\x01\n" +
-	"\x11ListRoutesRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
+	"\x05spoke\x18\x01 \x01(\v2..google.cloud.networkconnectivity.v1beta.SpokeR\x05spoke\"b\n" +
+	"\x14GetRouteTableRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-networkconnectivity.googleapis.com/RouteTableR\x04name\"[\n" +
+	"\x0fGetRouteRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+networkconnectivity.googleapis.com/HubRouteR\x04name\"\xd2\x01\n" +
+	"\x11ListRoutesRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
 	"-networkconnectivity.googleapis.com/RouteTableR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -6529,9 +6706,9 @@ const file_google_cloud_networkconnectivity_v1beta_hub_proto_rawDesc = "" +
 	"\x12ListRoutesResponse\x12F\n" +
 	"\x06routes\x18\x01 \x03(\v2..google.cloud.networkconnectivity.v1beta.RouteR\x06routes\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xcf\x01\n" +
-	"\x16ListRouteTablesRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xd0\x01\n" +
+	"\x16ListRouteTablesRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&networkconnectivity.googleapis.com/HubR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -6541,9 +6718,9 @@ const file_google_cloud_networkconnectivity_v1beta_hub_proto_rawDesc = "" +
 	"\x17ListRouteTablesResponse\x12V\n" +
 	"\froute_tables\x18\x01 \x03(\v23.google.cloud.networkconnectivity.v1beta.RouteTableR\vrouteTables\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xca\x01\n" +
-	"\x11ListGroupsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xcb\x01\n" +
+	"\x11ListGroupsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&networkconnectivity.googleapis.com/HubR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -6553,67 +6730,76 @@ const file_google_cloud_networkconnectivity_v1beta_hub_proto_rawDesc = "" +
 	"\x12ListGroupsResponse\x12F\n" +
 	"\x06groups\x18\x01 \x03(\v2..google.cloud.networkconnectivity.v1beta.GroupR\x06groups\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x8b\x02\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xbb\x03\n" +
 	"\x10LinkedVpnTunnels\x129\n" +
 	"\x04uris\x18\x01 \x03(\tB%\xfaA\"\n" +
 	" compute.googleapis.com/VpnTunnelR\x04uris\x12:\n" +
-	"\x1asite_to_site_data_transfer\x18\x02 \x01(\bR\x16siteToSiteDataTransfer\x12G\n" +
-	"\vvpc_network\x18\x03 \x01(\tB&\xe0A\x03\xfaA \n" +
+	"\x1asite_to_site_data_transfer\x18\x02 \x01(\bR\x16siteToSiteDataTransfer\x12H\n" +
+	"\vvpc_network\x18\x03 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
 	"\x1ecompute.googleapis.com/NetworkR\n" +
-	"vpcNetwork\x127\n" +
-	"\x15include_import_ranges\x18\x05 \x03(\tB\x03\xe0A\x01R\x13includeImportRanges\"\xa5\x02\n" +
+	"vpcNetwork\x128\n" +
+	"\x15include_import_ranges\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x13includeImportRanges\x128\n" +
+	"\x15exclude_import_ranges\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\x13excludeImportRanges\x128\n" +
+	"\x15include_export_ranges\x18\a \x03(\tB\x04\xe2A\x01\x01R\x13includeExportRanges\x128\n" +
+	"\x15exclude_export_ranges\x18\b \x03(\tB\x04\xe2A\x01\x01R\x13excludeExportRanges\"\xd5\x03\n" +
 	"\x1dLinkedInterconnectAttachments\x12F\n" +
 	"\x04uris\x18\x01 \x03(\tB2\xfaA/\n" +
 	"-compute.googleapis.com/InterconnectAttachmentR\x04uris\x12:\n" +
-	"\x1asite_to_site_data_transfer\x18\x02 \x01(\bR\x16siteToSiteDataTransfer\x12G\n" +
-	"\vvpc_network\x18\x03 \x01(\tB&\xe0A\x03\xfaA \n" +
+	"\x1asite_to_site_data_transfer\x18\x02 \x01(\bR\x16siteToSiteDataTransfer\x12H\n" +
+	"\vvpc_network\x18\x03 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
 	"\x1ecompute.googleapis.com/NetworkR\n" +
-	"vpcNetwork\x127\n" +
-	"\x15include_import_ranges\x18\x05 \x03(\tB\x03\xe0A\x01R\x13includeImportRanges\"\xbe\x02\n" +
+	"vpcNetwork\x128\n" +
+	"\x15include_import_ranges\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x13includeImportRanges\x128\n" +
+	"\x15exclude_import_ranges\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\x13excludeImportRanges\x128\n" +
+	"\x15include_export_ranges\x18\a \x03(\tB\x04\xe2A\x01\x01R\x13includeExportRanges\x128\n" +
+	"\x15exclude_export_ranges\x18\b \x03(\tB\x04\xe2A\x01\x01R\x13excludeExportRanges\"\xee\x03\n" +
 	"\x1eLinkedRouterApplianceInstances\x12^\n" +
 	"\tinstances\x18\x01 \x03(\v2@.google.cloud.networkconnectivity.v1beta.RouterApplianceInstanceR\tinstances\x12:\n" +
-	"\x1asite_to_site_data_transfer\x18\x02 \x01(\bR\x16siteToSiteDataTransfer\x12G\n" +
-	"\vvpc_network\x18\x03 \x01(\tB&\xe0A\x03\xfaA \n" +
+	"\x1asite_to_site_data_transfer\x18\x02 \x01(\bR\x16siteToSiteDataTransfer\x12H\n" +
+	"\vvpc_network\x18\x03 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
 	"\x1ecompute.googleapis.com/NetworkR\n" +
-	"vpcNetwork\x127\n" +
-	"\x15include_import_ranges\x18\x05 \x03(\tB\x03\xe0A\x01R\x13includeImportRanges\"\xb4\x03\n" +
-	"\x10LinkedVpcNetwork\x128\n" +
-	"\x03uri\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\x03uri\x127\n" +
-	"\x15exclude_export_ranges\x18\x02 \x03(\tB\x03\xe0A\x01R\x13excludeExportRanges\x127\n" +
-	"\x15include_export_ranges\x18\x03 \x03(\tB\x03\xe0A\x01R\x13includeExportRanges\x12H\n" +
-	"\x1eproposed_include_export_ranges\x18\x05 \x03(\tB\x03\xe0A\x03R\x1bproposedIncludeExportRanges\x12H\n" +
-	"\x1eproposed_exclude_export_ranges\x18\x06 \x03(\tB\x03\xe0A\x03R\x1bproposedExcludeExportRanges\x12`\n" +
-	"\x13producer_vpc_spokes\x18\x04 \x03(\tB0\xe0A\x03\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/SpokeR\x11producerVpcSpokes\"\x9e\x04\n" +
-	"\aGateway\x12|\n" +
-	"\x15ip_range_reservations\x18\a \x03(\v2C.google.cloud.networkconnectivity.v1beta.Gateway.IpRangeReservationB\x03\xe0A\x01R\x13ipRangeReservations\x12a\n" +
+	"vpcNetwork\x128\n" +
+	"\x15include_import_ranges\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x13includeImportRanges\x128\n" +
+	"\x15exclude_import_ranges\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\x13excludeImportRanges\x128\n" +
+	"\x15include_export_ranges\x18\a \x03(\tB\x04\xe2A\x01\x01R\x13includeExportRanges\x128\n" +
+	"\x15exclude_export_ranges\x18\b \x03(\tB\x04\xe2A\x01\x01R\x13excludeExportRanges\"\xba\x03\n" +
+	"\x10LinkedVpcNetwork\x129\n" +
+	"\x03uri\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\x03uri\x128\n" +
+	"\x15exclude_export_ranges\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x13excludeExportRanges\x128\n" +
+	"\x15include_export_ranges\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x13includeExportRanges\x12I\n" +
+	"\x1eproposed_include_export_ranges\x18\x05 \x03(\tB\x04\xe2A\x01\x03R\x1bproposedIncludeExportRanges\x12I\n" +
+	"\x1eproposed_exclude_export_ranges\x18\x06 \x03(\tB\x04\xe2A\x01\x03R\x1bproposedExcludeExportRanges\x12a\n" +
+	"\x13producer_vpc_spokes\x18\x04 \x03(\tB1\xe2A\x01\x03\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/SpokeR\x11producerVpcSpokes\"\xa3\x04\n" +
+	"\aGateway\x12}\n" +
+	"\x15ip_range_reservations\x18\a \x03(\v2C.google.cloud.networkconnectivity.v1beta.Gateway.IpRangeReservationB\x04\xe2A\x01\x01R\x13ipRangeReservations\x12b\n" +
 	"\bcapacity\x18\n" +
-	" \x01(\x0e2@.google.cloud.networkconnectivity.v1beta.Gateway.GatewayCapacityB\x03\xe0A\x01R\bcapacity\x12(\n" +
-	"\rcloud_routers\x18\r \x03(\tB\x03\xe0A\x03R\fcloudRouters\x12[\n" +
-	"\x0esac_attachment\x18\x0e \x01(\tB4\xe0A\x03\xfaA.\n" +
-	",networksecurity.googleapis.com/SACAttachmentR\rsacAttachment\x1a4\n" +
-	"\x12IpRangeReservation\x12\x1e\n" +
-	"\bip_range\x18\x01 \x01(\tB\x03\xe0A\x02R\aipRange\"u\n" +
+	" \x01(\x0e2@.google.cloud.networkconnectivity.v1beta.Gateway.GatewayCapacityB\x04\xe2A\x01\x01R\bcapacity\x12)\n" +
+	"\rcloud_routers\x18\r \x03(\tB\x04\xe2A\x01\x03R\fcloudRouters\x12\\\n" +
+	"\x0esac_attachment\x18\x0e \x01(\tB5\xe2A\x01\x03\xfaA.\n" +
+	",networksecurity.googleapis.com/SACAttachmentR\rsacAttachment\x1a5\n" +
+	"\x12IpRangeReservation\x12\x1f\n" +
+	"\bip_range\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aipRange\"u\n" +
 	"\x0fGatewayCapacity\x12 \n" +
 	"\x1cGATEWAY_CAPACITY_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fCAPACITY_1_GBPS\x10\x05\x12\x14\n" +
 	"\x10CAPACITY_10_GBPS\x10\x01\x12\x15\n" +
-	"\x11CAPACITY_100_GBPS\x10\x04\"\xc1\a\n" +
-	"\x16GatewayAdvertisedRoute\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x11CAPACITY_100_GBPS\x10\x04\"\xc9\a\n" +
+	"\x16GatewayAdvertisedRoute\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12c\n" +
 	"\x06labels\x18\x04 \x03(\v2K.google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute.LabelsEntryR\x06labels\x12 \n" +
-	"\vdescription\x18\x05 \x01(\tR\vdescription\x12 \n" +
-	"\tunique_id\x18\x06 \x01(\tB\x03\xe0A\x03R\buniqueId\x12I\n" +
-	"\x05state\x18\a \x01(\x0e2..google.cloud.networkconnectivity.v1beta.StateB\x03\xe0A\x03R\x05state\x12\x1e\n" +
-	"\bip_range\x18\b \x01(\tB\x03\xe0A\x05R\aipRange\x12$\n" +
-	"\bpriority\x18\t \x01(\x05B\x03\xe0A\x01H\x00R\bpriority\x88\x01\x01\x12l\n" +
+	"\vdescription\x18\x05 \x01(\tR\vdescription\x12!\n" +
+	"\tunique_id\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\buniqueId\x12J\n" +
+	"\x05state\x18\a \x01(\x0e2..google.cloud.networkconnectivity.v1beta.StateB\x04\xe2A\x01\x03R\x05state\x12\x1f\n" +
+	"\bip_range\x18\b \x01(\tB\x04\xe2A\x01\x05R\aipRange\x12%\n" +
+	"\bpriority\x18\t \x01(\x05B\x04\xe2A\x01\x01H\x00R\bpriority\x88\x01\x01\x12m\n" +
 	"\trecipient\x18\n" +
-	" \x01(\x0e2I.google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute.RecipientB\x03\xe0A\x01R\trecipient\x1a9\n" +
+	" \x01(\x0e2I.google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute.RecipientB\x04\xe2A\x01\x01R\trecipient\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"<\n" +
@@ -6621,52 +6807,52 @@ const file_google_cloud_networkconnectivity_v1beta_hub_proto_rawDesc = "" +
 	"\x15RECIPIENT_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10ADVERTISE_TO_HUB\x10\x01:\xdb\x01\xeaA\xd7\x01\n" +
 	"9networkconnectivity.googleapis.com/GatewayAdvertisedRoute\x12iprojects/{project}/locations/{location}/spokes/{spoke}/gatewayAdvertisedRoutes/{gateway_advertised_route}*\x17gatewayAdvertisedRoutes2\x16gatewayAdvertisedRouteB\v\n" +
-	"\t_priority\"\xdf\x02\n" +
-	"#CreateGatewayAdvertisedRouteRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/SpokeR\x06parent\x12B\n" +
-	"\x1bgateway_advertised_route_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x18gatewayAdvertisedRouteId\x12~\n" +
-	"\x18gateway_advertised_route\x18\x03 \x01(\v2?.google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRouteB\x03\xe0A\x02R\x16gatewayAdvertisedRoute\x12*\n" +
+	"\t_priority\"\xe3\x02\n" +
+	"#CreateGatewayAdvertisedRouteRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/SpokeR\x06parent\x12C\n" +
+	"\x1bgateway_advertised_route_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x18gatewayAdvertisedRouteId\x12\x7f\n" +
+	"\x18gateway_advertised_route\x18\x03 \x01(\v2?.google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRouteB\x04\xe2A\x01\x02R\x16gatewayAdvertisedRoute\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"y\n" +
-	" GetGatewayAdvertisedRouteRequest\x12U\n" +
-	"\x04name\x18\x01 \x01(\tBA\xe0A\x02\xfaA;\n" +
-	"9networkconnectivity.googleapis.com/GatewayAdvertisedRouteR\x04name\"\xe7\x01\n" +
-	"\"ListGatewayAdvertisedRoutesRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/SpokeR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"z\n" +
+	" GetGatewayAdvertisedRouteRequest\x12V\n" +
+	"\x04name\x18\x01 \x01(\tBB\xe2A\x01\x02\xfaA;\n" +
+	"9networkconnectivity.googleapis.com/GatewayAdvertisedRouteR\x04name\"\xea\x01\n" +
+	"\"ListGatewayAdvertisedRoutesRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/SpokeR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x16\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x16\n" +
 	"\x06filter\x18\x04 \x01(\tR\x06filter\x12\x19\n" +
 	"\border_by\x18\x05 \x01(\tR\aorderBy\"\xec\x01\n" +
 	"#ListGatewayAdvertisedRoutesResponse\x12{\n" +
 	"\x19gateway_advertised_routes\x18\x01 \x03(\v2?.google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRouteR\x17gatewayAdvertisedRoutes\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x93\x02\n" +
-	"#UpdateGatewayAdvertisedRouteRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12~\n" +
-	"\x18gateway_advertised_route\x18\x02 \x01(\v2?.google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRouteB\x03\xe0A\x02R\x16gatewayAdvertisedRoute\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x96\x02\n" +
+	"#UpdateGatewayAdvertisedRouteRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12\x7f\n" +
+	"\x18gateway_advertised_route\x18\x02 \x01(\v2?.google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRouteB\x04\xe2A\x01\x02R\x16gatewayAdvertisedRoute\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa8\x01\n" +
-	"#DeleteGatewayAdvertisedRouteRequest\x12U\n" +
-	"\x04name\x18\x01 \x01(\tBA\xe0A\x02\xfaA;\n" +
-	"9networkconnectivity.googleapis.com/GatewayAdvertisedRouteR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xaa\x01\n" +
+	"#DeleteGatewayAdvertisedRouteRequest\x12V\n" +
+	"\x04name\x18\x01 \x01(\tBB\xe2A\x01\x02\xfaA;\n" +
+	"9networkconnectivity.googleapis.com/GatewayAdvertisedRouteR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xc3\x04\n" +
-	"\x18LinkedProducerVpcNetwork\x12@\n" +
-	"\anetwork\x18\x01 \x01(\tB&\xe0A\x05\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12m\n" +
-	"\x1aservice_consumer_vpc_spoke\x18\x06 \x01(\tB0\xe0A\x03\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/SpokeR\x17serviceConsumerVpcSpoke\x12\x1d\n" +
-	"\apeering\x18\x02 \x01(\tB\x03\xe0A\x05R\apeering\x12Q\n" +
-	"\x10producer_network\x18\x05 \x01(\tB&\xe0A\x03\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\x0fproducerNetwork\x127\n" +
-	"\x15exclude_export_ranges\x18\x03 \x03(\tB\x03\xe0A\x01R\x13excludeExportRanges\x127\n" +
-	"\x15include_export_ranges\x18\x04 \x03(\tB\x03\xe0A\x01R\x13includeExportRanges\x12H\n" +
-	"\x1eproposed_include_export_ranges\x18\a \x03(\tB\x03\xe0A\x03R\x1bproposedIncludeExportRanges\x12H\n" +
-	"\x1eproposed_exclude_export_ranges\x18\b \x03(\tB\x03\xe0A\x03R\x1bproposedExcludeExportRanges\"\x87\x01\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xcb\x04\n" +
+	"\x18LinkedProducerVpcNetwork\x12A\n" +
+	"\anetwork\x18\x01 \x01(\tB'\xe2A\x01\x05\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12n\n" +
+	"\x1aservice_consumer_vpc_spoke\x18\x06 \x01(\tB1\xe2A\x01\x03\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/SpokeR\x17serviceConsumerVpcSpoke\x12\x1e\n" +
+	"\apeering\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\apeering\x12R\n" +
+	"\x10producer_network\x18\x05 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\x0fproducerNetwork\x128\n" +
+	"\x15exclude_export_ranges\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x13excludeExportRanges\x128\n" +
+	"\x15include_export_ranges\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x13includeExportRanges\x12I\n" +
+	"\x1eproposed_include_export_ranges\x18\a \x03(\tB\x04\xe2A\x01\x03R\x1bproposedIncludeExportRanges\x12I\n" +
+	"\x1eproposed_exclude_export_ranges\x18\b \x03(\tB\x04\xe2A\x01\x03R\x1bproposedExcludeExportRanges\"\x87\x01\n" +
 	"\x17RouterApplianceInstance\x12M\n" +
 	"\x0fvirtual_machine\x18\x01 \x01(\tB$\xfaA!\n" +
 	"\x1fcompute.googleapis.com/InstanceR\x0evirtualMachine\x12\x1d\n" +
@@ -6701,35 +6887,36 @@ const file_google_cloud_networkconnectivity_v1beta_hub_proto_rawDesc = "" +
 	"\fNextHopSpoke\x12?\n" +
 	"\x03uri\x18\x01 \x01(\tB-\xfaA*\n" +
 	"(networkconnectivity.googleapis.com/SpokeR\x03uri\x12:\n" +
-	"\x1asite_to_site_data_transfer\x18\x02 \x01(\bR\x16siteToSiteDataTransfer\"\xb3\x06\n" +
-	"\fSpokeSummary\x12u\n" +
-	"\x11spoke_type_counts\x18\x01 \x03(\v2D.google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeTypeCountB\x03\xe0A\x03R\x0fspokeTypeCounts\x12x\n" +
-	"\x12spoke_state_counts\x18\x02 \x03(\v2E.google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeStateCountB\x03\xe0A\x03R\x10spokeStateCounts\x12\x8b\x01\n" +
-	"\x19spoke_state_reason_counts\x18\x03 \x03(\v2K.google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeStateReasonCountB\x03\xe0A\x03R\x16spokeStateReasonCounts\x1a\x83\x01\n" +
-	"\x0eSpokeTypeCount\x12V\n" +
+	"\x1asite_to_site_data_transfer\x18\x02 \x01(\bR\x16siteToSiteDataTransfer\"\xbc\x06\n" +
+	"\fSpokeSummary\x12v\n" +
+	"\x11spoke_type_counts\x18\x01 \x03(\v2D.google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeTypeCountB\x04\xe2A\x01\x03R\x0fspokeTypeCounts\x12y\n" +
+	"\x12spoke_state_counts\x18\x02 \x03(\v2E.google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeStateCountB\x04\xe2A\x01\x03R\x10spokeStateCounts\x12\x8c\x01\n" +
+	"\x19spoke_state_reason_counts\x18\x03 \x03(\v2K.google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeStateReasonCountB\x04\xe2A\x01\x03R\x16spokeStateReasonCounts\x1a\x85\x01\n" +
+	"\x0eSpokeTypeCount\x12W\n" +
 	"\n" +
-	"spoke_type\x18\x01 \x01(\x0e22.google.cloud.networkconnectivity.v1beta.SpokeTypeB\x03\xe0A\x03R\tspokeType\x12\x19\n" +
-	"\x05count\x18\x02 \x01(\x03B\x03\xe0A\x03R\x05count\x1aw\n" +
-	"\x0fSpokeStateCount\x12I\n" +
-	"\x05state\x18\x01 \x01(\x0e2..google.cloud.networkconnectivity.v1beta.StateB\x03\xe0A\x03R\x05state\x12\x19\n" +
-	"\x05count\x18\x02 \x01(\x03B\x03\xe0A\x03R\x05count\x1a\xa4\x01\n" +
-	"\x15SpokeStateReasonCount\x12p\n" +
-	"\x11state_reason_code\x18\x01 \x01(\x0e2?.google.cloud.networkconnectivity.v1beta.Spoke.StateReason.CodeB\x03\xe0A\x03R\x0fstateReasonCode\x12\x19\n" +
-	"\x05count\x18\x02 \x01(\x03B\x03\xe0A\x03R\x05count\"W\n" +
-	"\x0fGetGroupRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(networkconnectivity.googleapis.com/GroupR\x04name\"\xc5\x01\n" +
-	"\x12UpdateGroupRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12I\n" +
-	"\x05group\x18\x02 \x01(\v2..google.cloud.networkconnectivity.v1beta.GroupB\x03\xe0A\x02R\x05group\x12\"\n" +
+	"spoke_type\x18\x01 \x01(\x0e22.google.cloud.networkconnectivity.v1beta.SpokeTypeB\x04\xe2A\x01\x03R\tspokeType\x12\x1a\n" +
+	"\x05count\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x05count\x1ay\n" +
+	"\x0fSpokeStateCount\x12J\n" +
+	"\x05state\x18\x01 \x01(\x0e2..google.cloud.networkconnectivity.v1beta.StateB\x04\xe2A\x01\x03R\x05state\x12\x1a\n" +
+	"\x05count\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x05count\x1a\xa6\x01\n" +
+	"\x15SpokeStateReasonCount\x12q\n" +
+	"\x11state_reason_code\x18\x01 \x01(\x0e2?.google.cloud.networkconnectivity.v1beta.Spoke.StateReason.CodeB\x04\xe2A\x01\x03R\x0fstateReasonCode\x12\x1a\n" +
+	"\x05count\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x05count\"X\n" +
+	"\x0fGetGroupRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(networkconnectivity.googleapis.com/GroupR\x04name\"\xc8\x01\n" +
+	"\x12UpdateGroupRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12J\n" +
+	"\x05group\x18\x02 \x01(\v2..google.cloud.networkconnectivity.v1beta.GroupB\x04\xe2A\x01\x02R\x05group\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId*l\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId*\x81\x01\n" +
 	"\tRouteType\x12\x1a\n" +
 	"\x16ROUTE_TYPE_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12VPC_PRIMARY_SUBNET\x10\x01\x12\x18\n" +
 	"\x14VPC_SECONDARY_SUBNET\x10\x02\x12\x11\n" +
-	"\rDYNAMIC_ROUTE\x10\x03*\x9a\x01\n" +
+	"\rDYNAMIC_ROUTE\x10\x03\x12\x13\n" +
+	"\x0fPSC_GLOBAL_GAPI\x10\x04*\x9a\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\n" +
@@ -6762,12 +6949,14 @@ const file_google_cloud_networkconnectivity_v1beta_hub_proto_rawDesc = "" +
 	"\x1bPRESET_TOPOLOGY_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04MESH\x10\x02\x12\b\n" +
 	"\x04STAR\x10\x03\x12\x15\n" +
-	"\x11HYBRID_INSPECTION\x10\x04*z\n" +
+	"\x11HYBRID_INSPECTION\x10\x04*\x8a\x01\n" +
 	"\x0fLocationFeature\x12 \n" +
 	"\x1cLOCATION_FEATURE_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14SITE_TO_CLOUD_SPOKES\x10\x01\x12\x17\n" +
 	"\x13SITE_TO_SITE_SPOKES\x10\x02\x12\x12\n" +
-	"\x0eGATEWAY_SPOKES\x10\x032\xd74\n" +
+	"\x0eGATEWAY_SPOKES\x10\x03\x12\x0e\n" +
+	"\n" +
+	"TRANSPORTS\x10\x042\xd74\n" +
 	"\n" +
 	"HubService\x12\xc3\x01\n" +
 	"\bListHubs\x128.google.cloud.networkconnectivity.v1beta.ListHubsRequest\x1a9.google.cloud.networkconnectivity.v1beta.ListHubsResponse\"B\xdaA\x06parent\x82\xd3\xe4\x93\x023\x121/v1beta/{parent=projects/*/locations/global}/hubs\x12\xb0\x01\n" +
@@ -6833,7 +7022,7 @@ func file_google_cloud_networkconnectivity_v1beta_hub_proto_rawDescGZIP() []byte
 }
 
 var file_google_cloud_networkconnectivity_v1beta_hub_proto_enumTypes = make([]protoimpl.EnumInfo, 11)
-var file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes = make([]protoimpl.MessageInfo, 75)
+var file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes = make([]protoimpl.MessageInfo, 76)
 var file_google_cloud_networkconnectivity_v1beta_hub_proto_goTypes = []any{
 	(RouteType)(0),                              // 0: google.cloud.networkconnectivity.v1beta.RouteType
 	(State)(0),                                  // 1: google.cloud.networkconnectivity.v1beta.State
@@ -6910,164 +7099,166 @@ var file_google_cloud_networkconnectivity_v1beta_hub_proto_goTypes = []any{
 	(*SpokeSummary)(nil),                        // 72: google.cloud.networkconnectivity.v1beta.SpokeSummary
 	(*GetGroupRequest)(nil),                     // 73: google.cloud.networkconnectivity.v1beta.GetGroupRequest
 	(*UpdateGroupRequest)(nil),                  // 74: google.cloud.networkconnectivity.v1beta.UpdateGroupRequest
-	nil,                                         // 75: google.cloud.networkconnectivity.v1beta.Hub.LabelsEntry
-	(*Spoke_StateReason)(nil),                   // 76: google.cloud.networkconnectivity.v1beta.Spoke.StateReason
-	nil,                                         // 77: google.cloud.networkconnectivity.v1beta.Spoke.LabelsEntry
-	nil,                                         // 78: google.cloud.networkconnectivity.v1beta.RouteTable.LabelsEntry
-	nil,                                         // 79: google.cloud.networkconnectivity.v1beta.Route.LabelsEntry
-	nil,                                         // 80: google.cloud.networkconnectivity.v1beta.Group.LabelsEntry
-	(*Gateway_IpRangeReservation)(nil),          // 81: google.cloud.networkconnectivity.v1beta.Gateway.IpRangeReservation
-	nil,                                         // 82: google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute.LabelsEntry
-	(*SpokeSummary_SpokeTypeCount)(nil),         // 83: google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeTypeCount
-	(*SpokeSummary_SpokeStateCount)(nil),        // 84: google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeStateCount
-	(*SpokeSummary_SpokeStateReasonCount)(nil),  // 85: google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeStateReasonCount
-	(*timestamppb.Timestamp)(nil),               // 86: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),               // 87: google.protobuf.FieldMask
-	(*longrunningpb.Operation)(nil),             // 88: google.longrunning.Operation
+	(*Hub_ExportPscConfig)(nil),                 // 75: google.cloud.networkconnectivity.v1beta.Hub.ExportPscConfig
+	nil,                                         // 76: google.cloud.networkconnectivity.v1beta.Hub.LabelsEntry
+	(*Spoke_StateReason)(nil),                   // 77: google.cloud.networkconnectivity.v1beta.Spoke.StateReason
+	nil,                                         // 78: google.cloud.networkconnectivity.v1beta.Spoke.LabelsEntry
+	nil,                                         // 79: google.cloud.networkconnectivity.v1beta.RouteTable.LabelsEntry
+	nil,                                         // 80: google.cloud.networkconnectivity.v1beta.Route.LabelsEntry
+	nil,                                         // 81: google.cloud.networkconnectivity.v1beta.Group.LabelsEntry
+	(*Gateway_IpRangeReservation)(nil),          // 82: google.cloud.networkconnectivity.v1beta.Gateway.IpRangeReservation
+	nil,                                         // 83: google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute.LabelsEntry
+	(*SpokeSummary_SpokeTypeCount)(nil),         // 84: google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeTypeCount
+	(*SpokeSummary_SpokeStateCount)(nil),        // 85: google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeStateCount
+	(*SpokeSummary_SpokeStateReasonCount)(nil),  // 86: google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeStateReasonCount
+	(*timestamppb.Timestamp)(nil),               // 87: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),               // 88: google.protobuf.FieldMask
+	(*longrunningpb.Operation)(nil),             // 89: google.longrunning.Operation
 }
 var file_google_cloud_networkconnectivity_v1beta_hub_proto_depIdxs = []int32{
-	86,  // 0: google.cloud.networkconnectivity.v1beta.Hub.create_time:type_name -> google.protobuf.Timestamp
-	86,  // 1: google.cloud.networkconnectivity.v1beta.Hub.update_time:type_name -> google.protobuf.Timestamp
-	75,  // 2: google.cloud.networkconnectivity.v1beta.Hub.labels:type_name -> google.cloud.networkconnectivity.v1beta.Hub.LabelsEntry
+	87,  // 0: google.cloud.networkconnectivity.v1beta.Hub.create_time:type_name -> google.protobuf.Timestamp
+	87,  // 1: google.cloud.networkconnectivity.v1beta.Hub.update_time:type_name -> google.protobuf.Timestamp
+	76,  // 2: google.cloud.networkconnectivity.v1beta.Hub.labels:type_name -> google.cloud.networkconnectivity.v1beta.Hub.LabelsEntry
 	1,   // 3: google.cloud.networkconnectivity.v1beta.Hub.state:type_name -> google.cloud.networkconnectivity.v1beta.State
 	12,  // 4: google.cloud.networkconnectivity.v1beta.Hub.routing_vpcs:type_name -> google.cloud.networkconnectivity.v1beta.RoutingVPC
 	72,  // 5: google.cloud.networkconnectivity.v1beta.Hub.spoke_summary:type_name -> google.cloud.networkconnectivity.v1beta.SpokeSummary
 	3,   // 6: google.cloud.networkconnectivity.v1beta.Hub.policy_mode:type_name -> google.cloud.networkconnectivity.v1beta.PolicyMode
 	4,   // 7: google.cloud.networkconnectivity.v1beta.Hub.preset_topology:type_name -> google.cloud.networkconnectivity.v1beta.PresetTopology
-	86,  // 8: google.cloud.networkconnectivity.v1beta.Spoke.create_time:type_name -> google.protobuf.Timestamp
-	86,  // 9: google.cloud.networkconnectivity.v1beta.Spoke.update_time:type_name -> google.protobuf.Timestamp
-	77,  // 10: google.cloud.networkconnectivity.v1beta.Spoke.labels:type_name -> google.cloud.networkconnectivity.v1beta.Spoke.LabelsEntry
-	52,  // 11: google.cloud.networkconnectivity.v1beta.Spoke.linked_vpn_tunnels:type_name -> google.cloud.networkconnectivity.v1beta.LinkedVpnTunnels
-	53,  // 12: google.cloud.networkconnectivity.v1beta.Spoke.linked_interconnect_attachments:type_name -> google.cloud.networkconnectivity.v1beta.LinkedInterconnectAttachments
-	54,  // 13: google.cloud.networkconnectivity.v1beta.Spoke.linked_router_appliance_instances:type_name -> google.cloud.networkconnectivity.v1beta.LinkedRouterApplianceInstances
-	55,  // 14: google.cloud.networkconnectivity.v1beta.Spoke.linked_vpc_network:type_name -> google.cloud.networkconnectivity.v1beta.LinkedVpcNetwork
-	56,  // 15: google.cloud.networkconnectivity.v1beta.Spoke.gateway:type_name -> google.cloud.networkconnectivity.v1beta.Gateway
-	64,  // 16: google.cloud.networkconnectivity.v1beta.Spoke.linked_producer_vpc_network:type_name -> google.cloud.networkconnectivity.v1beta.LinkedProducerVpcNetwork
-	1,   // 17: google.cloud.networkconnectivity.v1beta.Spoke.state:type_name -> google.cloud.networkconnectivity.v1beta.State
-	76,  // 18: google.cloud.networkconnectivity.v1beta.Spoke.reasons:type_name -> google.cloud.networkconnectivity.v1beta.Spoke.StateReason
-	2,   // 19: google.cloud.networkconnectivity.v1beta.Spoke.spoke_type:type_name -> google.cloud.networkconnectivity.v1beta.SpokeType
-	86,  // 20: google.cloud.networkconnectivity.v1beta.RouteTable.create_time:type_name -> google.protobuf.Timestamp
-	86,  // 21: google.cloud.networkconnectivity.v1beta.RouteTable.update_time:type_name -> google.protobuf.Timestamp
-	78,  // 22: google.cloud.networkconnectivity.v1beta.RouteTable.labels:type_name -> google.cloud.networkconnectivity.v1beta.RouteTable.LabelsEntry
-	1,   // 23: google.cloud.networkconnectivity.v1beta.RouteTable.state:type_name -> google.cloud.networkconnectivity.v1beta.State
-	86,  // 24: google.cloud.networkconnectivity.v1beta.Route.create_time:type_name -> google.protobuf.Timestamp
-	86,  // 25: google.cloud.networkconnectivity.v1beta.Route.update_time:type_name -> google.protobuf.Timestamp
-	0,   // 26: google.cloud.networkconnectivity.v1beta.Route.type:type_name -> google.cloud.networkconnectivity.v1beta.RouteType
-	67,  // 27: google.cloud.networkconnectivity.v1beta.Route.next_hop_vpc_network:type_name -> google.cloud.networkconnectivity.v1beta.NextHopVpcNetwork
-	79,  // 28: google.cloud.networkconnectivity.v1beta.Route.labels:type_name -> google.cloud.networkconnectivity.v1beta.Route.LabelsEntry
-	1,   // 29: google.cloud.networkconnectivity.v1beta.Route.state:type_name -> google.cloud.networkconnectivity.v1beta.State
-	68,  // 30: google.cloud.networkconnectivity.v1beta.Route.next_hop_vpn_tunnel:type_name -> google.cloud.networkconnectivity.v1beta.NextHopVPNTunnel
-	69,  // 31: google.cloud.networkconnectivity.v1beta.Route.next_hop_router_appliance_instance:type_name -> google.cloud.networkconnectivity.v1beta.NextHopRouterApplianceInstance
-	70,  // 32: google.cloud.networkconnectivity.v1beta.Route.next_hop_interconnect_attachment:type_name -> google.cloud.networkconnectivity.v1beta.NextHopInterconnectAttachment
-	71,  // 33: google.cloud.networkconnectivity.v1beta.Route.next_hop_spoke:type_name -> google.cloud.networkconnectivity.v1beta.NextHopSpoke
-	86,  // 34: google.cloud.networkconnectivity.v1beta.Group.create_time:type_name -> google.protobuf.Timestamp
-	86,  // 35: google.cloud.networkconnectivity.v1beta.Group.update_time:type_name -> google.protobuf.Timestamp
-	80,  // 36: google.cloud.networkconnectivity.v1beta.Group.labels:type_name -> google.cloud.networkconnectivity.v1beta.Group.LabelsEntry
-	1,   // 37: google.cloud.networkconnectivity.v1beta.Group.state:type_name -> google.cloud.networkconnectivity.v1beta.State
-	17,  // 38: google.cloud.networkconnectivity.v1beta.Group.auto_accept:type_name -> google.cloud.networkconnectivity.v1beta.AutoAccept
-	11,  // 39: google.cloud.networkconnectivity.v1beta.ListHubsResponse.hubs:type_name -> google.cloud.networkconnectivity.v1beta.Hub
-	11,  // 40: google.cloud.networkconnectivity.v1beta.CreateHubRequest.hub:type_name -> google.cloud.networkconnectivity.v1beta.Hub
-	87,  // 41: google.cloud.networkconnectivity.v1beta.UpdateHubRequest.update_mask:type_name -> google.protobuf.FieldMask
-	11,  // 42: google.cloud.networkconnectivity.v1beta.UpdateHubRequest.hub:type_name -> google.cloud.networkconnectivity.v1beta.Hub
-	7,   // 43: google.cloud.networkconnectivity.v1beta.ListHubSpokesRequest.view:type_name -> google.cloud.networkconnectivity.v1beta.ListHubSpokesRequest.SpokeView
-	13,  // 44: google.cloud.networkconnectivity.v1beta.ListHubSpokesResponse.spokes:type_name -> google.cloud.networkconnectivity.v1beta.Spoke
-	28,  // 45: google.cloud.networkconnectivity.v1beta.QueryHubStatusResponse.hub_status_entries:type_name -> google.cloud.networkconnectivity.v1beta.HubStatusEntry
-	29,  // 46: google.cloud.networkconnectivity.v1beta.HubStatusEntry.psc_propagation_status:type_name -> google.cloud.networkconnectivity.v1beta.PscPropagationStatus
-	8,   // 47: google.cloud.networkconnectivity.v1beta.PscPropagationStatus.code:type_name -> google.cloud.networkconnectivity.v1beta.PscPropagationStatus.Code
-	13,  // 48: google.cloud.networkconnectivity.v1beta.ListSpokesResponse.spokes:type_name -> google.cloud.networkconnectivity.v1beta.Spoke
-	13,  // 49: google.cloud.networkconnectivity.v1beta.CreateSpokeRequest.spoke:type_name -> google.cloud.networkconnectivity.v1beta.Spoke
-	87,  // 50: google.cloud.networkconnectivity.v1beta.UpdateSpokeRequest.update_mask:type_name -> google.protobuf.FieldMask
-	13,  // 51: google.cloud.networkconnectivity.v1beta.UpdateSpokeRequest.spoke:type_name -> google.cloud.networkconnectivity.v1beta.Spoke
-	13,  // 52: google.cloud.networkconnectivity.v1beta.AcceptHubSpokeResponse.spoke:type_name -> google.cloud.networkconnectivity.v1beta.Spoke
-	13,  // 53: google.cloud.networkconnectivity.v1beta.RejectHubSpokeResponse.spoke:type_name -> google.cloud.networkconnectivity.v1beta.Spoke
-	13,  // 54: google.cloud.networkconnectivity.v1beta.AcceptSpokeUpdateResponse.spoke:type_name -> google.cloud.networkconnectivity.v1beta.Spoke
-	13,  // 55: google.cloud.networkconnectivity.v1beta.RejectSpokeUpdateResponse.spoke:type_name -> google.cloud.networkconnectivity.v1beta.Spoke
-	15,  // 56: google.cloud.networkconnectivity.v1beta.ListRoutesResponse.routes:type_name -> google.cloud.networkconnectivity.v1beta.Route
-	14,  // 57: google.cloud.networkconnectivity.v1beta.ListRouteTablesResponse.route_tables:type_name -> google.cloud.networkconnectivity.v1beta.RouteTable
-	16,  // 58: google.cloud.networkconnectivity.v1beta.ListGroupsResponse.groups:type_name -> google.cloud.networkconnectivity.v1beta.Group
-	65,  // 59: google.cloud.networkconnectivity.v1beta.LinkedRouterApplianceInstances.instances:type_name -> google.cloud.networkconnectivity.v1beta.RouterApplianceInstance
-	81,  // 60: google.cloud.networkconnectivity.v1beta.Gateway.ip_range_reservations:type_name -> google.cloud.networkconnectivity.v1beta.Gateway.IpRangeReservation
-	9,   // 61: google.cloud.networkconnectivity.v1beta.Gateway.capacity:type_name -> google.cloud.networkconnectivity.v1beta.Gateway.GatewayCapacity
-	86,  // 62: google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute.create_time:type_name -> google.protobuf.Timestamp
-	86,  // 63: google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute.update_time:type_name -> google.protobuf.Timestamp
-	82,  // 64: google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute.labels:type_name -> google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute.LabelsEntry
-	1,   // 65: google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute.state:type_name -> google.cloud.networkconnectivity.v1beta.State
-	10,  // 66: google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute.recipient:type_name -> google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute.Recipient
-	57,  // 67: google.cloud.networkconnectivity.v1beta.CreateGatewayAdvertisedRouteRequest.gateway_advertised_route:type_name -> google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute
-	57,  // 68: google.cloud.networkconnectivity.v1beta.ListGatewayAdvertisedRoutesResponse.gateway_advertised_routes:type_name -> google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute
-	87,  // 69: google.cloud.networkconnectivity.v1beta.UpdateGatewayAdvertisedRouteRequest.update_mask:type_name -> google.protobuf.FieldMask
-	57,  // 70: google.cloud.networkconnectivity.v1beta.UpdateGatewayAdvertisedRouteRequest.gateway_advertised_route:type_name -> google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute
-	5,   // 71: google.cloud.networkconnectivity.v1beta.LocationMetadata.location_features:type_name -> google.cloud.networkconnectivity.v1beta.LocationFeature
-	83,  // 72: google.cloud.networkconnectivity.v1beta.SpokeSummary.spoke_type_counts:type_name -> google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeTypeCount
-	84,  // 73: google.cloud.networkconnectivity.v1beta.SpokeSummary.spoke_state_counts:type_name -> google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeStateCount
-	85,  // 74: google.cloud.networkconnectivity.v1beta.SpokeSummary.spoke_state_reason_counts:type_name -> google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeStateReasonCount
-	87,  // 75: google.cloud.networkconnectivity.v1beta.UpdateGroupRequest.update_mask:type_name -> google.protobuf.FieldMask
-	16,  // 76: google.cloud.networkconnectivity.v1beta.UpdateGroupRequest.group:type_name -> google.cloud.networkconnectivity.v1beta.Group
-	6,   // 77: google.cloud.networkconnectivity.v1beta.Spoke.StateReason.code:type_name -> google.cloud.networkconnectivity.v1beta.Spoke.StateReason.Code
-	2,   // 78: google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeTypeCount.spoke_type:type_name -> google.cloud.networkconnectivity.v1beta.SpokeType
-	1,   // 79: google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeStateCount.state:type_name -> google.cloud.networkconnectivity.v1beta.State
-	6,   // 80: google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeStateReasonCount.state_reason_code:type_name -> google.cloud.networkconnectivity.v1beta.Spoke.StateReason.Code
-	18,  // 81: google.cloud.networkconnectivity.v1beta.HubService.ListHubs:input_type -> google.cloud.networkconnectivity.v1beta.ListHubsRequest
-	20,  // 82: google.cloud.networkconnectivity.v1beta.HubService.GetHub:input_type -> google.cloud.networkconnectivity.v1beta.GetHubRequest
-	21,  // 83: google.cloud.networkconnectivity.v1beta.HubService.CreateHub:input_type -> google.cloud.networkconnectivity.v1beta.CreateHubRequest
-	22,  // 84: google.cloud.networkconnectivity.v1beta.HubService.UpdateHub:input_type -> google.cloud.networkconnectivity.v1beta.UpdateHubRequest
-	23,  // 85: google.cloud.networkconnectivity.v1beta.HubService.DeleteHub:input_type -> google.cloud.networkconnectivity.v1beta.DeleteHubRequest
-	24,  // 86: google.cloud.networkconnectivity.v1beta.HubService.ListHubSpokes:input_type -> google.cloud.networkconnectivity.v1beta.ListHubSpokesRequest
-	26,  // 87: google.cloud.networkconnectivity.v1beta.HubService.QueryHubStatus:input_type -> google.cloud.networkconnectivity.v1beta.QueryHubStatusRequest
-	30,  // 88: google.cloud.networkconnectivity.v1beta.HubService.ListSpokes:input_type -> google.cloud.networkconnectivity.v1beta.ListSpokesRequest
-	32,  // 89: google.cloud.networkconnectivity.v1beta.HubService.GetSpoke:input_type -> google.cloud.networkconnectivity.v1beta.GetSpokeRequest
-	33,  // 90: google.cloud.networkconnectivity.v1beta.HubService.CreateSpoke:input_type -> google.cloud.networkconnectivity.v1beta.CreateSpokeRequest
-	34,  // 91: google.cloud.networkconnectivity.v1beta.HubService.UpdateSpoke:input_type -> google.cloud.networkconnectivity.v1beta.UpdateSpokeRequest
-	38,  // 92: google.cloud.networkconnectivity.v1beta.HubService.RejectHubSpoke:input_type -> google.cloud.networkconnectivity.v1beta.RejectHubSpokeRequest
-	36,  // 93: google.cloud.networkconnectivity.v1beta.HubService.AcceptHubSpoke:input_type -> google.cloud.networkconnectivity.v1beta.AcceptHubSpokeRequest
-	40,  // 94: google.cloud.networkconnectivity.v1beta.HubService.AcceptSpokeUpdate:input_type -> google.cloud.networkconnectivity.v1beta.AcceptSpokeUpdateRequest
-	42,  // 95: google.cloud.networkconnectivity.v1beta.HubService.RejectSpokeUpdate:input_type -> google.cloud.networkconnectivity.v1beta.RejectSpokeUpdateRequest
-	35,  // 96: google.cloud.networkconnectivity.v1beta.HubService.DeleteSpoke:input_type -> google.cloud.networkconnectivity.v1beta.DeleteSpokeRequest
-	44,  // 97: google.cloud.networkconnectivity.v1beta.HubService.GetRouteTable:input_type -> google.cloud.networkconnectivity.v1beta.GetRouteTableRequest
-	45,  // 98: google.cloud.networkconnectivity.v1beta.HubService.GetRoute:input_type -> google.cloud.networkconnectivity.v1beta.GetRouteRequest
-	46,  // 99: google.cloud.networkconnectivity.v1beta.HubService.ListRoutes:input_type -> google.cloud.networkconnectivity.v1beta.ListRoutesRequest
-	48,  // 100: google.cloud.networkconnectivity.v1beta.HubService.ListRouteTables:input_type -> google.cloud.networkconnectivity.v1beta.ListRouteTablesRequest
-	73,  // 101: google.cloud.networkconnectivity.v1beta.HubService.GetGroup:input_type -> google.cloud.networkconnectivity.v1beta.GetGroupRequest
-	50,  // 102: google.cloud.networkconnectivity.v1beta.HubService.ListGroups:input_type -> google.cloud.networkconnectivity.v1beta.ListGroupsRequest
-	74,  // 103: google.cloud.networkconnectivity.v1beta.HubService.UpdateGroup:input_type -> google.cloud.networkconnectivity.v1beta.UpdateGroupRequest
-	58,  // 104: google.cloud.networkconnectivity.v1beta.HubService.CreateGatewayAdvertisedRoute:input_type -> google.cloud.networkconnectivity.v1beta.CreateGatewayAdvertisedRouteRequest
-	59,  // 105: google.cloud.networkconnectivity.v1beta.HubService.GetGatewayAdvertisedRoute:input_type -> google.cloud.networkconnectivity.v1beta.GetGatewayAdvertisedRouteRequest
-	60,  // 106: google.cloud.networkconnectivity.v1beta.HubService.ListGatewayAdvertisedRoutes:input_type -> google.cloud.networkconnectivity.v1beta.ListGatewayAdvertisedRoutesRequest
-	62,  // 107: google.cloud.networkconnectivity.v1beta.HubService.UpdateGatewayAdvertisedRoute:input_type -> google.cloud.networkconnectivity.v1beta.UpdateGatewayAdvertisedRouteRequest
-	63,  // 108: google.cloud.networkconnectivity.v1beta.HubService.DeleteGatewayAdvertisedRoute:input_type -> google.cloud.networkconnectivity.v1beta.DeleteGatewayAdvertisedRouteRequest
-	19,  // 109: google.cloud.networkconnectivity.v1beta.HubService.ListHubs:output_type -> google.cloud.networkconnectivity.v1beta.ListHubsResponse
-	11,  // 110: google.cloud.networkconnectivity.v1beta.HubService.GetHub:output_type -> google.cloud.networkconnectivity.v1beta.Hub
-	88,  // 111: google.cloud.networkconnectivity.v1beta.HubService.CreateHub:output_type -> google.longrunning.Operation
-	88,  // 112: google.cloud.networkconnectivity.v1beta.HubService.UpdateHub:output_type -> google.longrunning.Operation
-	88,  // 113: google.cloud.networkconnectivity.v1beta.HubService.DeleteHub:output_type -> google.longrunning.Operation
-	25,  // 114: google.cloud.networkconnectivity.v1beta.HubService.ListHubSpokes:output_type -> google.cloud.networkconnectivity.v1beta.ListHubSpokesResponse
-	27,  // 115: google.cloud.networkconnectivity.v1beta.HubService.QueryHubStatus:output_type -> google.cloud.networkconnectivity.v1beta.QueryHubStatusResponse
-	31,  // 116: google.cloud.networkconnectivity.v1beta.HubService.ListSpokes:output_type -> google.cloud.networkconnectivity.v1beta.ListSpokesResponse
-	13,  // 117: google.cloud.networkconnectivity.v1beta.HubService.GetSpoke:output_type -> google.cloud.networkconnectivity.v1beta.Spoke
-	88,  // 118: google.cloud.networkconnectivity.v1beta.HubService.CreateSpoke:output_type -> google.longrunning.Operation
-	88,  // 119: google.cloud.networkconnectivity.v1beta.HubService.UpdateSpoke:output_type -> google.longrunning.Operation
-	88,  // 120: google.cloud.networkconnectivity.v1beta.HubService.RejectHubSpoke:output_type -> google.longrunning.Operation
-	88,  // 121: google.cloud.networkconnectivity.v1beta.HubService.AcceptHubSpoke:output_type -> google.longrunning.Operation
-	88,  // 122: google.cloud.networkconnectivity.v1beta.HubService.AcceptSpokeUpdate:output_type -> google.longrunning.Operation
-	88,  // 123: google.cloud.networkconnectivity.v1beta.HubService.RejectSpokeUpdate:output_type -> google.longrunning.Operation
-	88,  // 124: google.cloud.networkconnectivity.v1beta.HubService.DeleteSpoke:output_type -> google.longrunning.Operation
-	14,  // 125: google.cloud.networkconnectivity.v1beta.HubService.GetRouteTable:output_type -> google.cloud.networkconnectivity.v1beta.RouteTable
-	15,  // 126: google.cloud.networkconnectivity.v1beta.HubService.GetRoute:output_type -> google.cloud.networkconnectivity.v1beta.Route
-	47,  // 127: google.cloud.networkconnectivity.v1beta.HubService.ListRoutes:output_type -> google.cloud.networkconnectivity.v1beta.ListRoutesResponse
-	49,  // 128: google.cloud.networkconnectivity.v1beta.HubService.ListRouteTables:output_type -> google.cloud.networkconnectivity.v1beta.ListRouteTablesResponse
-	16,  // 129: google.cloud.networkconnectivity.v1beta.HubService.GetGroup:output_type -> google.cloud.networkconnectivity.v1beta.Group
-	51,  // 130: google.cloud.networkconnectivity.v1beta.HubService.ListGroups:output_type -> google.cloud.networkconnectivity.v1beta.ListGroupsResponse
-	88,  // 131: google.cloud.networkconnectivity.v1beta.HubService.UpdateGroup:output_type -> google.longrunning.Operation
-	88,  // 132: google.cloud.networkconnectivity.v1beta.HubService.CreateGatewayAdvertisedRoute:output_type -> google.longrunning.Operation
-	57,  // 133: google.cloud.networkconnectivity.v1beta.HubService.GetGatewayAdvertisedRoute:output_type -> google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute
-	61,  // 134: google.cloud.networkconnectivity.v1beta.HubService.ListGatewayAdvertisedRoutes:output_type -> google.cloud.networkconnectivity.v1beta.ListGatewayAdvertisedRoutesResponse
-	88,  // 135: google.cloud.networkconnectivity.v1beta.HubService.UpdateGatewayAdvertisedRoute:output_type -> google.longrunning.Operation
-	88,  // 136: google.cloud.networkconnectivity.v1beta.HubService.DeleteGatewayAdvertisedRoute:output_type -> google.longrunning.Operation
-	109, // [109:137] is the sub-list for method output_type
-	81,  // [81:109] is the sub-list for method input_type
-	81,  // [81:81] is the sub-list for extension type_name
-	81,  // [81:81] is the sub-list for extension extendee
-	0,   // [0:81] is the sub-list for field type_name
+	75,  // 8: google.cloud.networkconnectivity.v1beta.Hub.export_psc_config:type_name -> google.cloud.networkconnectivity.v1beta.Hub.ExportPscConfig
+	87,  // 9: google.cloud.networkconnectivity.v1beta.Spoke.create_time:type_name -> google.protobuf.Timestamp
+	87,  // 10: google.cloud.networkconnectivity.v1beta.Spoke.update_time:type_name -> google.protobuf.Timestamp
+	78,  // 11: google.cloud.networkconnectivity.v1beta.Spoke.labels:type_name -> google.cloud.networkconnectivity.v1beta.Spoke.LabelsEntry
+	52,  // 12: google.cloud.networkconnectivity.v1beta.Spoke.linked_vpn_tunnels:type_name -> google.cloud.networkconnectivity.v1beta.LinkedVpnTunnels
+	53,  // 13: google.cloud.networkconnectivity.v1beta.Spoke.linked_interconnect_attachments:type_name -> google.cloud.networkconnectivity.v1beta.LinkedInterconnectAttachments
+	54,  // 14: google.cloud.networkconnectivity.v1beta.Spoke.linked_router_appliance_instances:type_name -> google.cloud.networkconnectivity.v1beta.LinkedRouterApplianceInstances
+	55,  // 15: google.cloud.networkconnectivity.v1beta.Spoke.linked_vpc_network:type_name -> google.cloud.networkconnectivity.v1beta.LinkedVpcNetwork
+	56,  // 16: google.cloud.networkconnectivity.v1beta.Spoke.gateway:type_name -> google.cloud.networkconnectivity.v1beta.Gateway
+	64,  // 17: google.cloud.networkconnectivity.v1beta.Spoke.linked_producer_vpc_network:type_name -> google.cloud.networkconnectivity.v1beta.LinkedProducerVpcNetwork
+	1,   // 18: google.cloud.networkconnectivity.v1beta.Spoke.state:type_name -> google.cloud.networkconnectivity.v1beta.State
+	77,  // 19: google.cloud.networkconnectivity.v1beta.Spoke.reasons:type_name -> google.cloud.networkconnectivity.v1beta.Spoke.StateReason
+	2,   // 20: google.cloud.networkconnectivity.v1beta.Spoke.spoke_type:type_name -> google.cloud.networkconnectivity.v1beta.SpokeType
+	87,  // 21: google.cloud.networkconnectivity.v1beta.RouteTable.create_time:type_name -> google.protobuf.Timestamp
+	87,  // 22: google.cloud.networkconnectivity.v1beta.RouteTable.update_time:type_name -> google.protobuf.Timestamp
+	79,  // 23: google.cloud.networkconnectivity.v1beta.RouteTable.labels:type_name -> google.cloud.networkconnectivity.v1beta.RouteTable.LabelsEntry
+	1,   // 24: google.cloud.networkconnectivity.v1beta.RouteTable.state:type_name -> google.cloud.networkconnectivity.v1beta.State
+	87,  // 25: google.cloud.networkconnectivity.v1beta.Route.create_time:type_name -> google.protobuf.Timestamp
+	87,  // 26: google.cloud.networkconnectivity.v1beta.Route.update_time:type_name -> google.protobuf.Timestamp
+	0,   // 27: google.cloud.networkconnectivity.v1beta.Route.type:type_name -> google.cloud.networkconnectivity.v1beta.RouteType
+	67,  // 28: google.cloud.networkconnectivity.v1beta.Route.next_hop_vpc_network:type_name -> google.cloud.networkconnectivity.v1beta.NextHopVpcNetwork
+	80,  // 29: google.cloud.networkconnectivity.v1beta.Route.labels:type_name -> google.cloud.networkconnectivity.v1beta.Route.LabelsEntry
+	1,   // 30: google.cloud.networkconnectivity.v1beta.Route.state:type_name -> google.cloud.networkconnectivity.v1beta.State
+	68,  // 31: google.cloud.networkconnectivity.v1beta.Route.next_hop_vpn_tunnel:type_name -> google.cloud.networkconnectivity.v1beta.NextHopVPNTunnel
+	69,  // 32: google.cloud.networkconnectivity.v1beta.Route.next_hop_router_appliance_instance:type_name -> google.cloud.networkconnectivity.v1beta.NextHopRouterApplianceInstance
+	70,  // 33: google.cloud.networkconnectivity.v1beta.Route.next_hop_interconnect_attachment:type_name -> google.cloud.networkconnectivity.v1beta.NextHopInterconnectAttachment
+	71,  // 34: google.cloud.networkconnectivity.v1beta.Route.next_hop_spoke:type_name -> google.cloud.networkconnectivity.v1beta.NextHopSpoke
+	87,  // 35: google.cloud.networkconnectivity.v1beta.Group.create_time:type_name -> google.protobuf.Timestamp
+	87,  // 36: google.cloud.networkconnectivity.v1beta.Group.update_time:type_name -> google.protobuf.Timestamp
+	81,  // 37: google.cloud.networkconnectivity.v1beta.Group.labels:type_name -> google.cloud.networkconnectivity.v1beta.Group.LabelsEntry
+	1,   // 38: google.cloud.networkconnectivity.v1beta.Group.state:type_name -> google.cloud.networkconnectivity.v1beta.State
+	17,  // 39: google.cloud.networkconnectivity.v1beta.Group.auto_accept:type_name -> google.cloud.networkconnectivity.v1beta.AutoAccept
+	11,  // 40: google.cloud.networkconnectivity.v1beta.ListHubsResponse.hubs:type_name -> google.cloud.networkconnectivity.v1beta.Hub
+	11,  // 41: google.cloud.networkconnectivity.v1beta.CreateHubRequest.hub:type_name -> google.cloud.networkconnectivity.v1beta.Hub
+	88,  // 42: google.cloud.networkconnectivity.v1beta.UpdateHubRequest.update_mask:type_name -> google.protobuf.FieldMask
+	11,  // 43: google.cloud.networkconnectivity.v1beta.UpdateHubRequest.hub:type_name -> google.cloud.networkconnectivity.v1beta.Hub
+	7,   // 44: google.cloud.networkconnectivity.v1beta.ListHubSpokesRequest.view:type_name -> google.cloud.networkconnectivity.v1beta.ListHubSpokesRequest.SpokeView
+	13,  // 45: google.cloud.networkconnectivity.v1beta.ListHubSpokesResponse.spokes:type_name -> google.cloud.networkconnectivity.v1beta.Spoke
+	28,  // 46: google.cloud.networkconnectivity.v1beta.QueryHubStatusResponse.hub_status_entries:type_name -> google.cloud.networkconnectivity.v1beta.HubStatusEntry
+	29,  // 47: google.cloud.networkconnectivity.v1beta.HubStatusEntry.psc_propagation_status:type_name -> google.cloud.networkconnectivity.v1beta.PscPropagationStatus
+	8,   // 48: google.cloud.networkconnectivity.v1beta.PscPropagationStatus.code:type_name -> google.cloud.networkconnectivity.v1beta.PscPropagationStatus.Code
+	13,  // 49: google.cloud.networkconnectivity.v1beta.ListSpokesResponse.spokes:type_name -> google.cloud.networkconnectivity.v1beta.Spoke
+	13,  // 50: google.cloud.networkconnectivity.v1beta.CreateSpokeRequest.spoke:type_name -> google.cloud.networkconnectivity.v1beta.Spoke
+	88,  // 51: google.cloud.networkconnectivity.v1beta.UpdateSpokeRequest.update_mask:type_name -> google.protobuf.FieldMask
+	13,  // 52: google.cloud.networkconnectivity.v1beta.UpdateSpokeRequest.spoke:type_name -> google.cloud.networkconnectivity.v1beta.Spoke
+	13,  // 53: google.cloud.networkconnectivity.v1beta.AcceptHubSpokeResponse.spoke:type_name -> google.cloud.networkconnectivity.v1beta.Spoke
+	13,  // 54: google.cloud.networkconnectivity.v1beta.RejectHubSpokeResponse.spoke:type_name -> google.cloud.networkconnectivity.v1beta.Spoke
+	13,  // 55: google.cloud.networkconnectivity.v1beta.AcceptSpokeUpdateResponse.spoke:type_name -> google.cloud.networkconnectivity.v1beta.Spoke
+	13,  // 56: google.cloud.networkconnectivity.v1beta.RejectSpokeUpdateResponse.spoke:type_name -> google.cloud.networkconnectivity.v1beta.Spoke
+	15,  // 57: google.cloud.networkconnectivity.v1beta.ListRoutesResponse.routes:type_name -> google.cloud.networkconnectivity.v1beta.Route
+	14,  // 58: google.cloud.networkconnectivity.v1beta.ListRouteTablesResponse.route_tables:type_name -> google.cloud.networkconnectivity.v1beta.RouteTable
+	16,  // 59: google.cloud.networkconnectivity.v1beta.ListGroupsResponse.groups:type_name -> google.cloud.networkconnectivity.v1beta.Group
+	65,  // 60: google.cloud.networkconnectivity.v1beta.LinkedRouterApplianceInstances.instances:type_name -> google.cloud.networkconnectivity.v1beta.RouterApplianceInstance
+	82,  // 61: google.cloud.networkconnectivity.v1beta.Gateway.ip_range_reservations:type_name -> google.cloud.networkconnectivity.v1beta.Gateway.IpRangeReservation
+	9,   // 62: google.cloud.networkconnectivity.v1beta.Gateway.capacity:type_name -> google.cloud.networkconnectivity.v1beta.Gateway.GatewayCapacity
+	87,  // 63: google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute.create_time:type_name -> google.protobuf.Timestamp
+	87,  // 64: google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute.update_time:type_name -> google.protobuf.Timestamp
+	83,  // 65: google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute.labels:type_name -> google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute.LabelsEntry
+	1,   // 66: google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute.state:type_name -> google.cloud.networkconnectivity.v1beta.State
+	10,  // 67: google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute.recipient:type_name -> google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute.Recipient
+	57,  // 68: google.cloud.networkconnectivity.v1beta.CreateGatewayAdvertisedRouteRequest.gateway_advertised_route:type_name -> google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute
+	57,  // 69: google.cloud.networkconnectivity.v1beta.ListGatewayAdvertisedRoutesResponse.gateway_advertised_routes:type_name -> google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute
+	88,  // 70: google.cloud.networkconnectivity.v1beta.UpdateGatewayAdvertisedRouteRequest.update_mask:type_name -> google.protobuf.FieldMask
+	57,  // 71: google.cloud.networkconnectivity.v1beta.UpdateGatewayAdvertisedRouteRequest.gateway_advertised_route:type_name -> google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute
+	5,   // 72: google.cloud.networkconnectivity.v1beta.LocationMetadata.location_features:type_name -> google.cloud.networkconnectivity.v1beta.LocationFeature
+	84,  // 73: google.cloud.networkconnectivity.v1beta.SpokeSummary.spoke_type_counts:type_name -> google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeTypeCount
+	85,  // 74: google.cloud.networkconnectivity.v1beta.SpokeSummary.spoke_state_counts:type_name -> google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeStateCount
+	86,  // 75: google.cloud.networkconnectivity.v1beta.SpokeSummary.spoke_state_reason_counts:type_name -> google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeStateReasonCount
+	88,  // 76: google.cloud.networkconnectivity.v1beta.UpdateGroupRequest.update_mask:type_name -> google.protobuf.FieldMask
+	16,  // 77: google.cloud.networkconnectivity.v1beta.UpdateGroupRequest.group:type_name -> google.cloud.networkconnectivity.v1beta.Group
+	6,   // 78: google.cloud.networkconnectivity.v1beta.Spoke.StateReason.code:type_name -> google.cloud.networkconnectivity.v1beta.Spoke.StateReason.Code
+	2,   // 79: google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeTypeCount.spoke_type:type_name -> google.cloud.networkconnectivity.v1beta.SpokeType
+	1,   // 80: google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeStateCount.state:type_name -> google.cloud.networkconnectivity.v1beta.State
+	6,   // 81: google.cloud.networkconnectivity.v1beta.SpokeSummary.SpokeStateReasonCount.state_reason_code:type_name -> google.cloud.networkconnectivity.v1beta.Spoke.StateReason.Code
+	18,  // 82: google.cloud.networkconnectivity.v1beta.HubService.ListHubs:input_type -> google.cloud.networkconnectivity.v1beta.ListHubsRequest
+	20,  // 83: google.cloud.networkconnectivity.v1beta.HubService.GetHub:input_type -> google.cloud.networkconnectivity.v1beta.GetHubRequest
+	21,  // 84: google.cloud.networkconnectivity.v1beta.HubService.CreateHub:input_type -> google.cloud.networkconnectivity.v1beta.CreateHubRequest
+	22,  // 85: google.cloud.networkconnectivity.v1beta.HubService.UpdateHub:input_type -> google.cloud.networkconnectivity.v1beta.UpdateHubRequest
+	23,  // 86: google.cloud.networkconnectivity.v1beta.HubService.DeleteHub:input_type -> google.cloud.networkconnectivity.v1beta.DeleteHubRequest
+	24,  // 87: google.cloud.networkconnectivity.v1beta.HubService.ListHubSpokes:input_type -> google.cloud.networkconnectivity.v1beta.ListHubSpokesRequest
+	26,  // 88: google.cloud.networkconnectivity.v1beta.HubService.QueryHubStatus:input_type -> google.cloud.networkconnectivity.v1beta.QueryHubStatusRequest
+	30,  // 89: google.cloud.networkconnectivity.v1beta.HubService.ListSpokes:input_type -> google.cloud.networkconnectivity.v1beta.ListSpokesRequest
+	32,  // 90: google.cloud.networkconnectivity.v1beta.HubService.GetSpoke:input_type -> google.cloud.networkconnectivity.v1beta.GetSpokeRequest
+	33,  // 91: google.cloud.networkconnectivity.v1beta.HubService.CreateSpoke:input_type -> google.cloud.networkconnectivity.v1beta.CreateSpokeRequest
+	34,  // 92: google.cloud.networkconnectivity.v1beta.HubService.UpdateSpoke:input_type -> google.cloud.networkconnectivity.v1beta.UpdateSpokeRequest
+	38,  // 93: google.cloud.networkconnectivity.v1beta.HubService.RejectHubSpoke:input_type -> google.cloud.networkconnectivity.v1beta.RejectHubSpokeRequest
+	36,  // 94: google.cloud.networkconnectivity.v1beta.HubService.AcceptHubSpoke:input_type -> google.cloud.networkconnectivity.v1beta.AcceptHubSpokeRequest
+	40,  // 95: google.cloud.networkconnectivity.v1beta.HubService.AcceptSpokeUpdate:input_type -> google.cloud.networkconnectivity.v1beta.AcceptSpokeUpdateRequest
+	42,  // 96: google.cloud.networkconnectivity.v1beta.HubService.RejectSpokeUpdate:input_type -> google.cloud.networkconnectivity.v1beta.RejectSpokeUpdateRequest
+	35,  // 97: google.cloud.networkconnectivity.v1beta.HubService.DeleteSpoke:input_type -> google.cloud.networkconnectivity.v1beta.DeleteSpokeRequest
+	44,  // 98: google.cloud.networkconnectivity.v1beta.HubService.GetRouteTable:input_type -> google.cloud.networkconnectivity.v1beta.GetRouteTableRequest
+	45,  // 99: google.cloud.networkconnectivity.v1beta.HubService.GetRoute:input_type -> google.cloud.networkconnectivity.v1beta.GetRouteRequest
+	46,  // 100: google.cloud.networkconnectivity.v1beta.HubService.ListRoutes:input_type -> google.cloud.networkconnectivity.v1beta.ListRoutesRequest
+	48,  // 101: google.cloud.networkconnectivity.v1beta.HubService.ListRouteTables:input_type -> google.cloud.networkconnectivity.v1beta.ListRouteTablesRequest
+	73,  // 102: google.cloud.networkconnectivity.v1beta.HubService.GetGroup:input_type -> google.cloud.networkconnectivity.v1beta.GetGroupRequest
+	50,  // 103: google.cloud.networkconnectivity.v1beta.HubService.ListGroups:input_type -> google.cloud.networkconnectivity.v1beta.ListGroupsRequest
+	74,  // 104: google.cloud.networkconnectivity.v1beta.HubService.UpdateGroup:input_type -> google.cloud.networkconnectivity.v1beta.UpdateGroupRequest
+	58,  // 105: google.cloud.networkconnectivity.v1beta.HubService.CreateGatewayAdvertisedRoute:input_type -> google.cloud.networkconnectivity.v1beta.CreateGatewayAdvertisedRouteRequest
+	59,  // 106: google.cloud.networkconnectivity.v1beta.HubService.GetGatewayAdvertisedRoute:input_type -> google.cloud.networkconnectivity.v1beta.GetGatewayAdvertisedRouteRequest
+	60,  // 107: google.cloud.networkconnectivity.v1beta.HubService.ListGatewayAdvertisedRoutes:input_type -> google.cloud.networkconnectivity.v1beta.ListGatewayAdvertisedRoutesRequest
+	62,  // 108: google.cloud.networkconnectivity.v1beta.HubService.UpdateGatewayAdvertisedRoute:input_type -> google.cloud.networkconnectivity.v1beta.UpdateGatewayAdvertisedRouteRequest
+	63,  // 109: google.cloud.networkconnectivity.v1beta.HubService.DeleteGatewayAdvertisedRoute:input_type -> google.cloud.networkconnectivity.v1beta.DeleteGatewayAdvertisedRouteRequest
+	19,  // 110: google.cloud.networkconnectivity.v1beta.HubService.ListHubs:output_type -> google.cloud.networkconnectivity.v1beta.ListHubsResponse
+	11,  // 111: google.cloud.networkconnectivity.v1beta.HubService.GetHub:output_type -> google.cloud.networkconnectivity.v1beta.Hub
+	89,  // 112: google.cloud.networkconnectivity.v1beta.HubService.CreateHub:output_type -> google.longrunning.Operation
+	89,  // 113: google.cloud.networkconnectivity.v1beta.HubService.UpdateHub:output_type -> google.longrunning.Operation
+	89,  // 114: google.cloud.networkconnectivity.v1beta.HubService.DeleteHub:output_type -> google.longrunning.Operation
+	25,  // 115: google.cloud.networkconnectivity.v1beta.HubService.ListHubSpokes:output_type -> google.cloud.networkconnectivity.v1beta.ListHubSpokesResponse
+	27,  // 116: google.cloud.networkconnectivity.v1beta.HubService.QueryHubStatus:output_type -> google.cloud.networkconnectivity.v1beta.QueryHubStatusResponse
+	31,  // 117: google.cloud.networkconnectivity.v1beta.HubService.ListSpokes:output_type -> google.cloud.networkconnectivity.v1beta.ListSpokesResponse
+	13,  // 118: google.cloud.networkconnectivity.v1beta.HubService.GetSpoke:output_type -> google.cloud.networkconnectivity.v1beta.Spoke
+	89,  // 119: google.cloud.networkconnectivity.v1beta.HubService.CreateSpoke:output_type -> google.longrunning.Operation
+	89,  // 120: google.cloud.networkconnectivity.v1beta.HubService.UpdateSpoke:output_type -> google.longrunning.Operation
+	89,  // 121: google.cloud.networkconnectivity.v1beta.HubService.RejectHubSpoke:output_type -> google.longrunning.Operation
+	89,  // 122: google.cloud.networkconnectivity.v1beta.HubService.AcceptHubSpoke:output_type -> google.longrunning.Operation
+	89,  // 123: google.cloud.networkconnectivity.v1beta.HubService.AcceptSpokeUpdate:output_type -> google.longrunning.Operation
+	89,  // 124: google.cloud.networkconnectivity.v1beta.HubService.RejectSpokeUpdate:output_type -> google.longrunning.Operation
+	89,  // 125: google.cloud.networkconnectivity.v1beta.HubService.DeleteSpoke:output_type -> google.longrunning.Operation
+	14,  // 126: google.cloud.networkconnectivity.v1beta.HubService.GetRouteTable:output_type -> google.cloud.networkconnectivity.v1beta.RouteTable
+	15,  // 127: google.cloud.networkconnectivity.v1beta.HubService.GetRoute:output_type -> google.cloud.networkconnectivity.v1beta.Route
+	47,  // 128: google.cloud.networkconnectivity.v1beta.HubService.ListRoutes:output_type -> google.cloud.networkconnectivity.v1beta.ListRoutesResponse
+	49,  // 129: google.cloud.networkconnectivity.v1beta.HubService.ListRouteTables:output_type -> google.cloud.networkconnectivity.v1beta.ListRouteTablesResponse
+	16,  // 130: google.cloud.networkconnectivity.v1beta.HubService.GetGroup:output_type -> google.cloud.networkconnectivity.v1beta.Group
+	51,  // 131: google.cloud.networkconnectivity.v1beta.HubService.ListGroups:output_type -> google.cloud.networkconnectivity.v1beta.ListGroupsResponse
+	89,  // 132: google.cloud.networkconnectivity.v1beta.HubService.UpdateGroup:output_type -> google.longrunning.Operation
+	89,  // 133: google.cloud.networkconnectivity.v1beta.HubService.CreateGatewayAdvertisedRoute:output_type -> google.longrunning.Operation
+	57,  // 134: google.cloud.networkconnectivity.v1beta.HubService.GetGatewayAdvertisedRoute:output_type -> google.cloud.networkconnectivity.v1beta.GatewayAdvertisedRoute
+	61,  // 135: google.cloud.networkconnectivity.v1beta.HubService.ListGatewayAdvertisedRoutes:output_type -> google.cloud.networkconnectivity.v1beta.ListGatewayAdvertisedRoutesResponse
+	89,  // 136: google.cloud.networkconnectivity.v1beta.HubService.UpdateGatewayAdvertisedRoute:output_type -> google.longrunning.Operation
+	89,  // 137: google.cloud.networkconnectivity.v1beta.HubService.DeleteGatewayAdvertisedRoute:output_type -> google.longrunning.Operation
+	110, // [110:138] is the sub-list for method output_type
+	82,  // [82:110] is the sub-list for method input_type
+	82,  // [82:82] is the sub-list for extension type_name
+	82,  // [82:82] is the sub-list for extension extendee
+	0,   // [0:82] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_networkconnectivity_v1beta_hub_proto_init() }
@@ -7078,13 +7269,14 @@ func file_google_cloud_networkconnectivity_v1beta_hub_proto_init() {
 	file_google_cloud_networkconnectivity_v1beta_common_proto_init()
 	file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[0].OneofWrappers = []any{}
 	file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[46].OneofWrappers = []any{}
+	file_google_cloud_networkconnectivity_v1beta_hub_proto_msgTypes[64].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_networkconnectivity_v1beta_hub_proto_rawDesc), len(file_google_cloud_networkconnectivity_v1beta_hub_proto_rawDesc)),
 			NumEnums:      11,
-			NumMessages:   75,
+			NumMessages:   76,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

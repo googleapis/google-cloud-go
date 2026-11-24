@@ -27,7 +27,7 @@ func TestPublishScheduler_Put_Basic(t *testing.T) {
 	defer close(done)
 
 	keysHandled := map[string]chan int{}
-	handle := func(itemi interface{}) {
+	handle := func(itemi any) {
 		items := itemi.([]pair)
 		for _, item := range items {
 			keysHandled[item.k] <- item.v
@@ -41,15 +41,15 @@ func TestPublishScheduler_Put_Basic(t *testing.T) {
 	numItems := 100
 	numKeys := 10
 
-	for ki := 0; ki < numKeys; ki++ {
+	for ki := range numKeys {
 		k := fmt.Sprintf("some_key_%d", ki)
 		keysHandled[k] = make(chan int, numItems)
 	}
 
-	for ki := 0; ki < numKeys; ki++ {
+	for ki := range numKeys {
 		k := fmt.Sprintf("some_key_%d", ki)
 		go func() {
-			for i := 0; i < numItems; i++ {
+			for i := range numItems {
 				select {
 				case <-done:
 					return
@@ -62,9 +62,9 @@ func TestPublishScheduler_Put_Basic(t *testing.T) {
 		}()
 	}
 
-	for ki := 0; ki < numKeys; ki++ {
+	for ki := range numKeys {
 		k := fmt.Sprintf("some_key_%d", ki)
-		for want := 0; want < numItems; want++ {
+		for want := range numItems {
 			select {
 			case got := <-keysHandled[k]:
 				if got != want {
@@ -84,7 +84,7 @@ func TestPublishScheduler_Put_ManyWithOneKey(t *testing.T) {
 	defer close(done)
 
 	recvd := make(chan int)
-	handle := func(itemi interface{}) {
+	handle := func(itemi any) {
 		items := itemi.([]int)
 		for _, item := range items {
 			recvd <- item
@@ -98,7 +98,7 @@ func TestPublishScheduler_Put_ManyWithOneKey(t *testing.T) {
 	numItems := 1000
 
 	go func() {
-		for i := 0; i < numItems; i++ {
+		for i := range numItems {
 			select {
 			case <-done:
 				return
@@ -110,7 +110,7 @@ func TestPublishScheduler_Put_ManyWithOneKey(t *testing.T) {
 		}
 	}()
 
-	for want := 0; want < numItems; want++ {
+	for want := range numItems {
 		select {
 		case got := <-recvd:
 			if got != want {
@@ -127,7 +127,7 @@ func TestPublishScheduler_DoesntRaceWithPublisher(t *testing.T) {
 	defer close(done)
 
 	keysHandled := map[string]chan int{}
-	handle := func(itemi interface{}) {
+	handle := func(itemi any) {
 		items := itemi.([]pair)
 		for _, item := range items {
 			keysHandled[item.k] <- item.v
@@ -141,15 +141,15 @@ func TestPublishScheduler_DoesntRaceWithPublisher(t *testing.T) {
 	numItems := 100
 	numKeys := 10
 
-	for ki := 0; ki < numKeys; ki++ {
+	for ki := range numKeys {
 		k := fmt.Sprintf("some_key_%d", ki)
 		keysHandled[k] = make(chan int, numItems)
 	}
 
-	for ki := 0; ki < numKeys; ki++ {
+	for ki := range numKeys {
 		k := fmt.Sprintf("some_key_%d", ki)
 		go func() {
-			for i := 0; i < numItems; i++ {
+			for i := range numItems {
 				select {
 				case <-done:
 					return
@@ -162,9 +162,9 @@ func TestPublishScheduler_DoesntRaceWithPublisher(t *testing.T) {
 		}()
 	}
 
-	for ki := 0; ki < numKeys; ki++ {
+	for ki := range numKeys {
 		k := fmt.Sprintf("some_key_%d", ki)
-		for want := 0; want < numItems; want++ {
+		for want := range numItems {
 			select {
 			case got := <-keysHandled[k]:
 				if got != want {
@@ -198,7 +198,7 @@ func TestPublishScheduler_FlushAndStop(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			recvd := make(chan int)
-			handle := func(itemi interface{}) {
+			handle := func(itemi any) {
 				for _, v := range itemi.([]int) {
 					recvd <- v
 				}

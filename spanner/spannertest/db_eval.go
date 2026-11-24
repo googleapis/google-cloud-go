@@ -29,6 +29,7 @@ import (
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner/spansql"
+	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -663,6 +664,18 @@ func (ec evalContext) coerceString(target spansql.Expr, slit spansql.StringLiter
 		}
 		return coercedValue{
 			val:  t,
+			orig: slit,
+		}, nil
+	case spansql.UUID:
+		if len(slit) != 36 {
+			return nil, fmt.Errorf("coercing string literal %q to UUID: invalid UUID length", slit)
+		}
+		id, err := uuid.Parse(string(slit))
+		if err != nil {
+			return nil, fmt.Errorf("coercing string literal %q to UUID: %w", slit, err)
+		}
+		return coercedValue{
+			val:  id.String(),
 			orig: slit,
 		}, nil
 	}

@@ -190,15 +190,15 @@ var File_google_cloud_datacatalog_v1_gcs_fileset_spec_proto protoreflect.FileDes
 
 const file_google_cloud_datacatalog_v1_gcs_fileset_spec_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/datacatalog/v1/gcs_fileset_spec.proto\x12\x1bgoogle.cloud.datacatalog.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a,google/cloud/datacatalog/v1/timestamps.proto\"\x9c\x01\n" +
-	"\x0eGcsFilesetSpec\x12(\n" +
-	"\rfile_patterns\x18\x01 \x03(\tB\x03\xe0A\x02R\ffilePatterns\x12`\n" +
-	"\x15sample_gcs_file_specs\x18\x02 \x03(\v2(.google.cloud.datacatalog.v1.GcsFileSpecB\x03\xe0A\x03R\x12sampleGcsFileSpecs\"\xae\x01\n" +
-	"\vGcsFileSpec\x12 \n" +
-	"\tfile_path\x18\x01 \x01(\tB\x03\xe0A\x02R\bfilePath\x12Y\n" +
-	"\x0egcs_timestamps\x18\x02 \x01(\v2-.google.cloud.datacatalog.v1.SystemTimestampsB\x03\xe0A\x03R\rgcsTimestamps\x12\"\n" +
+	"2google/cloud/datacatalog/v1/gcs_fileset_spec.proto\x12\x1bgoogle.cloud.datacatalog.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a,google/cloud/datacatalog/v1/timestamps.proto\"\x9e\x01\n" +
+	"\x0eGcsFilesetSpec\x12)\n" +
+	"\rfile_patterns\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\ffilePatterns\x12a\n" +
+	"\x15sample_gcs_file_specs\x18\x02 \x03(\v2(.google.cloud.datacatalog.v1.GcsFileSpecB\x04\xe2A\x01\x03R\x12sampleGcsFileSpecs\"\xb1\x01\n" +
+	"\vGcsFileSpec\x12!\n" +
+	"\tfile_path\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bfilePath\x12Z\n" +
+	"\x0egcs_timestamps\x18\x02 \x01(\v2-.google.cloud.datacatalog.v1.SystemTimestampsB\x04\xe2A\x01\x03R\rgcsTimestamps\x12#\n" +
 	"\n" +
-	"size_bytes\x18\x04 \x01(\x03B\x03\xe0A\x03R\tsizeBytesB\xc3\x01\n" +
+	"size_bytes\x18\x04 \x01(\x03B\x04\xe2A\x01\x03R\tsizeBytesB\xc3\x01\n" +
 	"\x1fcom.google.cloud.datacatalog.v1P\x01ZAcloud.google.com/go/datacatalog/apiv1/datacatalogpb;datacatalogpb\xaa\x02\x1bGoogle.Cloud.DataCatalog.V1\xca\x02\x1bGoogle\\Cloud\\DataCatalog\\V1\xea\x02\x1eGoogle::Cloud::DataCatalog::V1b\x06proto3"
 
 var (

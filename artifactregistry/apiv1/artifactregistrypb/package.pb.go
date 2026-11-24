@@ -459,34 +459,34 @@ var File_google_devtools_artifactregistry_v1_package_proto protoreflect.FileDesc
 
 const file_google_devtools_artifactregistry_v1_package_proto_rawDesc = "" +
 	"\n" +
-	"1google/devtools/artifactregistry/v1/package.proto\x12#google.devtools.artifactregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe5\x03\n" +
+	"1google/devtools/artifactregistry/v1/package.proto\x12#google.devtools.artifactregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe6\x03\n" +
 	"\aPackage\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12;\n" +
 	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\x12d\n" +
-	"\vannotations\x18\a \x03(\v2=.google.devtools.artifactregistry.v1.Package.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x1a>\n" +
+	"updateTime\x12e\n" +
+	"\vannotations\x18\a \x03(\v2=.google.devtools.artifactregistry.v1.Package.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x82\x01\xeaA\x7f\n" +
-	"'artifactregistry.googleapis.com/Package\x12Tprojects/{project}/locations/{location}/repositories/{repository}/packages/{package}\"\xd7\x01\n" +
-	"\x13ListPackagesRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'artifactregistry.googleapis.com/PackageR\x06parent\x12\x1b\n" +
+	"'artifactregistry.googleapis.com/Package\x12Tprojects/{project}/locations/{location}/repositories/{repository}/packages/{package}\"\xda\x01\n" +
+	"\x13ListPackagesRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'artifactregistry.googleapis.com/PackageR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x88\x01\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x88\x01\n" +
 	"\x14ListPackagesResponse\x12H\n" +
 	"\bpackages\x18\x01 \x03(\v2,.google.devtools.artifactregistry.v1.PackageR\bpackages\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"X\n" +
-	"\x11GetPackageRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'artifactregistry.googleapis.com/PackageR\x04name\"[\n" +
-	"\x14DeletePackageRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Y\n" +
+	"\x11GetPackageRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'artifactregistry.googleapis.com/PackageR\x04name\"\\\n" +
+	"\x14DeletePackageRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'artifactregistry.googleapis.com/PackageR\x04name\"\x9b\x01\n" +
 	"\x14UpdatePackageRequest\x12F\n" +
 	"\apackage\x18\x01 \x01(\v2,.google.devtools.artifactregistry.v1.PackageR\apackage\x12;\n" +

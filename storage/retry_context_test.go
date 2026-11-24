@@ -21,7 +21,6 @@ import (
 	"reflect"
 	"testing"
 
-	"cloud.google.com/go/storage/experimental"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -289,7 +288,7 @@ func TestGRPCRetryContextMetadataMultiRangeDownloader(t *testing.T) {
 		option.WithEndpoint("localhost:1"),
 		option.WithoutAuthentication(),
 		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
-		experimental.WithGRPCBidiReads(),
+		WithGRPCBidiReads(),
 	)
 	if err != nil {
 		t.Fatalf("NewGRPCClient: %v", err)

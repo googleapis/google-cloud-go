@@ -3332,179 +3332,179 @@ const file_google_cloud_dataproc_v1_jobs_proto_rawDesc = "" +
 	"\x04WARN\x10\x05\x12\t\n" +
 	"\x05ERROR\x10\x06\x12\t\n" +
 	"\x05FATAL\x10\a\x12\a\n" +
-	"\x03OFF\x10\b\"\xdd\x03\n" +
+	"\x03OFF\x10\b\"\xe3\x03\n" +
 	"\tHadoopJob\x12+\n" +
 	"\x11main_jar_file_uri\x18\x01 \x01(\tH\x00R\x0emainJarFileUri\x12\x1f\n" +
 	"\n" +
-	"main_class\x18\x02 \x01(\tH\x00R\tmainClass\x12\x17\n" +
-	"\x04args\x18\x03 \x03(\tB\x03\xe0A\x01R\x04args\x12'\n" +
-	"\rjar_file_uris\x18\x04 \x03(\tB\x03\xe0A\x01R\vjarFileUris\x12 \n" +
-	"\tfile_uris\x18\x05 \x03(\tB\x03\xe0A\x01R\bfileUris\x12&\n" +
-	"\farchive_uris\x18\x06 \x03(\tB\x03\xe0A\x01R\varchiveUris\x12X\n" +
+	"main_class\x18\x02 \x01(\tH\x00R\tmainClass\x12\x18\n" +
+	"\x04args\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x04args\x12(\n" +
+	"\rjar_file_uris\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\vjarFileUris\x12!\n" +
+	"\tfile_uris\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\bfileUris\x12'\n" +
+	"\farchive_uris\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\varchiveUris\x12Y\n" +
 	"\n" +
-	"properties\x18\a \x03(\v23.google.cloud.dataproc.v1.HadoopJob.PropertiesEntryB\x03\xe0A\x01R\n" +
-	"properties\x12S\n" +
-	"\x0elogging_config\x18\b \x01(\v2'.google.cloud.dataproc.v1.LoggingConfigB\x03\xe0A\x01R\rloggingConfig\x1a=\n" +
+	"properties\x18\a \x03(\v23.google.cloud.dataproc.v1.HadoopJob.PropertiesEntryB\x04\xe2A\x01\x01R\n" +
+	"properties\x12T\n" +
+	"\x0elogging_config\x18\b \x01(\v2'.google.cloud.dataproc.v1.LoggingConfigB\x04\xe2A\x01\x01R\rloggingConfig\x1a=\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\b\n" +
-	"\x06driver\"\xdb\x03\n" +
+	"\x06driver\"\xe1\x03\n" +
 	"\bSparkJob\x12+\n" +
 	"\x11main_jar_file_uri\x18\x01 \x01(\tH\x00R\x0emainJarFileUri\x12\x1f\n" +
 	"\n" +
-	"main_class\x18\x02 \x01(\tH\x00R\tmainClass\x12\x17\n" +
-	"\x04args\x18\x03 \x03(\tB\x03\xe0A\x01R\x04args\x12'\n" +
-	"\rjar_file_uris\x18\x04 \x03(\tB\x03\xe0A\x01R\vjarFileUris\x12 \n" +
-	"\tfile_uris\x18\x05 \x03(\tB\x03\xe0A\x01R\bfileUris\x12&\n" +
-	"\farchive_uris\x18\x06 \x03(\tB\x03\xe0A\x01R\varchiveUris\x12W\n" +
+	"main_class\x18\x02 \x01(\tH\x00R\tmainClass\x12\x18\n" +
+	"\x04args\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x04args\x12(\n" +
+	"\rjar_file_uris\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\vjarFileUris\x12!\n" +
+	"\tfile_uris\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\bfileUris\x12'\n" +
+	"\farchive_uris\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\varchiveUris\x12X\n" +
 	"\n" +
-	"properties\x18\a \x03(\v22.google.cloud.dataproc.v1.SparkJob.PropertiesEntryB\x03\xe0A\x01R\n" +
-	"properties\x12S\n" +
-	"\x0elogging_config\x18\b \x01(\v2'.google.cloud.dataproc.v1.LoggingConfigB\x03\xe0A\x01R\rloggingConfig\x1a=\n" +
+	"properties\x18\a \x03(\v22.google.cloud.dataproc.v1.SparkJob.PropertiesEntryB\x04\xe2A\x01\x01R\n" +
+	"properties\x12T\n" +
+	"\x0elogging_config\x18\b \x01(\v2'.google.cloud.dataproc.v1.LoggingConfigB\x04\xe2A\x01\x01R\rloggingConfig\x1a=\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\b\n" +
-	"\x06driver\"\xec\x03\n" +
+	"\x06driver\"\xf4\x03\n" +
 	"\n" +
-	"PySparkJob\x124\n" +
-	"\x14main_python_file_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x11mainPythonFileUri\x12\x17\n" +
-	"\x04args\x18\x02 \x03(\tB\x03\xe0A\x01R\x04args\x12-\n" +
-	"\x10python_file_uris\x18\x03 \x03(\tB\x03\xe0A\x01R\x0epythonFileUris\x12'\n" +
-	"\rjar_file_uris\x18\x04 \x03(\tB\x03\xe0A\x01R\vjarFileUris\x12 \n" +
-	"\tfile_uris\x18\x05 \x03(\tB\x03\xe0A\x01R\bfileUris\x12&\n" +
-	"\farchive_uris\x18\x06 \x03(\tB\x03\xe0A\x01R\varchiveUris\x12Y\n" +
+	"PySparkJob\x125\n" +
+	"\x14main_python_file_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x11mainPythonFileUri\x12\x18\n" +
+	"\x04args\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x04args\x12.\n" +
+	"\x10python_file_uris\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x0epythonFileUris\x12(\n" +
+	"\rjar_file_uris\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\vjarFileUris\x12!\n" +
+	"\tfile_uris\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\bfileUris\x12'\n" +
+	"\farchive_uris\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\varchiveUris\x12Z\n" +
 	"\n" +
-	"properties\x18\a \x03(\v24.google.cloud.dataproc.v1.PySparkJob.PropertiesEntryB\x03\xe0A\x01R\n" +
-	"properties\x12S\n" +
-	"\x0elogging_config\x18\b \x01(\v2'.google.cloud.dataproc.v1.LoggingConfigB\x03\xe0A\x01R\rloggingConfig\x1a=\n" +
+	"properties\x18\a \x03(\v24.google.cloud.dataproc.v1.PySparkJob.PropertiesEntryB\x04\xe2A\x01\x01R\n" +
+	"properties\x12T\n" +
+	"\x0elogging_config\x18\b \x01(\v2'.google.cloud.dataproc.v1.LoggingConfigB\x04\xe2A\x01\x01R\rloggingConfig\x1a=\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"*\n" +
-	"\tQueryList\x12\x1d\n" +
-	"\aqueries\x18\x01 \x03(\tB\x03\xe0A\x02R\aqueries\"\xa3\x04\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"+\n" +
+	"\tQueryList\x12\x1e\n" +
+	"\aqueries\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\aqueries\"\xa7\x04\n" +
 	"\aHiveJob\x12&\n" +
 	"\x0equery_file_uri\x18\x01 \x01(\tH\x00R\fqueryFileUri\x12D\n" +
 	"\n" +
-	"query_list\x18\x02 \x01(\v2#.google.cloud.dataproc.v1.QueryListH\x00R\tqueryList\x123\n" +
-	"\x13continue_on_failure\x18\x03 \x01(\bB\x03\xe0A\x01R\x11continueOnFailure\x12f\n" +
-	"\x10script_variables\x18\x04 \x03(\v26.google.cloud.dataproc.v1.HiveJob.ScriptVariablesEntryB\x03\xe0A\x01R\x0fscriptVariables\x12V\n" +
+	"query_list\x18\x02 \x01(\v2#.google.cloud.dataproc.v1.QueryListH\x00R\tqueryList\x124\n" +
+	"\x13continue_on_failure\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x11continueOnFailure\x12g\n" +
+	"\x10script_variables\x18\x04 \x03(\v26.google.cloud.dataproc.v1.HiveJob.ScriptVariablesEntryB\x04\xe2A\x01\x01R\x0fscriptVariables\x12W\n" +
 	"\n" +
-	"properties\x18\x05 \x03(\v21.google.cloud.dataproc.v1.HiveJob.PropertiesEntryB\x03\xe0A\x01R\n" +
-	"properties\x12'\n" +
-	"\rjar_file_uris\x18\x06 \x03(\tB\x03\xe0A\x01R\vjarFileUris\x1aB\n" +
+	"properties\x18\x05 \x03(\v21.google.cloud.dataproc.v1.HiveJob.PropertiesEntryB\x04\xe2A\x01\x01R\n" +
+	"properties\x12(\n" +
+	"\rjar_file_uris\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\vjarFileUris\x1aB\n" +
 	"\x14ScriptVariablesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a=\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\t\n" +
-	"\aqueries\"\xcf\x04\n" +
+	"\aqueries\"\xd3\x04\n" +
 	"\vSparkSqlJob\x12&\n" +
 	"\x0equery_file_uri\x18\x01 \x01(\tH\x00R\fqueryFileUri\x12D\n" +
 	"\n" +
-	"query_list\x18\x02 \x01(\v2#.google.cloud.dataproc.v1.QueryListH\x00R\tqueryList\x12j\n" +
-	"\x10script_variables\x18\x03 \x03(\v2:.google.cloud.dataproc.v1.SparkSqlJob.ScriptVariablesEntryB\x03\xe0A\x01R\x0fscriptVariables\x12Z\n" +
+	"query_list\x18\x02 \x01(\v2#.google.cloud.dataproc.v1.QueryListH\x00R\tqueryList\x12k\n" +
+	"\x10script_variables\x18\x03 \x03(\v2:.google.cloud.dataproc.v1.SparkSqlJob.ScriptVariablesEntryB\x04\xe2A\x01\x01R\x0fscriptVariables\x12[\n" +
 	"\n" +
-	"properties\x18\x04 \x03(\v25.google.cloud.dataproc.v1.SparkSqlJob.PropertiesEntryB\x03\xe0A\x01R\n" +
-	"properties\x12'\n" +
-	"\rjar_file_uris\x188 \x03(\tB\x03\xe0A\x01R\vjarFileUris\x12S\n" +
-	"\x0elogging_config\x18\x06 \x01(\v2'.google.cloud.dataproc.v1.LoggingConfigB\x03\xe0A\x01R\rloggingConfig\x1aB\n" +
+	"properties\x18\x04 \x03(\v25.google.cloud.dataproc.v1.SparkSqlJob.PropertiesEntryB\x04\xe2A\x01\x01R\n" +
+	"properties\x12(\n" +
+	"\rjar_file_uris\x188 \x03(\tB\x04\xe2A\x01\x01R\vjarFileUris\x12T\n" +
+	"\x0elogging_config\x18\x06 \x01(\v2'.google.cloud.dataproc.v1.LoggingConfigB\x04\xe2A\x01\x01R\rloggingConfig\x1aB\n" +
 	"\x14ScriptVariablesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a=\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\t\n" +
-	"\aqueries\"\xf5\x04\n" +
+	"\aqueries\"\xfa\x04\n" +
 	"\x06PigJob\x12&\n" +
 	"\x0equery_file_uri\x18\x01 \x01(\tH\x00R\fqueryFileUri\x12D\n" +
 	"\n" +
-	"query_list\x18\x02 \x01(\v2#.google.cloud.dataproc.v1.QueryListH\x00R\tqueryList\x123\n" +
-	"\x13continue_on_failure\x18\x03 \x01(\bB\x03\xe0A\x01R\x11continueOnFailure\x12e\n" +
-	"\x10script_variables\x18\x04 \x03(\v25.google.cloud.dataproc.v1.PigJob.ScriptVariablesEntryB\x03\xe0A\x01R\x0fscriptVariables\x12U\n" +
+	"query_list\x18\x02 \x01(\v2#.google.cloud.dataproc.v1.QueryListH\x00R\tqueryList\x124\n" +
+	"\x13continue_on_failure\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x11continueOnFailure\x12f\n" +
+	"\x10script_variables\x18\x04 \x03(\v25.google.cloud.dataproc.v1.PigJob.ScriptVariablesEntryB\x04\xe2A\x01\x01R\x0fscriptVariables\x12V\n" +
 	"\n" +
-	"properties\x18\x05 \x03(\v20.google.cloud.dataproc.v1.PigJob.PropertiesEntryB\x03\xe0A\x01R\n" +
-	"properties\x12'\n" +
-	"\rjar_file_uris\x18\x06 \x03(\tB\x03\xe0A\x01R\vjarFileUris\x12S\n" +
-	"\x0elogging_config\x18\a \x01(\v2'.google.cloud.dataproc.v1.LoggingConfigB\x03\xe0A\x01R\rloggingConfig\x1aB\n" +
+	"properties\x18\x05 \x03(\v20.google.cloud.dataproc.v1.PigJob.PropertiesEntryB\x04\xe2A\x01\x01R\n" +
+	"properties\x12(\n" +
+	"\rjar_file_uris\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\vjarFileUris\x12T\n" +
+	"\x0elogging_config\x18\a \x01(\v2'.google.cloud.dataproc.v1.LoggingConfigB\x04\xe2A\x01\x01R\rloggingConfig\x1aB\n" +
 	"\x14ScriptVariablesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a=\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\t\n" +
-	"\aqueries\"\x88\x03\n" +
-	"\tSparkRJob\x12*\n" +
-	"\x0fmain_r_file_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\fmainRFileUri\x12\x17\n" +
-	"\x04args\x18\x02 \x03(\tB\x03\xe0A\x01R\x04args\x12 \n" +
-	"\tfile_uris\x18\x03 \x03(\tB\x03\xe0A\x01R\bfileUris\x12&\n" +
-	"\farchive_uris\x18\x04 \x03(\tB\x03\xe0A\x01R\varchiveUris\x12X\n" +
+	"\aqueries\"\x8e\x03\n" +
+	"\tSparkRJob\x12+\n" +
+	"\x0fmain_r_file_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\fmainRFileUri\x12\x18\n" +
+	"\x04args\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x04args\x12!\n" +
+	"\tfile_uris\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\bfileUris\x12'\n" +
+	"\farchive_uris\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\varchiveUris\x12Y\n" +
 	"\n" +
-	"properties\x18\x05 \x03(\v23.google.cloud.dataproc.v1.SparkRJob.PropertiesEntryB\x03\xe0A\x01R\n" +
-	"properties\x12S\n" +
-	"\x0elogging_config\x18\x06 \x01(\v2'.google.cloud.dataproc.v1.LoggingConfigB\x03\xe0A\x01R\rloggingConfig\x1a=\n" +
+	"properties\x18\x05 \x03(\v23.google.cloud.dataproc.v1.SparkRJob.PropertiesEntryB\x04\xe2A\x01\x01R\n" +
+	"properties\x12T\n" +
+	"\x0elogging_config\x18\x06 \x01(\v2'.google.cloud.dataproc.v1.LoggingConfigB\x04\xe2A\x01\x01R\rloggingConfig\x1a=\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xf7\x03\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xfc\x03\n" +
 	"\tPrestoJob\x12&\n" +
 	"\x0equery_file_uri\x18\x01 \x01(\tH\x00R\fqueryFileUri\x12D\n" +
 	"\n" +
-	"query_list\x18\x02 \x01(\v2#.google.cloud.dataproc.v1.QueryListH\x00R\tqueryList\x123\n" +
-	"\x13continue_on_failure\x18\x03 \x01(\bB\x03\xe0A\x01R\x11continueOnFailure\x12(\n" +
-	"\routput_format\x18\x04 \x01(\tB\x03\xe0A\x01R\foutputFormat\x12$\n" +
-	"\vclient_tags\x18\x05 \x03(\tB\x03\xe0A\x01R\n" +
-	"clientTags\x12X\n" +
+	"query_list\x18\x02 \x01(\v2#.google.cloud.dataproc.v1.QueryListH\x00R\tqueryList\x124\n" +
+	"\x13continue_on_failure\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x11continueOnFailure\x12)\n" +
+	"\routput_format\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\foutputFormat\x12%\n" +
+	"\vclient_tags\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\n" +
+	"clientTags\x12Y\n" +
 	"\n" +
-	"properties\x18\x06 \x03(\v23.google.cloud.dataproc.v1.PrestoJob.PropertiesEntryB\x03\xe0A\x01R\n" +
-	"properties\x12S\n" +
-	"\x0elogging_config\x18\a \x01(\v2'.google.cloud.dataproc.v1.LoggingConfigB\x03\xe0A\x01R\rloggingConfig\x1a=\n" +
+	"properties\x18\x06 \x03(\v23.google.cloud.dataproc.v1.PrestoJob.PropertiesEntryB\x04\xe2A\x01\x01R\n" +
+	"properties\x12T\n" +
+	"\x0elogging_config\x18\a \x01(\v2'.google.cloud.dataproc.v1.LoggingConfigB\x04\xe2A\x01\x01R\rloggingConfig\x1a=\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\t\n" +
-	"\aqueries\"\xf5\x03\n" +
+	"\aqueries\"\xfa\x03\n" +
 	"\bTrinoJob\x12&\n" +
 	"\x0equery_file_uri\x18\x01 \x01(\tH\x00R\fqueryFileUri\x12D\n" +
 	"\n" +
-	"query_list\x18\x02 \x01(\v2#.google.cloud.dataproc.v1.QueryListH\x00R\tqueryList\x123\n" +
-	"\x13continue_on_failure\x18\x03 \x01(\bB\x03\xe0A\x01R\x11continueOnFailure\x12(\n" +
-	"\routput_format\x18\x04 \x01(\tB\x03\xe0A\x01R\foutputFormat\x12$\n" +
-	"\vclient_tags\x18\x05 \x03(\tB\x03\xe0A\x01R\n" +
-	"clientTags\x12W\n" +
+	"query_list\x18\x02 \x01(\v2#.google.cloud.dataproc.v1.QueryListH\x00R\tqueryList\x124\n" +
+	"\x13continue_on_failure\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x11continueOnFailure\x12)\n" +
+	"\routput_format\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\foutputFormat\x12%\n" +
+	"\vclient_tags\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\n" +
+	"clientTags\x12X\n" +
 	"\n" +
-	"properties\x18\x06 \x03(\v22.google.cloud.dataproc.v1.TrinoJob.PropertiesEntryB\x03\xe0A\x01R\n" +
-	"properties\x12S\n" +
-	"\x0elogging_config\x18\a \x01(\v2'.google.cloud.dataproc.v1.LoggingConfigB\x03\xe0A\x01R\rloggingConfig\x1a=\n" +
+	"properties\x18\x06 \x03(\v22.google.cloud.dataproc.v1.TrinoJob.PropertiesEntryB\x04\xe2A\x01\x01R\n" +
+	"properties\x12T\n" +
+	"\x0elogging_config\x18\a \x01(\v2'.google.cloud.dataproc.v1.LoggingConfigB\x04\xe2A\x01\x01R\rloggingConfig\x1a=\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\t\n" +
-	"\aqueries\"\xbb\x03\n" +
+	"\aqueries\"\xc0\x03\n" +
 	"\bFlinkJob\x12+\n" +
 	"\x11main_jar_file_uri\x18\x01 \x01(\tH\x00R\x0emainJarFileUri\x12\x1f\n" +
 	"\n" +
-	"main_class\x18\x02 \x01(\tH\x00R\tmainClass\x12\x17\n" +
-	"\x04args\x18\x03 \x03(\tB\x03\xe0A\x01R\x04args\x12'\n" +
-	"\rjar_file_uris\x18\x04 \x03(\tB\x03\xe0A\x01R\vjarFileUris\x12(\n" +
-	"\rsavepoint_uri\x18\t \x01(\tB\x03\xe0A\x01R\fsavepointUri\x12W\n" +
+	"main_class\x18\x02 \x01(\tH\x00R\tmainClass\x12\x18\n" +
+	"\x04args\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x04args\x12(\n" +
+	"\rjar_file_uris\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\vjarFileUris\x12)\n" +
+	"\rsavepoint_uri\x18\t \x01(\tB\x04\xe2A\x01\x01R\fsavepointUri\x12X\n" +
 	"\n" +
-	"properties\x18\a \x03(\v22.google.cloud.dataproc.v1.FlinkJob.PropertiesEntryB\x03\xe0A\x01R\n" +
-	"properties\x12S\n" +
-	"\x0elogging_config\x18\b \x01(\v2'.google.cloud.dataproc.v1.LoggingConfigB\x03\xe0A\x01R\rloggingConfig\x1a=\n" +
+	"properties\x18\a \x03(\v22.google.cloud.dataproc.v1.FlinkJob.PropertiesEntryB\x04\xe2A\x01\x01R\n" +
+	"properties\x12T\n" +
+	"\x0elogging_config\x18\b \x01(\v2'.google.cloud.dataproc.v1.LoggingConfigB\x04\xe2A\x01\x01R\rloggingConfig\x1a=\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\b\n" +
-	"\x06driver\"\x87\x02\n" +
-	"\fJobPlacement\x12&\n" +
-	"\fcluster_name\x18\x01 \x01(\tB\x03\xe0A\x02R\vclusterName\x12&\n" +
-	"\fcluster_uuid\x18\x02 \x01(\tB\x03\xe0A\x03R\vclusterUuid\x12e\n" +
-	"\x0ecluster_labels\x18\x03 \x03(\v29.google.cloud.dataproc.v1.JobPlacement.ClusterLabelsEntryB\x03\xe0A\x01R\rclusterLabels\x1a@\n" +
+	"\x06driver\"\x8a\x02\n" +
+	"\fJobPlacement\x12'\n" +
+	"\fcluster_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vclusterName\x12'\n" +
+	"\fcluster_uuid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vclusterUuid\x12f\n" +
+	"\x0ecluster_labels\x18\x03 \x03(\v29.google.cloud.dataproc.v1.JobPlacement.ClusterLabelsEntryB\x04\xe2A\x01\x01R\rclusterLabels\x1a@\n" +
 	"\x12ClusterLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x83\x04\n" +
-	"\tJobStatus\x12D\n" +
-	"\x05state\x18\x01 \x01(\x0e2).google.cloud.dataproc.v1.JobStatus.StateB\x03\xe0A\x03R\x05state\x12 \n" +
-	"\adetails\x18\x02 \x01(\tB\x06\xe0A\x03\xe0A\x01R\adetails\x12I\n" +
-	"\x10state_start_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0estateStartTime\x12M\n" +
-	"\bsubstate\x18\a \x01(\x0e2,.google.cloud.dataproc.v1.JobStatus.SubstateB\x03\xe0A\x03R\bsubstate\"\xa9\x01\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x85\x04\n" +
+	"\tJobStatus\x12E\n" +
+	"\x05state\x18\x01 \x01(\x0e2).google.cloud.dataproc.v1.JobStatus.StateB\x04\xe2A\x01\x03R\x05state\x12\x1f\n" +
+	"\adetails\x18\x02 \x01(\tB\x05\xe2A\x02\x03\x01R\adetails\x12J\n" +
+	"\x10state_start_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0estateStartTime\x12N\n" +
+	"\bsubstate\x18\a \x01(\x0e2,.google.cloud.dataproc.v1.JobStatus.SubstateB\x04\xe2A\x01\x03R\bsubstate\"\xa9\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPENDING\x10\x01\x12\x0e\n" +
@@ -3522,18 +3522,18 @@ const file_google_cloud_dataproc_v1_jobs_proto_rawDesc = "" +
 	"\tSUBMITTED\x10\x01\x12\n" +
 	"\n" +
 	"\x06QUEUED\x10\x02\x12\x10\n" +
-	"\fSTALE_STATUS\x10\x03\"N\n" +
-	"\fJobReference\x12\"\n" +
+	"\fSTALE_STATUS\x10\x03\"P\n" +
+	"\fJobReference\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x01R\tprojectId\x12\x1a\n" +
-	"\x06job_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x05jobId\"\xa4\x03\n" +
-	"\x0fYarnApplication\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12J\n" +
-	"\x05state\x18\x02 \x01(\x0e2/.google.cloud.dataproc.v1.YarnApplication.StateB\x03\xe0A\x02R\x05state\x12\x1f\n" +
-	"\bprogress\x18\x03 \x01(\x02B\x03\xe0A\x02R\bprogress\x12&\n" +
-	"\ftracking_url\x18\x04 \x01(\tB\x03\xe0A\x01R\vtrackingUrl\x12(\n" +
-	"\rvcore_seconds\x18\x05 \x01(\x03B\x03\xe0A\x01R\fvcoreSeconds\x12/\n" +
-	"\x11memory_mb_seconds\x18\x06 \x01(\x03B\x03\xe0A\x01R\x0fmemoryMbSeconds\"\x87\x01\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\tprojectId\x12\x1b\n" +
+	"\x06job_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05jobId\"\xaa\x03\n" +
+	"\x0fYarnApplication\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12K\n" +
+	"\x05state\x18\x02 \x01(\x0e2/.google.cloud.dataproc.v1.YarnApplication.StateB\x04\xe2A\x01\x02R\x05state\x12 \n" +
+	"\bprogress\x18\x03 \x01(\x02B\x04\xe2A\x01\x02R\bprogress\x12'\n" +
+	"\ftracking_url\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vtrackingUrl\x12)\n" +
+	"\rvcore_seconds\x18\x05 \x01(\x03B\x04\xe2A\x01\x01R\fvcoreSeconds\x120\n" +
+	"\x11memory_mb_seconds\x18\x06 \x01(\x03B\x04\xe2A\x01\x01R\x0fmemoryMbSeconds\"\x87\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03NEW\x10\x01\x12\x0e\n" +
@@ -3546,102 +3546,102 @@ const file_google_cloud_dataproc_v1_jobs_proto_rawDesc = "" +
 	"\n" +
 	"\x06FAILED\x10\a\x12\n" +
 	"\n" +
-	"\x06KILLED\x10\b\"\xf3\f\n" +
-	"\x03Job\x12I\n" +
-	"\treference\x18\x01 \x01(\v2&.google.cloud.dataproc.v1.JobReferenceB\x03\xe0A\x01R\treference\x12I\n" +
-	"\tplacement\x18\x02 \x01(\v2&.google.cloud.dataproc.v1.JobPlacementB\x03\xe0A\x02R\tplacement\x12I\n" +
+	"\x06KILLED\x10\b\"\x89\r\n" +
+	"\x03Job\x12J\n" +
+	"\treference\x18\x01 \x01(\v2&.google.cloud.dataproc.v1.JobReferenceB\x04\xe2A\x01\x01R\treference\x12J\n" +
+	"\tplacement\x18\x02 \x01(\v2&.google.cloud.dataproc.v1.JobPlacementB\x04\xe2A\x01\x02R\tplacement\x12J\n" +
 	"\n" +
-	"hadoop_job\x18\x03 \x01(\v2#.google.cloud.dataproc.v1.HadoopJobB\x03\xe0A\x01H\x00R\thadoopJob\x12F\n" +
-	"\tspark_job\x18\x04 \x01(\v2\".google.cloud.dataproc.v1.SparkJobB\x03\xe0A\x01H\x00R\bsparkJob\x12L\n" +
-	"\vpyspark_job\x18\x05 \x01(\v2$.google.cloud.dataproc.v1.PySparkJobB\x03\xe0A\x01H\x00R\n" +
-	"pysparkJob\x12C\n" +
-	"\bhive_job\x18\x06 \x01(\v2!.google.cloud.dataproc.v1.HiveJobB\x03\xe0A\x01H\x00R\ahiveJob\x12@\n" +
-	"\apig_job\x18\a \x01(\v2 .google.cloud.dataproc.v1.PigJobB\x03\xe0A\x01H\x00R\x06pigJob\x12J\n" +
-	"\vspark_r_job\x18\x15 \x01(\v2#.google.cloud.dataproc.v1.SparkRJobB\x03\xe0A\x01H\x00R\tsparkRJob\x12P\n" +
-	"\rspark_sql_job\x18\f \x01(\v2%.google.cloud.dataproc.v1.SparkSqlJobB\x03\xe0A\x01H\x00R\vsparkSqlJob\x12I\n" +
+	"hadoop_job\x18\x03 \x01(\v2#.google.cloud.dataproc.v1.HadoopJobB\x04\xe2A\x01\x01H\x00R\thadoopJob\x12G\n" +
+	"\tspark_job\x18\x04 \x01(\v2\".google.cloud.dataproc.v1.SparkJobB\x04\xe2A\x01\x01H\x00R\bsparkJob\x12M\n" +
+	"\vpyspark_job\x18\x05 \x01(\v2$.google.cloud.dataproc.v1.PySparkJobB\x04\xe2A\x01\x01H\x00R\n" +
+	"pysparkJob\x12D\n" +
+	"\bhive_job\x18\x06 \x01(\v2!.google.cloud.dataproc.v1.HiveJobB\x04\xe2A\x01\x01H\x00R\ahiveJob\x12A\n" +
+	"\apig_job\x18\a \x01(\v2 .google.cloud.dataproc.v1.PigJobB\x04\xe2A\x01\x01H\x00R\x06pigJob\x12K\n" +
+	"\vspark_r_job\x18\x15 \x01(\v2#.google.cloud.dataproc.v1.SparkRJobB\x04\xe2A\x01\x01H\x00R\tsparkRJob\x12Q\n" +
+	"\rspark_sql_job\x18\f \x01(\v2%.google.cloud.dataproc.v1.SparkSqlJobB\x04\xe2A\x01\x01H\x00R\vsparkSqlJob\x12J\n" +
 	"\n" +
-	"presto_job\x18\x17 \x01(\v2#.google.cloud.dataproc.v1.PrestoJobB\x03\xe0A\x01H\x00R\tprestoJob\x12F\n" +
-	"\ttrino_job\x18\x1c \x01(\v2\".google.cloud.dataproc.v1.TrinoJobB\x03\xe0A\x01H\x00R\btrinoJob\x12F\n" +
-	"\tflink_job\x18\x1d \x01(\v2\".google.cloud.dataproc.v1.FlinkJobB\x03\xe0A\x01H\x00R\bflinkJob\x12@\n" +
-	"\x06status\x18\b \x01(\v2#.google.cloud.dataproc.v1.JobStatusB\x03\xe0A\x03R\x06status\x12O\n" +
-	"\x0estatus_history\x18\r \x03(\v2#.google.cloud.dataproc.v1.JobStatusB\x03\xe0A\x03R\rstatusHistory\x12[\n" +
-	"\x11yarn_applications\x18\t \x03(\v2).google.cloud.dataproc.v1.YarnApplicationB\x03\xe0A\x03R\x10yarnApplications\x12@\n" +
-	"\x1adriver_output_resource_uri\x18\x11 \x01(\tB\x03\xe0A\x03R\x17driverOutputResourceUri\x12<\n" +
-	"\x18driver_control_files_uri\x18\x0f \x01(\tB\x03\xe0A\x03R\x15driverControlFilesUri\x12F\n" +
-	"\x06labels\x18\x12 \x03(\v2).google.cloud.dataproc.v1.Job.LabelsEntryB\x03\xe0A\x01R\x06labels\x12L\n" +
+	"presto_job\x18\x17 \x01(\v2#.google.cloud.dataproc.v1.PrestoJobB\x04\xe2A\x01\x01H\x00R\tprestoJob\x12G\n" +
+	"\ttrino_job\x18\x1c \x01(\v2\".google.cloud.dataproc.v1.TrinoJobB\x04\xe2A\x01\x01H\x00R\btrinoJob\x12G\n" +
+	"\tflink_job\x18\x1d \x01(\v2\".google.cloud.dataproc.v1.FlinkJobB\x04\xe2A\x01\x01H\x00R\bflinkJob\x12A\n" +
+	"\x06status\x18\b \x01(\v2#.google.cloud.dataproc.v1.JobStatusB\x04\xe2A\x01\x03R\x06status\x12P\n" +
+	"\x0estatus_history\x18\r \x03(\v2#.google.cloud.dataproc.v1.JobStatusB\x04\xe2A\x01\x03R\rstatusHistory\x12\\\n" +
+	"\x11yarn_applications\x18\t \x03(\v2).google.cloud.dataproc.v1.YarnApplicationB\x04\xe2A\x01\x03R\x10yarnApplications\x12A\n" +
+	"\x1adriver_output_resource_uri\x18\x11 \x01(\tB\x04\xe2A\x01\x03R\x17driverOutputResourceUri\x12=\n" +
+	"\x18driver_control_files_uri\x18\x0f \x01(\tB\x04\xe2A\x01\x03R\x15driverControlFilesUri\x12G\n" +
+	"\x06labels\x18\x12 \x03(\v2).google.cloud.dataproc.v1.Job.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12M\n" +
 	"\n" +
-	"scheduling\x18\x14 \x01(\v2'.google.cloud.dataproc.v1.JobSchedulingB\x03\xe0A\x01R\n" +
-	"scheduling\x12\x1e\n" +
-	"\bjob_uuid\x18\x16 \x01(\tB\x03\xe0A\x03R\ajobUuid\x12\x17\n" +
-	"\x04done\x18\x18 \x01(\bB\x03\xe0A\x03R\x04done\x12o\n" +
-	"\x18driver_scheduling_config\x18\x1b \x01(\v20.google.cloud.dataproc.v1.DriverSchedulingConfigB\x03\xe0A\x01R\x16driverSchedulingConfig\x1a9\n" +
+	"scheduling\x18\x14 \x01(\v2'.google.cloud.dataproc.v1.JobSchedulingB\x04\xe2A\x01\x01R\n" +
+	"scheduling\x12\x1f\n" +
+	"\bjob_uuid\x18\x16 \x01(\tB\x04\xe2A\x01\x03R\ajobUuid\x12\x18\n" +
+	"\x04done\x18\x18 \x01(\bB\x04\xe2A\x01\x03R\x04done\x12p\n" +
+	"\x18driver_scheduling_config\x18\x1b \x01(\v20.google.cloud.dataproc.v1.DriverSchedulingConfigB\x04\xe2A\x01\x01R\x16driverSchedulingConfig\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\n" +
 	"\n" +
-	"\btype_job\"W\n" +
-	"\x16DriverSchedulingConfig\x12 \n" +
-	"\tmemory_mb\x18\x01 \x01(\x05B\x03\xe0A\x02R\bmemoryMb\x12\x1b\n" +
-	"\x06vcores\x18\x02 \x01(\x05B\x03\xe0A\x02R\x06vcores\"z\n" +
-	"\rJobScheduling\x126\n" +
-	"\x15max_failures_per_hour\x18\x01 \x01(\x05B\x03\xe0A\x01R\x12maxFailuresPerHour\x121\n" +
-	"\x12max_failures_total\x18\x02 \x01(\x05B\x03\xe0A\x01R\x10maxFailuresTotal\"\xad\x01\n" +
-	"\x10SubmitJobRequest\x12\"\n" +
+	"\btype_job\"Y\n" +
+	"\x16DriverSchedulingConfig\x12!\n" +
+	"\tmemory_mb\x18\x01 \x01(\x05B\x04\xe2A\x01\x02R\bmemoryMb\x12\x1c\n" +
+	"\x06vcores\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x06vcores\"|\n" +
+	"\rJobScheduling\x127\n" +
+	"\x15max_failures_per_hour\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x12maxFailuresPerHour\x122\n" +
+	"\x12max_failures_total\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x10maxFailuresTotal\"\xb1\x01\n" +
+	"\x10SubmitJobRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1b\n" +
-	"\x06region\x18\x03 \x01(\tB\x03\xe0A\x02R\x06region\x124\n" +
-	"\x03job\x18\x02 \x01(\v2\x1d.google.cloud.dataproc.v1.JobB\x03\xe0A\x02R\x03job\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1c\n" +
+	"\x06region\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06region\x125\n" +
+	"\x03job\x18\x02 \x01(\v2\x1d.google.cloud.dataproc.v1.JobB\x04\xe2A\x01\x02R\x03job\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xd7\x01\n" +
-	"\vJobMetadata\x12\x1a\n" +
-	"\x06job_id\x18\x01 \x01(\tB\x03\xe0A\x03R\x05jobId\x12@\n" +
-	"\x06status\x18\x02 \x01(\v2#.google.cloud.dataproc.v1.JobStatusB\x03\xe0A\x03R\x06status\x12*\n" +
-	"\x0eoperation_type\x18\x03 \x01(\tB\x03\xe0A\x03R\roperationType\x12>\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xdb\x01\n" +
+	"\vJobMetadata\x12\x1b\n" +
+	"\x06job_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x05jobId\x12A\n" +
+	"\x06status\x18\x02 \x01(\v2#.google.cloud.dataproc.v1.JobStatusB\x04\xe2A\x01\x03R\x06status\x12+\n" +
+	"\x0eoperation_type\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\roperationType\x12?\n" +
 	"\n" +
-	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\"l\n" +
-	"\rGetJobRequest\x12\"\n" +
+	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\"o\n" +
+	"\rGetJobRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1b\n" +
-	"\x06region\x18\x03 \x01(\tB\x03\xe0A\x02R\x06region\x12\x1a\n" +
-	"\x06job_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x05jobId\"\x81\x03\n" +
-	"\x0fListJobsRequest\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1c\n" +
+	"\x06region\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x1b\n" +
+	"\x06job_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05jobId\"\x88\x03\n" +
+	"\x0fListJobsRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1b\n" +
-	"\x06region\x18\x06 \x01(\tB\x03\xe0A\x02R\x06region\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1c\n" +
+	"\x06region\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\x06region\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12&\n" +
-	"\fcluster_name\x18\x04 \x01(\tB\x03\xe0A\x01R\vclusterName\x12j\n" +
-	"\x11job_state_matcher\x18\x05 \x01(\x0e29.google.cloud.dataproc.v1.ListJobsRequest.JobStateMatcherB\x03\xe0A\x01R\x0fjobStateMatcher\x12\x1b\n" +
-	"\x06filter\x18\a \x01(\tB\x03\xe0A\x01R\x06filter\"6\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12'\n" +
+	"\fcluster_name\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vclusterName\x12k\n" +
+	"\x11job_state_matcher\x18\x05 \x01(\x0e29.google.cloud.dataproc.v1.ListJobsRequest.JobStateMatcherB\x04\xe2A\x01\x01R\x0fjobStateMatcher\x12\x1c\n" +
+	"\x06filter\x18\a \x01(\tB\x04\xe2A\x01\x01R\x06filter\"6\n" +
 	"\x0fJobStateMatcher\x12\a\n" +
 	"\x03ALL\x10\x00\x12\n" +
 	"\n" +
 	"\x06ACTIVE\x10\x01\x12\x0e\n" +
 	"\n" +
-	"NON_ACTIVE\x10\x02\"\xe7\x01\n" +
-	"\x10UpdateJobRequest\x12\"\n" +
+	"NON_ACTIVE\x10\x02\"\xec\x01\n" +
+	"\x10UpdateJobRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1b\n" +
-	"\x06region\x18\x02 \x01(\tB\x03\xe0A\x02R\x06region\x12\x1a\n" +
-	"\x06job_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x05jobId\x124\n" +
-	"\x03job\x18\x04 \x01(\v2\x1d.google.cloud.dataproc.v1.JobB\x03\xe0A\x02R\x03job\x12@\n" +
-	"\vupdate_mask\x18\x05 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\x9e\x01\n" +
-	"\x10ListJobsResponse\x126\n" +
-	"\x04jobs\x18\x01 \x03(\v2\x1d.google.cloud.dataproc.v1.JobB\x03\xe0A\x03R\x04jobs\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x03R\vunreachable\"o\n" +
-	"\x10CancelJobRequest\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1c\n" +
+	"\x06region\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x1b\n" +
+	"\x06job_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x05jobId\x125\n" +
+	"\x03job\x18\x04 \x01(\v2\x1d.google.cloud.dataproc.v1.JobB\x04\xe2A\x01\x02R\x03job\x12A\n" +
+	"\vupdate_mask\x18\x05 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xa1\x01\n" +
+	"\x10ListJobsResponse\x127\n" +
+	"\x04jobs\x18\x01 \x03(\v2\x1d.google.cloud.dataproc.v1.JobB\x04\xe2A\x01\x03R\x04jobs\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\vunreachable\"r\n" +
+	"\x10CancelJobRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1b\n" +
-	"\x06region\x18\x03 \x01(\tB\x03\xe0A\x02R\x06region\x12\x1a\n" +
-	"\x06job_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x05jobId\"o\n" +
-	"\x10DeleteJobRequest\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1c\n" +
+	"\x06region\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x1b\n" +
+	"\x06job_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05jobId\"r\n" +
+	"\x10DeleteJobRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1b\n" +
-	"\x06region\x18\x03 \x01(\tB\x03\xe0A\x02R\x06region\x12\x1a\n" +
-	"\x06job_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x05jobId2\xfc\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12\x1c\n" +
+	"\x06region\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06region\x12\x1b\n" +
+	"\x06job_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05jobId2\xfc\n" +
 	"\n" +
 	"\rJobController\x12\xb1\x01\n" +
 	"\tSubmitJob\x12*.google.cloud.dataproc.v1.SubmitJobRequest\x1a\x1d.google.cloud.dataproc.v1.Job\"Y\xdaA\x15project_id,region,job\x82\xd3\xe4\x93\x02;:\x01*\"6/v1/projects/{project_id}/regions/{region}/jobs:submit\x12\xde\x01\n" +

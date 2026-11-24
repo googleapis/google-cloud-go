@@ -2217,89 +2217,89 @@ var File_google_cloud_vision_v1_product_search_service_proto protoreflect.FileDe
 
 const file_google_cloud_vision_v1_product_search_service_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/vision/v1/product_search_service.proto\x12\x16google.cloud.vision.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/cloud/vision/v1/geometry.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xf7\x02\n" +
+	"3google/cloud/vision/v1/product_search_service.proto\x12\x16google.cloud.vision.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/cloud/vision/v1/geometry.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xf8\x02\n" +
 	"\aProduct\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12 \n" +
-	"\vdescription\x18\x03 \x01(\tR\vdescription\x12.\n" +
-	"\x10product_category\x18\x04 \x01(\tB\x03\xe0A\x05R\x0fproductCategory\x12O\n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x12/\n" +
+	"\x10product_category\x18\x04 \x01(\tB\x04\xe2A\x01\x05R\x0fproductCategory\x12O\n" +
 	"\x0eproduct_labels\x18\x05 \x03(\v2(.google.cloud.vision.v1.Product.KeyValueR\rproductLabels\x1a2\n" +
 	"\bKeyValue\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:^\xeaA[\n" +
-	"\x1dvision.googleapis.com/Product\x12:projects/{project}/locations/{location}/products/{product}\"\xa7\x02\n" +
+	"\x1dvision.googleapis.com/Product\x12:projects/{project}/locations/{location}/products/{product}\"\xa9\x02\n" +
 	"\n" +
 	"ProductSet\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12>\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12?\n" +
 	"\n" +
-	"index_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tindexTime\x128\n" +
-	"\vindex_error\x18\x04 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\n" +
+	"index_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tindexTime\x129\n" +
+	"\vindex_error\x18\x04 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\n" +
 	"indexError:h\xeaAe\n" +
-	" vision.googleapis.com/ProductSet\x12Aprojects/{project}/locations/{location}/productSets/{product_set}\"\x98\x02\n" +
+	" vision.googleapis.com/ProductSet\x12Aprojects/{project}/locations/{location}/productSets/{product_set}\"\x9a\x02\n" +
 	"\x0eReferenceImage\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x15\n" +
-	"\x03uri\x18\x02 \x01(\tB\x03\xe0A\x02R\x03uri\x12P\n" +
-	"\x0ebounding_polys\x18\x03 \x03(\v2$.google.cloud.vision.v1.BoundingPolyB\x03\xe0A\x01R\rboundingPolys:\x88\x01\xeaA\x84\x01\n" +
-	"$vision.googleapis.com/ReferenceImage\x12\\projects/{project}/locations/{location}/products/{product}/referenceImages/{reference_image}\"\xb8\x01\n" +
-	"\x14CreateProductRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12>\n" +
-	"\aproduct\x18\x02 \x01(\v2\x1f.google.cloud.vision.v1.ProductB\x03\xe0A\x02R\aproduct\x12\x1d\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n" +
+	"\x03uri\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12Q\n" +
+	"\x0ebounding_polys\x18\x03 \x03(\v2$.google.cloud.vision.v1.BoundingPolyB\x04\xe2A\x01\x01R\rboundingPolys:\x88\x01\xeaA\x84\x01\n" +
+	"$vision.googleapis.com/ReferenceImage\x12\\projects/{project}/locations/{location}/products/{product}/referenceImages/{reference_image}\"\xba\x01\n" +
+	"\x14CreateProductRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12?\n" +
+	"\aproduct\x18\x02 \x01(\v2\x1f.google.cloud.vision.v1.ProductB\x04\xe2A\x01\x02R\aproduct\x12\x1d\n" +
 	"\n" +
-	"product_id\x18\x03 \x01(\tR\tproductId\"\x94\x01\n" +
-	"\x13ListProductsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"product_id\x18\x03 \x01(\tR\tproductId\"\x95\x01\n" +
+	"\x13ListProductsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"{\n" +
 	"\x14ListProductsResponse\x12;\n" +
 	"\bproducts\x18\x01 \x03(\v2\x1f.google.cloud.vision.v1.ProductR\bproducts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"N\n" +
-	"\x11GetProductRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dvision.googleapis.com/ProductR\x04name\"\x93\x01\n" +
-	"\x14UpdateProductRequest\x12>\n" +
-	"\aproduct\x18\x01 \x01(\v2\x1f.google.cloud.vision.v1.ProductB\x03\xe0A\x02R\aproduct\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"O\n" +
+	"\x11GetProductRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dvision.googleapis.com/ProductR\x04name\"\x94\x01\n" +
+	"\x14UpdateProductRequest\x12?\n" +
+	"\aproduct\x18\x01 \x01(\v2\x1f.google.cloud.vision.v1.ProductB\x04\xe2A\x01\x02R\aproduct\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"Q\n" +
-	"\x14DeleteProductRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dvision.googleapis.com/ProductR\x04name\"\xcc\x01\n" +
-	"\x17CreateProductSetRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12H\n" +
-	"\vproduct_set\x18\x02 \x01(\v2\".google.cloud.vision.v1.ProductSetB\x03\xe0A\x02R\n" +
+	"updateMask\"R\n" +
+	"\x14DeleteProductRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dvision.googleapis.com/ProductR\x04name\"\xce\x01\n" +
+	"\x17CreateProductSetRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12I\n" +
+	"\vproduct_set\x18\x02 \x01(\v2\".google.cloud.vision.v1.ProductSetB\x04\xe2A\x01\x02R\n" +
 	"productSet\x12$\n" +
-	"\x0eproduct_set_id\x18\x03 \x01(\tR\fproductSetId\"\x97\x01\n" +
-	"\x16ListProductSetsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x0eproduct_set_id\x18\x03 \x01(\tR\fproductSetId\"\x98\x01\n" +
+	"\x16ListProductSetsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x88\x01\n" +
 	"\x17ListProductSetsResponse\x12E\n" +
 	"\fproduct_sets\x18\x01 \x03(\v2\".google.cloud.vision.v1.ProductSetR\vproductSets\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"T\n" +
-	"\x14GetProductSetRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" vision.googleapis.com/ProductSetR\x04name\"\xa0\x01\n" +
-	"\x17UpdateProductSetRequest\x12H\n" +
-	"\vproduct_set\x18\x01 \x01(\v2\".google.cloud.vision.v1.ProductSetB\x03\xe0A\x02R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"U\n" +
+	"\x14GetProductSetRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" vision.googleapis.com/ProductSetR\x04name\"\xa1\x01\n" +
+	"\x17UpdateProductSetRequest\x12I\n" +
+	"\vproduct_set\x18\x01 \x01(\v2\".google.cloud.vision.v1.ProductSetB\x04\xe2A\x01\x02R\n" +
 	"productSet\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"W\n" +
-	"\x17DeleteProductSetRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" vision.googleapis.com/ProductSetR\x04name\"\xe0\x01\n" +
-	"\x1bCreateReferenceImageRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dvision.googleapis.com/ProductR\x06parent\x12T\n" +
-	"\x0freference_image\x18\x02 \x01(\v2&.google.cloud.vision.v1.ReferenceImageB\x03\xe0A\x02R\x0ereferenceImage\x12,\n" +
-	"\x12reference_image_id\x18\x03 \x01(\tR\x10referenceImageId\"\x97\x01\n" +
-	"\x1aListReferenceImagesRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"updateMask\"X\n" +
+	"\x17DeleteProductSetRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" vision.googleapis.com/ProductSetR\x04name\"\xe2\x01\n" +
+	"\x1bCreateReferenceImageRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dvision.googleapis.com/ProductR\x06parent\x12U\n" +
+	"\x0freference_image\x18\x02 \x01(\v2&.google.cloud.vision.v1.ReferenceImageB\x04\xe2A\x01\x02R\x0ereferenceImage\x12,\n" +
+	"\x12reference_image_id\x18\x03 \x01(\tR\x10referenceImageId\"\x98\x01\n" +
+	"\x1aListReferenceImagesRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dvision.googleapis.com/ProductR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -2307,25 +2307,25 @@ const file_google_cloud_vision_v1_product_search_service_proto_rawDesc = "" +
 	"\x1bListReferenceImagesResponse\x12Q\n" +
 	"\x10reference_images\x18\x01 \x03(\v2&.google.cloud.vision.v1.ReferenceImageR\x0freferenceImages\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12&\n" +
-	"\x0fnext_page_token\x18\x03 \x01(\tR\rnextPageToken\"\\\n" +
-	"\x18GetReferenceImageRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$vision.googleapis.com/ReferenceImageR\x04name\"_\n" +
-	"\x1bDeleteReferenceImageRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$vision.googleapis.com/ReferenceImageR\x04name\"\x9e\x01\n" +
-	"\x1dAddProductToProductSetRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" vision.googleapis.com/ProductSetR\x04name\x12?\n" +
-	"\aproduct\x18\x02 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dvision.googleapis.com/ProductR\aproduct\"\xa3\x01\n" +
-	"\"RemoveProductFromProductSetRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" vision.googleapis.com/ProductSetR\x04name\x12?\n" +
-	"\aproduct\x18\x02 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dvision.googleapis.com/ProductR\aproduct\"\x9b\x01\n" +
-	"\x1fListProductsInProductSetRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"\x0fnext_page_token\x18\x03 \x01(\tR\rnextPageToken\"]\n" +
+	"\x18GetReferenceImageRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$vision.googleapis.com/ReferenceImageR\x04name\"`\n" +
+	"\x1bDeleteReferenceImageRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$vision.googleapis.com/ReferenceImageR\x04name\"\xa0\x01\n" +
+	"\x1dAddProductToProductSetRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" vision.googleapis.com/ProductSetR\x04name\x12@\n" +
+	"\aproduct\x18\x02 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dvision.googleapis.com/ProductR\aproduct\"\xa5\x01\n" +
+	"\"RemoveProductFromProductSetRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" vision.googleapis.com/ProductSetR\x04name\x12@\n" +
+	"\aproduct\x18\x02 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dvision.googleapis.com/ProductR\aproduct\"\x9c\x01\n" +
+	"\x1fListProductsInProductSetRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" vision.googleapis.com/ProductSetR\x04name\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -2339,11 +2339,11 @@ const file_google_cloud_vision_v1_product_search_service_proto_rawDesc = "" +
 	"\x1cImportProductSetsInputConfig\x12S\n" +
 	"\n" +
 	"gcs_source\x18\x01 \x01(\v22.google.cloud.vision.v1.ImportProductSetsGcsSourceH\x00R\tgcsSourceB\b\n" +
-	"\x06source\"\xbb\x01\n" +
-	"\x18ImportProductSetsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\\\n" +
-	"\finput_config\x18\x02 \x01(\v24.google.cloud.vision.v1.ImportProductSetsInputConfigB\x03\xe0A\x02R\vinputConfig\"\x9e\x01\n" +
+	"\x06source\"\xbd\x01\n" +
+	"\x18ImportProductSetsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12]\n" +
+	"\finput_config\x18\x02 \x01(\v24.google.cloud.vision.v1.ImportProductSetsInputConfigB\x04\xe2A\x01\x02R\vinputConfig\"\x9e\x01\n" +
 	"\x19ImportProductSetsResponse\x12Q\n" +
 	"\x10reference_images\x18\x01 \x03(\v2&.google.cloud.vision.v1.ReferenceImageR\x0freferenceImages\x12.\n" +
 	"\bstatuses\x18\x02 \x03(\v2\x12.google.rpc.StatusR\bstatuses\"\xb3\x02\n" +
@@ -2362,11 +2362,11 @@ const file_google_cloud_vision_v1_product_search_service_proto_rawDesc = "" +
 	"\x06FAILED\x10\x03\x12\r\n" +
 	"\tCANCELLED\x10\x04\"=\n" +
 	"\x15ProductSetPurgeConfig\x12$\n" +
-	"\x0eproduct_set_id\x18\x01 \x01(\tR\fproductSetId\"\x9b\x02\n" +
+	"\x0eproduct_set_id\x18\x01 \x01(\tR\fproductSetId\"\x9c\x02\n" +
 	"\x14PurgeProductsRequest\x12h\n" +
 	"\x18product_set_purge_config\x18\x02 \x01(\v2-.google.cloud.vision.v1.ProductSetPurgeConfigH\x00R\x15productSetPurgeConfig\x126\n" +
-	"\x16delete_orphan_products\x18\x03 \x01(\bH\x00R\x14deleteOrphanProducts\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x16delete_orphan_products\x18\x03 \x01(\bH\x00R\x14deleteOrphanProducts\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x14\n" +
 	"\x05force\x18\x04 \x01(\bR\x05forceB\b\n" +
 	"\x06target2\xf4\x1d\n" +

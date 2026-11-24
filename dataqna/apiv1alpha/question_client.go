@@ -313,6 +313,41 @@ func NewQuestionClient(ctx context.Context, opts ...option.ClientOption) (*Quest
 		client.CallOptions.GetUserFeedback = append(client.CallOptions.GetUserFeedback, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateUserFeedback = append(client.CallOptions.UpdateUserFeedback, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dataqna",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataqna/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataqna.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetQuestion = append(client.CallOptions.GetQuestion, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateQuestion = append(client.CallOptions.CreateQuestion, gax.WithClientTracing(tracing))
+		client.CallOptions.ExecuteQuestion = append(client.CallOptions.ExecuteQuestion, gax.WithClientTracing(tracing))
+		client.CallOptions.GetUserFeedback = append(client.CallOptions.GetUserFeedback, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateUserFeedback = append(client.CallOptions.UpdateUserFeedback, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dataqna",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataqna/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataqna.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetQuestion = append(client.CallOptions.GetQuestion, gax.WithClientLogging(logging))
+		client.CallOptions.CreateQuestion = append(client.CallOptions.CreateQuestion, gax.WithClientLogging(logging))
+		client.CallOptions.ExecuteQuestion = append(client.CallOptions.ExecuteQuestion, gax.WithClientLogging(logging))
+		client.CallOptions.GetUserFeedback = append(client.CallOptions.GetUserFeedback, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateUserFeedback = append(client.CallOptions.UpdateUserFeedback, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -422,6 +457,41 @@ func NewQuestionRESTClient(ctx context.Context, opts ...option.ClientOption) (*Q
 		callOpts.GetUserFeedback = append(callOpts.GetUserFeedback, gax.WithClientMetrics(metrics))
 		callOpts.UpdateUserFeedback = append(callOpts.UpdateUserFeedback, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dataqna",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataqna/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataqna.googleapis.com",
+			}),
+		)
+
+		callOpts.GetQuestion = append(callOpts.GetQuestion, gax.WithClientTracing(tracing))
+		callOpts.CreateQuestion = append(callOpts.CreateQuestion, gax.WithClientTracing(tracing))
+		callOpts.ExecuteQuestion = append(callOpts.ExecuteQuestion, gax.WithClientTracing(tracing))
+		callOpts.GetUserFeedback = append(callOpts.GetUserFeedback, gax.WithClientTracing(tracing))
+		callOpts.UpdateUserFeedback = append(callOpts.UpdateUserFeedback, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dataqna",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataqna/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataqna.googleapis.com",
+			}),
+		)
+
+		callOpts.GetQuestion = append(callOpts.GetQuestion, gax.WithClientLogging(logging))
+		callOpts.CreateQuestion = append(callOpts.CreateQuestion, gax.WithClientLogging(logging))
+		callOpts.ExecuteQuestion = append(callOpts.ExecuteQuestion, gax.WithClientLogging(logging))
+		callOpts.GetUserFeedback = append(callOpts.GetUserFeedback, gax.WithClientLogging(logging))
+		callOpts.UpdateUserFeedback = append(callOpts.UpdateUserFeedback, gax.WithClientLogging(logging))
+	}
 
 	return &QuestionClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -468,9 +538,6 @@ func (c *questionGRPCClient) GetQuestion(ctx context.Context, req *dataqnapb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataqna.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataqna.v1alpha.QuestionService/GetQuestion")
 	}
@@ -492,9 +559,6 @@ func (c *questionGRPCClient) CreateQuestion(ctx context.Context, req *dataqnapb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataqna.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataqna.v1alpha.QuestionService/CreateQuestion")
 	}
@@ -537,9 +601,6 @@ func (c *questionGRPCClient) GetUserFeedback(ctx context.Context, req *dataqnapb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataqna.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataqna.v1alpha.QuestionService/GetUserFeedback")
 	}
@@ -583,6 +644,11 @@ func (c *questionRESTClient) GetQuestion(ctx context.Context, req *dataqnapb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -602,9 +668,6 @@ func (c *questionRESTClient) GetQuestion(ctx context.Context, req *dataqnapb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataqna.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataqna.v1alpha.QuestionService/GetQuestion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=projects/*/locations/*/questions/*}")
@@ -653,6 +716,11 @@ func (c *questionRESTClient) CreateQuestion(ctx context.Context, req *dataqnapb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/questions", req.GetParent())
 
 	// Build HTTP headers from client and context metadata.
@@ -661,9 +729,6 @@ func (c *questionRESTClient) CreateQuestion(ctx context.Context, req *dataqnapb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataqna.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataqna.v1alpha.QuestionService/CreateQuestion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=projects/*/locations/*}/questions")
@@ -709,6 +774,11 @@ func (c *questionRESTClient) ExecuteQuestion(ctx context.Context, req *dataqnapb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:execute", req.GetName())
@@ -760,6 +830,11 @@ func (c *questionRESTClient) GetUserFeedback(ctx context.Context, req *dataqnapb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -768,9 +843,6 @@ func (c *questionRESTClient) GetUserFeedback(ctx context.Context, req *dataqnapb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataqna.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataqna.v1alpha.QuestionService/GetUserFeedback")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=projects/*/locations/*/questions/*/userFeedback}")
@@ -818,6 +890,11 @@ func (c *questionRESTClient) UpdateUserFeedback(ctx context.Context, req *dataqn
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetUserFeedback().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetUserFeedback().GetName())

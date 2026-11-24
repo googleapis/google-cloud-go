@@ -126,12 +126,12 @@ var File_google_cloud_securitycenter_settings_v1beta1_detector_proto protoreflec
 
 const file_google_cloud_securitycenter_settings_v1beta1_detector_proto_rawDesc = "" +
 	"\n" +
-	";google/cloud/securitycenter/settings/v1beta1/detector.proto\x12,google.cloud.securitycenter.settings.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1aCgoogle/cloud/securitycenter/settings/v1beta1/billing_settings.proto\"\xdf\x01\n" +
-	"\bDetector\x12\x1f\n" +
-	"\bdetector\x18\x01 \x01(\tB\x03\xe0A\x03R\bdetector\x12!\n" +
-	"\tcomponent\x18\x02 \x01(\tB\x03\xe0A\x03R\tcomponent\x12a\n" +
-	"\fbilling_tier\x18\x03 \x01(\x0e29.google.cloud.securitycenter.settings.v1beta1.BillingTierB\x03\xe0A\x03R\vbillingTier\x12,\n" +
-	"\x0fdetector_labels\x18\x04 \x03(\tB\x03\xe0A\x03R\x0edetectorLabelsB\xa6\x02\n" +
+	";google/cloud/securitycenter/settings/v1beta1/detector.proto\x12,google.cloud.securitycenter.settings.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1aCgoogle/cloud/securitycenter/settings/v1beta1/billing_settings.proto\"\xe3\x01\n" +
+	"\bDetector\x12 \n" +
+	"\bdetector\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\bdetector\x12\"\n" +
+	"\tcomponent\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\tcomponent\x12b\n" +
+	"\fbilling_tier\x18\x03 \x01(\x0e29.google.cloud.securitycenter.settings.v1beta1.BillingTierB\x04\xe2A\x01\x03R\vbillingTier\x12-\n" +
+	"\x0fdetector_labels\x18\x04 \x03(\tB\x04\xe2A\x01\x03R\x0edetectorLabelsB\xa6\x02\n" +
 	"0com.google.cloud.securitycenter.settings.v1beta1B\x0eDetectorsProtoP\x01ZLcloud.google.com/go/securitycenter/settings/apiv1beta1/settingspb;settingspb\xf8\x01\x01\xaa\x02,Google.Cloud.SecurityCenter.Settings.V1Beta1\xca\x02,Google\\Cloud\\SecurityCenter\\Settings\\V1beta1\xea\x020Google::Cloud::SecurityCenter::Settings::V1beta1b\x06proto3"
 
 var (

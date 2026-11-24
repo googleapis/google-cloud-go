@@ -250,6 +250,35 @@ func NewLfpProvidersClient(ctx context.Context, opts ...option.ClientOption) (*L
 		client.CallOptions.FindLfpProviders = append(client.CallOptions.FindLfpProviders, gax.WithClientMetrics(metrics))
 		client.CallOptions.LinkLfpProvider = append(client.CallOptions.LinkLfpProvider, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.FindLfpProviders = append(client.CallOptions.FindLfpProviders, gax.WithClientTracing(tracing))
+		client.CallOptions.LinkLfpProvider = append(client.CallOptions.LinkLfpProvider, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.FindLfpProviders = append(client.CallOptions.FindLfpProviders, gax.WithClientLogging(logging))
+		client.CallOptions.LinkLfpProvider = append(client.CallOptions.LinkLfpProvider, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -345,6 +374,35 @@ func NewLfpProvidersRESTClient(ctx context.Context, opts ...option.ClientOption)
 		callOpts.FindLfpProviders = append(callOpts.FindLfpProviders, gax.WithClientMetrics(metrics))
 		callOpts.LinkLfpProvider = append(callOpts.LinkLfpProvider, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.FindLfpProviders = append(callOpts.FindLfpProviders, gax.WithClientTracing(tracing))
+		callOpts.LinkLfpProvider = append(callOpts.LinkLfpProvider, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.FindLfpProviders = append(callOpts.FindLfpProviders, gax.WithClientLogging(logging))
+		callOpts.LinkLfpProvider = append(callOpts.LinkLfpProvider, gax.WithClientLogging(logging))
+	}
 
 	return &LfpProvidersClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -391,9 +449,6 @@ func (c *lfpProvidersGRPCClient) FindLfpProviders(ctx context.Context, req *acco
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.LfpProvidersService/FindLfpProviders")
 	}
@@ -443,9 +498,6 @@ func (c *lfpProvidersGRPCClient) LinkLfpProvider(ctx context.Context, req *accou
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.LfpProvidersService/LinkLfpProvider")
 	}
@@ -479,6 +531,11 @@ func (c *lfpProvidersRESTClient) FindLfpProviders(ctx context.Context, req *acco
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v/lfpProviders:find", req.GetParent())
@@ -552,6 +609,11 @@ func (c *lfpProvidersRESTClient) LinkLfpProvider(ctx context.Context, req *accou
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v:linkLfpProvider", req.GetName())
 
 	params := url.Values{}
@@ -565,9 +627,6 @@ func (c *lfpProvidersRESTClient) LinkLfpProvider(ctx context.Context, req *accou
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.LfpProvidersService/LinkLfpProvider")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{name=accounts/*/omnichannelSettings/*/lfpProviders/*}:linkLfpProvider")

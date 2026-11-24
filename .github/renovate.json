@@ -5,7 +5,7 @@
         ":disableDependencyDashboard",
         "docker:disable"
     ],
-    "semanticCommits": false,
+    "semanticCommits": "disabled",
     "postUpdateOptions": [
         "gomodTidy"
     ],
@@ -16,17 +16,25 @@
         "google.golang.org/genproto"
     ],
     "ignorePaths": [
-        "**/snippets/**"
+        ".github/workflows/librarian_tidy.yml",
+        ".github/workflows/generation_check.yaml",
+	".github/workflows/vet.yml"
     ],
     "packageRules": [
+    	{
+   	    "description": "prevent go version upgrades",
+      	    "matchManagers": ["gomod"],
+            "constraintsFiltering": "strict"
+    	},
         {
-            "matchPackagePatterns": [
-                "^github.com/google/go-github/v",
-                "^github.com/apache/arrow/go/v",
-                "^github.com/cloudprober/cloudprober",
-                "^go.einride.tech/aip"
-            ],
-            "enabled": false
+            "enabled": false,
+            "matchPackageNames": [
+                "/^github.com/google/go-github/v/",
+                "/^github.com/apache/arrow/go/v/",
+                "/^github.com/cloudprober/cloudprober/",
+                "/^github.com/planetscale/vtprotobuf/",
+                "/^go.einride.tech/aip/"
+            ]
         },
         {
           "matchPackageNames": ["cloud.google.com/go/pubsub"],
@@ -40,11 +48,7 @@
     },
     "force": {
         "constraints": {
-            "go": "1.25"
+            "go": "1.26"
         }
-    },
-    "baseBranchPatterns": [
-        "main",
-        "preview"
-    ]
+    }
 }

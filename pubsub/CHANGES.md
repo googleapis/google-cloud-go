@@ -1,5 +1,31 @@
 # Changes
 
+## [1.52.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.51.1...pubsub/v1.52.0) (2026-11-04)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+
+### Bug Fixes
+
+* Adds additional validation for REST RPC requests ([#20753](https://github.com/googleapis/google-cloud-go/issues/20753)) ([7827181](https://github.com/googleapis/google-cloud-go/commit/7827181e7cb653fb69645c538b162b2c7490b0bb))
+
+## [1.51.1](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.51.0...pubsub/v1.51.1) (2026-08-20)
+
+
+### Bug Fixes
+
+* **pubsub:** Update ackID batch size to 1000 ([#20398](https://github.com/googleapis/google-cloud-go/issues/20398)) ([03d5ded](https://github.com/googleapis/google-cloud-go/commit/03d5dede94a1c957216893c8601101f04b7efad0))
+
+## [1.51.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.50.4...pubsub/v1.51.0) (2026-07-15)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
 ## [1.50.4](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.50.3...pubsub/v1.50.4) (2026-07-08)
 
 

@@ -65,6 +65,8 @@ const (
 	OracleDatabase_RestartAutonomousDatabase_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/RestartAutonomousDatabase"
 	OracleDatabase_SwitchoverAutonomousDatabase_FullMethodName                = "/google.cloud.oracledatabase.v1.OracleDatabase/SwitchoverAutonomousDatabase"
 	OracleDatabase_FailoverAutonomousDatabase_FullMethodName                  = "/google.cloud.oracledatabase.v1.OracleDatabase/FailoverAutonomousDatabase"
+	OracleDatabase_RefreshAutonomousDatabase_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/RefreshAutonomousDatabase"
+	OracleDatabase_GetAutonomousDatabaseRefreshableClones_FullMethodName      = "/google.cloud.oracledatabase.v1.OracleDatabase/GetAutonomousDatabaseRefreshableClones"
 	OracleDatabase_ListOdbNetworks_FullMethodName                             = "/google.cloud.oracledatabase.v1.OracleDatabase/ListOdbNetworks"
 	OracleDatabase_GetOdbNetwork_FullMethodName                               = "/google.cloud.oracledatabase.v1.OracleDatabase/GetOdbNetwork"
 	OracleDatabase_CreateOdbNetwork_FullMethodName                            = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbNetwork"
@@ -73,6 +75,10 @@ const (
 	OracleDatabase_GetOdbSubnet_FullMethodName                                = "/google.cloud.oracledatabase.v1.OracleDatabase/GetOdbSubnet"
 	OracleDatabase_CreateOdbSubnet_FullMethodName                             = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbSubnet"
 	OracleDatabase_DeleteOdbSubnet_FullMethodName                             = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbSubnet"
+	OracleDatabase_ListOdbDnsZones_FullMethodName                             = "/google.cloud.oracledatabase.v1.OracleDatabase/ListOdbDnsZones"
+	OracleDatabase_GetOdbDnsZone_FullMethodName                               = "/google.cloud.oracledatabase.v1.OracleDatabase/GetOdbDnsZone"
+	OracleDatabase_CreateOdbDnsZone_FullMethodName                            = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbDnsZone"
+	OracleDatabase_DeleteOdbDnsZone_FullMethodName                            = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbDnsZone"
 	OracleDatabase_ListExadbVmClusters_FullMethodName                         = "/google.cloud.oracledatabase.v1.OracleDatabase/ListExadbVmClusters"
 	OracleDatabase_GetExadbVmCluster_FullMethodName                           = "/google.cloud.oracledatabase.v1.OracleDatabase/GetExadbVmCluster"
 	OracleDatabase_CreateExadbVmCluster_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateExadbVmCluster"
@@ -184,6 +190,10 @@ type OracleDatabaseClient interface {
 	// Initiates a failover to target autonomous database from the associated
 	// primary database.
 	FailoverAutonomousDatabase(ctx context.Context, in *FailoverAutonomousDatabaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Refreshes the refreshable clone of an Autonomous Database.
+	RefreshAutonomousDatabase(ctx context.Context, in *RefreshAutonomousDatabaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Gets the refreshable clones for a given Autonomous Database.
+	GetAutonomousDatabaseRefreshableClones(ctx context.Context, in *GetAutonomousDatabaseRefreshableClonesRequest, opts ...grpc.CallOption) (*AutonomousDatabaseRefreshableClones, error)
 	// Lists the ODB Networks in a given project and location.
 	ListOdbNetworks(ctx context.Context, in *ListOdbNetworksRequest, opts ...grpc.CallOption) (*ListOdbNetworksResponse, error)
 	// Gets details of a single ODB Network.
@@ -200,6 +210,14 @@ type OracleDatabaseClient interface {
 	CreateOdbSubnet(ctx context.Context, in *CreateOdbSubnetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single ODB Subnet.
 	DeleteOdbSubnet(ctx context.Context, in *DeleteOdbSubnetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Lists all the ODB DNS Zones in a given ODB Network.
+	ListOdbDnsZones(ctx context.Context, in *ListOdbDnsZonesRequest, opts ...grpc.CallOption) (*ListOdbDnsZonesResponse, error)
+	// Gets details of a single ODB DNS Zone.
+	GetOdbDnsZone(ctx context.Context, in *GetOdbDnsZoneRequest, opts ...grpc.CallOption) (*OdbDnsZone, error)
+	// Creates a new ODB DNS Zone in a given ODB Network.
+	CreateOdbDnsZone(ctx context.Context, in *CreateOdbDnsZoneRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deletes a single ODB DNS Zone.
+	DeleteOdbDnsZone(ctx context.Context, in *DeleteOdbDnsZoneRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists all the Exadb (Exascale) VM Clusters for the given project and
 	// location.
 	ListExadbVmClusters(ctx context.Context, in *ListExadbVmClustersRequest, opts ...grpc.CallOption) (*ListExadbVmClustersResponse, error)
@@ -566,6 +584,24 @@ func (c *oracleDatabaseClient) FailoverAutonomousDatabase(ctx context.Context, i
 	return out, nil
 }
 
+func (c *oracleDatabaseClient) RefreshAutonomousDatabase(ctx context.Context, in *RefreshAutonomousDatabaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_RefreshAutonomousDatabase_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) GetAutonomousDatabaseRefreshableClones(ctx context.Context, in *GetAutonomousDatabaseRefreshableClonesRequest, opts ...grpc.CallOption) (*AutonomousDatabaseRefreshableClones, error) {
+	out := new(AutonomousDatabaseRefreshableClones)
+	err := c.cc.Invoke(ctx, OracleDatabase_GetAutonomousDatabaseRefreshableClones_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *oracleDatabaseClient) ListOdbNetworks(ctx context.Context, in *ListOdbNetworksRequest, opts ...grpc.CallOption) (*ListOdbNetworksResponse, error) {
 	out := new(ListOdbNetworksResponse)
 	err := c.cc.Invoke(ctx, OracleDatabase_ListOdbNetworks_FullMethodName, in, out, opts...)
@@ -632,6 +668,42 @@ func (c *oracleDatabaseClient) CreateOdbSubnet(ctx context.Context, in *CreateOd
 func (c *oracleDatabaseClient) DeleteOdbSubnet(ctx context.Context, in *DeleteOdbSubnetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, OracleDatabase_DeleteOdbSubnet_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) ListOdbDnsZones(ctx context.Context, in *ListOdbDnsZonesRequest, opts ...grpc.CallOption) (*ListOdbDnsZonesResponse, error) {
+	out := new(ListOdbDnsZonesResponse)
+	err := c.cc.Invoke(ctx, OracleDatabase_ListOdbDnsZones_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) GetOdbDnsZone(ctx context.Context, in *GetOdbDnsZoneRequest, opts ...grpc.CallOption) (*OdbDnsZone, error) {
+	out := new(OdbDnsZone)
+	err := c.cc.Invoke(ctx, OracleDatabase_GetOdbDnsZone_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) CreateOdbDnsZone(ctx context.Context, in *CreateOdbDnsZoneRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_CreateOdbDnsZone_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) DeleteOdbDnsZone(ctx context.Context, in *DeleteOdbDnsZoneRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_DeleteOdbDnsZone_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1067,6 +1139,10 @@ type OracleDatabaseServer interface {
 	// Initiates a failover to target autonomous database from the associated
 	// primary database.
 	FailoverAutonomousDatabase(context.Context, *FailoverAutonomousDatabaseRequest) (*longrunningpb.Operation, error)
+	// Refreshes the refreshable clone of an Autonomous Database.
+	RefreshAutonomousDatabase(context.Context, *RefreshAutonomousDatabaseRequest) (*longrunningpb.Operation, error)
+	// Gets the refreshable clones for a given Autonomous Database.
+	GetAutonomousDatabaseRefreshableClones(context.Context, *GetAutonomousDatabaseRefreshableClonesRequest) (*AutonomousDatabaseRefreshableClones, error)
 	// Lists the ODB Networks in a given project and location.
 	ListOdbNetworks(context.Context, *ListOdbNetworksRequest) (*ListOdbNetworksResponse, error)
 	// Gets details of a single ODB Network.
@@ -1083,6 +1159,14 @@ type OracleDatabaseServer interface {
 	CreateOdbSubnet(context.Context, *CreateOdbSubnetRequest) (*longrunningpb.Operation, error)
 	// Deletes a single ODB Subnet.
 	DeleteOdbSubnet(context.Context, *DeleteOdbSubnetRequest) (*longrunningpb.Operation, error)
+	// Lists all the ODB DNS Zones in a given ODB Network.
+	ListOdbDnsZones(context.Context, *ListOdbDnsZonesRequest) (*ListOdbDnsZonesResponse, error)
+	// Gets details of a single ODB DNS Zone.
+	GetOdbDnsZone(context.Context, *GetOdbDnsZoneRequest) (*OdbDnsZone, error)
+	// Creates a new ODB DNS Zone in a given ODB Network.
+	CreateOdbDnsZone(context.Context, *CreateOdbDnsZoneRequest) (*longrunningpb.Operation, error)
+	// Deletes a single ODB DNS Zone.
+	DeleteOdbDnsZone(context.Context, *DeleteOdbDnsZoneRequest) (*longrunningpb.Operation, error)
 	// Lists all the Exadb (Exascale) VM Clusters for the given project and
 	// location.
 	ListExadbVmClusters(context.Context, *ListExadbVmClustersRequest) (*ListExadbVmClustersResponse, error)
@@ -1265,6 +1349,12 @@ func (UnimplementedOracleDatabaseServer) SwitchoverAutonomousDatabase(context.Co
 func (UnimplementedOracleDatabaseServer) FailoverAutonomousDatabase(context.Context, *FailoverAutonomousDatabaseRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FailoverAutonomousDatabase not implemented")
 }
+func (UnimplementedOracleDatabaseServer) RefreshAutonomousDatabase(context.Context, *RefreshAutonomousDatabaseRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RefreshAutonomousDatabase not implemented")
+}
+func (UnimplementedOracleDatabaseServer) GetAutonomousDatabaseRefreshableClones(context.Context, *GetAutonomousDatabaseRefreshableClonesRequest) (*AutonomousDatabaseRefreshableClones, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAutonomousDatabaseRefreshableClones not implemented")
+}
 func (UnimplementedOracleDatabaseServer) ListOdbNetworks(context.Context, *ListOdbNetworksRequest) (*ListOdbNetworksResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListOdbNetworks not implemented")
 }
@@ -1288,6 +1378,18 @@ func (UnimplementedOracleDatabaseServer) CreateOdbSubnet(context.Context, *Creat
 }
 func (UnimplementedOracleDatabaseServer) DeleteOdbSubnet(context.Context, *DeleteOdbSubnetRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteOdbSubnet not implemented")
+}
+func (UnimplementedOracleDatabaseServer) ListOdbDnsZones(context.Context, *ListOdbDnsZonesRequest) (*ListOdbDnsZonesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListOdbDnsZones not implemented")
+}
+func (UnimplementedOracleDatabaseServer) GetOdbDnsZone(context.Context, *GetOdbDnsZoneRequest) (*OdbDnsZone, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOdbDnsZone not implemented")
+}
+func (UnimplementedOracleDatabaseServer) CreateOdbDnsZone(context.Context, *CreateOdbDnsZoneRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateOdbDnsZone not implemented")
+}
+func (UnimplementedOracleDatabaseServer) DeleteOdbDnsZone(context.Context, *DeleteOdbDnsZoneRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteOdbDnsZone not implemented")
 }
 func (UnimplementedOracleDatabaseServer) ListExadbVmClusters(context.Context, *ListExadbVmClustersRequest) (*ListExadbVmClustersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListExadbVmClusters not implemented")
@@ -1961,6 +2063,42 @@ func _OracleDatabase_FailoverAutonomousDatabase_Handler(srv interface{}, ctx con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OracleDatabase_RefreshAutonomousDatabase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RefreshAutonomousDatabaseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).RefreshAutonomousDatabase(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_RefreshAutonomousDatabase_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).RefreshAutonomousDatabase(ctx, req.(*RefreshAutonomousDatabaseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_GetAutonomousDatabaseRefreshableClones_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAutonomousDatabaseRefreshableClonesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).GetAutonomousDatabaseRefreshableClones(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_GetAutonomousDatabaseRefreshableClones_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).GetAutonomousDatabaseRefreshableClones(ctx, req.(*GetAutonomousDatabaseRefreshableClonesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _OracleDatabase_ListOdbNetworks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListOdbNetworksRequest)
 	if err := dec(in); err != nil {
@@ -2101,6 +2239,78 @@ func _OracleDatabase_DeleteOdbSubnet_Handler(srv interface{}, ctx context.Contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OracleDatabaseServer).DeleteOdbSubnet(ctx, req.(*DeleteOdbSubnetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_ListOdbDnsZones_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListOdbDnsZonesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).ListOdbDnsZones(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_ListOdbDnsZones_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).ListOdbDnsZones(ctx, req.(*ListOdbDnsZonesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_GetOdbDnsZone_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetOdbDnsZoneRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).GetOdbDnsZone(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_GetOdbDnsZone_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).GetOdbDnsZone(ctx, req.(*GetOdbDnsZoneRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_CreateOdbDnsZone_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateOdbDnsZoneRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).CreateOdbDnsZone(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_CreateOdbDnsZone_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).CreateOdbDnsZone(ctx, req.(*CreateOdbDnsZoneRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_DeleteOdbDnsZone_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteOdbDnsZoneRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).DeleteOdbDnsZone(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_DeleteOdbDnsZone_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).DeleteOdbDnsZone(ctx, req.(*DeleteOdbDnsZoneRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2953,6 +3163,14 @@ var OracleDatabase_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _OracleDatabase_FailoverAutonomousDatabase_Handler,
 		},
 		{
+			MethodName: "RefreshAutonomousDatabase",
+			Handler:    _OracleDatabase_RefreshAutonomousDatabase_Handler,
+		},
+		{
+			MethodName: "GetAutonomousDatabaseRefreshableClones",
+			Handler:    _OracleDatabase_GetAutonomousDatabaseRefreshableClones_Handler,
+		},
+		{
 			MethodName: "ListOdbNetworks",
 			Handler:    _OracleDatabase_ListOdbNetworks_Handler,
 		},
@@ -2983,6 +3201,22 @@ var OracleDatabase_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteOdbSubnet",
 			Handler:    _OracleDatabase_DeleteOdbSubnet_Handler,
+		},
+		{
+			MethodName: "ListOdbDnsZones",
+			Handler:    _OracleDatabase_ListOdbDnsZones_Handler,
+		},
+		{
+			MethodName: "GetOdbDnsZone",
+			Handler:    _OracleDatabase_GetOdbDnsZone_Handler,
+		},
+		{
+			MethodName: "CreateOdbDnsZone",
+			Handler:    _OracleDatabase_CreateOdbDnsZone_Handler,
+		},
+		{
+			MethodName: "DeleteOdbDnsZone",
+			Handler:    _OracleDatabase_DeleteOdbDnsZone_Handler,
 		},
 		{
 			MethodName: "ListExadbVmClusters",

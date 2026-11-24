@@ -292,18 +292,18 @@ var File_google_cloud_securitycenter_settings_v1beta1_settings_proto protoreflec
 
 const file_google_cloud_securitycenter_settings_v1beta1_settings_proto_rawDesc = "" +
 	"\n" +
-	";google/cloud/securitycenter/settings/v1beta1/settings.proto\x12,google.cloud.securitycenter.settings.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aCgoogle/cloud/securitycenter/settings/v1beta1/billing_settings.proto\x1aEgoogle/cloud/securitycenter/settings/v1beta1/component_settings.proto\x1a@google/cloud/securitycenter/settings/v1beta1/sink_settings.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfd\f\n" +
+	";google/cloud/securitycenter/settings/v1beta1/settings.proto\x12,google.cloud.securitycenter.settings.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aCgoogle/cloud/securitycenter/settings/v1beta1/billing_settings.proto\x1aEgoogle/cloud/securitycenter/settings/v1beta1/component_settings.proto\x1a@google/cloud/securitycenter/settings/v1beta1/sink_settings.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xff\f\n" +
 	"\bSettings\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12h\n" +
 	"\x10billing_settings\x18\x02 \x01(\v2=.google.cloud.securitycenter.settings.v1beta1.BillingSettingsR\x0fbillingSettings\x12\\\n" +
-	"\x05state\x18\x03 \x01(\x0e2F.google.cloud.securitycenter.settings.v1beta1.Settings.OnboardingStateR\x05state\x123\n" +
-	"\x13org_service_account\x18\x05 \x01(\tB\x03\xe0A\x03R\x11orgServiceAccount\x12_\n" +
+	"\x05state\x18\x03 \x01(\x0e2F.google.cloud.securitycenter.settings.v1beta1.Settings.OnboardingStateR\x05state\x124\n" +
+	"\x13org_service_account\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x11orgServiceAccount\x12_\n" +
 	"\rsink_settings\x18\x06 \x01(\v2:.google.cloud.securitycenter.settings.v1beta1.SinkSettingsR\fsinkSettings\x12|\n" +
 	"\x12component_settings\x18\a \x03(\v2M.google.cloud.securitycenter.settings.v1beta1.Settings.ComponentSettingsEntryR\x11componentSettings\x12\x89\x01\n" +
 	"\x17detector_group_settings\x18\b \x03(\v2Q.google.cloud.securitycenter.settings.v1beta1.Settings.DetectorGroupSettingsEntryR\x15detectorGroupSettings\x12\x12\n" +
-	"\x04etag\x18\t \x01(\tR\x04etag\x12@\n" +
+	"\x04etag\x18\t \x01(\tR\x04etag\x12A\n" +
 	"\vupdate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x1au\n" +
 	"\x15DetectorGroupSettings\x12\\\n" +
 	"\x05state\x18\x01 \x01(\x0e2F.google.cloud.securitycenter.settings.v1beta1.ComponentEnablementStateR\x05state\x1a\x85\x01\n" +

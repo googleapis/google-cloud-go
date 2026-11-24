@@ -6608,94 +6608,94 @@ var File_google_cloud_apihub_v1_common_fields_proto protoreflect.FileDescriptor
 
 const file_google_cloud_apihub_v1_common_fields_proto_rawDesc = "" +
 	"\n" +
-	"*google/cloud/apihub/v1/common_fields.proto\x12\x16google.cloud.apihub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdf\f\n" +
-	"\x03Api\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12P\n" +
-	"\rdocumentation\x18\x04 \x01(\v2%.google.cloud.apihub.v1.DocumentationB\x03\xe0A\x01R\rdocumentation\x128\n" +
-	"\x05owner\x18\x05 \x01(\v2\x1d.google.cloud.apihub.v1.OwnerB\x03\xe0A\x01R\x05owner\x12A\n" +
-	"\bversions\x18\x06 \x03(\tB%\xe0A\x03\xfaA\x1f\n" +
-	"\x1dapihub.googleapis.com/VersionR\bversions\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12M\n" +
-	"\vtarget_user\x18\t \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x03\xe0A\x01R\n" +
-	"targetUser\x12@\n" +
+	"*google/cloud/apihub/v1/common_fields.proto\x12\x16google.cloud.apihub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf3\f\n" +
+	"\x03Api\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12Q\n" +
+	"\rdocumentation\x18\x04 \x01(\v2%.google.cloud.apihub.v1.DocumentationB\x04\xe2A\x01\x01R\rdocumentation\x129\n" +
+	"\x05owner\x18\x05 \x01(\v2\x1d.google.cloud.apihub.v1.OwnerB\x04\xe2A\x01\x01R\x05owner\x12B\n" +
+	"\bversions\x18\x06 \x03(\tB&\xe2A\x01\x03\xfaA\x1f\n" +
+	"\x1dapihub.googleapis.com/VersionR\bversions\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12N\n" +
+	"\vtarget_user\x18\t \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x04\xe2A\x01\x01R\n" +
+	"targetUser\x12A\n" +
 	"\x04team\x18\n" +
-	" \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x03\xe0A\x01R\x04team\x12Q\n" +
-	"\rbusiness_unit\x18\v \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x03\xe0A\x01R\fbusinessUnit\x12S\n" +
-	"\x0ematurity_level\x18\f \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x03\xe0A\x01R\rmaturityLevel\x12P\n" +
+	" \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x04\xe2A\x01\x01R\x04team\x12R\n" +
+	"\rbusiness_unit\x18\v \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x04\xe2A\x01\x01R\fbusinessUnit\x12T\n" +
+	"\x0ematurity_level\x18\f \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x04\xe2A\x01\x01R\rmaturityLevel\x12Q\n" +
 	"\n" +
-	"attributes\x18\r \x03(\v2+.google.cloud.apihub.v1.Api.AttributesEntryB\x03\xe0A\x01R\n" +
-	"attributes\x12I\n" +
-	"\tapi_style\x18\x0e \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x03\xe0A\x01R\bapiStyle\x12P\n" +
-	"\x10selected_version\x18\x0f \x01(\tB%\xe0A\x01\xfaA\x1f\n" +
-	"\x1dapihub.googleapis.com/VersionR\x0fselectedVersion\x12W\n" +
-	"\x10api_requirements\x18\x10 \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x03\xe0A\x01R\x0fapiRequirements\x12%\n" +
-	"\vfingerprint\x18\x11 \x01(\tB\x03\xe0A\x01R\vfingerprint\x12T\n" +
-	"\x0fsource_metadata\x18\x12 \x03(\v2&.google.cloud.apihub.v1.SourceMetadataB\x03\xe0A\x03R\x0esourceMetadata\x12l\n" +
-	"\x1bapi_functional_requirements\x18\x13 \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x03\xe0A\x01R\x19apiFunctionalRequirements\x12j\n" +
-	"\x1aapi_technical_requirements\x18\x14 \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x03\xe0A\x01R\x18apiTechnicalRequirements\x1af\n" +
+	"attributes\x18\r \x03(\v2+.google.cloud.apihub.v1.Api.AttributesEntryB\x04\xe2A\x01\x01R\n" +
+	"attributes\x12J\n" +
+	"\tapi_style\x18\x0e \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x04\xe2A\x01\x01R\bapiStyle\x12Q\n" +
+	"\x10selected_version\x18\x0f \x01(\tB&\xe2A\x01\x01\xfaA\x1f\n" +
+	"\x1dapihub.googleapis.com/VersionR\x0fselectedVersion\x12X\n" +
+	"\x10api_requirements\x18\x10 \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x04\xe2A\x01\x01R\x0fapiRequirements\x12&\n" +
+	"\vfingerprint\x18\x11 \x01(\tB\x04\xe2A\x01\x01R\vfingerprint\x12U\n" +
+	"\x0fsource_metadata\x18\x12 \x03(\v2&.google.cloud.apihub.v1.SourceMetadataB\x04\xe2A\x01\x03R\x0esourceMetadata\x12m\n" +
+	"\x1bapi_functional_requirements\x18\x13 \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x04\xe2A\x01\x01R\x19apiFunctionalRequirements\x12k\n" +
+	"\x1aapi_technical_requirements\x18\x14 \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x04\xe2A\x01\x01R\x18apiTechnicalRequirements\x1af\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12=\n" +
 	"\x05value\x18\x02 \x01(\v2'.google.cloud.apihub.v1.AttributeValuesR\x05value:\x028\x01:]\xeaAZ\n" +
-	"\x19apihub.googleapis.com/Api\x122projects/{project}/locations/{location}/apis/{api}*\x04apis2\x03api\"\xc7\n" +
+	"\x19apihub.googleapis.com/Api\x122projects/{project}/locations/{location}/apis/{api}*\x04apis2\x03api\"\xd7\n" +
 	"\n" +
-	"\aVersion\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12P\n" +
-	"\rdocumentation\x18\x04 \x01(\v2%.google.cloud.apihub.v1.DocumentationB\x03\xe0A\x01R\rdocumentation\x128\n" +
-	"\x05specs\x18\x05 \x03(\tB\"\xe0A\x03\xfaA\x1c\n" +
-	"\x1aapihub.googleapis.com/SpecR\x05specs\x12Q\n" +
-	"\x0eapi_operations\x18\x06 \x03(\tB*\xe0A\x03\xfaA$\n" +
-	"\"apihub.googleapis.com/ApiOperationR\rapiOperations\x12J\n" +
-	"\vdefinitions\x18\a \x03(\tB(\xe0A\x03\xfaA\"\n" +
-	" apihub.googleapis.com/DefinitionR\vdefinitions\x12J\n" +
-	"\vdeployments\x18\b \x03(\tB(\xe0A\x01\xfaA\"\n" +
-	" apihub.googleapis.com/DeploymentR\vdeployments\x12@\n" +
-	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
+	"\aVersion\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12Q\n" +
+	"\rdocumentation\x18\x04 \x01(\v2%.google.cloud.apihub.v1.DocumentationB\x04\xe2A\x01\x01R\rdocumentation\x129\n" +
+	"\x05specs\x18\x05 \x03(\tB#\xe2A\x01\x03\xfaA\x1c\n" +
+	"\x1aapihub.googleapis.com/SpecR\x05specs\x12R\n" +
+	"\x0eapi_operations\x18\x06 \x03(\tB+\xe2A\x01\x03\xfaA$\n" +
+	"\"apihub.googleapis.com/ApiOperationR\rapiOperations\x12K\n" +
+	"\vdefinitions\x18\a \x03(\tB)\xe2A\x01\x03\xfaA\"\n" +
+	" apihub.googleapis.com/DefinitionR\vdefinitions\x12K\n" +
+	"\vdeployments\x18\b \x03(\tB)\xe2A\x01\x01\xfaA\"\n" +
+	" apihub.googleapis.com/DeploymentR\vdeployments\x12A\n" +
+	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
 	"\vupdate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12J\n" +
-	"\tlifecycle\x18\v \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x03\xe0A\x01R\tlifecycle\x12L\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12K\n" +
+	"\tlifecycle\x18\v \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x04\xe2A\x01\x01R\tlifecycle\x12M\n" +
 	"\n" +
-	"compliance\x18\f \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x03\xe0A\x01R\n" +
-	"compliance\x12R\n" +
-	"\raccreditation\x18\r \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x03\xe0A\x01R\raccreditation\x12T\n" +
+	"compliance\x18\f \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x04\xe2A\x01\x01R\n" +
+	"compliance\x12S\n" +
+	"\raccreditation\x18\r \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x04\xe2A\x01\x01R\raccreditation\x12U\n" +
 	"\n" +
-	"attributes\x18\x0e \x03(\v2/.google.cloud.apihub.v1.Version.AttributesEntryB\x03\xe0A\x01R\n" +
-	"attributes\x12Y\n" +
-	"\x13selected_deployment\x18\x10 \x01(\tB(\xe0A\x01\xfaA\"\n" +
-	" apihub.googleapis.com/DeploymentR\x12selectedDeployment\x12T\n" +
-	"\x0fsource_metadata\x18\x11 \x03(\v2&.google.cloud.apihub.v1.SourceMetadataB\x03\xe0A\x03R\x0esourceMetadata\x1af\n" +
+	"attributes\x18\x0e \x03(\v2/.google.cloud.apihub.v1.Version.AttributesEntryB\x04\xe2A\x01\x01R\n" +
+	"attributes\x12Z\n" +
+	"\x13selected_deployment\x18\x10 \x01(\tB)\xe2A\x01\x01\xfaA\"\n" +
+	" apihub.googleapis.com/DeploymentR\x12selectedDeployment\x12U\n" +
+	"\x0fsource_metadata\x18\x11 \x03(\v2&.google.cloud.apihub.v1.SourceMetadataB\x04\xe2A\x01\x03R\x0esourceMetadata\x1af\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12=\n" +
 	"\x05value\x18\x02 \x01(\v2'.google.cloud.apihub.v1.AttributeValuesR\x05value:\x028\x01:|\xeaAy\n" +
-	"\x1dapihub.googleapis.com/Version\x12Eprojects/{project}/locations/{location}/apis/{api}/versions/{version}*\bversions2\aversion\"\x99\t\n" +
-	"\x04Spec\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12I\n" +
-	"\tspec_type\x18\x03 \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x03\xe0A\x02R\bspecType\x12H\n" +
-	"\bcontents\x18\x04 \x01(\v2$.google.cloud.apihub.v1.SpecContentsB\x06\xe0A\x01\xe0A\x04R\bcontents\x12B\n" +
-	"\adetails\x18\x05 \x01(\v2#.google.cloud.apihub.v1.SpecDetailsB\x03\xe0A\x03R\adetails\x12\"\n" +
+	"\x1dapihub.googleapis.com/Version\x12Eprojects/{project}/locations/{location}/apis/{api}/versions/{version}*\bversions2\aversion\"\xa2\t\n" +
+	"\x04Spec\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12J\n" +
+	"\tspec_type\x18\x03 \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x04\xe2A\x01\x02R\bspecType\x12G\n" +
+	"\bcontents\x18\x04 \x01(\v2$.google.cloud.apihub.v1.SpecContentsB\x05\xe2A\x02\x01\x04R\bcontents\x12C\n" +
+	"\adetails\x18\x05 \x01(\v2#.google.cloud.apihub.v1.SpecDetailsB\x04\xe2A\x01\x03R\adetails\x12#\n" +
 	"\n" +
-	"source_uri\x18\x06 \x01(\tB\x03\xe0A\x01R\tsourceUri\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12N\n" +
-	"\rlint_response\x18\t \x01(\v2$.google.cloud.apihub.v1.LintResponseB\x03\xe0A\x01R\flintResponse\x12Q\n" +
+	"source_uri\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\tsourceUri\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12O\n" +
+	"\rlint_response\x18\t \x01(\v2$.google.cloud.apihub.v1.LintResponseB\x04\xe2A\x01\x01R\flintResponse\x12R\n" +
 	"\n" +
 	"attributes\x18\n" +
-	" \x03(\v2,.google.cloud.apihub.v1.Spec.AttributesEntryB\x03\xe0A\x01R\n" +
-	"attributes\x12P\n" +
-	"\rdocumentation\x18\v \x01(\v2%.google.cloud.apihub.v1.DocumentationB\x03\xe0A\x01R\rdocumentation\x12S\n" +
-	"\fparsing_mode\x18\f \x01(\x0e2(.google.cloud.apihub.v1.Spec.ParsingModeB\x06\xe0A\x01\xe0A\x04R\vparsingMode\x12T\n" +
-	"\x0fsource_metadata\x18\r \x03(\v2&.google.cloud.apihub.v1.SourceMetadataB\x03\xe0A\x03R\x0esourceMetadata\x1af\n" +
+	" \x03(\v2,.google.cloud.apihub.v1.Spec.AttributesEntryB\x04\xe2A\x01\x01R\n" +
+	"attributes\x12Q\n" +
+	"\rdocumentation\x18\v \x01(\v2%.google.cloud.apihub.v1.DocumentationB\x04\xe2A\x01\x01R\rdocumentation\x12R\n" +
+	"\fparsing_mode\x18\f \x01(\x0e2(.google.cloud.apihub.v1.Spec.ParsingModeB\x05\xe2A\x02\x01\x04R\vparsingMode\x12U\n" +
+	"\x0fsource_metadata\x18\r \x03(\v2&.google.cloud.apihub.v1.SourceMetadataB\x04\xe2A\x01\x03R\x0esourceMetadata\x1af\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12=\n" +
 	"\x05value\x18\x02 \x01(\v2'.google.cloud.apihub.v1.AttributeValuesR\x05value:\x028\x01\"D\n" +
@@ -6704,69 +6704,69 @@ const file_google_cloud_apihub_v1_common_fields_proto_rawDesc = "" +
 	"\aRELAXED\x10\x01\x12\n" +
 	"\n" +
 	"\x06STRICT\x10\x02:\x80\x01\xeaA}\n" +
-	"\x1aapihub.googleapis.com/Spec\x12Rprojects/{project}/locations/{location}/apis/{api}/versions/{version}/specs/{spec}*\x05specs2\x04spec\"\xc0\n" +
+	"\x1aapihub.googleapis.com/Spec\x12Rprojects/{project}/locations/{location}/apis/{api}/versions/{version}/specs/{spec}*\x05specs2\x04spec\"\xd2\n" +
 	"\n" +
 	"\n" +
-	"Deployment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12P\n" +
-	"\rdocumentation\x18\x04 \x01(\v2%.google.cloud.apihub.v1.DocumentationB\x03\xe0A\x01R\rdocumentation\x12U\n" +
-	"\x0fdeployment_type\x18\x05 \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x03\xe0A\x02R\x0edeploymentType\x12&\n" +
-	"\fresource_uri\x18\x06 \x01(\tB\x03\xe0A\x02R\vresourceUri\x12!\n" +
-	"\tendpoints\x18\a \x03(\tB\x03\xe0A\x02R\tendpoints\x12&\n" +
-	"\fapi_versions\x18\b \x03(\tB\x03\xe0A\x03R\vapiVersions\x12@\n" +
-	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
+	"Deployment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12Q\n" +
+	"\rdocumentation\x18\x04 \x01(\v2%.google.cloud.apihub.v1.DocumentationB\x04\xe2A\x01\x01R\rdocumentation\x12V\n" +
+	"\x0fdeployment_type\x18\x05 \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x04\xe2A\x01\x02R\x0edeploymentType\x12'\n" +
+	"\fresource_uri\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\vresourceUri\x12\"\n" +
+	"\tendpoints\x18\a \x03(\tB\x04\xe2A\x01\x02R\tendpoints\x12'\n" +
+	"\fapi_versions\x18\b \x03(\tB\x04\xe2A\x01\x03R\vapiVersions\x12A\n" +
+	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
 	"\vupdate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12>\n" +
-	"\x03slo\x18\v \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x03\xe0A\x01R\x03slo\x12N\n" +
-	"\venvironment\x18\f \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x03\xe0A\x01R\venvironment\x12W\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12?\n" +
+	"\x03slo\x18\v \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x04\xe2A\x01\x01R\x03slo\x12O\n" +
+	"\venvironment\x18\f \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x04\xe2A\x01\x01R\venvironment\x12X\n" +
 	"\n" +
-	"attributes\x18\r \x03(\v22.google.cloud.apihub.v1.Deployment.AttributesEntryB\x03\xe0A\x01R\n" +
-	"attributes\x12T\n" +
-	"\x0fsource_metadata\x18\x0e \x03(\v2&.google.cloud.apihub.v1.SourceMetadataB\x03\xe0A\x03R\x0esourceMetadata\x12S\n" +
-	"\x0emanagement_url\x18\x0f \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x03\xe0A\x01R\rmanagementUrl\x12K\n" +
+	"attributes\x18\r \x03(\v22.google.cloud.apihub.v1.Deployment.AttributesEntryB\x04\xe2A\x01\x01R\n" +
+	"attributes\x12U\n" +
+	"\x0fsource_metadata\x18\x0e \x03(\v2&.google.cloud.apihub.v1.SourceMetadataB\x04\xe2A\x01\x03R\x0esourceMetadata\x12T\n" +
+	"\x0emanagement_url\x18\x0f \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x04\xe2A\x01\x01R\rmanagementUrl\x12L\n" +
 	"\n" +
-	"source_uri\x18\x10 \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x03\xe0A\x01R\tsourceUri\x12*\n" +
-	"\x0esource_project\x18\x11 \x01(\tB\x03\xe0A\x01R\rsourceProject\x122\n" +
-	"\x12source_environment\x18\x12 \x01(\tB\x03\xe0A\x01R\x11sourceEnvironment\x1af\n" +
+	"source_uri\x18\x10 \x01(\v2'.google.cloud.apihub.v1.AttributeValuesB\x04\xe2A\x01\x01R\tsourceUri\x12+\n" +
+	"\x0esource_project\x18\x11 \x01(\tB\x04\xe2A\x01\x01R\rsourceProject\x123\n" +
+	"\x12source_environment\x18\x12 \x01(\tB\x04\xe2A\x01\x01R\x11sourceEnvironment\x1af\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12=\n" +
 	"\x05value\x18\x02 \x01(\v2'.google.cloud.apihub.v1.AttributeValuesR\x05value:\x028\x01:\x80\x01\xeaA}\n" +
 	" apihub.googleapis.com/Deployment\x12@projects/{project}/locations/{location}/deployments/{deployment}*\vdeployments2\n" +
-	"deployment\"\xeb\x05\n" +
-	"\fApiOperation\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x126\n" +
-	"\x04spec\x18\x02 \x01(\tB\"\xe0A\x03\xfaA\x1c\n" +
-	"\x1aapihub.googleapis.com/SpecR\x04spec\x12G\n" +
-	"\adetails\x18\x03 \x01(\v2(.google.cloud.apihub.v1.OperationDetailsB\x03\xe0A\x01R\adetails\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12Y\n" +
+	"deployment\"\xf2\x05\n" +
+	"\fApiOperation\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x127\n" +
+	"\x04spec\x18\x02 \x01(\tB#\xe2A\x01\x03\xfaA\x1c\n" +
+	"\x1aapihub.googleapis.com/SpecR\x04spec\x12H\n" +
+	"\adetails\x18\x03 \x01(\v2(.google.cloud.apihub.v1.OperationDetailsB\x04\xe2A\x01\x01R\adetails\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12Z\n" +
 	"\n" +
-	"attributes\x18\x06 \x03(\v24.google.cloud.apihub.v1.ApiOperation.AttributesEntryB\x03\xe0A\x01R\n" +
-	"attributes\x12T\n" +
-	"\x0fsource_metadata\x18\a \x03(\v2&.google.cloud.apihub.v1.SourceMetadataB\x03\xe0A\x03R\x0esourceMetadata\x1af\n" +
+	"attributes\x18\x06 \x03(\v24.google.cloud.apihub.v1.ApiOperation.AttributesEntryB\x04\xe2A\x01\x01R\n" +
+	"attributes\x12U\n" +
+	"\x0fsource_metadata\x18\a \x03(\v2&.google.cloud.apihub.v1.SourceMetadataB\x04\xe2A\x01\x03R\x0esourceMetadata\x1af\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12=\n" +
 	"\x05value\x18\x02 \x01(\v2'.google.cloud.apihub.v1.AttributeValuesR\x05value:\x028\x01:\xa3\x01\xeaA\x9f\x01\n" +
-	"\"apihub.googleapis.com/ApiOperation\x12\\projects/{project}/locations/{location}/apis/{api}/versions/{version}/operations/{operation}*\rapiOperations2\fapiOperation\"\xf8\x05\n" +
+	"\"apihub.googleapis.com/ApiOperation\x12\\projects/{project}/locations/{location}/apis/{api}/versions/{version}/operations/{operation}*\rapiOperations2\fapiOperation\"\xff\x05\n" +
 	"\n" +
-	"Definition\x12=\n" +
-	"\x06schema\x18\x04 \x01(\v2\x1e.google.cloud.apihub.v1.SchemaB\x03\xe0A\x03H\x00R\x06schema\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x126\n" +
-	"\x04spec\x18\x02 \x01(\tB\"\xe0A\x03\xfaA\x1c\n" +
-	"\x1aapihub.googleapis.com/SpecR\x04spec\x12@\n" +
-	"\x04type\x18\x03 \x01(\x0e2'.google.cloud.apihub.v1.Definition.TypeB\x03\xe0A\x03R\x04type\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12W\n" +
+	"Definition\x12>\n" +
+	"\x06schema\x18\x04 \x01(\v2\x1e.google.cloud.apihub.v1.SchemaB\x04\xe2A\x01\x03H\x00R\x06schema\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x127\n" +
+	"\x04spec\x18\x02 \x01(\tB#\xe2A\x01\x03\xfaA\x1c\n" +
+	"\x1aapihub.googleapis.com/SpecR\x04spec\x12A\n" +
+	"\x04type\x18\x03 \x01(\x0e2'.google.cloud.apihub.v1.Definition.TypeB\x04\xe2A\x01\x03R\x04type\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12X\n" +
 	"\n" +
-	"attributes\x18\a \x03(\v22.google.cloud.apihub.v1.Definition.AttributesEntryB\x03\xe0A\x01R\n" +
+	"attributes\x18\a \x03(\v22.google.cloud.apihub.v1.Definition.AttributesEntryB\x04\xe2A\x01\x01R\n" +
 	"attributes\x1af\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12=\n" +
@@ -6777,27 +6777,27 @@ const file_google_cloud_apihub_v1_common_fields_proto_rawDesc = "" +
 	"\x06SCHEMA\x10\x01:\x9f\x01\xeaA\x9b\x01\n" +
 	" apihub.googleapis.com/Definition\x12^projects/{project}/locations/{location}/apis/{api}/versions/{version}/definitions/{definition}*\vdefinitions2\n" +
 	"definitionB\a\n" +
-	"\x05value\"\xef\t\n" +
-	"\tAttribute\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12^\n" +
-	"\x0fdefinition_type\x18\x04 \x01(\x0e20.google.cloud.apihub.v1.Attribute.DefinitionTypeB\x03\xe0A\x03R\x0edefinitionType\x12B\n" +
-	"\x05scope\x18\x05 \x01(\x0e2'.google.cloud.apihub.v1.Attribute.ScopeB\x03\xe0A\x02R\x05scope\x12L\n" +
-	"\tdata_type\x18\x06 \x01(\x0e2*.google.cloud.apihub.v1.Attribute.DataTypeB\x03\xe0A\x02R\bdataType\x12Z\n" +
-	"\x0eallowed_values\x18\a \x03(\v2..google.cloud.apihub.v1.Attribute.AllowedValueB\x03\xe0A\x01R\rallowedValues\x12%\n" +
-	"\vcardinality\x18\b \x01(\x05B\x03\xe0A\x01R\vcardinality\x12!\n" +
-	"\tmandatory\x18\t \x01(\bB\x03\xe0A\x03R\tmandatory\x12@\n" +
+	"\x05value\"\xfe\t\n" +
+	"\tAttribute\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12_\n" +
+	"\x0fdefinition_type\x18\x04 \x01(\x0e20.google.cloud.apihub.v1.Attribute.DefinitionTypeB\x04\xe2A\x01\x03R\x0edefinitionType\x12C\n" +
+	"\x05scope\x18\x05 \x01(\x0e2'.google.cloud.apihub.v1.Attribute.ScopeB\x04\xe2A\x01\x02R\x05scope\x12M\n" +
+	"\tdata_type\x18\x06 \x01(\x0e2*.google.cloud.apihub.v1.Attribute.DataTypeB\x04\xe2A\x01\x02R\bdataType\x12[\n" +
+	"\x0eallowed_values\x18\a \x03(\v2..google.cloud.apihub.v1.Attribute.AllowedValueB\x04\xe2A\x01\x01R\rallowedValues\x12&\n" +
+	"\vcardinality\x18\b \x01(\x05B\x04\xe2A\x01\x01R\vcardinality\x12\"\n" +
+	"\tmandatory\x18\t \x01(\bB\x04\xe2A\x01\x03R\tmandatory\x12A\n" +
 	"\vcreate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x1a\x95\x01\n" +
-	"\fAllowedValue\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12!\n" +
-	"\timmutable\x18\x04 \x01(\bB\x03\xe0A\x01R\timmutable\"W\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x1a\x99\x01\n" +
+	"\fAllowedValue\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\"\n" +
+	"\timmutable\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\timmutable\"W\n" +
 	"\x0eDefinitionType\x12\x1f\n" +
 	"\x1bDEFINITION_TYPE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eSYSTEM_DEFINED\x10\x01\x12\x10\n" +
@@ -6825,34 +6825,34 @@ const file_google_cloud_apihub_v1_common_fields_proto_rawDesc = "" +
 	"\x06STRING\x10\x03\x12\a\n" +
 	"\x03URI\x10\x04:{\xeaAx\n" +
 	"\x1fapihub.googleapis.com/Attribute\x12>projects/{project}/locations/{location}/attributes/{attribute}*\n" +
-	"attributes2\tattribute\"Q\n" +
-	"\fSpecContents\x12\x1f\n" +
-	"\bcontents\x18\x01 \x01(\fB\x03\xe0A\x02R\bcontents\x12 \n" +
-	"\tmime_type\x18\x02 \x01(\tB\x03\xe0A\x02R\bmimeType\"\xa5\x01\n" +
-	"\vSpecDetails\x12d\n" +
-	"\x15open_api_spec_details\x18\x02 \x01(\v2*.google.cloud.apihub.v1.OpenApiSpecDetailsB\x03\xe0A\x03H\x00R\x12openApiSpecDetails\x12%\n" +
-	"\vdescription\x18\x01 \x01(\tB\x03\xe0A\x03R\vdescriptionB\t\n" +
-	"\adetails\"\xa4\x02\n" +
-	"\x12OpenApiSpecDetails\x12N\n" +
-	"\x06format\x18\x01 \x01(\x0e21.google.cloud.apihub.v1.OpenApiSpecDetails.FormatB\x03\xe0A\x03R\x06format\x12\x1d\n" +
-	"\aversion\x18\x02 \x01(\tB\x03\xe0A\x03R\aversion\x128\n" +
-	"\x05owner\x18\x03 \x01(\v2\x1d.google.cloud.apihub.v1.OwnerB\x03\xe0A\x03R\x05owner\"e\n" +
+	"attributes2\tattribute\"S\n" +
+	"\fSpecContents\x12 \n" +
+	"\bcontents\x18\x01 \x01(\fB\x04\xe2A\x01\x02R\bcontents\x12!\n" +
+	"\tmime_type\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bmimeType\"\xa7\x01\n" +
+	"\vSpecDetails\x12e\n" +
+	"\x15open_api_spec_details\x18\x02 \x01(\v2*.google.cloud.apihub.v1.OpenApiSpecDetailsB\x04\xe2A\x01\x03H\x00R\x12openApiSpecDetails\x12&\n" +
+	"\vdescription\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\vdescriptionB\t\n" +
+	"\adetails\"\xa7\x02\n" +
+	"\x12OpenApiSpecDetails\x12O\n" +
+	"\x06format\x18\x01 \x01(\x0e21.google.cloud.apihub.v1.OpenApiSpecDetails.FormatB\x04\xe2A\x01\x03R\x06format\x12\x1e\n" +
+	"\aversion\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\aversion\x129\n" +
+	"\x05owner\x18\x03 \x01(\v2\x1d.google.cloud.apihub.v1.OwnerB\x04\xe2A\x01\x03R\x05owner\"e\n" +
 	"\x06Format\x12\x16\n" +
 	"\x12FORMAT_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11OPEN_API_SPEC_2_0\x10\x01\x12\x15\n" +
 	"\x11OPEN_API_SPEC_3_0\x10\x02\x12\x15\n" +
-	"\x11OPEN_API_SPEC_3_1\x10\x03\"\x8d\x02\n" +
+	"\x11OPEN_API_SPEC_3_1\x10\x03\"\x90\x02\n" +
 	"\x10OperationDetails\x12N\n" +
-	"\x0ehttp_operation\x18\x04 \x01(\v2%.google.cloud.apihub.v1.HttpOperationH\x00R\rhttpOperation\x12%\n" +
-	"\vdescription\x18\x01 \x01(\tB\x03\xe0A\x01R\vdescription\x12P\n" +
-	"\rdocumentation\x18\x02 \x01(\v2%.google.cloud.apihub.v1.DocumentationB\x03\xe0A\x01R\rdocumentation\x12#\n" +
+	"\x0ehttp_operation\x18\x04 \x01(\v2%.google.cloud.apihub.v1.HttpOperationH\x00R\rhttpOperation\x12&\n" +
+	"\vdescription\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12Q\n" +
+	"\rdocumentation\x18\x02 \x01(\v2%.google.cloud.apihub.v1.DocumentationB\x04\xe2A\x01\x01R\rdocumentation\x12$\n" +
 	"\n" +
-	"deprecated\x18\x03 \x01(\bB\x03\xe0A\x01R\n" +
+	"deprecated\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\n" +
 	"deprecatedB\v\n" +
-	"\toperation\"\x88\x02\n" +
-	"\rHttpOperation\x125\n" +
-	"\x04path\x18\x01 \x01(\v2\x1c.google.cloud.apihub.v1.PathB\x03\xe0A\x01R\x04path\x12I\n" +
-	"\x06method\x18\x02 \x01(\x0e2,.google.cloud.apihub.v1.HttpOperation.MethodB\x03\xe0A\x01R\x06method\"u\n" +
+	"\toperation\"\x8a\x02\n" +
+	"\rHttpOperation\x126\n" +
+	"\x04path\x18\x01 \x01(\v2\x1c.google.cloud.apihub.v1.PathB\x04\xe2A\x01\x01R\x04path\x12J\n" +
+	"\x06method\x18\x02 \x01(\x0e2,.google.cloud.apihub.v1.HttpOperation.MethodB\x04\xe2A\x01\x01R\x06method\"u\n" +
 	"\x06Method\x12\x16\n" +
 	"\x12METHOD_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03GET\x10\x01\x12\a\n" +
@@ -6863,18 +6863,18 @@ const file_google_cloud_apihub_v1_common_fields_proto_rawDesc = "" +
 	"\aOPTIONS\x10\x05\x12\b\n" +
 	"\x04HEAD\x10\x06\x12\t\n" +
 	"\x05PATCH\x10\a\x12\t\n" +
-	"\x05TRACE\x10\b\"F\n" +
-	"\x04Path\x12\x17\n" +
-	"\x04path\x18\x01 \x01(\tB\x03\xe0A\x01R\x04path\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\"R\n" +
-	"\x06Schema\x12&\n" +
-	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12 \n" +
-	"\traw_value\x18\x02 \x01(\fB\x03\xe0A\x03R\brawValue\"J\n" +
-	"\x05Owner\x12&\n" +
-	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12\x19\n" +
-	"\x05email\x18\x02 \x01(\tB\x03\xe0A\x02R\x05email\"7\n" +
-	"\rDocumentation\x12&\n" +
-	"\fexternal_uri\x18\x01 \x01(\tB\x03\xe0A\x01R\vexternalUri\"\x83\x05\n" +
+	"\x05TRACE\x10\b\"H\n" +
+	"\x04Path\x12\x18\n" +
+	"\x04path\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04path\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\"T\n" +
+	"\x06Schema\x12'\n" +
+	"\fdisplay_name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12!\n" +
+	"\traw_value\x18\x02 \x01(\fB\x04\xe2A\x01\x03R\brawValue\"L\n" +
+	"\x05Owner\x12'\n" +
+	"\fdisplay_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12\x1a\n" +
+	"\x05email\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05email\"8\n" +
+	"\rDocumentation\x12'\n" +
+	"\fexternal_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vexternalUri\"\x86\x05\n" +
 	"\x0fAttributeValues\x12^\n" +
 	"\venum_values\x18\x02 \x01(\v2;.google.cloud.apihub.v1.AttributeValues.EnumAttributeValuesH\x00R\n" +
 	"enumValues\x12d\n" +
@@ -6882,30 +6882,30 @@ const file_google_cloud_apihub_v1_common_fields_proto_rawDesc = "" +
 	"\vjson_values\x18\x04 \x01(\v2=.google.cloud.apihub.v1.AttributeValues.StringAttributeValuesH\x00R\n" +
 	"jsonValues\x12^\n" +
 	"\n" +
-	"uri_values\x18\x05 \x01(\v2=.google.cloud.apihub.v1.AttributeValues.StringAttributeValuesH\x00R\turiValues\x12E\n" +
-	"\tattribute\x18\x01 \x01(\tB'\xe0A\x03\xfaA!\n" +
-	"\x1fapihub.googleapis.com/AttributeR\tattribute\x1ab\n" +
-	"\x13EnumAttributeValues\x12K\n" +
-	"\x06values\x18\x01 \x03(\v2..google.cloud.apihub.v1.Attribute.AllowedValueB\x03\xe0A\x02R\x06values\x1a4\n" +
-	"\x15StringAttributeValues\x12\x1b\n" +
-	"\x06values\x18\x01 \x03(\tB\x03\xe0A\x02R\x06valuesB\a\n" +
-	"\x05Value\"\xb8\b\n" +
+	"uri_values\x18\x05 \x01(\v2=.google.cloud.apihub.v1.AttributeValues.StringAttributeValuesH\x00R\turiValues\x12F\n" +
+	"\tattribute\x18\x01 \x01(\tB(\xe2A\x01\x03\xfaA!\n" +
+	"\x1fapihub.googleapis.com/AttributeR\tattribute\x1ac\n" +
+	"\x13EnumAttributeValues\x12L\n" +
+	"\x06values\x18\x01 \x03(\v2..google.cloud.apihub.v1.Attribute.AllowedValueB\x04\xe2A\x01\x02R\x06values\x1a5\n" +
+	"\x15StringAttributeValues\x12\x1c\n" +
+	"\x06values\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x06valuesB\a\n" +
+	"\x05Value\"\xbe\b\n" +
 	"\n" +
-	"Dependency\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12U\n" +
-	"\bconsumer\x18\x02 \x01(\v21.google.cloud.apihub.v1.DependencyEntityReferenceB\x06\xe0A\x05\xe0A\x02R\bconsumer\x12U\n" +
-	"\bsupplier\x18\x03 \x01(\v21.google.cloud.apihub.v1.DependencyEntityReferenceB\x06\xe0A\x05\xe0A\x02R\bsupplier\x12C\n" +
-	"\x05state\x18\x04 \x01(\x0e2(.google.cloud.apihub.v1.Dependency.StateB\x03\xe0A\x03R\x05state\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12\\\n" +
-	"\x0ediscovery_mode\x18\x06 \x01(\x0e20.google.cloud.apihub.v1.Dependency.DiscoveryModeB\x03\xe0A\x03R\rdiscoveryMode\x12U\n" +
-	"\ferror_detail\x18\a \x01(\v2-.google.cloud.apihub.v1.DependencyErrorDetailB\x03\xe0A\x03R\verrorDetail\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12W\n" +
+	"Dependency\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12T\n" +
+	"\bconsumer\x18\x02 \x01(\v21.google.cloud.apihub.v1.DependencyEntityReferenceB\x05\xe2A\x02\x05\x02R\bconsumer\x12T\n" +
+	"\bsupplier\x18\x03 \x01(\v21.google.cloud.apihub.v1.DependencyEntityReferenceB\x05\xe2A\x02\x05\x02R\bsupplier\x12D\n" +
+	"\x05state\x18\x04 \x01(\x0e2(.google.cloud.apihub.v1.Dependency.StateB\x04\xe2A\x01\x03R\x05state\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12]\n" +
+	"\x0ediscovery_mode\x18\x06 \x01(\x0e20.google.cloud.apihub.v1.Dependency.DiscoveryModeB\x04\xe2A\x01\x03R\rdiscoveryMode\x12V\n" +
+	"\ferror_detail\x18\a \x01(\v2-.google.cloud.apihub.v1.DependencyErrorDetailB\x04\xe2A\x01\x03R\verrorDetail\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12X\n" +
 	"\n" +
 	"attributes\x18\n" +
-	" \x03(\v22.google.cloud.apihub.v1.Dependency.AttributesEntryB\x03\xe0A\x01R\n" +
+	" \x03(\v22.google.cloud.apihub.v1.Dependency.AttributesEntryB\x04\xe2A\x01\x01R\n" +
 	"attributes\x1af\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12=\n" +
@@ -6919,70 +6919,70 @@ const file_google_cloud_apihub_v1_common_fields_proto_rawDesc = "" +
 	"\n" +
 	"\x06MANUAL\x10\x01:\x82\x01\xeaA\x7f\n" +
 	" apihub.googleapis.com/Dependency\x12Aprojects/{project}/locations/{location}/dependencies/{dependency}*\fdependencies2\n" +
-	"dependency\"\xca\x01\n" +
+	"dependency\"\xcb\x01\n" +
 	"\x19DependencyEntityReference\x128\n" +
 	"\x17operation_resource_name\x18\x02 \x01(\tH\x00R\x15operationResourceName\x12=\n" +
-	"\x1aexternal_api_resource_name\x18\x03 \x01(\tH\x00R\x17externalApiResourceName\x12&\n" +
-	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x03R\vdisplayNameB\f\n" +
+	"\x1aexternal_api_resource_name\x18\x03 \x01(\tH\x00R\x17externalApiResourceName\x12'\n" +
+	"\fdisplay_name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\vdisplayNameB\f\n" +
 	"\n" +
-	"identifier\"\xf7\x01\n" +
-	"\x15DependencyErrorDetail\x12N\n" +
-	"\x05error\x18\x01 \x01(\x0e23.google.cloud.apihub.v1.DependencyErrorDetail.ErrorB\x03\xe0A\x01R\x05error\x12>\n" +
+	"identifier\"\xf9\x01\n" +
+	"\x15DependencyErrorDetail\x12O\n" +
+	"\x05error\x18\x01 \x01(\x0e23.google.cloud.apihub.v1.DependencyErrorDetail.ErrorB\x04\xe2A\x01\x01R\x05error\x12?\n" +
 	"\n" +
-	"error_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\terrorTime\"N\n" +
+	"error_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\terrorTime\"N\n" +
 	"\x05Error\x12\x15\n" +
 	"\x11ERROR_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12SUPPLIER_NOT_FOUND\x10\x01\x12\x16\n" +
-	"\x12SUPPLIER_RECREATED\x10\x02\"\xe4\x03\n" +
-	"\fLintResponse\x12:\n" +
-	"\x06issues\x18\x01 \x03(\v2\x1d.google.cloud.apihub.v1.IssueB\x03\xe0A\x01R\x06issues\x12P\n" +
-	"\asummary\x18\x02 \x03(\v21.google.cloud.apihub.v1.LintResponse.SummaryEntryB\x03\xe0A\x01R\asummary\x12<\n" +
-	"\x05state\x18\x03 \x01(\x0e2!.google.cloud.apihub.v1.LintStateB\x03\xe0A\x02R\x05state\x12\x1b\n" +
-	"\x06source\x18\x04 \x01(\tB\x03\xe0A\x02R\x06source\x12;\n" +
-	"\x06linter\x18\x05 \x01(\x0e2\x1e.google.cloud.apihub.v1.LinterB\x03\xe0A\x02R\x06linter\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\n" +
-	"createTime\x1al\n" +
-	"\fSummaryEntry\x12A\n" +
-	"\bseverity\x18\x01 \x01(\x0e2 .google.cloud.apihub.v1.SeverityB\x03\xe0A\x02R\bseverity\x12\x19\n" +
-	"\x05count\x18\x02 \x01(\x05B\x03\xe0A\x02R\x05count\"\xd5\x01\n" +
-	"\x05Issue\x12\x17\n" +
-	"\x04code\x18\x01 \x01(\tB\x03\xe0A\x02R\x04code\x12\x17\n" +
-	"\x04path\x18\x02 \x03(\tB\x03\xe0A\x02R\x04path\x12\x1d\n" +
-	"\amessage\x18\x03 \x01(\tB\x03\xe0A\x02R\amessage\x12A\n" +
-	"\bseverity\x18\x04 \x01(\x0e2 .google.cloud.apihub.v1.SeverityB\x03\xe0A\x02R\bseverity\x128\n" +
-	"\x05range\x18\x05 \x01(\v2\x1d.google.cloud.apihub.v1.RangeB\x03\xe0A\x02R\x05range\"w\n" +
-	"\x05Range\x128\n" +
-	"\x05start\x18\x01 \x01(\v2\x1d.google.cloud.apihub.v1.PointB\x03\xe0A\x02R\x05start\x124\n" +
-	"\x03end\x18\x02 \x01(\v2\x1d.google.cloud.apihub.v1.PointB\x03\xe0A\x02R\x03end\"C\n" +
-	"\x05Point\x12\x17\n" +
-	"\x04line\x18\x01 \x01(\x05B\x03\xe0A\x02R\x04line\x12!\n" +
-	"\tcharacter\x18\x02 \x01(\x05B\x03\xe0A\x02R\tcharacter\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"\xea\b\n" +
-	"\x0eApiHubInstance\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12G\n" +
-	"\x05state\x18\x04 \x01(\x0e2,.google.cloud.apihub.v1.ApiHubInstance.StateB\x03\xe0A\x03R\x05state\x12(\n" +
-	"\rstate_message\x18\x05 \x01(\tB\x03\xe0A\x03R\fstateMessage\x12J\n" +
-	"\x06config\x18\x06 \x01(\v2-.google.cloud.apihub.v1.ApiHubInstance.ConfigB\x03\xe0A\x02R\x06config\x12O\n" +
-	"\x06labels\x18\a \x03(\v22.google.cloud.apihub.v1.ApiHubInstance.LabelsEntryB\x03\xe0A\x01R\x06labels\x12%\n" +
-	"\vdescription\x18\b \x01(\tB\x03\xe0A\x01R\vdescription\x1a\xbe\x02\n" +
-	"\x06Config\x12'\n" +
-	"\rcmek_key_name\x18\x01 \x01(\tB\x03\xe0A\x01R\vcmekKeyName\x12*\n" +
-	"\x0edisable_search\x18\x02 \x01(\bB\x03\xe0A\x01R\rdisableSearch\x12,\n" +
-	"\x0fvertex_location\x18\x03 \x01(\tB\x03\xe0A\x01R\x0evertexLocation\x12j\n" +
-	"\x0fencryption_type\x18\x04 \x01(\x0e2<.google.cloud.apihub.v1.ApiHubInstance.Config.EncryptionTypeB\x03\xe0A\x01R\x0eencryptionType\"E\n" +
+	"\x12SUPPLIER_RECREATED\x10\x02\"\xec\x03\n" +
+	"\fLintResponse\x12;\n" +
+	"\x06issues\x18\x01 \x03(\v2\x1d.google.cloud.apihub.v1.IssueB\x04\xe2A\x01\x01R\x06issues\x12Q\n" +
+	"\asummary\x18\x02 \x03(\v21.google.cloud.apihub.v1.LintResponse.SummaryEntryB\x04\xe2A\x01\x01R\asummary\x12=\n" +
+	"\x05state\x18\x03 \x01(\x0e2!.google.cloud.apihub.v1.LintStateB\x04\xe2A\x01\x02R\x05state\x12\x1c\n" +
+	"\x06source\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x06source\x12<\n" +
+	"\x06linter\x18\x05 \x01(\x0e2\x1e.google.cloud.apihub.v1.LinterB\x04\xe2A\x01\x02R\x06linter\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\n" +
+	"createTime\x1an\n" +
+	"\fSummaryEntry\x12B\n" +
+	"\bseverity\x18\x01 \x01(\x0e2 .google.cloud.apihub.v1.SeverityB\x04\xe2A\x01\x02R\bseverity\x12\x1a\n" +
+	"\x05count\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x05count\"\xda\x01\n" +
+	"\x05Issue\x12\x18\n" +
+	"\x04code\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04code\x12\x18\n" +
+	"\x04path\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x04path\x12\x1e\n" +
+	"\amessage\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\amessage\x12B\n" +
+	"\bseverity\x18\x04 \x01(\x0e2 .google.cloud.apihub.v1.SeverityB\x04\xe2A\x01\x02R\bseverity\x129\n" +
+	"\x05range\x18\x05 \x01(\v2\x1d.google.cloud.apihub.v1.RangeB\x04\xe2A\x01\x02R\x05range\"y\n" +
+	"\x05Range\x129\n" +
+	"\x05start\x18\x01 \x01(\v2\x1d.google.cloud.apihub.v1.PointB\x04\xe2A\x01\x02R\x05start\x125\n" +
+	"\x03end\x18\x02 \x01(\v2\x1d.google.cloud.apihub.v1.PointB\x04\xe2A\x01\x02R\x03end\"E\n" +
+	"\x05Point\x12\x18\n" +
+	"\x04line\x18\x01 \x01(\x05B\x04\xe2A\x01\x02R\x04line\x12\"\n" +
+	"\tcharacter\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\tcharacter\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"\xf6\b\n" +
+	"\x0eApiHubInstance\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12H\n" +
+	"\x05state\x18\x04 \x01(\x0e2,.google.cloud.apihub.v1.ApiHubInstance.StateB\x04\xe2A\x01\x03R\x05state\x12)\n" +
+	"\rstate_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\fstateMessage\x12K\n" +
+	"\x06config\x18\x06 \x01(\v2-.google.cloud.apihub.v1.ApiHubInstance.ConfigB\x04\xe2A\x01\x02R\x06config\x12P\n" +
+	"\x06labels\x18\a \x03(\v22.google.cloud.apihub.v1.ApiHubInstance.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12&\n" +
+	"\vdescription\x18\b \x01(\tB\x04\xe2A\x01\x01R\vdescription\x1a\xc2\x02\n" +
+	"\x06Config\x12(\n" +
+	"\rcmek_key_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vcmekKeyName\x12+\n" +
+	"\x0edisable_search\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\rdisableSearch\x12-\n" +
+	"\x0fvertex_location\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x0evertexLocation\x12k\n" +
+	"\x0fencryption_type\x18\x04 \x01(\x0e2<.google.cloud.apihub.v1.ApiHubInstance.Config.EncryptionTypeB\x04\xe2A\x01\x01R\x0eencryptionType\"E\n" +
 	"\x0eEncryptionType\x12\x1f\n" +
 	"\x1bENCRYPTION_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04GMEK\x10\x01\x12\b\n" +
@@ -7000,40 +7000,40 @@ const file_google_cloud_apihub_v1_common_fields_proto_rawDesc = "" +
 	"\bDELETING\x10\x05\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x06:\x97\x01\xeaA\x93\x01\n" +
-	"$apihub.googleapis.com/ApiHubInstance\x12Jprojects/{project}/locations/{location}/apiHubInstances/{api_hub_instance}*\x0fapiHubInstances2\x0eapiHubInstance\"\xd5\x05\n" +
-	"\vExternalApi\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12!\n" +
-	"\tendpoints\x18\x04 \x03(\tB\x03\xe0A\x01R\tendpoints\x12\x19\n" +
-	"\x05paths\x18\x05 \x03(\tB\x03\xe0A\x01R\x05paths\x12P\n" +
-	"\rdocumentation\x18\x06 \x01(\v2%.google.cloud.apihub.v1.DocumentationB\x03\xe0A\x01R\rdocumentation\x12X\n" +
+	"$apihub.googleapis.com/ApiHubInstance\x12Jprojects/{project}/locations/{location}/apiHubInstances/{api_hub_instance}*\x0fapiHubInstances2\x0eapiHubInstance\"\xde\x05\n" +
+	"\vExternalApi\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\"\n" +
+	"\tendpoints\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\tendpoints\x12\x1a\n" +
+	"\x05paths\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x05paths\x12Q\n" +
+	"\rdocumentation\x18\x06 \x01(\v2%.google.cloud.apihub.v1.DocumentationB\x04\xe2A\x01\x01R\rdocumentation\x12Y\n" +
 	"\n" +
-	"attributes\x18\a \x03(\v23.google.cloud.apihub.v1.ExternalApi.AttributesEntryB\x03\xe0A\x01R\n" +
-	"attributes\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"attributes\x18\a \x03(\v23.google.cloud.apihub.v1.ExternalApi.AttributesEntryB\x04\xe2A\x01\x01R\n" +
+	"attributes\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x1af\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12=\n" +
 	"\x05value\x18\x02 \x01(\v2'.google.cloud.apihub.v1.AttributeValuesR\x05value:\x028\x01:\x87\x01\xeaA\x83\x01\n" +
-	"!apihub.googleapis.com/ExternalApi\x12Cprojects/{project}/locations/{location}/externalApis/{external_api}*\fexternalApis2\vexternalApi\"w\n" +
-	"\x11ConfigValueOption\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\"4\n" +
-	"\x06Secret\x12*\n" +
-	"\x0esecret_version\x18\x01 \x01(\tB\x03\xe0A\x02R\rsecretVersion\"\xca\x04\n" +
-	"\x16ConfigVariableTemplate\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12\\\n" +
+	"!apihub.googleapis.com/ExternalApi\x12Cprojects/{project}/locations/{location}/externalApis/{external_api}*\fexternalApis2\vexternalApi\"z\n" +
+	"\x11ConfigValueOption\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\"5\n" +
+	"\x06Secret\x12+\n" +
+	"\x0esecret_version\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\rsecretVersion\"\xd1\x04\n" +
+	"\x16ConfigVariableTemplate\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12]\n" +
 	"\n" +
-	"value_type\x18\x02 \x01(\x0e28.google.cloud.apihub.v1.ConfigVariableTemplate.ValueTypeB\x03\xe0A\x02R\tvalueType\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12.\n" +
-	"\x10validation_regex\x18\x04 \x01(\tB\x03\xe0A\x01R\x0fvalidationRegex\x12\x1f\n" +
-	"\brequired\x18\x05 \x01(\bB\x03\xe0A\x01R\brequired\x12Q\n" +
-	"\fenum_options\x18\x06 \x03(\v2).google.cloud.apihub.v1.ConfigValueOptionB\x03\xe0A\x01R\venumOptions\x12`\n" +
-	"\x14multi_select_options\x18\a \x03(\v2).google.cloud.apihub.v1.ConfigValueOptionB\x03\xe0A\x01R\x12multiSelectOptions\"\x8f\x01\n" +
+	"value_type\x18\x02 \x01(\x0e28.google.cloud.apihub.v1.ConfigVariableTemplate.ValueTypeB\x04\xe2A\x01\x02R\tvalueType\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12/\n" +
+	"\x10validation_regex\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x0fvalidationRegex\x12 \n" +
+	"\brequired\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\brequired\x12R\n" +
+	"\fenum_options\x18\x06 \x03(\v2).google.cloud.apihub.v1.ConfigValueOptionB\x04\xe2A\x01\x01R\venumOptions\x12a\n" +
+	"\x14multi_select_options\x18\a \x03(\v2).google.cloud.apihub.v1.ConfigValueOptionB\x04\xe2A\x01\x01R\x12multiSelectOptions\"\x8f\x01\n" +
 	"\tValueType\x12\x1a\n" +
 	"\x16VALUE_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -7045,46 +7045,46 @@ const file_google_cloud_apihub_v1_common_fields_proto_rawDesc = "" +
 	"\x04ENUM\x10\x05\x12\x10\n" +
 	"\fMULTI_SELECT\x10\x06\x12\x10\n" +
 	"\fMULTI_STRING\x10\a\x12\r\n" +
-	"\tMULTI_INT\x10\b\"\xc7\x06\n" +
-	"\x0eConfigVariable\x12(\n" +
-	"\fstring_value\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\vstringValue\x12\"\n" +
-	"\tint_value\x18\x03 \x01(\x03B\x03\xe0A\x01H\x00R\bintValue\x12$\n" +
+	"\tMULTI_INT\x10\b\"\xd3\x06\n" +
+	"\x0eConfigVariable\x12)\n" +
+	"\fstring_value\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\vstringValue\x12#\n" +
+	"\tint_value\x18\x03 \x01(\x03B\x04\xe2A\x01\x01H\x00R\bintValue\x12%\n" +
 	"\n" +
-	"bool_value\x18\x04 \x01(\bB\x03\xe0A\x01H\x00R\tboolValue\x12H\n" +
-	"\fsecret_value\x18\x05 \x01(\v2\x1e.google.cloud.apihub.v1.SecretB\x03\xe0A\x01H\x00R\vsecretValue\x12O\n" +
+	"bool_value\x18\x04 \x01(\bB\x04\xe2A\x01\x01H\x00R\tboolValue\x12I\n" +
+	"\fsecret_value\x18\x05 \x01(\v2\x1e.google.cloud.apihub.v1.SecretB\x04\xe2A\x01\x01H\x00R\vsecretValue\x12P\n" +
 	"\n" +
-	"enum_value\x18\x06 \x01(\v2).google.cloud.apihub.v1.ConfigValueOptionB\x03\xe0A\x01H\x00R\tenumValue\x12o\n" +
-	"\x13multi_select_values\x18\a \x01(\v28.google.cloud.apihub.v1.ConfigVariable.MultiSelectValuesB\x03\xe0A\x01H\x00R\x11multiSelectValues\x12o\n" +
-	"\x13multi_string_values\x18\b \x01(\v28.google.cloud.apihub.v1.ConfigVariable.MultiStringValuesB\x03\xe0A\x01H\x00R\x11multiStringValues\x12f\n" +
-	"\x10multi_int_values\x18\t \x01(\v25.google.cloud.apihub.v1.ConfigVariable.MultiIntValuesB\x03\xe0A\x01H\x00R\x0emultiIntValues\x12\x15\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x03R\x03key\x1a[\n" +
-	"\x11MultiSelectValues\x12F\n" +
-	"\x06values\x18\x01 \x03(\v2).google.cloud.apihub.v1.ConfigValueOptionB\x03\xe0A\x01R\x06values\x1a0\n" +
-	"\x11MultiStringValues\x12\x1b\n" +
-	"\x06values\x18\x01 \x03(\tB\x03\xe0A\x01R\x06values\x1a-\n" +
-	"\x0eMultiIntValues\x12\x1b\n" +
-	"\x06values\x18\x01 \x03(\x05B\x03\xe0A\x01R\x06valuesB\a\n" +
-	"\x05value\"p\n" +
-	"\x1aGoogleServiceAccountConfig\x12R\n" +
-	"\x0fservice_account\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!iam.googleapis.com/ServiceAccountR\x0eserviceAccount\"\x86\t\n" +
+	"enum_value\x18\x06 \x01(\v2).google.cloud.apihub.v1.ConfigValueOptionB\x04\xe2A\x01\x01H\x00R\tenumValue\x12p\n" +
+	"\x13multi_select_values\x18\a \x01(\v28.google.cloud.apihub.v1.ConfigVariable.MultiSelectValuesB\x04\xe2A\x01\x01H\x00R\x11multiSelectValues\x12p\n" +
+	"\x13multi_string_values\x18\b \x01(\v28.google.cloud.apihub.v1.ConfigVariable.MultiStringValuesB\x04\xe2A\x01\x01H\x00R\x11multiStringValues\x12g\n" +
+	"\x10multi_int_values\x18\t \x01(\v25.google.cloud.apihub.v1.ConfigVariable.MultiIntValuesB\x04\xe2A\x01\x01H\x00R\x0emultiIntValues\x12\x16\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x03key\x1a\\\n" +
+	"\x11MultiSelectValues\x12G\n" +
+	"\x06values\x18\x01 \x03(\v2).google.cloud.apihub.v1.ConfigValueOptionB\x04\xe2A\x01\x01R\x06values\x1a1\n" +
+	"\x11MultiStringValues\x12\x1c\n" +
+	"\x06values\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x06values\x1a.\n" +
+	"\x0eMultiIntValues\x12\x1c\n" +
+	"\x06values\x18\x01 \x03(\x05B\x04\xe2A\x01\x01R\x06valuesB\a\n" +
+	"\x05value\"q\n" +
+	"\x1aGoogleServiceAccountConfig\x12S\n" +
+	"\x0fservice_account\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!iam.googleapis.com/ServiceAccountR\x0eserviceAccount\"\x8e\t\n" +
 	"\n" +
 	"AuthConfig\x12w\n" +
 	"\x1dgoogle_service_account_config\x18\x02 \x01(\v22.google.cloud.apihub.v1.GoogleServiceAccountConfigH\x00R\x1agoogleServiceAccountConfig\x12i\n" +
 	"\x14user_password_config\x18\x03 \x01(\v25.google.cloud.apihub.v1.AuthConfig.UserPasswordConfigH\x00R\x12userPasswordConfig\x12W\n" +
 	"\x0eapi_key_config\x18\x04 \x01(\v2/.google.cloud.apihub.v1.AuthConfig.ApiKeyConfigH\x00R\fapiKeyConfig\x12\x8b\x01\n" +
-	" oauth2_client_credentials_config\x18\x05 \x01(\v2@.google.cloud.apihub.v1.AuthConfig.Oauth2ClientCredentialsConfigH\x00R\x1doauth2ClientCredentialsConfig\x12B\n" +
-	"\tauth_type\x18\x01 \x01(\x0e2 .google.cloud.apihub.v1.AuthTypeB\x03\xe0A\x02R\bauthType\x1av\n" +
-	"\x12UserPasswordConfig\x12\x1f\n" +
-	"\busername\x18\x01 \x01(\tB\x03\xe0A\x02R\busername\x12?\n" +
-	"\bpassword\x18\x02 \x01(\v2\x1e.google.cloud.apihub.v1.SecretB\x03\xe0A\x02R\bpassword\x1a\x8b\x01\n" +
-	"\x1dOauth2ClientCredentialsConfig\x12 \n" +
-	"\tclient_id\x18\x01 \x01(\tB\x03\xe0A\x02R\bclientId\x12H\n" +
-	"\rclient_secret\x18\x02 \x01(\v2\x1e.google.cloud.apihub.v1.SecretB\x03\xe0A\x02R\fclientSecret\x1a\xd8\x02\n" +
-	"\fApiKeyConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12<\n" +
-	"\aapi_key\x18\x02 \x01(\v2\x1e.google.cloud.apihub.v1.SecretB\x03\xe0A\x02R\x06apiKey\x12|\n" +
-	"\x15http_element_location\x18\x03 \x01(\x0e2C.google.cloud.apihub.v1.AuthConfig.ApiKeyConfig.HttpElementLocationB\x03\xe0A\x02R\x13httpElementLocation\"s\n" +
+	" oauth2_client_credentials_config\x18\x05 \x01(\v2@.google.cloud.apihub.v1.AuthConfig.Oauth2ClientCredentialsConfigH\x00R\x1doauth2ClientCredentialsConfig\x12C\n" +
+	"\tauth_type\x18\x01 \x01(\x0e2 .google.cloud.apihub.v1.AuthTypeB\x04\xe2A\x01\x02R\bauthType\x1ax\n" +
+	"\x12UserPasswordConfig\x12 \n" +
+	"\busername\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\busername\x12@\n" +
+	"\bpassword\x18\x02 \x01(\v2\x1e.google.cloud.apihub.v1.SecretB\x04\xe2A\x01\x02R\bpassword\x1a\x8d\x01\n" +
+	"\x1dOauth2ClientCredentialsConfig\x12!\n" +
+	"\tclient_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bclientId\x12I\n" +
+	"\rclient_secret\x18\x02 \x01(\v2\x1e.google.cloud.apihub.v1.SecretB\x04\xe2A\x01\x02R\fclientSecret\x1a\xdb\x02\n" +
+	"\fApiKeyConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12=\n" +
+	"\aapi_key\x18\x02 \x01(\v2\x1e.google.cloud.apihub.v1.SecretB\x04\xe2A\x01\x02R\x06apiKey\x12}\n" +
+	"\x15http_element_location\x18\x03 \x01(\x0e2C.google.cloud.apihub.v1.AuthConfig.ApiKeyConfig.HttpElementLocationB\x04\xe2A\x01\x02R\x13httpElementLocation\"s\n" +
 	"\x13HttpElementLocation\x12%\n" +
 	"!HTTP_ELEMENT_LOCATION_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05QUERY\x10\x01\x12\n" +
@@ -7094,44 +7094,44 @@ const file_google_cloud_apihub_v1_common_fields_proto_rawDesc = "" +
 	"\x04BODY\x10\x04\x12\n" +
 	"\n" +
 	"\x06COOKIE\x10\x05B\b\n" +
-	"\x06config\"\xcf\x05\n" +
-	"\x0eSourceMetadata\x12\x8b\x01\n" +
-	"\x1dplugin_instance_action_source\x18\x01 \x01(\v2A.google.cloud.apihub.v1.SourceMetadata.PluginInstanceActionSourceB\x03\xe0A\x03H\x00R\x1apluginInstanceActionSource\x12W\n" +
-	"\vsource_type\x18\x02 \x01(\x0e21.google.cloud.apihub.v1.SourceMetadata.SourceTypeB\x03\xe0A\x03R\n" +
-	"sourceType\x125\n" +
-	"\x14original_resource_id\x18\x03 \x01(\tB\x03\xe0A\x03R\x12originalResourceId\x12b\n" +
-	"\x1doriginal_resource_create_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x1aoriginalResourceCreateTime\x12b\n" +
-	"\x1doriginal_resource_update_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x1aoriginalResourceUpdateTime\x1a\x95\x01\n" +
-	"\x1aPluginInstanceActionSource\x12U\n" +
-	"\x0fplugin_instance\x18\x01 \x01(\tB,\xe0A\x03\xfaA&\n" +
-	"$apihub.googleapis.com/PluginInstanceR\x0epluginInstance\x12 \n" +
-	"\taction_id\x18\x02 \x01(\tB\x03\xe0A\x03R\bactionId\"5\n" +
+	"\x06config\"\xd6\x05\n" +
+	"\x0eSourceMetadata\x12\x8c\x01\n" +
+	"\x1dplugin_instance_action_source\x18\x01 \x01(\v2A.google.cloud.apihub.v1.SourceMetadata.PluginInstanceActionSourceB\x04\xe2A\x01\x03H\x00R\x1apluginInstanceActionSource\x12X\n" +
+	"\vsource_type\x18\x02 \x01(\x0e21.google.cloud.apihub.v1.SourceMetadata.SourceTypeB\x04\xe2A\x01\x03R\n" +
+	"sourceType\x126\n" +
+	"\x14original_resource_id\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x12originalResourceId\x12c\n" +
+	"\x1doriginal_resource_create_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x1aoriginalResourceCreateTime\x12c\n" +
+	"\x1doriginal_resource_update_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x1aoriginalResourceUpdateTime\x1a\x97\x01\n" +
+	"\x1aPluginInstanceActionSource\x12V\n" +
+	"\x0fplugin_instance\x18\x01 \x01(\tB-\xe2A\x01\x03\xfaA&\n" +
+	"$apihub.googleapis.com/PluginInstanceR\x0epluginInstance\x12!\n" +
+	"\taction_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\bactionId\"5\n" +
 	"\n" +
 	"SourceType\x12\x1b\n" +
 	"\x17SOURCE_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06PLUGIN\x10\x01B\b\n" +
-	"\x06source\"\xd8\t\n" +
-	"\x18DiscoveredApiObservation\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12Q\n" +
-	"\x05style\x18\x02 \x01(\x0e26.google.cloud.apihub.v1.DiscoveredApiObservation.StyleB\x03\xe0A\x01R\x05style\x12\"\n" +
+	"\x06source\"\xe6\t\n" +
+	"\x18DiscoveredApiObservation\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12R\n" +
+	"\x05style\x18\x02 \x01(\x0e26.google.cloud.apihub.v1.DiscoveredApiObservation.StyleB\x04\xe2A\x01\x01R\x05style\x12#\n" +
 	"\n" +
-	"server_ips\x18\x03 \x03(\tB\x03\xe0A\x01R\tserverIps\x12\x1f\n" +
-	"\bhostname\x18\x04 \x01(\tB\x03\xe0A\x01R\bhostname\x12X\n" +
-	"\x18last_event_detected_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x15lastEventDetectedTime\x12T\n" +
-	"\x10source_locations\x18\x06 \x03(\tB)\xe0A\x01\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x0fsourceLocations\x123\n" +
-	"\x13api_operation_count\x18\a \x01(\x03B\x03\xe0A\x01R\x11apiOperationCount\x12\x1b\n" +
-	"\x06origin\x18\b \x01(\tB\x03\xe0A\x01R\x06origin\x12c\n" +
-	"\fsource_types\x18\t \x03(\x0e2;.google.cloud.apihub.v1.DiscoveredApiObservation.SourceTypeB\x03\xe0A\x01R\vsourceTypes\x129\n" +
+	"server_ips\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\tserverIps\x12 \n" +
+	"\bhostname\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\bhostname\x12Y\n" +
+	"\x18last_event_detected_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x15lastEventDetectedTime\x12U\n" +
+	"\x10source_locations\x18\x06 \x03(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x0fsourceLocations\x124\n" +
+	"\x13api_operation_count\x18\a \x01(\x03B\x04\xe2A\x01\x01R\x11apiOperationCount\x12\x1c\n" +
+	"\x06origin\x18\b \x01(\tB\x04\xe2A\x01\x01R\x06origin\x12d\n" +
+	"\fsource_types\x18\t \x03(\x0e2;.google.cloud.apihub.v1.DiscoveredApiObservation.SourceTypeB\x04\xe2A\x01\x01R\vsourceTypes\x12:\n" +
 	"\x16known_operations_count\x18\n" +
-	" \x01(\x03B\x03\xe0A\x03R\x14knownOperationsCount\x12=\n" +
-	"\x18unknown_operations_count\x18\v \x01(\x03B\x03\xe0A\x03R\x16unknownOperationsCount\x12@\n" +
-	"\vcreate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12T\n" +
-	"\x0fsource_metadata\x18\x0e \x01(\v2&.google.cloud.apihub.v1.SourceMetadataB\x03\xe0A\x03R\x0esourceMetadata\"?\n" +
+	" \x01(\x03B\x04\xe2A\x01\x03R\x14knownOperationsCount\x12>\n" +
+	"\x18unknown_operations_count\x18\v \x01(\x03B\x04\xe2A\x01\x03R\x16unknownOperationsCount\x12A\n" +
+	"\vcreate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12U\n" +
+	"\x0fsource_metadata\x18\x0e \x01(\v2&.google.cloud.apihub.v1.SourceMetadataB\x04\xe2A\x01\x03R\x0esourceMetadata\"?\n" +
 	"\x05Style\x12\x15\n" +
 	"\x11STYLE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04REST\x10\x01\x12\b\n" +
@@ -7142,56 +7142,56 @@ const file_google_cloud_apihub_v1_common_fields_proto_rawDesc = "" +
 	"\x17SOURCE_TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aGCP_XLB\x10\x01\x12\v\n" +
 	"\aGCP_ILB\x10\x02:\xc9\x01\xeaA\xc5\x01\n" +
-	".apihub.googleapis.com/DiscoveredApiObservation\x12^projects/{project}/locations/{location}/discoveredApiObservations/{discovered_api_observation}*\x19discoveredApiObservations2\x18discoveredApiObservation\"\xdd\b\n" +
-	"\x16DiscoveredApiOperation\x12Z\n" +
-	"\x0ehttp_operation\x18\x02 \x01(\v2,.google.cloud.apihub.v1.HttpOperationDetailsB\x03\xe0A\x01H\x00R\rhttpOperation\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12G\n" +
-	"\x0ffirst_seen_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\rfirstSeenTime\x12E\n" +
-	"\x0elast_seen_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\flastSeenTime\x12\x19\n" +
-	"\x05count\x18\x05 \x01(\x03B\x03\xe0A\x01R\x05count\x12j\n" +
-	"\x0eclassification\x18\x06 \x01(\x0e2=.google.cloud.apihub.v1.DiscoveredApiOperation.ClassificationB\x03\xe0A\x03R\x0eclassification\x12d\n" +
-	"\rmatch_results\x18\a \x03(\v2:.google.cloud.apihub.v1.DiscoveredApiOperation.MatchResultB\x03\xe0A\x03R\fmatchResults\x12T\n" +
-	"\x0fsource_metadata\x18\b \x01(\v2&.google.cloud.apihub.v1.SourceMetadataB\x03\xe0A\x03R\x0esourceMetadata\x12@\n" +
-	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
+	".apihub.googleapis.com/DiscoveredApiObservation\x12^projects/{project}/locations/{location}/discoveredApiObservations/{discovered_api_observation}*\x19discoveredApiObservations2\x18discoveredApiObservation\"\xe8\b\n" +
+	"\x16DiscoveredApiOperation\x12[\n" +
+	"\x0ehttp_operation\x18\x02 \x01(\v2,.google.cloud.apihub.v1.HttpOperationDetailsB\x04\xe2A\x01\x01H\x00R\rhttpOperation\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12H\n" +
+	"\x0ffirst_seen_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\rfirstSeenTime\x12F\n" +
+	"\x0elast_seen_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\flastSeenTime\x12\x1a\n" +
+	"\x05count\x18\x05 \x01(\x03B\x04\xe2A\x01\x01R\x05count\x12k\n" +
+	"\x0eclassification\x18\x06 \x01(\x0e2=.google.cloud.apihub.v1.DiscoveredApiOperation.ClassificationB\x04\xe2A\x01\x03R\x0eclassification\x12e\n" +
+	"\rmatch_results\x18\a \x03(\v2:.google.cloud.apihub.v1.DiscoveredApiOperation.MatchResultB\x04\xe2A\x01\x03R\fmatchResults\x12U\n" +
+	"\x0fsource_metadata\x18\b \x01(\v2&.google.cloud.apihub.v1.SourceMetadataB\x04\xe2A\x01\x03R\x0esourceMetadata\x12A\n" +
+	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
 	"\vupdate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x1a&\n" +
-	"\vMatchResult\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\"H\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x1a'\n" +
+	"\vMatchResult\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\"H\n" +
 	"\x0eClassification\x12\x1e\n" +
 	"\x1aCLASSIFICATION_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05KNOWN\x10\x01\x12\v\n" +
 	"\aUNKNOWN\x10\x02:\xf7\x01\xeaA\xf3\x01\n" +
 	",apihub.googleapis.com/DiscoveredApiOperation\x12\x91\x01projects/{project}/locations/{location}/discoveredApiObservations/{discovered_api_observation}/discoveredApiOperations/{discovered_api_operation}*\x17discoveredApiOperations2\x16discoveredApiOperationB\v\n" +
-	"\toperation\"\xf4\r\n" +
-	"\x14HttpOperationDetails\x12Q\n" +
-	"\x0ehttp_operation\x18\x01 \x01(\v2%.google.cloud.apihub.v1.HttpOperationB\x03\xe0A\x02R\rhttpOperation\x12\\\n" +
-	"\vpath_params\x18\x02 \x03(\v26.google.cloud.apihub.v1.HttpOperationDetails.PathParamB\x03\xe0A\x01R\n" +
-	"pathParams\x12e\n" +
-	"\fquery_params\x18\x03 \x03(\v2=.google.cloud.apihub.v1.HttpOperationDetails.QueryParamsEntryB\x03\xe0A\x01R\vqueryParams\x12W\n" +
-	"\arequest\x18\x04 \x01(\v28.google.cloud.apihub.v1.HttpOperationDetails.HttpRequestB\x03\xe0A\x01R\arequest\x12Z\n" +
-	"\bresponse\x18\x05 \x01(\v29.google.cloud.apihub.v1.HttpOperationDetails.HttpResponseB\x03\xe0A\x01R\bresponse\x1a\x85\x01\n" +
-	"\tPathParam\x12\x1f\n" +
-	"\bposition\x18\x01 \x01(\x05B\x03\xe0A\x01R\bposition\x12W\n" +
-	"\tdata_type\x18\x02 \x01(\x0e25.google.cloud.apihub.v1.HttpOperationDetails.DataTypeB\x03\xe0A\x01R\bdataType\x1a\x99\x01\n" +
+	"\toperation\"\x81\x0e\n" +
+	"\x14HttpOperationDetails\x12R\n" +
+	"\x0ehttp_operation\x18\x01 \x01(\v2%.google.cloud.apihub.v1.HttpOperationB\x04\xe2A\x01\x02R\rhttpOperation\x12]\n" +
+	"\vpath_params\x18\x02 \x03(\v26.google.cloud.apihub.v1.HttpOperationDetails.PathParamB\x04\xe2A\x01\x01R\n" +
+	"pathParams\x12f\n" +
+	"\fquery_params\x18\x03 \x03(\v2=.google.cloud.apihub.v1.HttpOperationDetails.QueryParamsEntryB\x04\xe2A\x01\x01R\vqueryParams\x12X\n" +
+	"\arequest\x18\x04 \x01(\v28.google.cloud.apihub.v1.HttpOperationDetails.HttpRequestB\x04\xe2A\x01\x01R\arequest\x12[\n" +
+	"\bresponse\x18\x05 \x01(\v29.google.cloud.apihub.v1.HttpOperationDetails.HttpResponseB\x04\xe2A\x01\x01R\bresponse\x1a\x87\x01\n" +
+	"\tPathParam\x12 \n" +
+	"\bposition\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\bposition\x12X\n" +
+	"\tdata_type\x18\x02 \x01(\x0e25.google.cloud.apihub.v1.HttpOperationDetails.DataTypeB\x04\xe2A\x01\x01R\bdataType\x1a\x9c\x01\n" +
 	"\n" +
-	"QueryParam\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x19\n" +
-	"\x05count\x18\x02 \x01(\x03B\x03\xe0A\x01R\x05count\x12W\n" +
-	"\tdata_type\x18\x03 \x01(\x0e25.google.cloud.apihub.v1.HttpOperationDetails.DataTypeB\x03\xe0A\x01R\bdataType\x1a\x86\x01\n" +
+	"QueryParam\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x1a\n" +
+	"\x05count\x18\x02 \x01(\x03B\x04\xe2A\x01\x01R\x05count\x12X\n" +
+	"\tdata_type\x18\x03 \x01(\x0e25.google.cloud.apihub.v1.HttpOperationDetails.DataTypeB\x04\xe2A\x01\x01R\bdataType\x1a\x86\x01\n" +
 	"\x06Header\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
 	"\x05count\x18\x02 \x01(\x03R\x05count\x12R\n" +
-	"\tdata_type\x18\x03 \x01(\x0e25.google.cloud.apihub.v1.HttpOperationDetails.DataTypeR\bdataType\x1a\xe4\x01\n" +
-	"\vHttpRequest\x12d\n" +
-	"\aheaders\x18\x01 \x03(\v2E.google.cloud.apihub.v1.HttpOperationDetails.HttpRequest.HeadersEntryB\x03\xe0A\x01R\aheaders\x1ao\n" +
+	"\tdata_type\x18\x03 \x01(\x0e25.google.cloud.apihub.v1.HttpOperationDetails.DataTypeR\bdataType\x1a\xe5\x01\n" +
+	"\vHttpRequest\x12e\n" +
+	"\aheaders\x18\x01 \x03(\v2E.google.cloud.apihub.v1.HttpOperationDetails.HttpRequest.HeadersEntryB\x04\xe2A\x01\x01R\aheaders\x1ao\n" +
 	"\fHeadersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12I\n" +
-	"\x05value\x18\x02 \x01(\v23.google.cloud.apihub.v1.HttpOperationDetails.HeaderR\x05value:\x028\x01\x1a\xa2\x03\n" +
-	"\fHttpResponse\x12e\n" +
-	"\aheaders\x18\x01 \x03(\v2F.google.cloud.apihub.v1.HttpOperationDetails.HttpResponse.HeadersEntryB\x03\xe0A\x01R\aheaders\x12x\n" +
-	"\x0eresponse_codes\x18\x02 \x03(\v2L.google.cloud.apihub.v1.HttpOperationDetails.HttpResponse.ResponseCodesEntryB\x03\xe0A\x01R\rresponseCodes\x1ao\n" +
+	"\x05value\x18\x02 \x01(\v23.google.cloud.apihub.v1.HttpOperationDetails.HeaderR\x05value:\x028\x01\x1a\xa4\x03\n" +
+	"\fHttpResponse\x12f\n" +
+	"\aheaders\x18\x01 \x03(\v2F.google.cloud.apihub.v1.HttpOperationDetails.HttpResponse.HeadersEntryB\x04\xe2A\x01\x01R\aheaders\x12y\n" +
+	"\x0eresponse_codes\x18\x02 \x03(\v2L.google.cloud.apihub.v1.HttpOperationDetails.HttpResponse.ResponseCodesEntryB\x04\xe2A\x01\x01R\rresponseCodes\x1ao\n" +
 	"\fHeadersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12I\n" +
 	"\x05value\x18\x02 \x01(\v23.google.cloud.apihub.v1.HttpOperationDetails.HeaderR\x05value:\x028\x01\x1a@\n" +

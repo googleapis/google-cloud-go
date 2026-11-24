@@ -6620,65 +6620,65 @@ var File_google_analytics_admin_v1alpha_resources_proto protoreflect.FileDescrip
 
 const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\n" +
-	".google/analytics/admin/v1alpha/resources.proto\x12\x1egoogle.analytics.admin.v1alpha\x1a-google/analytics/admin/v1alpha/audience.proto\x1a2google/analytics/admin/v1alpha/channel_group.proto\x1a:google/analytics/admin/v1alpha/event_create_and_edit.proto\x1a6google/analytics/admin/v1alpha/expanded_data_set.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x16google/type/date.proto\"\xc8\x03\n" +
-	"\aAccount\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12&\n" +
-	"\fdisplay_name\x18\x04 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12\x1f\n" +
+	".google/analytics/admin/v1alpha/resources.proto\x12\x1egoogle.analytics.admin.v1alpha\x1a-google/analytics/admin/v1alpha/audience.proto\x1a2google/analytics/admin/v1alpha/channel_group.proto\x1a:google/analytics/admin/v1alpha/event_create_and_edit.proto\x1a6google/analytics/admin/v1alpha/expanded_data_set.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x16google/type/date.proto\"\xce\x03\n" +
+	"\aAccount\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12'\n" +
+	"\fdisplay_name\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12\x1f\n" +
 	"\vregion_code\x18\x05 \x01(\tR\n" +
-	"regionCode\x12\x1d\n" +
-	"\adeleted\x18\x06 \x01(\bB\x03\xe0A\x03R\adeleted\x12e\n" +
-	"\x10gmp_organization\x18\a \x01(\tB:\xe0A\x03\xfaA4\n" +
+	"regionCode\x12\x1e\n" +
+	"\adeleted\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\adeleted\x12f\n" +
+	"\x10gmp_organization\x18\a \x01(\tB;\xe2A\x01\x03\xfaA4\n" +
 	"2marketingplatformadmin.googleapis.com/OrganizationR\x0fgmpOrganization:Q\xeaAN\n" +
-	"%analyticsadmin.googleapis.com/Account\x12\x12accounts/{account}*\baccounts2\aaccount\"\xe9\x06\n" +
-	"\bProperty\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12V\n" +
-	"\rproperty_type\x18\x0e \x01(\x0e2,.google.analytics.admin.v1alpha.PropertyTypeB\x03\xe0A\x05R\fpropertyType\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x1b\n" +
-	"\x06parent\x18\x02 \x01(\tB\x03\xe0A\x05R\x06parent\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12]\n" +
-	"\x11industry_category\x18\x06 \x01(\x0e20.google.analytics.admin.v1alpha.IndustryCategoryR\x10industryCategory\x12 \n" +
-	"\ttime_zone\x18\a \x01(\tB\x03\xe0A\x02R\btimeZone\x12#\n" +
-	"\rcurrency_code\x18\b \x01(\tR\fcurrencyCode\x12V\n" +
+	"%analyticsadmin.googleapis.com/Account\x12\x12accounts/{account}*\baccounts2\aaccount\"\xf4\x06\n" +
+	"\bProperty\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12W\n" +
+	"\rproperty_type\x18\x0e \x01(\x0e2,.google.analytics.admin.v1alpha.PropertyTypeB\x04\xe2A\x01\x05R\fpropertyType\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x1c\n" +
+	"\x06parent\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\x06parent\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12]\n" +
+	"\x11industry_category\x18\x06 \x01(\x0e20.google.analytics.admin.v1alpha.IndustryCategoryR\x10industryCategory\x12!\n" +
+	"\ttime_zone\x18\a \x01(\tB\x04\xe2A\x01\x02R\btimeZone\x12#\n" +
+	"\rcurrency_code\x18\b \x01(\tR\fcurrencyCode\x12W\n" +
 	"\rservice_level\x18\n" +
-	" \x01(\x0e2,.google.analytics.admin.v1alpha.ServiceLevelB\x03\xe0A\x03R\fserviceLevel\x12@\n" +
-	"\vdelete_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12@\n" +
-	"\vexpire_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12G\n" +
-	"\aaccount\x18\r \x01(\tB-\xe0A\x05\xfaA'\n" +
+	" \x01(\x0e2,.google.analytics.admin.v1alpha.ServiceLevelB\x04\xe2A\x01\x03R\fserviceLevel\x12A\n" +
+	"\vdelete_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12A\n" +
+	"\vexpire_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12H\n" +
+	"\aaccount\x18\r \x01(\tB.\xe2A\x01\x05\xfaA'\n" +
 	"%analyticsadmin.googleapis.com/AccountR\aaccount:X\xeaAU\n" +
 	"&analyticsadmin.googleapis.com/Property\x12\x15properties/{property}*\n" +
-	"properties2\bproperty\"\xd5\t\n" +
+	"properties2\bproperty\"\xdb\t\n" +
 	"\n" +
 	"DataStream\x12b\n" +
 	"\x0fweb_stream_data\x18\x06 \x01(\v28.google.analytics.admin.v1alpha.DataStream.WebStreamDataH\x00R\rwebStreamData\x12x\n" +
 	"\x17android_app_stream_data\x18\a \x01(\v2?.google.analytics.admin.v1alpha.DataStream.AndroidAppStreamDataH\x00R\x14androidAppStreamData\x12l\n" +
-	"\x13ios_app_stream_data\x18\b \x01(\v2;.google.analytics.admin.v1alpha.DataStream.IosAppStreamDataH\x00R\x10iosAppStreamData\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12U\n" +
-	"\x04type\x18\x02 \x01(\x0e29.google.analytics.admin.v1alpha.DataStream.DataStreamTypeB\x06\xe0A\x05\xe0A\x02R\x04type\x12!\n" +
-	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x1a\x89\x01\n" +
-	"\rWebStreamData\x12*\n" +
-	"\x0emeasurement_id\x18\x01 \x01(\tB\x03\xe0A\x03R\rmeasurementId\x12+\n" +
-	"\x0ffirebase_app_id\x18\x02 \x01(\tB\x03\xe0A\x03R\rfirebaseAppId\x12\x1f\n" +
+	"\x13ios_app_stream_data\x18\b \x01(\v2;.google.analytics.admin.v1alpha.DataStream.IosAppStreamDataH\x00R\x10iosAppStreamData\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12T\n" +
+	"\x04type\x18\x02 \x01(\x0e29.google.analytics.admin.v1alpha.DataStream.DataStreamTypeB\x05\xe2A\x02\x05\x02R\x04type\x12!\n" +
+	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x1a\x8b\x01\n" +
+	"\rWebStreamData\x12+\n" +
+	"\x0emeasurement_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\rmeasurementId\x12,\n" +
+	"\x0ffirebase_app_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rfirebaseAppId\x12\x1f\n" +
 	"\vdefault_uri\x18\x03 \x01(\tR\n" +
-	"defaultUri\x1ak\n" +
-	"\x14AndroidAppStreamData\x12+\n" +
-	"\x0ffirebase_app_id\x18\x01 \x01(\tB\x03\xe0A\x03R\rfirebaseAppId\x12&\n" +
-	"\fpackage_name\x18\x02 \x01(\tB\x03\xe0A\x05R\vpackageName\x1ad\n" +
-	"\x10IosAppStreamData\x12+\n" +
-	"\x0ffirebase_app_id\x18\x01 \x01(\tB\x03\xe0A\x03R\rfirebaseAppId\x12#\n" +
-	"\tbundle_id\x18\x02 \x01(\tB\x06\xe0A\x05\xe0A\x02R\bbundleId\"}\n" +
+	"defaultUri\x1am\n" +
+	"\x14AndroidAppStreamData\x12,\n" +
+	"\x0ffirebase_app_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\rfirebaseAppId\x12'\n" +
+	"\fpackage_name\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\vpackageName\x1ad\n" +
+	"\x10IosAppStreamData\x12,\n" +
+	"\x0ffirebase_app_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\rfirebaseAppId\x12\"\n" +
+	"\tbundle_id\x18\x02 \x01(\tB\x05\xe2A\x02\x05\x02R\bbundleId\"}\n" +
 	"\x0eDataStreamType\x12 \n" +
 	"\x1cDATA_STREAM_TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fWEB_DATA_STREAM\x10\x01\x12\x1b\n" +
@@ -6686,39 +6686,39 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\x13IOS_APP_DATA_STREAM\x10\x03:w\xeaAt\n" +
 	"(analyticsadmin.googleapis.com/DataStream\x12/properties/{property}/dataStreams/{data_stream}*\vdataStreams2\n" +
 	"dataStreamB\r\n" +
-	"\vstream_data\"\x8c\x02\n" +
-	"\fFirebaseLink\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x05R\aproject\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\vstream_data\"\x8f\x02\n" +
+	"\fFirebaseLink\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1e\n" +
+	"\aproject\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\aproject\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime:\x81\x01\xeaA~\n" +
-	"*analyticsadmin.googleapis.com/FirebaseLink\x123properties/{property}/firebaseLinks/{firebase_link}*\rfirebaseLinks2\ffirebaseLink\"\xd9\x01\n" +
-	"\rGlobalSiteTag\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\asnippet\x18\x02 \x01(\tB\x03\xe0A\x05R\asnippet:\x8f\x01\xeaA\x8b\x01\n" +
-	"+analyticsadmin.googleapis.com/GlobalSiteTag\x12=properties/{property}/dataStreams/{data_stream}/globalSiteTag*\x0eglobalSiteTags2\rglobalSiteTag\"\xa5\x04\n" +
-	"\rGoogleAdsLink\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12$\n" +
-	"\vcustomer_id\x18\x03 \x01(\tB\x03\xe0A\x05R\n" +
-	"customerId\x121\n" +
-	"\x12can_manage_clients\x18\x04 \x01(\bB\x03\xe0A\x03R\x10canManageClients\x12Z\n" +
-	"\x1bads_personalization_enabled\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueR\x19adsPersonalizationEnabled\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x127\n" +
-	"\x15creator_email_address\x18\t \x01(\tB\x03\xe0A\x03R\x13creatorEmailAddress:\x88\x01\xeaA\x84\x01\n" +
-	"+analyticsadmin.googleapis.com/GoogleAdsLink\x126properties/{property}/googleAdsLinks/{google_ads_link}*\x0egoogleAdsLinks2\rgoogleAdsLink\"\xc7\x04\n" +
-	"\x13DataSharingSettings\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12L\n" +
+	"*analyticsadmin.googleapis.com/FirebaseLink\x123properties/{property}/firebaseLinks/{firebase_link}*\rfirebaseLinks2\ffirebaseLink\"\xdb\x01\n" +
+	"\rGlobalSiteTag\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1e\n" +
+	"\asnippet\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\asnippet:\x8f\x01\xeaA\x8b\x01\n" +
+	"+analyticsadmin.googleapis.com/GlobalSiteTag\x12=properties/{property}/dataStreams/{data_stream}/globalSiteTag*\x0eglobalSiteTags2\rglobalSiteTag\"\xab\x04\n" +
+	"\rGoogleAdsLink\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12%\n" +
+	"\vcustomer_id\x18\x03 \x01(\tB\x04\xe2A\x01\x05R\n" +
+	"customerId\x122\n" +
+	"\x12can_manage_clients\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\x10canManageClients\x12Z\n" +
+	"\x1bads_personalization_enabled\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueR\x19adsPersonalizationEnabled\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x128\n" +
+	"\x15creator_email_address\x18\t \x01(\tB\x04\xe2A\x01\x03R\x13creatorEmailAddress:\x88\x01\xeaA\x84\x01\n" +
+	"+analyticsadmin.googleapis.com/GoogleAdsLink\x126properties/{property}/googleAdsLinks/{google_ads_link}*\x0egoogleAdsLinks2\rgoogleAdsLink\"\xc8\x04\n" +
+	"\x13DataSharingSettings\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12L\n" +
 	"#sharing_with_google_support_enabled\x18\x02 \x01(\bR\x1fsharingWithGoogleSupportEnabled\x12Y\n" +
 	"*sharing_with_google_assigned_sales_enabled\x18\x03 \x01(\bR%sharingWithGoogleAssignedSalesEnabled\x12S\n" +
 	"%sharing_with_google_any_sales_enabled\x18\x04 \x01(\bB\x02\x18\x01R sharingWithGoogleAnySalesEnabled\x12N\n" +
 	"$sharing_with_google_products_enabled\x18\x05 \x01(\bR sharingWithGoogleProductsEnabled\x12=\n" +
 	"\x1bsharing_with_others_enabled\x18\x06 \x01(\bR\x18sharingWithOthersEnabled:\x89\x01\xeaA\x85\x01\n" +
-	"1analyticsadmin.googleapis.com/DataSharingSettings\x12&accounts/{account}/dataSharingSettings*\x13dataSharingSettings2\x13dataSharingSettings\"\xeb\x02\n" +
-	"\x0eAccountSummary\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12D\n" +
+	"1analyticsadmin.googleapis.com/DataSharingSettings\x12&accounts/{account}/dataSharingSettings*\x13dataSharingSettings2\x13dataSharingSettings\"\xec\x02\n" +
+	"\x0eAccountSummary\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12D\n" +
 	"\aaccount\x18\x02 \x01(\tB*\xfaA'\n" +
 	"%analyticsadmin.googleapis.com/AccountR\aaccount\x12!\n" +
 	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12^\n" +
@@ -6730,33 +6730,33 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12Q\n" +
 	"\rproperty_type\x18\x03 \x01(\x0e2,.google.analytics.admin.v1alpha.PropertyTypeR\fpropertyType\x12\x16\n" +
 	"\x06parent\x18\x04 \x01(\tR\x06parent\x12\x19\n" +
-	"\bcan_edit\x18\x05 \x01(\bR\acanEdit\"\xe5\x02\n" +
-	"\x19MeasurementProtocolSecret\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12&\n" +
-	"\fsecret_value\x18\x03 \x01(\tB\x03\xe0A\x03R\vsecretValue:\xde\x01\xeaA\xda\x01\n" +
-	"7analyticsadmin.googleapis.com/MeasurementProtocolSecret\x12hproperties/{property}/dataStreams/{data_stream}/measurementProtocolSecrets/{measurement_protocol_secret}*\x1ameasurementProtocolSecrets2\x19measurementProtocolSecret\"\xa0\x05\n" +
-	" SKAdNetworkConversionValueSchema\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12c\n" +
-	"\x13postback_window_one\x18\x02 \x01(\v2..google.analytics.admin.v1alpha.PostbackWindowB\x03\xe0A\x02R\x11postbackWindowOne\x12^\n" +
+	"\bcan_edit\x18\x05 \x01(\bR\acanEdit\"\xe8\x02\n" +
+	"\x19MeasurementProtocolSecret\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12'\n" +
+	"\fsecret_value\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vsecretValue:\xde\x01\xeaA\xda\x01\n" +
+	"7analyticsadmin.googleapis.com/MeasurementProtocolSecret\x12hproperties/{property}/dataStreams/{data_stream}/measurementProtocolSecrets/{measurement_protocol_secret}*\x1ameasurementProtocolSecrets2\x19measurementProtocolSecret\"\xa2\x05\n" +
+	" SKAdNetworkConversionValueSchema\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12d\n" +
+	"\x13postback_window_one\x18\x02 \x01(\v2..google.analytics.admin.v1alpha.PostbackWindowB\x04\xe2A\x01\x02R\x11postbackWindowOne\x12^\n" +
 	"\x13postback_window_two\x18\x03 \x01(\v2..google.analytics.admin.v1alpha.PostbackWindowR\x11postbackWindowTwo\x12b\n" +
 	"\x15postback_window_three\x18\x04 \x01(\v2..google.analytics.admin.v1alpha.PostbackWindowR\x13postbackWindowThree\x126\n" +
 	"\x17apply_conversion_values\x18\x05 \x01(\bR\x15applyConversionValues:\x81\x02\xeaA\xfd\x01\n" +
 	">analyticsadmin.googleapis.com/SKAdNetworkConversionValueSchema\x12vproperties/{property}/dataStreams/{data_stream}/sKAdNetworkConversionValueSchema/{skadnetwork_conversion_value_schema}*!skAdNetworkConversionValueSchemas2 skAdNetworkConversionValueSchema\"\xb8\x01\n" +
 	"\x0ePostbackWindow\x12]\n" +
 	"\x11conversion_values\x18\x01 \x03(\v20.google.analytics.admin.v1alpha.ConversionValuesR\x10conversionValues\x12G\n" +
-	" postback_window_settings_enabled\x18\x02 \x01(\bR\x1dpostbackWindowSettingsEnabled\"\xb5\x02\n" +
+	" postback_window_settings_enabled\x18\x02 \x01(\bR\x1dpostbackWindowSettingsEnabled\"\xb6\x02\n" +
 	"\x10ConversionValues\x12!\n" +
 	"\fdisplay_name\x18\x01 \x01(\tR\vdisplayName\x12\"\n" +
 	"\n" +
-	"fine_value\x18\x02 \x01(\x05H\x00R\tfineValue\x88\x01\x01\x12S\n" +
-	"\fcoarse_value\x18\x03 \x01(\x0e2+.google.analytics.admin.v1alpha.CoarseValueB\x03\xe0A\x02R\vcoarseValue\x12S\n" +
+	"fine_value\x18\x02 \x01(\x05H\x00R\tfineValue\x88\x01\x01\x12T\n" +
+	"\fcoarse_value\x18\x03 \x01(\x0e2+.google.analytics.admin.v1alpha.CoarseValueB\x04\xe2A\x01\x02R\vcoarseValue\x12S\n" +
 	"\x0eevent_mappings\x18\x04 \x03(\v2,.google.analytics.admin.v1alpha.EventMappingR\reventMappings\x12!\n" +
 	"\flock_enabled\x18\x05 \x01(\bR\vlockEnabledB\r\n" +
-	"\v_fine_value\"\xb6\x02\n" +
-	"\fEventMapping\x12\"\n" +
+	"\v_fine_value\"\xb7\x02\n" +
+	"\fEventMapping\x12#\n" +
 	"\n" +
-	"event_name\x18\x01 \x01(\tB\x03\xe0A\x02R\teventName\x12+\n" +
+	"event_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\teventName\x12+\n" +
 	"\x0fmin_event_count\x18\x02 \x01(\x03H\x00R\rminEventCount\x88\x01\x01\x12+\n" +
 	"\x0fmax_event_count\x18\x03 \x01(\x03H\x01R\rmaxEventCount\x88\x01\x01\x12+\n" +
 	"\x0fmin_event_value\x18\x04 \x01(\x01H\x02R\rminEventValue\x88\x01\x01\x12+\n" +
@@ -6813,48 +6813,48 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\x1breporting_identity_settings\x18\" \x01(\v29.google.analytics.admin.v1alpha.ReportingIdentitySettingsH\x00R\x19reportingIdentitySettings\x12y\n" +
 	"\x1buser_provided_data_settings\x18# \x01(\v28.google.analytics.admin.v1alpha.UserProvidedDataSettingsH\x00R\x18userProvidedDataSettingsB\n" +
 	"\n" +
-	"\bresource\"\x98\x05\n" +
-	"\x1dDisplayVideo360AdvertiserLink\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12(\n" +
-	"\radvertiser_id\x18\x02 \x01(\tB\x03\xe0A\x05R\fadvertiserId\x12;\n" +
-	"\x17advertiser_display_name\x18\x03 \x01(\tB\x03\xe0A\x03R\x15advertiserDisplayName\x12Z\n" +
-	"\x1bads_personalization_enabled\x18\x04 \x01(\v2\x1a.google.protobuf.BoolValueR\x19adsPersonalizationEnabled\x12b\n" +
-	"\x1dcampaign_data_sharing_enabled\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x05R\x1acampaignDataSharingEnabled\x12Z\n" +
-	"\x19cost_data_sharing_enabled\x18\x06 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x05R\x16costDataSharingEnabled:\xda\x01\xeaA\xd6\x01\n" +
-	";analyticsadmin.googleapis.com/DisplayVideo360AdvertiserLink\x12Xproperties/{property}/displayVideo360AdvertiserLinks/{display_video_360_advertiser_link}*\x1edisplayVideo360AdvertiserLinks2\x1ddisplayVideo360AdvertiserLink\"\xff\x06\n" +
-	"%DisplayVideo360AdvertiserLinkProposal\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12(\n" +
-	"\radvertiser_id\x18\x02 \x01(\tB\x03\xe0A\x05R\fadvertiserId\x12\x7f\n" +
-	"\x1clink_proposal_status_details\x18\x03 \x01(\v29.google.analytics.admin.v1alpha.LinkProposalStatusDetailsB\x03\xe0A\x03R\x19linkProposalStatusDetails\x12;\n" +
-	"\x17advertiser_display_name\x18\x04 \x01(\tB\x03\xe0A\x03R\x15advertiserDisplayName\x12.\n" +
-	"\x10validation_email\x18\x05 \x01(\tB\x03\xe0A\x04R\x0fvalidationEmail\x12_\n" +
-	"\x1bads_personalization_enabled\x18\x06 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x05R\x19adsPersonalizationEnabled\x12b\n" +
-	"\x1dcampaign_data_sharing_enabled\x18\a \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x05R\x1acampaignDataSharingEnabled\x12Z\n" +
-	"\x19cost_data_sharing_enabled\x18\b \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x05R\x16costDataSharingEnabled:\x83\x02\xeaA\xff\x01\n" +
-	"Canalyticsadmin.googleapis.com/DisplayVideo360AdvertiserLinkProposal\x12iproperties/{property}/displayVideo360AdvertiserLinkProposals/{display_video_360_advertiser_link_proposal}*&displayVideo360AdvertiserLinkProposals2%displayVideo360AdvertiserLinkProposal\"\xa2\x05\n" +
-	"\x10SearchAds360Link\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12(\n" +
-	"\radvertiser_id\x18\x02 \x01(\tB\x03\xe0A\x05R\fadvertiserId\x12b\n" +
-	"\x1dcampaign_data_sharing_enabled\x18\x03 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x05R\x1acampaignDataSharingEnabled\x12Z\n" +
-	"\x19cost_data_sharing_enabled\x18\x04 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x05R\x16costDataSharingEnabled\x12;\n" +
-	"\x17advertiser_display_name\x18\x05 \x01(\tB\x03\xe0A\x03R\x15advertiserDisplayName\x12Z\n" +
+	"\bresource\"\x9d\x05\n" +
+	"\x1dDisplayVideo360AdvertiserLink\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12)\n" +
+	"\radvertiser_id\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\fadvertiserId\x12<\n" +
+	"\x17advertiser_display_name\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x15advertiserDisplayName\x12Z\n" +
+	"\x1bads_personalization_enabled\x18\x04 \x01(\v2\x1a.google.protobuf.BoolValueR\x19adsPersonalizationEnabled\x12c\n" +
+	"\x1dcampaign_data_sharing_enabled\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x05R\x1acampaignDataSharingEnabled\x12[\n" +
+	"\x19cost_data_sharing_enabled\x18\x06 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x05R\x16costDataSharingEnabled:\xda\x01\xeaA\xd6\x01\n" +
+	";analyticsadmin.googleapis.com/DisplayVideo360AdvertiserLink\x12Xproperties/{property}/displayVideo360AdvertiserLinks/{display_video_360_advertiser_link}*\x1edisplayVideo360AdvertiserLinks2\x1ddisplayVideo360AdvertiserLink\"\x88\a\n" +
+	"%DisplayVideo360AdvertiserLinkProposal\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12)\n" +
+	"\radvertiser_id\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\fadvertiserId\x12\x80\x01\n" +
+	"\x1clink_proposal_status_details\x18\x03 \x01(\v29.google.analytics.admin.v1alpha.LinkProposalStatusDetailsB\x04\xe2A\x01\x03R\x19linkProposalStatusDetails\x12<\n" +
+	"\x17advertiser_display_name\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x15advertiserDisplayName\x12/\n" +
+	"\x10validation_email\x18\x05 \x01(\tB\x04\xe2A\x01\x04R\x0fvalidationEmail\x12`\n" +
+	"\x1bads_personalization_enabled\x18\x06 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x05R\x19adsPersonalizationEnabled\x12c\n" +
+	"\x1dcampaign_data_sharing_enabled\x18\a \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x05R\x1acampaignDataSharingEnabled\x12[\n" +
+	"\x19cost_data_sharing_enabled\x18\b \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x05R\x16costDataSharingEnabled:\x83\x02\xeaA\xff\x01\n" +
+	"Canalyticsadmin.googleapis.com/DisplayVideo360AdvertiserLinkProposal\x12iproperties/{property}/displayVideo360AdvertiserLinkProposals/{display_video_360_advertiser_link_proposal}*&displayVideo360AdvertiserLinkProposals2%displayVideo360AdvertiserLinkProposal\"\xa7\x05\n" +
+	"\x10SearchAds360Link\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12)\n" +
+	"\radvertiser_id\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\fadvertiserId\x12c\n" +
+	"\x1dcampaign_data_sharing_enabled\x18\x03 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x05R\x1acampaignDataSharingEnabled\x12[\n" +
+	"\x19cost_data_sharing_enabled\x18\x04 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x05R\x16costDataSharingEnabled\x12<\n" +
+	"\x17advertiser_display_name\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x15advertiserDisplayName\x12Z\n" +
 	"\x1bads_personalization_enabled\x18\x06 \x01(\v2\x1a.google.protobuf.BoolValueR\x19adsPersonalizationEnabled\x12W\n" +
 	"\x1asite_stats_sharing_enabled\x18\a \x01(\v2\x1a.google.protobuf.BoolValueR\x17siteStatsSharingEnabled:\x98\x01\xeaA\x94\x01\n" +
-	".analyticsadmin.googleapis.com/SearchAds360Link\x12=properties/{property}/searchAds360Links/{search_ads_360_link}*\x11searchAds360Links2\x10searchAds360Link\"\xbf\x02\n" +
-	"\x19LinkProposalStatusDetails\x12\x8b\x01\n" +
-	" link_proposal_initiating_product\x18\x01 \x01(\x0e2=.google.analytics.admin.v1alpha.LinkProposalInitiatingProductB\x03\xe0A\x03R\x1dlinkProposalInitiatingProduct\x12,\n" +
-	"\x0frequestor_email\x18\x02 \x01(\tB\x03\xe0A\x03R\x0erequestorEmail\x12f\n" +
-	"\x13link_proposal_state\x18\x03 \x01(\x0e21.google.analytics.admin.v1alpha.LinkProposalStateB\x03\xe0A\x03R\x11linkProposalState\"\xf3\x06\n" +
-	"\x0fConversionEvent\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\"\n" +
+	".analyticsadmin.googleapis.com/SearchAds360Link\x12=properties/{property}/searchAds360Links/{search_ads_360_link}*\x11searchAds360Links2\x10searchAds360Link\"\xc2\x02\n" +
+	"\x19LinkProposalStatusDetails\x12\x8c\x01\n" +
+	" link_proposal_initiating_product\x18\x01 \x01(\x0e2=.google.analytics.admin.v1alpha.LinkProposalInitiatingProductB\x04\xe2A\x01\x03R\x1dlinkProposalInitiatingProduct\x12-\n" +
+	"\x0frequestor_email\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x0erequestorEmail\x12g\n" +
+	"\x13link_proposal_state\x18\x03 \x01(\x0e21.google.analytics.admin.v1alpha.LinkProposalStateB\x04\xe2A\x01\x03R\x11linkProposalState\"\xfa\x06\n" +
+	"\x0fConversionEvent\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12#\n" +
 	"\n" +
-	"event_name\x18\x02 \x01(\tB\x03\xe0A\x05R\teventName\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12!\n" +
-	"\tdeletable\x18\x04 \x01(\bB\x03\xe0A\x03R\tdeletable\x12\x1b\n" +
-	"\x06custom\x18\x05 \x01(\bB\x03\xe0A\x03R\x06custom\x12v\n" +
-	"\x0fcounting_method\x18\x06 \x01(\x0e2H.google.analytics.admin.v1alpha.ConversionEvent.ConversionCountingMethodB\x03\xe0A\x01R\x0ecountingMethod\x12\x8a\x01\n" +
-	"\x18default_conversion_value\x18\a \x01(\v2F.google.analytics.admin.v1alpha.ConversionEvent.DefaultConversionValueB\x03\xe0A\x01H\x00R\x16defaultConversionValue\x88\x01\x01\x1ay\n" +
+	"event_name\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\teventName\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12\"\n" +
+	"\tdeletable\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\tdeletable\x12\x1c\n" +
+	"\x06custom\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\x06custom\x12w\n" +
+	"\x0fcounting_method\x18\x06 \x01(\x0e2H.google.analytics.admin.v1alpha.ConversionEvent.ConversionCountingMethodB\x04\xe2A\x01\x01R\x0ecountingMethod\x12\x8b\x01\n" +
+	"\x18default_conversion_value\x18\a \x01(\v2F.google.analytics.admin.v1alpha.ConversionEvent.DefaultConversionValueB\x04\xe2A\x01\x01H\x00R\x16defaultConversionValue\x88\x01\x01\x1ay\n" +
 	"\x16DefaultConversionValue\x12\x19\n" +
 	"\x05value\x18\x01 \x01(\x01H\x00R\x05value\x88\x01\x01\x12(\n" +
 	"\rcurrency_code\x18\x02 \x01(\tH\x01R\fcurrencyCode\x88\x01\x01B\b\n" +
@@ -6865,51 +6865,51 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\x0eONCE_PER_EVENT\x10\x01\x12\x14\n" +
 	"\x10ONCE_PER_SESSION\x10\x02:\x91\x01\xeaA\x8d\x01\n" +
 	"-analyticsadmin.googleapis.com/ConversionEvent\x129properties/{property}/conversionEvents/{conversion_event}*\x10conversionEvents2\x0fconversionEventB\x1b\n" +
-	"\x19_default_conversion_value\"\xc1\x05\n" +
-	"\bKeyEvent\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\"\n" +
+	"\x19_default_conversion_value\"\xca\x05\n" +
+	"\bKeyEvent\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12#\n" +
 	"\n" +
-	"event_name\x18\x02 \x01(\tB\x03\xe0A\x05R\teventName\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12!\n" +
-	"\tdeletable\x18\x04 \x01(\bB\x03\xe0A\x03R\tdeletable\x12\x1b\n" +
-	"\x06custom\x18\x05 \x01(\bB\x03\xe0A\x03R\x06custom\x12e\n" +
-	"\x0fcounting_method\x18\x06 \x01(\x0e27.google.analytics.admin.v1alpha.KeyEvent.CountingMethodB\x03\xe0A\x02R\x0ecountingMethod\x12_\n" +
-	"\rdefault_value\x18\a \x01(\v25.google.analytics.admin.v1alpha.KeyEvent.DefaultValueB\x03\xe0A\x01R\fdefaultValue\x1ab\n" +
-	"\fDefaultValue\x12(\n" +
-	"\rnumeric_value\x18\x01 \x01(\x01B\x03\xe0A\x02R\fnumericValue\x12(\n" +
-	"\rcurrency_code\x18\x02 \x01(\tB\x03\xe0A\x02R\fcurrencyCode\"[\n" +
+	"event_name\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\teventName\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12\"\n" +
+	"\tdeletable\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\tdeletable\x12\x1c\n" +
+	"\x06custom\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\x06custom\x12f\n" +
+	"\x0fcounting_method\x18\x06 \x01(\x0e27.google.analytics.admin.v1alpha.KeyEvent.CountingMethodB\x04\xe2A\x01\x02R\x0ecountingMethod\x12`\n" +
+	"\rdefault_value\x18\a \x01(\v25.google.analytics.admin.v1alpha.KeyEvent.DefaultValueB\x04\xe2A\x01\x01R\fdefaultValue\x1ad\n" +
+	"\fDefaultValue\x12)\n" +
+	"\rnumeric_value\x18\x01 \x01(\x01B\x04\xe2A\x01\x02R\fnumericValue\x12)\n" +
+	"\rcurrency_code\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fcurrencyCode\"[\n" +
 	"\x0eCountingMethod\x12\x1f\n" +
 	"\x1bCOUNTING_METHOD_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eONCE_PER_EVENT\x10\x01\x12\x14\n" +
 	"\x10ONCE_PER_SESSION\x10\x02:m\xeaAj\n" +
-	"&analyticsadmin.googleapis.com/KeyEvent\x12+properties/{property}/keyEvents/{key_event}*\tkeyEvents2\bkeyEvent\"\xb6\x02\n" +
-	"\x15GoogleSignalsSettings\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12H\n" +
-	"\x05state\x18\x03 \x01(\x0e22.google.analytics.admin.v1alpha.GoogleSignalsStateR\x05state\x12S\n" +
-	"\aconsent\x18\x04 \x01(\x0e24.google.analytics.admin.v1alpha.GoogleSignalsConsentB\x03\xe0A\x03R\aconsent:e\xeaAb\n" +
-	"3analyticsadmin.googleapis.com/GoogleSignalsSettings\x12+properties/{property}/googleSignalsSettings\"\xb3\x04\n" +
-	"\x0fCustomDimension\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12-\n" +
-	"\x0eparameter_name\x18\x02 \x01(\tB\x06\xe0A\x02\xe0A\x05R\rparameterName\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12\\\n" +
-	"\x05scope\x18\x05 \x01(\x0e2>.google.analytics.admin.v1alpha.CustomDimension.DimensionScopeB\x06\xe0A\x02\xe0A\x05R\x05scope\x12E\n" +
-	"\x1cdisallow_ads_personalization\x18\x06 \x01(\bB\x03\xe0A\x01R\x1adisallowAdsPersonalization\"P\n" +
+	"&analyticsadmin.googleapis.com/KeyEvent\x12+properties/{property}/keyEvents/{key_event}*\tkeyEvents2\bkeyEvent\"\xb8\x02\n" +
+	"\x15GoogleSignalsSettings\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12H\n" +
+	"\x05state\x18\x03 \x01(\x0e22.google.analytics.admin.v1alpha.GoogleSignalsStateR\x05state\x12T\n" +
+	"\aconsent\x18\x04 \x01(\x0e24.google.analytics.admin.v1alpha.GoogleSignalsConsentB\x04\xe2A\x01\x03R\aconsent:e\xeaAb\n" +
+	"3analyticsadmin.googleapis.com/GoogleSignalsSettings\x12+properties/{property}/googleSignalsSettings\"\xb5\x04\n" +
+	"\x0fCustomDimension\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12,\n" +
+	"\x0eparameter_name\x18\x02 \x01(\tB\x05\xe2A\x02\x02\x05R\rparameterName\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12[\n" +
+	"\x05scope\x18\x05 \x01(\x0e2>.google.analytics.admin.v1alpha.CustomDimension.DimensionScopeB\x05\xe2A\x02\x02\x05R\x05scope\x12F\n" +
+	"\x1cdisallow_ads_personalization\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x1adisallowAdsPersonalization\"P\n" +
 	"\x0eDimensionScope\x12\x1f\n" +
 	"\x1bDIMENSION_SCOPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05EVENT\x10\x01\x12\b\n" +
 	"\x04USER\x10\x02\x12\b\n" +
 	"\x04ITEM\x10\x03:\x91\x01\xeaA\x8d\x01\n" +
-	"-analyticsadmin.googleapis.com/CustomDimension\x129properties/{property}/customDimensions/{custom_dimension}*\x10customDimensions2\x0fcustomDimension\"\xc0\a\n" +
-	"\fCustomMetric\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12-\n" +
-	"\x0eparameter_name\x18\x02 \x01(\tB\x06\xe0A\x02\xe0A\x05R\rparameterName\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12l\n" +
-	"\x10measurement_unit\x18\x05 \x01(\x0e2<.google.analytics.admin.v1alpha.CustomMetric.MeasurementUnitB\x03\xe0A\x02R\x0fmeasurementUnit\x12V\n" +
-	"\x05scope\x18\x06 \x01(\x0e28.google.analytics.admin.v1alpha.CustomMetric.MetricScopeB\x06\xe0A\x02\xe0A\x05R\x05scope\x12|\n" +
-	"\x16restricted_metric_type\x18\b \x03(\x0e2A.google.analytics.admin.v1alpha.CustomMetric.RestrictedMetricTypeB\x03\xe0A\x01R\x14restrictedMetricType\"\xb7\x01\n" +
+	"-analyticsadmin.googleapis.com/CustomDimension\x129properties/{property}/customDimensions/{custom_dimension}*\x10customDimensions2\x0fcustomDimension\"\xc3\a\n" +
+	"\fCustomMetric\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12,\n" +
+	"\x0eparameter_name\x18\x02 \x01(\tB\x05\xe2A\x02\x02\x05R\rparameterName\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12m\n" +
+	"\x10measurement_unit\x18\x05 \x01(\x0e2<.google.analytics.admin.v1alpha.CustomMetric.MeasurementUnitB\x04\xe2A\x01\x02R\x0fmeasurementUnit\x12U\n" +
+	"\x05scope\x18\x06 \x01(\x0e28.google.analytics.admin.v1alpha.CustomMetric.MetricScopeB\x05\xe2A\x02\x02\x05R\x05scope\x12}\n" +
+	"\x16restricted_metric_type\x18\b \x03(\x0e2A.google.analytics.admin.v1alpha.CustomMetric.RestrictedMetricTypeB\x04\xe2A\x01\x01R\x14restrictedMetricType\"\xb7\x01\n" +
 	"\x0fMeasurementUnit\x12 \n" +
 	"\x1cMEASUREMENT_UNIT_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bSTANDARD\x10\x01\x12\f\n" +
@@ -6932,17 +6932,17 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\"RESTRICTED_METRIC_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tCOST_DATA\x10\x01\x12\x10\n" +
 	"\fREVENUE_DATA\x10\x02:\x81\x01\xeaA~\n" +
-	"*analyticsadmin.googleapis.com/CustomMetric\x123properties/{property}/customMetrics/{custom_metric}*\rcustomMetrics2\fcustomMetric\"\x9f\a\n" +
-	"\x10CalculatedMetric\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x02R\vdisplayName\x125\n" +
-	"\x14calculated_metric_id\x18\x04 \x01(\tB\x03\xe0A\x03R\x12calculatedMetricId\x12a\n" +
-	"\vmetric_unit\x18\x05 \x01(\x0e2;.google.analytics.admin.v1alpha.CalculatedMetric.MetricUnitB\x03\xe0A\x02R\n" +
-	"metricUnit\x12\x80\x01\n" +
-	"\x16restricted_metric_type\x18\x06 \x03(\x0e2E.google.analytics.admin.v1alpha.CalculatedMetric.RestrictedMetricTypeB\x03\xe0A\x03R\x14restrictedMetricType\x12\x1d\n" +
-	"\aformula\x18\a \x01(\tB\x03\xe0A\x02R\aformula\x12=\n" +
-	"\x18invalid_metric_reference\x18\t \x01(\bB\x03\xe0A\x03R\x16invalidMetricReference\"\xad\x01\n" +
+	"*analyticsadmin.googleapis.com/CustomMetric\x123properties/{property}/customMetrics/{custom_metric}*\rcustomMetrics2\fcustomMetric\"\xa7\a\n" +
+	"\x10CalculatedMetric\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x126\n" +
+	"\x14calculated_metric_id\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x12calculatedMetricId\x12b\n" +
+	"\vmetric_unit\x18\x05 \x01(\x0e2;.google.analytics.admin.v1alpha.CalculatedMetric.MetricUnitB\x04\xe2A\x01\x02R\n" +
+	"metricUnit\x12\x81\x01\n" +
+	"\x16restricted_metric_type\x18\x06 \x03(\x0e2E.google.analytics.admin.v1alpha.CalculatedMetric.RestrictedMetricTypeB\x04\xe2A\x01\x03R\x14restrictedMetricType\x12\x1e\n" +
+	"\aformula\x18\a \x01(\tB\x04\xe2A\x01\x02R\aformula\x12>\n" +
+	"\x18invalid_metric_reference\x18\t \x01(\bB\x04\xe2A\x01\x03R\x16invalidMetricReference\"\xad\x01\n" +
 	"\n" +
 	"MetricUnit\x12\x1b\n" +
 	"\x17METRIC_UNIT_UNSPECIFIED\x10\x00\x12\f\n" +
@@ -6963,11 +6963,11 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\"RESTRICTED_METRIC_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tCOST_DATA\x10\x01\x12\x10\n" +
 	"\fREVENUE_DATA\x10\x02:\x96\x01\xeaA\x92\x01\n" +
-	".analyticsadmin.googleapis.com/CalculatedMetric\x12;properties/{property}/calculatedMetrics/{calculated_metric}*\x11calculatedMetrics2\x10calculatedMetric\"\xab\x05\n" +
-	"\x15DataRetentionSettings\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12~\n" +
-	"\x14event_data_retention\x18\x02 \x01(\x0e2G.google.analytics.admin.v1alpha.DataRetentionSettings.RetentionDurationB\x03\xe0A\x02R\x12eventDataRetention\x12|\n" +
-	"\x13user_data_retention\x18\x04 \x01(\x0e2G.google.analytics.admin.v1alpha.DataRetentionSettings.RetentionDurationB\x03\xe0A\x02R\x11userDataRetention\x12C\n" +
+	".analyticsadmin.googleapis.com/CalculatedMetric\x12;properties/{property}/calculatedMetrics/{calculated_metric}*\x11calculatedMetrics2\x10calculatedMetric\"\xae\x05\n" +
+	"\x15DataRetentionSettings\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x7f\n" +
+	"\x14event_data_retention\x18\x02 \x01(\x0e2G.google.analytics.admin.v1alpha.DataRetentionSettings.RetentionDurationB\x04\xe2A\x01\x02R\x12eventDataRetention\x12}\n" +
+	"\x13user_data_retention\x18\x04 \x01(\x0e2G.google.analytics.admin.v1alpha.DataRetentionSettings.RetentionDurationB\x04\xe2A\x01\x02R\x11userDataRetention\x12C\n" +
 	"\x1freset_user_data_on_new_activity\x18\x03 \x01(\bR\x1aresetUserDataOnNewActivity\"\x9e\x01\n" +
 	"\x11RetentionDuration\x12\"\n" +
 	"\x1eRETENTION_DURATION_UNSPECIFIED\x10\x00\x12\x0e\n" +
@@ -6977,13 +6977,13 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\x11TWENTY_SIX_MONTHS\x10\x04\x12\x17\n" +
 	"\x13THIRTY_EIGHT_MONTHS\x10\x05\x12\x10\n" +
 	"\fFIFTY_MONTHS\x10\x06:\x94\x01\xeaA\x90\x01\n" +
-	"3analyticsadmin.googleapis.com/DataRetentionSettings\x12+properties/{property}/dataRetentionSettings*\x15dataRetentionSettings2\x15dataRetentionSettings\"\x8d\r\n" +
-	"\x13AttributionSettings\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\xc1\x01\n" +
-	",acquisition_conversion_event_lookback_window\x18\x02 \x01(\x0e2\\.google.analytics.admin.v1alpha.AttributionSettings.AcquisitionConversionEventLookbackWindowB\x03\xe0A\x02R(acquisitionConversionEventLookbackWindow\x12\xaf\x01\n" +
-	"&other_conversion_event_lookback_window\x18\x03 \x01(\x0e2V.google.analytics.admin.v1alpha.AttributionSettings.OtherConversionEventLookbackWindowB\x03\xe0A\x02R\"otherConversionEventLookbackWindow\x12\x92\x01\n" +
-	"\x1breporting_attribution_model\x18\x04 \x01(\x0e2M.google.analytics.admin.v1alpha.AttributionSettings.ReportingAttributionModelB\x03\xe0A\x02R\x19reportingAttributionModel\x12\xa7\x01\n" +
-	"$ads_web_conversion_data_export_scope\x18\x05 \x01(\x0e2S.google.analytics.admin.v1alpha.AttributionSettings.AdsWebConversionDataExportScopeB\x03\xe0A\x02R\x1fadsWebConversionDataExportScope\"\xdb\x01\n" +
+	"3analyticsadmin.googleapis.com/DataRetentionSettings\x12+properties/{property}/dataRetentionSettings*\x15dataRetentionSettings2\x15dataRetentionSettings\"\x92\r\n" +
+	"\x13AttributionSettings\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\xc2\x01\n" +
+	",acquisition_conversion_event_lookback_window\x18\x02 \x01(\x0e2\\.google.analytics.admin.v1alpha.AttributionSettings.AcquisitionConversionEventLookbackWindowB\x04\xe2A\x01\x02R(acquisitionConversionEventLookbackWindow\x12\xb0\x01\n" +
+	"&other_conversion_event_lookback_window\x18\x03 \x01(\x0e2V.google.analytics.admin.v1alpha.AttributionSettings.OtherConversionEventLookbackWindowB\x04\xe2A\x01\x02R\"otherConversionEventLookbackWindow\x12\x93\x01\n" +
+	"\x1breporting_attribution_model\x18\x04 \x01(\x0e2M.google.analytics.admin.v1alpha.AttributionSettings.ReportingAttributionModelB\x04\xe2A\x01\x02R\x19reportingAttributionModel\x12\xa8\x01\n" +
+	"$ads_web_conversion_data_export_scope\x18\x05 \x01(\x0e2S.google.analytics.admin.v1alpha.AttributionSettings.AdsWebConversionDataExportScopeB\x04\xe2A\x01\x02R\x1fadsWebConversionDataExportScope\"\xdb\x01\n" +
 	"(AcquisitionConversionEventLookbackWindow\x12<\n" +
 	"8ACQUISITION_CONVERSION_EVENT_LOOKBACK_WINDOW_UNSPECIFIED\x10\x00\x127\n" +
 	"3ACQUISITION_CONVERSION_EVENT_LOOKBACK_WINDOW_7_DAYS\x10\x01\x128\n" +
@@ -7003,29 +7003,29 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\x10NOT_SELECTED_YET\x10\x01\x12\x1d\n" +
 	"\x19PAID_AND_ORGANIC_CHANNELS\x10\x02\x12\x18\n" +
 	"\x14GOOGLE_PAID_CHANNELS\x10\x03:a\xeaA^\n" +
-	"1analyticsadmin.googleapis.com/AttributionSettings\x12)properties/{property}/attributionSettings\"\x84\x02\n" +
+	"1analyticsadmin.googleapis.com/AttributionSettings\x12)properties/{property}/attributionSettings\"\x85\x02\n" +
 	"\rAccessBinding\x12\x14\n" +
-	"\x04user\x18\x02 \x01(\tH\x00R\x04user\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x14\n" +
+	"\x04user\x18\x02 \x01(\tH\x00R\x04user\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x14\n" +
 	"\x05roles\x18\x03 \x03(\tR\x05roles:\x9c\x01\xeaA\x98\x01\n" +
 	"+analyticsadmin.googleapis.com/AccessBinding\x122accounts/{account}/accessBindings/{access_binding}\x125properties/{property}/accessBindings/{access_binding}B\x0f\n" +
-	"\raccess_target\"\xd0\x04\n" +
-	"\fBigQueryLink\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x05R\aproject\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\raccess_target\"\xd2\x04\n" +
+	"\fBigQueryLink\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x1e\n" +
+	"\aproject\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\aproject\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\x120\n" +
 	"\x14daily_export_enabled\x18\x04 \x01(\bR\x12dailyExportEnabled\x128\n" +
 	"\x18streaming_export_enabled\x18\x05 \x01(\bR\x16streamingExportEnabled\x12;\n" +
 	"\x1afresh_daily_export_enabled\x18\t \x01(\bR\x17freshDailyExportEnabled\x124\n" +
 	"\x16include_advertising_id\x18\x06 \x01(\bR\x14includeAdvertisingId\x12%\n" +
 	"\x0eexport_streams\x18\a \x03(\tR\rexportStreams\x12'\n" +
-	"\x0fexcluded_events\x18\b \x03(\tR\x0eexcludedEvents\x121\n" +
+	"\x0fexcluded_events\x18\b \x03(\tR\x0eexcludedEvents\x120\n" +
 	"\x10dataset_location\x18\n" +
-	" \x01(\tB\x06\xe0A\x05\xe0A\x02R\x0fdatasetLocation:d\xeaAa\n" +
-	"*analyticsadmin.googleapis.com/BigQueryLink\x123properties/{property}/bigQueryLinks/{bigquery_link}\"\xc6\x05\n" +
-	"\x1bEnhancedMeasurementSettings\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12%\n" +
+	" \x01(\tB\x05\xe2A\x02\x05\x02R\x0fdatasetLocation:d\xeaAa\n" +
+	"*analyticsadmin.googleapis.com/BigQueryLink\x123properties/{property}/bigQueryLinks/{bigquery_link}\"\xc8\x05\n" +
+	"\x1bEnhancedMeasurementSettings\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12%\n" +
 	"\x0estream_enabled\x18\x02 \x01(\bR\rstreamEnabled\x12'\n" +
 	"\x0fscrolls_enabled\x18\x03 \x01(\bR\x0escrollsEnabled\x126\n" +
 	"\x17outbound_clicks_enabled\x18\x04 \x01(\bR\x15outboundClicksEnabled\x12.\n" +
@@ -7033,37 +7033,37 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\x18video_engagement_enabled\x18\x06 \x01(\bR\x16videoEngagementEnabled\x124\n" +
 	"\x16file_downloads_enabled\x18\a \x01(\bR\x14fileDownloadsEnabled\x120\n" +
 	"\x14page_changes_enabled\x18\b \x01(\bR\x12pageChangesEnabled\x12:\n" +
-	"\x19form_interactions_enabled\x18\t \x01(\bR\x17formInteractionsEnabled\x129\n" +
+	"\x19form_interactions_enabled\x18\t \x01(\bR\x17formInteractionsEnabled\x12:\n" +
 	"\x16search_query_parameter\x18\n" +
-	" \x01(\tB\x03\xe0A\x02R\x14searchQueryParameter\x12.\n" +
+	" \x01(\tB\x04\xe2A\x01\x02R\x14searchQueryParameter\x12.\n" +
 	"\x13uri_query_parameter\x18\v \x01(\tR\x11uriQueryParameter:\x8c\x01\xeaA\x88\x01\n" +
-	"9analyticsadmin.googleapis.com/EnhancedMeasurementSettings\x12Kproperties/{property}/dataStreams/{data_stream}/enhancedMeasurementSettings\"\xe6\x02\n" +
-	"\x15DataRedactionSettings\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x126\n" +
+	"9analyticsadmin.googleapis.com/EnhancedMeasurementSettings\x12Kproperties/{property}/dataStreams/{data_stream}/enhancedMeasurementSettings\"\xe7\x02\n" +
+	"\x15DataRedactionSettings\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x126\n" +
 	"\x17email_redaction_enabled\x18\x02 \x01(\bR\x15emailRedactionEnabled\x12I\n" +
 	"!query_parameter_redaction_enabled\x18\x03 \x01(\bR\x1equeryParameterRedactionEnabled\x120\n" +
 	"\x14query_parameter_keys\x18\x04 \x03(\tR\x12queryParameterKeys:\x7f\xeaA|\n" +
-	"3analyticsadmin.googleapis.com/DataRedactionSettings\x12Eproperties/{property}/dataStreams/{data_stream}/dataRedactionSettings\"\xb4\x01\n" +
-	"\vAdSenseLink\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12)\n" +
-	"\x0ead_client_code\x18\x02 \x01(\tB\x03\xe0A\x05R\fadClientCode:a\xeaA^\n" +
-	")analyticsadmin.googleapis.com/AdSenseLink\x121properties/{property}/adSenseLinks/{adsense_link}\"\xa4\x02\n" +
-	"\x18RollupPropertySourceLink\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12,\n" +
-	"\x0fsource_property\x18\x02 \x01(\tB\x03\xe0A\x05R\x0esourceProperty:\xc0\x01\xeaA\xbc\x01\n" +
-	"6analyticsadmin.googleapis.com/RollupPropertySourceLink\x12Mproperties/{property}/rollupPropertySourceLinks/{rollup_property_source_link}*\x19rollupPropertySourceLinks2\x18rollupPropertySourceLink\"\xe1\x06\n" +
+	"3analyticsadmin.googleapis.com/DataRedactionSettings\x12Eproperties/{property}/dataStreams/{data_stream}/dataRedactionSettings\"\xb6\x01\n" +
+	"\vAdSenseLink\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12*\n" +
+	"\x0ead_client_code\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\fadClientCode:a\xeaA^\n" +
+	")analyticsadmin.googleapis.com/AdSenseLink\x121properties/{property}/adSenseLinks/{adsense_link}\"\xa6\x02\n" +
+	"\x18RollupPropertySourceLink\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12-\n" +
+	"\x0fsource_property\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\x0esourceProperty:\xc0\x01\xeaA\xbc\x01\n" +
+	"6analyticsadmin.googleapis.com/RollupPropertySourceLink\x12Mproperties/{property}/rollupPropertySourceLinks/{rollup_property_source_link}*\x19rollupPropertySourceLinks2\x18rollupPropertySourceLink\"\xe6\x06\n" +
 	"\x17ReportingDataAnnotation\x12<\n" +
 	"\x0fannotation_date\x18\x04 \x01(\v2\x11.google.type.DateH\x00R\x0eannotationDate\x12w\n" +
-	"\x15annotation_date_range\x18\x05 \x01(\v2A.google.analytics.admin.v1alpha.ReportingDataAnnotation.DateRangeH\x00R\x13annotationDateRange\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x02R\x04name\x12\x19\n" +
-	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x02R\x05title\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12X\n" +
-	"\x05color\x18\x06 \x01(\x0e2=.google.analytics.admin.v1alpha.ReportingDataAnnotation.ColorB\x03\xe0A\x02R\x05color\x12.\n" +
-	"\x10system_generated\x18\a \x01(\bB\x03\xe0A\x03R\x0fsystemGenerated\x1au\n" +
-	"\tDateRange\x125\n" +
+	"\x15annotation_date_range\x18\x05 \x01(\v2A.google.analytics.admin.v1alpha.ReportingDataAnnotation.DateRangeH\x00R\x13annotationDateRange\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x02R\x04name\x12\x1a\n" +
+	"\x05title\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05title\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12Y\n" +
+	"\x05color\x18\x06 \x01(\x0e2=.google.analytics.admin.v1alpha.ReportingDataAnnotation.ColorB\x04\xe2A\x01\x02R\x05color\x12/\n" +
+	"\x10system_generated\x18\a \x01(\bB\x04\xe2A\x01\x03R\x0fsystemGenerated\x1aw\n" +
+	"\tDateRange\x126\n" +
 	"\n" +
-	"start_date\x18\x01 \x01(\v2\x11.google.type.DateB\x03\xe0A\x02R\tstartDate\x121\n" +
-	"\bend_date\x18\x02 \x01(\v2\x11.google.type.DateB\x03\xe0A\x02R\aendDate\"i\n" +
+	"start_date\x18\x01 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x02R\tstartDate\x122\n" +
+	"\bend_date\x18\x02 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x02R\aendDate\"i\n" +
 	"\x05Color\x12\x15\n" +
 	"\x11COLOR_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -7076,29 +7076,29 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"\n" +
 	"\x06ORANGE\x10\a:\xba\x01\xeaA\xb6\x01\n" +
 	"5analyticsadmin.googleapis.com/ReportingDataAnnotation\x12Jproperties/{property}/reportingDataAnnotations/{reporting_data_annotation}*\x18reportingDataAnnotations2\x17reportingDataAnnotationB\b\n" +
-	"\x06target\"\x8c\x04\n" +
-	"\x15SubpropertySyncConfig\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x03R\x04name\x122\n" +
-	"\x11apply_to_property\x18\x02 \x01(\tB\x06\xe0A\x05\xe0A\x03R\x0fapplyToProperty\x12\x9f\x01\n" +
-	"%custom_dimension_and_metric_sync_mode\x18\x03 \x01(\x0e2I.google.analytics.admin.v1alpha.SubpropertySyncConfig.SynchronizationModeB\x03\xe0A\x02R customDimensionAndMetricSyncMode\"N\n" +
+	"\x06target\"\x8b\x04\n" +
+	"\x15SubpropertySyncConfig\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x03R\x04name\x121\n" +
+	"\x11apply_to_property\x18\x02 \x01(\tB\x05\xe2A\x02\x05\x03R\x0fapplyToProperty\x12\xa0\x01\n" +
+	"%custom_dimension_and_metric_sync_mode\x18\x03 \x01(\x0e2I.google.analytics.admin.v1alpha.SubpropertySyncConfig.SynchronizationModeB\x04\xe2A\x01\x02R customDimensionAndMetricSyncMode\"N\n" +
 	"\x13SynchronizationMode\x12$\n" +
 	" SYNCHRONIZATION_MODE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04NONE\x10\x01\x12\a\n" +
 	"\x03ALL\x10\x02:\xb0\x01\xeaA\xac\x01\n" +
-	"3analyticsadmin.googleapis.com/SubpropertySyncConfig\x12Fproperties/{property}/subpropertySyncConfigs/{subproperty_sync_config}*\x16subpropertySyncConfigs2\x15subpropertySyncConfig\"\xc8\x03\n" +
-	"\x19ReportingIdentitySettings\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x03R\x04name\x12z\n" +
+	"3analyticsadmin.googleapis.com/SubpropertySyncConfig\x12Fproperties/{property}/subpropertySyncConfigs/{subproperty_sync_config}*\x16subpropertySyncConfigs2\x15subpropertySyncConfig\"\xc7\x03\n" +
+	"\x19ReportingIdentitySettings\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x03R\x04name\x12z\n" +
 	"\x12reporting_identity\x18\x02 \x01(\x0e2K.google.analytics.admin.v1alpha.ReportingIdentitySettings.ReportingIdentityR\x11reportingIdentity\"l\n" +
 	"\x11ReportingIdentity\x12*\n" +
 	"&IDENTITY_BLENDING_STRATEGY_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aBLENDED\x10\x01\x12\f\n" +
 	"\bOBSERVED\x10\x02\x12\x10\n" +
 	"\fDEVICE_BASED\x10\x03:\xa4\x01\xeaA\xa0\x01\n" +
-	"7analyticsadmin.googleapis.com/ReportingIdentitySettings\x12/properties/{property}/reportingIdentitySettings*\x19reportingIdentitySettings2\x19reportingIdentitySettings\"\x96\x03\n" +
-	"\x18UserProvidedDataSettings\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12U\n" +
-	"%user_provided_data_collection_enabled\x18\x02 \x01(\bB\x03\xe0A\x01R!userProvidedDataCollectionEnabled\x12g\n" +
-	".automatically_detected_data_collection_enabled\x18\x03 \x01(\bB\x03\xe0A\x01R*automaticallyDetectedDataCollectionEnabled:\xa0\x01\xeaA\x9c\x01\n" +
+	"7analyticsadmin.googleapis.com/ReportingIdentitySettings\x12/properties/{property}/reportingIdentitySettings*\x19reportingIdentitySettings2\x19reportingIdentitySettings\"\x99\x03\n" +
+	"\x18UserProvidedDataSettings\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12V\n" +
+	"%user_provided_data_collection_enabled\x18\x02 \x01(\bB\x04\xe2A\x01\x01R!userProvidedDataCollectionEnabled\x12h\n" +
+	".automatically_detected_data_collection_enabled\x18\x03 \x01(\bB\x04\xe2A\x01\x01R*automaticallyDetectedDataCollectionEnabled:\xa0\x01\xeaA\x9c\x01\n" +
 	"6analyticsadmin.googleapis.com/UserProvidedDataSettings\x12.properties/{property}/userProvidedDataSettings*\x18userProvidedDataSettings2\x18userProvidedDataSettings*\xaa\x04\n" +
 	"\x10IndustryCategory\x12!\n" +
 	"\x1dINDUSTRY_CATEGORY_UNSPECIFIED\x10\x00\x12\x0e\n" +

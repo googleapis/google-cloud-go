@@ -896,16 +896,16 @@ var File_google_cloud_discoveryengine_v1beta_project_proto protoreflect.FileDesc
 
 const file_google_cloud_discoveryengine_v1beta_project_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/discoveryengine/v1beta/project.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/discoveryengine/v1beta/logging.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf9\x1d\n" +
-	"\aProject\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12[\n" +
-	"\x19provision_completion_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x17provisionCompletionTime\x12r\n" +
-	"\x11service_terms_map\x18\x04 \x03(\v2A.google.cloud.discoveryengine.v1beta.Project.ServiceTermsMapEntryB\x03\xe0A\x03R\x0fserviceTermsMap\x12\x82\x01\n" +
-	"\x18customer_provided_config\x18\x06 \x01(\v2C.google.cloud.discoveryengine.v1beta.Project.CustomerProvidedConfigB\x03\xe0A\x01R\x16customerProvidedConfig\x12\x8b\x01\n" +
+	"1google/cloud/discoveryengine/v1beta/project.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/discoveryengine/v1beta/logging.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x95\x1e\n" +
+	"\aProject\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12\\\n" +
+	"\x19provision_completion_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x17provisionCompletionTime\x12s\n" +
+	"\x11service_terms_map\x18\x04 \x03(\v2A.google.cloud.discoveryengine.v1beta.Project.ServiceTermsMapEntryB\x04\xe2A\x01\x03R\x0fserviceTermsMap\x12\x83\x01\n" +
+	"\x18customer_provided_config\x18\x06 \x01(\v2C.google.cloud.discoveryengine.v1beta.Project.CustomerProvidedConfigB\x04\xe2A\x01\x01R\x16customerProvidedConfig\x12\x8c\x01\n" +
 	"\x1bconfigurable_billing_status\x18\n" +
-	" \x01(\v2F.google.cloud.discoveryengine.v1beta.Project.ConfigurableBillingStatusB\x03\xe0A\x03R\x19configurableBillingStatus\x1a\xe6\x02\n" +
+	" \x01(\v2F.google.cloud.discoveryengine.v1beta.Project.ConfigurableBillingStatusB\x04\xe2A\x01\x03R\x19configurableBillingStatus\x1a\xe6\x02\n" +
 	"\fServiceTerms\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12U\n" +
@@ -917,43 +917,43 @@ const file_google_cloud_discoveryengine_v1beta_project_proto_rawDesc = "" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eTERMS_ACCEPTED\x10\x01\x12\x11\n" +
 	"\rTERMS_PENDING\x10\x02\x12\x12\n" +
-	"\x0eTERMS_DECLINED\x10\x03\x1a\xc4\t\n" +
-	"\x16CustomerProvidedConfig\x12\x86\x01\n" +
-	"\x11notebooklm_config\x18\x03 \x01(\v2T.google.cloud.discoveryengine.v1beta.Project.CustomerProvidedConfig.NotebooklmConfigB\x03\xe0A\x01R\x10notebooklmConfig\x1a\xa0\b\n" +
+	"\x0eTERMS_DECLINED\x10\x03\x1a\xcc\t\n" +
+	"\x16CustomerProvidedConfig\x12\x87\x01\n" +
+	"\x11notebooklm_config\x18\x03 \x01(\v2T.google.cloud.discoveryengine.v1beta.Project.CustomerProvidedConfig.NotebooklmConfigB\x04\xe2A\x01\x01R\x10notebooklmConfig\x1a\xa7\b\n" +
 	"\x10NotebooklmConfig\x12\x93\x01\n" +
-	"\x12model_armor_config\x18\x01 \x01(\v2e.google.cloud.discoveryengine.v1beta.Project.CustomerProvidedConfig.NotebooklmConfig.ModelArmorConfigR\x10modelArmorConfig\x12<\n" +
-	"\x18opt_out_notebook_sharing\x18\x02 \x01(\bB\x03\xe0A\x01R\x15optOutNotebookSharing\x12\xa4\x01\n" +
-	"\x16data_protection_policy\x18\x05 \x01(\v2i.google.cloud.discoveryengine.v1beta.Project.CustomerProvidedConfig.NotebooklmConfig.DataProtectionPolicyB\x03\xe0A\x01R\x14dataProtectionPolicy\x12p\n" +
-	"\x14observability_config\x18\x06 \x01(\v28.google.cloud.discoveryengine.v1beta.ObservabilityConfigB\x03\xe0A\x01R\x13observabilityConfig\x1a\xc9\x01\n" +
-	"\x10ModelArmorConfig\x12\\\n" +
-	"\x14user_prompt_template\x18\x01 \x01(\tB*\xe0A\x01\xfaA$\n" +
-	"\"modelarmor.googleapis.com/TemplateR\x12userPromptTemplate\x12W\n" +
-	"\x11response_template\x18\x02 \x01(\tB*\xe0A\x01\xfaA$\n" +
-	"\"modelarmor.googleapis.com/TemplateR\x10responseTemplate\x1a\xd2\x02\n" +
-	"\x14DataProtectionPolicy\x12\xd6\x01\n" +
-	" sensitive_data_protection_policy\x18\x01 \x01(\v2\x87\x01.google.cloud.discoveryengine.v1beta.Project.CustomerProvidedConfig.NotebooklmConfig.DataProtectionPolicy.SensitiveDataProtectionPolicyB\x03\xe0A\x01R\x1dsensitiveDataProtectionPolicy\x1aa\n" +
-	"\x1dSensitiveDataProtectionPolicy\x12@\n" +
-	"\x06policy\x18\x01 \x01(\tB(\xe0A\x01\xfaA\"\n" +
-	" dlp.googleapis.com/ContentPolicyR\x06policy\x1a\xbe\v\n" +
-	"\x19ConfigurableBillingStatus\x12H\n" +
-	"\x1eeffective_search_qpm_threshold\x18\x01 \x01(\x03B\x03\xe0A\x01R\x1beffectiveSearchQpmThreshold\x12N\n" +
-	"!effective_indexing_core_threshold\x18\x02 \x01(\x03B\x03\xe0A\x01R\x1eeffectiveIndexingCoreThreshold\x12>\n" +
+	"\x12model_armor_config\x18\x01 \x01(\v2e.google.cloud.discoveryengine.v1beta.Project.CustomerProvidedConfig.NotebooklmConfig.ModelArmorConfigR\x10modelArmorConfig\x12=\n" +
+	"\x18opt_out_notebook_sharing\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x15optOutNotebookSharing\x12\xa5\x01\n" +
+	"\x16data_protection_policy\x18\x05 \x01(\v2i.google.cloud.discoveryengine.v1beta.Project.CustomerProvidedConfig.NotebooklmConfig.DataProtectionPolicyB\x04\xe2A\x01\x01R\x14dataProtectionPolicy\x12q\n" +
+	"\x14observability_config\x18\x06 \x01(\v28.google.cloud.discoveryengine.v1beta.ObservabilityConfigB\x04\xe2A\x01\x01R\x13observabilityConfig\x1a\xcb\x01\n" +
+	"\x10ModelArmorConfig\x12]\n" +
+	"\x14user_prompt_template\x18\x01 \x01(\tB+\xe2A\x01\x01\xfaA$\n" +
+	"\"modelarmor.googleapis.com/TemplateR\x12userPromptTemplate\x12X\n" +
+	"\x11response_template\x18\x02 \x01(\tB+\xe2A\x01\x01\xfaA$\n" +
+	"\"modelarmor.googleapis.com/TemplateR\x10responseTemplate\x1a\xd4\x02\n" +
+	"\x14DataProtectionPolicy\x12\xd7\x01\n" +
+	" sensitive_data_protection_policy\x18\x01 \x01(\v2\x87\x01.google.cloud.discoveryengine.v1beta.Project.CustomerProvidedConfig.NotebooklmConfig.DataProtectionPolicy.SensitiveDataProtectionPolicyB\x04\xe2A\x01\x01R\x1dsensitiveDataProtectionPolicy\x1ab\n" +
+	"\x1dSensitiveDataProtectionPolicy\x12A\n" +
+	"\x06policy\x18\x01 \x01(\tB)\xe2A\x01\x01\xfaA\"\n" +
+	" dlp.googleapis.com/ContentPolicyR\x06policy\x1a\xcc\v\n" +
+	"\x19ConfigurableBillingStatus\x12I\n" +
+	"\x1eeffective_search_qpm_threshold\x18\x01 \x01(\x03B\x04\xe2A\x01\x01R\x1beffectiveSearchQpmThreshold\x12O\n" +
+	"!effective_indexing_core_threshold\x18\x02 \x01(\x03B\x04\xe2A\x01\x01R\x1eeffectiveIndexingCoreThreshold\x12?\n" +
 	"\n" +
-	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\tstartTime\x12F\n" +
-	"\x0eterminate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\rterminateTime\x12p\n" +
-	"%search_qpm_threshold_next_update_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R searchQpmThresholdNextUpdateTime\x12v\n" +
-	"(indexing_core_threshold_next_update_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R#indexingCoreThresholdNextUpdateTime\x12w\n" +
-	"\vupdate_type\x18\a \x01(\x0e2Q.google.cloud.discoveryengine.v1beta.Project.ConfigurableBillingStatus.UpdateTypeB\x03\xe0A\x03R\n" +
-	"updateType\x12\xc6\x01\n" +
-	"(agent_search_token_subscription_statuses\x18\b \x03(\v2i.google.cloud.discoveryengine.v1beta.Project.ConfigurableBillingStatus.AgentSearchTokenSubscriptionStatusB\x03\xe0A\x03R$agentSearchTokenSubscriptionStatuses\x1a\xf1\x03\n" +
-	"\"AgentSearchTokenSubscriptionStatus\x12(\n" +
-	"\rmodel_version\x18\x01 \x01(\tB\x03\xe0A\x03R\fmodelVersion\x12;\n" +
-	"\x17effective_tpm_threshold\x18\x02 \x01(\x03B\x03\xe0A\x03R\x15effectiveTpmThreshold\x12c\n" +
-	"\x1etpm_threshold_next_update_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x1atpmThresholdNextUpdateTime\x12>\n" +
+	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\tstartTime\x12G\n" +
+	"\x0eterminate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\rterminateTime\x12q\n" +
+	"%search_qpm_threshold_next_update_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R searchQpmThresholdNextUpdateTime\x12w\n" +
+	"(indexing_core_threshold_next_update_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R#indexingCoreThresholdNextUpdateTime\x12x\n" +
+	"\vupdate_type\x18\a \x01(\x0e2Q.google.cloud.discoveryengine.v1beta.Project.ConfigurableBillingStatus.UpdateTypeB\x04\xe2A\x01\x03R\n" +
+	"updateType\x12\xc7\x01\n" +
+	"(agent_search_token_subscription_statuses\x18\b \x03(\v2i.google.cloud.discoveryengine.v1beta.Project.ConfigurableBillingStatus.AgentSearchTokenSubscriptionStatusB\x04\xe2A\x01\x03R$agentSearchTokenSubscriptionStatuses\x1a\xf7\x03\n" +
+	"\"AgentSearchTokenSubscriptionStatus\x12)\n" +
+	"\rmodel_version\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\fmodelVersion\x12<\n" +
+	"\x17effective_tpm_threshold\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x15effectiveTpmThreshold\x12d\n" +
+	"\x1etpm_threshold_next_update_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x1atpmThresholdNextUpdateTime\x12?\n" +
 	"\n" +
-	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12F\n" +
-	"\x0eterminate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\rterminateTime\x12w\n" +
-	"\vupdate_type\x18\x06 \x01(\x0e2Q.google.cloud.discoveryengine.v1beta.Project.ConfigurableBillingStatus.UpdateTypeB\x03\xe0A\x03R\n" +
+	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12G\n" +
+	"\x0eterminate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\rterminateTime\x12x\n" +
+	"\vupdate_type\x18\x06 \x01(\x0e2Q.google.cloud.discoveryengine.v1beta.Project.ConfigurableBillingStatus.UpdateTypeB\x04\xe2A\x01\x03R\n" +
 	"updateType\"_\n" +
 	"\n" +
 	"UpdateType\x12\x1b\n" +

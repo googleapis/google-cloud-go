@@ -123,13 +123,13 @@ var File_google_maps_places_v1_route_modifiers_proto protoreflect.FileDescriptor
 
 const file_google_maps_places_v1_route_modifiers_proto_rawDesc = "" +
 	"\n" +
-	"+google/maps/places/v1/route_modifiers.proto\x12\x15google.maps.places.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xb4\x01\n" +
-	"\x0eRouteModifiers\x12$\n" +
-	"\vavoid_tolls\x18\x01 \x01(\bB\x03\xe0A\x01R\n" +
-	"avoidTolls\x12*\n" +
-	"\x0eavoid_highways\x18\x02 \x01(\bB\x03\xe0A\x01R\ravoidHighways\x12(\n" +
-	"\ravoid_ferries\x18\x03 \x01(\bB\x03\xe0A\x01R\favoidFerries\x12&\n" +
-	"\favoid_indoor\x18\x04 \x01(\bB\x03\xe0A\x01R\vavoidIndoorB\xa4\x01\n" +
+	"+google/maps/places/v1/route_modifiers.proto\x12\x15google.maps.places.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xb8\x01\n" +
+	"\x0eRouteModifiers\x12%\n" +
+	"\vavoid_tolls\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"avoidTolls\x12+\n" +
+	"\x0eavoid_highways\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\ravoidHighways\x12)\n" +
+	"\ravoid_ferries\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\favoidFerries\x12'\n" +
+	"\favoid_indoor\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\vavoidIndoorB\xa4\x01\n" +
 	"\x19com.google.maps.places.v1B\x13RouteModifiersProtoP\x01Z7cloud.google.com/go/maps/places/apiv1/placespb;placespb\xa2\x02\x06GMPSV1\xaa\x02\x15Google.Maps.Places.V1\xca\x02\x15Google\\Maps\\Places\\V1b\x06proto3"
 
 var (

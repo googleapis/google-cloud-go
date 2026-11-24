@@ -674,34 +674,34 @@ const file_google_cloud_discoveryengine_v1alpha_control_proto_rawDesc = "" +
 	"\tTimeRange\x129\n" +
 	"\n" +
 	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"\x8a\f\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"\x92\f\n" +
 	"\aControl\x12^\n" +
 	"\fboost_action\x18\x06 \x01(\v29.google.cloud.discoveryengine.v1alpha.Control.BoostActionH\x00R\vboostAction\x12a\n" +
 	"\rfilter_action\x18\a \x01(\v2:.google.cloud.discoveryengine.v1alpha.Control.FilterActionH\x00R\ffilterAction\x12g\n" +
 	"\x0fredirect_action\x18\t \x01(\v2<.google.cloud.discoveryengine.v1alpha.Control.RedirectActionH\x00R\x0eredirectAction\x12g\n" +
 	"\x0fsynonyms_action\x18\n" +
-	" \x01(\v2<.google.cloud.discoveryengine.v1alpha.Control.SynonymsActionH\x00R\x0esynonymsAction\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12F\n" +
-	"\x1dassociated_serving_config_ids\x18\x03 \x03(\tB\x03\xe0A\x03R\x1aassociatedServingConfigIds\x12_\n" +
-	"\rsolution_type\x18\x04 \x01(\x0e22.google.cloud.discoveryengine.v1alpha.SolutionTypeB\x06\xe0A\x02\xe0A\x05R\fsolutionType\x12P\n" +
+	" \x01(\v2<.google.cloud.discoveryengine.v1alpha.Control.SynonymsActionH\x00R\x0esynonymsAction\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12G\n" +
+	"\x1dassociated_serving_config_ids\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\x1aassociatedServingConfigIds\x12^\n" +
+	"\rsolution_type\x18\x04 \x01(\x0e22.google.cloud.discoveryengine.v1alpha.SolutionTypeB\x05\xe2A\x02\x02\x05R\fsolutionType\x12P\n" +
 	"\tuse_cases\x18\b \x03(\x0e23.google.cloud.discoveryengine.v1alpha.SearchUseCaseR\buseCases\x12O\n" +
 	"\n" +
 	"conditions\x18\x05 \x03(\v2/.google.cloud.discoveryengine.v1alpha.ConditionR\n" +
-	"conditions\x1a\x96\x01\n" +
-	"\vBoostAction\x12\x19\n" +
-	"\x05boost\x18\x01 \x01(\x02B\x03\xe0A\x02R\x05boost\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x02R\x06filter\x12O\n" +
+	"conditions\x1a\x99\x01\n" +
+	"\vBoostAction\x12\x1a\n" +
+	"\x05boost\x18\x01 \x01(\x02B\x04\xe2A\x01\x02R\x05boost\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06filter\x12P\n" +
 	"\n" +
-	"data_store\x18\x03 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\x1a|\n" +
-	"\fFilterAction\x12\x1b\n" +
-	"\x06filter\x18\x01 \x01(\tB\x03\xe0A\x02R\x06filter\x12O\n" +
+	"data_store\x18\x03 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\x1a~\n" +
+	"\fFilterAction\x12\x1c\n" +
+	"\x06filter\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06filter\x12P\n" +
 	"\n" +
-	"data_store\x18\x02 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\x1a8\n" +
-	"\x0eRedirectAction\x12&\n" +
-	"\fredirect_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\vredirectUri\x1a,\n" +
+	"data_store\x18\x02 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\x1a9\n" +
+	"\x0eRedirectAction\x12'\n" +
+	"\fredirect_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vredirectUri\x1a,\n" +
 	"\x0eSynonymsAction\x12\x1a\n" +
 	"\bsynonyms\x18\x01 \x03(\tR\bsynonyms:\xd3\x02\xeaA\xcf\x02\n" +
 	"&discoveryengine.googleapis.com/Control\x12Rprojects/{project}/locations/{location}/dataStores/{data_store}/controls/{control}\x12kprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/controls/{control}\x12dprojects/{project}/locations/{location}/collections/{collection}/engines/{engine}/controls/{control}B\b\n" +

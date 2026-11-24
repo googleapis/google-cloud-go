@@ -15,46 +15,58 @@
 package storage
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
+	"io"
+	"log"
+	"os"
+	"regexp"
 	"runtime"
 	"strings"
 	"sync"
 	"testing"
 	"time"
 
+	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func TestNewPartName(t *testing.T) {
-	bucket := "my-bucket"
-	prefix := "gcs-go-sdk-pu-tmp/"
-	finalName := "my-object"
-	partNumber := 42
-
-	partName := newPartName(bucket, prefix, finalName, partNumber)
-
-	if !strings.HasPrefix(partName, prefix) {
-		t.Errorf("NewPartName() should start with the prefix %q, but got %q", prefix, partName)
+	const (
+		prefix     = "gcs-go-sdk-pu-tmp/"
+		partNumber = 42
+	)
+	tests := []struct {
+		name      string
+		finalName string
+	}{
+		{
+			name:      "simple_name",
+			finalName: "my-object",
+		},
+		{
+			name:      "dot_dot_segments",
+			finalName: "tenant-a/../../../../other-prefix/target",
+		},
+		{
+			name:      "max_length_object_name",
+			finalName: strings.Repeat("a", 1024),
+		},
 	}
 
-	expectedFormat := prefix + "%x-" + finalName + "-part-%d"
-	var randSuffix uint64
-	var parsedPartNum int
-
-	_, err := fmt.Sscanf(partName, expectedFormat, &randSuffix, &parsedPartNum)
-	if err != nil {
-		t.Errorf("NewPartName() returned a name with an unexpected format. Got %q, want format ~%q. Error: %v", partName, prefix+"<hex>-"+finalName+"-part-<int>", err)
-		return // Return to avoid further checks if parsing failed.
-	}
-
-	if parsedPartNum != partNumber {
-		t.Errorf("NewPartName() did not include the correct part number. Got %d, want %d", parsedPartNum, partNumber)
-	}
-
-	if randSuffix == 0 {
-		t.Errorf("NewPartName() did not include a non-zero random hex part. Got %x", randSuffix)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			partName := newPartName(prefix, tc.finalName, partNumber)
+			wantPattern := fmt.Sprintf(`^gcs-go-sdk-pu-tmp/[0-9a-f]{8}-[0-9a-f]{%d}-part-%d$`, 2*partNameDigestBytes, partNumber)
+			if !regexp.MustCompile(wantPattern).MatchString(partName) {
+				t.Errorf("newPartName() = %q, want match %q", partName, wantPattern)
+			}
+		})
 	}
 }
 
@@ -89,7 +101,7 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 		{
 			name: "PartSize below minimum is adjusted",
 			in: &ParallelUploadConfig{
-				PartSize: 1024 * 1024, // 1 MiB, below the 5 MiB minimum.
+				PartSize: 1024 * 1024, // 1 MiB, below the 8 MiB minimum.
 			},
 			want: &ParallelUploadConfig{
 				PartSize:       minPartSize,
@@ -178,16 +190,22 @@ func TestPCUState_ResultCollector(t *testing.T) {
 		ctx:      pCtx,
 		w:        w,
 		cancel:   cancel,
-		resultCh: make(chan uploadResult, 2),
+		resultCh: make(chan uploadResult, 4),
 		partMap:  make(map[int]*ObjectHandle),
 	}
 
 	state.collectorWG.Add(1)
 	go state.resultCollector()
 
-	// Successful result.
-	objHandle1 := &ObjectHandle{object: "part1"}
-	state.resultCh <- uploadResult{partNumber: 1, handle: objHandle1, err: nil, size: 50}
+	// Successful result with positive generation gets pinned.
+	objHandle1 := &ObjectHandle{object: "part1", gen: defaultGen}
+	state.resultCh <- uploadResult{partNumber: 1, handle: objHandle1, obj: &ObjectAttrs{Generation: 42}, err: nil, size: 50}
+
+	// Zero generation and nil attrs stay unpinned (defaultGen).
+	objHandle3 := &ObjectHandle{object: "part3", gen: defaultGen}
+	state.resultCh <- uploadResult{partNumber: 3, handle: objHandle3, obj: &ObjectAttrs{Generation: 0}, err: nil, size: 10}
+	objHandle4 := &ObjectHandle{object: "part4", gen: defaultGen}
+	state.resultCh <- uploadResult{partNumber: 4, handle: objHandle4, obj: nil, err: nil, size: 10}
 
 	// Error result.
 	errResult := fmt.Errorf("upload failed")
@@ -196,12 +214,18 @@ func TestPCUState_ResultCollector(t *testing.T) {
 	close(state.resultCh)
 	state.collectorWG.Wait()
 
-	if progressSize != 50 {
-		t.Errorf("resultCollector: progressSize got %d, want 50", progressSize)
+	if progressSize != 70 {
+		t.Errorf("resultCollector: progressSize got %d, want 70", progressSize)
 	}
 
-	if handle, ok := state.partMap[1]; !ok || handle.object != objHandle1.object {
-		t.Errorf("resultCollector: partMap[1] got (%v, %v), want (%v, true)", handle, ok, objHandle1)
+	if handle, ok := state.partMap[1]; !ok || handle.object != objHandle1.object || handle.gen != 42 {
+		t.Errorf("resultCollector: partMap[1] got (%v, %v), want (object=%q gen=42, true)", handle, ok, objHandle1.object)
+	}
+	if handle, ok := state.partMap[3]; !ok || handle.gen != defaultGen {
+		t.Errorf("resultCollector: partMap[3] gen got %v (ok=%v), want %d", handle, ok, defaultGen)
+	}
+	if handle, ok := state.partMap[4]; !ok || handle.gen != defaultGen {
+		t.Errorf("resultCollector: partMap[4] gen got %v (ok=%v), want %d", handle, ok, defaultGen)
 	}
 	if _, ok := state.partMap[2]; ok {
 		t.Errorf("resultCollector: partMap[2] should not be present on error")
@@ -448,7 +472,7 @@ func TestPCUWorker_WriteContextCancellation(t *testing.T) {
 		state.bufferCh <- make([]byte, 10)
 	}
 
-	// Trigger a flush by writing exact PartSize.
+	// Trigger a flush by writing exact part size.
 	n, err := state.write([]byte("0123456789"))
 	if err != nil {
 		t.Fatalf("state.write failed: %v", err)
@@ -498,13 +522,12 @@ func TestPCUWorker_WriteContextCancellation(t *testing.T) {
 }
 
 func TestNewPartName_Uniqueness(t *testing.T) {
-	bucket := "my-bucket"
 	prefix := "gcs-go-sdk-pu-tmp/"
 	finalName := "my-object"
 	partNumber := 42
 
-	name1 := newPartName(bucket, prefix, finalName, partNumber)
-	name2 := newPartName(bucket, prefix, finalName, partNumber)
+	name1 := newPartName(prefix, finalName, partNumber)
+	name2 := newPartName(prefix, finalName, partNumber)
 
 	if name1 == name2 {
 		t.Errorf("NewPartName() returned the same name twice: %q", name1)
@@ -758,11 +781,16 @@ func TestPCUState_GetSortedParts(t *testing.T) {
 }
 
 func TestPCUState_ComposeParts(t *testing.T) {
+	csek := bytes.Repeat([]byte{0x24}, 32)
+	const kmsKey = "projects/p/locations/us/keyRings/kr/cryptoKeys/k"
+
 	tests := []struct {
 		name     string
 		numParts int
 		// We'll simulate maxComposeComponents by checking how many calls occur.
 		wantIntermediates int
+		csek              []byte
+		kmsKeyName        string
 	}{
 		{
 			name:              "Under limit (Single Level)",
@@ -779,12 +807,26 @@ func TestPCUState_ComposeParts(t *testing.T) {
 			numParts:          46,
 			wantIntermediates: 2, // 2 intermediate groups (32+14) merged in final.
 		},
+		{
+			name:              "Over limit with CSEK",
+			numParts:          46,
+			wantIntermediates: 2,
+			csek:              csek,
+		},
+		{
+			name:              "Over limit with CMEK",
+			numParts:          46,
+			wantIntermediates: 2,
+			kmsKeyName:        kmsKey,
+		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			var mu sync.Mutex
 			intermediateCount := 0
+			var nextGen int64 = 100
+			interGenByName := make(map[string]int64)
 
 			partMap := make(map[int]*ObjectHandle)
 			for i := 1; i <= tc.numParts; i++ {
@@ -796,7 +838,8 @@ func TestPCUState_ComposeParts(t *testing.T) {
 				partMap:         partMap,
 				intermediateMap: make(map[string]*ObjectHandle),
 				w: &Writer{
-					o: &ObjectHandle{c: dummyClient, object: "final-dest", bucket: "b"},
+					ObjectAttrs: ObjectAttrs{KMSKeyName: tc.kmsKeyName},
+					o:           &ObjectHandle{c: dummyClient, object: "final-dest", bucket: "b", encryptionKey: tc.csek},
 				},
 				config: &ParallelUploadConfig{},
 			}
@@ -805,13 +848,41 @@ func TestPCUState_ComposeParts(t *testing.T) {
 				mu.Lock()
 				defer mu.Unlock()
 
-				// If the destination isn't the final object, it's an intermediate.
-				if c.dst.object != "final-dest" {
-					intermediateCount++
+				if !c.DeleteSourceObjects {
+					t.Errorf("expected DeleteSourceObjects to be true, got false")
+				}
+				if !bytes.Equal(c.dst.encryptionKey, tc.csek) {
+					t.Errorf("compose dst(%q) encryptionKey = %x, want %x", c.dst.object, c.dst.encryptionKey, tc.csek)
+				}
+				if c.KMSKeyName != tc.kmsKeyName {
+					t.Errorf("compose dst(%q) KMSKeyName = %q, want %q", c.dst.object, c.KMSKeyName, tc.kmsKeyName)
 				}
 
-				// Return the name of the destination object as the "attribute".
-				return &ObjectAttrs{Name: c.dst.object}, nil
+				nextGen++
+				gen := nextGen
+				// If the destination isn't the final object, it's an intermediate.
+				if c.dst.object != "final-dest" {
+					if c.dst.conds == nil || !c.dst.conds.DoesNotExist {
+						t.Errorf("intermediate compose dst(%q) DoesNotExist = false, want true", c.dst.object)
+					}
+					intermediateCount++
+					interGenByName[c.dst.object] = gen
+				} else if tc.wantIntermediates > 0 {
+					for _, src := range c.srcs {
+						if src.conds != nil {
+							t.Errorf("final compose source %q has unexpected conds %+v", src.object, src.conds)
+						}
+						wantGen, ok := interGenByName[src.object]
+						if !ok {
+							t.Errorf("final compose source %q was not created as an intermediate", src.object)
+						} else if src.gen != wantGen {
+							t.Errorf("final compose source %q gen = %d, want %d", src.object, src.gen, wantGen)
+						}
+					}
+				}
+
+				// Return the name and generation of the destination object as the "attribute".
+				return &ObjectAttrs{Name: c.dst.object, Generation: gen}, nil
 			}
 
 			// Execute.
@@ -831,6 +902,11 @@ func TestPCUState_ComposeParts(t *testing.T) {
 
 			if len(state.intermediateMap) != intermediateCount {
 				t.Errorf("intermediate map count mismatch: got %d, want %d", len(state.intermediateMap), intermediateCount)
+			}
+			for name, h := range state.intermediateMap {
+				if wantGen := interGenByName[name]; h.gen != wantGen {
+					t.Errorf("intermediateMap[%q].gen = %d, want %d", name, h.gen, wantGen)
+				}
 			}
 		})
 	}
@@ -930,7 +1006,10 @@ func TestPCUState_DoCleanup(t *testing.T) {
 		partsToCreate     int
 		interimsToCreate  int
 		failDeletesFor    map[string]bool
+		notExistFor       map[string]bool
 		expectDeleteCalls int
+		// expectLogged is the set of objects expected to be reported as failed deletes.
+		expectLogged []string
 	}{
 		{
 			name:              "CleanupAlways should clean up all",
@@ -948,6 +1027,23 @@ func TestPCUState_DoCleanup(t *testing.T) {
 				"interim-0": true,
 			},
 			expectDeleteCalls: 4,
+			expectLogged:      []string{"part-1", "interim-0"},
+		},
+		{
+			// Parts consumed by a successful compose with DeleteSourceObjects are
+			// already gone; cleanup should not report them.
+			name:             "Already deleted objects are not logged",
+			partsToCreate:    3,
+			interimsToCreate: 1,
+			notExistFor: map[string]bool{
+				"part-0": true,
+				"part-1": true,
+			},
+			failDeletesFor: map[string]bool{
+				"part-2": true,
+			},
+			expectDeleteCalls: 4,
+			expectLogged:      []string{"part-2"},
 		},
 	}
 
@@ -973,6 +1069,9 @@ func TestPCUState_DoCleanup(t *testing.T) {
 				mu.Unlock()
 
 				// Simulate failure based on the object's dummy name.
+				if tc.notExistFor[h.object] {
+					return fmt.Errorf("mock: %w", ErrObjectNotExist)
+				}
 				if shouldFail, ok := tc.failDeletesFor[h.object]; ok && shouldFail {
 					return errors.New("mock delete error")
 				}
@@ -989,6 +1088,11 @@ func TestPCUState_DoCleanup(t *testing.T) {
 				state.intermediateMap[name] = &ObjectHandle{object: name}
 			}
 
+			// Capture cleanup logs.
+			var logBuf bytes.Buffer
+			log.SetOutput(&logBuf)
+			defer log.SetOutput(os.Stderr)
+
 			// Execute.
 			state.doCleanup()
 
@@ -996,48 +1100,91 @@ func TestPCUState_DoCleanup(t *testing.T) {
 			if deleteCalls != tc.expectDeleteCalls {
 				t.Errorf("Expected %d delete calls, but got %d", tc.expectDeleteCalls, deleteCalls)
 			}
+			logs := logBuf.String()
+			if got := strings.Count(logs, "failed to delete temporary part"); got != len(tc.expectLogged) {
+				t.Errorf("got %d logged delete failures, want %d; logs:\n%s", got, len(tc.expectLogged), logs)
+			}
+			for _, name := range tc.expectLogged {
+				if !strings.Contains(logs, fmt.Sprintf("%q", name)) {
+					t.Errorf("expected delete failure for %q to be logged; logs:\n%s", name, logs)
+				}
+			}
 		})
 	}
 }
 
 func TestPCUState_Close(t *testing.T) {
 	tests := []struct {
-		name          string
-		numParts      int
-		mockErr       error
-		expectCompose bool
-		expectError   bool
+		name string
+		// workerErr is set as firstErr before close, simulating a failed part upload.
+		workerErr error
+		// composeErr is returned by composeParts.
+		composeErr error
+		// finalComposeSucceeded simulates the final compose succeeding before
+		// composeParts returns (e.g. a CRC32C mismatch detected afterwards).
+		finalComposeSucceeded bool
+		expectCompose         bool
+		expectError           bool
+		expectCleanup         bool
 	}{
 		{
-			name:          "Successful Upload",
-			numParts:      2,
-			mockErr:       nil,
-			expectCompose: true,
-			expectError:   false,
+			name:                  "Successful Upload",
+			finalComposeSucceeded: true,
+			expectCompose:         true,
 		},
 		{
 			name:          "Worker Error - Aborts Compose",
-			numParts:      2,
-			mockErr:       fmt.Errorf("upload failed"),
-			expectCompose: false,
+			workerErr:     fmt.Errorf("upload failed"),
 			expectError:   true,
+			expectCleanup: true,
+		},
+		{
+			name:          "Compose Error",
+			composeErr:    fmt.Errorf("compose failed"),
+			expectCompose: true,
+			expectError:   true,
+			expectCleanup: true,
+		},
+		{
+			// setError ignores context.Canceled, so firstErr stays nil; cleanup
+			// must still run or the uploaded parts leak.
+			name:          "Context Canceled During Compose",
+			composeErr:    context.Canceled,
+			expectCompose: true,
+			expectError:   true,
+			expectCleanup: true,
+		},
+		{
+			name:          "Wrapped Context Canceled During Compose",
+			composeErr:    fmt.Errorf("Post \"https://storage.googleapis.com\": %w", context.Canceled),
+			expectCompose: true,
+			expectError:   true,
+			expectCleanup: true,
+		},
+		{
+			// Sources were already deleted by the final compose.
+			name:                  "Error After Final Compose Succeeded",
+			composeErr:            fmt.Errorf("crc32c mismatch"),
+			finalComposeSucceeded: true,
+			expectCompose:         true,
+			expectError:           true,
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			var mu sync.Mutex
 			composeCalled := false
-			cleanupCalled := false
+			cleanupCh := make(chan struct{}, 1)
 			ctx := context.Background()
 			objName := "test-object"
 
 			state := &pcuState{
 				ctx:      ctx,
+				cancel:   func() {},
 				started:  true,
 				uploadCh: make(chan uploadTask, 10),
 				resultCh: make(chan uploadResult, 10),
-				partMap:  make(map[int]*ObjectHandle),
+				partMap:  map[int]*ObjectHandle{1: {object: "tmp1"}, 2: {object: "tmp2"}},
 				w: &Writer{
 					ctx: ctx,
 					ObjectAttrs: ObjectAttrs{
@@ -1051,30 +1198,23 @@ func TestPCUState_Close(t *testing.T) {
 				},
 				composePartsFn: func(s *pcuState) error {
 					composeCalled = true
-					return nil
+					if tc.finalComposeSucceeded {
+						s.mu.Lock()
+						s.finalComposeSucceeded = true
+						s.mu.Unlock()
+					}
+					return tc.composeErr
 				},
 				doCleanupFn: func(s *pcuState) {
-					mu.Lock()
-					cleanupCalled = true
-					mu.Unlock()
+					cleanupCh <- struct{}{}
 				},
 			}
-
-			// Pre-populate handles if testing success/failure.
-			if tc.numParts > 0 {
-				for i := 1; i <= tc.numParts; i++ {
-					state.partMap[i] = &ObjectHandle{object: "tmp"}
-				}
+			if tc.workerErr != nil {
+				state.firstErr = tc.workerErr
 			}
 
-			if tc.mockErr != nil {
-				state.firstErr = tc.mockErr
-			}
-
-			// Execute.
 			err := state.close()
 
-			// Assertions.
 			if (err != nil) != tc.expectError {
 				t.Errorf("expectError %v, got err: %v", tc.expectError, err)
 			}
@@ -1082,13 +1222,275 @@ func TestPCUState_Close(t *testing.T) {
 				t.Errorf("expectCompose %v, but composeCalled was %v", tc.expectCompose, composeCalled)
 			}
 
-			// Wait for background cleanup to execute
-			time.Sleep(10 * time.Millisecond)
-			mu.Lock()
-			if !cleanupCalled {
-				t.Errorf("cleanup logic was not executed")
+			// Cleanup runs in the background.
+			if tc.expectCleanup {
+				select {
+				case <-cleanupCh:
+				case <-time.After(time.Second):
+					t.Errorf("cleanup was not executed; temporary parts would leak")
+				}
+			} else {
+				select {
+				case <-cleanupCh:
+					t.Errorf("cleanup executed unexpectedly")
+				case <-time.After(50 * time.Millisecond):
+				}
 			}
-			mu.Unlock()
 		})
+	}
+}
+
+type pcuRecordedPartWrite struct {
+	name         string
+	kmsKey       string
+	csekKeyBytes []byte
+	assignedGen  int64
+}
+
+type pcuFakeGRPCServer struct {
+	storagepb.UnimplementedStorageServer
+
+	mu                    sync.Mutex
+	nextGen               int64
+	partWrites            []pcuRecordedPartWrite
+	composeReqs           []*storagepb.ComposeObjectRequest
+	deleteReqs            []*storagepb.DeleteObjectRequest
+	wantDeletes           int
+	deletesDone           chan struct{}
+	failFirstIntermediate bool
+	failFinalCompose      bool
+}
+
+func (s *pcuFakeGRPCServer) BidiWriteObject(stream storagepb.Storage_BidiWriteObjectServer) error {
+	var spec *storagepb.WriteObjectSpec
+	var csek *storagepb.CommonObjectRequestParams
+	var totalSize int64
+
+	for {
+		req, err := stream.Recv()
+		if errors.Is(err, io.EOF) {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		if ws := req.GetWriteObjectSpec(); ws != nil {
+			spec = ws
+			csek = req.GetCommonObjectRequestParams()
+		}
+		totalSize += int64(len(req.GetChecksummedData().GetContent()))
+
+		if req.GetFinishWrite() {
+			if spec == nil {
+				return status.Error(codes.InvalidArgument, "missing WriteObjectSpec")
+			}
+			s.mu.Lock()
+			s.nextGen++
+			gen := s.nextGen
+			rec := pcuRecordedPartWrite{
+				name:         spec.GetResource().GetName(),
+				kmsKey:       spec.GetResource().GetKmsKey(),
+				csekKeyBytes: append([]byte(nil), csek.GetEncryptionKeyBytes()...),
+				assignedGen:  gen,
+			}
+			s.partWrites = append(s.partWrites, rec)
+			s.mu.Unlock()
+
+			return stream.Send(&storagepb.BidiWriteObjectResponse{
+				WriteStatus: &storagepb.BidiWriteObjectResponse_Resource{
+					Resource: &storagepb.Object{
+						Bucket:     spec.GetResource().GetBucket(),
+						Name:       spec.GetResource().GetName(),
+						Size:       totalSize,
+						Generation: gen,
+						KmsKey:     spec.GetResource().GetKmsKey(),
+					},
+				},
+			})
+		}
+	}
+}
+
+func (s *pcuFakeGRPCServer) ComposeObject(ctx context.Context, req *storagepb.ComposeObjectRequest) (*storagepb.Object, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.composeReqs = append(s.composeReqs, req)
+	if s.failFirstIntermediate && strings.HasPrefix(req.GetDestination().GetName(), tmpObjectPrefix) {
+		s.failFirstIntermediate = false
+		return nil, status.Error(codes.Unavailable, "simulated transient intermediate compose failure")
+	}
+	if s.failFinalCompose && !strings.HasPrefix(req.GetDestination().GetName(), tmpObjectPrefix) {
+		return nil, status.Error(codes.Aborted, "simulated final compose failure")
+	}
+
+	s.nextGen++
+	gen := s.nextGen
+	return &storagepb.Object{
+		Bucket:     req.GetDestination().GetBucket(),
+		Name:       req.GetDestination().GetName(),
+		Generation: gen,
+		KmsKey:     req.GetKmsKey(),
+	}, nil
+}
+
+func (s *pcuFakeGRPCServer) DeleteObject(ctx context.Context, req *storagepb.DeleteObjectRequest) (*emptypb.Empty, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.deleteReqs = append(s.deleteReqs, req)
+	if s.deletesDone != nil && len(s.deleteReqs) == s.wantDeletes {
+		close(s.deletesDone)
+	}
+	return &emptypb.Empty{}, nil
+}
+
+func TestPCU_PartEncryptionAndGenerationPinning(t *testing.T) {
+	csek := bytes.Repeat([]byte{0x42}, 32)
+	const kmsKey = "projects/p/locations/us/keyRings/kr/cryptoKeys/k"
+
+	tests := []struct {
+		name       string
+		csek       []byte
+		kmsKeyName string
+	}{
+		{
+			name: "no_key",
+		},
+		{
+			name: "csek",
+			csek: csek,
+		},
+		{
+			name:       "cmek",
+			kmsKeyName: kmsKey,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			srv := &pcuFakeGRPCServer{nextGen: 1000}
+			client := newBufconnGRPCClient(t, srv)
+
+			obj := client.Bucket("my-bucket").Object("tenant-a/../../dest-obj")
+			if len(tc.csek) > 0 {
+				obj = obj.Key(tc.csek)
+			}
+			w := obj.NewWriter(t.Context())
+			w.EnableParallelUpload = true
+			w.ParallelUploadConfig = ParallelUploadConfig{PartSize: minPartSize, MaxConcurrency: 2}
+			w.KMSKeyName = tc.kmsKeyName
+
+			// Write 2 parts (8 MiB + 1 MiB) so both part upload and compose run.
+			payload := make([]byte, minPartSize+(1<<20))
+			if _, err := w.Write(payload); err != nil {
+				t.Fatalf("Writer.Write() failed: %v", err)
+			}
+			if err := w.Close(); err != nil {
+				t.Fatalf("Writer.Close() failed: %v", err)
+			}
+
+			srv.mu.Lock()
+			defer srv.mu.Unlock()
+
+			if len(srv.partWrites) != 2 {
+				t.Fatalf("partWrites count = %d, want 2", len(srv.partWrites))
+			}
+			wantGenByName := make(map[string]int64, len(srv.partWrites))
+			for i, pw := range srv.partWrites {
+				if !bytes.Equal(pw.csekKeyBytes, tc.csek) {
+					t.Errorf("partWrites[%d] CSEK = %x, want %x", i, pw.csekKeyBytes, tc.csek)
+				}
+				if pw.kmsKey != tc.kmsKeyName {
+					t.Errorf("partWrites[%d].kmsKey = %q, want %q", i, pw.kmsKey, tc.kmsKeyName)
+				}
+				wantGenByName[pw.name] = pw.assignedGen
+			}
+
+			if len(srv.composeReqs) != 1 {
+				t.Fatalf("composeReqs count = %d, want 1", len(srv.composeReqs))
+			}
+			comp := srv.composeReqs[0]
+			if comp.GetKmsKey() != tc.kmsKeyName {
+				t.Errorf("ComposeObjectRequest.KmsKey = %q, want %q", comp.GetKmsKey(), tc.kmsKeyName)
+			}
+			if got := comp.GetCommonObjectRequestParams().GetEncryptionKeyBytes(); !bytes.Equal(got, tc.csek) {
+				t.Errorf("ComposeObjectRequest CSEK = %x, want %x", got, tc.csek)
+			}
+			for _, src := range comp.GetSourceObjects() {
+				wantGen, ok := wantGenByName[src.GetName()]
+				if !ok {
+					t.Errorf("compose source %q was never uploaded as a part", src.GetName())
+				} else if src.GetGeneration() != wantGen {
+					t.Errorf("compose source %q generation = %d, want %d", src.GetName(), src.GetGeneration(), wantGen)
+				}
+			}
+		})
+	}
+}
+
+func TestPCU_MultiLevelComposeEncryptionAndCleanupGenerations(t *testing.T) {
+	csek := bytes.Repeat([]byte{0x24}, 32)
+	const wantDeletes = 35 // 33 parts + 2 intermediates
+
+	srv := &pcuFakeGRPCServer{
+		nextGen:               5000,
+		wantDeletes:           wantDeletes,
+		deletesDone:           make(chan struct{}),
+		failFirstIntermediate: true,
+		failFinalCompose:      true,
+	}
+	client := newBufconnGRPCClient(t, srv)
+
+	obj := client.Bucket("my-bucket").Object("multi-level-dest").Key(csek)
+	w := obj.NewWriter(t.Context())
+	w.EnableParallelUpload = true
+	w.ParallelUploadConfig = ParallelUploadConfig{PartSize: minPartSize, MaxConcurrency: 4}
+
+	// Write 33 parts (32*minPartSize + 1024 bytes) to trigger intermediate composition.
+	chunk := make([]byte, minPartSize)
+	for i := 0; i < 32; i++ {
+		if _, err := w.Write(chunk); err != nil {
+			t.Fatalf("Writer.Write(part %d) failed: %v", i+1, err)
+		}
+	}
+	if _, err := w.Write(make([]byte, 1024)); err != nil {
+		t.Fatalf("Writer.Write(tail) failed: %v", err)
+	}
+	if err := w.Close(); err == nil {
+		t.Fatalf("Writer.Close() = nil, want simulated final compose error")
+	}
+
+	select {
+	case <-srv.deletesDone:
+	case <-time.After(30 * time.Second):
+		t.Fatal("timed out waiting for cleanup deletes")
+	}
+
+	srv.mu.Lock()
+	defer srv.mu.Unlock()
+
+	if len(srv.composeReqs) != 4 { // 1 retried + 2 succeeded intermediates + 1 failed final
+		t.Fatalf("composeReqs count = %d, want 4", len(srv.composeReqs))
+	}
+	for i, inter := range srv.composeReqs[:3] {
+		if got := inter.GetCommonObjectRequestParams().GetEncryptionKeyBytes(); !bytes.Equal(got, csek) {
+			t.Errorf("intermediate compose[%d] CSEK = %x, want %x", i, got, csek)
+		}
+		if inter.IfGenerationMatch == nil || inter.GetIfGenerationMatch() != 0 {
+			t.Errorf("intermediate compose[%d] IfGenerationMatch = %v, want 0", i, inter.IfGenerationMatch)
+		}
+	}
+	for i, src := range srv.composeReqs[3].GetSourceObjects() {
+		if src.GetGeneration() == 0 {
+			t.Errorf("final compose SourceObjects[%d] (%q) Generation = 0, want pinned intermediate generation", i, src.GetName())
+		}
+	}
+	if len(srv.deleteReqs) != wantDeletes {
+		t.Fatalf("deleteReqs count = %d, want %d", len(srv.deleteReqs), wantDeletes)
+	}
+	for i, del := range srv.deleteReqs {
+		if del.GetGeneration() == 0 {
+			t.Errorf("deleteReqs[%d] (%q) Generation = 0, want pinned generation", i, del.GetObject())
+		}
 	}
 }

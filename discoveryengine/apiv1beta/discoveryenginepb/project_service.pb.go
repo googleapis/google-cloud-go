@@ -220,18 +220,18 @@ var File_google_cloud_discoveryengine_v1beta_project_service_proto protoreflect.
 
 const file_google_cloud_discoveryengine_v1beta_project_service_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/discoveryengine/v1beta/project_service.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/discoveryengine/v1beta/project.proto\x1a#google/longrunning/operations.proto\"\x93\x03\n" +
-	"\x17ProvisionProjectRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&discoveryengine.googleapis.com/ProjectR\x04name\x126\n" +
-	"\x15accept_data_use_terms\x18\x02 \x01(\bB\x03\xe0A\x02R\x12acceptDataUseTerms\x128\n" +
-	"\x16data_use_terms_version\x18\x03 \x01(\tB\x03\xe0A\x02R\x13dataUseTermsVersion\x12m\n" +
-	"\vsaas_params\x18\x04 \x01(\v2G.google.cloud.discoveryengine.v1beta.ProvisionProjectRequest.SaasParamsB\x03\xe0A\x01R\n" +
-	"saasParams\x1aS\n" +
+	"9google/cloud/discoveryengine/v1beta/project_service.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/discoveryengine/v1beta/project.proto\x1a#google/longrunning/operations.proto\"\x99\x03\n" +
+	"\x17ProvisionProjectRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&discoveryengine.googleapis.com/ProjectR\x04name\x127\n" +
+	"\x15accept_data_use_terms\x18\x02 \x01(\bB\x04\xe2A\x01\x02R\x12acceptDataUseTerms\x129\n" +
+	"\x16data_use_terms_version\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x13dataUseTermsVersion\x12n\n" +
+	"\vsaas_params\x18\x04 \x01(\v2G.google.cloud.discoveryengine.v1beta.ProvisionProjectRequest.SaasParamsB\x04\xe2A\x01\x01R\n" +
+	"saasParams\x1aU\n" +
 	"\n" +
-	"SaasParams\x12)\n" +
-	"\x0eaccept_biz_qos\x18\x01 \x01(\bB\x03\xe0A\x01R\facceptBizQos\x12\x1a\n" +
-	"\x06is_biz\x18\x02 \x01(\bB\x03\xe0A\x01R\x05isBiz\"\x1a\n" +
+	"SaasParams\x12*\n" +
+	"\x0eaccept_biz_qos\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\facceptBizQos\x12\x1b\n" +
+	"\x06is_biz\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05isBiz\"\x1a\n" +
 	"\x18ProvisionProjectMetadata2\xfa\x03\n" +
 	"\x0eProjectService\x12\x95\x02\n" +
 	"\x10ProvisionProject\x12<.google.cloud.discoveryengine.v1beta.ProvisionProjectRequest\x1a\x1d.google.longrunning.Operation\"\xa3\x01\xcaAk\n" +

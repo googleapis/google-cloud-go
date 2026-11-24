@@ -184,12 +184,12 @@ var File_google_cloud_securitycenter_v1_effective_security_health_analytics_cust
 
 const file_google_cloud_securitycenter_v1_effective_security_health_analytics_custom_module_proto_rawDesc = "" +
 	"\n" +
-	"Vgoogle/cloud/securitycenter/v1/effective_security_health_analytics_custom_module.proto\x12\x1egoogle.cloud.securitycenter.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aLgoogle/cloud/securitycenter/v1/security_health_analytics_custom_config.proto\"\xb0\x06\n" +
-	",EffectiveSecurityHealthAnalyticsCustomModule\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12V\n" +
-	"\rcustom_config\x18\x02 \x01(\v2,.google.cloud.securitycenter.v1.CustomConfigB\x03\xe0A\x03R\fcustomConfig\x12\x8c\x01\n" +
-	"\x10enablement_state\x18\x03 \x01(\x0e2\\.google.cloud.securitycenter.v1.EffectiveSecurityHealthAnalyticsCustomModule.EnablementStateB\x03\xe0A\x03R\x0fenablementState\x12&\n" +
-	"\fdisplay_name\x18\x04 \x01(\tB\x03\xe0A\x03R\vdisplayName\"N\n" +
+	"Vgoogle/cloud/securitycenter/v1/effective_security_health_analytics_custom_module.proto\x12\x1egoogle.cloud.securitycenter.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aLgoogle/cloud/securitycenter/v1/security_health_analytics_custom_config.proto\"\xb4\x06\n" +
+	",EffectiveSecurityHealthAnalyticsCustomModule\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12W\n" +
+	"\rcustom_config\x18\x02 \x01(\v2,.google.cloud.securitycenter.v1.CustomConfigB\x04\xe2A\x01\x03R\fcustomConfig\x12\x8d\x01\n" +
+	"\x10enablement_state\x18\x03 \x01(\x0e2\\.google.cloud.securitycenter.v1.EffectiveSecurityHealthAnalyticsCustomModule.EnablementStateB\x04\xe2A\x01\x03R\x0fenablementState\x12'\n" +
+	"\fdisplay_name\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\"N\n" +
 	"\x0fEnablementState\x12 \n" +
 	"\x1cENABLEMENT_STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aENABLED\x10\x01\x12\f\n" +

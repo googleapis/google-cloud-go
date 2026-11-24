@@ -208,6 +208,79 @@ func TestCachedGroupFillRoutingHint_PreferLeaderDisabledByDirectedReadOptions(t 
 	}
 }
 
+func threeReplicaLeaderCacheUpdate() *sppb.CacheUpdate {
+	return &sppb.CacheUpdate{
+		Range: []*sppb.Range{
+			{
+				StartKey:   []byte("a"),
+				LimitKey:   []byte("z"),
+				GroupUid:   5,
+				SplitId:    1,
+				Generation: []byte("1"),
+			},
+		},
+		Group: []*sppb.Group{
+			{
+				GroupUid:    5,
+				Generation:  []byte("1"),
+				LeaderIndex: 0,
+				Tablets: []*sppb.Tablet{
+					{TabletUid: 1, ServerAddress: "server1", Incarnation: []byte("1"), Distance: 0},
+					{TabletUid: 2, ServerAddress: "server2", Incarnation: []byte("1"), Distance: 0},
+					{TabletUid: 3, ServerAddress: "server3", Incarnation: []byte("1"), Distance: 0},
+				},
+			},
+		},
+	}
+}
+
+func TestKeyRangeCache_PreferLeaderWithOperationUIDSelectsLeaderEvenWhenFollowerHasLowerLatency(t *testing.T) {
+	withIsolatedEndpointLatencyRegistry(t)
+	const operationUID = 42
+
+	endpointCache := newTestEndpointCache()
+	cache := newKeyRangeCache(endpointCache)
+	cache.useDeterministicRandom()
+	cache.addRanges(threeReplicaLeaderCacheUpdate())
+	for _, address := range []string{"server1", "server2", "server3"} {
+		endpointCache.Get(context.Background(), address)
+	}
+
+	endpointLatencyRegistryRecordLatency(operationUID, true, "server1", 300*time.Microsecond)
+	endpointLatencyRegistryRecordLatency(operationUID, true, "server2", 100*time.Microsecond)
+	endpointLatencyRegistryRecordLatency(operationUID, true, "server3", 200*time.Microsecond)
+
+	hint := &sppb.RoutingHint{Key: []byte("a"), OperationUid: operationUID}
+	endpoint := cache.fillRoutingHint(context.Background(), true, rangeModeCoveringSplit, &sppb.DirectedReadOptions{}, hint)
+	if endpoint == nil || endpoint.Address() != "server1" {
+		t.Fatalf("expected leader server1 for preferLeader request, got %#v", endpoint)
+	}
+}
+
+func TestKeyRangeCache_PreferLeaderWithOperationUIDFallsBackToScoreAwareWhenLeaderUnhealthy(t *testing.T) {
+	withIsolatedEndpointLatencyRegistry(t)
+	const operationUID = 42
+
+	endpointCache := newTestEndpointCache()
+	cache := newKeyRangeCache(endpointCache)
+	cache.useDeterministicRandom()
+	cache.addRanges(threeReplicaLeaderCacheUpdate())
+	for _, address := range []string{"server1", "server2", "server3"} {
+		endpointCache.Get(context.Background(), address)
+	}
+	endpointCache.setHealthy("server1", false)
+	endpointCache.setTransientFailure("server1", true)
+
+	endpointLatencyRegistryRecordLatency(operationUID, true, "server2", 200*time.Microsecond)
+	endpointLatencyRegistryRecordLatency(operationUID, true, "server3", 100*time.Microsecond)
+
+	hint := &sppb.RoutingHint{Key: []byte("a"), OperationUid: operationUID}
+	endpoint := cache.fillRoutingHint(context.Background(), true, rangeModeCoveringSplit, &sppb.DirectedReadOptions{}, hint)
+	if endpoint == nil || endpoint.Address() != "server3" {
+		t.Fatalf("expected lowest-latency follower server3 when leader is unhealthy, got %#v", endpoint)
+	}
+}
+
 func TestKeyRangeCache_FillRoutingHintSkipsUnhealthyCachedTablet(t *testing.T) {
 	endpointCache := newTestEndpointCache()
 	cache := newKeyRangeCache(endpointCache)

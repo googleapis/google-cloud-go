@@ -336,7 +336,7 @@ type Revision struct {
 	//
 	// Note that this value might not be what was used
 	// as input. For example, if ALPHA was provided as input in the parent
-	// resource, but only BETA and GA-level features are were, this field will be
+	// resource, but only BETA and GA-level features are used, this field will be
 	// BETA.
 	LaunchStage api.LaunchStage `protobuf:"varint,10,opt,name=launch_stage,json=launchStage,proto3,enum=google.api.LaunchStage" json:"launch_stage,omitempty"`
 	// Output only. The name of the parent service.
@@ -354,9 +354,11 @@ type Revision struct {
 	// the service. The service account represents the identity of the running
 	// revision, and determines what permissions the revision has.
 	ServiceAccount string `protobuf:"bytes,16,opt,name=service_account,json=serviceAccount,proto3" json:"service_account,omitempty"`
-	// Holds the single container that defines the unit of execution for this
+	// Holds the list which define the units of execution for this
 	// Revision.
 	Containers []*Container `protobuf:"bytes,17,rep,name=containers,proto3" json:"containers,omitempty"`
+	// Output only. Configuration for sandboxes.
+	Sandboxes *SandboxConfiguration `protobuf:"bytes,56,opt,name=sandboxes,proto3" json:"sandboxes,omitempty"`
 	// A list of Volumes to make available to containers.
 	Volumes []*Volume `protobuf:"bytes,18,rep,name=volumes,proto3" json:"volumes,omitempty"`
 	// The execution environment being used to host this Revision.
@@ -394,11 +396,19 @@ type Revision struct {
 	ScalingStatus *RevisionScalingStatus `protobuf:"bytes,39,opt,name=scaling_status,json=scalingStatus,proto3" json:"scaling_status,omitempty"`
 	// The node selector for the revision.
 	NodeSelector *NodeSelector `protobuf:"bytes,40,opt,name=node_selector,json=nodeSelector,proto3" json:"node_selector,omitempty"`
+	// Optional. The Revision's workload identity settings.
+	WorkloadIdentityConfig *WorkloadIdentityConfig `protobuf:"bytes,52,opt,name=workload_identity_config,json=workloadIdentityConfig,proto3" json:"workload_identity_config,omitempty"`
 	// Optional. Output only. True if GPU zonal redundancy is disabled on this
 	// revision.
 	GpuZonalRedundancyDisabled *bool `protobuf:"varint,48,opt,name=gpu_zonal_redundancy_disabled,json=gpuZonalRedundancyDisabled,proto3,oneof" json:"gpu_zonal_redundancy_disabled,omitempty"`
 	// Output only. Email address of the authenticated creator.
 	Creator string `protobuf:"bytes,49,opt,name=creator,proto3" json:"creator,omitempty"`
+	// Output only. Arbitrary identifier for the API client.
+	Client string `protobuf:"bytes,53,opt,name=client,proto3" json:"client,omitempty"`
+	// Output only. Arbitrary version identifier for the API client.
+	ClientVersion string `protobuf:"bytes,54,opt,name=client_version,json=clientVersion,proto3" json:"client_version,omitempty"`
+	// Output only. The ambient networking configuration for this revision.
+	AmbientNetworking *AmbientNetworking `protobuf:"bytes,59,opt,name=ambient_networking,json=ambientNetworking,proto3" json:"ambient_networking,omitempty"`
 	// Output only. A system-generated fingerprint for this version of the
 	// resource. May be used to detect modification conflict during updates.
 	Etag          string `protobuf:"bytes,99,opt,name=etag,proto3" json:"etag,omitempty"`
@@ -555,6 +565,13 @@ func (x *Revision) GetContainers() []*Container {
 	return nil
 }
 
+func (x *Revision) GetSandboxes() *SandboxConfiguration {
+	if x != nil {
+		return x.Sandboxes
+	}
+	return nil
+}
+
 func (x *Revision) GetVolumes() []*Volume {
 	if x != nil {
 		return x.Volumes
@@ -653,6 +670,13 @@ func (x *Revision) GetNodeSelector() *NodeSelector {
 	return nil
 }
 
+func (x *Revision) GetWorkloadIdentityConfig() *WorkloadIdentityConfig {
+	if x != nil {
+		return x.WorkloadIdentityConfig
+	}
+	return nil
+}
+
 func (x *Revision) GetGpuZonalRedundancyDisabled() bool {
 	if x != nil && x.GpuZonalRedundancyDisabled != nil {
 		return *x.GpuZonalRedundancyDisabled
@@ -667,6 +691,27 @@ func (x *Revision) GetCreator() string {
 	return ""
 }
 
+func (x *Revision) GetClient() string {
+	if x != nil {
+		return x.Client
+	}
+	return ""
+}
+
+func (x *Revision) GetClientVersion() string {
+	if x != nil {
+		return x.ClientVersion
+	}
+	return ""
+}
+
+func (x *Revision) GetAmbientNetworking() *AmbientNetworking {
+	if x != nil {
+		return x.AmbientNetworking
+	}
+	return nil
+}
+
 func (x *Revision) GetEtag() string {
 	if x != nil {
 		return x.Etag
@@ -678,43 +723,43 @@ var File_google_cloud_run_v2_revision_proto protoreflect.FileDescriptor
 
 const file_google_cloud_run_v2_revision_proto_rawDesc = "" +
 	"\n" +
-	"\"google/cloud/run/v2/revision.proto\x12\x13google.cloud.run.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1dgoogle/api/launch_stage.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a#google/cloud/run/v2/condition.proto\x1a!google/cloud/run/v2/k8s.min.proto\x1a google/cloud/run/v2/status.proto\x1a)google/cloud/run/v2/vendor_settings.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"M\n" +
-	"\x12GetRevisionRequest\x127\n" +
-	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
-	"\x1brun.googleapis.com/RevisionR\x04name\"\xb2\x01\n" +
-	"\x14ListRevisionsRequest\x12;\n" +
-	"\x06parent\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\x12\x1brun.googleapis.com/RevisionR\x06parent\x12\x1b\n" +
+	"\"google/cloud/run/v2/revision.proto\x12\x13google.cloud.run.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1dgoogle/api/launch_stage.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a#google/cloud/run/v2/condition.proto\x1a!google/cloud/run/v2/k8s.min.proto\x1a!google/cloud/run/v2/sandbox.proto\x1a google/cloud/run/v2/status.proto\x1a)google/cloud/run/v2/vendor_settings.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"N\n" +
+	"\x12GetRevisionRequest\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
+	"\x1brun.googleapis.com/RevisionR\x04name\"\xb3\x01\n" +
+	"\x14ListRevisionsRequest\x12<\n" +
+	"\x06parent\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\x12\x1brun.googleapis.com/RevisionR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12!\n" +
 	"\fshow_deleted\x18\x04 \x01(\bR\vshowDeleted\"|\n" +
 	"\x15ListRevisionsResponse\x12;\n" +
 	"\trevisions\x18\x01 \x03(\v2\x1d.google.cloud.run.v2.RevisionR\trevisions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x89\x01\n" +
-	"\x15DeleteRevisionRequest\x127\n" +
-	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8a\x01\n" +
+	"\x15DeleteRevisionRequest\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
 	"\x1brun.googleapis.com/RevisionR\x04name\x12#\n" +
 	"\rvalidate_only\x18\x02 \x01(\bR\fvalidateOnly\x12\x12\n" +
-	"\x04etag\x18\x03 \x01(\tR\x04etag\"\xc2\x12\n" +
-	"\bRevision\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12#\n" +
+	"\x04etag\x18\x03 \x01(\tR\x04etag\"\xb7\x15\n" +
+	"\bRevision\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12$\n" +
 	"\n" +
-	"generation\x18\x03 \x01(\x03B\x03\xe0A\x03R\n" +
-	"generation\x12F\n" +
-	"\x06labels\x18\x04 \x03(\v2).google.cloud.run.v2.Revision.LabelsEntryB\x03\xe0A\x03R\x06labels\x12U\n" +
-	"\vannotations\x18\x05 \x03(\v2..google.cloud.run.v2.Revision.AnnotationsEntryB\x03\xe0A\x03R\vannotations\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12@\n" +
-	"\vexpire_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"generation\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\n" +
+	"generation\x12G\n" +
+	"\x06labels\x18\x04 \x03(\v2).google.cloud.run.v2.Revision.LabelsEntryB\x04\xe2A\x01\x03R\x06labels\x12V\n" +
+	"\vannotations\x18\x05 \x03(\v2..google.cloud.run.v2.Revision.AnnotationsEntryB\x04\xe2A\x01\x03R\vannotations\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12A\n" +
+	"\vexpire_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"expireTime\x12:\n" +
 	"\flaunch_stage\x18\n" +
-	" \x01(\x0e2\x17.google.api.LaunchStageR\vlaunchStage\x12<\n" +
-	"\aservice\x18\v \x01(\tB\"\xe0A\x03\xfaA\x1c\n" +
+	" \x01(\x0e2\x17.google.api.LaunchStageR\vlaunchStage\x12=\n" +
+	"\aservice\x18\v \x01(\tB#\xe2A\x01\x03\xfaA\x1c\n" +
 	"\x1arun.googleapis.com/ServiceR\aservice\x12>\n" +
 	"\ascaling\x18\f \x01(\v2$.google.cloud.run.v2.RevisionScalingR\ascaling\x12=\n" +
 	"\n" +
@@ -724,27 +769,32 @@ const file_google_cloud_run_v2_revision_proto_rawDesc = "" +
 	"\x0fservice_account\x18\x10 \x01(\tR\x0eserviceAccount\x12>\n" +
 	"\n" +
 	"containers\x18\x11 \x03(\v2\x1e.google.cloud.run.v2.ContainerR\n" +
-	"containers\x125\n" +
+	"containers\x12M\n" +
+	"\tsandboxes\x188 \x01(\v2).google.cloud.run.v2.SandboxConfigurationB\x04\xe2A\x01\x03R\tsandboxes\x125\n" +
 	"\avolumes\x18\x12 \x03(\v2\x1b.google.cloud.run.v2.VolumeR\avolumes\x12^\n" +
 	"\x15execution_environment\x18\x14 \x01(\x0e2).google.cloud.run.v2.ExecutionEnvironmentR\x14executionEnvironment\x12M\n" +
 	"\x0eencryption_key\x18\x15 \x01(\tB&\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\rencryptionKey\x12C\n" +
 	"\fservice_mesh\x18\x16 \x01(\v2 .google.cloud.run.v2.ServiceMeshR\vserviceMesh\x12{\n" +
 	" encryption_key_revocation_action\x18\x17 \x01(\x0e22.google.cloud.run.v2.EncryptionKeyRevocationActionR\x1dencryptionKeyRevocationAction\x12b\n" +
-	" encryption_key_shutdown_duration\x18\x18 \x01(\v2\x19.google.protobuf.DurationR\x1dencryptionKeyShutdownDuration\x12%\n" +
-	"\vreconciling\x18\x1e \x01(\bB\x03\xe0A\x03R\vreconciling\x12C\n" +
+	" encryption_key_shutdown_duration\x18\x18 \x01(\v2\x19.google.protobuf.DurationR\x1dencryptionKeyShutdownDuration\x12&\n" +
+	"\vreconciling\x18\x1e \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12D\n" +
 	"\n" +
-	"conditions\x18\x1f \x03(\v2\x1e.google.cloud.run.v2.ConditionB\x03\xe0A\x03R\n" +
-	"conditions\x124\n" +
-	"\x13observed_generation\x18  \x01(\x03B\x03\xe0A\x03R\x12observedGeneration\x12\x1c\n" +
-	"\alog_uri\x18! \x01(\tB\x03\xe0A\x03R\x06logUri\x12(\n" +
-	"\rsatisfies_pzs\x18% \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x12)\n" +
-	"\x10session_affinity\x18& \x01(\bR\x0fsessionAffinity\x12V\n" +
-	"\x0escaling_status\x18' \x01(\v2*.google.cloud.run.v2.RevisionScalingStatusB\x03\xe0A\x03R\rscalingStatus\x12F\n" +
-	"\rnode_selector\x18( \x01(\v2!.google.cloud.run.v2.NodeSelectorR\fnodeSelector\x12N\n" +
-	"\x1dgpu_zonal_redundancy_disabled\x180 \x01(\bB\x06\xe0A\x01\xe0A\x03H\x00R\x1agpuZonalRedundancyDisabled\x88\x01\x01\x12\x1d\n" +
-	"\acreator\x181 \x01(\tB\x03\xe0A\x03R\acreator\x12\x17\n" +
-	"\x04etag\x18c \x01(\tB\x03\xe0A\x03R\x04etag\x1a9\n" +
+	"conditions\x18\x1f \x03(\v2\x1e.google.cloud.run.v2.ConditionB\x04\xe2A\x01\x03R\n" +
+	"conditions\x125\n" +
+	"\x13observed_generation\x18  \x01(\x03B\x04\xe2A\x01\x03R\x12observedGeneration\x12\x1d\n" +
+	"\alog_uri\x18! \x01(\tB\x04\xe2A\x01\x03R\x06logUri\x12)\n" +
+	"\rsatisfies_pzs\x18% \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12)\n" +
+	"\x10session_affinity\x18& \x01(\bR\x0fsessionAffinity\x12W\n" +
+	"\x0escaling_status\x18' \x01(\v2*.google.cloud.run.v2.RevisionScalingStatusB\x04\xe2A\x01\x03R\rscalingStatus\x12F\n" +
+	"\rnode_selector\x18( \x01(\v2!.google.cloud.run.v2.NodeSelectorR\fnodeSelector\x12k\n" +
+	"\x18workload_identity_config\x184 \x01(\v2+.google.cloud.run.v2.WorkloadIdentityConfigB\x04\xe2A\x01\x01R\x16workloadIdentityConfig\x12M\n" +
+	"\x1dgpu_zonal_redundancy_disabled\x180 \x01(\bB\x05\xe2A\x02\x01\x03H\x00R\x1agpuZonalRedundancyDisabled\x88\x01\x01\x12\x1e\n" +
+	"\acreator\x181 \x01(\tB\x04\xe2A\x01\x03R\acreator\x12\x1c\n" +
+	"\x06client\x185 \x01(\tB\x04\xe2A\x01\x03R\x06client\x12+\n" +
+	"\x0eclient_version\x186 \x01(\tB\x04\xe2A\x01\x03R\rclientVersion\x12[\n" +
+	"\x12ambient_networking\x18; \x01(\v2&.google.cloud.run.v2.AmbientNetworkingB\x04\xe2A\x01\x03R\x11ambientNetworking\x12\x18\n" +
+	"\x04etag\x18c \x01(\tB\x04\xe2A\x01\x03R\x04etag\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +
@@ -752,7 +802,7 @@ const file_google_cloud_run_v2_revision_proto_rawDesc = "" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:t\xeaAq\n" +
 	"\x1brun.googleapis.com/Revision\x12Oprojects/{project}/locations/{location}/services/{service}/revisions/{revision}R\x01\x01B \n" +
-	"\x1e_gpu_zonal_redundancy_disabled2\xc4\a\n" +
+	"\x1e_gpu_zonal_redundancy_disabled2\x96\b\n" +
 	"\tRevisions\x12\x92\x02\n" +
 	"\vGetRevision\x12'.google.cloud.run.v2.GetRevisionRequest\x1a\x1d.google.cloud.run.v2.Revision\"\xba\x01\xdaA\x04name\x82\xd3\xe4\x93\x02yZ=\x12;/v2/{name=projects/*/locations/*/workerPools/*/revisions/*}\x128/v2/{name=projects/*/locations/*/services/*/revisions/*}\x8a\xd3\xe4\x93\x02.\x12,\n" +
 	"\x04name\x12$projects/*/locations/{location=*}/**\x12\xa7\x02\n" +
@@ -760,7 +810,7 @@ const file_google_cloud_run_v2_revision_proto_rawDesc = "" +
 	"\x06parent\x12$projects/*/locations/{location=*}/**\x12\xaf\x02\n" +
 	"\x0eDeleteRevision\x12*.google.cloud.run.v2.DeleteRevisionRequest\x1a\x1d.google.longrunning.Operation\"\xd1\x01\xcaA\x14\n" +
 	"\bRevision\x12\bRevision\xdaA\x04name\x82\xd3\xe4\x93\x02yZ=*;/v2/{name=projects/*/locations/*/workerPools/*/revisions/*}*8/v2/{name=projects/*/locations/*/services/*/revisions/*}\x8a\xd3\xe4\x93\x02.\x12,\n" +
-	"\x04name\x12$projects/*/locations/{location=*}/**\x1aF\xcaA\x12run.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformBU\n" +
+	"\x04name\x12$projects/*/locations/{location=*}/**\x1a\x97\x01\xcaA\x12run.googleapis.com\xd2A\x7fhttps://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/run,https://www.googleapis.com/auth/run.readonlyBU\n" +
 	"\x17com.google.cloud.run.v2B\rRevisionProtoP\x01Z)cloud.google.com/go/run/apiv2/runpb;runpbb\x06proto3"
 
 var (
@@ -790,14 +840,17 @@ var file_google_cloud_run_v2_revision_proto_goTypes = []any{
 	(*VpcAccess)(nil),                  // 10: google.cloud.run.v2.VpcAccess
 	(*durationpb.Duration)(nil),        // 11: google.protobuf.Duration
 	(*Container)(nil),                  // 12: google.cloud.run.v2.Container
-	(*Volume)(nil),                     // 13: google.cloud.run.v2.Volume
-	(ExecutionEnvironment)(0),          // 14: google.cloud.run.v2.ExecutionEnvironment
-	(*ServiceMesh)(nil),                // 15: google.cloud.run.v2.ServiceMesh
-	(EncryptionKeyRevocationAction)(0), // 16: google.cloud.run.v2.EncryptionKeyRevocationAction
-	(*Condition)(nil),                  // 17: google.cloud.run.v2.Condition
-	(*RevisionScalingStatus)(nil),      // 18: google.cloud.run.v2.RevisionScalingStatus
-	(*NodeSelector)(nil),               // 19: google.cloud.run.v2.NodeSelector
-	(*longrunningpb.Operation)(nil),    // 20: google.longrunning.Operation
+	(*SandboxConfiguration)(nil),       // 13: google.cloud.run.v2.SandboxConfiguration
+	(*Volume)(nil),                     // 14: google.cloud.run.v2.Volume
+	(ExecutionEnvironment)(0),          // 15: google.cloud.run.v2.ExecutionEnvironment
+	(*ServiceMesh)(nil),                // 16: google.cloud.run.v2.ServiceMesh
+	(EncryptionKeyRevocationAction)(0), // 17: google.cloud.run.v2.EncryptionKeyRevocationAction
+	(*Condition)(nil),                  // 18: google.cloud.run.v2.Condition
+	(*RevisionScalingStatus)(nil),      // 19: google.cloud.run.v2.RevisionScalingStatus
+	(*NodeSelector)(nil),               // 20: google.cloud.run.v2.NodeSelector
+	(*WorkloadIdentityConfig)(nil),     // 21: google.cloud.run.v2.WorkloadIdentityConfig
+	(*AmbientNetworking)(nil),          // 22: google.cloud.run.v2.AmbientNetworking
+	(*longrunningpb.Operation)(nil),    // 23: google.longrunning.Operation
 }
 var file_google_cloud_run_v2_revision_proto_depIdxs = []int32{
 	4,  // 0: google.cloud.run.v2.ListRevisionsResponse.revisions:type_name -> google.cloud.run.v2.Revision
@@ -812,25 +865,28 @@ var file_google_cloud_run_v2_revision_proto_depIdxs = []int32{
 	10, // 9: google.cloud.run.v2.Revision.vpc_access:type_name -> google.cloud.run.v2.VpcAccess
 	11, // 10: google.cloud.run.v2.Revision.timeout:type_name -> google.protobuf.Duration
 	12, // 11: google.cloud.run.v2.Revision.containers:type_name -> google.cloud.run.v2.Container
-	13, // 12: google.cloud.run.v2.Revision.volumes:type_name -> google.cloud.run.v2.Volume
-	14, // 13: google.cloud.run.v2.Revision.execution_environment:type_name -> google.cloud.run.v2.ExecutionEnvironment
-	15, // 14: google.cloud.run.v2.Revision.service_mesh:type_name -> google.cloud.run.v2.ServiceMesh
-	16, // 15: google.cloud.run.v2.Revision.encryption_key_revocation_action:type_name -> google.cloud.run.v2.EncryptionKeyRevocationAction
-	11, // 16: google.cloud.run.v2.Revision.encryption_key_shutdown_duration:type_name -> google.protobuf.Duration
-	17, // 17: google.cloud.run.v2.Revision.conditions:type_name -> google.cloud.run.v2.Condition
-	18, // 18: google.cloud.run.v2.Revision.scaling_status:type_name -> google.cloud.run.v2.RevisionScalingStatus
-	19, // 19: google.cloud.run.v2.Revision.node_selector:type_name -> google.cloud.run.v2.NodeSelector
-	0,  // 20: google.cloud.run.v2.Revisions.GetRevision:input_type -> google.cloud.run.v2.GetRevisionRequest
-	1,  // 21: google.cloud.run.v2.Revisions.ListRevisions:input_type -> google.cloud.run.v2.ListRevisionsRequest
-	3,  // 22: google.cloud.run.v2.Revisions.DeleteRevision:input_type -> google.cloud.run.v2.DeleteRevisionRequest
-	4,  // 23: google.cloud.run.v2.Revisions.GetRevision:output_type -> google.cloud.run.v2.Revision
-	2,  // 24: google.cloud.run.v2.Revisions.ListRevisions:output_type -> google.cloud.run.v2.ListRevisionsResponse
-	20, // 25: google.cloud.run.v2.Revisions.DeleteRevision:output_type -> google.longrunning.Operation
-	23, // [23:26] is the sub-list for method output_type
-	20, // [20:23] is the sub-list for method input_type
-	20, // [20:20] is the sub-list for extension type_name
-	20, // [20:20] is the sub-list for extension extendee
-	0,  // [0:20] is the sub-list for field type_name
+	13, // 12: google.cloud.run.v2.Revision.sandboxes:type_name -> google.cloud.run.v2.SandboxConfiguration
+	14, // 13: google.cloud.run.v2.Revision.volumes:type_name -> google.cloud.run.v2.Volume
+	15, // 14: google.cloud.run.v2.Revision.execution_environment:type_name -> google.cloud.run.v2.ExecutionEnvironment
+	16, // 15: google.cloud.run.v2.Revision.service_mesh:type_name -> google.cloud.run.v2.ServiceMesh
+	17, // 16: google.cloud.run.v2.Revision.encryption_key_revocation_action:type_name -> google.cloud.run.v2.EncryptionKeyRevocationAction
+	11, // 17: google.cloud.run.v2.Revision.encryption_key_shutdown_duration:type_name -> google.protobuf.Duration
+	18, // 18: google.cloud.run.v2.Revision.conditions:type_name -> google.cloud.run.v2.Condition
+	19, // 19: google.cloud.run.v2.Revision.scaling_status:type_name -> google.cloud.run.v2.RevisionScalingStatus
+	20, // 20: google.cloud.run.v2.Revision.node_selector:type_name -> google.cloud.run.v2.NodeSelector
+	21, // 21: google.cloud.run.v2.Revision.workload_identity_config:type_name -> google.cloud.run.v2.WorkloadIdentityConfig
+	22, // 22: google.cloud.run.v2.Revision.ambient_networking:type_name -> google.cloud.run.v2.AmbientNetworking
+	0,  // 23: google.cloud.run.v2.Revisions.GetRevision:input_type -> google.cloud.run.v2.GetRevisionRequest
+	1,  // 24: google.cloud.run.v2.Revisions.ListRevisions:input_type -> google.cloud.run.v2.ListRevisionsRequest
+	3,  // 25: google.cloud.run.v2.Revisions.DeleteRevision:input_type -> google.cloud.run.v2.DeleteRevisionRequest
+	4,  // 26: google.cloud.run.v2.Revisions.GetRevision:output_type -> google.cloud.run.v2.Revision
+	2,  // 27: google.cloud.run.v2.Revisions.ListRevisions:output_type -> google.cloud.run.v2.ListRevisionsResponse
+	23, // 28: google.cloud.run.v2.Revisions.DeleteRevision:output_type -> google.longrunning.Operation
+	26, // [26:29] is the sub-list for method output_type
+	23, // [23:26] is the sub-list for method input_type
+	23, // [23:23] is the sub-list for extension type_name
+	23, // [23:23] is the sub-list for extension extendee
+	0,  // [0:23] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_run_v2_revision_proto_init() }
@@ -840,6 +896,7 @@ func file_google_cloud_run_v2_revision_proto_init() {
 	}
 	file_google_cloud_run_v2_condition_proto_init()
 	file_google_cloud_run_v2_k8s_min_proto_init()
+	file_google_cloud_run_v2_sandbox_proto_init()
 	file_google_cloud_run_v2_status_proto_init()
 	file_google_cloud_run_v2_vendor_settings_proto_init()
 	file_google_cloud_run_v2_revision_proto_msgTypes[4].OneofWrappers = []any{}

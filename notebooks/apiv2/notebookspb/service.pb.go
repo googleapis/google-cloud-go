@@ -1004,65 +1004,65 @@ const file_google_cloud_notebooks_v2_service_proto_rawDesc = "" +
 	"\x16requested_cancellation\x18\x06 \x01(\bR\x15requestedCancellation\x12\x1f\n" +
 	"\vapi_version\x18\a \x01(\tR\n" +
 	"apiVersion\x12\x1a\n" +
-	"\bendpoint\x18\b \x01(\tR\bendpoint\"\xdc\x01\n" +
-	"\x14ListInstancesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!notebooks.googleapis.com/InstanceR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\bendpoint\x18\b \x01(\tR\bendpoint\"\xe1\x01\n" +
+	"\x14ListInstancesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!notebooks.googleapis.com/InstanceR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1e\n" +
-	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\"\xa4\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1f\n" +
+	"\border_by\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xa4\x01\n" +
 	"\x15ListInstancesResponse\x12A\n" +
 	"\tinstances\x18\x01 \x03(\v2#.google.cloud.notebooks.v2.InstanceR\tinstances\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"S\n" +
-	"\x12GetInstanceRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!notebooks.googleapis.com/InstanceR\x04name\"\xea\x01\n" +
-	"\x15CreateInstanceRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!notebooks.googleapis.com/InstanceR\x06parent\x12$\n" +
-	"\vinstance_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"instanceId\x12D\n" +
-	"\binstance\x18\x03 \x01(\v2#.google.cloud.notebooks.v2.InstanceB\x03\xe0A\x02R\binstance\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"T\n" +
+	"\x12GetInstanceRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!notebooks.googleapis.com/InstanceR\x04name\"\xee\x01\n" +
+	"\x15CreateInstanceRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!notebooks.googleapis.com/InstanceR\x06parent\x12%\n" +
+	"\vinstance_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"instanceId\x12E\n" +
+	"\binstance\x18\x03 \x01(\v2#.google.cloud.notebooks.v2.InstanceB\x04\xe2A\x01\x02R\binstance\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xc3\x01\n" +
-	"\x15UpdateInstanceRequest\x12D\n" +
-	"\binstance\x18\x01 \x01(\v2#.google.cloud.notebooks.v2.InstanceB\x03\xe0A\x02R\binstance\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xc6\x01\n" +
+	"\x15UpdateInstanceRequest\x12E\n" +
+	"\binstance\x18\x01 \x01(\v2#.google.cloud.notebooks.v2.InstanceB\x04\xe2A\x01\x02R\binstance\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"z\n" +
-	"\x15DeleteInstanceRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!notebooks.googleapis.com/InstanceR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"|\n" +
+	"\x15DeleteInstanceRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!notebooks.googleapis.com/InstanceR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"/\n" +
-	"\x14StartInstanceRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\".\n" +
-	"\x13StopInstanceRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"/\n" +
-	"\x14ResetInstanceRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"U\n" +
-	"!CheckInstanceUpgradabilityRequest\x120\n" +
-	"\x11notebook_instance\x18\x01 \x01(\tB\x03\xe0A\x02R\x10notebookInstance\"\xb7\x01\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"0\n" +
+	"\x14StartInstanceRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\"/\n" +
+	"\x13StopInstanceRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\"0\n" +
+	"\x14ResetInstanceRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\"V\n" +
+	"!CheckInstanceUpgradabilityRequest\x121\n" +
+	"\x11notebook_instance\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x10notebookInstance\"\xb7\x01\n" +
 	"\"CheckInstanceUpgradabilityResponse\x12 \n" +
 	"\vupgradeable\x18\x01 \x01(\bR\vupgradeable\x12'\n" +
 	"\x0fupgrade_version\x18\x02 \x01(\tR\x0eupgradeVersion\x12!\n" +
 	"\fupgrade_info\x18\x03 \x01(\tR\vupgradeInfo\x12#\n" +
-	"\rupgrade_image\x18\x04 \x01(\tR\fupgradeImage\"1\n" +
-	"\x16UpgradeInstanceRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"\xaf\x01\n" +
-	"\x17RollbackInstanceRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!notebooks.googleapis.com/InstanceR\x04name\x12,\n" +
-	"\x0ftarget_snapshot\x18\x02 \x01(\tB\x03\xe0A\x02R\x0etargetSnapshot\x12'\n" +
-	"\vrevision_id\x18\x03 \x01(\tB\x06\xe0A\x03\xe0A\x02R\n" +
-	"revisionId\"\xe5\x01\n" +
-	"\x17DiagnoseInstanceRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!notebooks.googleapis.com/InstanceR\x04name\x12]\n" +
-	"\x11diagnostic_config\x18\x02 \x01(\v2+.google.cloud.notebooks.v2.DiagnosticConfigB\x03\xe0A\x02R\x10diagnosticConfig\x12,\n" +
-	"\x0ftimeout_minutes\x18\x03 \x01(\x05B\x03\xe0A\x01R\x0etimeoutMinutes2\xfa\x13\n" +
+	"\rupgrade_image\x18\x04 \x01(\tR\fupgradeImage\"2\n" +
+	"\x16UpgradeInstanceRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\"\xb0\x01\n" +
+	"\x17RollbackInstanceRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!notebooks.googleapis.com/InstanceR\x04name\x12-\n" +
+	"\x0ftarget_snapshot\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0etargetSnapshot\x12&\n" +
+	"\vrevision_id\x18\x03 \x01(\tB\x05\xe2A\x02\x03\x02R\n" +
+	"revisionId\"\xe8\x01\n" +
+	"\x17DiagnoseInstanceRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!notebooks.googleapis.com/InstanceR\x04name\x12^\n" +
+	"\x11diagnostic_config\x18\x02 \x01(\v2+.google.cloud.notebooks.v2.DiagnosticConfigB\x04\xe2A\x01\x02R\x10diagnosticConfig\x12-\n" +
+	"\x0ftimeout_minutes\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x0etimeoutMinutes2\xfa\x13\n" +
 	"\x0fNotebookService\x12\xb2\x01\n" +
 	"\rListInstances\x12/.google.cloud.notebooks.v2.ListInstancesRequest\x1a0.google.cloud.notebooks.v2.ListInstancesResponse\">\xdaA\x06parent\x82\xd3\xe4\x93\x02/\x12-/v2/{parent=projects/*/locations/*}/instances\x12\x9f\x01\n" +
 	"\vGetInstance\x12-.google.cloud.notebooks.v2.GetInstanceRequest\x1a#.google.cloud.notebooks.v2.Instance\"<\xdaA\x04name\x82\xd3\xe4\x93\x02/\x12-/v2/{name=projects/*/locations/*/instances/*}\x12\xe0\x01\n" +

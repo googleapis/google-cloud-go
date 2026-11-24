@@ -279,22 +279,22 @@ var File_google_cloud_dataproc_v1_node_groups_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dataproc_v1_node_groups_proto_rawDesc = "" +
 	"\n" +
-	"*google/cloud/dataproc/v1/node_groups.proto\x12\x18google.cloud.dataproc.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/dataproc/v1/clusters.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\"\xf1\x01\n" +
-	"\x16CreateNodeGroupRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!dataproc.googleapis.com/NodeGroupR\x06parent\x12G\n" +
+	"*google/cloud/dataproc/v1/node_groups.proto\x12\x18google.cloud.dataproc.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/dataproc/v1/clusters.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\"\xf5\x01\n" +
+	"\x16CreateNodeGroupRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!dataproc.googleapis.com/NodeGroupR\x06parent\x12H\n" +
 	"\n" +
-	"node_group\x18\x02 \x01(\v2#.google.cloud.dataproc.v1.NodeGroupB\x03\xe0A\x02R\tnodeGroup\x12'\n" +
-	"\rnode_group_id\x18\x04 \x01(\tB\x03\xe0A\x01R\vnodeGroupId\x12\"\n" +
+	"node_group\x18\x02 \x01(\v2#.google.cloud.dataproc.v1.NodeGroupB\x04\xe2A\x01\x02R\tnodeGroup\x12(\n" +
+	"\rnode_group_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vnodeGroupId\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\xd2\x01\n" +
-	"\x16ResizeNodeGroupRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x17\n" +
-	"\x04size\x18\x02 \x01(\x05B\x03\xe0A\x02R\x04size\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xd6\x01\n" +
+	"\x16ResizeNodeGroupRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x18\n" +
+	"\x04size\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x04size\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\x12b\n" +
-	"\x1dgraceful_decommission_timeout\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x1bgracefulDecommissionTimeout\"T\n" +
-	"\x13GetNodeGroupRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12c\n" +
+	"\x1dgraceful_decommission_timeout\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x1bgracefulDecommissionTimeout\"U\n" +
+	"\x13GetNodeGroupRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!dataproc.googleapis.com/NodeGroupR\x04name2\xa7\x06\n" +
 	"\x13NodeGroupController\x12\x95\x02\n" +
 	"\x0fCreateNodeGroup\x120.google.cloud.dataproc.v1.CreateNodeGroupRequest\x1a\x1d.google.longrunning.Operation\"\xb0\x01\xcaA@\n" +

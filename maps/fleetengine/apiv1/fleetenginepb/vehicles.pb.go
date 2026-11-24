@@ -1118,34 +1118,34 @@ var File_google_maps_fleetengine_v1_vehicles_proto protoreflect.FileDescriptor
 
 const file_google_maps_fleetengine_v1_vehicles_proto_rawDesc = "" +
 	"\n" +
-	")google/maps/fleetengine/v1/vehicles.proto\x12\x13maps.fleetengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/maps/fleetengine/v1/fleetengine.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xc0\x0f\n" +
-	"\aVehicle\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12F\n" +
+	")google/maps/fleetengine/v1/vehicles.proto\x12\x13maps.fleetengine.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/maps/fleetengine/v1/fleetengine.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xc9\x0f\n" +
+	"\aVehicle\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12F\n" +
 	"\rvehicle_state\x18\x02 \x01(\x0e2!.maps.fleetengine.v1.VehicleStateR\fvehicleState\x12O\n" +
-	"\x14supported_trip_types\x18\x03 \x03(\x0e2\x1d.maps.fleetengine.v1.TripTypeR\x12supportedTripTypes\x12(\n" +
-	"\rcurrent_trips\x18\x04 \x03(\tB\x03\xe0A\x03R\fcurrentTrips\x12I\n" +
-	"\rlast_location\x18\x05 \x01(\v2$.maps.fleetengine.v1.VehicleLocationR\flastLocation\x12P\n" +
-	"\x0epast_locations\x18\x1e \x03(\v2$.maps.fleetengine.v1.VehicleLocationB\x03\xe0A\x04R\rpastLocations\x12)\n" +
+	"\x14supported_trip_types\x18\x03 \x03(\x0e2\x1d.maps.fleetengine.v1.TripTypeR\x12supportedTripTypes\x12)\n" +
+	"\rcurrent_trips\x18\x04 \x03(\tB\x04\xe2A\x01\x03R\fcurrentTrips\x12I\n" +
+	"\rlast_location\x18\x05 \x01(\v2$.maps.fleetengine.v1.VehicleLocationR\flastLocation\x12Q\n" +
+	"\x0epast_locations\x18\x1e \x03(\v2$.maps.fleetengine.v1.VehicleLocationB\x04\xe2A\x01\x04R\rpastLocations\x12)\n" +
 	"\x10maximum_capacity\x18\x06 \x01(\x05R\x0fmaximumCapacity\x12E\n" +
 	"\n" +
 	"attributes\x18\b \x03(\v2%.maps.fleetengine.v1.VehicleAttributeR\n" +
-	"attributes\x12P\n" +
-	"\fvehicle_type\x18\t \x01(\v2(.maps.fleetengine.v1.Vehicle.VehicleTypeB\x03\xe0A\x02R\vvehicleType\x12F\n" +
+	"attributes\x12Q\n" +
+	"\fvehicle_type\x18\t \x01(\v2(.maps.fleetengine.v1.Vehicle.VehicleTypeB\x04\xe2A\x01\x02R\vvehicleType\x12F\n" +
 	"\rlicense_plate\x18\n" +
 	" \x01(\v2!.maps.fleetengine.v1.LicensePlateR\flicensePlate\x12?\n" +
 	"\x05route\x18\f \x03(\v2%.maps.fleetengine.v1.TerminalLocationB\x02\x18\x01R\x05route\x122\n" +
-	"\x15current_route_segment\x18\x14 \x01(\tR\x13currentRouteSegment\x12p\n" +
-	"\x1dcurrent_route_segment_traffic\x18\x1c \x01(\v2(.maps.fleetengine.v1.TrafficPolylineDataB\x03\xe0A\x04R\x1acurrentRouteSegmentTraffic\x12b\n" +
-	"\x1dcurrent_route_segment_version\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x1acurrentRouteSegmentVersion\x12g\n" +
+	"\x15current_route_segment\x18\x14 \x01(\tR\x13currentRouteSegment\x12q\n" +
+	"\x1dcurrent_route_segment_traffic\x18\x1c \x01(\v2(.maps.fleetengine.v1.TrafficPolylineDataB\x04\xe2A\x01\x04R\x1acurrentRouteSegmentTraffic\x12c\n" +
+	"\x1dcurrent_route_segment_version\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x1acurrentRouteSegmentVersion\x12g\n" +
 	"\x1fcurrent_route_segment_end_point\x18\x18 \x01(\v2!.maps.fleetengine.v1.TripWaypointR\x1bcurrentRouteSegmentEndPoint\x12W\n" +
 	"\x19remaining_distance_meters\x18\x12 \x01(\v2\x1b.google.protobuf.Int32ValueR\x17remainingDistanceMeters\x12M\n" +
-	"\x15eta_to_first_waypoint\x18\x13 \x01(\v2\x1a.google.protobuf.TimestampR\x12etaToFirstWaypoint\x12V\n" +
-	"\x16remaining_time_seconds\x18\x19 \x01(\v2\x1b.google.protobuf.Int32ValueB\x03\xe0A\x04R\x14remainingTimeSeconds\x12?\n" +
-	"\twaypoints\x18\x16 \x03(\v2!.maps.fleetengine.v1.TripWaypointR\twaypoints\x12L\n" +
-	"\x11waypoints_version\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x10waypointsVersion\x12/\n" +
+	"\x15eta_to_first_waypoint\x18\x13 \x01(\v2\x1a.google.protobuf.TimestampR\x12etaToFirstWaypoint\x12W\n" +
+	"\x16remaining_time_seconds\x18\x19 \x01(\v2\x1b.google.protobuf.Int32ValueB\x04\xe2A\x01\x04R\x14remainingTimeSeconds\x12?\n" +
+	"\twaypoints\x18\x16 \x03(\v2!.maps.fleetengine.v1.TripWaypointR\twaypoints\x12M\n" +
+	"\x11waypoints_version\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x10waypointsVersion\x12/\n" +
 	"\x14back_to_back_enabled\x18\x17 \x01(\bR\x11backToBackEnabled\x12R\n" +
-	"\x11navigation_status\x18\x1a \x01(\x0e2%.maps.fleetengine.v1.NavigationStatusR\x10navigationStatus\x12Q\n" +
-	"\x0fdevice_settings\x18\x1b \x01(\v2#.maps.fleetengine.v1.DeviceSettingsB\x03\xe0A\x04R\x0edeviceSettings\x1a\xc2\x01\n" +
+	"\x11navigation_status\x18\x1a \x01(\x0e2%.maps.fleetengine.v1.NavigationStatusR\x10navigationStatus\x12R\n" +
+	"\x0fdevice_settings\x18\x1b \x01(\v2#.maps.fleetengine.v1.DeviceSettingsB\x04\xe2A\x01\x04R\x0edeviceSettings\x1a\xc2\x01\n" +
 	"\vVehicleType\x12M\n" +
 	"\bcategory\x18\x01 \x01(\x0e21.maps.fleetengine.v1.Vehicle.VehicleType.CategoryR\bcategory\"d\n" +
 	"\bCategory\x12\v\n" +
@@ -1166,16 +1166,16 @@ const file_google_maps_fleetengine_v1_vehicles_proto_rawDesc = "" +
 	"\x18location_power_save_mode\x18\x01 \x01(\x0e2*.maps.fleetengine.v1.LocationPowerSaveModeR\x15locationPowerSaveMode\x12+\n" +
 	"\x12is_power_save_mode\x18\x02 \x01(\bR\x0fisPowerSaveMode\x12%\n" +
 	"\x0eis_interactive\x18\x03 \x01(\bR\risInteractive\x12C\n" +
-	"\fbattery_info\x18\x04 \x01(\v2 .maps.fleetengine.v1.BatteryInfoR\vbatteryInfo\"]\n" +
-	"\fLicensePlate\x12&\n" +
-	"\fcountry_code\x18\x01 \x01(\tB\x03\xe0A\x02R\vcountryCode\x12%\n" +
-	"\x0elast_character\x18\x02 \x01(\tR\rlastCharacter\"\xa6\x03\n" +
-	"$VisualTrafficReportPolylineRendering\x12m\n" +
-	"\froad_stretch\x18\x01 \x03(\v2E.maps.fleetengine.v1.VisualTrafficReportPolylineRendering.RoadStretchB\x03\xe0A\x01R\vroadStretch\x1a\x8e\x02\n" +
-	"\vRoadStretch\x12f\n" +
-	"\x05style\x18\x01 \x01(\x0e2K.maps.fleetengine.v1.VisualTrafficReportPolylineRendering.RoadStretch.StyleB\x03\xe0A\x02R\x05style\x12(\n" +
-	"\roffset_meters\x18\x02 \x01(\x05B\x03\xe0A\x02R\foffsetMeters\x12(\n" +
-	"\rlength_meters\x18\x03 \x01(\x05B\x03\xe0A\x02R\flengthMeters\"C\n" +
+	"\fbattery_info\x18\x04 \x01(\v2 .maps.fleetengine.v1.BatteryInfoR\vbatteryInfo\"^\n" +
+	"\fLicensePlate\x12'\n" +
+	"\fcountry_code\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vcountryCode\x12%\n" +
+	"\x0elast_character\x18\x02 \x01(\tR\rlastCharacter\"\xaa\x03\n" +
+	"$VisualTrafficReportPolylineRendering\x12n\n" +
+	"\froad_stretch\x18\x01 \x03(\v2E.maps.fleetengine.v1.VisualTrafficReportPolylineRendering.RoadStretchB\x04\xe2A\x01\x01R\vroadStretch\x1a\x91\x02\n" +
+	"\vRoadStretch\x12g\n" +
+	"\x05style\x18\x01 \x01(\x0e2K.maps.fleetengine.v1.VisualTrafficReportPolylineRendering.RoadStretch.StyleB\x04\xe2A\x01\x02R\x05style\x12)\n" +
+	"\roffset_meters\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\foffsetMeters\x12)\n" +
+	"\rlength_meters\x18\x03 \x01(\x05B\x04\xe2A\x01\x02R\flengthMeters\"C\n" +
 	"\x05Style\x12\x15\n" +
 	"\x11STYLE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eSLOWER_TRAFFIC\x10\x01\x12\x0f\n" +

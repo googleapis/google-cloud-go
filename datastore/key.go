@@ -94,7 +94,7 @@ func (k *Key) Equal(o *Key) bool {
 
 // marshal marshals the key's string representation to the buffer.
 // If includeSensitive is true, it will include the namespace when creating the string.
-func (k *Key) marshal(b *bytes.Buffer, includeSensitive bool) {
+func (k *Key) marshal(b *strings.Builder, includeSensitive bool) {
 	if k.Parent != nil {
 		k.Parent.marshal(b, includeSensitive)
 	}
@@ -104,7 +104,8 @@ func (k *Key) marshal(b *bytes.Buffer, includeSensitive bool) {
 	if k.Name != "" {
 		b.WriteString(k.Name)
 	} else {
-		b.WriteString(strconv.FormatInt(k.ID, 10))
+		var numBuf [20]byte
+		b.Write(strconv.AppendInt(numBuf[:0], k.ID, 10))
 	}
 	if k.Namespace != "" && includeSensitive {
 		b.WriteByte(',')
@@ -127,8 +128,9 @@ func (k *Key) string(includeSensitive bool) string {
 	if k == nil {
 		return ""
 	}
-	b := bytes.NewBuffer(make([]byte, 0, 512))
-	k.marshal(b, includeSensitive)
+	var b strings.Builder
+	b.Grow(64)
+	k.marshal(&b, includeSensitive)
 	return b.String()
 }
 

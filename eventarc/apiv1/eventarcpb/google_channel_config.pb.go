@@ -126,14 +126,14 @@ var File_google_cloud_eventarc_v1_google_channel_config_proto protoreflect.FileD
 
 const file_google_cloud_eventarc_v1_google_channel_config_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/eventarc/v1/google_channel_config.proto\x12\x18google.cloud.eventarc.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf2\x03\n" +
-	"\x13GoogleChannelConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12Q\n" +
-	"\x0fcrypto_key_name\x18\a \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\rcryptoKeyName\x12V\n" +
-	"\x06labels\x18\b \x03(\v29.google.cloud.eventarc.v1.GoogleChannelConfig.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a9\n" +
+	"4google/cloud/eventarc/v1/google_channel_config.proto\x12\x18google.cloud.eventarc.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf6\x03\n" +
+	"\x13GoogleChannelConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12R\n" +
+	"\x0fcrypto_key_name\x18\a \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\rcryptoKeyName\x12W\n" +
+	"\x06labels\x18\b \x03(\v29.google.cloud.eventarc.v1.GoogleChannelConfig.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x99\x01\xeaA\x95\x01\n" +

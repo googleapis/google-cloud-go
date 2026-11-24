@@ -71,9 +71,15 @@ const (
 	Dataform_DeleteWorkspace_FullMethodName                    = "/google.cloud.dataform.v1beta1.Dataform/DeleteWorkspace"
 	Dataform_InstallNpmPackages_FullMethodName                 = "/google.cloud.dataform.v1beta1.Dataform/InstallNpmPackages"
 	Dataform_PullGitCommits_FullMethodName                     = "/google.cloud.dataform.v1beta1.Dataform/PullGitCommits"
+	Dataform_SyncWorkspaceRefs_FullMethodName                  = "/google.cloud.dataform.v1beta1.Dataform/SyncWorkspaceRefs"
+	Dataform_FetchWorkspaceBranches_FullMethodName             = "/google.cloud.dataform.v1beta1.Dataform/FetchWorkspaceBranches"
+	Dataform_DeleteBranch_FullMethodName                       = "/google.cloud.dataform.v1beta1.Dataform/DeleteBranch"
+	Dataform_CheckoutWorkspaceBranch_FullMethodName            = "/google.cloud.dataform.v1beta1.Dataform/CheckoutWorkspaceBranch"
+	Dataform_FetchCurrentWorkspaceBranch_FullMethodName        = "/google.cloud.dataform.v1beta1.Dataform/FetchCurrentWorkspaceBranch"
 	Dataform_PushGitCommits_FullMethodName                     = "/google.cloud.dataform.v1beta1.Dataform/PushGitCommits"
 	Dataform_FetchFileGitStatuses_FullMethodName               = "/google.cloud.dataform.v1beta1.Dataform/FetchFileGitStatuses"
 	Dataform_FetchGitAheadBehind_FullMethodName                = "/google.cloud.dataform.v1beta1.Dataform/FetchGitAheadBehind"
+	Dataform_FetchWorkspaceHistory_FullMethodName              = "/google.cloud.dataform.v1beta1.Dataform/FetchWorkspaceHistory"
 	Dataform_CommitWorkspaceChanges_FullMethodName             = "/google.cloud.dataform.v1beta1.Dataform/CommitWorkspaceChanges"
 	Dataform_ResetWorkspaceChanges_FullMethodName              = "/google.cloud.dataform.v1beta1.Dataform/ResetWorkspaceChanges"
 	Dataform_FetchFileDiff_FullMethodName                      = "/google.cloud.dataform.v1beta1.Dataform/FetchFileDiff"
@@ -94,6 +100,7 @@ const (
 	Dataform_ListCompilationResults_FullMethodName             = "/google.cloud.dataform.v1beta1.Dataform/ListCompilationResults"
 	Dataform_GetCompilationResult_FullMethodName               = "/google.cloud.dataform.v1beta1.Dataform/GetCompilationResult"
 	Dataform_CreateCompilationResult_FullMethodName            = "/google.cloud.dataform.v1beta1.Dataform/CreateCompilationResult"
+	Dataform_CreateCompilationResultLongRunning_FullMethodName = "/google.cloud.dataform.v1beta1.Dataform/CreateCompilationResultLongRunning"
 	Dataform_QueryCompilationResultActions_FullMethodName      = "/google.cloud.dataform.v1beta1.Dataform/QueryCompilationResultActions"
 	Dataform_ListWorkflowConfigs_FullMethodName                = "/google.cloud.dataform.v1beta1.Dataform/ListWorkflowConfigs"
 	Dataform_GetWorkflowConfig_FullMethodName                  = "/google.cloud.dataform.v1beta1.Dataform/GetWorkflowConfig"
@@ -202,12 +209,24 @@ type DataformClient interface {
 	InstallNpmPackages(ctx context.Context, in *InstallNpmPackagesRequest, opts ...grpc.CallOption) (*InstallNpmPackagesResponse, error)
 	// Pulls Git commits from the Repository's remote into a Workspace.
 	PullGitCommits(ctx context.Context, in *PullGitCommitsRequest, opts ...grpc.CallOption) (*PullGitCommitsResponse, error)
+	// Syncs the refs of a Workspace.
+	SyncWorkspaceRefs(ctx context.Context, in *SyncWorkspaceRefsRequest, opts ...grpc.CallOption) (*SyncWorkspaceRefsResponse, error)
+	// Fetches branches in a Workspace.
+	FetchWorkspaceBranches(ctx context.Context, in *FetchWorkspaceBranchesRequest, opts ...grpc.CallOption) (*FetchWorkspaceBranchesResponse, error)
+	// Deletes a branch in a Workspace.
+	DeleteBranch(ctx context.Context, in *DeleteBranchRequest, opts ...grpc.CallOption) (*DeleteBranchResponse, error)
+	// Checkout a branch in a Workspace.
+	CheckoutWorkspaceBranch(ctx context.Context, in *CheckoutWorkspaceBranchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Fetches the current branch of a Workspace.
+	FetchCurrentWorkspaceBranch(ctx context.Context, in *FetchCurrentWorkspaceBranchRequest, opts ...grpc.CallOption) (*FetchCurrentWorkspaceBranchResponse, error)
 	// Pushes Git commits from a Workspace to the Repository's remote.
 	PushGitCommits(ctx context.Context, in *PushGitCommitsRequest, opts ...grpc.CallOption) (*PushGitCommitsResponse, error)
 	// Fetches Git statuses for the files in a Workspace.
 	FetchFileGitStatuses(ctx context.Context, in *FetchFileGitStatusesRequest, opts ...grpc.CallOption) (*FetchFileGitStatusesResponse, error)
 	// Fetches Git ahead/behind against a remote branch.
 	FetchGitAheadBehind(ctx context.Context, in *FetchGitAheadBehindRequest, opts ...grpc.CallOption) (*FetchGitAheadBehindResponse, error)
+	// Fetches a Workspace's history of commits.
+	FetchWorkspaceHistory(ctx context.Context, in *FetchWorkspaceHistoryRequest, opts ...grpc.CallOption) (*FetchWorkspaceHistoryResponse, error)
 	// Applies a Git commit for uncommitted files in a Workspace.
 	CommitWorkspaceChanges(ctx context.Context, in *CommitWorkspaceChangesRequest, opts ...grpc.CallOption) (*CommitWorkspaceChangesResponse, error)
 	// Performs a Git reset for uncommitted files in a Workspace.
@@ -254,6 +273,9 @@ type DataformClient interface {
 	GetCompilationResult(ctx context.Context, in *GetCompilationResultRequest, opts ...grpc.CallOption) (*CompilationResult, error)
 	// Creates a new CompilationResult in a given project and location.
 	CreateCompilationResult(ctx context.Context, in *CreateCompilationResultRequest, opts ...grpc.CallOption) (*CompilationResult, error)
+	// Creates a new CompilationResult in a given project and location
+	// asynchronously.
+	CreateCompilationResultLongRunning(ctx context.Context, in *CreateCompilationResultRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Returns CompilationResultActions in a given CompilationResult.
 	QueryCompilationResultActions(ctx context.Context, in *QueryCompilationResultActionsRequest, opts ...grpc.CallOption) (*QueryCompilationResultActionsResponse, error)
 	// Lists WorkflowConfigs in a given Repository.
@@ -625,6 +647,51 @@ func (c *dataformClient) PullGitCommits(ctx context.Context, in *PullGitCommitsR
 	return out, nil
 }
 
+func (c *dataformClient) SyncWorkspaceRefs(ctx context.Context, in *SyncWorkspaceRefsRequest, opts ...grpc.CallOption) (*SyncWorkspaceRefsResponse, error) {
+	out := new(SyncWorkspaceRefsResponse)
+	err := c.cc.Invoke(ctx, Dataform_SyncWorkspaceRefs_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) FetchWorkspaceBranches(ctx context.Context, in *FetchWorkspaceBranchesRequest, opts ...grpc.CallOption) (*FetchWorkspaceBranchesResponse, error) {
+	out := new(FetchWorkspaceBranchesResponse)
+	err := c.cc.Invoke(ctx, Dataform_FetchWorkspaceBranches_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) DeleteBranch(ctx context.Context, in *DeleteBranchRequest, opts ...grpc.CallOption) (*DeleteBranchResponse, error) {
+	out := new(DeleteBranchResponse)
+	err := c.cc.Invoke(ctx, Dataform_DeleteBranch_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) CheckoutWorkspaceBranch(ctx context.Context, in *CheckoutWorkspaceBranchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Dataform_CheckoutWorkspaceBranch_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) FetchCurrentWorkspaceBranch(ctx context.Context, in *FetchCurrentWorkspaceBranchRequest, opts ...grpc.CallOption) (*FetchCurrentWorkspaceBranchResponse, error) {
+	out := new(FetchCurrentWorkspaceBranchResponse)
+	err := c.cc.Invoke(ctx, Dataform_FetchCurrentWorkspaceBranch_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *dataformClient) PushGitCommits(ctx context.Context, in *PushGitCommitsRequest, opts ...grpc.CallOption) (*PushGitCommitsResponse, error) {
 	out := new(PushGitCommitsResponse)
 	err := c.cc.Invoke(ctx, Dataform_PushGitCommits_FullMethodName, in, out, opts...)
@@ -646,6 +713,15 @@ func (c *dataformClient) FetchFileGitStatuses(ctx context.Context, in *FetchFile
 func (c *dataformClient) FetchGitAheadBehind(ctx context.Context, in *FetchGitAheadBehindRequest, opts ...grpc.CallOption) (*FetchGitAheadBehindResponse, error) {
 	out := new(FetchGitAheadBehindResponse)
 	err := c.cc.Invoke(ctx, Dataform_FetchGitAheadBehind_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) FetchWorkspaceHistory(ctx context.Context, in *FetchWorkspaceHistoryRequest, opts ...grpc.CallOption) (*FetchWorkspaceHistoryResponse, error) {
+	out := new(FetchWorkspaceHistoryResponse)
+	err := c.cc.Invoke(ctx, Dataform_FetchWorkspaceHistory_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -826,6 +902,15 @@ func (c *dataformClient) GetCompilationResult(ctx context.Context, in *GetCompil
 func (c *dataformClient) CreateCompilationResult(ctx context.Context, in *CreateCompilationResultRequest, opts ...grpc.CallOption) (*CompilationResult, error) {
 	out := new(CompilationResult)
 	err := c.cc.Invoke(ctx, Dataform_CreateCompilationResult_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) CreateCompilationResultLongRunning(ctx context.Context, in *CreateCompilationResultRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Dataform_CreateCompilationResultLongRunning_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1074,12 +1159,24 @@ type DataformServer interface {
 	InstallNpmPackages(context.Context, *InstallNpmPackagesRequest) (*InstallNpmPackagesResponse, error)
 	// Pulls Git commits from the Repository's remote into a Workspace.
 	PullGitCommits(context.Context, *PullGitCommitsRequest) (*PullGitCommitsResponse, error)
+	// Syncs the refs of a Workspace.
+	SyncWorkspaceRefs(context.Context, *SyncWorkspaceRefsRequest) (*SyncWorkspaceRefsResponse, error)
+	// Fetches branches in a Workspace.
+	FetchWorkspaceBranches(context.Context, *FetchWorkspaceBranchesRequest) (*FetchWorkspaceBranchesResponse, error)
+	// Deletes a branch in a Workspace.
+	DeleteBranch(context.Context, *DeleteBranchRequest) (*DeleteBranchResponse, error)
+	// Checkout a branch in a Workspace.
+	CheckoutWorkspaceBranch(context.Context, *CheckoutWorkspaceBranchRequest) (*emptypb.Empty, error)
+	// Fetches the current branch of a Workspace.
+	FetchCurrentWorkspaceBranch(context.Context, *FetchCurrentWorkspaceBranchRequest) (*FetchCurrentWorkspaceBranchResponse, error)
 	// Pushes Git commits from a Workspace to the Repository's remote.
 	PushGitCommits(context.Context, *PushGitCommitsRequest) (*PushGitCommitsResponse, error)
 	// Fetches Git statuses for the files in a Workspace.
 	FetchFileGitStatuses(context.Context, *FetchFileGitStatusesRequest) (*FetchFileGitStatusesResponse, error)
 	// Fetches Git ahead/behind against a remote branch.
 	FetchGitAheadBehind(context.Context, *FetchGitAheadBehindRequest) (*FetchGitAheadBehindResponse, error)
+	// Fetches a Workspace's history of commits.
+	FetchWorkspaceHistory(context.Context, *FetchWorkspaceHistoryRequest) (*FetchWorkspaceHistoryResponse, error)
 	// Applies a Git commit for uncommitted files in a Workspace.
 	CommitWorkspaceChanges(context.Context, *CommitWorkspaceChangesRequest) (*CommitWorkspaceChangesResponse, error)
 	// Performs a Git reset for uncommitted files in a Workspace.
@@ -1126,6 +1223,9 @@ type DataformServer interface {
 	GetCompilationResult(context.Context, *GetCompilationResultRequest) (*CompilationResult, error)
 	// Creates a new CompilationResult in a given project and location.
 	CreateCompilationResult(context.Context, *CreateCompilationResultRequest) (*CompilationResult, error)
+	// Creates a new CompilationResult in a given project and location
+	// asynchronously.
+	CreateCompilationResultLongRunning(context.Context, *CreateCompilationResultRequest) (*longrunningpb.Operation, error)
 	// Returns CompilationResultActions in a given CompilationResult.
 	QueryCompilationResultActions(context.Context, *QueryCompilationResultActionsRequest) (*QueryCompilationResultActionsResponse, error)
 	// Lists WorkflowConfigs in a given Repository.
@@ -1289,6 +1389,21 @@ func (UnimplementedDataformServer) InstallNpmPackages(context.Context, *InstallN
 func (UnimplementedDataformServer) PullGitCommits(context.Context, *PullGitCommitsRequest) (*PullGitCommitsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PullGitCommits not implemented")
 }
+func (UnimplementedDataformServer) SyncWorkspaceRefs(context.Context, *SyncWorkspaceRefsRequest) (*SyncWorkspaceRefsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SyncWorkspaceRefs not implemented")
+}
+func (UnimplementedDataformServer) FetchWorkspaceBranches(context.Context, *FetchWorkspaceBranchesRequest) (*FetchWorkspaceBranchesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchWorkspaceBranches not implemented")
+}
+func (UnimplementedDataformServer) DeleteBranch(context.Context, *DeleteBranchRequest) (*DeleteBranchResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteBranch not implemented")
+}
+func (UnimplementedDataformServer) CheckoutWorkspaceBranch(context.Context, *CheckoutWorkspaceBranchRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckoutWorkspaceBranch not implemented")
+}
+func (UnimplementedDataformServer) FetchCurrentWorkspaceBranch(context.Context, *FetchCurrentWorkspaceBranchRequest) (*FetchCurrentWorkspaceBranchResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchCurrentWorkspaceBranch not implemented")
+}
 func (UnimplementedDataformServer) PushGitCommits(context.Context, *PushGitCommitsRequest) (*PushGitCommitsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PushGitCommits not implemented")
 }
@@ -1297,6 +1412,9 @@ func (UnimplementedDataformServer) FetchFileGitStatuses(context.Context, *FetchF
 }
 func (UnimplementedDataformServer) FetchGitAheadBehind(context.Context, *FetchGitAheadBehindRequest) (*FetchGitAheadBehindResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FetchGitAheadBehind not implemented")
+}
+func (UnimplementedDataformServer) FetchWorkspaceHistory(context.Context, *FetchWorkspaceHistoryRequest) (*FetchWorkspaceHistoryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchWorkspaceHistory not implemented")
 }
 func (UnimplementedDataformServer) CommitWorkspaceChanges(context.Context, *CommitWorkspaceChangesRequest) (*CommitWorkspaceChangesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CommitWorkspaceChanges not implemented")
@@ -1357,6 +1475,9 @@ func (UnimplementedDataformServer) GetCompilationResult(context.Context, *GetCom
 }
 func (UnimplementedDataformServer) CreateCompilationResult(context.Context, *CreateCompilationResultRequest) (*CompilationResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCompilationResult not implemented")
+}
+func (UnimplementedDataformServer) CreateCompilationResultLongRunning(context.Context, *CreateCompilationResultRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateCompilationResultLongRunning not implemented")
 }
 func (UnimplementedDataformServer) QueryCompilationResultActions(context.Context, *QueryCompilationResultActionsRequest) (*QueryCompilationResultActionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryCompilationResultActions not implemented")
@@ -2033,6 +2154,96 @@ func _Dataform_PullGitCommits_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Dataform_SyncWorkspaceRefs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SyncWorkspaceRefsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).SyncWorkspaceRefs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_SyncWorkspaceRefs_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).SyncWorkspaceRefs(ctx, req.(*SyncWorkspaceRefsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_FetchWorkspaceBranches_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FetchWorkspaceBranchesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).FetchWorkspaceBranches(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_FetchWorkspaceBranches_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).FetchWorkspaceBranches(ctx, req.(*FetchWorkspaceBranchesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_DeleteBranch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteBranchRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).DeleteBranch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_DeleteBranch_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).DeleteBranch(ctx, req.(*DeleteBranchRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_CheckoutWorkspaceBranch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckoutWorkspaceBranchRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).CheckoutWorkspaceBranch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_CheckoutWorkspaceBranch_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).CheckoutWorkspaceBranch(ctx, req.(*CheckoutWorkspaceBranchRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_FetchCurrentWorkspaceBranch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FetchCurrentWorkspaceBranchRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).FetchCurrentWorkspaceBranch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_FetchCurrentWorkspaceBranch_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).FetchCurrentWorkspaceBranch(ctx, req.(*FetchCurrentWorkspaceBranchRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Dataform_PushGitCommits_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PushGitCommitsRequest)
 	if err := dec(in); err != nil {
@@ -2083,6 +2294,24 @@ func _Dataform_FetchGitAheadBehind_Handler(srv interface{}, ctx context.Context,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DataformServer).FetchGitAheadBehind(ctx, req.(*FetchGitAheadBehindRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_FetchWorkspaceHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FetchWorkspaceHistoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).FetchWorkspaceHistory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_FetchWorkspaceHistory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).FetchWorkspaceHistory(ctx, req.(*FetchWorkspaceHistoryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2443,6 +2672,24 @@ func _Dataform_CreateCompilationResult_Handler(srv interface{}, ctx context.Cont
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DataformServer).CreateCompilationResult(ctx, req.(*CreateCompilationResultRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_CreateCompilationResultLongRunning_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateCompilationResultRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).CreateCompilationResultLongRunning(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_CreateCompilationResultLongRunning_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).CreateCompilationResultLongRunning(ctx, req.(*CreateCompilationResultRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2897,6 +3144,26 @@ var Dataform_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Dataform_PullGitCommits_Handler,
 		},
 		{
+			MethodName: "SyncWorkspaceRefs",
+			Handler:    _Dataform_SyncWorkspaceRefs_Handler,
+		},
+		{
+			MethodName: "FetchWorkspaceBranches",
+			Handler:    _Dataform_FetchWorkspaceBranches_Handler,
+		},
+		{
+			MethodName: "DeleteBranch",
+			Handler:    _Dataform_DeleteBranch_Handler,
+		},
+		{
+			MethodName: "CheckoutWorkspaceBranch",
+			Handler:    _Dataform_CheckoutWorkspaceBranch_Handler,
+		},
+		{
+			MethodName: "FetchCurrentWorkspaceBranch",
+			Handler:    _Dataform_FetchCurrentWorkspaceBranch_Handler,
+		},
+		{
 			MethodName: "PushGitCommits",
 			Handler:    _Dataform_PushGitCommits_Handler,
 		},
@@ -2907,6 +3174,10 @@ var Dataform_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FetchGitAheadBehind",
 			Handler:    _Dataform_FetchGitAheadBehind_Handler,
+		},
+		{
+			MethodName: "FetchWorkspaceHistory",
+			Handler:    _Dataform_FetchWorkspaceHistory_Handler,
 		},
 		{
 			MethodName: "CommitWorkspaceChanges",
@@ -2987,6 +3258,10 @@ var Dataform_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateCompilationResult",
 			Handler:    _Dataform_CreateCompilationResult_Handler,
+		},
+		{
+			MethodName: "CreateCompilationResultLongRunning",
+			Handler:    _Dataform_CreateCompilationResultLongRunning_Handler,
 		},
 		{
 			MethodName: "QueryCompilationResultActions",

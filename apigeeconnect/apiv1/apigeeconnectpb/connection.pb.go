@@ -288,9 +288,9 @@ var File_google_cloud_apigeeconnect_v1_connection_proto protoreflect.FileDescrip
 
 const file_google_cloud_apigeeconnect_v1_connection_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/apigeeconnect/v1/connection.proto\x12\x1dgoogle.cloud.apigeeconnect.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x9b\x01\n" +
-	"\x16ListConnectionsRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	".google/cloud/apigeeconnect/v1/connection.proto\x12\x1dgoogle.cloud.apigeeconnect.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x9c\x01\n" +
+	"\x16ListConnectionsRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%apigeeconnect.googleapis.com/EndpointR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +

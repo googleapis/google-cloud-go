@@ -354,30 +354,30 @@ var File_google_cloud_ces_v1beta_schema_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_schema_proto_rawDesc = "" +
 	"\n" +
-	"$google/cloud/ces/v1beta/schema.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xd6\t\n" +
-	"\x06Schema\x12=\n" +
-	"\x04type\x18\x01 \x01(\x0e2$.google.cloud.ces.v1beta.Schema.TypeB\x03\xe0A\x02R\x04type\x12T\n" +
+	"$google/cloud/ces/v1beta/schema.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xe9\t\n" +
+	"\x06Schema\x12>\n" +
+	"\x04type\x18\x01 \x01(\x0e2$.google.cloud.ces.v1beta.Schema.TypeB\x04\xe2A\x01\x02R\x04type\x12U\n" +
 	"\n" +
-	"properties\x18\x02 \x03(\v2/.google.cloud.ces.v1beta.Schema.PropertiesEntryB\x03\xe0A\x01R\n" +
-	"properties\x12\x1f\n" +
-	"\brequired\x18\x03 \x03(\tB\x03\xe0A\x01R\brequired\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12:\n" +
-	"\x05items\x18\x05 \x01(\v2\x1f.google.cloud.ces.v1beta.SchemaB\x03\xe0A\x01R\x05items\x12\x1f\n" +
-	"\bnullable\x18\x06 \x01(\bB\x03\xe0A\x01R\bnullable\x12&\n" +
-	"\funique_items\x18\a \x01(\bB\x03\xe0A\x01R\vuniqueItems\x12G\n" +
-	"\fprefix_items\x18\b \x03(\v2\x1f.google.cloud.ces.v1beta.SchemaB\x03\xe0A\x01R\vprefixItems\x12Y\n" +
-	"\x15additional_properties\x18\t \x01(\v2\x1f.google.cloud.ces.v1beta.SchemaB\x03\xe0A\x01R\x14additionalProperties\x12;\n" +
+	"properties\x18\x02 \x03(\v2/.google.cloud.ces.v1beta.Schema.PropertiesEntryB\x04\xe2A\x01\x01R\n" +
+	"properties\x12 \n" +
+	"\brequired\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\brequired\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12;\n" +
+	"\x05items\x18\x05 \x01(\v2\x1f.google.cloud.ces.v1beta.SchemaB\x04\xe2A\x01\x01R\x05items\x12 \n" +
+	"\bnullable\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\bnullable\x12'\n" +
+	"\funique_items\x18\a \x01(\bB\x04\xe2A\x01\x01R\vuniqueItems\x12H\n" +
+	"\fprefix_items\x18\b \x03(\v2\x1f.google.cloud.ces.v1beta.SchemaB\x04\xe2A\x01\x01R\vprefixItems\x12Z\n" +
+	"\x15additional_properties\x18\t \x01(\v2\x1f.google.cloud.ces.v1beta.SchemaB\x04\xe2A\x01\x01R\x14additionalProperties\x12<\n" +
 	"\x06any_of\x18\n" +
-	" \x03(\v2\x1f.google.cloud.ces.v1beta.SchemaB\x03\xe0A\x01R\x05anyOf\x12\x17\n" +
-	"\x04enum\x18\v \x03(\tB\x03\xe0A\x01R\x04enum\x125\n" +
-	"\adefault\x18\f \x01(\v2\x16.google.protobuf.ValueB\x03\xe0A\x01R\adefault\x12\x15\n" +
-	"\x03ref\x18\r \x01(\tB\x03\xe0A\x01R\x03ref\x12B\n" +
-	"\x04defs\x18\x0e \x03(\v2).google.cloud.ces.v1beta.Schema.DefsEntryB\x03\xe0A\x01R\x04defs\x12\x19\n" +
-	"\x05title\x18\x0f \x01(\tB\x03\xe0A\x01R\x05title\x12 \n" +
-	"\tmin_items\x18\x10 \x01(\x03B\x03\xe0A\x01R\bminItems\x12 \n" +
-	"\tmax_items\x18\x11 \x01(\x03B\x03\xe0A\x01R\bmaxItems\x12\"\n" +
-	"\aminimum\x18\x12 \x01(\x01B\x03\xe0A\x01H\x00R\aminimum\x88\x01\x01\x12\"\n" +
-	"\amaximum\x18\x13 \x01(\x01B\x03\xe0A\x01H\x01R\amaximum\x88\x01\x01\x1a^\n" +
+	" \x03(\v2\x1f.google.cloud.ces.v1beta.SchemaB\x04\xe2A\x01\x01R\x05anyOf\x12\x18\n" +
+	"\x04enum\x18\v \x03(\tB\x04\xe2A\x01\x01R\x04enum\x126\n" +
+	"\adefault\x18\f \x01(\v2\x16.google.protobuf.ValueB\x04\xe2A\x01\x01R\adefault\x12\x16\n" +
+	"\x03ref\x18\r \x01(\tB\x04\xe2A\x01\x01R\x03ref\x12C\n" +
+	"\x04defs\x18\x0e \x03(\v2).google.cloud.ces.v1beta.Schema.DefsEntryB\x04\xe2A\x01\x01R\x04defs\x12\x1a\n" +
+	"\x05title\x18\x0f \x01(\tB\x04\xe2A\x01\x01R\x05title\x12!\n" +
+	"\tmin_items\x18\x10 \x01(\x03B\x04\xe2A\x01\x01R\bminItems\x12!\n" +
+	"\tmax_items\x18\x11 \x01(\x03B\x04\xe2A\x01\x01R\bmaxItems\x12#\n" +
+	"\aminimum\x18\x12 \x01(\x01B\x04\xe2A\x01\x01H\x00R\aminimum\x88\x01\x01\x12#\n" +
+	"\amaximum\x18\x13 \x01(\x01B\x04\xe2A\x01\x01H\x01R\amaximum\x88\x01\x01\x1a^\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x125\n" +
 	"\x05value\x18\x02 \x01(\v2\x1f.google.cloud.ces.v1beta.SchemaR\x05value:\x028\x01\x1aX\n" +

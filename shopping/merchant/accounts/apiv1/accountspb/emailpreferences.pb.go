@@ -266,23 +266,23 @@ var File_google_shopping_merchant_accounts_v1_emailpreferences_proto protoreflec
 
 const file_google_shopping_merchant_accounts_v1_emailpreferences_proto_rawDesc = "" +
 	"\n" +
-	";google/shopping/merchant/accounts/v1/emailpreferences.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xfc\x02\n" +
-	"\x10EmailPreferences\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12j\n" +
-	"\rnews_and_tips\x18\x02 \x01(\x0e2A.google.shopping.merchant.accounts.v1.EmailPreferences.OptInStateB\x03\xe0A\x01R\vnewsAndTips\"X\n" +
+	";google/shopping/merchant/accounts/v1/emailpreferences.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xfe\x02\n" +
+	"\x10EmailPreferences\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12k\n" +
+	"\rnews_and_tips\x18\x02 \x01(\x0e2A.google.shopping.merchant.accounts.v1.EmailPreferences.OptInStateB\x04\xe2A\x01\x01R\vnewsAndTips\"X\n" +
 	"\n" +
 	"OptInState\x12\x1c\n" +
 	"\x18OPT_IN_STATE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tOPTED_OUT\x10\x01\x12\f\n" +
 	"\bOPTED_IN\x10\x02\x12\x0f\n" +
 	"\vUNCONFIRMED\x10\x03:\x88\x01\xeaA\x84\x01\n" +
-	"+merchantapi.googleapis.com/EmailPreferences\x121accounts/{account}/users/{email}/emailPreferences*\x10emailPreferences2\x10emailPreferences\"e\n" +
-	"\x1aGetEmailPreferencesRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+merchantapi.googleapis.com/EmailPreferencesR\x04name\"\xcb\x01\n" +
-	"\x1dUpdateEmailPreferencesRequest\x12h\n" +
-	"\x11email_preferences\x18\x01 \x01(\v26.google.shopping.merchant.accounts.v1.EmailPreferencesB\x03\xe0A\x02R\x10emailPreferences\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"+merchantapi.googleapis.com/EmailPreferences\x121accounts/{account}/users/{email}/emailPreferences*\x10emailPreferences2\x10emailPreferences\"f\n" +
+	"\x1aGetEmailPreferencesRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+merchantapi.googleapis.com/EmailPreferencesR\x04name\"\xcd\x01\n" +
+	"\x1dUpdateEmailPreferencesRequest\x12i\n" +
+	"\x11email_preferences\x18\x01 \x01(\v26.google.shopping.merchant.accounts.v1.EmailPreferencesB\x04\xe2A\x01\x02R\x10emailPreferences\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
 	"updateMask2\xdb\x04\n" +
 	"\x17EmailPreferencesService\x12\xd7\x01\n" +
 	"\x13GetEmailPreferences\x12@.google.shopping.merchant.accounts.v1.GetEmailPreferencesRequest\x1a6.google.shopping.merchant.accounts.v1.EmailPreferences\"F\xdaA\x04name\x82\xd3\xe4\x93\x029\x127/accounts/v1/{name=accounts/*/users/*/emailPreferences}\x12\x9c\x02\n" +

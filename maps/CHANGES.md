@@ -2,6 +2,70 @@
 
 
 
+## [1.45.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.44.1...maps/v1.45.0) (2026-11-05)
+
+
+### Features
+
+* Update API sources and regenerate ([#20848](https://github.com/googleapis/google-cloud-go/issues/20848)) ([7437b30](https://github.com/googleapis/google-cloud-go/commit/7437b30bc59a2f6a30b5f101c91b496512fb84a4))
+
+## [1.44.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.44.0...maps/v1.44.1) (2026-10-28)
+
+
+### Bug Fixes
+
+* Adds additional validation for REST RPC requests ([#20753](https://github.com/googleapis/google-cloud-go/issues/20753)) ([7827181](https://github.com/googleapis/google-cloud-go/commit/7827181e7cb653fb69645c538b162b2c7490b0bb))
+
+## [1.44.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.43.0...maps/v1.44.0) (2026-10-22)
+
+
+### Features
+
+* Update API sources and regenerate ([#20728](https://github.com/googleapis/google-cloud-go/issues/20728)) ([ab1da9d](https://github.com/googleapis/google-cloud-go/commit/ab1da9d200416594ae18fa7a2944961f1c92c928))
+
+## [1.43.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.42.0...maps/v1.43.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.42.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.41.0...maps/v1.42.0) (2026-09-17)
+
+
+### Features
+
+* Update API sources and regenerate ([#20526](https://github.com/googleapis/google-cloud-go/issues/20526)) ([e6f37a3](https://github.com/googleapis/google-cloud-go/commit/e6f37a362b6e37b0bc74e77b8d7f151dc7443fb8))
+* Update API sources and regenerate. ([e6f37a3](https://github.com/googleapis/google-cloud-go/commit/e6f37a362b6e37b0bc74e77b8d7f151dc7443fb8))
+
+## [1.41.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.40.0...maps/v1.41.0) (2026-08-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20427](https://github.com/googleapis/google-cloud-go/issues/20427)) ([eb07af9](https://github.com/googleapis/google-cloud-go/commit/eb07af97288cb3446ef50ff1806c7bc12d5c6350))
+
+## [1.40.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.39.0...maps/v1.40.0) (2026-08-20)
+
+
+### Features
+
+* **google/maps/mapmanagement/v2:** Onboard a new library ([#20402](https://github.com/googleapis/google-cloud-go/issues/20402)) ([f9efbe7](https://github.com/googleapis/google-cloud-go/commit/f9efbe71614d91124cded6c037134aa19ba6547f))
+
+## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.38.0...maps/v1.39.0) (2026-07-30)
+
+
+### Features
+
+* **google/maps/navconnect/v1:** Onboard a new library ([#20253](https://github.com/googleapis/google-cloud-go/issues/20253)) ([9f7081e](https://github.com/googleapis/google-cloud-go/commit/9f7081e2c2bbb42cd2b73a68dbdebd0423e81d9e))
+
+## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.37.0...maps/v1.38.0) (2026-07-20)
+
+
+### Features
+
+* **maps:** Onboard isochrones v1 api ([#20155](https://github.com/googleapis/google-cloud-go/issues/20155)) ([100358a](https://github.com/googleapis/google-cloud-go/commit/100358a5d9e58e6fe4d73d6e70ea6297f4275739))
+
 ## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.36.0...maps/v1.37.0) (2026-07-13)
 
 

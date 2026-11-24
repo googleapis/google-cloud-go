@@ -305,20 +305,20 @@ var File_google_shopping_merchant_accounts_v1_developerregistration_proto protor
 
 const file_google_shopping_merchant_accounts_v1_developerregistration_proto_rawDesc = "" +
 	"\n" +
-	"@google/shopping/merchant/accounts/v1/developerregistration.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xdf\x01\n" +
-	"\x15DeveloperRegistration\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1c\n" +
-	"\agcp_ids\x18\x02 \x03(\tB\x03\xe0A\x03R\x06gcpIds:\x8e\x01\xeaA\x8a\x01\n" +
-	"0merchantapi.googleapis.com/DeveloperRegistration\x12(accounts/{account}/developerRegistration*\x15developerRegistration2\x15developerRegistration\"\x90\x01\n" +
-	"\x12RegisterGcpRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0merchantapi.googleapis.com/DeveloperRegistrationR\x04name\x12,\n" +
-	"\x0fdeveloper_email\x18\x02 \x01(\tB\x03\xe0A\x05R\x0edeveloperEmail\"d\n" +
-	"\x14UnregisterGcpRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0merchantapi.googleapis.com/DeveloperRegistrationR\x04name\"o\n" +
-	"\x1fGetDeveloperRegistrationRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
+	"@google/shopping/merchant/accounts/v1/developerregistration.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xe1\x01\n" +
+	"\x15DeveloperRegistration\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1d\n" +
+	"\agcp_ids\x18\x02 \x03(\tB\x04\xe2A\x01\x03R\x06gcpIds:\x8e\x01\xeaA\x8a\x01\n" +
+	"0merchantapi.googleapis.com/DeveloperRegistration\x12(accounts/{account}/developerRegistration*\x15developerRegistration2\x15developerRegistration\"\x92\x01\n" +
+	"\x12RegisterGcpRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0merchantapi.googleapis.com/DeveloperRegistrationR\x04name\x12-\n" +
+	"\x0fdeveloper_email\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\x0edeveloperEmail\"e\n" +
+	"\x14UnregisterGcpRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0merchantapi.googleapis.com/DeveloperRegistrationR\x04name\"p\n" +
+	"\x1fGetDeveloperRegistrationRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
 	"0merchantapi.googleapis.com/DeveloperRegistrationR\x04name\":\n" +
 	"$GetAccountForGcpRegistrationResponse\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name2\x97\a\n" +

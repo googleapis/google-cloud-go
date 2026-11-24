@@ -310,6 +310,39 @@ func NewRankClient(ctx context.Context, opts ...option.ClientOption) (*RankClien
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Rank = append(client.CallOptions.Rank, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Rank = append(client.CallOptions.Rank, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -404,6 +437,39 @@ func NewRankRESTClient(ctx context.Context, opts ...option.ClientOption) (*RankC
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.Rank = append(callOpts.Rank, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.Rank = append(callOpts.Rank, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &RankClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -450,9 +516,6 @@ func (c *rankGRPCClient) Rank(ctx context.Context, req *discoveryenginepb.RankRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetRankingConfig()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.RankService/Rank")
 	}
@@ -568,6 +631,11 @@ func (c *rankRESTClient) Rank(ctx context.Context, req *discoveryenginepb.RankRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRankingConfig(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:rank", req.GetRankingConfig())
 
 	params := url.Values{}
@@ -581,9 +649,6 @@ func (c *rankRESTClient) Rank(ctx context.Context, req *discoveryenginepb.RankRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetRankingConfig()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.RankService/Rank")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{ranking_config=projects/*/locations/*/rankingConfigs/*}:rank")
@@ -631,6 +696,11 @@ func (c *rankRESTClient) CancelOperation(ctx context.Context, req *longrunningpb
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -668,6 +738,11 @@ func (c *rankRESTClient) CancelOperation(ctx context.Context, req *longrunningpb
 func (c *rankRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
@@ -735,6 +810,11 @@ func (c *rankRESTClient) ListOperations(ctx context.Context, req *longrunningpb.
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/operations", req.GetName())

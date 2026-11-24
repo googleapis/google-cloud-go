@@ -56,6 +56,10 @@ func (t *mockTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	}
 	result := t.results[0]
 	t.results = t.results[1:]
+	// Like net/http.Transport, set the request on the response.
+	if result.res != nil && result.res.Request == nil {
+		result.res.Request = req
+	}
 	return result.res, result.err
 }
 

@@ -146,6 +146,8 @@ type AppVersion struct {
 	Creator string `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
 	// Output only. Timestamp when the app version was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	// Output only. Timestamp when the app version was last updated.
+	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	// Output only. The snapshot of the app when the version is created.
 	Snapshot *AppSnapshot `protobuf:"bytes,8,opt,name=snapshot,proto3" json:"snapshot,omitempty"`
 	// Output only. Etag used to ensure the object hasn't changed during a
@@ -221,6 +223,13 @@ func (x *AppVersion) GetCreateTime() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *AppVersion) GetUpdateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdateTime
+	}
+	return nil
+}
+
 func (x *AppVersion) GetSnapshot() *AppSnapshot {
 	if x != nil {
 		return x.Snapshot
@@ -239,26 +248,28 @@ var File_google_cloud_ces_v1beta_app_version_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_app_version_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/ces/v1beta/app_version.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/ces/v1beta/agent.proto\x1a!google/cloud/ces/v1beta/app.proto\x1a%google/cloud/ces/v1beta/example.proto\x1a'google/cloud/ces/v1beta/guardrail.proto\x1a\"google/cloud/ces/v1beta/tool.proto\x1a%google/cloud/ces/v1beta/toolset.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x88\x03\n" +
-	"\vAppSnapshot\x123\n" +
-	"\x03app\x18\x01 \x01(\v2\x1c.google.cloud.ces.v1beta.AppB\x03\xe0A\x01R\x03app\x12;\n" +
-	"\x06agents\x18\x02 \x03(\v2\x1e.google.cloud.ces.v1beta.AgentB\x03\xe0A\x01R\x06agents\x128\n" +
-	"\x05tools\x18\x03 \x03(\v2\x1d.google.cloud.ces.v1beta.ToolB\x03\xe0A\x01R\x05tools\x12A\n" +
-	"\bexamples\x18\x04 \x03(\v2 .google.cloud.ces.v1beta.ExampleB\x03\xe0A\x01R\bexamples\x12G\n" +
+	")google/cloud/ces/v1beta/app_version.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/ces/v1beta/agent.proto\x1a!google/cloud/ces/v1beta/app.proto\x1a%google/cloud/ces/v1beta/example.proto\x1a'google/cloud/ces/v1beta/guardrail.proto\x1a\"google/cloud/ces/v1beta/tool.proto\x1a%google/cloud/ces/v1beta/toolset.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8e\x03\n" +
+	"\vAppSnapshot\x124\n" +
+	"\x03app\x18\x01 \x01(\v2\x1c.google.cloud.ces.v1beta.AppB\x04\xe2A\x01\x01R\x03app\x12<\n" +
+	"\x06agents\x18\x02 \x03(\v2\x1e.google.cloud.ces.v1beta.AgentB\x04\xe2A\x01\x01R\x06agents\x129\n" +
+	"\x05tools\x18\x03 \x03(\v2\x1d.google.cloud.ces.v1beta.ToolB\x04\xe2A\x01\x01R\x05tools\x12B\n" +
+	"\bexamples\x18\x04 \x03(\v2 .google.cloud.ces.v1beta.ExampleB\x04\xe2A\x01\x01R\bexamples\x12H\n" +
 	"\n" +
-	"guardrails\x18\x05 \x03(\v2\".google.cloud.ces.v1beta.GuardrailB\x03\xe0A\x01R\n" +
-	"guardrails\x12A\n" +
-	"\btoolsets\x18\x06 \x03(\v2 .google.cloud.ces.v1beta.ToolsetB\x03\xe0A\x01R\btoolsets\"\xba\x03\n" +
+	"guardrails\x18\x05 \x03(\v2\".google.cloud.ces.v1beta.GuardrailB\x04\xe2A\x01\x01R\n" +
+	"guardrails\x12B\n" +
+	"\btoolsets\x18\x06 \x03(\v2 .google.cloud.ces.v1beta.ToolsetB\x04\xe2A\x01\x01R\btoolsets\"\x84\x04\n" +
 	"\n" +
-	"AppVersion\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x1d\n" +
-	"\acreator\x18\x04 \x01(\tB\x03\xe0A\x03R\acreator\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12E\n" +
-	"\bsnapshot\x18\b \x01(\v2$.google.cloud.ces.v1beta.AppSnapshotB\x03\xe0A\x03R\bsnapshot\x12\x17\n" +
-	"\x04etag\x18\a \x01(\tB\x03\xe0A\x03R\x04etag:\x82\x01\xeaA\x7f\n" +
+	"AppVersion\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x1e\n" +
+	"\acreator\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\acreator\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12F\n" +
+	"\bsnapshot\x18\b \x01(\v2$.google.cloud.ces.v1beta.AppSnapshotB\x04\xe2A\x01\x03R\bsnapshot\x12\x18\n" +
+	"\x04etag\x18\a \x01(\tB\x04\xe2A\x01\x03R\x04etag:\x82\x01\xeaA\x7f\n" +
 	"\x1dces.googleapis.com/AppVersion\x12Eprojects/{project}/locations/{location}/apps/{app}/versions/{version}*\vappVersions2\n" +
 	"appVersionB_\n" +
 	"\x1bcom.google.cloud.ces.v1betaB\x0fAppVersionProtoP\x01Z-cloud.google.com/go/ces/apiv1beta/cespb;cespbb\x06proto3"
@@ -295,12 +306,13 @@ var file_google_cloud_ces_v1beta_app_version_proto_depIdxs = []int32{
 	6, // 4: google.cloud.ces.v1beta.AppSnapshot.guardrails:type_name -> google.cloud.ces.v1beta.Guardrail
 	7, // 5: google.cloud.ces.v1beta.AppSnapshot.toolsets:type_name -> google.cloud.ces.v1beta.Toolset
 	8, // 6: google.cloud.ces.v1beta.AppVersion.create_time:type_name -> google.protobuf.Timestamp
-	0, // 7: google.cloud.ces.v1beta.AppVersion.snapshot:type_name -> google.cloud.ces.v1beta.AppSnapshot
-	8, // [8:8] is the sub-list for method output_type
-	8, // [8:8] is the sub-list for method input_type
-	8, // [8:8] is the sub-list for extension type_name
-	8, // [8:8] is the sub-list for extension extendee
-	0, // [0:8] is the sub-list for field type_name
+	8, // 7: google.cloud.ces.v1beta.AppVersion.update_time:type_name -> google.protobuf.Timestamp
+	0, // 8: google.cloud.ces.v1beta.AppVersion.snapshot:type_name -> google.cloud.ces.v1beta.AppSnapshot
+	9, // [9:9] is the sub-list for method output_type
+	9, // [9:9] is the sub-list for method input_type
+	9, // [9:9] is the sub-list for extension type_name
+	9, // [9:9] is the sub-list for extension extendee
+	0, // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_ces_v1beta_app_version_proto_init() }

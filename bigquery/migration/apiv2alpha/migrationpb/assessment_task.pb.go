@@ -162,16 +162,16 @@ var File_google_cloud_bigquery_migration_v2alpha_assessment_task_proto protorefl
 
 const file_google_cloud_bigquery_migration_v2alpha_assessment_task_proto_rawDesc = "" +
 	"\n" +
-	"=google/cloud/bigquery/migration/v2alpha/assessment_task.proto\x12'google.cloud.bigquery.migration.v2alpha\x1a\x1fgoogle/api/field_behavior.proto\"\xb9\x01\n" +
-	"\x15AssessmentTaskDetails\x12\"\n" +
+	"=google/cloud/bigquery/migration/v2alpha/assessment_task.proto\x12'google.cloud.bigquery.migration.v2alpha\x1a\x1fgoogle/api/field_behavior.proto\"\xbd\x01\n" +
+	"\x15AssessmentTaskDetails\x12#\n" +
 	"\n" +
-	"input_path\x18\x01 \x01(\tB\x03\xe0A\x02R\tinputPath\x12*\n" +
-	"\x0eoutput_dataset\x18\x02 \x01(\tB\x03\xe0A\x02R\routputDataset\x12*\n" +
-	"\x0equerylogs_path\x18\x03 \x01(\tB\x03\xe0A\x01R\rquerylogsPath\x12$\n" +
-	"\vdata_source\x18\x04 \x01(\tB\x03\xe0A\x02R\n" +
-	"dataSource\"l\n" +
-	"$AssessmentOrchestrationResultDetails\x12D\n" +
-	"\x1coutput_tables_schema_version\x18\x01 \x01(\tB\x03\xe0A\x01R\x19outputTablesSchemaVersionB\xe3\x01\n" +
+	"input_path\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tinputPath\x12+\n" +
+	"\x0eoutput_dataset\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\routputDataset\x12+\n" +
+	"\x0equerylogs_path\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\rquerylogsPath\x12%\n" +
+	"\vdata_source\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"dataSource\"m\n" +
+	"$AssessmentOrchestrationResultDetails\x12E\n" +
+	"\x1coutput_tables_schema_version\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x19outputTablesSchemaVersionB\xe3\x01\n" +
 	"+com.google.cloud.bigquery.migration.v2alphaB\x13AssessmentTaskProtoP\x01ZIcloud.google.com/go/bigquery/migration/apiv2alpha/migrationpb;migrationpb\xaa\x02'Google.Cloud.BigQuery.Migration.V2Alpha\xca\x02'Google\\Cloud\\BigQuery\\Migration\\V2alphab\x06proto3"
 
 var (

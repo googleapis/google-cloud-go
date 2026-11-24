@@ -955,21 +955,21 @@ var File_google_cloud_datacatalog_v1_tags_proto protoreflect.FileDescriptor
 
 const file_google_cloud_datacatalog_v1_tags_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/datacatalog/v1/tags.proto\x12\x1bgoogle.cloud.datacatalog.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcc\x04\n" +
-	"\x03Tag\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1f\n" +
-	"\btemplate\x18\x02 \x01(\tB\x03\xe0A\x02R\btemplate\x127\n" +
-	"\x15template_display_name\x18\x05 \x01(\tB\x03\xe0A\x03R\x13templateDisplayName\x12\x18\n" +
-	"\x06column\x18\x04 \x01(\tH\x00R\x06column\x12I\n" +
-	"\x06fields\x18\x03 \x03(\v2,.google.cloud.datacatalog.v1.Tag.FieldsEntryB\x03\xe0A\x02R\x06fields\x12~\n" +
-	"\x18dataplex_transfer_status\x18\a \x01(\x0e2?.google.cloud.datacatalog.v1.TagTemplate.DataplexTransferStatusB\x03\xe0A\x03R\x16dataplexTransferStatus\x1a`\n" +
+	"&google/cloud/datacatalog/v1/tags.proto\x12\x1bgoogle.cloud.datacatalog.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd1\x04\n" +
+	"\x03Tag\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12 \n" +
+	"\btemplate\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\btemplate\x128\n" +
+	"\x15template_display_name\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x13templateDisplayName\x12\x18\n" +
+	"\x06column\x18\x04 \x01(\tH\x00R\x06column\x12J\n" +
+	"\x06fields\x18\x03 \x03(\v2,.google.cloud.datacatalog.v1.Tag.FieldsEntryB\x04\xe2A\x01\x02R\x06fields\x12\x7f\n" +
+	"\x18dataplex_transfer_status\x18\a \x01(\x0e2?.google.cloud.datacatalog.v1.TagTemplate.DataplexTransferStatusB\x04\xe2A\x01\x03R\x16dataplexTransferStatus\x1a`\n" +
 	"\vFieldsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12;\n" +
 	"\x05value\x18\x02 \x01(\v2%.google.cloud.datacatalog.v1.TagFieldR\x05value:\x028\x01:\x81\x01\xeaA~\n" +
 	"\x1edatacatalog.googleapis.com/Tag\x12\\projects/{project}/locations/{location}/entryGroups/{entry_group}/entries/{entry}/tags/{tag}B\a\n" +
-	"\x05scope\"\xb2\x03\n" +
-	"\bTagField\x12&\n" +
-	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12#\n" +
+	"\x05scope\"\xb4\x03\n" +
+	"\bTagField\x12'\n" +
+	"\fdisplay_name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12#\n" +
 	"\fdouble_value\x18\x02 \x01(\x01H\x00R\vdoubleValue\x12#\n" +
 	"\fstring_value\x18\x03 \x01(\tH\x00R\vstringValue\x12\x1f\n" +
 	"\n" +
@@ -977,17 +977,17 @@ const file_google_cloud_datacatalog_v1_tags_proto_rawDesc = "" +
 	"\x0ftimestamp_value\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\x0etimestampValue\x12P\n" +
 	"\n" +
 	"enum_value\x18\x06 \x01(\v2/.google.cloud.datacatalog.v1.TagField.EnumValueH\x00R\tenumValue\x12'\n" +
-	"\x0erichtext_value\x18\b \x01(\tH\x00R\rrichtextValue\x12\x19\n" +
-	"\x05order\x18\a \x01(\x05B\x03\xe0A\x03R\x05order\x1a.\n" +
+	"\x0erichtext_value\x18\b \x01(\tH\x00R\rrichtextValue\x12\x1a\n" +
+	"\x05order\x18\a \x01(\x05B\x04\xe2A\x01\x03R\x05order\x1a.\n" +
 	"\tEnumValue\x12!\n" +
 	"\fdisplay_name\x18\x01 \x01(\tR\vdisplayNameB\x06\n" +
-	"\x04kind\"\x91\x05\n" +
-	"\vTagTemplate\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12!\n" +
+	"\x04kind\"\x94\x05\n" +
+	"\vTagTemplate\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x120\n" +
-	"\x14is_publicly_readable\x18\x05 \x01(\bR\x12isPubliclyReadable\x12Q\n" +
-	"\x06fields\x18\x03 \x03(\v24.google.cloud.datacatalog.v1.TagTemplate.FieldsEntryB\x03\xe0A\x02R\x06fields\x12~\n" +
-	"\x18dataplex_transfer_status\x18\a \x01(\x0e2?.google.cloud.datacatalog.v1.TagTemplate.DataplexTransferStatusB\x03\xe0A\x01R\x16dataplexTransferStatus\x1ah\n" +
+	"\x14is_publicly_readable\x18\x05 \x01(\bR\x12isPubliclyReadable\x12R\n" +
+	"\x06fields\x18\x03 \x03(\v24.google.cloud.datacatalog.v1.TagTemplate.FieldsEntryB\x04\xe2A\x01\x02R\x06fields\x12\x7f\n" +
+	"\x18dataplex_transfer_status\x18\a \x01(\x0e2?.google.cloud.datacatalog.v1.TagTemplate.DataplexTransferStatusB\x04\xe2A\x01\x01R\x16dataplexTransferStatus\x1ah\n" +
 	"\vFieldsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12C\n" +
 	"\x05value\x18\x02 \x01(\v2-.google.cloud.datacatalog.v1.TagTemplateFieldR\x05value:\x028\x01\"e\n" +
@@ -995,23 +995,23 @@ const file_google_cloud_datacatalog_v1_tags_proto_rawDesc = "" +
 	"$DATAPLEX_TRANSFER_STATUS_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\bMIGRATED\x10\x01\x1a\x02\b\x01\x12\x0f\n" +
 	"\vTRANSFERRED\x10\x02:p\xeaAm\n" +
-	"&datacatalog.googleapis.com/TagTemplate\x12Cprojects/{project}/locations/{location}/tagTemplates/{tag_template}\"\xf0\x02\n" +
-	"\x10TagTemplateField\x12\x17\n" +
-	"\x04name\x18\x06 \x01(\tB\x03\xe0A\bR\x04name\x12!\n" +
-	"\fdisplay_name\x18\x01 \x01(\tR\vdisplayName\x12?\n" +
-	"\x04type\x18\x02 \x01(\v2&.google.cloud.datacatalog.v1.FieldTypeB\x03\xe0A\x02R\x04type\x12\x1f\n" +
+	"&datacatalog.googleapis.com/TagTemplate\x12Cprojects/{project}/locations/{location}/tagTemplates/{tag_template}\"\xf2\x02\n" +
+	"\x10TagTemplateField\x12\x18\n" +
+	"\x04name\x18\x06 \x01(\tB\x04\xe2A\x01\bR\x04name\x12!\n" +
+	"\fdisplay_name\x18\x01 \x01(\tR\vdisplayName\x12@\n" +
+	"\x04type\x18\x02 \x01(\v2&.google.cloud.datacatalog.v1.FieldTypeB\x04\xe2A\x01\x02R\x04type\x12\x1f\n" +
 	"\vis_required\x18\x03 \x01(\bR\n" +
 	"isRequired\x12 \n" +
 	"\vdescription\x18\x04 \x01(\tR\vdescription\x12\x14\n" +
 	"\x05order\x18\x05 \x01(\x05R\x05order:\x85\x01\xeaA\x81\x01\n" +
-	"+datacatalog.googleapis.com/TagTemplateField\x12Rprojects/{project}/locations/{location}/tagTemplates/{tag_template}/fields/{field}\"\xdb\x03\n" +
+	"+datacatalog.googleapis.com/TagTemplateField\x12Rprojects/{project}/locations/{location}/tagTemplates/{tag_template}/fields/{field}\"\xdc\x03\n" +
 	"\tFieldType\x12]\n" +
 	"\x0eprimitive_type\x18\x01 \x01(\x0e24.google.cloud.datacatalog.v1.FieldType.PrimitiveTypeH\x00R\rprimitiveType\x12N\n" +
-	"\tenum_type\x18\x02 \x01(\v2/.google.cloud.datacatalog.v1.FieldType.EnumTypeH\x00R\benumType\x1a\xa1\x01\n" +
+	"\tenum_type\x18\x02 \x01(\v2/.google.cloud.datacatalog.v1.FieldType.EnumTypeH\x00R\benumType\x1a\xa2\x01\n" +
 	"\bEnumType\x12`\n" +
-	"\x0eallowed_values\x18\x01 \x03(\v29.google.cloud.datacatalog.v1.FieldType.EnumType.EnumValueR\rallowedValues\x1a3\n" +
-	"\tEnumValue\x12&\n" +
-	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x02R\vdisplayName\"n\n" +
+	"\x0eallowed_values\x18\x01 \x03(\v29.google.cloud.datacatalog.v1.FieldType.EnumType.EnumValueR\rallowedValues\x1a4\n" +
+	"\tEnumValue\x12'\n" +
+	"\fdisplay_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\"n\n" +
 	"\rPrimitiveType\x12\x1e\n" +
 	"\x1aPRIMITIVE_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,8 +35,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	UserLicenseService_ListUserLicenses_FullMethodName        = "/google.cloud.discoveryengine.v1.UserLicenseService/ListUserLicenses"
-	UserLicenseService_BatchUpdateUserLicenses_FullMethodName = "/google.cloud.discoveryengine.v1.UserLicenseService/BatchUpdateUserLicenses"
+	UserLicenseService_ListUserLicenses_FullMethodName             = "/google.cloud.discoveryengine.v1.UserLicenseService/ListUserLicenses"
+	UserLicenseService_ListLicenseConfigsUsageStats_FullMethodName = "/google.cloud.discoveryengine.v1.UserLicenseService/ListLicenseConfigsUsageStats"
+	UserLicenseService_BatchUpdateUserLicenses_FullMethodName      = "/google.cloud.discoveryengine.v1.UserLicenseService/BatchUpdateUserLicenses"
 )
 
 // UserLicenseServiceClient is the client API for UserLicenseService service.
@@ -45,6 +46,10 @@ const (
 type UserLicenseServiceClient interface {
 	// Lists the User Licenses.
 	ListUserLicenses(ctx context.Context, in *ListUserLicensesRequest, opts ...grpc.CallOption) (*ListUserLicensesResponse, error)
+	// Lists all the
+	// [LicenseConfigUsageStats][google.cloud.discoveryengine.v1.LicenseConfigUsageStats]s
+	// associated with the project.
+	ListLicenseConfigsUsageStats(ctx context.Context, in *ListLicenseConfigsUsageStatsRequest, opts ...grpc.CallOption) (*ListLicenseConfigsUsageStatsResponse, error)
 	// Updates the User License.
 	// This method is used for batch assign/unassign licenses to users.
 	BatchUpdateUserLicenses(ctx context.Context, in *BatchUpdateUserLicensesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
@@ -67,6 +72,15 @@ func (c *userLicenseServiceClient) ListUserLicenses(ctx context.Context, in *Lis
 	return out, nil
 }
 
+func (c *userLicenseServiceClient) ListLicenseConfigsUsageStats(ctx context.Context, in *ListLicenseConfigsUsageStatsRequest, opts ...grpc.CallOption) (*ListLicenseConfigsUsageStatsResponse, error) {
+	out := new(ListLicenseConfigsUsageStatsResponse)
+	err := c.cc.Invoke(ctx, UserLicenseService_ListLicenseConfigsUsageStats_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userLicenseServiceClient) BatchUpdateUserLicenses(ctx context.Context, in *BatchUpdateUserLicensesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, UserLicenseService_BatchUpdateUserLicenses_FullMethodName, in, out, opts...)
@@ -82,6 +96,10 @@ func (c *userLicenseServiceClient) BatchUpdateUserLicenses(ctx context.Context, 
 type UserLicenseServiceServer interface {
 	// Lists the User Licenses.
 	ListUserLicenses(context.Context, *ListUserLicensesRequest) (*ListUserLicensesResponse, error)
+	// Lists all the
+	// [LicenseConfigUsageStats][google.cloud.discoveryengine.v1.LicenseConfigUsageStats]s
+	// associated with the project.
+	ListLicenseConfigsUsageStats(context.Context, *ListLicenseConfigsUsageStatsRequest) (*ListLicenseConfigsUsageStatsResponse, error)
 	// Updates the User License.
 	// This method is used for batch assign/unassign licenses to users.
 	BatchUpdateUserLicenses(context.Context, *BatchUpdateUserLicensesRequest) (*longrunningpb.Operation, error)
@@ -93,6 +111,9 @@ type UnimplementedUserLicenseServiceServer struct {
 
 func (UnimplementedUserLicenseServiceServer) ListUserLicenses(context.Context, *ListUserLicensesRequest) (*ListUserLicensesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUserLicenses not implemented")
+}
+func (UnimplementedUserLicenseServiceServer) ListLicenseConfigsUsageStats(context.Context, *ListLicenseConfigsUsageStatsRequest) (*ListLicenseConfigsUsageStatsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListLicenseConfigsUsageStats not implemented")
 }
 func (UnimplementedUserLicenseServiceServer) BatchUpdateUserLicenses(context.Context, *BatchUpdateUserLicensesRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchUpdateUserLicenses not implemented")
@@ -127,6 +148,24 @@ func _UserLicenseService_ListUserLicenses_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserLicenseService_ListLicenseConfigsUsageStats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListLicenseConfigsUsageStatsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserLicenseServiceServer).ListLicenseConfigsUsageStats(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserLicenseService_ListLicenseConfigsUsageStats_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserLicenseServiceServer).ListLicenseConfigsUsageStats(ctx, req.(*ListLicenseConfigsUsageStatsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserLicenseService_BatchUpdateUserLicenses_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BatchUpdateUserLicensesRequest)
 	if err := dec(in); err != nil {
@@ -155,6 +194,10 @@ var UserLicenseService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListUserLicenses",
 			Handler:    _UserLicenseService_ListUserLicenses_Handler,
+		},
+		{
+			MethodName: "ListLicenseConfigsUsageStats",
+			Handler:    _UserLicenseService_ListLicenseConfigsUsageStats_Handler,
 		},
 		{
 			MethodName: "BatchUpdateUserLicenses",

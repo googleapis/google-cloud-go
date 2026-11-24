@@ -18,12 +18,14 @@ package apihub
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	apihubpb "cloud.google.com/go/apihub/apiv1/apihubpb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -571,6 +573,12 @@ func (op *ExecutePluginInstanceActionOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ApiIterator) All() iter.Seq2[*apihubpb.Api, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ApiIterator manages a stream of *apihubpb.Api.
 type ApiIterator struct {
 	items    []*apihubpb.Api
@@ -616,6 +624,12 @@ func (it *ApiIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ApiOperationIterator) All() iter.Seq2[*apihubpb.ApiOperation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ApiOperationIterator manages a stream of *apihubpb.ApiOperation.
@@ -665,6 +679,12 @@ func (it *ApiOperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AttributeIterator) All() iter.Seq2[*apihubpb.Attribute, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AttributeIterator manages a stream of *apihubpb.Attribute.
 type AttributeIterator struct {
 	items    []*apihubpb.Attribute
@@ -710,6 +730,12 @@ func (it *AttributeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CurationIterator) All() iter.Seq2[*apihubpb.Curation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // CurationIterator manages a stream of *apihubpb.Curation.
@@ -759,6 +785,12 @@ func (it *CurationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DependencyIterator) All() iter.Seq2[*apihubpb.Dependency, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DependencyIterator manages a stream of *apihubpb.Dependency.
 type DependencyIterator struct {
 	items    []*apihubpb.Dependency
@@ -804,6 +836,12 @@ func (it *DependencyIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DeploymentIterator) All() iter.Seq2[*apihubpb.Deployment, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DeploymentIterator manages a stream of *apihubpb.Deployment.
@@ -853,6 +891,12 @@ func (it *DeploymentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DiscoveredApiObservationIterator) All() iter.Seq2[*apihubpb.DiscoveredApiObservation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DiscoveredApiObservationIterator manages a stream of *apihubpb.DiscoveredApiObservation.
 type DiscoveredApiObservationIterator struct {
 	items    []*apihubpb.DiscoveredApiObservation
@@ -898,6 +942,12 @@ func (it *DiscoveredApiObservationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DiscoveredApiOperationIterator) All() iter.Seq2[*apihubpb.DiscoveredApiOperation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DiscoveredApiOperationIterator manages a stream of *apihubpb.DiscoveredApiOperation.
@@ -947,6 +997,12 @@ func (it *DiscoveredApiOperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ExternalApiIterator) All() iter.Seq2[*apihubpb.ExternalApi, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ExternalApiIterator manages a stream of *apihubpb.ExternalApi.
 type ExternalApiIterator struct {
 	items    []*apihubpb.ExternalApi
@@ -992,6 +1048,12 @@ func (it *ExternalApiIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *HostProjectRegistrationIterator) All() iter.Seq2[*apihubpb.HostProjectRegistration, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // HostProjectRegistrationIterator manages a stream of *apihubpb.HostProjectRegistration.
@@ -1041,6 +1103,12 @@ func (it *HostProjectRegistrationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -1086,6 +1154,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -1135,6 +1209,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PluginInstanceIterator) All() iter.Seq2[*apihubpb.PluginInstance, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // PluginInstanceIterator manages a stream of *apihubpb.PluginInstance.
 type PluginInstanceIterator struct {
 	items    []*apihubpb.PluginInstance
@@ -1180,6 +1260,12 @@ func (it *PluginInstanceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PluginIterator) All() iter.Seq2[*apihubpb.Plugin, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PluginIterator manages a stream of *apihubpb.Plugin.
@@ -1229,6 +1315,12 @@ func (it *PluginIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RuntimeProjectAttachmentIterator) All() iter.Seq2[*apihubpb.RuntimeProjectAttachment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RuntimeProjectAttachmentIterator manages a stream of *apihubpb.RuntimeProjectAttachment.
 type RuntimeProjectAttachmentIterator struct {
 	items    []*apihubpb.RuntimeProjectAttachment
@@ -1274,6 +1366,12 @@ func (it *RuntimeProjectAttachmentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SearchResultIterator) All() iter.Seq2[*apihubpb.SearchResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SearchResultIterator manages a stream of *apihubpb.SearchResult.
@@ -1323,6 +1421,12 @@ func (it *SearchResultIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SpecIterator) All() iter.Seq2[*apihubpb.Spec, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SpecIterator manages a stream of *apihubpb.Spec.
 type SpecIterator struct {
 	items    []*apihubpb.Spec
@@ -1368,6 +1472,12 @@ func (it *SpecIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VersionIterator) All() iter.Seq2[*apihubpb.Version, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // VersionIterator manages a stream of *apihubpb.Version.

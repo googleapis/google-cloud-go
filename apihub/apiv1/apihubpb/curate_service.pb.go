@@ -870,49 +870,49 @@ var File_google_cloud_apihub_v1_curate_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_apihub_v1_curate_service_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/apihub/v1/curate_service.proto\x12\x16google.cloud.apihub.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc0\x01\n" +
-	"\x15CreateCurationRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1eapihub.googleapis.com/CurationR\x06parent\x12$\n" +
-	"\vcuration_id\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
-	"curationId\x12A\n" +
-	"\bcuration\x18\x03 \x01(\v2 .google.cloud.apihub.v1.CurationB\x03\xe0A\x02R\bcuration\"P\n" +
-	"\x12GetCurationRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1eapihub.googleapis.com/CurationR\x04name\"\x9c\x01\n" +
-	"\x15UpdateCurationRequest\x12A\n" +
-	"\bcuration\x18\x01 \x01(\v2 .google.cloud.apihub.v1.CurationB\x03\xe0A\x02R\bcuration\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"S\n" +
-	"\x15DeleteCurationRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1eapihub.googleapis.com/CurationR\x04name\"\xb9\x01\n" +
-	"\x14ListCurationsRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1eapihub.googleapis.com/CurationR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"+google/cloud/apihub/v1/curate_service.proto\x12\x16google.cloud.apihub.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc3\x01\n" +
+	"\x15CreateCurationRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1eapihub.googleapis.com/CurationR\x06parent\x12%\n" +
+	"\vcuration_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"curationId\x12B\n" +
+	"\bcuration\x18\x03 \x01(\v2 .google.cloud.apihub.v1.CurationB\x04\xe2A\x01\x02R\bcuration\"Q\n" +
+	"\x12GetCurationRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1eapihub.googleapis.com/CurationR\x04name\"\x9e\x01\n" +
+	"\x15UpdateCurationRequest\x12B\n" +
+	"\bcuration\x18\x01 \x01(\v2 .google.cloud.apihub.v1.CurationB\x04\xe2A\x01\x02R\bcuration\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"T\n" +
+	"\x15DeleteCurationRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1eapihub.googleapis.com/CurationR\x04name\"\xbd\x01\n" +
+	"\x14ListCurationsRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1eapihub.googleapis.com/CurationR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x7f\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x7f\n" +
 	"\x15ListCurationsResponse\x12>\n" +
 	"\tcurations\x18\x01 \x03(\v2 .google.cloud.apihub.v1.CurationR\tcurations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xff\b\n" +
-	"\bCuration\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12A\n" +
-	"\bendpoint\x18\x04 \x01(\v2 .google.cloud.apihub.v1.EndpointB\x03\xe0A\x02R\bendpoint\x12t\n" +
-	"\x17plugin_instance_actions\x18\x05 \x03(\v27.google.cloud.apihub.v1.Curation.PluginInstanceActionIDB\x03\xe0A\x03R\x15pluginInstanceActions\x12j\n" +
-	"\x14last_execution_state\x18\x06 \x01(\x0e23.google.cloud.apihub.v1.Curation.LastExecutionStateB\x03\xe0A\x03R\x12lastExecutionState\x12j\n" +
-	"\x19last_execution_error_code\x18\a \x01(\x0e2*.google.cloud.apihub.v1.Curation.ErrorCodeB\x03\xe0A\x03R\x16lastExecutionErrorCode\x12D\n" +
-	"\x1clast_execution_error_message\x18\b \x01(\tB\x03\xe0A\x03R\x19lastExecutionErrorMessage\x12@\n" +
-	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8b\t\n" +
+	"\bCuration\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12B\n" +
+	"\bendpoint\x18\x04 \x01(\v2 .google.cloud.apihub.v1.EndpointB\x04\xe2A\x01\x02R\bendpoint\x12u\n" +
+	"\x17plugin_instance_actions\x18\x05 \x03(\v27.google.cloud.apihub.v1.Curation.PluginInstanceActionIDB\x04\xe2A\x01\x03R\x15pluginInstanceActions\x12k\n" +
+	"\x14last_execution_state\x18\x06 \x01(\x0e23.google.cloud.apihub.v1.Curation.LastExecutionStateB\x04\xe2A\x01\x03R\x12lastExecutionState\x12k\n" +
+	"\x19last_execution_error_code\x18\a \x01(\x0e2*.google.cloud.apihub.v1.Curation.ErrorCodeB\x04\xe2A\x01\x03R\x16lastExecutionErrorCode\x12E\n" +
+	"\x1clast_execution_error_message\x18\b \x01(\tB\x04\xe2A\x01\x03R\x19lastExecutionErrorMessage\x12A\n" +
+	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
 	"\vupdate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x1a\x91\x01\n" +
-	"\x16PluginInstanceActionID\x12U\n" +
-	"\x0fplugin_instance\x18\x01 \x01(\tB,\xe0A\x03\xfaA&\n" +
-	"$apihub.googleapis.com/PluginInstanceR\x0epluginInstance\x12 \n" +
-	"\taction_id\x18\x02 \x01(\tB\x03\xe0A\x03R\bactionId\"U\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x1a\x93\x01\n" +
+	"\x16PluginInstanceActionID\x12V\n" +
+	"\x0fplugin_instance\x18\x01 \x01(\tB-\xe2A\x01\x03\xfaA&\n" +
+	"$apihub.googleapis.com/PluginInstanceR\x0epluginInstance\x12!\n" +
+	"\taction_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\bactionId\"U\n" +
 	"\x12LastExecutionState\x12$\n" +
 	" LAST_EXECUTION_STATE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tSUCCEEDED\x10\x01\x12\n" +
@@ -922,14 +922,14 @@ const file_google_cloud_apihub_v1_curate_service_proto_rawDesc = "" +
 	"\x16ERROR_CODE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eINTERNAL_ERROR\x10\x01\x12\x10\n" +
 	"\fUNAUTHORIZED\x10\x02:v\xeaAs\n" +
-	"\x1eapihub.googleapis.com/Curation\x12<projects/{project}/locations/{location}/curations/{curation}*\tcurations2\bcuration\"\xbe\x01\n" +
-	"\bEndpoint\x12\x9d\x01\n" +
-	"(application_integration_endpoint_details\x18\x01 \x01(\v2=.google.cloud.apihub.v1.ApplicationIntegrationEndpointDetailsB\x03\xe0A\x02H\x00R%applicationIntegrationEndpointDetailsB\x12\n" +
-	"\x10endpoint_details\"b\n" +
-	"%ApplicationIntegrationEndpointDetails\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\x12\"\n" +
+	"\x1eapihub.googleapis.com/Curation\x12<projects/{project}/locations/{location}/curations/{curation}*\tcurations2\bcuration\"\xbf\x01\n" +
+	"\bEndpoint\x12\x9e\x01\n" +
+	"(application_integration_endpoint_details\x18\x01 \x01(\v2=.google.cloud.apihub.v1.ApplicationIntegrationEndpointDetailsB\x04\xe2A\x01\x02H\x00R%applicationIntegrationEndpointDetailsB\x12\n" +
+	"\x10endpoint_details\"d\n" +
+	"%ApplicationIntegrationEndpointDetails\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12#\n" +
 	"\n" +
-	"trigger_id\x18\x02 \x01(\tB\x03\xe0A\x02R\ttriggerId2\xc4\a\n" +
+	"trigger_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\ttriggerId2\xc4\a\n" +
 	"\fApiHubCurate\x12\xc0\x01\n" +
 	"\x0eCreateCuration\x12-.google.cloud.apihub.v1.CreateCurationRequest\x1a .google.cloud.apihub.v1.Curation\"]\xdaA\x1bparent,curation,curation_id\x82\xd3\xe4\x93\x029:\bcuration\"-/v1/{parent=projects/*/locations/*}/curations\x12\x99\x01\n" +
 	"\vGetCuration\x12*.google.cloud.apihub.v1.GetCurationRequest\x1a .google.cloud.apihub.v1.Curation\"<\xdaA\x04name\x82\xd3\xe4\x93\x02/\x12-/v1/{name=projects/*/locations/*/curations/*}\x12\xac\x01\n" +

@@ -23,6 +23,7 @@ import (
 	"io"
 	"log"
 	"math/rand"
+	"net"
 	"os"
 	"runtime"
 	"strings"
@@ -722,9 +723,6 @@ func TestInitializeConfig(t *testing.T) {
 		if !strings.Contains(errorString, tt.wantErrorString) {
 			t.Errorf("initializeConfig(%v) got error: %v, want contain %v", tt.config, errorString, tt.wantErrorString)
 		}
-		if tt.wantErrorString == "" {
-			tt.wantConfig.APIAddr = apiAddress
-		}
 		if config != tt.wantConfig {
 			t.Errorf("initializeConfig(%v) got: %v, want %v", tt.config, config, tt.wantConfig)
 		}
@@ -982,7 +980,7 @@ func TestAgentWithServer(t *testing.T) {
 		numProfiles:        2,
 		DebugLogging:       true,
 		DebugLoggingOutput: &logs,
-	}); err != nil {
+	}, option.WithoutAuthentication()); err != nil {
 		t.Fatalf("Start(): %v", err)
 	}
 
@@ -1011,3 +1009,187 @@ type testConnPool struct{ *grpc.ClientConn }
 
 func (p testConnPool) Num() int               { return 1 }
 func (p testConnPool) Conn() *grpc.ClientConn { return p.ClientConn }
+
+func TestEndpointResolution(t *testing.T) {
+	origDialGRPC, origConfig, origOnGCE, origLogger := dialGRPC, config, onGCE, logger
+	t.Cleanup(func() {
+		dialGRPC, config, onGCE, logger = origDialGRPC, origConfig, origOnGCE, origLogger
+	})
+
+	// Sentinel error returned after inspecting the dialed target so start()
+	// exits cleanly without starting the background pollProfilerService loop.
+	errStopAfterDial := errors.New("stop after dial")
+
+	// Prevent any real network connections while still exercising real
+	// gtransport.DialPool option processing and endpoint resolution.
+	noOpDialer := func(context.Context, string) (net.Conn, error) {
+		return nil, errors.New("network dialing disabled in unit test")
+	}
+
+	tests := []struct {
+		name               string
+		envUniverseDomain  string
+		envUseMTLSEndpoint string
+		apiAddr            string
+		opts               []option.ClientOption
+		wantTarget         string
+	}{
+		{
+			name:       "default_gdu_endpoint",
+			wantTarget: "cloudprofiler.googleapis.com:443",
+		},
+		{
+			name:               "mtls_always_gdu_endpoint",
+			envUseMTLSEndpoint: "always",
+			wantTarget:         "cloudprofiler.mtls.googleapis.com:443",
+		},
+		{
+			name:       "universe_domain_option",
+			opts:       []option.ClientOption{option.WithUniverseDomain("example-universe.test")},
+			wantTarget: "cloudprofiler.example-universe.test:443",
+		},
+		{
+			name:              "universe_domain_env",
+			envUniverseDomain: "example-universe.test",
+			wantTarget:        "cloudprofiler.example-universe.test:443",
+		},
+		{
+			name:              "universe_domain_option_overrides_env",
+			envUniverseDomain: "env-universe.test",
+			opts:              []option.ClientOption{option.WithUniverseDomain("opt-universe.test")},
+			wantTarget:        "cloudprofiler.opt-universe.test:443",
+		},
+		{
+			name:              "empty_universe_domain_option_falls_back_to_env",
+			envUniverseDomain: "env-universe.test",
+			opts:              []option.ClientOption{option.WithUniverseDomain("")},
+			wantTarget:        "cloudprofiler.env-universe.test:443",
+		},
+		{
+			name:       "empty_universe_domain_option_falls_back_to_default",
+			opts:       []option.ClientOption{option.WithUniverseDomain("")},
+			wantTarget: "cloudprofiler.googleapis.com:443",
+		},
+		{
+			name:       "config_api_addr",
+			apiAddr:    "custom-config.example.com:443",
+			wantTarget: "custom-config.example.com:443",
+		},
+		{
+			name:               "config_api_addr_overrides_mtls_always",
+			envUseMTLSEndpoint: "always",
+			apiAddr:            "custom-config.example.com:443",
+			wantTarget:         "custom-config.example.com:443",
+		},
+		{
+			name:              "config_api_addr_overrides_universe_domain_env",
+			envUniverseDomain: "env-universe.test",
+			apiAddr:           "custom-config.example.com:443",
+			wantTarget:        "custom-config.example.com:443",
+		},
+		{
+			name:       "config_api_addr_overrides_universe_domain_option",
+			apiAddr:    "custom-config.example.com:443",
+			opts:       []option.ClientOption{option.WithUniverseDomain("opt-universe.test")},
+			wantTarget: "custom-config.example.com:443",
+		},
+		{
+			name:       "with_endpoint_option",
+			opts:       []option.ClientOption{option.WithEndpoint("opt-endpoint.example.com:443")},
+			wantTarget: "opt-endpoint.example.com:443",
+		},
+		{
+			name:       "with_endpoint_overrides_config_api_addr",
+			apiAddr:    "custom-config.example.com:443",
+			opts:       []option.ClientOption{option.WithEndpoint("opt-endpoint.example.com:443")},
+			wantTarget: "opt-endpoint.example.com:443",
+		},
+		{
+			name:              "with_endpoint_overrides_config_api_addr_and_universe_domain",
+			envUniverseDomain: "env-universe.test",
+			apiAddr:           "custom-config.example.com:443",
+			opts: []option.ClientOption{
+				option.WithUniverseDomain("opt-universe.test"),
+				option.WithEndpoint("opt-endpoint.example.com:443"),
+			},
+			wantTarget: "opt-endpoint.example.com:443",
+		},
+		{
+			name: "with_endpoint_before_with_universe_domain",
+			opts: []option.ClientOption{
+				option.WithEndpoint("opt-endpoint.example.com:443"),
+				option.WithUniverseDomain("opt-universe.test"),
+			},
+			wantTarget: "opt-endpoint.example.com:443",
+		},
+		{
+			name:    "multiple_with_endpoint_last_wins",
+			apiAddr: "custom-config.example.com:443",
+			opts: []option.ClientOption{
+				option.WithEndpoint("first.example.com:443"),
+				option.WithEndpoint("second.example.com:443"),
+			},
+			wantTarget: "second.example.com:443",
+		},
+		{
+			name:              "empty_with_endpoint_clears_config_api_addr",
+			envUniverseDomain: "env-universe.test",
+			apiAddr:           "custom-config.example.com:443",
+			opts:              []option.ClientOption{option.WithEndpoint("")},
+			wantTarget:        "cloudprofiler.env-universe.test:443",
+		},
+		{
+			name:       "endpoint_with_scheme_preserved_verbatim",
+			apiAddr:    "dns:///127.0.0.1:443",
+			wantTarget: "dns:///127.0.0.1:443",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", tc.envUniverseDomain)
+			// Keep endpoint resolution hermetic on hosts with ambient mTLS/S2A settings.
+			t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
+			mtlsEndpoint := tc.envUseMTLSEndpoint
+			if mtlsEndpoint == "" {
+				mtlsEndpoint = "auto"
+			}
+			t.Setenv("GOOGLE_API_USE_MTLS_ENDPOINT", mtlsEndpoint)
+			t.Setenv("GOOGLE_API_USE_MTLS", "")
+			t.Setenv("EXPERIMENTAL_GOOGLE_API_USE_S2A", "false")
+
+			onGCE = func() bool { return false }
+
+			var gotTarget string
+			dialGRPC = func(ctx context.Context, opts ...option.ClientOption) (gtransport.ConnPool, error) {
+				connPool, err := gtransport.DialPool(ctx, opts...)
+				if err != nil {
+					return nil, err
+				}
+				defer connPool.Close()
+				gotTarget = connPool.Conn().Target()
+				return nil, errStopAfterDial
+			}
+
+			cfg := Config{
+				Service:            testService,
+				ProjectID:          testProjectID,
+				APIAddr:            tc.apiAddr,
+				DebugLoggingOutput: io.Discard,
+			}
+			opts := append([]option.ClientOption{
+				option.WithoutAuthentication(),
+				option.WithGRPCDialOption(grpc.WithContextDialer(noOpDialer)),
+			}, tc.opts...)
+
+			err := start(cfg, opts...)
+			if !errors.Is(err, errStopAfterDial) {
+				t.Fatalf("start() unexpected error: %v", err)
+			}
+			if gotTarget != tc.wantTarget {
+				t.Errorf("start() resolved endpoint = %q, want %q", gotTarget, tc.wantTarget)
+			}
+		})
+	}
+
+}

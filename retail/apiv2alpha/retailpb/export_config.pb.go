@@ -1026,36 +1026,36 @@ var File_google_cloud_retail_v2alpha_export_config_proto protoreflect.FileDescri
 
 const file_google_cloud_retail_v2alpha_export_config_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/retail/v2alpha/export_config.proto\x12\x1bgoogle.cloud.retail.v2alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xc6\x03\n" +
+	"/google/cloud/retail/v2alpha/export_config.proto\x12\x1bgoogle.cloud.retail.v2alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xca\x03\n" +
 	"\fOutputConfig\x12c\n" +
 	"\x0fgcs_destination\x18\x01 \x01(\v28.google.cloud.retail.v2alpha.OutputConfig.GcsDestinationH\x00R\x0egcsDestination\x12r\n" +
-	"\x14bigquery_destination\x18\x02 \x01(\v2=.google.cloud.retail.v2alpha.OutputConfig.BigQueryDestinationH\x00R\x13bigqueryDestination\x1aA\n" +
-	"\x0eGcsDestination\x12/\n" +
-	"\x11output_uri_prefix\x18\x01 \x01(\tB\x03\xe0A\x02R\x0foutputUriPrefix\x1a\x8a\x01\n" +
-	"\x13BigQueryDestination\x12\"\n" +
+	"\x14bigquery_destination\x18\x02 \x01(\v2=.google.cloud.retail.v2alpha.OutputConfig.BigQueryDestinationH\x00R\x13bigqueryDestination\x1aB\n" +
+	"\x0eGcsDestination\x120\n" +
+	"\x11output_uri_prefix\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0foutputUriPrefix\x1a\x8d\x01\n" +
+	"\x13BigQueryDestination\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12+\n" +
-	"\x0ftable_id_prefix\x18\x02 \x01(\tB\x03\xe0A\x02R\rtableIdPrefix\x12\"\n" +
+	"dataset_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12,\n" +
+	"\x0ftable_id_prefix\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rtableIdPrefix\x12#\n" +
 	"\n" +
-	"table_type\x18\x03 \x01(\tB\x03\xe0A\x02R\ttableTypeB\r\n" +
+	"table_type\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\ttableTypeB\r\n" +
 	"\vdestination\"D\n" +
 	"\x12ExportErrorsConfig\x12\x1f\n" +
 	"\n" +
 	"gcs_prefix\x18\x01 \x01(\tH\x00R\tgcsPrefixB\r\n" +
-	"\vdestination\"\xc2\x01\n" +
-	"\x15ExportProductsRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cretail.googleapis.com/BranchR\x06parent\x12S\n" +
-	"\routput_config\x18\x02 \x01(\v2).google.cloud.retail.v2alpha.OutputConfigB\x03\xe0A\x02R\foutputConfig\x12\x16\n" +
-	"\x06filter\x18\x03 \x01(\tR\x06filter\"\xc5\x01\n" +
-	"\x17ExportUserEventsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dretail.googleapis.com/CatalogR\x06parent\x12S\n" +
-	"\routput_config\x18\x02 \x01(\v2).google.cloud.retail.v2alpha.OutputConfigB\x03\xe0A\x02R\foutputConfig\x12\x16\n" +
-	"\x06filter\x18\x03 \x01(\tR\x06filter\"\xab\x01\n" +
-	"\x1dExportAnalyticsMetricsRequest\x12\x1d\n" +
-	"\acatalog\x18\x01 \x01(\tB\x03\xe0A\x02R\acatalog\x12S\n" +
-	"\routput_config\x18\x02 \x01(\v2).google.cloud.retail.v2alpha.OutputConfigB\x03\xe0A\x02R\foutputConfig\x12\x16\n" +
+	"\vdestination\"\xc4\x01\n" +
+	"\x15ExportProductsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cretail.googleapis.com/BranchR\x06parent\x12T\n" +
+	"\routput_config\x18\x02 \x01(\v2).google.cloud.retail.v2alpha.OutputConfigB\x04\xe2A\x01\x02R\foutputConfig\x12\x16\n" +
+	"\x06filter\x18\x03 \x01(\tR\x06filter\"\xc7\x01\n" +
+	"\x17ExportUserEventsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dretail.googleapis.com/CatalogR\x06parent\x12T\n" +
+	"\routput_config\x18\x02 \x01(\v2).google.cloud.retail.v2alpha.OutputConfigB\x04\xe2A\x01\x02R\foutputConfig\x12\x16\n" +
+	"\x06filter\x18\x03 \x01(\tR\x06filter\"\xad\x01\n" +
+	"\x1dExportAnalyticsMetricsRequest\x12\x1e\n" +
+	"\acatalog\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\acatalog\x12T\n" +
+	"\routput_config\x18\x02 \x01(\v2).google.cloud.retail.v2alpha.OutputConfigB\x04\xe2A\x01\x02R\foutputConfig\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\"\x8a\x01\n" +
 	"\x0eExportMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +

@@ -34,16 +34,18 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Participants_CreateParticipant_FullMethodName       = "/google.cloud.dialogflow.v2.Participants/CreateParticipant"
-	Participants_GetParticipant_FullMethodName          = "/google.cloud.dialogflow.v2.Participants/GetParticipant"
-	Participants_ListParticipants_FullMethodName        = "/google.cloud.dialogflow.v2.Participants/ListParticipants"
-	Participants_UpdateParticipant_FullMethodName       = "/google.cloud.dialogflow.v2.Participants/UpdateParticipant"
-	Participants_AnalyzeContent_FullMethodName          = "/google.cloud.dialogflow.v2.Participants/AnalyzeContent"
-	Participants_StreamingAnalyzeContent_FullMethodName = "/google.cloud.dialogflow.v2.Participants/StreamingAnalyzeContent"
-	Participants_SuggestArticles_FullMethodName         = "/google.cloud.dialogflow.v2.Participants/SuggestArticles"
-	Participants_SuggestFaqAnswers_FullMethodName       = "/google.cloud.dialogflow.v2.Participants/SuggestFaqAnswers"
-	Participants_SuggestSmartReplies_FullMethodName     = "/google.cloud.dialogflow.v2.Participants/SuggestSmartReplies"
-	Participants_SuggestKnowledgeAssist_FullMethodName  = "/google.cloud.dialogflow.v2.Participants/SuggestKnowledgeAssist"
+	Participants_CreateParticipant_FullMethodName                     = "/google.cloud.dialogflow.v2.Participants/CreateParticipant"
+	Participants_GetParticipant_FullMethodName                        = "/google.cloud.dialogflow.v2.Participants/GetParticipant"
+	Participants_ListParticipants_FullMethodName                      = "/google.cloud.dialogflow.v2.Participants/ListParticipants"
+	Participants_UpdateParticipant_FullMethodName                     = "/google.cloud.dialogflow.v2.Participants/UpdateParticipant"
+	Participants_AnalyzeContent_FullMethodName                        = "/google.cloud.dialogflow.v2.Participants/AnalyzeContent"
+	Participants_StreamingAnalyzeContent_FullMethodName               = "/google.cloud.dialogflow.v2.Participants/StreamingAnalyzeContent"
+	Participants_BidiStreamingAnalyzeContent_FullMethodName           = "/google.cloud.dialogflow.v2.Participants/BidiStreamingAnalyzeContent"
+	Participants_StreamingReactiveCompanionSuggestions_FullMethodName = "/google.cloud.dialogflow.v2.Participants/StreamingReactiveCompanionSuggestions"
+	Participants_SuggestArticles_FullMethodName                       = "/google.cloud.dialogflow.v2.Participants/SuggestArticles"
+	Participants_SuggestFaqAnswers_FullMethodName                     = "/google.cloud.dialogflow.v2.Participants/SuggestFaqAnswers"
+	Participants_SuggestSmartReplies_FullMethodName                   = "/google.cloud.dialogflow.v2.Participants/SuggestSmartReplies"
+	Participants_SuggestKnowledgeAssist_FullMethodName                = "/google.cloud.dialogflow.v2.Participants/SuggestKnowledgeAssist"
 )
 
 // ParticipantsClient is the client API for Participants service.
@@ -81,6 +83,11 @@ type ParticipantsClient interface {
 	// sent to virtual agents. See [Versions and
 	// environments](https://cloud.google.com/dialogflow/es/docs/agents-versions).
 	StreamingAnalyzeContent(ctx context.Context, opts ...grpc.CallOption) (Participants_StreamingAnalyzeContentClient, error)
+	// Bidirectional endless streaming version of
+	// [StreamingAnalyzeContent][google.cloud.dialogflow.v2.Participants.StreamingAnalyzeContent].
+	BidiStreamingAnalyzeContent(ctx context.Context, opts ...grpc.CallOption) (Participants_BidiStreamingAnalyzeContentClient, error)
+	// External streaming API for direct human-agent-to-bot chats.
+	StreamingReactiveCompanionSuggestions(ctx context.Context, opts ...grpc.CallOption) (Participants_StreamingReactiveCompanionSuggestionsClient, error)
 	// Gets suggested articles for a participant based on specific historical
 	// messages.
 	SuggestArticles(ctx context.Context, in *SuggestArticlesRequest, opts ...grpc.CallOption) (*SuggestArticlesResponse, error)
@@ -178,6 +185,68 @@ func (x *participantsStreamingAnalyzeContentClient) Recv() (*StreamingAnalyzeCon
 	return m, nil
 }
 
+func (c *participantsClient) BidiStreamingAnalyzeContent(ctx context.Context, opts ...grpc.CallOption) (Participants_BidiStreamingAnalyzeContentClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Participants_ServiceDesc.Streams[1], Participants_BidiStreamingAnalyzeContent_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &participantsBidiStreamingAnalyzeContentClient{stream}
+	return x, nil
+}
+
+type Participants_BidiStreamingAnalyzeContentClient interface {
+	Send(*BidiStreamingAnalyzeContentRequest) error
+	Recv() (*BidiStreamingAnalyzeContentResponse, error)
+	grpc.ClientStream
+}
+
+type participantsBidiStreamingAnalyzeContentClient struct {
+	grpc.ClientStream
+}
+
+func (x *participantsBidiStreamingAnalyzeContentClient) Send(m *BidiStreamingAnalyzeContentRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *participantsBidiStreamingAnalyzeContentClient) Recv() (*BidiStreamingAnalyzeContentResponse, error) {
+	m := new(BidiStreamingAnalyzeContentResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *participantsClient) StreamingReactiveCompanionSuggestions(ctx context.Context, opts ...grpc.CallOption) (Participants_StreamingReactiveCompanionSuggestionsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Participants_ServiceDesc.Streams[2], Participants_StreamingReactiveCompanionSuggestions_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &participantsStreamingReactiveCompanionSuggestionsClient{stream}
+	return x, nil
+}
+
+type Participants_StreamingReactiveCompanionSuggestionsClient interface {
+	Send(*StreamingReactiveCompanionSuggestionsRequest) error
+	Recv() (*StreamingReactiveCompanionSuggestionsResponse, error)
+	grpc.ClientStream
+}
+
+type participantsStreamingReactiveCompanionSuggestionsClient struct {
+	grpc.ClientStream
+}
+
+func (x *participantsStreamingReactiveCompanionSuggestionsClient) Send(m *StreamingReactiveCompanionSuggestionsRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *participantsStreamingReactiveCompanionSuggestionsClient) Recv() (*StreamingReactiveCompanionSuggestionsResponse, error) {
+	m := new(StreamingReactiveCompanionSuggestionsResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *participantsClient) SuggestArticles(ctx context.Context, in *SuggestArticlesRequest, opts ...grpc.CallOption) (*SuggestArticlesResponse, error) {
 	out := new(SuggestArticlesResponse)
 	err := c.cc.Invoke(ctx, Participants_SuggestArticles_FullMethodName, in, out, opts...)
@@ -249,6 +318,11 @@ type ParticipantsServer interface {
 	// sent to virtual agents. See [Versions and
 	// environments](https://cloud.google.com/dialogflow/es/docs/agents-versions).
 	StreamingAnalyzeContent(Participants_StreamingAnalyzeContentServer) error
+	// Bidirectional endless streaming version of
+	// [StreamingAnalyzeContent][google.cloud.dialogflow.v2.Participants.StreamingAnalyzeContent].
+	BidiStreamingAnalyzeContent(Participants_BidiStreamingAnalyzeContentServer) error
+	// External streaming API for direct human-agent-to-bot chats.
+	StreamingReactiveCompanionSuggestions(Participants_StreamingReactiveCompanionSuggestionsServer) error
 	// Gets suggested articles for a participant based on specific historical
 	// messages.
 	SuggestArticles(context.Context, *SuggestArticlesRequest) (*SuggestArticlesResponse, error)
@@ -283,6 +357,12 @@ func (UnimplementedParticipantsServer) AnalyzeContent(context.Context, *AnalyzeC
 }
 func (UnimplementedParticipantsServer) StreamingAnalyzeContent(Participants_StreamingAnalyzeContentServer) error {
 	return status.Errorf(codes.Unimplemented, "method StreamingAnalyzeContent not implemented")
+}
+func (UnimplementedParticipantsServer) BidiStreamingAnalyzeContent(Participants_BidiStreamingAnalyzeContentServer) error {
+	return status.Errorf(codes.Unimplemented, "method BidiStreamingAnalyzeContent not implemented")
+}
+func (UnimplementedParticipantsServer) StreamingReactiveCompanionSuggestions(Participants_StreamingReactiveCompanionSuggestionsServer) error {
+	return status.Errorf(codes.Unimplemented, "method StreamingReactiveCompanionSuggestions not implemented")
 }
 func (UnimplementedParticipantsServer) SuggestArticles(context.Context, *SuggestArticlesRequest) (*SuggestArticlesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SuggestArticles not implemented")
@@ -424,6 +504,58 @@ func (x *participantsStreamingAnalyzeContentServer) Recv() (*StreamingAnalyzeCon
 	return m, nil
 }
 
+func _Participants_BidiStreamingAnalyzeContent_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ParticipantsServer).BidiStreamingAnalyzeContent(&participantsBidiStreamingAnalyzeContentServer{stream})
+}
+
+type Participants_BidiStreamingAnalyzeContentServer interface {
+	Send(*BidiStreamingAnalyzeContentResponse) error
+	Recv() (*BidiStreamingAnalyzeContentRequest, error)
+	grpc.ServerStream
+}
+
+type participantsBidiStreamingAnalyzeContentServer struct {
+	grpc.ServerStream
+}
+
+func (x *participantsBidiStreamingAnalyzeContentServer) Send(m *BidiStreamingAnalyzeContentResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *participantsBidiStreamingAnalyzeContentServer) Recv() (*BidiStreamingAnalyzeContentRequest, error) {
+	m := new(BidiStreamingAnalyzeContentRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func _Participants_StreamingReactiveCompanionSuggestions_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ParticipantsServer).StreamingReactiveCompanionSuggestions(&participantsStreamingReactiveCompanionSuggestionsServer{stream})
+}
+
+type Participants_StreamingReactiveCompanionSuggestionsServer interface {
+	Send(*StreamingReactiveCompanionSuggestionsResponse) error
+	Recv() (*StreamingReactiveCompanionSuggestionsRequest, error)
+	grpc.ServerStream
+}
+
+type participantsStreamingReactiveCompanionSuggestionsServer struct {
+	grpc.ServerStream
+}
+
+func (x *participantsStreamingReactiveCompanionSuggestionsServer) Send(m *StreamingReactiveCompanionSuggestionsResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *participantsStreamingReactiveCompanionSuggestionsServer) Recv() (*StreamingReactiveCompanionSuggestionsRequest, error) {
+	m := new(StreamingReactiveCompanionSuggestionsRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func _Participants_SuggestArticles_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SuggestArticlesRequest)
 	if err := dec(in); err != nil {
@@ -544,6 +676,18 @@ var Participants_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "StreamingAnalyzeContent",
 			Handler:       _Participants_StreamingAnalyzeContent_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "BidiStreamingAnalyzeContent",
+			Handler:       _Participants_BidiStreamingAnalyzeContent_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "StreamingReactiveCompanionSuggestions",
+			Handler:       _Participants_StreamingReactiveCompanionSuggestions_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},

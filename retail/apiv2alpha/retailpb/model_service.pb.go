@@ -665,38 +665,38 @@ var File_google_cloud_retail_v2alpha_model_service_proto protoreflect.FileDescri
 
 const file_google_cloud_retail_v2alpha_model_service_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/retail/v2alpha/model_service.proto\x12\x1bgoogle.cloud.retail.v2alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/retail/v2alpha/model.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xb0\x01\n" +
-	"\x12CreateModelRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dretail.googleapis.com/CatalogR\x06parent\x12=\n" +
-	"\x05model\x18\x02 \x01(\v2\".google.cloud.retail.v2alpha.ModelB\x03\xe0A\x02R\x05model\x12\x1c\n" +
-	"\adry_run\x18\x03 \x01(\bB\x03\xe0A\x01R\x06dryRun\"\x95\x01\n" +
-	"\x12UpdateModelRequest\x12=\n" +
-	"\x05model\x18\x01 \x01(\v2\".google.cloud.retail.v2alpha.ModelB\x03\xe0A\x02R\x05model\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"J\n" +
-	"\x0fGetModelRequest\x127\n" +
-	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
-	"\x1bretail.googleapis.com/ModelR\x04name\"L\n" +
-	"\x11PauseModelRequest\x127\n" +
-	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
-	"\x1bretail.googleapis.com/ModelR\x04name\"-\n" +
-	"\x12ResumeModelRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"\x98\x01\n" +
-	"\x11ListModelsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dretail.googleapis.com/CatalogR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"/google/cloud/retail/v2alpha/model_service.proto\x12\x1bgoogle.cloud.retail.v2alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/retail/v2alpha/model.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xb3\x01\n" +
+	"\x12CreateModelRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dretail.googleapis.com/CatalogR\x06parent\x12>\n" +
+	"\x05model\x18\x02 \x01(\v2\".google.cloud.retail.v2alpha.ModelB\x04\xe2A\x01\x02R\x05model\x12\x1d\n" +
+	"\adry_run\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x06dryRun\"\x97\x01\n" +
+	"\x12UpdateModelRequest\x12>\n" +
+	"\x05model\x18\x01 \x01(\v2\".google.cloud.retail.v2alpha.ModelB\x04\xe2A\x01\x02R\x05model\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"K\n" +
+	"\x0fGetModelRequest\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
+	"\x1bretail.googleapis.com/ModelR\x04name\"M\n" +
+	"\x11PauseModelRequest\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
+	"\x1bretail.googleapis.com/ModelR\x04name\".\n" +
+	"\x12ResumeModelRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\"\x9b\x01\n" +
+	"\x11ListModelsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dretail.googleapis.com/CatalogR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"M\n" +
-	"\x12DeleteModelRequest\x127\n" +
-	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"N\n" +
+	"\x12DeleteModelRequest\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
 	"\x1bretail.googleapis.com/ModelR\x04name\"x\n" +
 	"\x12ListModelsResponse\x12:\n" +
 	"\x06models\x18\x01 \x03(\v2\".google.cloud.retail.v2alpha.ModelR\x06models\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"K\n" +
-	"\x10TuneModelRequest\x127\n" +
-	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"L\n" +
+	"\x10TuneModelRequest\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
 	"\x1bretail.googleapis.com/ModelR\x04name\"+\n" +
 	"\x13CreateModelMetadata\x12\x14\n" +
 	"\x05model\x18\x01 \x01(\tR\x05model\")\n" +

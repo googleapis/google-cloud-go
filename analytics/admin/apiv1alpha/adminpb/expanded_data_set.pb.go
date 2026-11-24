@@ -585,24 +585,24 @@ var File_google_analytics_admin_v1alpha_expanded_data_set_proto protoreflect.Fil
 
 const file_google_analytics_admin_v1alpha_expanded_data_set_proto_rawDesc = "" +
 	"\n" +
-	"6google/analytics/admin/v1alpha/expanded_data_set.proto\x12\x1egoogle.analytics.admin.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x85\x05\n" +
+	"6google/analytics/admin/v1alpha/expanded_data_set.proto\x12\x1egoogle.analytics.admin.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8b\x05\n" +
 	"\x15ExpandedDataSetFilter\x12i\n" +
 	"\rstring_filter\x18\x02 \x01(\v2B.google.analytics.admin.v1alpha.ExpandedDataSetFilter.StringFilterH\x00R\fstringFilter\x12j\n" +
-	"\x0ein_list_filter\x18\x03 \x01(\v2B.google.analytics.admin.v1alpha.ExpandedDataSetFilter.InListFilterH\x00R\finListFilter\x12\"\n" +
+	"\x0ein_list_filter\x18\x03 \x01(\v2B.google.analytics.admin.v1alpha.ExpandedDataSetFilter.InListFilterH\x00R\finListFilter\x12#\n" +
 	"\n" +
-	"field_name\x18\x01 \x01(\tB\x03\xe0A\x02R\tfieldName\x1a\x89\x02\n" +
-	"\fStringFilter\x12p\n" +
+	"field_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tfieldName\x1a\x8c\x02\n" +
+	"\fStringFilter\x12q\n" +
 	"\n" +
-	"match_type\x18\x01 \x01(\x0e2L.google.analytics.admin.v1alpha.ExpandedDataSetFilter.StringFilter.MatchTypeB\x03\xe0A\x02R\tmatchType\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x02R\x05value\x12*\n" +
-	"\x0ecase_sensitive\x18\x03 \x01(\bB\x03\xe0A\x01R\rcaseSensitive\"@\n" +
+	"match_type\x18\x01 \x01(\x0e2L.google.analytics.admin.v1alpha.ExpandedDataSetFilter.StringFilter.MatchTypeB\x04\xe2A\x01\x02R\tmatchType\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05value\x12+\n" +
+	"\x0ecase_sensitive\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\rcaseSensitive\"@\n" +
 	"\tMatchType\x12\x1a\n" +
 	"\x16MATCH_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05EXACT\x10\x01\x12\f\n" +
-	"\bCONTAINS\x10\x02\x1aW\n" +
-	"\fInListFilter\x12\x1b\n" +
-	"\x06values\x18\x01 \x03(\tB\x03\xe0A\x02R\x06values\x12*\n" +
-	"\x0ecase_sensitive\x18\x02 \x01(\bB\x03\xe0A\x01R\rcaseSensitiveB\f\n" +
+	"\bCONTAINS\x10\x02\x1aY\n" +
+	"\fInListFilter\x12\x1c\n" +
+	"\x06values\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x06values\x12+\n" +
+	"\x0ecase_sensitive\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\rcaseSensitiveB\f\n" +
 	"\n" +
 	"one_filter\"\xc8\x02\n" +
 	"\x1fExpandedDataSetFilterExpression\x12b\n" +
@@ -611,15 +611,15 @@ const file_google_analytics_admin_v1alpha_expanded_data_set_proto_rawDesc = "" +
 	"\x06filter\x18\x03 \x01(\v25.google.analytics.admin.v1alpha.ExpandedDataSetFilterH\x00R\x06filterB\x06\n" +
 	"\x04expr\"\x95\x01\n" +
 	"#ExpandedDataSetFilterExpressionList\x12n\n" +
-	"\x12filter_expressions\x18\x01 \x03(\v2?.google.analytics.admin.v1alpha.ExpandedDataSetFilterExpressionR\x11filterExpressions\"\xa4\x04\n" +
-	"\x0fExpandedDataSet\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12,\n" +
-	"\x0fdimension_names\x18\x04 \x03(\tB\x03\xe0A\x05R\x0edimensionNames\x12&\n" +
-	"\fmetric_names\x18\x05 \x03(\tB\x03\xe0A\x05R\vmetricNames\x12\x84\x01\n" +
-	"\x1bdimension_filter_expression\x18\x06 \x01(\v2?.google.analytics.admin.v1alpha.ExpandedDataSetFilterExpressionB\x03\xe0A\x05R\x19dimensionFilterExpression\x12\\\n" +
-	"\x1adata_collection_start_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x17dataCollectionStartTime:n\xeaAk\n" +
+	"\x12filter_expressions\x18\x01 \x03(\v2?.google.analytics.admin.v1alpha.ExpandedDataSetFilterExpressionR\x11filterExpressions\"\xab\x04\n" +
+	"\x0fExpandedDataSet\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12-\n" +
+	"\x0fdimension_names\x18\x04 \x03(\tB\x04\xe2A\x01\x05R\x0edimensionNames\x12'\n" +
+	"\fmetric_names\x18\x05 \x03(\tB\x04\xe2A\x01\x05R\vmetricNames\x12\x85\x01\n" +
+	"\x1bdimension_filter_expression\x18\x06 \x01(\v2?.google.analytics.admin.v1alpha.ExpandedDataSetFilterExpressionB\x04\xe2A\x01\x05R\x19dimensionFilterExpression\x12]\n" +
+	"\x1adata_collection_start_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x17dataCollectionStartTime:n\xeaAk\n" +
 	"-analyticsadmin.googleapis.com/ExpandedDataSet\x12:properties/{property}/expandedDataSets/{expanded_data_set}B|\n" +
 	"\"com.google.analytics.admin.v1alphaB\x14ExpandedDataSetProtoP\x01Z>cloud.google.com/go/analytics/admin/apiv1alpha/adminpb;adminpbb\x06proto3"
 

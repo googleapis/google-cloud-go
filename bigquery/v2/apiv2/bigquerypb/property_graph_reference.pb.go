@@ -107,13 +107,13 @@ var File_google_cloud_bigquery_v2_property_graph_reference_proto protoreflect.Fi
 
 const file_google_cloud_bigquery_v2_property_graph_reference_proto_rawDesc = "" +
 	"\n" +
-	"7google/cloud/bigquery/v2/property_graph_reference.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"\x91\x01\n" +
-	"\x16PropertyGraphReference\x12\"\n" +
+	"7google/cloud/bigquery/v2/property_graph_reference.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"\x94\x01\n" +
+	"\x16PropertyGraphReference\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12/\n" +
-	"\x11property_graph_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x0fpropertyGraphIdBz\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x120\n" +
+	"\x11property_graph_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0fpropertyGraphIdBz\n" +
 	"\x1ccom.google.cloud.bigquery.v2B\x1bPropertyGraphReferenceProtoP\x01Z;cloud.google.com/go/bigquery/v2/apiv2/bigquerypb;bigquerypbb\x06proto3"
 
 var (

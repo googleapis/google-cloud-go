@@ -493,36 +493,37 @@ var File_google_ai_generativelanguage_v1alpha_permission_service_proto protorefl
 
 const file_google_ai_generativelanguage_v1alpha_permission_service_proto_rawDesc = "" +
 	"\n" +
-	"=google/ai/generativelanguage/v1alpha/permission_service.proto\x12$google.ai.generativelanguage.v1alpha\x1a5google/ai/generativelanguage/v1alpha/permission.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xbe\x01\n" +
-	"\x17CreatePermissionRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,generativelanguage.googleapis.com/PermissionR\x06parent\x12U\n" +
+	"=google/ai/generativelanguage/v1alpha/permission_service.proto\x12$google.ai.generativelanguage.v1alpha\x1a5google/ai/generativelanguage/v1alpha/permission.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xc0\x01\n" +
+	"\x17CreatePermissionRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,generativelanguage.googleapis.com/PermissionR\x06parent\x12V\n" +
 	"\n" +
-	"permission\x18\x02 \x01(\v20.google.ai.generativelanguage.v1alpha.PermissionB\x03\xe0A\x02R\n" +
-	"permission\"`\n" +
-	"\x14GetPermissionRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",generativelanguage.googleapis.com/PermissionR\x04name\"\x81\x01\n" +
-	"\x16ListPermissionsRequest\x12!\n" +
-	"\x06parent\x18\x01 \x01(\tB\t\xe0A\x02\xfaA\x03\n" +
-	"\x01*R\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"permission\x18\x02 \x01(\v20.google.ai.generativelanguage.v1alpha.PermissionB\x04\xe2A\x01\x02R\n" +
+	"permission\"a\n" +
+	"\x14GetPermissionRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",generativelanguage.googleapis.com/PermissionR\x04name\"\x84\x01\n" +
+	"\x16ListPermissionsRequest\x12\"\n" +
+	"\x06parent\x18\x01 \x01(\tB\n" +
+	"\xe2A\x01\x02\xfaA\x03\n" +
+	"\x01*R\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x95\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x95\x01\n" +
 	"\x17ListPermissionsResponse\x12R\n" +
 	"\vpermissions\x18\x01 \x03(\v20.google.ai.generativelanguage.v1alpha.PermissionR\vpermissions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb2\x01\n" +
-	"\x17UpdatePermissionRequest\x12U\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb4\x01\n" +
+	"\x17UpdatePermissionRequest\x12V\n" +
 	"\n" +
-	"permission\x18\x01 \x01(\v20.google.ai.generativelanguage.v1alpha.PermissionB\x03\xe0A\x02R\n" +
-	"permission\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"c\n" +
-	"\x17DeletePermissionRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",generativelanguage.googleapis.com/PermissionR\x04name\"\x8e\x01\n" +
-	"\x18TransferOwnershipRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,generativelanguage.googleapis.com/PermissionR\x04name\x12(\n" +
-	"\remail_address\x18\x02 \x01(\tB\x03\xe0A\x02R\femailAddress\"\x1b\n" +
+	"permission\x18\x01 \x01(\v20.google.ai.generativelanguage.v1alpha.PermissionB\x04\xe2A\x01\x02R\n" +
+	"permission\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"d\n" +
+	"\x17DeletePermissionRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",generativelanguage.googleapis.com/PermissionR\x04name\"\x90\x01\n" +
+	"\x18TransferOwnershipRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,generativelanguage.googleapis.com/PermissionR\x04name\x12)\n" +
+	"\remail_address\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\femailAddress\"\x1b\n" +
 	"\x19TransferOwnershipResponse2\x82\f\n" +
 	"\x11PermissionService\x12\x90\x02\n" +
 	"\x10CreatePermission\x12=.google.ai.generativelanguage.v1alpha.CreatePermissionRequest\x1a0.google.ai.generativelanguage.v1alpha.Permission\"\x8a\x01\xdaA\x11parent,permission\x82\xd3\xe4\x93\x02p:\n" +

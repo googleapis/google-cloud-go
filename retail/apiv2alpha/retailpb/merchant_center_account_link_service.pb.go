@@ -256,18 +256,18 @@ var File_google_cloud_retail_v2alpha_merchant_center_account_link_service_proto 
 
 const file_google_cloud_retail_v2alpha_merchant_center_account_link_service_proto_rawDesc = "" +
 	"\n" +
-	"Fgoogle/cloud/retail/v2alpha/merchant_center_account_link_service.proto\x12\x1bgoogle.cloud.retail.v2alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a>google/cloud/retail/v2alpha/merchant_center_account_link.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\"f\n" +
-	"%ListMerchantCenterAccountLinksRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"Fgoogle/cloud/retail/v2alpha/merchant_center_account_link_service.proto\x12\x1bgoogle.cloud.retail.v2alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a>google/cloud/retail/v2alpha/merchant_center_account_link.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\"g\n" +
+	"%ListMerchantCenterAccountLinksRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dretail.googleapis.com/CatalogR\x06parent\"\xa3\x01\n" +
 	"&ListMerchantCenterAccountLinksResponse\x12y\n" +
-	"\x1dmerchant_center_account_links\x18\x01 \x03(\v26.google.cloud.retail.v2alpha.MerchantCenterAccountLinkR\x1amerchantCenterAccountLinks\"\xe5\x01\n" +
-	"&CreateMerchantCenterAccountLinkRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dretail.googleapis.com/CatalogR\x06parent\x12|\n" +
-	"\x1cmerchant_center_account_link\x18\x02 \x01(\v26.google.cloud.retail.v2alpha.MerchantCenterAccountLinkB\x03\xe0A\x02R\x19merchantCenterAccountLink\"u\n" +
-	"&DeleteMerchantCenterAccountLinkRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
+	"\x1dmerchant_center_account_links\x18\x01 \x03(\v26.google.cloud.retail.v2alpha.MerchantCenterAccountLinkR\x1amerchantCenterAccountLinks\"\xe7\x01\n" +
+	"&CreateMerchantCenterAccountLinkRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dretail.googleapis.com/CatalogR\x06parent\x12}\n" +
+	"\x1cmerchant_center_account_link\x18\x02 \x01(\v26.google.cloud.retail.v2alpha.MerchantCenterAccountLinkB\x04\xe2A\x01\x02R\x19merchantCenterAccountLink\"v\n" +
+	"&DeleteMerchantCenterAccountLinkRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
 	"/retail.googleapis.com/MerchantCenterAccountLinkR\x04name2\xfe\a\n" +
 	" MerchantCenterAccountLinkService\x12\x8a\x02\n" +
 	"\x1eListMerchantCenterAccountLinks\x12B.google.cloud.retail.v2alpha.ListMerchantCenterAccountLinksRequest\x1aC.google.cloud.retail.v2alpha.ListMerchantCenterAccountLinksResponse\"_\xdaA\x06parent\x82\xd3\xe4\x93\x02P\x12N/v2alpha/{parent=projects/*/locations/*/catalogs/*}/merchantCenterAccountLinks\x12\xa1\x03\n" +

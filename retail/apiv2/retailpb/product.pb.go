@@ -947,21 +947,21 @@ var File_google_cloud_retail_v2_product_proto protoreflect.FileDescriptor
 
 const file_google_cloud_retail_v2_product_proto_rawDesc = "" +
 	"\n" +
-	"$google/cloud/retail/v2/product.proto\x12\x16google.cloud.retail.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/retail/v2/common.proto\x1a&google/cloud/retail/v2/promotion.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xe3\x10\n" +
+	"$google/cloud/retail/v2/product.proto\x12\x16google.cloud.retail.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/retail/v2/common.proto\x1a&google/cloud/retail/v2/promotion.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xea\x10\n" +
 	"\aProduct\x12=\n" +
 	"\vexpire_time\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\n" +
-	"expireTime\x122\n" +
-	"\x03ttl\x18\x11 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x04H\x00R\x03ttl\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12\x13\n" +
-	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x05R\x02id\x12=\n" +
-	"\x04type\x18\x03 \x01(\x0e2$.google.cloud.retail.v2.Product.TypeB\x03\xe0A\x05R\x04type\x12,\n" +
+	"expireTime\x123\n" +
+	"\x03ttl\x18\x11 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x04H\x00R\x03ttl\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12\x14\n" +
+	"\x02id\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\x02id\x12>\n" +
+	"\x04type\x18\x03 \x01(\x0e2$.google.cloud.retail.v2.Product.TypeB\x04\xe2A\x01\x05R\x04type\x12,\n" +
 	"\x12primary_product_id\x18\x04 \x01(\tR\x10primaryProductId\x122\n" +
 	"\x15collection_member_ids\x18\x05 \x03(\tR\x13collectionMemberIds\x12\x12\n" +
 	"\x04gtin\x18\x06 \x01(\tR\x04gtin\x12\x1e\n" +
 	"\n" +
 	"categories\x18\a \x03(\tR\n" +
-	"categories\x12\x19\n" +
-	"\x05title\x18\b \x01(\tB\x03\xe0A\x02R\x05title\x12\x16\n" +
+	"categories\x12\x1a\n" +
+	"\x05title\x18\b \x01(\tB\x04\xe2A\x01\x02R\x05title\x12\x16\n" +
 	"\x06brands\x18\t \x03(\tR\x06brands\x12 \n" +
 	"\vdescription\x18\n" +
 	" \x01(\tR\vdescription\x12#\n" +
@@ -992,9 +992,9 @@ const file_google_cloud_retail_v2_product_proto_rawDesc = "" +
 	"promotions\x18\" \x03(\v2!.google.cloud.retail.v2.PromotionR\n" +
 	"promotions\x12=\n" +
 	"\fpublish_time\x18! \x01(\v2\x1a.google.protobuf.TimestampR\vpublishTime\x12M\n" +
-	"\x12retrievable_fields\x18\x1e \x01(\v2\x1a.google.protobuf.FieldMaskB\x02\x18\x01R\x11retrievableFields\x12@\n" +
-	"\bvariants\x18\x1f \x03(\v2\x1f.google.cloud.retail.v2.ProductB\x03\xe0A\x03R\bvariants\x12X\n" +
-	"\x11local_inventories\x18# \x03(\v2&.google.cloud.retail.v2.LocalInventoryB\x03\xe0A\x03R\x10localInventories\x1af\n" +
+	"\x12retrievable_fields\x18\x1e \x01(\v2\x1a.google.protobuf.FieldMaskB\x02\x18\x01R\x11retrievableFields\x12A\n" +
+	"\bvariants\x18\x1f \x03(\v2\x1f.google.cloud.retail.v2.ProductB\x04\xe2A\x01\x03R\bvariants\x12Y\n" +
+	"\x11local_inventories\x18# \x03(\v2&.google.cloud.retail.v2.LocalInventoryB\x04\xe2A\x01\x03R\x10localInventories\x1af\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12=\n" +
 	"\x05value\x18\x02 \x01(\v2'.google.cloud.retail.v2.CustomAttributeR\x05value:\x028\x01\"F\n" +

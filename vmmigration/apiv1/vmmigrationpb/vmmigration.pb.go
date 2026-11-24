@@ -17215,7 +17215,7 @@ var File_google_cloud_vmmigration_v1_vmmigration_proto protoreflect.FileDescript
 
 const file_google_cloud_vmmigration_v1_vmmigration_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/vmmigration/v1/vmmigration.proto\x12\x1bgoogle.cloud.vmmigration.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/rpc/error_details.proto\x1a\x17google/rpc/status.proto\"\xc3\x06\n" +
+	"-google/cloud/vmmigration/v1/vmmigration.proto\x12\x1bgoogle.cloud.vmmigration.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/rpc/error_details.proto\x1a\x17google/rpc/status.proto\"\xc5\x06\n" +
 	"\x10ReplicationCycle\x12\x12\n" +
 	"\x04name\x18\r \x01(\tR\x04name\x12!\n" +
 	"\fcycle_number\x18\n" +
@@ -17226,9 +17226,9 @@ const file_google_cloud_vmmigration_v1_vmmigration_proto_rawDesc = "" +
 	"\x14total_pause_duration\x18\a \x01(\v2\x19.google.protobuf.DurationR\x12totalPauseDuration\x12-\n" +
 	"\x10progress_percent\x18\x05 \x01(\x05B\x02\x18\x01R\x0fprogressPercent\x12<\n" +
 	"\x05steps\x18\t \x03(\v2&.google.cloud.vmmigration.v1.CycleStepR\x05steps\x12I\n" +
-	"\x05state\x18\v \x01(\x0e23.google.cloud.vmmigration.v1.ReplicationCycle.StateR\x05state\x12-\n" +
-	"\x05error\x18\f \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x12N\n" +
-	"\bwarnings\x18\x0e \x03(\v2-.google.cloud.vmmigration.v1.MigrationWarningB\x03\xe0A\x03R\bwarnings\"R\n" +
+	"\x05state\x18\v \x01(\x0e23.google.cloud.vmmigration.v1.ReplicationCycle.StateR\x05state\x12.\n" +
+	"\x05error\x18\f \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x12O\n" +
+	"\bwarnings\x18\x0e \x03(\v2-.google.cloud.vmmigration.v1.MigrationWarningB\x04\xe2A\x01\x03R\bwarnings\"R\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aRUNNING\x10\x01\x12\n" +
@@ -17255,46 +17255,46 @@ const file_google_cloud_vmmigration_v1_vmmigration_proto_rawDesc = "" +
 	",last_thirty_minutes_average_bytes_per_second\x18\x04 \x01(\x03R&lastThirtyMinutesAverageBytesPerSecond\"\x14\n" +
 	"\x12PostProcessingStep\"S\n" +
 	"\x0fReplicationSync\x12@\n" +
-	"\x0elast_sync_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\flastSyncTime\"\xf5\x13\n" +
+	"\x0elast_sync_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\flastSyncTime\"\x89\x14\n" +
 	"\vMigratingVm\x12\x7f\n" +
 	"\x1ecompute_engine_target_defaults\x18\x1a \x01(\v28.google.cloud.vmmigration.v1.ComputeEngineTargetDefaultsH\x00R\x1bcomputeEngineTargetDefaults\x12\x8f\x01\n" +
-	"$compute_engine_disks_target_defaults\x18\" \x01(\v2=.google.cloud.vmmigration.v1.ComputeEngineDisksTargetDefaultsH\x00R computeEngineDisksTargetDefaults\x12r\n" +
-	"\x18vmware_source_vm_details\x18\x1c \x01(\v22.google.cloud.vmmigration.v1.VmwareSourceVmDetailsB\x03\xe0A\x03H\x01R\x15vmwareSourceVmDetails\x12i\n" +
-	"\x15aws_source_vm_details\x18\x1d \x01(\v2/.google.cloud.vmmigration.v1.AwsSourceVmDetailsB\x03\xe0A\x03H\x01R\x12awsSourceVmDetails\x12o\n" +
-	"\x17azure_source_vm_details\x18\x1e \x01(\v21.google.cloud.vmmigration.v1.AzureSourceVmDetailsB\x03\xe0A\x03H\x01R\x14azureSourceVmDetails\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12 \n" +
+	"$compute_engine_disks_target_defaults\x18\" \x01(\v2=.google.cloud.vmmigration.v1.ComputeEngineDisksTargetDefaultsH\x00R computeEngineDisksTargetDefaults\x12s\n" +
+	"\x18vmware_source_vm_details\x18\x1c \x01(\v22.google.cloud.vmmigration.v1.VmwareSourceVmDetailsB\x04\xe2A\x01\x03H\x01R\x15vmwareSourceVmDetails\x12j\n" +
+	"\x15aws_source_vm_details\x18\x1d \x01(\v2/.google.cloud.vmmigration.v1.AwsSourceVmDetailsB\x04\xe2A\x01\x03H\x01R\x12awsSourceVmDetails\x12p\n" +
+	"\x17azure_source_vm_details\x18\x1e \x01(\v21.google.cloud.vmmigration.v1.AzureSourceVmDetailsB\x04\xe2A\x01\x03H\x01R\x14azureSourceVmDetails\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12 \n" +
 	"\fsource_vm_id\x18\x02 \x01(\tR\n" +
 	"sourceVmId\x12!\n" +
 	"\fdisplay_name\x18\x12 \x01(\tR\vdisplayName\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12C\n" +
-	"\x06policy\x18\b \x01(\v2+.google.cloud.vmmigration.v1.SchedulePolicyR\x06policy\x12@\n" +
-	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
+	"\x06policy\x18\b \x01(\v2+.google.cloud.vmmigration.v1.SchedulePolicyR\x06policy\x12A\n" +
+	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
 	"\vupdate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12N\n" +
-	"\tlast_sync\x18\v \x01(\v2,.google.cloud.vmmigration.v1.ReplicationSyncB\x03\xe0A\x03R\blastSync\x12I\n" +
-	"\x05state\x18\x17 \x01(\x0e2..google.cloud.vmmigration.v1.MigratingVm.StateB\x03\xe0A\x03R\x05state\x12>\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12O\n" +
+	"\tlast_sync\x18\v \x01(\v2,.google.cloud.vmmigration.v1.ReplicationSyncB\x04\xe2A\x01\x03R\blastSync\x12J\n" +
+	"\x05state\x18\x17 \x01(\x0e2..google.cloud.vmmigration.v1.MigratingVm.StateB\x04\xe2A\x01\x03R\x05state\x12?\n" +
 	"\n" +
-	"state_time\x18\x16 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstateTime\x12^\n" +
-	"\x11current_sync_info\x18\r \x01(\v2-.google.cloud.vmmigration.v1.ReplicationCycleB\x03\xe0A\x03R\x0fcurrentSyncInfo\x12h\n" +
-	"\x16last_replication_cycle\x18  \x01(\v2-.google.cloud.vmmigration.v1.ReplicationCycleB\x03\xe0A\x03R\x14lastReplicationCycle\x12>\n" +
-	"\x05group\x18\x0f \x01(\tB(\xe0A\x03\xfaA\"\x12 vmmigration.googleapis.com/GroupR\x05group\x12L\n" +
-	"\x06labels\x18\x10 \x03(\v24.google.cloud.vmmigration.v1.MigratingVm.LabelsEntryR\x06labels\x12V\n" +
-	"\x11recent_clone_jobs\x18\x11 \x03(\v2%.google.cloud.vmmigration.v1.CloneJobB\x03\xe0A\x03R\x0frecentCloneJobs\x12-\n" +
-	"\x05error\x18\x13 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x12\\\n" +
-	"\x13recent_cutover_jobs\x18\x14 \x03(\v2'.google.cloud.vmmigration.v1.CutoverJobB\x03\xe0A\x03R\x11recentCutoverJobs\x12\\\n" +
-	"\x10cutover_forecast\x18! \x01(\v2,.google.cloud.vmmigration.v1.CutoverForecastB\x03\xe0A\x03R\x0fcutoverForecast\x12X\n" +
+	"state_time\x18\x16 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstateTime\x12_\n" +
+	"\x11current_sync_info\x18\r \x01(\v2-.google.cloud.vmmigration.v1.ReplicationCycleB\x04\xe2A\x01\x03R\x0fcurrentSyncInfo\x12i\n" +
+	"\x16last_replication_cycle\x18  \x01(\v2-.google.cloud.vmmigration.v1.ReplicationCycleB\x04\xe2A\x01\x03R\x14lastReplicationCycle\x12?\n" +
+	"\x05group\x18\x0f \x01(\tB)\xe2A\x01\x03\xfaA\"\x12 vmmigration.googleapis.com/GroupR\x05group\x12L\n" +
+	"\x06labels\x18\x10 \x03(\v24.google.cloud.vmmigration.v1.MigratingVm.LabelsEntryR\x06labels\x12W\n" +
+	"\x11recent_clone_jobs\x18\x11 \x03(\v2%.google.cloud.vmmigration.v1.CloneJobB\x04\xe2A\x01\x03R\x0frecentCloneJobs\x12.\n" +
+	"\x05error\x18\x13 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x12]\n" +
+	"\x13recent_cutover_jobs\x18\x14 \x03(\v2'.google.cloud.vmmigration.v1.CutoverJobB\x04\xe2A\x01\x03R\x11recentCutoverJobs\x12]\n" +
+	"\x10cutover_forecast\x18! \x01(\v2,.google.cloud.vmmigration.v1.CutoverForecastB\x04\xe2A\x01\x03R\x0fcutoverForecast\x12Y\n" +
 	"\n" +
-	"expiration\x18% \x01(\v23.google.cloud.vmmigration.v1.MigratingVm.ExpirationB\x03\xe0A\x03R\n" +
-	"expiration\x1a\xa1\x01\n" +
+	"expiration\x18% \x01(\v23.google.cloud.vmmigration.v1.MigratingVm.ExpirationB\x04\xe2A\x01\x03R\n" +
+	"expiration\x1a\xa4\x01\n" +
 	"\n" +
-	"Expiration\x12@\n" +
-	"\vexpire_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12,\n" +
-	"\x0fextension_count\x18\x02 \x01(\x05B\x03\xe0A\x03R\x0eextensionCount\x12#\n" +
+	"Expiration\x12A\n" +
+	"\vexpire_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12-\n" +
+	"\x0fextension_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\x0eextensionCount\x12$\n" +
 	"\n" +
-	"extendable\x18\x03 \x01(\bB\x03\xe0A\x03R\n" +
+	"extendable\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\n" +
 	"extendable\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -17322,21 +17322,21 @@ const file_google_cloud_vmmigration_v1_vmmigration_proto_rawDesc = "" +
 	"\x11FINALIZED_EXPIRED\x10\x11:\x81\x01\xeaA~\n" +
 	"&vmmigration.googleapis.com/MigratingVm\x12Tprojects/{project}/locations/{location}/sources/{source}/migratingVms/{migrating_vm}B\x14\n" +
 	"\x12target_vm_defaultsB\x13\n" +
-	"\x11source_vm_details\"v\n" +
-	"\x0fCutoverForecast\x12c\n" +
-	"\x1eestimated_cutover_job_duration\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\x1bestimatedCutoverJobDuration\"\xe5\a\n" +
-	"\bCloneJob\x12\x81\x01\n" +
-	"\x1dcompute_engine_target_details\x18\x14 \x01(\v27.google.cloud.vmmigration.v1.ComputeEngineTargetDetailsB\x03\xe0A\x03H\x00R\x1acomputeEngineTargetDetails\x12\x91\x01\n" +
-	"#compute_engine_disks_target_details\x18\x19 \x01(\v2<.google.cloud.vmmigration.v1.ComputeEngineDisksTargetDetailsB\x03\xe0A\x03H\x00R\x1fcomputeEngineDisksTargetDetails\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x16 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x17\n" +
-	"\x04name\x18\x03 \x01(\tB\x03\xe0A\x03R\x04name\x12F\n" +
-	"\x05state\x18\f \x01(\x0e2+.google.cloud.vmmigration.v1.CloneJob.StateB\x03\xe0A\x03R\x05state\x12>\n" +
+	"\x11source_vm_details\"w\n" +
+	"\x0fCutoverForecast\x12d\n" +
+	"\x1eestimated_cutover_job_duration\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\x1bestimatedCutoverJobDuration\"\xee\a\n" +
+	"\bCloneJob\x12\x82\x01\n" +
+	"\x1dcompute_engine_target_details\x18\x14 \x01(\v27.google.cloud.vmmigration.v1.ComputeEngineTargetDetailsB\x04\xe2A\x01\x03H\x00R\x1acomputeEngineTargetDetails\x12\x92\x01\n" +
+	"#compute_engine_disks_target_details\x18\x19 \x01(\v2<.google.cloud.vmmigration.v1.ComputeEngineDisksTargetDetailsB\x04\xe2A\x01\x03H\x00R\x1fcomputeEngineDisksTargetDetails\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x16 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x18\n" +
+	"\x04name\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12G\n" +
+	"\x05state\x18\f \x01(\x0e2+.google.cloud.vmmigration.v1.CloneJob.StateB\x04\xe2A\x01\x03R\x05state\x12?\n" +
 	"\n" +
-	"state_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstateTime\x12-\n" +
-	"\x05error\x18\x11 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x12A\n" +
-	"\x05steps\x18\x17 \x03(\v2&.google.cloud.vmmigration.v1.CloneStepB\x03\xe0A\x03R\x05steps\"\x82\x01\n" +
+	"state_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstateTime\x12.\n" +
+	"\x05error\x18\x11 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x12B\n" +
+	"\x05steps\x18\x17 \x03(\v2&.google.cloud.vmmigration.v1.CloneStepB\x04\xe2A\x01\x03R\x05steps\"\x82\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPENDING\x10\x01\x12\n" +
@@ -17362,23 +17362,23 @@ const file_google_cloud_vmmigration_v1_vmmigration_proto_rawDesc = "" +
 	"\x04step\"\x10\n" +
 	"\x0eAdaptingOSStep\"\x16\n" +
 	"\x14PreparingVMDisksStep\"\x1d\n" +
-	"\x1bInstantiatingMigratedVMStep\"\xcb\b\n" +
+	"\x1bInstantiatingMigratedVMStep\"\xd6\b\n" +
 	"\n" +
-	"CutoverJob\x12\x81\x01\n" +
-	"\x1dcompute_engine_target_details\x18\x0e \x01(\v27.google.cloud.vmmigration.v1.ComputeEngineTargetDetailsB\x03\xe0A\x03H\x00R\x1acomputeEngineTargetDetails\x12\x91\x01\n" +
-	"#compute_engine_disks_target_details\x18\x14 \x01(\v2<.google.cloud.vmmigration.v1.ComputeEngineDisksTargetDetailsB\x03\xe0A\x03H\x00R\x1fcomputeEngineDisksTargetDetails\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x17\n" +
-	"\x04name\x18\x03 \x01(\tB\x03\xe0A\x03R\x04name\x12H\n" +
-	"\x05state\x18\x05 \x01(\x0e2-.google.cloud.vmmigration.v1.CutoverJob.StateB\x03\xe0A\x03R\x05state\x12>\n" +
+	"CutoverJob\x12\x82\x01\n" +
+	"\x1dcompute_engine_target_details\x18\x0e \x01(\v27.google.cloud.vmmigration.v1.ComputeEngineTargetDetailsB\x04\xe2A\x01\x03H\x00R\x1acomputeEngineTargetDetails\x12\x92\x01\n" +
+	"#compute_engine_disks_target_details\x18\x14 \x01(\v2<.google.cloud.vmmigration.v1.ComputeEngineDisksTargetDetailsB\x04\xe2A\x01\x03H\x00R\x1fcomputeEngineDisksTargetDetails\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x18\n" +
+	"\x04name\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12I\n" +
+	"\x05state\x18\x05 \x01(\x0e2-.google.cloud.vmmigration.v1.CutoverJob.StateB\x04\xe2A\x01\x03R\x05state\x12?\n" +
 	"\n" +
-	"state_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstateTime\x12.\n" +
-	"\x10progress_percent\x18\r \x01(\x05B\x03\xe0A\x03R\x0fprogressPercent\x12-\n" +
-	"\x05error\x18\t \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x12(\n" +
+	"state_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstateTime\x12/\n" +
+	"\x10progress_percent\x18\r \x01(\x05B\x04\xe2A\x01\x03R\x0fprogressPercent\x12.\n" +
+	"\x05error\x18\t \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x12)\n" +
 	"\rstate_message\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\fstateMessage\x12C\n" +
-	"\x05steps\x18\x11 \x03(\v2(.google.cloud.vmmigration.v1.CutoverStepB\x03\xe0A\x03R\x05steps\"\x82\x01\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\fstateMessage\x12D\n" +
+	"\x05steps\x18\x11 \x03(\v2(.google.cloud.vmmigration.v1.CutoverStepB\x04\xe2A\x01\x03R\x05steps\"\x82\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPENDING\x10\x01\x12\n" +
@@ -17404,84 +17404,84 @@ const file_google_cloud_vmmigration_v1_vmmigration_proto_rawDesc = "" +
 	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +
 	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aendTimeB\x06\n" +
 	"\x04step\"\x1a\n" +
-	"\x18ShuttingDownSourceVMStep\"\xeb\x01\n" +
-	"\x15CreateCloneJobRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#vmmigration.googleapis.com/CloneJobR\x06parent\x12%\n" +
-	"\fclone_job_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"cloneJobId\x12G\n" +
-	"\tclone_job\x18\x03 \x01(\v2%.google.cloud.vmmigration.v1.CloneJobB\x03\xe0A\x02R\bcloneJob\x12\x1d\n" +
+	"\x18ShuttingDownSourceVMStep\"\xee\x01\n" +
+	"\x15CreateCloneJobRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#vmmigration.googleapis.com/CloneJobR\x06parent\x12&\n" +
+	"\fclone_job_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"cloneJobId\x12H\n" +
+	"\tclone_job\x18\x03 \x01(\v2%.google.cloud.vmmigration.v1.CloneJobB\x04\xe2A\x01\x02R\bcloneJob\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tR\trequestId\"X\n" +
-	"\x15CancelCloneJobRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\"Y\n" +
+	"\x15CancelCloneJobRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#vmmigration.googleapis.com/CloneJobR\x04name\"\x18\n" +
-	"\x16CancelCloneJobResponse\"\xde\x01\n" +
-	"\x14ListCloneJobsRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#vmmigration.googleapis.com/CloneJobR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x16CancelCloneJobResponse\"\xe3\x01\n" +
+	"\x14ListCloneJobsRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#vmmigration.googleapis.com/CloneJobR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x02R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xb6\x01\n" +
-	"\x15ListCloneJobsResponse\x12I\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xb9\x01\n" +
+	"\x15ListCloneJobsResponse\x12J\n" +
 	"\n" +
-	"clone_jobs\x18\x01 \x03(\v2%.google.cloud.vmmigration.v1.CloneJobB\x03\xe0A\x03R\tcloneJobs\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x03R\vunreachable\"U\n" +
-	"\x12GetCloneJobRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#vmmigration.googleapis.com/CloneJobR\x04name\"\xe8\x05\n" +
+	"clone_jobs\x18\x01 \x03(\v2%.google.cloud.vmmigration.v1.CloneJobB\x04\xe2A\x01\x03R\tcloneJobs\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\vunreachable\"V\n" +
+	"\x12GetCloneJobRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#vmmigration.googleapis.com/CloneJobR\x04name\"\xea\x05\n" +
 	"\x06Source\x12J\n" +
 	"\x06vmware\x18\n" +
 	" \x01(\v20.google.cloud.vmmigration.v1.VmwareSourceDetailsH\x00R\x06vmware\x12A\n" +
 	"\x03aws\x18\f \x01(\v2-.google.cloud.vmmigration.v1.AwsSourceDetailsH\x00R\x03aws\x12G\n" +
-	"\x05azure\x18\r \x01(\v2/.google.cloud.vmmigration.v1.AzureSourceDetailsH\x00R\x05azure\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x05azure\x18\r \x01(\v2/.google.cloud.vmmigration.v1.AzureSourceDetailsH\x00R\x05azure\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12G\n" +
 	"\x06labels\x18\x04 \x03(\v2/.google.cloud.vmmigration.v1.Source.LabelsEntryR\x06labels\x12 \n" +
-	"\vdescription\x18\x06 \x01(\tR\vdescription\x12O\n" +
+	"\vdescription\x18\x06 \x01(\tR\vdescription\x12N\n" +
 	"\n" +
-	"encryption\x18\x0e \x01(\v2'.google.cloud.vmmigration.v1.EncryptionB\x06\xe0A\x01\xe0A\x05R\n" +
+	"encryption\x18\x0e \x01(\v2'.google.cloud.vmmigration.v1.EncryptionB\x05\xe2A\x02\x01\x05R\n" +
 	"encryption\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:`\xeaA]\n" +
 	"!vmmigration.googleapis.com/Source\x128projects/{project}/locations/{location}/sources/{source}B\x10\n" +
-	"\x0esource_details\"P\n" +
+	"\x0esource_details\"Q\n" +
 	"\n" +
-	"Encryption\x12B\n" +
-	"\akms_key\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\"\xc5\x01\n" +
+	"Encryption\x12C\n" +
+	"\akms_key\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\"\xc6\x01\n" +
 	"\x13VmwareSourceDetails\x12\x1a\n" +
-	"\busername\x18\x01 \x01(\tR\busername\x12\x1f\n" +
-	"\bpassword\x18\x02 \x01(\tB\x03\xe0A\x04R\bpassword\x12\x1d\n" +
+	"\busername\x18\x01 \x01(\tR\busername\x12 \n" +
+	"\bpassword\x18\x02 \x01(\tB\x04\xe2A\x01\x04R\bpassword\x12\x1d\n" +
 	"\n" +
 	"vcenter_ip\x18\x03 \x01(\tR\tvcenterIp\x12\x1e\n" +
 	"\n" +
 	"thumbprint\x18\x04 \x01(\tR\n" +
 	"thumbprint\x122\n" +
-	"\x15resolved_vcenter_host\x18\x05 \x01(\tR\x13resolvedVcenterHost\"\xf9\a\n" +
+	"\x15resolved_vcenter_host\x18\x05 \x01(\tR\x13resolvedVcenterHost\"\x81\b\n" +
 	"\x10AwsSourceDetails\x12n\n" +
-	"\x10access_key_creds\x18\v \x01(\v2B.google.cloud.vmmigration.v1.AwsSourceDetails.AccessKeyCredentialsH\x00R\x0eaccessKeyCreds\x12\"\n" +
+	"\x10access_key_creds\x18\v \x01(\v2B.google.cloud.vmmigration.v1.AwsSourceDetails.AccessKeyCredentialsH\x00R\x0eaccessKeyCreds\x12#\n" +
 	"\n" +
-	"aws_region\x18\x03 \x01(\tB\x03\xe0A\x05R\tawsRegion\x12N\n" +
-	"\x05state\x18\x04 \x01(\x0e23.google.cloud.vmmigration.v1.AwsSourceDetails.StateB\x03\xe0A\x03R\x05state\x12-\n" +
-	"\x05error\x18\x05 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x12_\n" +
+	"aws_region\x18\x03 \x01(\tB\x04\xe2A\x01\x05R\tawsRegion\x12O\n" +
+	"\x05state\x18\x04 \x01(\x0e23.google.cloud.vmmigration.v1.AwsSourceDetails.StateB\x04\xe2A\x01\x03R\x05state\x12.\n" +
+	"\x05error\x18\x05 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x12_\n" +
 	"\x12inventory_tag_list\x18\n" +
 	" \x03(\v21.google.cloud.vmmigration.v1.AwsSourceDetails.TagR\x10inventoryTagList\x12C\n" +
 	"\x1einventory_security_group_names\x18\a \x03(\tR\x1binventorySecurityGroupNames\x12\x90\x01\n" +
-	"\x1dmigration_resources_user_tags\x18\b \x03(\v2M.google.cloud.vmmigration.v1.AwsSourceDetails.MigrationResourcesUserTagsEntryR\x1amigrationResourcesUserTags\x12 \n" +
-	"\tpublic_ip\x18\t \x01(\tB\x03\xe0A\x03R\bpublicIp\x1a\x95\x01\n" +
+	"\x1dmigration_resources_user_tags\x18\b \x03(\v2M.google.cloud.vmmigration.v1.AwsSourceDetails.MigrationResourcesUserTagsEntryR\x1amigrationResourcesUserTags\x12!\n" +
+	"\tpublic_ip\x18\t \x01(\tB\x04\xe2A\x01\x03R\bpublicIp\x1a\x97\x01\n" +
 	"\x14AccessKeyCredentials\x12\"\n" +
-	"\raccess_key_id\x18\x01 \x01(\tR\vaccessKeyId\x12/\n" +
-	"\x11secret_access_key\x18\x02 \x01(\tB\x03\xe0A\x04R\x0fsecretAccessKey\x12(\n" +
-	"\rsession_token\x18\x03 \x01(\tB\x03\xe0A\x04R\fsessionToken\x1a7\n" +
-	"\x03Tag\x12\x15\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x02R\x03key\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x02R\x05value\x1aM\n" +
+	"\raccess_key_id\x18\x01 \x01(\tR\vaccessKeyId\x120\n" +
+	"\x11secret_access_key\x18\x02 \x01(\tB\x04\xe2A\x01\x04R\x0fsecretAccessKey\x12)\n" +
+	"\rsession_token\x18\x03 \x01(\tB\x04\xe2A\x01\x04R\fsessionToken\x1a9\n" +
+	"\x03Tag\x12\x16\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03key\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05value\x1aM\n" +
 	"\x1fMigrationResourcesUserTagsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"C\n" +
@@ -17492,20 +17492,20 @@ const file_google_cloud_vmmigration_v1_vmmigration_proto_rawDesc = "" +
 	"\x06FAILED\x10\x02\x12\n" +
 	"\n" +
 	"\x06ACTIVE\x10\x03B\x12\n" +
-	"\x10credentials_type\"\xd7\x06\n" +
+	"\x10credentials_type\"\xdd\x06\n" +
 	"\x12AzureSourceDetails\x12y\n" +
-	"\x13client_secret_creds\x18\t \x01(\v2G.google.cloud.vmmigration.v1.AzureSourceDetails.ClientSecretCredentialsH\x00R\x11clientSecretCreds\x12,\n" +
-	"\x0fsubscription_id\x18\x01 \x01(\tB\x03\xe0A\x05R\x0esubscriptionId\x12*\n" +
-	"\x0eazure_location\x18\x05 \x01(\tB\x03\xe0A\x05R\razureLocation\x12P\n" +
-	"\x05state\x18\x06 \x01(\x0e25.google.cloud.vmmigration.v1.AzureSourceDetails.StateB\x03\xe0A\x03R\x05state\x12-\n" +
-	"\x05error\x18\a \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x12\x92\x01\n" +
-	"\x1dmigration_resources_user_tags\x18\b \x03(\v2O.google.cloud.vmmigration.v1.AzureSourceDetails.MigrationResourcesUserTagsEntryR\x1amigrationResourcesUserTags\x12/\n" +
+	"\x13client_secret_creds\x18\t \x01(\v2G.google.cloud.vmmigration.v1.AzureSourceDetails.ClientSecretCredentialsH\x00R\x11clientSecretCreds\x12-\n" +
+	"\x0fsubscription_id\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x0esubscriptionId\x12+\n" +
+	"\x0eazure_location\x18\x05 \x01(\tB\x04\xe2A\x01\x05R\razureLocation\x12Q\n" +
+	"\x05state\x18\x06 \x01(\x0e25.google.cloud.vmmigration.v1.AzureSourceDetails.StateB\x04\xe2A\x01\x03R\x05state\x12.\n" +
+	"\x05error\x18\a \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x12\x92\x01\n" +
+	"\x1dmigration_resources_user_tags\x18\b \x03(\v2O.google.cloud.vmmigration.v1.AzureSourceDetails.MigrationResourcesUserTagsEntryR\x1amigrationResourcesUserTags\x120\n" +
 	"\x11resource_group_id\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x0fresourceGroupId\x1a}\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x0fresourceGroupId\x1a~\n" +
 	"\x17ClientSecretCredentials\x12\x1b\n" +
 	"\ttenant_id\x18\x01 \x01(\tR\btenantId\x12\x1b\n" +
-	"\tclient_id\x18\x02 \x01(\tR\bclientId\x12(\n" +
-	"\rclient_secret\x18\x03 \x01(\tB\x03\xe0A\x04R\fclientSecret\x1aM\n" +
+	"\tclient_id\x18\x02 \x01(\tR\bclientId\x12)\n" +
+	"\rclient_secret\x18\x03 \x01(\tB\x04\xe2A\x01\x04R\fclientSecret\x1aM\n" +
 	"\x1fMigrationResourcesUserTagsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"C\n" +
@@ -17516,26 +17516,26 @@ const file_google_cloud_vmmigration_v1_vmmigration_proto_rawDesc = "" +
 	"\x06FAILED\x10\x02\x12\n" +
 	"\n" +
 	"\x06ACTIVE\x10\x03B\x12\n" +
-	"\x10credentials_type\"\xbe\b\n" +
-	"\x13DatacenterConnector\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04name\x18\x03 \x01(\tB\x03\xe0A\x03R\x04name\x12,\n" +
-	"\x0fregistration_id\x18\f \x01(\tB\x03\xe0A\x05R\x0eregistrationId\x12'\n" +
+	"\x10credentials_type\"\xca\b\n" +
+	"\x13DatacenterConnector\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04name\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12-\n" +
+	"\x0fregistration_id\x18\f \x01(\tB\x04\xe2A\x01\x05R\x0eregistrationId\x12'\n" +
 	"\x0fservice_account\x18\x05 \x01(\tR\x0eserviceAccount\x12\x18\n" +
-	"\aversion\x18\x06 \x01(\tR\aversion\x12\x1b\n" +
+	"\aversion\x18\x06 \x01(\tR\aversion\x12\x1c\n" +
 	"\x06bucket\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x06bucket\x12Q\n" +
-	"\x05state\x18\a \x01(\x0e26.google.cloud.vmmigration.v1.DatacenterConnector.StateB\x03\xe0A\x03R\x05state\x12>\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x06bucket\x12R\n" +
+	"\x05state\x18\a \x01(\x0e26.google.cloud.vmmigration.v1.DatacenterConnector.StateB\x04\xe2A\x01\x03R\x05state\x12?\n" +
 	"\n" +
-	"state_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstateTime\x12-\n" +
-	"\x05error\x18\v \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x12M\n" +
-	" appliance_infrastructure_version\x18\r \x01(\tB\x03\xe0A\x03R\x1eapplianceInfrastructureVersion\x12A\n" +
-	"\x1aappliance_software_version\x18\x0e \x01(\tB\x03\xe0A\x03R\x18applianceSoftwareVersion\x12a\n" +
-	"\x12available_versions\x18\x0f \x01(\v2-.google.cloud.vmmigration.v1.AvailableUpdatesB\x03\xe0A\x03R\x11availableVersions\x12V\n" +
-	"\x0eupgrade_status\x18\x10 \x01(\v2*.google.cloud.vmmigration.v1.UpgradeStatusB\x03\xe0A\x03R\rupgradeStatus\"P\n" +
+	"state_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstateTime\x12.\n" +
+	"\x05error\x18\v \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x12N\n" +
+	" appliance_infrastructure_version\x18\r \x01(\tB\x04\xe2A\x01\x03R\x1eapplianceInfrastructureVersion\x12B\n" +
+	"\x1aappliance_software_version\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\x18applianceSoftwareVersion\x12b\n" +
+	"\x12available_versions\x18\x0f \x01(\v2-.google.cloud.vmmigration.v1.AvailableUpdatesB\x04\xe2A\x01\x03R\x11availableVersions\x12W\n" +
+	"\x0eupgrade_status\x18\x10 \x01(\v2*.google.cloud.vmmigration.v1.UpgradeStatusB\x04\xe2A\x01\x03R\rupgradeStatus\"P\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPENDING\x10\x01\x12\v\n" +
@@ -17544,11 +17544,11 @@ const file_google_cloud_vmmigration_v1_vmmigration_proto_rawDesc = "" +
 	"\x06FAILED\x10\x03\x12\n" +
 	"\n" +
 	"\x06ACTIVE\x10\x04:\x9a\x01\xeaA\x96\x01\n" +
-	".vmmigration.googleapis.com/DatacenterConnector\x12dprojects/{project}/locations/{location}/sources/{source}/datacenterConnectors/{datacenter_connector}\"\xce\x02\n" +
+	".vmmigration.googleapis.com/DatacenterConnector\x12dprojects/{project}/locations/{location}/sources/{source}/datacenterConnectors/{datacenter_connector}\"\xcf\x02\n" +
 	"\rUpgradeStatus\x12\x18\n" +
 	"\aversion\x18\x01 \x01(\tR\aversion\x12F\n" +
-	"\x05state\x18\x02 \x01(\x0e20.google.cloud.vmmigration.v1.UpgradeStatus.StateR\x05state\x12-\n" +
-	"\x05error\x18\x03 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x129\n" +
+	"\x05state\x18\x02 \x01(\x0e20.google.cloud.vmmigration.v1.UpgradeStatus.StateR\x05state\x12.\n" +
+	"\x05error\x18\x03 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x129\n" +
 	"\n" +
 	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x12)\n" +
 	"\x10previous_version\x18\x05 \x01(\tR\x0fpreviousVersion\"F\n" +
@@ -17565,42 +17565,42 @@ const file_google_cloud_vmmigration_v1_vmmigration_proto_rawDesc = "" +
 	"\aversion\x18\x01 \x01(\tR\aversion\x12\x10\n" +
 	"\x03uri\x18\x02 \x01(\tR\x03uri\x12\x1a\n" +
 	"\bcritical\x18\x03 \x01(\bR\bcritical\x12*\n" +
-	"\x11release_notes_uri\x18\x04 \x01(\tR\x0freleaseNotesUri\"\xda\x01\n" +
-	"\x12ListSourcesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!vmmigration.googleapis.com/SourceR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x11release_notes_uri\x18\x04 \x01(\tR\x0freleaseNotesUri\"\xdf\x01\n" +
+	"\x12ListSourcesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!vmmigration.googleapis.com/SourceR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x02R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xad\x01\n" +
-	"\x13ListSourcesResponse\x12B\n" +
-	"\asources\x18\x01 \x03(\v2#.google.cloud.vmmigration.v1.SourceB\x03\xe0A\x03R\asources\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x03R\vunreachable\"Q\n" +
-	"\x10GetSourceRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!vmmigration.googleapis.com/SourceR\x04name\"\xdb\x01\n" +
-	"\x13CreateSourceRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!vmmigration.googleapis.com/SourceR\x06parent\x12 \n" +
-	"\tsource_id\x18\x02 \x01(\tB\x03\xe0A\x02R\bsourceId\x12@\n" +
-	"\x06source\x18\x03 \x01(\v2#.google.cloud.vmmigration.v1.SourceB\x03\xe0A\x02R\x06source\x12\x1d\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xb0\x01\n" +
+	"\x13ListSourcesResponse\x12C\n" +
+	"\asources\x18\x01 \x03(\v2#.google.cloud.vmmigration.v1.SourceB\x04\xe2A\x01\x03R\asources\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\vunreachable\"R\n" +
+	"\x10GetSourceRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!vmmigration.googleapis.com/SourceR\x04name\"\xde\x01\n" +
+	"\x13CreateSourceRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!vmmigration.googleapis.com/SourceR\x06parent\x12!\n" +
+	"\tsource_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bsourceId\x12A\n" +
+	"\x06source\x18\x03 \x01(\v2#.google.cloud.vmmigration.v1.SourceB\x04\xe2A\x01\x02R\x06source\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tR\trequestId\"\xb3\x01\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\"\xb4\x01\n" +
 	"\x13UpdateSourceRequest\x12;\n" +
 	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\x12@\n" +
-	"\x06source\x18\x02 \x01(\v2#.google.cloud.vmmigration.v1.SourceB\x03\xe0A\x02R\x06source\x12\x1d\n" +
+	"updateMask\x12A\n" +
+	"\x06source\x18\x02 \x01(\v2#.google.cloud.vmmigration.v1.SourceB\x04\xe2A\x01\x02R\x06source\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tR\trequestId\"x\n" +
-	"\x13DeleteSourceRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!vmmigration.googleapis.com/SourceR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tR\trequestId\"z\n" +
+	"\x13DeleteSourceRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!vmmigration.googleapis.com/SourceR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\x7f\n" +
-	"\x15FetchInventoryRequest\x12A\n" +
-	"\x06source\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x80\x01\n" +
+	"\x15FetchInventoryRequest\x12B\n" +
+	"\x06source\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!vmmigration.googleapis.com/SourceR\x06source\x12#\n" +
-	"\rforce_refresh\x18\x02 \x01(\bR\fforceRefresh\"\x87\a\n" +
+	"\rforce_refresh\x18\x02 \x01(\bR\fforceRefresh\"\x89\a\n" +
 	"\x0fVmwareVmDetails\x12\x13\n" +
 	"\x05vm_id\x18\x01 \x01(\tR\x04vmId\x12#\n" +
 	"\rdatacenter_id\x18\x02 \x01(\tR\fdatacenterId\x125\n" +
@@ -17614,10 +17614,10 @@ const file_google_cloud_vmmigration_v1_vmmigration_proto_rawDesc = "" +
 	"\n" +
 	"disk_count\x18\t \x01(\x05R\tdiskCount\x120\n" +
 	"\x14committed_storage_mb\x18\f \x01(\x03R\x12committedStorageMb\x12+\n" +
-	"\x11guest_description\x18\v \x01(\tR\x10guestDescription\x12]\n" +
-	"\vboot_option\x18\r \x01(\x0e27.google.cloud.vmmigration.v1.VmwareVmDetails.BootOptionB\x03\xe0A\x03R\n" +
-	"bootOption\x12d\n" +
-	"\farchitecture\x18\x0e \x01(\x0e2;.google.cloud.vmmigration.v1.VmwareVmDetails.VmArchitectureB\x03\xe0A\x03R\farchitecture\"I\n" +
+	"\x11guest_description\x18\v \x01(\tR\x10guestDescription\x12^\n" +
+	"\vboot_option\x18\r \x01(\x0e27.google.cloud.vmmigration.v1.VmwareVmDetails.BootOptionB\x04\xe2A\x01\x03R\n" +
+	"bootOption\x12e\n" +
+	"\farchitecture\x18\x0e \x01(\x0e2;.google.cloud.vmmigration.v1.VmwareVmDetails.VmArchitectureB\x04\xe2A\x01\x03R\farchitecture\"I\n" +
 	"\n" +
 	"PowerState\x12\x1b\n" +
 	"\x17POWER_STATE_UNSPECIFIED\x10\x00\x12\x06\n" +
@@ -17632,14 +17632,14 @@ const file_google_cloud_vmmigration_v1_vmmigration_proto_rawDesc = "" +
 	"\x0eVmArchitecture\x12\x1f\n" +
 	"\x1bVM_ARCHITECTURE_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aVM_ARCHITECTURE_X86_FAMILY\x10\x01\x12\x19\n" +
-	"\x15VM_ARCHITECTURE_ARM64\x10\x02\"\xe3\n" +
+	"\x15VM_ARCHITECTURE_ARM64\x10\x02\"\xe4\n" +
 	"\n" +
 	"\fAwsVmDetails\x12\x13\n" +
 	"\x05vm_id\x18\x01 \x01(\tR\x04vmId\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x1b\n" +
 	"\tsource_id\x18\x03 \x01(\tR\bsourceId\x12-\n" +
-	"\x12source_description\x18\x04 \x01(\tR\x11sourceDescription\x12Z\n" +
-	"\vpower_state\x18\x05 \x01(\x0e24.google.cloud.vmmigration.v1.AwsVmDetails.PowerStateB\x03\xe0A\x03R\n" +
+	"\x12source_description\x18\x04 \x01(\tR\x11sourceDescription\x12[\n" +
+	"\vpower_state\x18\x05 \x01(\x0e24.google.cloud.vmmigration.v1.AwsVmDetails.PowerStateB\x04\xe2A\x01\x03R\n" +
 	"powerState\x12\x1b\n" +
 	"\tcpu_count\x18\x06 \x01(\x05R\bcpuCount\x12\x1b\n" +
 	"\tmemory_mb\x18\a \x01(\x05R\bmemoryMb\x12\x1d\n" +
@@ -17748,48 +17748,48 @@ const file_google_cloud_vmmigration_v1_vmmigration_proto_rawDesc = "" +
 	"\rAwsVmsDetails\x12C\n" +
 	"\adetails\x18\x01 \x03(\v2).google.cloud.vmmigration.v1.AwsVmDetailsR\adetails\"X\n" +
 	"\x0fAzureVmsDetails\x12E\n" +
-	"\adetails\x18\x01 \x03(\v2+.google.cloud.vmmigration.v1.AzureVmDetailsR\adetails\"\xcb\x02\n" +
+	"\adetails\x18\x01 \x03(\v2+.google.cloud.vmmigration.v1.AzureVmDetailsR\adetails\"\xcc\x02\n" +
 	"\x16FetchInventoryResponse\x12N\n" +
 	"\n" +
 	"vmware_vms\x18\x01 \x01(\v2-.google.cloud.vmmigration.v1.VmwareVmsDetailsH\x00R\tvmwareVms\x12E\n" +
 	"\aaws_vms\x18\x03 \x01(\v2*.google.cloud.vmmigration.v1.AwsVmsDetailsH\x00R\x06awsVms\x12K\n" +
-	"\tazure_vms\x18\x05 \x01(\v2,.google.cloud.vmmigration.v1.AzureVmsDetailsH\x00R\bazureVms\x12@\n" +
-	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\tazure_vms\x18\x05 \x01(\v2,.google.cloud.vmmigration.v1.AzureVmsDetailsH\x00R\bazureVms\x12A\n" +
+	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTimeB\v\n" +
-	"\tSourceVms\"\xf8\x02\n" +
-	"\x1cFetchStorageInventoryRequest\x12A\n" +
-	"\x06source\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!vmmigration.googleapis.com/SourceR\x06source\x12^\n" +
-	"\x04type\x18\x02 \x01(\x0e2E.google.cloud.vmmigration.v1.FetchStorageInventoryRequest.StorageTypeB\x03\xe0A\x02R\x04type\x12(\n" +
-	"\rforce_refresh\x18\x03 \x01(\bB\x03\xe0A\x01R\fforceRefresh\x12 \n" +
-	"\tpage_size\x18\x04 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\tSourceVms\"\xfd\x02\n" +
+	"\x1cFetchStorageInventoryRequest\x12B\n" +
+	"\x06source\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!vmmigration.googleapis.com/SourceR\x06source\x12_\n" +
+	"\x04type\x18\x02 \x01(\x0e2E.google.cloud.vmmigration.v1.FetchStorageInventoryRequest.StorageTypeB\x04\xe2A\x01\x02R\x04type\x12)\n" +
+	"\rforce_refresh\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fforceRefresh\x12!\n" +
+	"\tpage_size\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x05 \x01(\tB\x03\xe0A\x01R\tpageToken\"E\n" +
+	"page_token\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"E\n" +
 	"\vStorageType\x12\x1c\n" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05DISKS\x10\x01\x12\r\n" +
-	"\tSNAPSHOTS\x10\x02\"\xe0\x01\n" +
+	"\tSNAPSHOTS\x10\x02\"\xe2\x01\n" +
 	"\x1dFetchStorageInventoryResponse\x12P\n" +
-	"\tresources\x18\x01 \x03(\v22.google.cloud.vmmigration.v1.SourceStorageResourceR\tresources\x12@\n" +
-	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12+\n" +
-	"\x0fnext_page_token\x18\x03 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"\x89\x01\n" +
+	"\tresources\x18\x01 \x03(\v22.google.cloud.vmmigration.v1.SourceStorageResourceR\tresources\x12A\n" +
+	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12,\n" +
+	"\x0fnext_page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"\x89\x01\n" +
 	"\x15SourceStorageResource\x12]\n" +
 	"\x10aws_disk_details\x18\x01 \x01(\v21.google.cloud.vmmigration.v1.AwsSourceDiskDetailsH\x00R\x0eawsDiskDetailsB\x11\n" +
-	"\x0fStorageResource\"\xfb\x06\n" +
-	"\x11UtilizationReport\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12O\n" +
-	"\x05state\x18\x03 \x01(\x0e24.google.cloud.vmmigration.v1.UtilizationReport.StateB\x03\xe0A\x03R\x05state\x12>\n" +
+	"\x0fStorageResource\"\x82\a\n" +
+	"\x11UtilizationReport\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12!\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12P\n" +
+	"\x05state\x18\x03 \x01(\x0e24.google.cloud.vmmigration.v1.UtilizationReport.StateB\x04\xe2A\x01\x03R\x05state\x12?\n" +
 	"\n" +
-	"state_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstateTime\x12-\n" +
-	"\x05error\x18\x05 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"state_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstateTime\x12.\n" +
+	"\x05error\x18\x05 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\x12W\n" +
 	"\n" +
-	"time_frame\x18\a \x01(\x0e28.google.cloud.vmmigration.v1.UtilizationReport.TimeFrameR\ttimeFrame\x12E\n" +
-	"\x0eframe_end_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fframeEndTime\x12\x1e\n" +
-	"\bvm_count\x18\t \x01(\x05B\x03\xe0A\x03R\avmCount\x12@\n" +
+	"time_frame\x18\a \x01(\x0e28.google.cloud.vmmigration.v1.UtilizationReport.TimeFrameR\ttimeFrame\x12F\n" +
+	"\x0eframe_end_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fframeEndTime\x12\x1f\n" +
+	"\bvm_count\x18\t \x01(\x05B\x04\xe2A\x01\x03R\avmCount\x12@\n" +
 	"\x03vms\x18\n" +
 	" \x03(\v2..google.cloud.vmmigration.v1.VmUtilizationInfoR\x03vms\"G\n" +
 	"\x05State\x12\x15\n" +
@@ -17818,65 +17818,65 @@ const file_google_cloud_vmmigration_v1_vmmigration_proto_rawDesc = "" +
 	"\x15disk_io_rate_max_kbps\x18\r \x01(\x03R\x11diskIoRateMaxKbps\x128\n" +
 	"\x19disk_io_rate_average_kbps\x18\x0e \x01(\x03R\x15diskIoRateAverageKbps\x12=\n" +
 	"\x1bnetwork_throughput_max_kbps\x18\x0f \x01(\x03R\x18networkThroughputMaxKbps\x12E\n" +
-	"\x1fnetwork_throughput_average_kbps\x18\x10 \x01(\x03R\x1cnetworkThroughputAverageKbps\"\xbd\x02\n" +
-	"\x1dListUtilizationReportsRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,vmmigration.googleapis.com/UtilizationReportR\x06parent\x12K\n" +
-	"\x04view\x18\x02 \x01(\x0e22.google.cloud.vmmigration.v1.UtilizationReportViewB\x03\xe0A\x01R\x04view\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x1fnetwork_throughput_average_kbps\x18\x10 \x01(\x03R\x1cnetworkThroughputAverageKbps\"\xc3\x02\n" +
+	"\x1dListUtilizationReportsRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,vmmigration.googleapis.com/UtilizationReportR\x06parent\x12L\n" +
+	"\x04view\x18\x02 \x01(\x0e22.google.cloud.vmmigration.v1.UtilizationReportViewB\x04\xe2A\x01\x01R\x04view\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x02R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x06 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xda\x01\n" +
-	"\x1eListUtilizationReportsResponse\x12d\n" +
-	"\x13utilization_reports\x18\x01 \x03(\v2..google.cloud.vmmigration.v1.UtilizationReportB\x03\xe0A\x03R\x12utilizationReports\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x03R\vunreachable\"\xb4\x01\n" +
-	"\x1bGetUtilizationReportRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",vmmigration.googleapis.com/UtilizationReportR\x04name\x12K\n" +
-	"\x04view\x18\x02 \x01(\x0e22.google.cloud.vmmigration.v1.UtilizationReportViewB\x03\xe0A\x01R\x04view\"\xaa\x02\n" +
-	"\x1eCreateUtilizationReportRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,vmmigration.googleapis.com/UtilizationReportR\x06parent\x12b\n" +
-	"\x12utilization_report\x18\x02 \x01(\v2..google.cloud.vmmigration.v1.UtilizationReportB\x03\xe0A\x02R\x11utilizationReport\x127\n" +
-	"\x15utilization_report_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x13utilizationReportId\x12\x1d\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xdd\x01\n" +
+	"\x1eListUtilizationReportsResponse\x12e\n" +
+	"\x13utilization_reports\x18\x01 \x03(\v2..google.cloud.vmmigration.v1.UtilizationReportB\x04\xe2A\x01\x03R\x12utilizationReports\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\vunreachable\"\xb6\x01\n" +
+	"\x1bGetUtilizationReportRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",vmmigration.googleapis.com/UtilizationReportR\x04name\x12L\n" +
+	"\x04view\x18\x02 \x01(\x0e22.google.cloud.vmmigration.v1.UtilizationReportViewB\x04\xe2A\x01\x01R\x04view\"\xad\x02\n" +
+	"\x1eCreateUtilizationReportRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,vmmigration.googleapis.com/UtilizationReportR\x06parent\x12c\n" +
+	"\x12utilization_report\x18\x02 \x01(\v2..google.cloud.vmmigration.v1.UtilizationReportB\x04\xe2A\x01\x02R\x11utilizationReport\x128\n" +
+	"\x15utilization_report_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x13utilizationReportId\x12\x1d\n" +
+	"\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\"\x90\x01\n" +
+	"\x1eDeleteUtilizationReportRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",vmmigration.googleapis.com/UtilizationReportR\x04name\x12#\n" +
+	"\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xe5\x01\n" +
+	" ListDatacenterConnectorsResponse\x12k\n" +
+	"\x15datacenter_connectors\x18\x01 \x03(\v20.google.cloud.vmmigration.v1.DatacenterConnectorB\x04\xe2A\x01\x03R\x14datacenterConnectors\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\vunreachable\"l\n" +
+	"\x1dGetDatacenterConnectorRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".vmmigration.googleapis.com/DatacenterConnectorR\x04name\"\xbb\x02\n" +
+	" CreateDatacenterConnectorRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.vmmigration.googleapis.com/DatacenterConnectorR\x06parent\x12<\n" +
+	"\x17datacenter_connector_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x15datacenterConnectorId\x12i\n" +
+	"\x14datacenter_connector\x18\x03 \x01(\v20.google.cloud.vmmigration.v1.DatacenterConnectorB\x04\xe2A\x01\x02R\x13datacenterConnector\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x04 \x01(\tR\trequestId\"\x8e\x01\n" +
-	"\x1eDeleteUtilizationReportRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",vmmigration.googleapis.com/UtilizationReportR\x04name\x12\"\n" +
-	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xe2\x01\n" +
-	" ListDatacenterConnectorsResponse\x12j\n" +
-	"\x15datacenter_connectors\x18\x01 \x03(\v20.google.cloud.vmmigration.v1.DatacenterConnectorB\x03\xe0A\x03R\x14datacenterConnectors\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x03R\vunreachable\"k\n" +
-	"\x1dGetDatacenterConnectorRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".vmmigration.googleapis.com/DatacenterConnectorR\x04name\"\xb8\x02\n" +
-	" CreateDatacenterConnectorRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.vmmigration.googleapis.com/DatacenterConnectorR\x06parent\x12;\n" +
-	"\x17datacenter_connector_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x15datacenterConnectorId\x12h\n" +
-	"\x14datacenter_connector\x18\x03 \x01(\v20.google.cloud.vmmigration.v1.DatacenterConnectorB\x03\xe0A\x02R\x13datacenterConnector\x12\x1d\n" +
-	"\n" +
-	"request_id\x18\x04 \x01(\tR\trequestId\"\x8d\x01\n" +
-	" DeleteDatacenterConnectorRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
+	" DeleteDatacenterConnectorRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
 	".vmmigration.googleapis.com/DatacenterConnectorR\x04name\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tR\trequestId\"\xa3\x01\n" +
-	"\x17UpgradeApplianceRequest\x12i\n" +
-	"\x14datacenter_connector\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
+	"request_id\x18\x02 \x01(\tR\trequestId\"\xa4\x01\n" +
+	"\x17UpgradeApplianceRequest\x12j\n" +
+	"\x14datacenter_connector\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
 	".vmmigration.googleapis.com/DatacenterConnectorR\x13datacenterConnector\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x02 \x01(\tR\trequestId\"\x1a\n" +
-	"\x18UpgradeApplianceResponse\"\xf4\x01\n" +
-	"\x1fListDatacenterConnectorsRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.vmmigration.googleapis.com/DatacenterConnectorR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x18UpgradeApplianceResponse\"\xf9\x01\n" +
+	"\x1fListDatacenterConnectorsRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.vmmigration.googleapis.com/DatacenterConnectorR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x02R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xe6\r\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xee\r\n" +
 	"\x1bComputeEngineTargetDefaults\x12\x17\n" +
 	"\avm_name\x18\x01 \x01(\tR\x06vmName\x12T\n" +
 	"\x0etarget_project\x18\x02 \x01(\tB-\xfaA*\n" +
@@ -17885,40 +17885,40 @@ const file_google_cloud_vmmigration_v1_vmmigration_proto_rawDesc = "" +
 	"\x13machine_type_series\x18\x04 \x01(\tR\x11machineTypeSeries\x12!\n" +
 	"\fmachine_type\x18\x05 \x01(\tR\vmachineType\x12!\n" +
 	"\fnetwork_tags\x18\x06 \x03(\tR\vnetworkTags\x12\\\n" +
-	"\x12network_interfaces\x18\a \x03(\v2-.google.cloud.vmmigration.v1.NetworkInterfaceR\x11networkInterfaces\x12,\n" +
-	"\x0fservice_account\x18\b \x01(\tB\x03\xe0A\x01R\x0eserviceAccount\x12O\n" +
+	"\x12network_interfaces\x18\a \x03(\v2-.google.cloud.vmmigration.v1.NetworkInterfaceR\x11networkInterfaces\x12-\n" +
+	"\x0fservice_account\x18\b \x01(\tB\x04\xe2A\x01\x01R\x0eserviceAccount\x12O\n" +
 	"\tdisk_type\x18\t \x01(\x0e22.google.cloud.vmmigration.v1.ComputeEngineDiskTypeR\bdiskType\x12\\\n" +
 	"\x06labels\x18\n" +
 	" \x03(\v2D.google.cloud.vmmigration.v1.ComputeEngineTargetDefaults.LabelsEntryR\x06labels\x12X\n" +
-	"\flicense_type\x18\v \x01(\x0e25.google.cloud.vmmigration.v1.ComputeEngineLicenseTypeR\vlicenseType\x12Y\n" +
-	"\x0fapplied_license\x18\f \x01(\v2+.google.cloud.vmmigration.v1.AppliedLicenseB\x03\xe0A\x03R\x0eappliedLicense\x12]\n" +
+	"\flicense_type\x18\v \x01(\x0e25.google.cloud.vmmigration.v1.ComputeEngineLicenseTypeR\vlicenseType\x12Z\n" +
+	"\x0fapplied_license\x18\f \x01(\v2+.google.cloud.vmmigration.v1.AppliedLicenseB\x04\xe2A\x01\x03R\x0eappliedLicense\x12]\n" +
 	"\x12compute_scheduling\x18\r \x01(\v2..google.cloud.vmmigration.v1.ComputeSchedulingR\x11computeScheduling\x12\x1f\n" +
 	"\vsecure_boot\x18\x0e \x01(\bR\n" +
-	"secureBoot\x12$\n" +
-	"\venable_vtpm\x18\x15 \x01(\bB\x03\xe0A\x01R\n" +
-	"enableVtpm\x12C\n" +
-	"\x1benable_integrity_monitoring\x18\x16 \x01(\bB\x03\xe0A\x01R\x19enableIntegrityMonitoring\x12Z\n" +
-	"\vboot_option\x18\x0f \x01(\x0e24.google.cloud.vmmigration.v1.ComputeEngineBootOptionB\x03\xe0A\x03R\n" +
+	"secureBoot\x12%\n" +
+	"\venable_vtpm\x18\x15 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"enableVtpm\x12D\n" +
+	"\x1benable_integrity_monitoring\x18\x16 \x01(\bB\x04\xe2A\x01\x01R\x19enableIntegrityMonitoring\x12[\n" +
+	"\vboot_option\x18\x0f \x01(\x0e24.google.cloud.vmmigration.v1.ComputeEngineBootOptionB\x04\xe2A\x01\x03R\n" +
 	"bootOption\x12b\n" +
 	"\bmetadata\x18\x10 \x03(\v2F.google.cloud.vmmigration.v1.ComputeEngineTargetDefaults.MetadataEntryR\bmetadata\x12/\n" +
 	"\x13additional_licenses\x18\x11 \x03(\tR\x12additionalLicenses\x12\x1a\n" +
-	"\bhostname\x18\x12 \x01(\tR\bhostname\x12O\n" +
+	"\bhostname\x18\x12 \x01(\tR\bhostname\x12N\n" +
 	"\n" +
-	"encryption\x18\x13 \x01(\v2'.google.cloud.vmmigration.v1.EncryptionB\x06\xe0A\x01\xe0A\x05R\n" +
-	"encryption\x12Y\n" +
-	"\x0fboot_conversion\x18\x14 \x01(\x0e2+.google.cloud.vmmigration.v1.BootConversionB\x03\xe0A\x01R\x0ebootConversion\x12g\n" +
-	"\x14adaptation_modifiers\x18\x17 \x03(\v2/.google.cloud.vmmigration.v1.AdaptationModifierB\x03\xe0A\x01R\x13adaptationModifiers\x121\n" +
-	"\x12disk_replica_zones\x18\x18 \x03(\tB\x03\xe0A\x01R\x10diskReplicaZones\x12&\n" +
-	"\fstorage_pool\x18\x19 \x01(\tB\x03\xe0A\x01R\vstoragePool\x1a9\n" +
+	"encryption\x18\x13 \x01(\v2'.google.cloud.vmmigration.v1.EncryptionB\x05\xe2A\x02\x01\x05R\n" +
+	"encryption\x12Z\n" +
+	"\x0fboot_conversion\x18\x14 \x01(\x0e2+.google.cloud.vmmigration.v1.BootConversionB\x04\xe2A\x01\x01R\x0ebootConversion\x12h\n" +
+	"\x14adaptation_modifiers\x18\x17 \x03(\v2/.google.cloud.vmmigration.v1.AdaptationModifierB\x04\xe2A\x01\x01R\x13adaptationModifiers\x122\n" +
+	"\x12disk_replica_zones\x18\x18 \x03(\tB\x04\xe2A\x01\x01R\x10diskReplicaZones\x12'\n" +
+	"\fstorage_pool\x18\x19 \x01(\tB\x04\xe2A\x01\x01R\vstoragePool\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"P\n" +
-	"\x12AdaptationModifier\x12\x1f\n" +
-	"\bmodifier\x18\x03 \x01(\tB\x03\xe0A\x01R\bmodifier\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x01R\x05value\"\x95\r\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"R\n" +
+	"\x12AdaptationModifier\x12 \n" +
+	"\bmodifier\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bmodifier\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05value\"\x9c\r\n" +
 	"\x1aComputeEngineTargetDetails\x12\x17\n" +
 	"\avm_name\x18\x01 \x01(\tR\x06vmName\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12\x12\n" +
@@ -17935,38 +17935,38 @@ const file_google_cloud_vmmigration_v1_vmmigration_proto_rawDesc = "" +
 	"\x0fapplied_license\x18\f \x01(\v2+.google.cloud.vmmigration.v1.AppliedLicenseR\x0eappliedLicense\x12]\n" +
 	"\x12compute_scheduling\x18\r \x01(\v2..google.cloud.vmmigration.v1.ComputeSchedulingR\x11computeScheduling\x12\x1f\n" +
 	"\vsecure_boot\x18\x0e \x01(\bR\n" +
-	"secureBoot\x12$\n" +
-	"\venable_vtpm\x18\x15 \x01(\bB\x03\xe0A\x01R\n" +
-	"enableVtpm\x12C\n" +
-	"\x1benable_integrity_monitoring\x18\x16 \x01(\bB\x03\xe0A\x01R\x19enableIntegrityMonitoring\x12U\n" +
+	"secureBoot\x12%\n" +
+	"\venable_vtpm\x18\x15 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"enableVtpm\x12D\n" +
+	"\x1benable_integrity_monitoring\x18\x16 \x01(\bB\x04\xe2A\x01\x01R\x19enableIntegrityMonitoring\x12U\n" +
 	"\vboot_option\x18\x0f \x01(\x0e24.google.cloud.vmmigration.v1.ComputeEngineBootOptionR\n" +
 	"bootOption\x12a\n" +
 	"\bmetadata\x18\x10 \x03(\v2E.google.cloud.vmmigration.v1.ComputeEngineTargetDetails.MetadataEntryR\bmetadata\x12/\n" +
 	"\x13additional_licenses\x18\x11 \x03(\tR\x12additionalLicenses\x12\x1a\n" +
-	"\bhostname\x18\x12 \x01(\tR\bhostname\x12L\n" +
+	"\bhostname\x18\x12 \x01(\tR\bhostname\x12M\n" +
 	"\n" +
-	"encryption\x18\x13 \x01(\v2'.google.cloud.vmmigration.v1.EncryptionB\x03\xe0A\x01R\n" +
-	"encryption\x12Y\n" +
-	"\x0fboot_conversion\x18\x14 \x01(\x0e2+.google.cloud.vmmigration.v1.BootConversionB\x03\xe0A\x01R\x0ebootConversion\x12g\n" +
-	"\x14adaptation_modifiers\x18\x17 \x03(\v2/.google.cloud.vmmigration.v1.AdaptationModifierB\x03\xe0A\x01R\x13adaptationModifiers\x121\n" +
-	"\x12disk_replica_zones\x18\x18 \x03(\tB\x03\xe0A\x01R\x10diskReplicaZones\x12&\n" +
-	"\fstorage_pool\x18\x19 \x01(\tB\x03\xe0A\x01R\vstoragePool\x1a9\n" +
+	"encryption\x18\x13 \x01(\v2'.google.cloud.vmmigration.v1.EncryptionB\x04\xe2A\x01\x01R\n" +
+	"encryption\x12Z\n" +
+	"\x0fboot_conversion\x18\x14 \x01(\x0e2+.google.cloud.vmmigration.v1.BootConversionB\x04\xe2A\x01\x01R\x0ebootConversion\x12h\n" +
+	"\x14adaptation_modifiers\x18\x17 \x03(\v2/.google.cloud.vmmigration.v1.AdaptationModifierB\x04\xe2A\x01\x01R\x13adaptationModifiers\x122\n" +
+	"\x12disk_replica_zones\x18\x18 \x03(\tB\x04\xe2A\x01\x01R\x10diskReplicaZones\x12'\n" +
+	"\fstorage_pool\x18\x19 \x01(\tB\x04\xe2A\x01\x01R\vstoragePool\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x81\x02\n" +
-	"\x10NetworkInterface\x12\x1d\n" +
-	"\anetwork\x18\x01 \x01(\tB\x03\xe0A\x01R\anetwork\x12#\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x86\x02\n" +
+	"\x10NetworkInterface\x12\x1e\n" +
+	"\anetwork\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\anetwork\x12$\n" +
 	"\n" +
-	"subnetwork\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
-	"subnetwork\x12$\n" +
-	"\vinternal_ip\x18\x03 \x01(\tB\x03\xe0A\x01R\n" +
-	"internalIp\x12$\n" +
-	"\vexternal_ip\x18\x04 \x01(\tB\x03\xe0A\x01R\n" +
-	"externalIp\x12]\n" +
-	"\fnetwork_tier\x18\x05 \x01(\x0e25.google.cloud.vmmigration.v1.ComputeEngineNetworkTierB\x03\xe0A\x01R\vnetworkTier\"\xb1\x01\n" +
+	"subnetwork\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"subnetwork\x12%\n" +
+	"\vinternal_ip\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"internalIp\x12%\n" +
+	"\vexternal_ip\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"externalIp\x12^\n" +
+	"\fnetwork_tier\x18\x05 \x01(\x0e25.google.cloud.vmmigration.v1.ComputeEngineNetworkTierB\x04\xe2A\x01\x01R\vnetworkTier\"\xb1\x01\n" +
 	"\x0eAppliedLicense\x12D\n" +
 	"\x04type\x18\x01 \x01(\x0e20.google.cloud.vmmigration.v1.AppliedLicense.TypeR\x04type\x12\x1d\n" +
 	"\n" +
@@ -18007,62 +18007,62 @@ const file_google_cloud_vmmigration_v1_vmmigration_proto_rawDesc = "" +
 	"\x05disks\x18\x04 \x03(\v23.google.cloud.vmmigration.v1.PersistentDiskDefaultsR\x05disksB\n" +
 	"\n" +
 	"\blocationB\v\n" +
-	"\tvm_target\"\xb4\x04\n" +
-	"\x16PersistentDiskDefaults\x121\n" +
-	"\x12source_disk_number\x18\x01 \x01(\x05B\x03\xe0A\x02R\x10sourceDiskNumber\x12 \n" +
-	"\tdisk_name\x18\x02 \x01(\tB\x03\xe0A\x01R\bdiskName\x12O\n" +
+	"\tvm_target\"\xb8\x04\n" +
+	"\x16PersistentDiskDefaults\x122\n" +
+	"\x12source_disk_number\x18\x01 \x01(\x05B\x04\xe2A\x01\x02R\x10sourceDiskNumber\x12!\n" +
+	"\tdisk_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bdiskName\x12O\n" +
 	"\tdisk_type\x18\x03 \x01(\x0e22.google.cloud.vmmigration.v1.ComputeEngineDiskTypeR\bdiskType\x12v\n" +
-	"\x11additional_labels\x18\x04 \x03(\v2I.google.cloud.vmmigration.v1.PersistentDiskDefaults.AdditionalLabelsEntryR\x10additionalLabels\x12L\n" +
+	"\x11additional_labels\x18\x04 \x03(\v2I.google.cloud.vmmigration.v1.PersistentDiskDefaults.AdditionalLabelsEntryR\x10additionalLabels\x12M\n" +
 	"\n" +
-	"encryption\x18\x05 \x01(\v2'.google.cloud.vmmigration.v1.EncryptionB\x03\xe0A\x01R\n" +
-	"encryption\x12i\n" +
-	"\x15vm_attachment_details\x18\x06 \x01(\v20.google.cloud.vmmigration.v1.VmAttachmentDetailsB\x03\xe0A\x01R\x13vmAttachmentDetails\x1aC\n" +
+	"encryption\x18\x05 \x01(\v2'.google.cloud.vmmigration.v1.EncryptionB\x04\xe2A\x01\x01R\n" +
+	"encryption\x12j\n" +
+	"\x15vm_attachment_details\x18\x06 \x01(\v20.google.cloud.vmmigration.v1.VmAttachmentDetailsB\x04\xe2A\x01\x01R\x13vmAttachmentDetails\x1aC\n" +
 	"\x15AdditionalLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\";\n" +
-	"\x13VmAttachmentDetails\x12$\n" +
-	"\vdevice_name\x18\x01 \x01(\tB\x03\xe0A\x01R\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"<\n" +
+	"\x13VmAttachmentDetails\x12%\n" +
+	"\vdevice_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\n" +
 	"deviceName\"#\n" +
-	"!DisksMigrationDisksTargetDefaults\"\x9a\t\n" +
-	"\x1eDisksMigrationVmTargetDefaults\x12\x1c\n" +
-	"\avm_name\x18\x01 \x01(\tB\x03\xe0A\x02R\x06vmName\x123\n" +
-	"\x13machine_type_series\x18\x02 \x01(\tB\x03\xe0A\x01R\x11machineTypeSeries\x12&\n" +
-	"\fmachine_type\x18\x03 \x01(\tB\x03\xe0A\x02R\vmachineType\x12&\n" +
-	"\fnetwork_tags\x18\x04 \x03(\tB\x03\xe0A\x01R\vnetworkTags\x12a\n" +
-	"\x12network_interfaces\x18\x05 \x03(\v2-.google.cloud.vmmigration.v1.NetworkInterfaceB\x03\xe0A\x01R\x11networkInterfaces\x12,\n" +
-	"\x0fservice_account\x18\x06 \x01(\tB\x03\xe0A\x01R\x0eserviceAccount\x12b\n" +
-	"\x12compute_scheduling\x18\a \x01(\v2..google.cloud.vmmigration.v1.ComputeSchedulingB\x03\xe0A\x01R\x11computeScheduling\x12$\n" +
-	"\vsecure_boot\x18\b \x01(\bB\x03\xe0A\x01R\n" +
-	"secureBoot\x12$\n" +
-	"\venable_vtpm\x18\x10 \x01(\bB\x03\xe0A\x01R\n" +
-	"enableVtpm\x12C\n" +
-	"\x1benable_integrity_monitoring\x18\x11 \x01(\bB\x03\xe0A\x01R\x19enableIntegrityMonitoring\x12j\n" +
+	"!DisksMigrationDisksTargetDefaults\"\xaa\t\n" +
+	"\x1eDisksMigrationVmTargetDefaults\x12\x1d\n" +
+	"\avm_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06vmName\x124\n" +
+	"\x13machine_type_series\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x11machineTypeSeries\x12'\n" +
+	"\fmachine_type\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vmachineType\x12'\n" +
+	"\fnetwork_tags\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\vnetworkTags\x12b\n" +
+	"\x12network_interfaces\x18\x05 \x03(\v2-.google.cloud.vmmigration.v1.NetworkInterfaceB\x04\xe2A\x01\x01R\x11networkInterfaces\x12-\n" +
+	"\x0fservice_account\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x0eserviceAccount\x12c\n" +
+	"\x12compute_scheduling\x18\a \x01(\v2..google.cloud.vmmigration.v1.ComputeSchedulingB\x04\xe2A\x01\x01R\x11computeScheduling\x12%\n" +
+	"\vsecure_boot\x18\b \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"secureBoot\x12%\n" +
+	"\venable_vtpm\x18\x10 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"enableVtpm\x12D\n" +
+	"\x1benable_integrity_monitoring\x18\x11 \x01(\bB\x04\xe2A\x01\x01R\x19enableIntegrityMonitoring\x12k\n" +
 	"\bmetadata\x18\n" +
-	" \x03(\v2I.google.cloud.vmmigration.v1.DisksMigrationVmTargetDefaults.MetadataEntryB\x03\xe0A\x01R\bmetadata\x124\n" +
-	"\x13additional_licenses\x18\v \x03(\tB\x03\xe0A\x01R\x12additionalLicenses\x12\x1f\n" +
-	"\bhostname\x18\f \x01(\tB\x03\xe0A\x01R\bhostname\x12d\n" +
-	"\x06labels\x18\r \x03(\v2G.google.cloud.vmmigration.v1.DisksMigrationVmTargetDefaults.LabelsEntryB\x03\xe0A\x01R\x06labels\x12`\n" +
-	"\x12boot_disk_defaults\x18\x0e \x01(\v2-.google.cloud.vmmigration.v1.BootDiskDefaultsB\x03\xe0A\x01R\x10bootDiskDefaults\x12L\n" +
+	" \x03(\v2I.google.cloud.vmmigration.v1.DisksMigrationVmTargetDefaults.MetadataEntryB\x04\xe2A\x01\x01R\bmetadata\x125\n" +
+	"\x13additional_licenses\x18\v \x03(\tB\x04\xe2A\x01\x01R\x12additionalLicenses\x12 \n" +
+	"\bhostname\x18\f \x01(\tB\x04\xe2A\x01\x01R\bhostname\x12e\n" +
+	"\x06labels\x18\r \x03(\v2G.google.cloud.vmmigration.v1.DisksMigrationVmTargetDefaults.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12a\n" +
+	"\x12boot_disk_defaults\x18\x0e \x01(\v2-.google.cloud.vmmigration.v1.BootDiskDefaultsB\x04\xe2A\x01\x01R\x10bootDiskDefaults\x12M\n" +
 	"\n" +
-	"encryption\x18\x0f \x01(\v2'.google.cloud.vmmigration.v1.EncryptionB\x03\xe0A\x01R\n" +
+	"encryption\x18\x0f \x01(\v2'.google.cloud.vmmigration.v1.EncryptionB\x04\xe2A\x01\x01R\n" +
 	"encryption\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xbf\x03\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xc4\x03\n" +
 	"\x10BootDiskDefaults\x12W\n" +
-	"\x05image\x18\x03 \x01(\v2?.google.cloud.vmmigration.v1.BootDiskDefaults.DiskImageDefaultsH\x00R\x05image\x12 \n" +
-	"\tdisk_name\x18\x01 \x01(\tB\x03\xe0A\x01R\bdiskName\x12T\n" +
-	"\tdisk_type\x18\x02 \x01(\x0e22.google.cloud.vmmigration.v1.ComputeEngineDiskTypeB\x03\xe0A\x01R\bdiskType\x12$\n" +
-	"\vdevice_name\x18\x04 \x01(\tB\x03\xe0A\x01R\n" +
-	"deviceName\x12L\n" +
+	"\x05image\x18\x03 \x01(\v2?.google.cloud.vmmigration.v1.BootDiskDefaults.DiskImageDefaultsH\x00R\x05image\x12!\n" +
+	"\tdisk_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bdiskName\x12U\n" +
+	"\tdisk_type\x18\x02 \x01(\x0e22.google.cloud.vmmigration.v1.ComputeEngineDiskTypeB\x04\xe2A\x01\x01R\bdiskType\x12%\n" +
+	"\vdevice_name\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"deviceName\x12M\n" +
 	"\n" +
-	"encryption\x18\x05 \x01(\v2'.google.cloud.vmmigration.v1.EncryptionB\x03\xe0A\x01R\n" +
-	"encryption\x1a\\\n" +
-	"\x11DiskImageDefaults\x12G\n" +
-	"\fsource_image\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
+	"encryption\x18\x05 \x01(\v2'.google.cloud.vmmigration.v1.EncryptionB\x04\xe2A\x01\x01R\n" +
+	"encryption\x1a]\n" +
+	"\x11DiskImageDefaults\x12H\n" +
+	"\fsource_image\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
 	"\x1ccompute.googleapis.com/ImageR\vsourceImageB\b\n" +
 	"\x06source\"\xce\x02\n" +
 	"\x1fComputeEngineDisksTargetDetails\x12q\n" +
@@ -18073,204 +18073,204 @@ const file_google_cloud_vmmigration_v1_vmmigration_proto_rawDesc = "" +
 	"\x0ePersistentDisk\x12,\n" +
 	"\x12source_disk_number\x18\x01 \x01(\x05R\x10sourceDiskNumber\x12\x19\n" +
 	"\bdisk_uri\x18\x02 \x01(\tR\adiskUri\"\"\n" +
-	" DisksMigrationDisksTargetDetails\";\n" +
-	"\x1dDisksMigrationVmTargetDetails\x12\x1a\n" +
-	"\x06vm_uri\x18\x01 \x01(\tB\x03\xe0A\x03R\x05vmUri\"~\n" +
+	" DisksMigrationDisksTargetDetails\"<\n" +
+	"\x1dDisksMigrationVmTargetDetails\x12\x1b\n" +
+	"\x06vm_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x05vmUri\"~\n" +
 	"\x0eSchedulePolicy\x12>\n" +
 	"\ridle_duration\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\fidleDuration\x12,\n" +
-	"\x12skip_os_adaptation\x18\x02 \x01(\bR\x10skipOsAdaptation\"\x80\x02\n" +
-	"\x18CreateMigratingVmRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&vmmigration.googleapis.com/MigratingVmR\x06parent\x12+\n" +
-	"\x0fmigrating_vm_id\x18\x02 \x01(\tB\x03\xe0A\x02R\rmigratingVmId\x12P\n" +
-	"\fmigrating_vm\x18\x03 \x01(\v2(.google.cloud.vmmigration.v1.MigratingVmB\x03\xe0A\x02R\vmigratingVm\x12\x1d\n" +
+	"\x12skip_os_adaptation\x18\x02 \x01(\bR\x10skipOsAdaptation\"\x83\x02\n" +
+	"\x18CreateMigratingVmRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&vmmigration.googleapis.com/MigratingVmR\x06parent\x12,\n" +
+	"\x0fmigrating_vm_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rmigratingVmId\x12Q\n" +
+	"\fmigrating_vm\x18\x03 \x01(\v2(.google.cloud.vmmigration.v1.MigratingVmB\x04\xe2A\x01\x02R\vmigratingVm\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tR\trequestId\"\xab\x02\n" +
-	"\x17ListMigratingVmsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&vmmigration.googleapis.com/MigratingVmR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\"\xb1\x02\n" +
+	"\x17ListMigratingVmsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&vmmigration.googleapis.com/MigratingVmR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x02R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\x12E\n" +
-	"\x04view\x18\x06 \x01(\x0e2,.google.cloud.vmmigration.v1.MigratingVmViewB\x03\xe0A\x01R\x04view\"\xc2\x01\n" +
-	"\x18ListMigratingVmsResponse\x12R\n" +
-	"\rmigrating_vms\x18\x01 \x03(\v2(.google.cloud.vmmigration.v1.MigratingVmB\x03\xe0A\x03R\fmigratingVms\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x03R\vunreachable\"\xa2\x01\n" +
-	"\x15GetMigratingVmRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vmmigration.googleapis.com/MigratingVmR\x04name\x12E\n" +
-	"\x04view\x18\x02 \x01(\x0e2,.google.cloud.vmmigration.v1.MigratingVmViewB\x03\xe0A\x01R\x04view\"\xc8\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12F\n" +
+	"\x04view\x18\x06 \x01(\x0e2,.google.cloud.vmmigration.v1.MigratingVmViewB\x04\xe2A\x01\x01R\x04view\"\xc5\x01\n" +
+	"\x18ListMigratingVmsResponse\x12S\n" +
+	"\rmigrating_vms\x18\x01 \x03(\v2(.google.cloud.vmmigration.v1.MigratingVmB\x04\xe2A\x01\x03R\fmigratingVms\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\vunreachable\"\xa4\x01\n" +
+	"\x15GetMigratingVmRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vmmigration.googleapis.com/MigratingVmR\x04name\x12F\n" +
+	"\x04view\x18\x02 \x01(\x0e2,.google.cloud.vmmigration.v1.MigratingVmViewB\x04\xe2A\x01\x01R\x04view\"\xc9\x01\n" +
 	"\x18UpdateMigratingVmRequest\x12;\n" +
 	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\x12P\n" +
-	"\fmigrating_vm\x18\x02 \x01(\v2(.google.cloud.vmmigration.v1.MigratingVmB\x03\xe0A\x02R\vmigratingVm\x12\x1d\n" +
+	"updateMask\x12Q\n" +
+	"\fmigrating_vm\x18\x02 \x01(\v2(.google.cloud.vmmigration.v1.MigratingVmB\x04\xe2A\x01\x02R\vmigratingVm\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tR\trequestId\"^\n" +
-	"\x18DeleteMigratingVmRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vmmigration.googleapis.com/MigratingVmR\x04name\"j\n" +
-	"\x15StartMigrationRequest\x12Q\n" +
-	"\fmigrating_vm\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"request_id\x18\x03 \x01(\tR\trequestId\"_\n" +
+	"\x18DeleteMigratingVmRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vmmigration.googleapis.com/MigratingVmR\x04name\"k\n" +
+	"\x15StartMigrationRequest\x12R\n" +
+	"\fmigrating_vm\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&vmmigration.googleapis.com/MigratingVmR\vmigratingVm\"\x18\n" +
-	"\x16StartMigrationResponse\"j\n" +
-	"\x15PauseMigrationRequest\x12Q\n" +
-	"\fmigrating_vm\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"\x16StartMigrationResponse\"k\n" +
+	"\x15PauseMigrationRequest\x12R\n" +
+	"\fmigrating_vm\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&vmmigration.googleapis.com/MigratingVmR\vmigratingVm\"\x18\n" +
-	"\x16PauseMigrationResponse\"k\n" +
-	"\x16ResumeMigrationRequest\x12Q\n" +
-	"\fmigrating_vm\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"\x16PauseMigrationResponse\"l\n" +
+	"\x16ResumeMigrationRequest\x12R\n" +
+	"\fmigrating_vm\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&vmmigration.googleapis.com/MigratingVmR\vmigratingVm\"\x19\n" +
-	"\x17ResumeMigrationResponse\"m\n" +
-	"\x18FinalizeMigrationRequest\x12Q\n" +
-	"\fmigrating_vm\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vmmigration.googleapis.com/MigratingVmR\vmigratingVm\"k\n" +
-	"\x16ExtendMigrationRequest\x12Q\n" +
-	"\fmigrating_vm\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"\x17ResumeMigrationResponse\"n\n" +
+	"\x18FinalizeMigrationRequest\x12R\n" +
+	"\fmigrating_vm\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vmmigration.googleapis.com/MigratingVmR\vmigratingVm\"l\n" +
+	"\x16ExtendMigrationRequest\x12R\n" +
+	"\fmigrating_vm\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&vmmigration.googleapis.com/MigratingVmR\vmigratingVm\"\x19\n" +
 	"\x17ExtendMigrationResponse\"\x1b\n" +
-	"\x19FinalizeMigrationResponse\"\xe5\x02\n" +
-	"\rTargetProject\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12 \n" +
-	"\vdescription\x18\x03 \x01(\tR\vdescription\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x19FinalizeMigrationResponse\"\xe9\x02\n" +
+	"\rTargetProject\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x1e\n" +
+	"\aproject\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aproject\x12 \n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:v\xeaAs\n" +
-	"(vmmigration.googleapis.com/TargetProject\x12Gprojects/{project}/locations/{location}/targetProjects/{target_project}\"_\n" +
-	"\x17GetTargetProjectRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(vmmigration.googleapis.com/TargetProjectR\x04name\"\xe8\x01\n" +
-	"\x19ListTargetProjectsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(vmmigration.googleapis.com/TargetProjectR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"(vmmigration.googleapis.com/TargetProject\x12Gprojects/{project}/locations/{location}/targetProjects/{target_project}\"`\n" +
+	"\x17GetTargetProjectRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(vmmigration.googleapis.com/TargetProjectR\x04name\"\xed\x01\n" +
+	"\x19ListTargetProjectsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(vmmigration.googleapis.com/TargetProjectR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x02R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xca\x01\n" +
-	"\x1aListTargetProjectsResponse\x12X\n" +
-	"\x0ftarget_projects\x18\x01 \x03(\v2*.google.cloud.vmmigration.v1.TargetProjectB\x03\xe0A\x03R\x0etargetProjects\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x03R\vunreachable\"\x8e\x02\n" +
-	"\x1aCreateTargetProjectRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(vmmigration.googleapis.com/TargetProjectR\x06parent\x12/\n" +
-	"\x11target_project_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x0ftargetProjectId\x12V\n" +
-	"\x0etarget_project\x18\x03 \x01(\v2*.google.cloud.vmmigration.v1.TargetProjectB\x03\xe0A\x02R\rtargetProject\x12\x1d\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xcd\x01\n" +
+	"\x1aListTargetProjectsResponse\x12Y\n" +
+	"\x0ftarget_projects\x18\x01 \x03(\v2*.google.cloud.vmmigration.v1.TargetProjectB\x04\xe2A\x01\x03R\x0etargetProjects\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\vunreachable\"\x91\x02\n" +
+	"\x1aCreateTargetProjectRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(vmmigration.googleapis.com/TargetProjectR\x06parent\x120\n" +
+	"\x11target_project_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0ftargetProjectId\x12W\n" +
+	"\x0etarget_project\x18\x03 \x01(\v2*.google.cloud.vmmigration.v1.TargetProjectB\x04\xe2A\x01\x02R\rtargetProject\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tR\trequestId\"\xd0\x01\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\"\xd1\x01\n" +
 	"\x1aUpdateTargetProjectRequest\x12;\n" +
 	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\x12V\n" +
-	"\x0etarget_project\x18\x02 \x01(\v2*.google.cloud.vmmigration.v1.TargetProjectB\x03\xe0A\x02R\rtargetProject\x12\x1d\n" +
+	"updateMask\x12W\n" +
+	"\x0etarget_project\x18\x02 \x01(\v2*.google.cloud.vmmigration.v1.TargetProjectB\x04\xe2A\x01\x02R\rtargetProject\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tR\trequestId\"\x86\x01\n" +
-	"\x1aDeleteTargetProjectRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(vmmigration.googleapis.com/TargetProjectR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tR\trequestId\"\x88\x01\n" +
+	"\x1aDeleteTargetProjectRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(vmmigration.googleapis.com/TargetProjectR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xb7\x04\n" +
-	"\x05Group\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xbb\x04\n" +
+	"\x05Group\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12 \n" +
 	"\vdescription\x18\x04 \x01(\tR\vdescription\x12!\n" +
-	"\fdisplay_name\x18\x05 \x01(\tR\vdisplayName\x12o\n" +
-	"\x15migration_target_type\x18\x06 \x01(\x0e26.google.cloud.vmmigration.v1.Group.MigrationTargetTypeB\x03\xe0A\x05R\x13migrationTargetType\"|\n" +
+	"\fdisplay_name\x18\x05 \x01(\tR\vdisplayName\x12p\n" +
+	"\x15migration_target_type\x18\x06 \x01(\x0e26.google.cloud.vmmigration.v1.Group.MigrationTargetTypeB\x04\xe2A\x01\x05R\x13migrationTargetType\"|\n" +
 	"\x13MigrationTargetType\x12%\n" +
 	"!MIGRATION_TARGET_TYPE_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19MIGRATION_TARGET_TYPE_GCE\x10\x01\x12\x1f\n" +
 	"\x1bMIGRATION_TARGET_TYPE_DISKS\x10\x02:]\xeaAZ\n" +
-	" vmmigration.googleapis.com/Group\x126projects/{project}/locations/{location}/groups/{group}\"\xd8\x01\n" +
-	"\x11ListGroupsRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\x12 vmmigration.googleapis.com/GroupR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	" vmmigration.googleapis.com/Group\x126projects/{project}/locations/{location}/groups/{group}\"\xdd\x01\n" +
+	"\x11ListGroupsRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\x12 vmmigration.googleapis.com/GroupR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x02R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xa9\x01\n" +
-	"\x12ListGroupsResponse\x12?\n" +
-	"\x06groups\x18\x01 \x03(\v2\".google.cloud.vmmigration.v1.GroupB\x03\xe0A\x03R\x06groups\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x03R\vunreachable\"O\n" +
-	"\x0fGetGroupRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" vmmigration.googleapis.com/GroupR\x04name\"\xd4\x01\n" +
-	"\x12CreateGroupRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\x12 vmmigration.googleapis.com/GroupR\x06parent\x12\x1e\n" +
-	"\bgroup_id\x18\x02 \x01(\tB\x03\xe0A\x02R\agroupId\x12=\n" +
-	"\x05group\x18\x03 \x01(\v2\".google.cloud.vmmigration.v1.GroupB\x03\xe0A\x02R\x05group\x12\x1d\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xac\x01\n" +
+	"\x12ListGroupsResponse\x12@\n" +
+	"\x06groups\x18\x01 \x03(\v2\".google.cloud.vmmigration.v1.GroupB\x04\xe2A\x01\x03R\x06groups\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\vunreachable\"P\n" +
+	"\x0fGetGroupRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" vmmigration.googleapis.com/GroupR\x04name\"\xd7\x01\n" +
+	"\x12CreateGroupRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\x12 vmmigration.googleapis.com/GroupR\x06parent\x12\x1f\n" +
+	"\bgroup_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\agroupId\x12>\n" +
+	"\x05group\x18\x03 \x01(\v2\".google.cloud.vmmigration.v1.GroupB\x04\xe2A\x01\x02R\x05group\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tR\trequestId\"\xaf\x01\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\"\xb0\x01\n" +
 	"\x12UpdateGroupRequest\x12;\n" +
 	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\x12=\n" +
-	"\x05group\x18\x02 \x01(\v2\".google.cloud.vmmigration.v1.GroupB\x03\xe0A\x02R\x05group\x12\x1d\n" +
+	"updateMask\x12>\n" +
+	"\x05group\x18\x02 \x01(\v2\".google.cloud.vmmigration.v1.GroupB\x04\xe2A\x01\x02R\x05group\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tR\trequestId\"v\n" +
-	"\x12DeleteGroupRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" vmmigration.googleapis.com/GroupR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tR\trequestId\"x\n" +
+	"\x12DeleteGroupRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" vmmigration.googleapis.com/GroupR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xaa\x01\n" +
-	"\x18AddGroupMigrationRequest\x12>\n" +
-	"\x05group\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xab\x01\n" +
+	"\x18AddGroupMigrationRequest\x12?\n" +
+	"\x05group\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" vmmigration.googleapis.com/GroupR\x05group\x12N\n" +
 	"\fmigrating_vm\x18\x02 \x01(\tB+\xfaA(\n" +
 	"&vmmigration.googleapis.com/MigratingVmR\vmigratingVm\"\x1b\n" +
-	"\x19AddGroupMigrationResponse\"\xad\x01\n" +
-	"\x1bRemoveGroupMigrationRequest\x12>\n" +
-	"\x05group\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"\x19AddGroupMigrationResponse\"\xae\x01\n" +
+	"\x1bRemoveGroupMigrationRequest\x12?\n" +
+	"\x05group\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" vmmigration.googleapis.com/GroupR\x05group\x12N\n" +
 	"\fmigrating_vm\x18\x02 \x01(\tB+\xfaA(\n" +
 	"&vmmigration.googleapis.com/MigratingVmR\vmigratingVm\"\x1e\n" +
-	"\x1cRemoveGroupMigrationResponse\"\xf9\x01\n" +
-	"\x17CreateCutoverJobRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%vmmigration.googleapis.com/CutoverJobR\x06parent\x12)\n" +
-	"\x0ecutover_job_id\x18\x02 \x01(\tB\x03\xe0A\x02R\fcutoverJobId\x12M\n" +
-	"\vcutover_job\x18\x03 \x01(\v2'.google.cloud.vmmigration.v1.CutoverJobB\x03\xe0A\x02R\n" +
+	"\x1cRemoveGroupMigrationResponse\"\xfc\x01\n" +
+	"\x17CreateCutoverJobRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%vmmigration.googleapis.com/CutoverJobR\x06parent\x12*\n" +
+	"\x0ecutover_job_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fcutoverJobId\x12N\n" +
+	"\vcutover_job\x18\x03 \x01(\v2'.google.cloud.vmmigration.v1.CutoverJobB\x04\xe2A\x01\x02R\n" +
 	"cutoverJob\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tR\trequestId\"\\\n" +
-	"\x17CancelCutoverJobRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\"]\n" +
+	"\x17CancelCutoverJobRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%vmmigration.googleapis.com/CutoverJobR\x04name\"\x1a\n" +
-	"\x18CancelCutoverJobResponse\"\xe2\x01\n" +
-	"\x16ListCutoverJobsRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%vmmigration.googleapis.com/CutoverJobR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x18CancelCutoverJobResponse\"\xe7\x01\n" +
+	"\x16ListCutoverJobsRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%vmmigration.googleapis.com/CutoverJobR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x02R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xbe\x01\n" +
-	"\x17ListCutoverJobsResponse\x12O\n" +
-	"\fcutover_jobs\x18\x01 \x03(\v2'.google.cloud.vmmigration.v1.CutoverJobB\x03\xe0A\x03R\vcutoverJobs\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x03R\vunreachable\"Y\n" +
-	"\x14GetCutoverJobRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%vmmigration.googleapis.com/CutoverJobR\x04name\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"\xa7\x05\n" +
-	"\x0eMigrationError\x12N\n" +
-	"\x04code\x18\x01 \x01(\x0e25.google.cloud.vmmigration.v1.MigrationError.ErrorCodeB\x03\xe0A\x03R\x04code\x12F\n" +
-	"\rerror_message\x18\x02 \x01(\v2\x1c.google.rpc.LocalizedMessageB\x03\xe0A\x03R\ferrorMessage\x12B\n" +
-	"\vaction_item\x18\x03 \x01(\v2\x1c.google.rpc.LocalizedMessageB\x03\xe0A\x03R\n" +
-	"actionItem\x129\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xc1\x01\n" +
+	"\x17ListCutoverJobsResponse\x12P\n" +
+	"\fcutover_jobs\x18\x01 \x03(\v2'.google.cloud.vmmigration.v1.CutoverJobB\x04\xe2A\x01\x03R\vcutoverJobs\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\vunreachable\"Z\n" +
+	"\x14GetCutoverJobRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%vmmigration.googleapis.com/CutoverJobR\x04name\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"\xac\x05\n" +
+	"\x0eMigrationError\x12O\n" +
+	"\x04code\x18\x01 \x01(\x0e25.google.cloud.vmmigration.v1.MigrationError.ErrorCodeB\x04\xe2A\x01\x03R\x04code\x12G\n" +
+	"\rerror_message\x18\x02 \x01(\v2\x1c.google.rpc.LocalizedMessageB\x04\xe2A\x01\x03R\ferrorMessage\x12C\n" +
+	"\vaction_item\x18\x03 \x01(\v2\x1c.google.rpc.LocalizedMessageB\x04\xe2A\x01\x03R\n" +
+	"actionItem\x12:\n" +
 	"\n" +
-	"help_links\x18\x04 \x03(\v2\x15.google.rpc.Help.LinkB\x03\xe0A\x03R\thelpLinks\x12>\n" +
+	"help_links\x18\x04 \x03(\v2\x15.google.rpc.Help.LinkB\x04\xe2A\x01\x03R\thelpLinks\x12?\n" +
 	"\n" +
-	"error_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\terrorTime\"\xbd\x02\n" +
+	"error_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\terrorTime\"\xbd\x02\n" +
 	"\tErrorCode\x12\x1a\n" +
 	"\x16ERROR_CODE_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rUNKNOWN_ERROR\x10\x01\x12\x1b\n" +
@@ -18284,108 +18284,108 @@ const file_google_cloud_vmmigration_v1_vmmigration_proto_rawDesc = "" +
 	"\x17APPLIANCE_UPGRADE_ERROR\x10\t\x12\x16\n" +
 	"\x12IMAGE_IMPORT_ERROR\x10\n" +
 	"\x12\x18\n" +
-	"\x14DISK_MIGRATION_ERROR\x10\v\"\xb0\x03\n" +
+	"\x14DISK_MIGRATION_ERROR\x10\v\"\xb3\x03\n" +
 	"\x10MigrationWarning\x12M\n" +
-	"\x04code\x18\x01 \x01(\x0e29.google.cloud.vmmigration.v1.MigrationWarning.WarningCodeR\x04code\x12J\n" +
-	"\x0fwarning_message\x18\x02 \x01(\v2\x1c.google.rpc.LocalizedMessageB\x03\xe0A\x03R\x0ewarningMessage\x12B\n" +
-	"\vaction_item\x18\x03 \x01(\v2\x1c.google.rpc.LocalizedMessageB\x03\xe0A\x03R\n" +
-	"actionItem\x129\n" +
+	"\x04code\x18\x01 \x01(\x0e29.google.cloud.vmmigration.v1.MigrationWarning.WarningCodeR\x04code\x12K\n" +
+	"\x0fwarning_message\x18\x02 \x01(\v2\x1c.google.rpc.LocalizedMessageB\x04\xe2A\x01\x03R\x0ewarningMessage\x12C\n" +
+	"\vaction_item\x18\x03 \x01(\v2\x1c.google.rpc.LocalizedMessageB\x04\xe2A\x01\x03R\n" +
+	"actionItem\x12:\n" +
 	"\n" +
-	"help_links\x18\x04 \x03(\v2\x15.google.rpc.Help.LinkB\x03\xe0A\x03R\thelpLinks\x12=\n" +
+	"help_links\x18\x04 \x03(\v2\x15.google.rpc.Help.LinkB\x04\xe2A\x01\x03R\thelpLinks\x12=\n" +
 	"\fwarning_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\vwarningTime\"C\n" +
 	"\vWarningCode\x12\x1c\n" +
 	"\x18WARNING_CODE_UNSPECIFIED\x10\x00\x12\x16\n" +
-	"\x12ADAPTATION_WARNING\x10\x01\"\xfa\x04\n" +
-	"\x15VmwareSourceVmDetails\x12\\\n" +
-	"\bfirmware\x18\x01 \x01(\x0e2;.google.cloud.vmmigration.v1.VmwareSourceVmDetails.FirmwareB\x03\xe0A\x03R\bfirmware\x12;\n" +
-	"\x17committed_storage_bytes\x18\x02 \x01(\x03B\x03\xe0A\x03R\x15committedStorageBytes\x12_\n" +
-	"\x05disks\x18\x03 \x03(\v2D.google.cloud.vmmigration.v1.VmwareSourceVmDetails.VmwareDiskDetailsB\x03\xe0A\x03R\x05disks\x12b\n" +
-	"\x14vm_capabilities_info\x18\x05 \x01(\v2+.google.cloud.vmmigration.v1.VmCapabilitiesB\x03\xe0A\x03R\x12vmCapabilitiesInfo\x12T\n" +
-	"\farchitecture\x18\x06 \x01(\x0e2+.google.cloud.vmmigration.v1.VmArchitectureB\x03\xe0A\x03R\farchitecture\x1ar\n" +
-	"\x11VmwareDiskDetails\x12$\n" +
-	"\vdisk_number\x18\x01 \x01(\x05B\x03\xe0A\x03R\n" +
-	"diskNumber\x12\x1c\n" +
-	"\asize_gb\x18\x02 \x01(\x03B\x03\xe0A\x03R\x06sizeGb\x12\x19\n" +
-	"\x05label\x18\x03 \x01(\tB\x03\xe0A\x03R\x05label\"7\n" +
+	"\x12ADAPTATION_WARNING\x10\x01\"\x82\x05\n" +
+	"\x15VmwareSourceVmDetails\x12]\n" +
+	"\bfirmware\x18\x01 \x01(\x0e2;.google.cloud.vmmigration.v1.VmwareSourceVmDetails.FirmwareB\x04\xe2A\x01\x03R\bfirmware\x12<\n" +
+	"\x17committed_storage_bytes\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x15committedStorageBytes\x12`\n" +
+	"\x05disks\x18\x03 \x03(\v2D.google.cloud.vmmigration.v1.VmwareSourceVmDetails.VmwareDiskDetailsB\x04\xe2A\x01\x03R\x05disks\x12c\n" +
+	"\x14vm_capabilities_info\x18\x05 \x01(\v2+.google.cloud.vmmigration.v1.VmCapabilitiesB\x04\xe2A\x01\x03R\x12vmCapabilitiesInfo\x12U\n" +
+	"\farchitecture\x18\x06 \x01(\x0e2+.google.cloud.vmmigration.v1.VmArchitectureB\x04\xe2A\x01\x03R\farchitecture\x1au\n" +
+	"\x11VmwareDiskDetails\x12%\n" +
+	"\vdisk_number\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\n" +
+	"diskNumber\x12\x1d\n" +
+	"\asize_gb\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x06sizeGb\x12\x1a\n" +
+	"\x05label\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x05label\"7\n" +
 	"\bFirmware\x12\x18\n" +
 	"\x14FIRMWARE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03EFI\x10\x01\x12\b\n" +
-	"\x04BIOS\x10\x02\"\xf2\x04\n" +
-	"\x12AwsSourceVmDetails\x12Y\n" +
-	"\bfirmware\x18\x01 \x01(\x0e28.google.cloud.vmmigration.v1.AwsSourceVmDetails.FirmwareB\x03\xe0A\x03R\bfirmware\x12;\n" +
-	"\x17committed_storage_bytes\x18\x02 \x01(\x03B\x03\xe0A\x03R\x15committedStorageBytes\x12Y\n" +
-	"\x05disks\x18\x03 \x03(\v2>.google.cloud.vmmigration.v1.AwsSourceVmDetails.AwsDiskDetailsB\x03\xe0A\x03R\x05disks\x12b\n" +
-	"\x14vm_capabilities_info\x18\x05 \x01(\v2+.google.cloud.vmmigration.v1.VmCapabilitiesB\x03\xe0A\x03R\x12vmCapabilitiesInfo\x12T\n" +
-	"\farchitecture\x18\x06 \x01(\x0e2+.google.cloud.vmmigration.v1.VmArchitectureB\x03\xe0A\x03R\farchitecture\x1av\n" +
-	"\x0eAwsDiskDetails\x12$\n" +
-	"\vdisk_number\x18\x01 \x01(\x05B\x03\xe0A\x03R\n" +
-	"diskNumber\x12 \n" +
-	"\tvolume_id\x18\x02 \x01(\tB\x03\xe0A\x03R\bvolumeId\x12\x1c\n" +
-	"\asize_gb\x18\x03 \x01(\x03B\x03\xe0A\x03R\x06sizeGb\"7\n" +
+	"\x04BIOS\x10\x02\"\xfa\x04\n" +
+	"\x12AwsSourceVmDetails\x12Z\n" +
+	"\bfirmware\x18\x01 \x01(\x0e28.google.cloud.vmmigration.v1.AwsSourceVmDetails.FirmwareB\x04\xe2A\x01\x03R\bfirmware\x12<\n" +
+	"\x17committed_storage_bytes\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x15committedStorageBytes\x12Z\n" +
+	"\x05disks\x18\x03 \x03(\v2>.google.cloud.vmmigration.v1.AwsSourceVmDetails.AwsDiskDetailsB\x04\xe2A\x01\x03R\x05disks\x12c\n" +
+	"\x14vm_capabilities_info\x18\x05 \x01(\v2+.google.cloud.vmmigration.v1.VmCapabilitiesB\x04\xe2A\x01\x03R\x12vmCapabilitiesInfo\x12U\n" +
+	"\farchitecture\x18\x06 \x01(\x0e2+.google.cloud.vmmigration.v1.VmArchitectureB\x04\xe2A\x01\x03R\farchitecture\x1ay\n" +
+	"\x0eAwsDiskDetails\x12%\n" +
+	"\vdisk_number\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\n" +
+	"diskNumber\x12!\n" +
+	"\tvolume_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\bvolumeId\x12\x1d\n" +
+	"\asize_gb\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\x06sizeGb\"7\n" +
 	"\bFirmware\x12\x18\n" +
 	"\x14FIRMWARE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03EFI\x10\x01\x12\b\n" +
-	"\x04BIOS\x10\x02\"\xf8\x04\n" +
-	"\x14AzureSourceVmDetails\x12[\n" +
-	"\bfirmware\x18\x01 \x01(\x0e2:.google.cloud.vmmigration.v1.AzureSourceVmDetails.FirmwareB\x03\xe0A\x03R\bfirmware\x12;\n" +
-	"\x17committed_storage_bytes\x18\x02 \x01(\x03B\x03\xe0A\x03R\x15committedStorageBytes\x12]\n" +
-	"\x05disks\x18\x03 \x03(\v2B.google.cloud.vmmigration.v1.AzureSourceVmDetails.AzureDiskDetailsB\x03\xe0A\x03R\x05disks\x12b\n" +
-	"\x14vm_capabilities_info\x18\x05 \x01(\v2+.google.cloud.vmmigration.v1.VmCapabilitiesB\x03\xe0A\x03R\x12vmCapabilitiesInfo\x12T\n" +
-	"\farchitecture\x18\x06 \x01(\x0e2+.google.cloud.vmmigration.v1.VmArchitectureB\x03\xe0A\x03R\farchitecture\x1at\n" +
-	"\x10AzureDiskDetails\x12$\n" +
-	"\vdisk_number\x18\x01 \x01(\x05B\x03\xe0A\x03R\n" +
-	"diskNumber\x12\x1c\n" +
-	"\adisk_id\x18\x02 \x01(\tB\x03\xe0A\x03R\x06diskId\x12\x1c\n" +
-	"\asize_gb\x18\x03 \x01(\x03B\x03\xe0A\x03R\x06sizeGb\"7\n" +
+	"\x04BIOS\x10\x02\"\x80\x05\n" +
+	"\x14AzureSourceVmDetails\x12\\\n" +
+	"\bfirmware\x18\x01 \x01(\x0e2:.google.cloud.vmmigration.v1.AzureSourceVmDetails.FirmwareB\x04\xe2A\x01\x03R\bfirmware\x12<\n" +
+	"\x17committed_storage_bytes\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x15committedStorageBytes\x12^\n" +
+	"\x05disks\x18\x03 \x03(\v2B.google.cloud.vmmigration.v1.AzureSourceVmDetails.AzureDiskDetailsB\x04\xe2A\x01\x03R\x05disks\x12c\n" +
+	"\x14vm_capabilities_info\x18\x05 \x01(\v2+.google.cloud.vmmigration.v1.VmCapabilitiesB\x04\xe2A\x01\x03R\x12vmCapabilitiesInfo\x12U\n" +
+	"\farchitecture\x18\x06 \x01(\x0e2+.google.cloud.vmmigration.v1.VmArchitectureB\x04\xe2A\x01\x03R\farchitecture\x1aw\n" +
+	"\x10AzureDiskDetails\x12%\n" +
+	"\vdisk_number\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\n" +
+	"diskNumber\x12\x1d\n" +
+	"\adisk_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x06diskId\x12\x1d\n" +
+	"\asize_gb\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\x06sizeGb\"7\n" +
 	"\bFirmware\x12\x18\n" +
 	"\x14FIRMWARE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03EFI\x10\x01\x12\b\n" +
-	"\x04BIOS\x10\x02\"\xee\x01\n" +
-	"\x1cListReplicationCyclesRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+vmmigration.googleapis.com/ReplicationCycleR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x04BIOS\x10\x02\"\xf3\x01\n" +
+	"\x1cListReplicationCyclesRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+vmmigration.googleapis.com/ReplicationCycleR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x02R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xd6\x01\n" +
-	"\x1dListReplicationCyclesResponse\x12a\n" +
-	"\x12replication_cycles\x18\x01 \x03(\v2-.google.cloud.vmmigration.v1.ReplicationCycleB\x03\xe0A\x03R\x11replicationCycles\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x03R\vunreachable\"e\n" +
-	"\x1aGetReplicationCycleRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xd9\x01\n" +
+	"\x1dListReplicationCyclesResponse\x12b\n" +
+	"\x12replication_cycles\x18\x01 \x03(\v2-.google.cloud.vmmigration.v1.ReplicationCycleB\x04\xe2A\x01\x03R\x11replicationCycles\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\vunreachable\"f\n" +
+	"\x1aGetReplicationCycleRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+vmmigration.googleapis.com/ReplicationCycleR\x04name\"\xd5\x01\n" +
-	"\x0eVmCapabilities\x12Z\n" +
-	"\x0fos_capabilities\x18\x01 \x03(\x0e2).google.cloud.vmmigration.v1.OsCapabilityB\x06\xe0A\x03\xe0A\x06R\x0eosCapabilities\x12g\n" +
-	" last_os_capabilities_update_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x1clastOsCapabilitiesUpdateTime\"\xf2\x05\n" +
-	"\vImageImport\x121\n" +
-	"\x11cloud_storage_uri\x18\x02 \x01(\tB\x03\xe0A\x05H\x00R\x0fcloudStorageUri\x12w\n" +
-	"\x1adisk_image_target_defaults\x18\x04 \x01(\v23.google.cloud.vmmigration.v1.DiskImageTargetDetailsB\x03\xe0A\x05H\x01R\x17diskImageTargetDefaults\x12\x80\x01\n" +
-	"\x1dmachine_image_target_defaults\x18\a \x01(\v26.google.cloud.vmmigration.v1.MachineImageTargetDetailsB\x03\xe0A\x05H\x01R\x1amachineImageTargetDefaults\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12i\n" +
-	"\x18recent_image_import_jobs\x18\x05 \x03(\v2+.google.cloud.vmmigration.v1.ImageImportJobB\x03\xe0A\x03R\x15recentImageImportJobs\x12L\n" +
+	"\x0eVmCapabilities\x12Y\n" +
+	"\x0fos_capabilities\x18\x01 \x03(\x0e2).google.cloud.vmmigration.v1.OsCapabilityB\x05\xe2A\x02\x03\x06R\x0eosCapabilities\x12h\n" +
+	" last_os_capabilities_update_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x1clastOsCapabilitiesUpdateTime\"\xf9\x05\n" +
+	"\vImageImport\x122\n" +
+	"\x11cloud_storage_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x05H\x00R\x0fcloudStorageUri\x12x\n" +
+	"\x1adisk_image_target_defaults\x18\x04 \x01(\v23.google.cloud.vmmigration.v1.DiskImageTargetDetailsB\x04\xe2A\x01\x05H\x01R\x17diskImageTargetDefaults\x12\x81\x01\n" +
+	"\x1dmachine_image_target_defaults\x18\a \x01(\v26.google.cloud.vmmigration.v1.MachineImageTargetDetailsB\x04\xe2A\x01\x05H\x01R\x1amachineImageTargetDefaults\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12j\n" +
+	"\x18recent_image_import_jobs\x18\x05 \x03(\v2+.google.cloud.vmmigration.v1.ImageImportJobB\x04\xe2A\x01\x03R\x15recentImageImportJobs\x12M\n" +
 	"\n" +
-	"encryption\x18\x06 \x01(\v2'.google.cloud.vmmigration.v1.EncryptionB\x03\xe0A\x05R\n" +
+	"encryption\x18\x06 \x01(\v2'.google.cloud.vmmigration.v1.EncryptionB\x04\xe2A\x01\x05R\n" +
 	"encryption:\x82\x01\xeaA\x7f\n" +
 	"&vmmigration.googleapis.com/ImageImport\x12:projects/{project}/locations/{location}/imageImports/{job}*\fimageImports2\vimageImportB\b\n" +
 	"\x06sourceB\x11\n" +
-	"\x0ftarget_defaults\"\xd3\b\n" +
-	"\x0eImageImportJob\x121\n" +
+	"\x0ftarget_defaults\"\xde\b\n" +
+	"\x0eImageImportJob\x122\n" +
 	"\x11cloud_storage_uri\x18\n" +
-	" \x01(\tB\x03\xe0A\x03H\x00R\x0fcloudStorageUri\x12u\n" +
-	"\x19disk_image_target_details\x18\x03 \x01(\v23.google.cloud.vmmigration.v1.DiskImageTargetDetailsB\x03\xe0A\x03H\x01R\x16diskImageTargetDetails\x12~\n" +
-	"\x1cmachine_image_target_details\x18\v \x01(\v26.google.cloud.vmmigration.v1.MachineImageTargetDetailsB\x03\xe0A\x03H\x01R\x19machineImageTargetDetails\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x120\n" +
-	"\x11created_resources\x18\x02 \x03(\tB\x03\xe0A\x03R\x10createdResources\x12L\n" +
-	"\x05state\x18\x04 \x01(\x0e21.google.cloud.vmmigration.v1.ImageImportJob.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12/\n" +
-	"\x06errors\x18\a \x03(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x06errors\x12N\n" +
-	"\bwarnings\x18\b \x03(\v2-.google.cloud.vmmigration.v1.MigrationWarningB\x03\xe0A\x03R\bwarnings\x12G\n" +
-	"\x05steps\x18\t \x03(\v2,.google.cloud.vmmigration.v1.ImageImportStepB\x03\xe0A\x03R\x05steps\"r\n" +
+	" \x01(\tB\x04\xe2A\x01\x03H\x00R\x0fcloudStorageUri\x12v\n" +
+	"\x19disk_image_target_details\x18\x03 \x01(\v23.google.cloud.vmmigration.v1.DiskImageTargetDetailsB\x04\xe2A\x01\x03H\x01R\x16diskImageTargetDetails\x12\x7f\n" +
+	"\x1cmachine_image_target_details\x18\v \x01(\v26.google.cloud.vmmigration.v1.MachineImageTargetDetailsB\x04\xe2A\x01\x03H\x01R\x19machineImageTargetDetails\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x121\n" +
+	"\x11created_resources\x18\x02 \x03(\tB\x04\xe2A\x01\x03R\x10createdResources\x12M\n" +
+	"\x05state\x18\x04 \x01(\x0e21.google.cloud.vmmigration.v1.ImageImportJob.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x120\n" +
+	"\x06errors\x18\a \x03(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x06errors\x12O\n" +
+	"\bwarnings\x18\b \x03(\v2-.google.cloud.vmmigration.v1.MigrationWarningB\x04\xe2A\x01\x03R\bwarnings\x12H\n" +
+	"\x05steps\x18\t \x03(\v2,.google.cloud.vmmigration.v1.ImageImportStepB\x04\xe2A\x01\x03R\x05steps\"r\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPENDING\x10\x01\x12\v\n" +
@@ -18398,146 +18398,146 @@ const file_google_cloud_vmmigration_v1_vmmigration_proto_rawDesc = "" +
 	"\tCANCELLED\x10\x06:\xa5\x01\xeaA\xa1\x01\n" +
 	")vmmigration.googleapis.com/ImageImportJob\x12Sprojects/{project}/locations/{location}/imageImports/{job}/imageImportJobs/{result}*\x0fimageImportJobs2\x0eimageImportJobB\b\n" +
 	"\x06sourceB\x10\n" +
-	"\x0etarget_details\"\x8c\x04\n" +
+	"\x0etarget_details\"\x8e\x04\n" +
 	"\x0fImageImportStep\x12^\n" +
 	"\finitializing\x18\x03 \x01(\v28.google.cloud.vmmigration.v1.InitializingImageImportStepH\x00R\finitializing\x12l\n" +
 	"\x14loading_source_files\x18\x04 \x01(\v28.google.cloud.vmmigration.v1.LoadingImageSourceFilesStepH\x00R\x12loadingSourceFiles\x12N\n" +
 	"\vadapting_os\x18\x05 \x01(\v2+.google.cloud.vmmigration.v1.AdaptingOSStepH\x00R\n" +
 	"adaptingOs\x12W\n" +
-	"\x0ecreating_image\x18\x06 \x01(\v2..google.cloud.vmmigration.v1.CreatingImageStepH\x00R\rcreatingImage\x12>\n" +
+	"\x0ecreating_image\x18\x06 \x01(\v2..google.cloud.vmmigration.v1.CreatingImageStepH\x00R\rcreatingImage\x12?\n" +
 	"\n" +
-	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTimeB\x06\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTimeB\x06\n" +
 	"\x04step\"\x1d\n" +
 	"\x1bInitializingImageImportStep\"\x1d\n" +
 	"\x1bLoadingImageSourceFilesStep\"\x13\n" +
-	"\x11CreatingImageStep\"\xbf\x06\n" +
-	"\x16DiskImageTargetDetails\x12\x7f\n" +
-	"\x18os_adaptation_parameters\x18\v \x01(\v2>.google.cloud.vmmigration.v1.ImageImportOsAdaptationParametersB\x03\xe0A\x01H\x00R\x16osAdaptationParameters\x12l\n" +
-	"\x16data_disk_image_import\x18\f \x01(\v20.google.cloud.vmmigration.v1.DataDiskImageImportB\x03\xe0A\x01H\x00R\x13dataDiskImageImport\x12\"\n" +
+	"\x11CreatingImageStep\"\xca\x06\n" +
+	"\x16DiskImageTargetDetails\x12\x80\x01\n" +
+	"\x18os_adaptation_parameters\x18\v \x01(\v2>.google.cloud.vmmigration.v1.ImageImportOsAdaptationParametersB\x04\xe2A\x01\x01H\x00R\x16osAdaptationParameters\x12m\n" +
+	"\x16data_disk_image_import\x18\f \x01(\v20.google.cloud.vmmigration.v1.DataDiskImageImportB\x04\xe2A\x01\x01H\x00R\x13dataDiskImageImport\x12#\n" +
 	"\n" +
-	"image_name\x18\x01 \x01(\tB\x03\xe0A\x02R\timageName\x12W\n" +
-	"\x0etarget_project\x18\x02 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(vmmigration.googleapis.com/TargetProjectR\rtargetProject\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12$\n" +
-	"\vfamily_name\x18\x06 \x01(\tB\x03\xe0A\x01R\n" +
-	"familyName\x12\\\n" +
-	"\x06labels\x18\a \x03(\v2?.google.cloud.vmmigration.v1.DiskImageTargetDetails.LabelsEntryB\x03\xe0A\x01R\x06labels\x124\n" +
-	"\x13additional_licenses\x18\b \x03(\tB\x03\xe0A\x01R\x12additionalLicenses\x127\n" +
-	"\x15single_region_storage\x18\t \x01(\bB\x03\xe0A\x01R\x13singleRegionStorage\x12L\n" +
+	"image_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\timageName\x12X\n" +
+	"\x0etarget_project\x18\x02 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(vmmigration.googleapis.com/TargetProjectR\rtargetProject\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12%\n" +
+	"\vfamily_name\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"familyName\x12]\n" +
+	"\x06labels\x18\a \x03(\v2?.google.cloud.vmmigration.v1.DiskImageTargetDetails.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x125\n" +
+	"\x13additional_licenses\x18\b \x03(\tB\x04\xe2A\x01\x01R\x12additionalLicenses\x128\n" +
+	"\x15single_region_storage\x18\t \x01(\bB\x04\xe2A\x01\x01R\x13singleRegionStorage\x12M\n" +
 	"\n" +
 	"encryption\x18\n" +
-	" \x01(\v2'.google.cloud.vmmigration.v1.EncryptionB\x03\xe0A\x05R\n" +
+	" \x01(\v2'.google.cloud.vmmigration.v1.EncryptionB\x04\xe2A\x01\x05R\n" +
 	"encryption\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x16\n" +
-	"\x14os_adaptation_config\"\x80\n" +
+	"\x14os_adaptation_config\"\x8f\n" +
 	"\n" +
-	"\x19MachineImageTargetDetails\x12\x7f\n" +
-	"\x18os_adaptation_parameters\x18\x03 \x01(\v2>.google.cloud.vmmigration.v1.ImageImportOsAdaptationParametersB\x03\xe0A\x01H\x00R\x16osAdaptationParameters\x12b\n" +
-	"\x12skip_os_adaptation\x18\x10 \x01(\v2-.google.cloud.vmmigration.v1.SkipOsAdaptationB\x03\xe0A\x01H\x00R\x10skipOsAdaptation\x121\n" +
-	"\x12machine_image_name\x18\x01 \x01(\tB\x03\xe0A\x02R\x10machineImageName\x12W\n" +
-	"\x0etarget_project\x18\x02 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(vmmigration.googleapis.com/TargetProjectR\rtargetProject\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x127\n" +
-	"\x15single_region_storage\x18\x05 \x01(\bB\x03\xe0A\x01R\x13singleRegionStorage\x12L\n" +
+	"\x19MachineImageTargetDetails\x12\x80\x01\n" +
+	"\x18os_adaptation_parameters\x18\x03 \x01(\v2>.google.cloud.vmmigration.v1.ImageImportOsAdaptationParametersB\x04\xe2A\x01\x01H\x00R\x16osAdaptationParameters\x12c\n" +
+	"\x12skip_os_adaptation\x18\x10 \x01(\v2-.google.cloud.vmmigration.v1.SkipOsAdaptationB\x04\xe2A\x01\x01H\x00R\x10skipOsAdaptation\x122\n" +
+	"\x12machine_image_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x10machineImageName\x12X\n" +
+	"\x0etarget_project\x18\x02 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(vmmigration.googleapis.com/TargetProjectR\rtargetProject\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x128\n" +
+	"\x15single_region_storage\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x13singleRegionStorage\x12M\n" +
 	"\n" +
-	"encryption\x18\x06 \x01(\v2'.google.cloud.vmmigration.v1.EncryptionB\x03\xe0A\x05R\n" +
-	"encryption\x12\x8e\x01\n" +
-	"\"machine_image_parameters_overrides\x18\a \x01(\v2<.google.cloud.vmmigration.v1.MachineImageParametersOverridesB\x03\xe0A\x01R\x1fmachineImageParametersOverrides\x12Y\n" +
-	"\x0fservice_account\x18\b \x01(\v2+.google.cloud.vmmigration.v1.ServiceAccountB\x03\xe0A\x01R\x0eserviceAccount\x124\n" +
-	"\x13additional_licenses\x18\t \x03(\tB\x03\xe0A\x01R\x12additionalLicenses\x12_\n" +
+	"encryption\x18\x06 \x01(\v2'.google.cloud.vmmigration.v1.EncryptionB\x04\xe2A\x01\x05R\n" +
+	"encryption\x12\x8f\x01\n" +
+	"\"machine_image_parameters_overrides\x18\a \x01(\v2<.google.cloud.vmmigration.v1.MachineImageParametersOverridesB\x04\xe2A\x01\x01R\x1fmachineImageParametersOverrides\x12Z\n" +
+	"\x0fservice_account\x18\b \x01(\v2+.google.cloud.vmmigration.v1.ServiceAccountB\x04\xe2A\x01\x01R\x0eserviceAccount\x125\n" +
+	"\x13additional_licenses\x18\t \x03(\tB\x04\xe2A\x01\x01R\x12additionalLicenses\x12`\n" +
 	"\x06labels\x18\n" +
-	" \x03(\v2B.google.cloud.vmmigration.v1.MachineImageTargetDetails.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x17\n" +
-	"\x04tags\x18\v \x03(\tB\x03\xe0A\x01R\x04tags\x12r\n" +
-	"\x18shielded_instance_config\x18\f \x01(\v23.google.cloud.vmmigration.v1.ShieldedInstanceConfigB\x03\xe0A\x01R\x16shieldedInstanceConfig\x12a\n" +
-	"\x12network_interfaces\x18\r \x03(\v2-.google.cloud.vmmigration.v1.NetworkInterfaceB\x03\xe0A\x01R\x11networkInterfaces\x1a9\n" +
+	" \x03(\v2B.google.cloud.vmmigration.v1.MachineImageTargetDetails.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12\x18\n" +
+	"\x04tags\x18\v \x03(\tB\x04\xe2A\x01\x01R\x04tags\x12s\n" +
+	"\x18shielded_instance_config\x18\f \x01(\v23.google.cloud.vmmigration.v1.ShieldedInstanceConfigB\x04\xe2A\x01\x01R\x16shieldedInstanceConfig\x12b\n" +
+	"\x12network_interfaces\x18\r \x03(\v2-.google.cloud.vmmigration.v1.NetworkInterfaceB\x04\xe2A\x01\x01R\x11networkInterfaces\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x16\n" +
-	"\x14os_adaptation_config\"n\n" +
-	"\x0eServiceAccount\x12?\n" +
-	"\x05email\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!iam.googleapis.com/ServiceAccountR\x05email\x12\x1b\n" +
-	"\x06scopes\x18\x02 \x03(\tB\x03\xe0A\x01R\x06scopes\"\xa9\x02\n" +
-	"\x16ShieldedInstanceConfig\x12d\n" +
-	"\vsecure_boot\x18\x01 \x01(\x0e2>.google.cloud.vmmigration.v1.ShieldedInstanceConfig.SecureBootB\x03\xe0A\x01R\n" +
-	"secureBoot\x12$\n" +
-	"\venable_vtpm\x18\x02 \x01(\bB\x03\xe0A\x01R\n" +
-	"enableVtpm\x12C\n" +
-	"\x1benable_integrity_monitoring\x18\x03 \x01(\bB\x03\xe0A\x01R\x19enableIntegrityMonitoring\">\n" +
+	"\x14os_adaptation_config\"p\n" +
+	"\x0eServiceAccount\x12@\n" +
+	"\x05email\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!iam.googleapis.com/ServiceAccountR\x05email\x12\x1c\n" +
+	"\x06scopes\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x06scopes\"\xac\x02\n" +
+	"\x16ShieldedInstanceConfig\x12e\n" +
+	"\vsecure_boot\x18\x01 \x01(\x0e2>.google.cloud.vmmigration.v1.ShieldedInstanceConfig.SecureBootB\x04\xe2A\x01\x01R\n" +
+	"secureBoot\x12%\n" +
+	"\venable_vtpm\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"enableVtpm\x12D\n" +
+	"\x1benable_integrity_monitoring\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x19enableIntegrityMonitoring\">\n" +
 	"\n" +
 	"SecureBoot\x12\x1b\n" +
 	"\x17SECURE_BOOT_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04TRUE\x10\x01\x12\t\n" +
-	"\x05FALSE\x10\x02\"I\n" +
-	"\x1fMachineImageParametersOverrides\x12&\n" +
-	"\fmachine_type\x18\x01 \x01(\tB\x03\xe0A\x01R\vmachineType\"\xeb\x02\n" +
-	"!ImageImportOsAdaptationParameters\x12#\n" +
+	"\x05FALSE\x10\x02\"J\n" +
+	"\x1fMachineImageParametersOverrides\x12'\n" +
+	"\fmachine_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vmachineType\"\xef\x02\n" +
+	"!ImageImportOsAdaptationParameters\x12$\n" +
 	"\n" +
-	"generalize\x18\x01 \x01(\bB\x03\xe0A\x01R\n" +
-	"generalize\x12]\n" +
-	"\flicense_type\x18\x02 \x01(\x0e25.google.cloud.vmmigration.v1.ComputeEngineLicenseTypeB\x03\xe0A\x01R\vlicenseType\x12Y\n" +
-	"\x0fboot_conversion\x18\x03 \x01(\x0e2+.google.cloud.vmmigration.v1.BootConversionB\x03\xe0A\x01R\x0ebootConversion\x12g\n" +
-	"\x14adaptation_modifiers\x18\x04 \x03(\v2/.google.cloud.vmmigration.v1.AdaptationModifierB\x03\xe0A\x01R\x13adaptationModifiers\"F\n" +
-	"\x13DataDiskImageImport\x12/\n" +
-	"\x11guest_os_features\x18\x01 \x03(\tB\x03\xe0A\x01R\x0fguestOsFeatures\"\x12\n" +
-	"\x10SkipOsAdaptation\"[\n" +
-	"\x15GetImageImportRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vmmigration.googleapis.com/ImageImportR\x04name\"\xe4\x01\n" +
-	"\x17ListImageImportsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&vmmigration.googleapis.com/ImageImportR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"generalize\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"generalize\x12^\n" +
+	"\flicense_type\x18\x02 \x01(\x0e25.google.cloud.vmmigration.v1.ComputeEngineLicenseTypeB\x04\xe2A\x01\x01R\vlicenseType\x12Z\n" +
+	"\x0fboot_conversion\x18\x03 \x01(\x0e2+.google.cloud.vmmigration.v1.BootConversionB\x04\xe2A\x01\x01R\x0ebootConversion\x12h\n" +
+	"\x14adaptation_modifiers\x18\x04 \x03(\v2/.google.cloud.vmmigration.v1.AdaptationModifierB\x04\xe2A\x01\x01R\x13adaptationModifiers\"G\n" +
+	"\x13DataDiskImageImport\x120\n" +
+	"\x11guest_os_features\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x0fguestOsFeatures\"\x12\n" +
+	"\x10SkipOsAdaptation\"\\\n" +
+	"\x15GetImageImportRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vmmigration.googleapis.com/ImageImportR\x04name\"\xe9\x01\n" +
+	"\x17ListImageImportsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&vmmigration.googleapis.com/ImageImportR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xc2\x01\n" +
-	"\x18ListImageImportsResponse\x12R\n" +
-	"\rimage_imports\x18\x01 \x03(\v2(.google.cloud.vmmigration.v1.ImageImportB\x03\xe0A\x03R\fimageImports\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x03R\vunreachable\"\x85\x02\n" +
-	"\x18CreateImageImportRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&vmmigration.googleapis.com/ImageImportR\x06parent\x12+\n" +
-	"\x0fimage_import_id\x18\x02 \x01(\tB\x03\xe0A\x02R\rimageImportId\x12P\n" +
-	"\fimage_import\x18\x03 \x01(\v2(.google.cloud.vmmigration.v1.ImageImportB\x03\xe0A\x02R\vimageImport\x12\"\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xc5\x01\n" +
+	"\x18ListImageImportsResponse\x12S\n" +
+	"\rimage_imports\x18\x01 \x03(\v2(.google.cloud.vmmigration.v1.ImageImportB\x04\xe2A\x01\x03R\fimageImports\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\vunreachable\"\x89\x02\n" +
+	"\x18CreateImageImportRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&vmmigration.googleapis.com/ImageImportR\x06parent\x12,\n" +
+	"\x0fimage_import_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rimageImportId\x12Q\n" +
+	"\fimage_import\x18\x03 \x01(\v2(.google.cloud.vmmigration.v1.ImageImportB\x04\xe2A\x01\x02R\vimageImport\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\x82\x01\n" +
-	"\x18DeleteImageImportRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vmmigration.googleapis.com/ImageImportR\x04name\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x84\x01\n" +
+	"\x18DeleteImageImportRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vmmigration.googleapis.com/ImageImportR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"a\n" +
-	"\x18GetImageImportJobRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")vmmigration.googleapis.com/ImageImportJobR\x04name\"\xea\x01\n" +
-	"\x1aListImageImportJobsRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)vmmigration.googleapis.com/ImageImportJobR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"b\n" +
+	"\x18GetImageImportJobRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")vmmigration.googleapis.com/ImageImportJobR\x04name\"\xef\x01\n" +
+	"\x1aListImageImportJobsRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)vmmigration.googleapis.com/ImageImportJobR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xcf\x01\n" +
-	"\x1bListImageImportJobsResponse\x12\\\n" +
-	"\x11image_import_jobs\x18\x01 \x03(\v2+.google.cloud.vmmigration.v1.ImageImportJobB\x03\xe0A\x03R\x0fimageImportJobs\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x03R\vunreachable\"d\n" +
-	"\x1bCancelImageImportJobRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xd2\x01\n" +
+	"\x1bListImageImportJobsResponse\x12]\n" +
+	"\x11image_import_jobs\x18\x01 \x03(\v2+.google.cloud.vmmigration.v1.ImageImportJobB\x04\xe2A\x01\x03R\x0fimageImportJobs\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\vunreachable\"e\n" +
+	"\x1bCancelImageImportJobRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")vmmigration.googleapis.com/ImageImportJobR\x04name\"\x1e\n" +
-	"\x1cCancelImageImportJobResponse\"\x95\a\n" +
+	"\x1cCancelImageImportJobResponse\"\x9a\a\n" +
 	"\x10DiskMigrationJob\x12j\n" +
-	"\x17aws_source_disk_details\x18\x02 \x01(\v21.google.cloud.vmmigration.v1.AwsSourceDiskDetailsH\x00R\x14awsSourceDiskDetails\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x03R\x04name\x12f\n" +
-	"\x0etarget_details\x18\x03 \x01(\v2:.google.cloud.vmmigration.v1.DiskMigrationJobTargetDetailsB\x03\xe0A\x02R\rtargetDetails\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12N\n" +
-	"\x05state\x18\x06 \x01(\x0e23.google.cloud.vmmigration.v1.DiskMigrationJob.StateB\x03\xe0A\x03R\x05state\x12/\n" +
-	"\x06errors\x18\a \x03(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x06errors\x12I\n" +
-	"\x05steps\x18\b \x03(\v2..google.cloud.vmmigration.v1.DiskMigrationStepB\x03\xe0A\x03R\x05steps\"p\n" +
+	"\x17aws_source_disk_details\x18\x02 \x01(\v21.google.cloud.vmmigration.v1.AwsSourceDiskDetailsH\x00R\x14awsSourceDiskDetails\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x03R\x04name\x12g\n" +
+	"\x0etarget_details\x18\x03 \x01(\v2:.google.cloud.vmmigration.v1.DiskMigrationJobTargetDetailsB\x04\xe2A\x01\x02R\rtargetDetails\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12O\n" +
+	"\x05state\x18\x06 \x01(\x0e23.google.cloud.vmmigration.v1.DiskMigrationJob.StateB\x04\xe2A\x01\x03R\x05state\x120\n" +
+	"\x06errors\x18\a \x03(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x06errors\x12J\n" +
+	"\x05steps\x18\b \x03(\v2..google.cloud.vmmigration.v1.DiskMigrationStepB\x04\xe2A\x01\x03R\x05steps\"p\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05READY\x10\x01\x12\v\n" +
@@ -18549,43 +18549,43 @@ const file_google_cloud_vmmigration_v1_vmmigration_proto_rawDesc = "" +
 	"\n" +
 	"\x06FAILED\x10\a:\xb7\x01\xeaA\xb3\x01\n" +
 	"+vmmigration.googleapis.com/DiskMigrationJob\x12_projects/{project}/locations/{location}/sources/{source}/diskMigrationJobs/{disk_migration_job}*\x11diskMigrationJobs2\x10diskMigrationJobB\x15\n" +
-	"\x13source_disk_details\"\xd0\x03\n" +
-	"\x1dDiskMigrationJobTargetDetails\x12V\n" +
-	"\vtarget_disk\x18\b \x01(\v2..google.cloud.vmmigration.v1.ComputeEngineDiskB\x03\xe0A\x02H\x00R\n" +
-	"targetDisk\x12W\n" +
-	"\x0etarget_project\x18\x02 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(vmmigration.googleapis.com/TargetProjectR\rtargetProject\x12c\n" +
-	"\x06labels\x18\x06 \x03(\v2F.google.cloud.vmmigration.v1.DiskMigrationJobTargetDetails.LabelsEntryB\x03\xe0A\x01R\x06labels\x12L\n" +
+	"\x13source_disk_details\"\xd4\x03\n" +
+	"\x1dDiskMigrationJobTargetDetails\x12W\n" +
+	"\vtarget_disk\x18\b \x01(\v2..google.cloud.vmmigration.v1.ComputeEngineDiskB\x04\xe2A\x01\x02H\x00R\n" +
+	"targetDisk\x12X\n" +
+	"\x0etarget_project\x18\x02 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(vmmigration.googleapis.com/TargetProjectR\rtargetProject\x12d\n" +
+	"\x06labels\x18\x06 \x03(\v2F.google.cloud.vmmigration.v1.DiskMigrationJobTargetDetails.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12M\n" +
 	"\n" +
-	"encryption\x18\a \x01(\v2'.google.cloud.vmmigration.v1.EncryptionB\x03\xe0A\x01R\n" +
+	"encryption\x18\a \x01(\v2'.google.cloud.vmmigration.v1.EncryptionB\x04\xe2A\x01\x01R\n" +
 	"encryption\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x10\n" +
-	"\x0etarget_storage\"\x8e\x04\n" +
+	"\x0etarget_storage\"\x90\x04\n" +
 	"\x11DiskMigrationStep\x12\x80\x01\n" +
 	"\x1dcreating_source_disk_snapshot\x18\x03 \x01(\v2;.google.cloud.vmmigration.v1.CreatingSourceDiskSnapshotStepH\x00R\x1acreatingSourceDiskSnapshot\x12}\n" +
 	"\x1ccopying_source_disk_snapshot\x18\x04 \x01(\v2:.google.cloud.vmmigration.v1.CopyingSourceDiskSnapshotStepH\x00R\x19copyingSourceDiskSnapshot\x12s\n" +
-	"\x18provisioning_target_disk\x18\x05 \x01(\v27.google.cloud.vmmigration.v1.ProvisioningTargetDiskStepH\x00R\x16provisioningTargetDisk\x12>\n" +
+	"\x18provisioning_target_disk\x18\x05 \x01(\v27.google.cloud.vmmigration.v1.ProvisioningTargetDiskStepH\x00R\x16provisioningTargetDisk\x12?\n" +
 	"\n" +
-	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTimeB\x06\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTimeB\x06\n" +
 	"\x04step\" \n" +
 	"\x1eCreatingSourceDiskSnapshotStep\"\x1f\n" +
 	"\x1dCopyingSourceDiskSnapshotStep\"\x1c\n" +
-	"\x1aProvisioningTargetDiskStep\"\x96\x02\n" +
-	"\x11ComputeEngineDisk\x12\x1c\n" +
-	"\adisk_id\x18\x01 \x01(\tB\x03\xe0A\x01R\x06diskId\x12=\n" +
-	"\x04zone\x18\x02 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x04zone\x12N\n" +
-	"\rreplica_zones\x18\x03 \x03(\tB)\xe0A\x01\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\freplicaZones\x12T\n" +
-	"\tdisk_type\x18\x04 \x01(\x0e22.google.cloud.vmmigration.v1.ComputeEngineDiskTypeB\x03\xe0A\x02R\bdiskType\"\xa9\x03\n" +
-	"\x14AwsSourceDiskDetails\x12 \n" +
-	"\tvolume_id\x18\x01 \x01(\tB\x03\xe0A\x02R\bvolumeId\x12\x1e\n" +
-	"\bsize_gib\x18\x02 \x01(\x03B\x03\xe0A\x03R\asizeGib\x12[\n" +
-	"\tdisk_type\x18\x03 \x01(\x0e26.google.cloud.vmmigration.v1.AwsSourceDiskDetails.TypeB\x06\xe0A\x01\xe0A\x03R\bdiskType\x12W\n" +
-	"\x04tags\x18\x04 \x03(\v2;.google.cloud.vmmigration.v1.AwsSourceDiskDetails.TagsEntryB\x06\xe0A\x01\xe0A\x03R\x04tags\x1a7\n" +
+	"\x1aProvisioningTargetDiskStep\"\x9a\x02\n" +
+	"\x11ComputeEngineDisk\x12\x1d\n" +
+	"\adisk_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x06diskId\x12>\n" +
+	"\x04zone\x18\x02 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x04zone\x12O\n" +
+	"\rreplica_zones\x18\x03 \x03(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\freplicaZones\x12U\n" +
+	"\tdisk_type\x18\x04 \x01(\x0e22.google.cloud.vmmigration.v1.ComputeEngineDiskTypeB\x04\xe2A\x01\x02R\bdiskType\"\xa9\x03\n" +
+	"\x14AwsSourceDiskDetails\x12!\n" +
+	"\tvolume_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bvolumeId\x12\x1f\n" +
+	"\bsize_gib\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\asizeGib\x12Z\n" +
+	"\tdisk_type\x18\x03 \x01(\x0e26.google.cloud.vmmigration.v1.AwsSourceDiskDetails.TypeB\x05\xe2A\x02\x01\x03R\bdiskType\x12V\n" +
+	"\x04tags\x18\x04 \x03(\v2;.google.cloud.vmmigration.v1.AwsSourceDiskDetails.TagsEntryB\x05\xe2A\x02\x01\x03R\x04tags\x1a7\n" +
 	"\tTagsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"`\n" +
@@ -18597,43 +18597,43 @@ const file_google_cloud_vmmigration_v1_vmmigration_proto_rawDesc = "" +
 	"\x03IO2\x10\x04\x12\a\n" +
 	"\x03ST1\x10\x05\x12\a\n" +
 	"\x03SC1\x10\x06\x12\f\n" +
-	"\bSTANDARD\x10\a\"\xb2\x02\n" +
-	"\x1dCreateDiskMigrationJobRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+vmmigration.googleapis.com/DiskMigrationJobR\x06parent\x126\n" +
-	"\x15disk_migration_job_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x12diskMigrationJobId\x12`\n" +
-	"\x12disk_migration_job\x18\x03 \x01(\v2-.google.cloud.vmmigration.v1.DiskMigrationJobB\x03\xe0A\x02R\x10diskMigrationJob\x12*\n" +
+	"\bSTANDARD\x10\a\"\xb6\x02\n" +
+	"\x1dCreateDiskMigrationJobRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+vmmigration.googleapis.com/DiskMigrationJobR\x06parent\x127\n" +
+	"\x15disk_migration_job_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12diskMigrationJobId\x12a\n" +
+	"\x12disk_migration_job\x18\x03 \x01(\v2-.google.cloud.vmmigration.v1.DiskMigrationJobB\x04\xe2A\x01\x02R\x10diskMigrationJob\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xee\x01\n" +
-	"\x1cListDiskMigrationJobsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+vmmigration.googleapis.com/DiskMigrationJobR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xf3\x01\n" +
+	"\x1cListDiskMigrationJobsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+vmmigration.googleapis.com/DiskMigrationJobR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x80\x02\n" +
-	"\x1dListDiskMigrationJobsResponse\x12b\n" +
-	"\x13disk_migration_jobs\x18\x01 \x03(\v2-.google.cloud.vmmigration.v1.DiskMigrationJobB\x03\xe0A\x03R\x11diskMigrationJobs\x12.\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x06\xe0A\x03\xe0A\x01R\rnextPageToken\x12K\n" +
-	"\vunreachable\x18\x03 \x03(\tB)\xe0A\x03\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\vunreachable\"e\n" +
-	"\x1aGetDiskMigrationJobRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+vmmigration.googleapis.com/DiskMigrationJobR\x04name\"\xef\x01\n" +
-	"\x1dUpdateDiskMigrationJobRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12`\n" +
-	"\x12disk_migration_job\x18\x02 \x01(\v2-.google.cloud.vmmigration.v1.DiskMigrationJobB\x03\xe0A\x02R\x10diskMigrationJob\x12*\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x81\x02\n" +
+	"\x1dListDiskMigrationJobsResponse\x12c\n" +
+	"\x13disk_migration_jobs\x18\x01 \x03(\v2-.google.cloud.vmmigration.v1.DiskMigrationJobB\x04\xe2A\x01\x03R\x11diskMigrationJobs\x12-\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x05\xe2A\x02\x03\x01R\rnextPageToken\x12L\n" +
+	"\vunreachable\x18\x03 \x03(\tB*\xe2A\x01\x03\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\vunreachable\"f\n" +
+	"\x1aGetDiskMigrationJobRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+vmmigration.googleapis.com/DiskMigrationJobR\x04name\"\xf2\x01\n" +
+	"\x1dUpdateDiskMigrationJobRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12a\n" +
+	"\x12disk_migration_job\x18\x02 \x01(\v2-.google.cloud.vmmigration.v1.DiskMigrationJobB\x04\xe2A\x01\x02R\x10diskMigrationJob\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"h\n" +
-	"\x1dDeleteDiskMigrationJobRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+vmmigration.googleapis.com/DiskMigrationJobR\x04name\"e\n" +
-	"\x1aRunDiskMigrationJobRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"i\n" +
+	"\x1dDeleteDiskMigrationJobRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+vmmigration.googleapis.com/DiskMigrationJobR\x04name\"f\n" +
+	"\x1aRunDiskMigrationJobRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+vmmigration.googleapis.com/DiskMigrationJobR\x04name\"\x1d\n" +
-	"\x1bRunDiskMigrationJobResponse\"h\n" +
-	"\x1dCancelDiskMigrationJobRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"\x1bRunDiskMigrationJobResponse\"i\n" +
+	"\x1dCancelDiskMigrationJobRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+vmmigration.googleapis.com/DiskMigrationJobR\x04name\" \n" +
 	"\x1eCancelDiskMigrationJobResponse*\xe2\x01\n" +
 	"\x15ComputeEngineDiskType\x12(\n" +

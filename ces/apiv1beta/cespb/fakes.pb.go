@@ -231,14 +231,14 @@ var File_google_cloud_ces_v1beta_fakes_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_fakes_proto_rawDesc = "" +
 	"\n" +
-	"#google/cloud/ces/v1beta/fakes.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\"1\n" +
-	"\tCodeBlock\x12$\n" +
-	"\vpython_code\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"pythonCode\"\x9a\x01\n" +
-	"\x0eToolFakeConfig\x12H\n" +
+	"#google/cloud/ces/v1beta/fakes.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\"2\n" +
+	"\tCodeBlock\x12%\n" +
+	"\vpython_code\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"pythonCode\"\x9c\x01\n" +
+	"\x0eToolFakeConfig\x12I\n" +
 	"\n" +
-	"code_block\x18\x01 \x01(\v2\".google.cloud.ces.v1beta.CodeBlockB\x03\xe0A\x01H\x00R\tcodeBlock\x12-\n" +
-	"\x10enable_fake_mode\x18\x02 \x01(\bB\x03\xe0A\x01R\x0eenableFakeModeB\x0f\n" +
+	"code_block\x18\x01 \x01(\v2\".google.cloud.ces.v1beta.CodeBlockB\x04\xe2A\x01\x01H\x00R\tcodeBlock\x12.\n" +
+	"\x10enable_fake_mode\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x0eenableFakeModeB\x0f\n" +
 	"\rtool_response*a\n" +
 	"\x1bEvaluationToolCallBehaviour\x12.\n" +
 	"*EVALUATION_TOOL_CALL_BEHAVIOUR_UNSPECIFIED\x10\x00\x12\b\n" +

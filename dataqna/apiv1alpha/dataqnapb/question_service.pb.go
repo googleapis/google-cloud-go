@@ -316,23 +316,23 @@ var File_google_cloud_dataqna_v1alpha_question_service_proto protoreflect.FileDe
 
 const file_google_cloud_dataqna_v1alpha_question_service_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/dataqna/v1alpha/question_service.proto\x12\x1cgoogle.cloud.dataqna.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/dataqna/v1alpha/question.proto\x1a0google/cloud/dataqna/v1alpha/user_feedback.proto\x1a google/protobuf/field_mask.proto\"\x8a\x01\n" +
-	"\x12GetQuestionRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"3google/cloud/dataqna/v1alpha/question_service.proto\x12\x1cgoogle.cloud.dataqna.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/dataqna/v1alpha/question.proto\x1a0google/cloud/dataqna/v1alpha/user_feedback.proto\x1a google/protobuf/field_mask.proto\"\x8b\x01\n" +
+	"\x12GetQuestionRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fdataqna.googleapis.com/QuestionR\x04name\x127\n" +
-	"\tread_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\breadMask\"\xa3\x01\n" +
-	"\x15CreateQuestionRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12G\n" +
-	"\bquestion\x18\x02 \x01(\v2&.google.cloud.dataqna.v1alpha.QuestionB\x03\xe0A\x02R\bquestion\"i\n" +
-	"\x16ExecuteQuestionRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x126\n" +
-	"\x14interpretation_index\x18\x02 \x01(\x05B\x03\xe0A\x02R\x13interpretationIndex\"Y\n" +
-	"\x16GetUserFeedbackRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#dataqna.googleapis.com/UserFeedbackR\x04name\"\xae\x01\n" +
-	"\x19UpdateUserFeedbackRequest\x12T\n" +
-	"\ruser_feedback\x18\x01 \x01(\v2*.google.cloud.dataqna.v1alpha.UserFeedbackB\x03\xe0A\x02R\fuserFeedback\x12;\n" +
+	"\tread_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\breadMask\"\xa5\x01\n" +
+	"\x15CreateQuestionRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12H\n" +
+	"\bquestion\x18\x02 \x01(\v2&.google.cloud.dataqna.v1alpha.QuestionB\x04\xe2A\x01\x02R\bquestion\"k\n" +
+	"\x16ExecuteQuestionRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x127\n" +
+	"\x14interpretation_index\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x13interpretationIndex\"Z\n" +
+	"\x16GetUserFeedbackRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#dataqna.googleapis.com/UserFeedbackR\x04name\"\xaf\x01\n" +
+	"\x19UpdateUserFeedbackRequest\x12U\n" +
+	"\ruser_feedback\x18\x01 \x01(\v2*.google.cloud.dataqna.v1alpha.UserFeedbackB\x04\xe2A\x01\x02R\fuserFeedback\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask2\xec\b\n" +
 	"\x0fQuestionService\x12\xaa\x01\n" +

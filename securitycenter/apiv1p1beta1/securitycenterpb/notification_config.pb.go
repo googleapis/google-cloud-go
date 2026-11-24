@@ -281,15 +281,15 @@ var File_google_cloud_securitycenter_v1p1beta1_notification_config_proto protore
 
 const file_google_cloud_securitycenter_v1p1beta1_notification_config_proto_rawDesc = "" +
 	"\n" +
-	"?google/cloud/securitycenter/v1p1beta1/notification_config.proto\x12%google.cloud.securitycenter.v1p1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x8a\x05\n" +
+	"?google/cloud/securitycenter/v1p1beta1/notification_config.proto\x12%google.cloud.securitycenter.v1p1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x8b\x05\n" +
 	"\x12NotificationConfig\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12b\n" +
 	"\n" +
 	"event_type\x18\x03 \x01(\x0e2C.google.cloud.securitycenter.v1p1beta1.NotificationConfig.EventTypeR\teventType\x12C\n" +
 	"\fpubsub_topic\x18\x04 \x01(\tB \xfaA\x1d\n" +
-	"\x1bpubsub.googleapis.com/TopicR\vpubsubTopic\x12,\n" +
-	"\x0fservice_account\x18\x05 \x01(\tB\x03\xe0A\x03R\x0eserviceAccount\x12v\n" +
+	"\x1bpubsub.googleapis.com/TopicR\vpubsubTopic\x12-\n" +
+	"\x0fservice_account\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x0eserviceAccount\x12v\n" +
 	"\x10streaming_config\x18\x06 \x01(\v2I.google.cloud.securitycenter.v1p1beta1.NotificationConfig.StreamingConfigH\x00R\x0fstreamingConfig\x1a)\n" +
 	"\x0fStreamingConfig\x12\x16\n" +
 	"\x06filter\x18\x01 \x01(\tR\x06filter\"4\n" +

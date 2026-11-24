@@ -1021,16 +1021,16 @@ var File_google_shopping_merchant_conversions_v1_conversionsources_proto protore
 
 const file_google_shopping_merchant_conversions_v1_conversionsources_proto_rawDesc = "" +
 	"\n" +
-	"?google/shopping/merchant/conversions/v1/conversionsources.proto\x12'google.shopping.merchant.conversions.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf0\x06\n" +
-	"\x10ConversionSource\x12w\n" +
-	"\x15google_analytics_link\x18\x03 \x01(\v2<.google.shopping.merchant.conversions.v1.GoogleAnalyticsLinkB\x03\xe0A\x05H\x00R\x13googleAnalyticsLink\x12\x84\x01\n" +
-	"\x1bmerchant_center_destination\x18\x04 \x01(\v2B.google.shopping.merchant.conversions.v1.MerchantCenterDestinationH\x00R\x19merchantCenterDestination\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12Z\n" +
-	"\x05state\x18\x05 \x01(\x0e2?.google.shopping.merchant.conversions.v1.ConversionSource.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vexpire_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12i\n" +
+	"?google/shopping/merchant/conversions/v1/conversionsources.proto\x12'google.shopping.merchant.conversions.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf3\x06\n" +
+	"\x10ConversionSource\x12x\n" +
+	"\x15google_analytics_link\x18\x03 \x01(\v2<.google.shopping.merchant.conversions.v1.GoogleAnalyticsLinkB\x04\xe2A\x01\x05H\x00R\x13googleAnalyticsLink\x12\x84\x01\n" +
+	"\x1bmerchant_center_destination\x18\x04 \x01(\v2B.google.shopping.merchant.conversions.v1.MerchantCenterDestinationH\x00R\x19merchantCenterDestination\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12[\n" +
+	"\x05state\x18\x05 \x01(\x0e2?.google.shopping.merchant.conversions.v1.ConversionSource.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vexpire_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12j\n" +
 	"\n" +
-	"controller\x18\a \x01(\x0e2D.google.shopping.merchant.conversions.v1.ConversionSource.ControllerB\x03\xe0A\x03R\n" +
+	"controller\x18\a \x01(\x0e2D.google.shopping.merchant.conversions.v1.ConversionSource.ControllerB\x04\xe2A\x01\x03R\n" +
 	"controller\"E\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
@@ -1044,14 +1044,14 @@ const file_google_shopping_merchant_conversions_v1_conversionsources_proto_rawDe
 	"\bMERCHANT\x10\x01\x12\x16\n" +
 	"\x12YOUTUBE_AFFILIATES\x10\x02:\x90\x01\xeaA\x8c\x01\n" +
 	"+merchantapi.googleapis.com/ConversionSource\x128accounts/{account}/conversionSources/{conversion_source}*\x11conversionSources2\x10conversionSourceB\r\n" +
-	"\vsource_data\"\xb6\x05\n" +
-	"\x13AttributionSettings\x12L\n" +
-	" attribution_lookback_window_days\x18\x01 \x01(\x05B\x03\xe0A\x02R\x1dattributionLookbackWindowDays\x12\x7f\n" +
-	"\x11attribution_model\x18\x02 \x01(\x0e2M.google.shopping.merchant.conversions.v1.AttributionSettings.AttributionModelB\x03\xe0A\x02R\x10attributionModel\x12|\n" +
-	"\x0fconversion_type\x18\x03 \x03(\v2K.google.shopping.merchant.conversions.v1.AttributionSettings.ConversionTypeB\x06\xe0A\x06\xe0A\x05R\x0econversionType\x1aF\n" +
-	"\x0eConversionType\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1b\n" +
-	"\x06report\x18\x02 \x01(\bB\x03\xe0A\x03R\x06report\"\x89\x02\n" +
+	"\vsource_data\"\xba\x05\n" +
+	"\x13AttributionSettings\x12M\n" +
+	" attribution_lookback_window_days\x18\x01 \x01(\x05B\x04\xe2A\x01\x02R\x1dattributionLookbackWindowDays\x12\x80\x01\n" +
+	"\x11attribution_model\x18\x02 \x01(\x0e2M.google.shopping.merchant.conversions.v1.AttributionSettings.AttributionModelB\x04\xe2A\x01\x02R\x10attributionModel\x12{\n" +
+	"\x0fconversion_type\x18\x03 \x03(\v2K.google.shopping.merchant.conversions.v1.AttributionSettings.ConversionTypeB\x05\xe2A\x02\x06\x05R\x0econversionType\x1aH\n" +
+	"\x0eConversionType\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x1c\n" +
+	"\x06report\x18\x02 \x01(\bB\x04\xe2A\x01\x03R\x06report\"\x89\x02\n" +
 	"\x10AttributionModel\x12!\n" +
 	"\x1dATTRIBUTION_MODEL_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18CROSS_CHANNEL_LAST_CLICK\x10\x01\x12\x1c\n" +
@@ -1060,39 +1060,39 @@ const file_google_shopping_merchant_conversions_v1_conversionsources_proto_rawDe
 	"\x19CROSS_CHANNEL_FIRST_CLICK\x10\x06\x12\x18\n" +
 	"\x14CROSS_CHANNEL_LINEAR\x10\a\x12 \n" +
 	"\x1cCROSS_CHANNEL_POSITION_BASED\x10\b\x12\x1c\n" +
-	"\x18CROSS_CHANNEL_TIME_DECAY\x10\t\"\xd5\x01\n" +
-	"\x13GoogleAnalyticsLink\x12'\n" +
-	"\vproperty_id\x18\x01 \x01(\x03B\x06\xe0A\x02\xe0A\x05R\n" +
-	"propertyId\x12t\n" +
-	"\x14attribution_settings\x18\x02 \x01(\v2<.google.shopping.merchant.conversions.v1.AttributionSettingsB\x03\xe0A\x03R\x13attributionSettings\x12\x1f\n" +
-	"\bproperty\x18\x03 \x01(\tB\x03\xe0A\x03R\bproperty\"\x8a\x02\n" +
-	"\x19MerchantCenterDestination\x12%\n" +
-	"\vdestination\x18\x01 \x01(\tB\x03\xe0A\x03R\vdestination\x12t\n" +
-	"\x14attribution_settings\x18\x02 \x01(\v2<.google.shopping.merchant.conversions.v1.AttributionSettingsB\x03\xe0A\x02R\x13attributionSettings\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12(\n" +
-	"\rcurrency_code\x18\x04 \x01(\tB\x03\xe0A\x02R\fcurrencyCode\"\xd9\x01\n" +
-	"\x1dCreateConversionSourceRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+merchantapi.googleapis.com/ConversionSourceR\x06parent\x12k\n" +
-	"\x11conversion_source\x18\x02 \x01(\v29.google.shopping.merchant.conversions.v1.ConversionSourceB\x03\xe0A\x02R\x10conversionSource\"\xce\x01\n" +
-	"\x1dUpdateConversionSourceRequest\x12k\n" +
-	"\x11conversion_source\x18\x01 \x01(\v29.google.shopping.merchant.conversions.v1.ConversionSourceB\x03\xe0A\x02R\x10conversionSource\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"h\n" +
-	"\x1dDeleteConversionSourceRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+merchantapi.googleapis.com/ConversionSourceR\x04name\"j\n" +
-	"\x1fUndeleteConversionSourceRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+merchantapi.googleapis.com/ConversionSourceR\x04name\"e\n" +
-	"\x1aGetConversionSourceRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+merchantapi.googleapis.com/ConversionSourceR\x04name\"\xd9\x01\n" +
-	"\x1cListConversionSourcesRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+merchantapi.googleapis.com/ConversionSourceR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x18CROSS_CHANNEL_TIME_DECAY\x10\t\"\xd6\x01\n" +
+	"\x13GoogleAnalyticsLink\x12&\n" +
+	"\vproperty_id\x18\x01 \x01(\x03B\x05\xe2A\x02\x02\x05R\n" +
+	"propertyId\x12u\n" +
+	"\x14attribution_settings\x18\x02 \x01(\v2<.google.shopping.merchant.conversions.v1.AttributionSettingsB\x04\xe2A\x01\x03R\x13attributionSettings\x12 \n" +
+	"\bproperty\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\bproperty\"\x8e\x02\n" +
+	"\x19MerchantCenterDestination\x12&\n" +
+	"\vdestination\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\vdestination\x12u\n" +
+	"\x14attribution_settings\x18\x02 \x01(\v2<.google.shopping.merchant.conversions.v1.AttributionSettingsB\x04\xe2A\x01\x02R\x13attributionSettings\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12)\n" +
+	"\rcurrency_code\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\fcurrencyCode\"\xdb\x01\n" +
+	"\x1dCreateConversionSourceRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+merchantapi.googleapis.com/ConversionSourceR\x06parent\x12l\n" +
+	"\x11conversion_source\x18\x02 \x01(\v29.google.shopping.merchant.conversions.v1.ConversionSourceB\x04\xe2A\x01\x02R\x10conversionSource\"\xd0\x01\n" +
+	"\x1dUpdateConversionSourceRequest\x12l\n" +
+	"\x11conversion_source\x18\x01 \x01(\v29.google.shopping.merchant.conversions.v1.ConversionSourceB\x04\xe2A\x01\x02R\x10conversionSource\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"i\n" +
+	"\x1dDeleteConversionSourceRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+merchantapi.googleapis.com/ConversionSourceR\x04name\"k\n" +
+	"\x1fUndeleteConversionSourceRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+merchantapi.googleapis.com/ConversionSourceR\x04name\"f\n" +
+	"\x1aGetConversionSourceRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+merchantapi.googleapis.com/ConversionSourceR\x04name\"\xdd\x01\n" +
+	"\x1cListConversionSourcesRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+merchantapi.googleapis.com/ConversionSourceR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12&\n" +
-	"\fshow_deleted\x18\x04 \x01(\bB\x03\xe0A\x01R\vshowDeleted\"\xb1\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12'\n" +
+	"\fshow_deleted\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\vshowDeleted\"\xb1\x01\n" +
 	"\x1dListConversionSourcesResponse\x12h\n" +
 	"\x12conversion_sources\x18\x01 \x03(\v29.google.shopping.merchant.conversions.v1.ConversionSourceR\x11conversionSources\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\x8e\f\n" +

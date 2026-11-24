@@ -507,44 +507,44 @@ var File_google_cloud_networksecurity_v1beta1_client_tls_policy_proto protorefle
 
 const file_google_cloud_networksecurity_v1beta1_client_tls_policy_proto_rawDesc = "" +
 	"\n" +
-	"<google/cloud/networksecurity/v1beta1/client_tls_policy.proto\x12$google.cloud.networksecurity.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/networksecurity/v1beta1/tls.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe6\x05\n" +
-	"\x0fClientTlsPolicy\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12^\n" +
-	"\x06labels\x18\x05 \x03(\v2A.google.cloud.networksecurity.v1beta1.ClientTlsPolicy.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x15\n" +
-	"\x03sni\x18\x06 \x01(\tB\x03\xe0A\x01R\x03sni\x12m\n" +
-	"\x12client_certificate\x18\a \x01(\v29.google.cloud.networksecurity.v1beta1.CertificateProviderB\x03\xe0A\x01R\x11clientCertificate\x12i\n" +
-	"\x14server_validation_ca\x18\b \x03(\v22.google.cloud.networksecurity.v1beta1.ValidationCAB\x03\xe0A\x01R\x12serverValidationCa\x1a9\n" +
+	"<google/cloud/networksecurity/v1beta1/client_tls_policy.proto\x12$google.cloud.networksecurity.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/networksecurity/v1beta1/tls.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xee\x05\n" +
+	"\x0fClientTlsPolicy\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12_\n" +
+	"\x06labels\x18\x05 \x03(\v2A.google.cloud.networksecurity.v1beta1.ClientTlsPolicy.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12\x16\n" +
+	"\x03sni\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x03sni\x12n\n" +
+	"\x12client_certificate\x18\a \x01(\v29.google.cloud.networksecurity.v1beta1.CertificateProviderB\x04\xe2A\x01\x01R\x11clientCertificate\x12j\n" +
+	"\x14server_validation_ca\x18\b \x03(\v22.google.cloud.networksecurity.v1beta1.ValidationCAB\x04\xe2A\x01\x01R\x12serverValidationCa\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x82\x01\xeaA\x7f\n" +
-	".networksecurity.googleapis.com/ClientTlsPolicy\x12Mprojects/{project}/locations/{location}/clientTlsPolicies/{client_tls_policy}\"\x9d\x01\n" +
-	"\x1cListClientTlsPoliciesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	".networksecurity.googleapis.com/ClientTlsPolicy\x12Mprojects/{project}/locations/{location}/clientTlsPolicies/{client_tls_policy}\"\x9e\x01\n" +
+	"\x1cListClientTlsPoliciesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xae\x01\n" +
 	"\x1dListClientTlsPoliciesResponse\x12e\n" +
 	"\x13client_tls_policies\x18\x01 \x03(\v25.google.cloud.networksecurity.v1beta1.ClientTlsPolicyR\x11clientTlsPolicies\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"g\n" +
-	"\x19GetClientTlsPolicyRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".networksecurity.googleapis.com/ClientTlsPolicyR\x04name\"\x8c\x02\n" +
-	"\x1cCreateClientTlsPolicyRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.networksecurity.googleapis.com/ClientTlsPolicyR\x06parent\x124\n" +
-	"\x14client_tls_policy_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x11clientTlsPolicyId\x12f\n" +
-	"\x11client_tls_policy\x18\x03 \x01(\v25.google.cloud.networksecurity.v1beta1.ClientTlsPolicyB\x03\xe0A\x02R\x0fclientTlsPolicy\"\xc8\x01\n" +
-	"\x1cUpdateClientTlsPolicyRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12f\n" +
-	"\x11client_tls_policy\x18\x02 \x01(\v25.google.cloud.networksecurity.v1beta1.ClientTlsPolicyB\x03\xe0A\x02R\x0fclientTlsPolicy\"j\n" +
-	"\x1cDeleteClientTlsPolicyRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"h\n" +
+	"\x19GetClientTlsPolicyRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".networksecurity.googleapis.com/ClientTlsPolicyR\x04name\"\x8f\x02\n" +
+	"\x1cCreateClientTlsPolicyRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.networksecurity.googleapis.com/ClientTlsPolicyR\x06parent\x125\n" +
+	"\x14client_tls_policy_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x11clientTlsPolicyId\x12g\n" +
+	"\x11client_tls_policy\x18\x03 \x01(\v25.google.cloud.networksecurity.v1beta1.ClientTlsPolicyB\x04\xe2A\x01\x02R\x0fclientTlsPolicy\"\xca\x01\n" +
+	"\x1cUpdateClientTlsPolicyRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12g\n" +
+	"\x11client_tls_policy\x18\x02 \x01(\v25.google.cloud.networksecurity.v1beta1.ClientTlsPolicyB\x04\xe2A\x01\x02R\x0fclientTlsPolicy\"k\n" +
+	"\x1cDeleteClientTlsPolicyRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
 	".networksecurity.googleapis.com/ClientTlsPolicyR\x04nameB\x8e\x02\n" +
 	"(com.google.cloud.networksecurity.v1beta1B\x14ClientTlsPolicyProtoP\x01ZRcloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb;networksecuritypb\xaa\x02$Google.Cloud.NetworkSecurity.V1Beta1\xca\x02$Google\\Cloud\\NetworkSecurity\\V1beta1\xea\x02'Google::Cloud::NetworkSecurity::V1beta1b\x06proto3"
 

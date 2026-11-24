@@ -722,49 +722,49 @@ var File_google_shopping_merchant_productstudio_v1alpha_image_proto protoreflect
 
 const file_google_shopping_merchant_productstudio_v1alpha_image_proto_rawDesc = "" +
 	"\n" +
-	":google/shopping/merchant/productstudio/v1alpha/image.proto\x12.google.shopping.merchant.productstudio.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1aIgoogle/shopping/merchant/productstudio/v1alpha/productstudio_common.proto\"\xfb\x02\n" +
-	"%GenerateProductImageBackgroundRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12k\n" +
-	"\routput_config\x18\x02 \x01(\v2A.google.shopping.merchant.productstudio.v1alpha.OutputImageConfigB\x03\xe0A\x01R\foutputConfig\x12`\n" +
-	"\vinput_image\x18\x03 \x01(\v2:.google.shopping.merchant.productstudio.v1alpha.InputImageB\x03\xe0A\x02R\n" +
-	"inputImage\x12j\n" +
-	"\x06config\x18\x04 \x01(\v2M.google.shopping.merchant.productstudio.v1alpha.GenerateImageBackgroundConfigB\x03\xe0A\x02R\x06config\"\x91\x01\n" +
+	":google/shopping/merchant/productstudio/v1alpha/image.proto\x12.google.shopping.merchant.productstudio.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1aIgoogle/shopping/merchant/productstudio/v1alpha/productstudio_common.proto\"\xff\x02\n" +
+	"%GenerateProductImageBackgroundRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12l\n" +
+	"\routput_config\x18\x02 \x01(\v2A.google.shopping.merchant.productstudio.v1alpha.OutputImageConfigB\x04\xe2A\x01\x01R\foutputConfig\x12a\n" +
+	"\vinput_image\x18\x03 \x01(\v2:.google.shopping.merchant.productstudio.v1alpha.InputImageB\x04\xe2A\x01\x02R\n" +
+	"inputImage\x12k\n" +
+	"\x06config\x18\x04 \x01(\v2M.google.shopping.merchant.productstudio.v1alpha.GenerateImageBackgroundConfigB\x04\xe2A\x01\x02R\x06config\"\x91\x01\n" +
 	"&GenerateProductImageBackgroundResponse\x12g\n" +
-	"\x0fgenerated_image\x18\x01 \x01(\v2>.google.shopping.merchant.productstudio.v1alpha.GeneratedImageR\x0egeneratedImage\"\xf7\x02\n" +
-	"#RemoveProductImageBackgroundRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12k\n" +
-	"\routput_config\x18\x02 \x01(\v2A.google.shopping.merchant.productstudio.v1alpha.OutputImageConfigB\x03\xe0A\x01R\foutputConfig\x12`\n" +
-	"\vinput_image\x18\x03 \x01(\v2:.google.shopping.merchant.productstudio.v1alpha.InputImageB\x03\xe0A\x02R\n" +
-	"inputImage\x12h\n" +
-	"\x06config\x18\x04 \x01(\v2K.google.shopping.merchant.productstudio.v1alpha.RemoveImageBackgroundConfigB\x03\xe0A\x01R\x06config\"\x8f\x01\n" +
+	"\x0fgenerated_image\x18\x01 \x01(\v2>.google.shopping.merchant.productstudio.v1alpha.GeneratedImageR\x0egeneratedImage\"\xfb\x02\n" +
+	"#RemoveProductImageBackgroundRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12l\n" +
+	"\routput_config\x18\x02 \x01(\v2A.google.shopping.merchant.productstudio.v1alpha.OutputImageConfigB\x04\xe2A\x01\x01R\foutputConfig\x12a\n" +
+	"\vinput_image\x18\x03 \x01(\v2:.google.shopping.merchant.productstudio.v1alpha.InputImageB\x04\xe2A\x01\x02R\n" +
+	"inputImage\x12i\n" +
+	"\x06config\x18\x04 \x01(\v2K.google.shopping.merchant.productstudio.v1alpha.RemoveImageBackgroundConfigB\x04\xe2A\x01\x01R\x06config\"\x8f\x01\n" +
 	"$RemoveProductImageBackgroundResponse\x12g\n" +
-	"\x0fgenerated_image\x18\x01 \x01(\v2>.google.shopping.merchant.productstudio.v1alpha.GeneratedImageR\x0egeneratedImage\"\x84\x02\n" +
-	"\x1aUpscaleProductImageRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12k\n" +
-	"\routput_config\x18\x02 \x01(\v2A.google.shopping.merchant.productstudio.v1alpha.OutputImageConfigB\x03\xe0A\x01R\foutputConfig\x12`\n" +
-	"\vinput_image\x18\x03 \x01(\v2:.google.shopping.merchant.productstudio.v1alpha.InputImageB\x03\xe0A\x02R\n" +
+	"\x0fgenerated_image\x18\x01 \x01(\v2>.google.shopping.merchant.productstudio.v1alpha.GeneratedImageR\x0egeneratedImage\"\x87\x02\n" +
+	"\x1aUpscaleProductImageRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12l\n" +
+	"\routput_config\x18\x02 \x01(\v2A.google.shopping.merchant.productstudio.v1alpha.OutputImageConfigB\x04\xe2A\x01\x01R\foutputConfig\x12a\n" +
+	"\vinput_image\x18\x03 \x01(\v2:.google.shopping.merchant.productstudio.v1alpha.InputImageB\x04\xe2A\x01\x02R\n" +
 	"inputImage\"\x86\x01\n" +
 	"\x1bUpscaleProductImageResponse\x12g\n" +
-	"\x0fgenerated_image\x18\x01 \x01(\v2>.google.shopping.merchant.productstudio.v1alpha.GeneratedImageR\x0egeneratedImage\"\xb7\x02\n" +
+	"\x0fgenerated_image\x18\x01 \x01(\v2>.google.shopping.merchant.productstudio.v1alpha.GeneratedImageR\x0egeneratedImage\"\xb8\x02\n" +
 	"\x0eGeneratedImage\x12\x12\n" +
 	"\x03uri\x18\x02 \x01(\tH\x00R\x03uri\x12!\n" +
 	"\vimage_bytes\x18\x03 \x01(\fH\x00R\n" +
-	"imageBytes\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12C\n" +
+	"imageBytes\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12C\n" +
 	"\x0fgeneration_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x0egenerationTime:\x86\x01\xeaA\x82\x01\n" +
 	")merchantapi.googleapis.com/GeneratedImage\x124accounts/{account}/generatedImages/{generated_image}*\x0fgeneratedImages2\x0egeneratedImageB\a\n" +
-	"\x05image\"B\n" +
-	"\x11OutputImageConfig\x12-\n" +
-	"\x10return_image_uri\x18\x01 \x01(\bB\x03\xe0A\x01R\x0ereturnImageUri\"\x91\x01\n" +
-	"\x1dGenerateImageBackgroundConfig\x124\n" +
-	"\x13product_description\x18\x01 \x01(\tB\x03\xe0A\x02R\x12productDescription\x12:\n" +
-	"\x16background_description\x18\x02 \x01(\tB\x03\xe0A\x02R\x15backgroundDescription\"\x87\x01\n" +
-	"\x1bRemoveImageBackgroundConfig\x12h\n" +
-	"\x10background_color\x18\x01 \x01(\v28.google.shopping.merchant.productstudio.v1alpha.RgbColorB\x03\xe0A\x01R\x0fbackgroundColor\"U\n" +
-	"\bRgbColor\x12\x15\n" +
-	"\x03red\x18\x01 \x01(\x05B\x03\xe0A\x01R\x03red\x12\x19\n" +
-	"\x05green\x18\x02 \x01(\x05B\x03\xe0A\x01R\x05green\x12\x17\n" +
-	"\x04blue\x18\x03 \x01(\x05B\x03\xe0A\x01R\x04blue2\xda\a\n" +
+	"\x05image\"C\n" +
+	"\x11OutputImageConfig\x12.\n" +
+	"\x10return_image_uri\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x0ereturnImageUri\"\x93\x01\n" +
+	"\x1dGenerateImageBackgroundConfig\x125\n" +
+	"\x13product_description\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x12productDescription\x12;\n" +
+	"\x16background_description\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x15backgroundDescription\"\x88\x01\n" +
+	"\x1bRemoveImageBackgroundConfig\x12i\n" +
+	"\x10background_color\x18\x01 \x01(\v28.google.shopping.merchant.productstudio.v1alpha.RgbColorB\x04\xe2A\x01\x01R\x0fbackgroundColor\"X\n" +
+	"\bRgbColor\x12\x16\n" +
+	"\x03red\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x03red\x12\x1a\n" +
+	"\x05green\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x05green\x12\x18\n" +
+	"\x04blue\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x04blue2\xda\a\n" +
 	"\fImageService\x12\xba\x02\n" +
 	"\x1eGenerateProductImageBackground\x12U.google.shopping.merchant.productstudio.v1alpha.GenerateProductImageBackgroundRequest\x1aV.google.shopping.merchant.productstudio.v1alpha.GenerateProductImageBackgroundResponse\"i\xdaA\x04name\x82\xd3\xe4\x93\x02\\:\x01*\"W/productstudio/v1alpha/{name=accounts/*}/generatedImages:generateProductImageBackground\x12\xb2\x02\n" +
 	"\x1cRemoveProductImageBackground\x12S.google.shopping.merchant.productstudio.v1alpha.RemoveProductImageBackgroundRequest\x1aT.google.shopping.merchant.productstudio.v1alpha.RemoveProductImageBackgroundResponse\"g\xdaA\x04name\x82\xd3\xe4\x93\x02Z:\x01*\"U/productstudio/v1alpha/{name=accounts/*}/generatedImages:removeProductImageBackground\x12\x8e\x02\n" +

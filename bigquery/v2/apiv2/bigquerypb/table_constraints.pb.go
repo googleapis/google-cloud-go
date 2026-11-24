@@ -266,22 +266,22 @@ var File_google_cloud_bigquery_v2_table_constraints_proto protoreflect.FileDescr
 
 const file_google_cloud_bigquery_v2_table_constraints_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/bigquery/v2/table_constraints.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a.google/cloud/bigquery/v2/table_reference.proto\"+\n" +
+	"0google/cloud/bigquery/v2/table_constraints.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a.google/cloud/bigquery/v2/table_reference.proto\",\n" +
 	"\n" +
-	"PrimaryKey\x12\x1d\n" +
-	"\acolumns\x18\x01 \x03(\tB\x03\xe0A\x02R\acolumns\"w\n" +
-	"\x0fColumnReference\x122\n" +
-	"\x12referencing_column\x18\x01 \x01(\tB\x03\xe0A\x02R\x11referencingColumn\x120\n" +
-	"\x11referenced_column\x18\x02 \x01(\tB\x03\xe0A\x02R\x10referencedColumn\"\xdc\x01\n" +
+	"PrimaryKey\x12\x1e\n" +
+	"\acolumns\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\acolumns\"y\n" +
+	"\x0fColumnReference\x123\n" +
+	"\x12referencing_column\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x11referencingColumn\x121\n" +
+	"\x11referenced_column\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x10referencedColumn\"\xdf\x01\n" +
 	"\n" +
-	"ForeignKey\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12X\n" +
-	"\x10referenced_table\x18\x02 \x01(\v2(.google.cloud.bigquery.v2.TableReferenceB\x03\xe0A\x02R\x0freferencedTable\x12[\n" +
-	"\x11column_references\x18\x03 \x03(\v2).google.cloud.bigquery.v2.ColumnReferenceB\x03\xe0A\x02R\x10columnReferences\"\xac\x01\n" +
-	"\x10TableConstraints\x12J\n" +
-	"\vprimary_key\x18\x01 \x01(\v2$.google.cloud.bigquery.v2.PrimaryKeyB\x03\xe0A\x01R\n" +
-	"primaryKey\x12L\n" +
-	"\fforeign_keys\x18\x02 \x03(\v2$.google.cloud.bigquery.v2.ForeignKeyB\x03\xe0A\x01R\vforeignKeysBr\n" +
+	"ForeignKey\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12Y\n" +
+	"\x10referenced_table\x18\x02 \x01(\v2(.google.cloud.bigquery.v2.TableReferenceB\x04\xe2A\x01\x02R\x0freferencedTable\x12\\\n" +
+	"\x11column_references\x18\x03 \x03(\v2).google.cloud.bigquery.v2.ColumnReferenceB\x04\xe2A\x01\x02R\x10columnReferences\"\xae\x01\n" +
+	"\x10TableConstraints\x12K\n" +
+	"\vprimary_key\x18\x01 \x01(\v2$.google.cloud.bigquery.v2.PrimaryKeyB\x04\xe2A\x01\x01R\n" +
+	"primaryKey\x12M\n" +
+	"\fforeign_keys\x18\x02 \x03(\v2$.google.cloud.bigquery.v2.ForeignKeyB\x04\xe2A\x01\x01R\vforeignKeysBr\n" +
 	"\x1ccom.google.cloud.bigquery.v2B\x15TableConstraintsProtoZ;cloud.google.com/go/bigquery/v2/apiv2/bigquerypb;bigquerypbb\x06proto3"
 
 var (

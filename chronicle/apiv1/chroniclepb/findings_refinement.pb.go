@@ -1571,39 +1571,39 @@ var File_google_cloud_chronicle_v1_findings_refinement_proto protoreflect.FileDe
 
 const file_google_cloud_chronicle_v1_findings_refinement_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/chronicle/v1/findings_refinement.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/interval.proto\"\xa0\x04\n" +
+	"3google/cloud/chronicle/v1/findings_refinement.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/interval.proto\"\xa3\x04\n" +
 	"\x12FindingsRefinement\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12E\n" +
-	"\x04type\x18\x03 \x01(\x0e21.google.cloud.chronicle.v1.FindingsRefinementTypeR\x04type\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04type\x18\x03 \x01(\x0e21.google.cloud.chronicle.v1.FindingsRefinementTypeR\x04type\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12\x14\n" +
-	"\x05query\x18\a \x01(\tR\x05query\x12V\n" +
-	"\x0foutcome_filters\x18\b \x03(\v2(.google.cloud.chronicle.v1.OutcomeFilterB\x03\xe0A\x01R\x0eoutcomeFilters:\x99\x01\xeaA\x95\x01\n" +
-	"+chronicle.googleapis.com/FindingsRefinement\x12fprojects/{project}/locations/{location}/instances/{instance}/findingsRefinements/{findings_refinement}\"\x86\x04\n" +
+	"\x05query\x18\a \x01(\tR\x05query\x12W\n" +
+	"\x0foutcome_filters\x18\b \x03(\v2(.google.cloud.chronicle.v1.OutcomeFilterB\x04\xe2A\x01\x01R\x0eoutcomeFilters:\x99\x01\xeaA\x95\x01\n" +
+	"+chronicle.googleapis.com/FindingsRefinement\x12fprojects/{project}/locations/{location}/instances/{instance}/findingsRefinements/{findings_refinement}\"\x88\x04\n" +
 	"\x1cFindingsRefinementDeployment\x12\x82\x01\n" +
-	"\x1fdetection_exclusion_application\x18\x05 \x01(\v28.google.cloud.chronicle.v1.DetectionExclusionApplicationH\x00R\x1ddetectionExclusionApplication\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x18\n" +
+	"\x1fdetection_exclusion_application\x18\x05 \x01(\v28.google.cloud.chronicle.v1.DetectionExclusionApplicationH\x00R\x1ddetectionExclusionApplication\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x18\n" +
 	"\aenabled\x18\x02 \x01(\bR\aenabled\x12\x1a\n" +
-	"\barchived\x18\x03 \x01(\bR\barchived\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\barchived\x18\x03 \x01(\bR\barchived\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:\xae\x01\xeaA\xaa\x01\n" +
 	"5chronicle.googleapis.com/FindingsRefinementDeployment\x12qprojects/{project}/locations/{location}/instances/{instance}/findingsRefinements/{findings_refinement}/deploymentB\x1f\n" +
-	"\x1dFindingsRefinementApplication\"\xf2\x02\n" +
+	"\x1dFindingsRefinementApplication\"\xf4\x02\n" +
 	"\x1dDetectionExclusionApplication\x12X\n" +
 	"\x11curated_rule_sets\x18\x01 \x03(\tB,\xfaA)\n" +
 	"'chronicle.googleapis.com/CuratedRuleSetR\x0fcuratedRuleSets\x12N\n" +
 	"\rcurated_rules\x18\x02 \x03(\tB)\xfaA&\n" +
-	"$chronicle.googleapis.com/CuratedRuleR\fcuratedRules\x12;\n" +
-	"\x05rules\x18\x03 \x03(\tB%\xe0A\x01\xfaA\x1f\n" +
-	"\x1dchronicle.googleapis.com/RuleR\x05rules\x12j\n" +
-	"\x19deleted_curated_rule_sets\x18\x04 \x03(\tB/\xe0A\x03\xfaA)\n" +
-	"'chronicle.googleapis.com/CuratedRuleSetR\x16deletedCuratedRuleSets\"\x89\x02\n" +
+	"$chronicle.googleapis.com/CuratedRuleR\fcuratedRules\x12<\n" +
+	"\x05rules\x18\x03 \x03(\tB&\xe2A\x01\x01\xfaA\x1f\n" +
+	"\x1dchronicle.googleapis.com/RuleR\x05rules\x12k\n" +
+	"\x19deleted_curated_rule_sets\x18\x04 \x03(\tB0\xe2A\x01\x03\xfaA)\n" +
+	"'chronicle.googleapis.com/CuratedRuleSetR\x16deletedCuratedRuleSets\"\x8a\x02\n" +
 	"\x1aFindingsRefinementActivity\x12y\n" +
-	"\x1cdetection_exclusion_activity\x18\x02 \x01(\v25.google.cloud.chronicle.v1.DetectionExclusionActivityH\x00R\x1adetectionExclusionActivity\x12d\n" +
-	"\x13findings_refinement\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"\x1cdetection_exclusion_activity\x18\x02 \x01(\v25.google.cloud.chronicle.v1.DetectionExclusionActivityH\x00R\x1adetectionExclusionActivity\x12e\n" +
+	"\x13findings_refinement\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+chronicle.googleapis.com/FindingsRefinementR\x12findingsRefinementB\n" +
 	"\n" +
 	"\bActivity\"\xc1\x05\n" +
@@ -1620,34 +1620,34 @@ const file_google_cloud_chronicle_v1_findings_refinement_proto_rawDesc = "" +
 	"'chronicle.googleapis.com/CuratedRuleSetH\x00R\x15deletedCuratedRuleSet\x128\n" +
 	"\x18excluded_detection_count\x18\x03 \x01(\x03R\x16excludedDetectionCount\x122\n" +
 	"\x15total_detection_count\x18\x04 \x01(\x03R\x13totalDetectionCountB\x0f\n" +
-	"\rdetector_name\"g\n" +
-	"\x1cGetFindingsRefinementRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+chronicle.googleapis.com/FindingsRefinementR\x04name\"\xa9\x01\n" +
-	"\x1eListFindingsRefinementsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+chronicle.googleapis.com/FindingsRefinementR\x06parent\x12\x1b\n" +
+	"\rdetector_name\"h\n" +
+	"\x1cGetFindingsRefinementRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+chronicle.googleapis.com/FindingsRefinementR\x04name\"\xaa\x01\n" +
+	"\x1eListFindingsRefinementsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+chronicle.googleapis.com/FindingsRefinementR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xab\x01\n" +
 	"\x1fListFindingsRefinementsResponse\x12`\n" +
 	"\x14findings_refinements\x18\x01 \x03(\v2-.google.cloud.chronicle.v1.FindingsRefinementR\x13findingsRefinements\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd3\x01\n" +
-	"\x1fCreateFindingsRefinementRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+chronicle.googleapis.com/FindingsRefinementR\x06parent\x12c\n" +
-	"\x13findings_refinement\x18\x02 \x01(\v2-.google.cloud.chronicle.v1.FindingsRefinementB\x03\xe0A\x02R\x12findingsRefinement\"\xc8\x01\n" +
-	"\x1fUpdateFindingsRefinementRequest\x12c\n" +
-	"\x13findings_refinement\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.FindingsRefinementB\x03\xe0A\x02R\x12findingsRefinement\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"{\n" +
-	"&GetFindingsRefinementDeploymentRequest\x12Q\n" +
-	"\x04name\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\n" +
-	"5chronicle.googleapis.com/FindingsRefinementDeploymentR\x04name\"\xf2\x01\n" +
-	")UpdateFindingsRefinementDeploymentRequest\x12\x82\x01\n" +
-	"\x1efindings_refinement_deployment\x18\x01 \x01(\v27.google.cloud.chronicle.v1.FindingsRefinementDeploymentB\x03\xe0A\x02R\x1cfindingsRefinementDeployment\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xc8\x01\n" +
-	"+ListAllFindingsRefinementDeploymentsRequest\x12E\n" +
-	"\binstance\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd5\x01\n" +
+	"\x1fCreateFindingsRefinementRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+chronicle.googleapis.com/FindingsRefinementR\x06parent\x12d\n" +
+	"\x13findings_refinement\x18\x02 \x01(\v2-.google.cloud.chronicle.v1.FindingsRefinementB\x04\xe2A\x01\x02R\x12findingsRefinement\"\xca\x01\n" +
+	"\x1fUpdateFindingsRefinementRequest\x12d\n" +
+	"\x13findings_refinement\x18\x01 \x01(\v2-.google.cloud.chronicle.v1.FindingsRefinementB\x04\xe2A\x01\x02R\x12findingsRefinement\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"|\n" +
+	"&GetFindingsRefinementDeploymentRequest\x12R\n" +
+	"\x04name\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\n" +
+	"5chronicle.googleapis.com/FindingsRefinementDeploymentR\x04name\"\xf4\x01\n" +
+	")UpdateFindingsRefinementDeploymentRequest\x12\x83\x01\n" +
+	"\x1efindings_refinement_deployment\x18\x01 \x01(\v27.google.cloud.chronicle.v1.FindingsRefinementDeploymentB\x04\xe2A\x01\x02R\x1cfindingsRefinementDeployment\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xc9\x01\n" +
+	"+ListAllFindingsRefinementDeploymentsRequest\x12F\n" +
+	"\binstance\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!chronicle.googleapis.com/InstanceR\binstance\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -1655,25 +1655,25 @@ const file_google_cloud_chronicle_v1_findings_refinement_proto_rawDesc = "" +
 	"\x06filter\x18\x04 \x01(\tR\x06filter\"\xdf\x01\n" +
 	",ListAllFindingsRefinementDeploymentsResponse\x12\x86\x01\n" +
 	"#all_findings_refinement_deployments\x18\x01 \x03(\v27.google.cloud.chronicle.v1.FindingsRefinementDeploymentR allFindingsRefinementDeployments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbd\x02\n" +
-	"\rOutcomeFilter\x12.\n" +
-	"\x10outcome_variable\x18\x01 \x01(\tB\x03\xe0A\x02R\x0foutcomeVariable\x12(\n" +
-	"\routcome_value\x18\x02 \x01(\tB\x03\xe0A\x02R\foutcomeValue\x12n\n" +
-	"\x17outcome_filter_operator\x18\x03 \x01(\x0e21.google.cloud.chronicle.v1.OutcomeFilter.OperatorB\x03\xe0A\x02R\x15outcomeFilterOperator\"b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc0\x02\n" +
+	"\rOutcomeFilter\x12/\n" +
+	"\x10outcome_variable\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0foutcomeVariable\x12)\n" +
+	"\routcome_value\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\foutcomeValue\x12o\n" +
+	"\x17outcome_filter_operator\x18\x03 \x01(\x0e21.google.cloud.chronicle.v1.OutcomeFilter.OperatorB\x04\xe2A\x01\x02R\x15outcomeFilterOperator\"b\n" +
 	"\bOperator\x12\x18\n" +
 	"\x14OPERATOR_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05EQUAL\x10\x01\x12\f\n" +
 	"\bCONTAINS\x10\x02\x12\x11\n" +
 	"\rMATCHES_REGEX\x10\x03\x12\x10\n" +
-	"\fMATCHES_CIDR\x10\x04\"\xa6\x01\n" +
-	"(ComputeFindingsRefinementActivityRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"\fMATCHES_CIDR\x10\x04\"\xa7\x01\n" +
+	"(ComputeFindingsRefinementActivityRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+chronicle.googleapis.com/FindingsRefinementR\x04name\x121\n" +
 	"\binterval\x18\x02 \x01(\v2\x15.google.type.IntervalR\binterval\"~\n" +
 	")ComputeFindingsRefinementActivityResponse\x12Q\n" +
-	"\bactivity\x18\x01 \x01(\v25.google.cloud.chronicle.v1.FindingsRefinementActivityR\bactivity\"\xa9\x01\n" +
-	"-ComputeAllFindingsRefinementActivitiesRequest\x12E\n" +
-	"\binstance\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\bactivity\x18\x01 \x01(\v25.google.cloud.chronicle.v1.FindingsRefinementActivityR\bactivity\"\xaa\x01\n" +
+	"-ComputeAllFindingsRefinementActivitiesRequest\x12F\n" +
+	"\binstance\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!chronicle.googleapis.com/InstanceR\binstance\x121\n" +
 	"\binterval\x18\x02 \x01(\v2\x15.google.type.IntervalR\binterval\"\x87\x01\n" +
 	".ComputeAllFindingsRefinementActivitiesResponse\x12U\n" +

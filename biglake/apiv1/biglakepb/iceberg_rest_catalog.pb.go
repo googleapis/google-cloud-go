@@ -711,7 +711,18 @@ type ListIcebergCatalogsRequest struct {
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=page-size,proto3" json:"page_size,omitempty"`
 	// Optional. The page token, received from a previous `ListIcebergCatalogs`
 	// call. Provide this to retrieve the subsequent page.
-	PageToken     string `protobuf:"bytes,4,opt,name=page_token,json=page-token,proto3" json:"page_token,omitempty"`
+	PageToken string `protobuf:"bytes,4,opt,name=page_token,json=page-token,proto3" json:"page_token,omitempty"`
+	// Optional. The filter expression.
+	// The only parameter currently supported is filtering based on the
+	// `IcebergCatalog.catalog_type` field.
+	//
+	// Examples:
+	// * `catalog_type = CATALOG_TYPE_BIGLAKE`
+	// * `catalog_type != CATALOG_TYPE_GCS_BUCKET`
+	// * `catalog_type = CATALOG_TYPE_BIGLAKE OR catalog_type =
+	// CATALOG_TYPE_GCS_BUCKET`
+	// * `NOT catalog_type = CATALOG_TYPE_GCS_BUCKET`
+	Filter        string `protobuf:"bytes,6,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -770,6 +781,13 @@ func (x *ListIcebergCatalogsRequest) GetPageSize() int32 {
 func (x *ListIcebergCatalogsRequest) GetPageToken() string {
 	if x != nil {
 		return x.PageToken
+	}
+	return ""
+}
+
+func (x *ListIcebergCatalogsRequest) GetFilter() string {
+	if x != nil {
+		return x.Filter
 	}
 	return ""
 }
@@ -2368,6 +2386,7 @@ type IcebergCatalog_FederatedCatalogOptions struct {
 	//
 	//	*IcebergCatalog_FederatedCatalogOptions_UnityCatalogInfo_
 	//	*IcebergCatalog_FederatedCatalogOptions_GlueCatalogInfo_
+	//	*IcebergCatalog_FederatedCatalogOptions_SnowflakeCatalogInfo_
 	RemoteCatalogInfo isIcebergCatalog_FederatedCatalogOptions_RemoteCatalogInfo `protobuf_oneof:"remote_catalog_info"`
 	// Optional. The secret resource name in Secret Manager, in the format
 	// `projects/{project_id}/locations/{location}/secrets/{secret_id}` or
@@ -2377,7 +2396,11 @@ type IcebergCatalog_FederatedCatalogOptions struct {
 	// the catalog's location.
 	// If the version is not specified, the latest version will be used.
 	//
-	// This field is not used when `service_principal_application_id` is set.
+	// This field is not used when
+	// [google.cloud.biglake.v1main.IcebergCatalog.FederatedCatalogOptions.UnityCatalogInfo.service_principal_application_id][google.cloud.biglake.v1main.IcebergCatalog.FederatedCatalogOptions.UnityCatalogInfo.service_principal_application_id]
+	// or
+	// [google.cloud.biglake.v1main.IcebergCatalog.FederatedCatalogOptions.SnowflakeCatalogInfo.snowflake_role][google.cloud.biglake.v1main.IcebergCatalog.FederatedCatalogOptions.SnowflakeCatalogInfo.snowflake_role]
+	// is set.
 	SecretName *string `protobuf:"bytes,1,opt,name=secret_name,json=secret-name,proto3,oneof" json:"secret_name,omitempty"`
 	// Optional. The service directory resource name for routing traffic over a
 	// private network connection through Cross-Cloud Interconnect, in the
@@ -2447,6 +2470,15 @@ func (x *IcebergCatalog_FederatedCatalogOptions) GetGlueCatalogInfo() *IcebergCa
 	return nil
 }
 
+func (x *IcebergCatalog_FederatedCatalogOptions) GetSnowflakeCatalogInfo() *IcebergCatalog_FederatedCatalogOptions_SnowflakeCatalogInfo {
+	if x != nil {
+		if x, ok := x.RemoteCatalogInfo.(*IcebergCatalog_FederatedCatalogOptions_SnowflakeCatalogInfo_); ok {
+			return x.SnowflakeCatalogInfo
+		}
+	}
+	return nil
+}
+
 func (x *IcebergCatalog_FederatedCatalogOptions) GetSecretName() string {
 	if x != nil && x.SecretName != nil {
 		return *x.SecretName
@@ -2489,10 +2521,18 @@ type IcebergCatalog_FederatedCatalogOptions_GlueCatalogInfo_ struct {
 	GlueCatalogInfo *IcebergCatalog_FederatedCatalogOptions_GlueCatalogInfo `protobuf:"bytes,4,opt,name=glue_catalog_info,json=glue-catalog-info,proto3,oneof"`
 }
 
+type IcebergCatalog_FederatedCatalogOptions_SnowflakeCatalogInfo_ struct {
+	// Optional. Info specific to a Snowflake Catalog.
+	SnowflakeCatalogInfo *IcebergCatalog_FederatedCatalogOptions_SnowflakeCatalogInfo `protobuf:"bytes,7,opt,name=snowflake_catalog_info,json=snowflake-catalog-info,proto3,oneof"`
+}
+
 func (*IcebergCatalog_FederatedCatalogOptions_UnityCatalogInfo_) isIcebergCatalog_FederatedCatalogOptions_RemoteCatalogInfo() {
 }
 
 func (*IcebergCatalog_FederatedCatalogOptions_GlueCatalogInfo_) isIcebergCatalog_FederatedCatalogOptions_RemoteCatalogInfo() {
+}
+
+func (*IcebergCatalog_FederatedCatalogOptions_SnowflakeCatalogInfo_) isIcebergCatalog_FederatedCatalogOptions_RemoteCatalogInfo() {
 }
 
 // Unity Catalog info.
@@ -2507,7 +2547,7 @@ type IcebergCatalog_FederatedCatalogOptions_UnityCatalogInfo struct {
 	CatalogName *string `protobuf:"bytes,2,opt,name=catalog_name,json=catalog-name,proto3,oneof" json:"catalog_name,omitempty"`
 	// Optional. The application ID of the Databricks service principal that
 	// will be used to access the Unity Catalog in the OIDC authentication
-	// flow. With OIDC, the secret_name field is not used.
+	// flow.
 	ServicePrincipalApplicationId *string `protobuf:"bytes,3,opt,name=service_principal_application_id,json=service-principal-application-id,proto3,oneof" json:"service_principal_application_id,omitempty"`
 	unknownFields                 protoimpl.UnknownFields
 	sizeCache                     protoimpl.SizeCache
@@ -2640,6 +2680,86 @@ func (x *IcebergCatalog_FederatedCatalogOptions_GlueCatalogInfo) GetAwsRoleArn()
 	return ""
 }
 
+// Snowflake Catalog info.
+type IcebergCatalog_FederatedCatalogOptions_SnowflakeCatalogInfo struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The account identifier in Snowflake (See:
+	// https://docs.snowflake.com/en/user-guide/admin-account-identifier). It
+	// is the prefix to log into your Snowflake deployment URL. For example:
+	// https://<account_identifier>.snowflakecomputing.com.
+	AccountIdentifier *string `protobuf:"bytes,1,opt,name=account_identifier,json=account-identifier,proto3,oneof" json:"account_identifier,omitempty"`
+	// Required. The warehouse to connect to in Snowflake REST Catalog.
+	// https://<account_identifier>.snowflakecomputing.com/polaris/api/catalog/v1/config?warehouse=<database_name>.
+	//
+	// This is the Snowflake database name containing the Iceberg metadata to
+	// be federated.
+	//
+	// Must be non-empty.
+	Warehouse *string `protobuf:"bytes,2,opt,name=warehouse,proto3,oneof" json:"warehouse,omitempty"`
+	// Optional. The specific Snowflake role name to request in the OAuth
+	// token scope (via session:role:$ROLE) for the Iceberg REST Catalog
+	// session. This role grants the GCP BigLake service account the necessary
+	// permissions to interact with the Iceberg catalog, namespaces, and
+	// tables.
+	//
+	// Note: The role provided here must be the DEFAULT_ROLE or be granted to,
+	// the Snowflake service user mapped to the BigLake service account.
+	SnowflakeRole *string `protobuf:"bytes,3,opt,name=snowflake_role,json=snowflake-role,proto3,oneof" json:"snowflake_role,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *IcebergCatalog_FederatedCatalogOptions_SnowflakeCatalogInfo) Reset() {
+	*x = IcebergCatalog_FederatedCatalogOptions_SnowflakeCatalogInfo{}
+	mi := &file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IcebergCatalog_FederatedCatalogOptions_SnowflakeCatalogInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IcebergCatalog_FederatedCatalogOptions_SnowflakeCatalogInfo) ProtoMessage() {}
+
+func (x *IcebergCatalog_FederatedCatalogOptions_SnowflakeCatalogInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IcebergCatalog_FederatedCatalogOptions_SnowflakeCatalogInfo.ProtoReflect.Descriptor instead.
+func (*IcebergCatalog_FederatedCatalogOptions_SnowflakeCatalogInfo) Descriptor() ([]byte, []int) {
+	return file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_rawDescGZIP(), []int{0, 2, 2}
+}
+
+func (x *IcebergCatalog_FederatedCatalogOptions_SnowflakeCatalogInfo) GetAccountIdentifier() string {
+	if x != nil && x.AccountIdentifier != nil {
+		return *x.AccountIdentifier
+	}
+	return ""
+}
+
+func (x *IcebergCatalog_FederatedCatalogOptions_SnowflakeCatalogInfo) GetWarehouse() string {
+	if x != nil && x.Warehouse != nil {
+		return *x.Warehouse
+	}
+	return ""
+}
+
+func (x *IcebergCatalog_FederatedCatalogOptions_SnowflakeCatalogInfo) GetSnowflakeRole() string {
+	if x != nil && x.SnowflakeRole != nil {
+		return *x.SnowflakeRole
+	}
+	return ""
+}
+
 // Schedule defines if and when metadata refresh should be scheduled.
 type IcebergCatalog_FederatedCatalogOptions_RefreshSchedule struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2655,7 +2775,7 @@ type IcebergCatalog_FederatedCatalogOptions_RefreshSchedule struct {
 
 func (x *IcebergCatalog_FederatedCatalogOptions_RefreshSchedule) Reset() {
 	*x = IcebergCatalog_FederatedCatalogOptions_RefreshSchedule{}
-	mi := &file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[36]
+	mi := &file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2667,7 +2787,7 @@ func (x *IcebergCatalog_FederatedCatalogOptions_RefreshSchedule) String() string
 func (*IcebergCatalog_FederatedCatalogOptions_RefreshSchedule) ProtoMessage() {}
 
 func (x *IcebergCatalog_FederatedCatalogOptions_RefreshSchedule) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[36]
+	mi := &file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2680,7 +2800,7 @@ func (x *IcebergCatalog_FederatedCatalogOptions_RefreshSchedule) ProtoReflect() 
 
 // Deprecated: Use IcebergCatalog_FederatedCatalogOptions_RefreshSchedule.ProtoReflect.Descriptor instead.
 func (*IcebergCatalog_FederatedCatalogOptions_RefreshSchedule) Descriptor() ([]byte, []int) {
-	return file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_rawDescGZIP(), []int{0, 2, 2}
+	return file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_rawDescGZIP(), []int{0, 2, 3}
 }
 
 func (x *IcebergCatalog_FederatedCatalogOptions_RefreshSchedule) GetRefreshInterval() *durationpb.Duration {
@@ -2707,7 +2827,7 @@ type IcebergCatalog_FederatedCatalogOptions_RefreshScope struct {
 
 func (x *IcebergCatalog_FederatedCatalogOptions_RefreshScope) Reset() {
 	*x = IcebergCatalog_FederatedCatalogOptions_RefreshScope{}
-	mi := &file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[37]
+	mi := &file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2719,7 +2839,7 @@ func (x *IcebergCatalog_FederatedCatalogOptions_RefreshScope) String() string {
 func (*IcebergCatalog_FederatedCatalogOptions_RefreshScope) ProtoMessage() {}
 
 func (x *IcebergCatalog_FederatedCatalogOptions_RefreshScope) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[37]
+	mi := &file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2732,7 +2852,7 @@ func (x *IcebergCatalog_FederatedCatalogOptions_RefreshScope) ProtoReflect() pro
 
 // Deprecated: Use IcebergCatalog_FederatedCatalogOptions_RefreshScope.ProtoReflect.Descriptor instead.
 func (*IcebergCatalog_FederatedCatalogOptions_RefreshScope) Descriptor() ([]byte, []int) {
-	return file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_rawDescGZIP(), []int{0, 2, 3}
+	return file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_rawDescGZIP(), []int{0, 2, 4}
 }
 
 func (x *IcebergCatalog_FederatedCatalogOptions_RefreshScope) GetNamespaceFilters() []string {
@@ -2756,7 +2876,7 @@ type IcebergCatalog_FederatedCatalogOptions_RefreshOptions struct {
 
 func (x *IcebergCatalog_FederatedCatalogOptions_RefreshOptions) Reset() {
 	*x = IcebergCatalog_FederatedCatalogOptions_RefreshOptions{}
-	mi := &file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[38]
+	mi := &file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2768,7 +2888,7 @@ func (x *IcebergCatalog_FederatedCatalogOptions_RefreshOptions) String() string 
 func (*IcebergCatalog_FederatedCatalogOptions_RefreshOptions) ProtoMessage() {}
 
 func (x *IcebergCatalog_FederatedCatalogOptions_RefreshOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[38]
+	mi := &file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2781,7 +2901,7 @@ func (x *IcebergCatalog_FederatedCatalogOptions_RefreshOptions) ProtoReflect() p
 
 // Deprecated: Use IcebergCatalog_FederatedCatalogOptions_RefreshOptions.ProtoReflect.Descriptor instead.
 func (*IcebergCatalog_FederatedCatalogOptions_RefreshOptions) Descriptor() ([]byte, []int) {
-	return file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_rawDescGZIP(), []int{0, 2, 4}
+	return file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_rawDescGZIP(), []int{0, 2, 5}
 }
 
 func (x *IcebergCatalog_FederatedCatalogOptions_RefreshOptions) GetRefreshSchedule() *IcebergCatalog_FederatedCatalogOptions_RefreshSchedule {
@@ -2816,7 +2936,7 @@ type IcebergCatalog_FederatedCatalogOptions_RefreshStatus struct {
 
 func (x *IcebergCatalog_FederatedCatalogOptions_RefreshStatus) Reset() {
 	*x = IcebergCatalog_FederatedCatalogOptions_RefreshStatus{}
-	mi := &file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[39]
+	mi := &file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2828,7 +2948,7 @@ func (x *IcebergCatalog_FederatedCatalogOptions_RefreshStatus) String() string {
 func (*IcebergCatalog_FederatedCatalogOptions_RefreshStatus) ProtoMessage() {}
 
 func (x *IcebergCatalog_FederatedCatalogOptions_RefreshStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[39]
+	mi := &file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2841,7 +2961,7 @@ func (x *IcebergCatalog_FederatedCatalogOptions_RefreshStatus) ProtoReflect() pr
 
 // Deprecated: Use IcebergCatalog_FederatedCatalogOptions_RefreshStatus.ProtoReflect.Descriptor instead.
 func (*IcebergCatalog_FederatedCatalogOptions_RefreshStatus) Descriptor() ([]byte, []int) {
-	return file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_rawDescGZIP(), []int{0, 2, 5}
+	return file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_rawDescGZIP(), []int{0, 2, 6}
 }
 
 func (x *IcebergCatalog_FederatedCatalogOptions_RefreshStatus) GetStartTime() *timestamppb.Timestamp {
@@ -2869,72 +2989,81 @@ var File_google_cloud_biglake_v1_iceberg_rest_catalog_proto protoreflect.FileDes
 
 const file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/biglake/v1/iceberg_rest_catalog.proto\x12\x17google.cloud.biglake.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xc3\x1c\n" +
-	"\x0eIcebergCatalog\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12e\n" +
-	"\x0fcredential_mode\x18\x02 \x01(\x0e26.google.cloud.biglake.v1.IcebergCatalog.CredentialModeB\x03\xe0A\x01R\x0fcredential-mode\x12=\n" +
-	"\x17biglake_service_account\x18\x03 \x01(\tB\x03\xe0A\x03R\x17biglake-service-account\x12J\n" +
-	"!biglake_service_account_unique_id\x18\x0e \x01(\tB\x03\xe0A\x03R\x1abiglake-service-account-id\x12\\\n" +
-	"\fcatalog_type\x18\x04 \x01(\x0e23.google.cloud.biglake.v1.IcebergCatalog.CatalogTypeB\x03\xe0A\x02R\fcatalog-type\x12/\n" +
-	"\x10default_location\x18\x05 \x01(\tB\x03\xe0A\x01R\x10default-location\x12-\n" +
+	"2google/cloud/biglake/v1/iceberg_rest_catalog.proto\x12\x17google.cloud.biglake.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xe1\x1f\n" +
+	"\x0eIcebergCatalog\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12f\n" +
+	"\x0fcredential_mode\x18\x02 \x01(\x0e26.google.cloud.biglake.v1.IcebergCatalog.CredentialModeB\x04\xe2A\x01\x01R\x0fcredential-mode\x12>\n" +
+	"\x17biglake_service_account\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x17biglake-service-account\x12K\n" +
+	"!biglake_service_account_unique_id\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\x1abiglake-service-account-id\x12]\n" +
+	"\fcatalog_type\x18\x04 \x01(\x0e23.google.cloud.biglake.v1.IcebergCatalog.CatalogTypeB\x04\xe2A\x01\x02R\fcatalog-type\x120\n" +
+	"\x10default_location\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x10default-location\x12.\n" +
 	"\x0fstorage_regions\x18\n" +
-	" \x03(\tB\x03\xe0A\x03R\x0fstorage-regions\x12A\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vcreate-time\x12A\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vupdate-time\x12P\n" +
-	"\breplicas\x18\t \x03(\v2/.google.cloud.biglake.v1.IcebergCatalog.ReplicaB\x03\xe0A\x03R\breplicas\x12%\n" +
-	"\vdescription\x18\f \x01(\tB\x03\xe0A\x01R\vdescription\x12\x88\x01\n" +
-	"\x1brestricted_locations_config\x18\x0f \x01(\v2A.google.cloud.biglake.v1.IcebergCatalog.RestrictedLocationsConfigB\x03\xe0A\x01R\x1brestricted-locations-config\x12\x82\x01\n" +
-	"\x19federated_catalog_options\x18\r \x01(\v2?.google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptionsB\x03\xe0A\x01R\x19federated-catalog-options\x1a\xdb\x01\n" +
-	"\aReplica\x12\x1b\n" +
-	"\x06region\x18\x01 \x01(\tB\x03\xe0A\x03R\x06region\x12P\n" +
-	"\x05state\x18\x02 \x01(\x0e25.google.cloud.biglake.v1.IcebergCatalog.Replica.StateB\x03\xe0A\x03R\x05state\"a\n" +
+	" \x03(\tB\x04\xe2A\x01\x03R\x0fstorage-regions\x12B\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\vcreate-time\x12B\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\vupdate-time\x12Q\n" +
+	"\breplicas\x18\t \x03(\v2/.google.cloud.biglake.v1.IcebergCatalog.ReplicaB\x04\xe2A\x01\x03R\breplicas\x12&\n" +
+	"\vdescription\x18\f \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x89\x01\n" +
+	"\x1brestricted_locations_config\x18\x0f \x01(\v2A.google.cloud.biglake.v1.IcebergCatalog.RestrictedLocationsConfigB\x04\xe2A\x01\x01R\x1brestricted-locations-config\x12\x83\x01\n" +
+	"\x19federated_catalog_options\x18\r \x01(\v2?.google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptionsB\x04\xe2A\x01\x01R\x19federated-catalog-options\x1a\xdd\x01\n" +
+	"\aReplica\x12\x1c\n" +
+	"\x06region\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06region\x12Q\n" +
+	"\x05state\x18\x02 \x01(\x0e25.google.cloud.biglake.v1.IcebergCatalog.Replica.StateB\x04\xe2A\x01\x03R\x05state\"a\n" +
 	"\x05State\x12\x11\n" +
 	"\rSTATE_UNKNOWN\x10\x00\x12\x11\n" +
 	"\rSTATE_PRIMARY\x10\x01\x12\x1d\n" +
 	"\x19STATE_PRIMARY_IN_PROGRESS\x10\x02\x12\x13\n" +
-	"\x0fSTATE_SECONDARY\x10\x03\x1aT\n" +
-	"\x19RestrictedLocationsConfig\x127\n" +
-	"\x14restricted_locations\x18\x01 \x03(\tB\x03\xe0A\x01R\x14restricted-locations\x1a\xcc\x0f\n" +
-	"\x17FederatedCatalogOptions\x12\x87\x01\n" +
-	"\x12unity_catalog_info\x18\x02 \x01(\v2P.google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.UnityCatalogInfoB\x03\xe0A\x01H\x00R\x12unity-catalog-info\x12\x84\x01\n" +
-	"\x11glue_catalog_info\x18\x04 \x01(\v2O.google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.GlueCatalogInfoB\x03\xe0A\x01H\x00R\x11glue-catalog-info\x12R\n" +
-	"\vsecret_name\x18\x01 \x01(\tB+\xe0A\x01\xfaA%\n" +
-	"#secretmanager.googleapis.com/SecretH\x01R\vsecret-name\x88\x01\x01\x12l\n" +
-	"\x16service_directory_name\x18\x05 \x01(\tB/\xe0A\x01\xfaA)\n" +
-	"'servicedirectory.googleapis.com/ServiceH\x02R\x16service-directory-name\x88\x01\x01\x12}\n" +
-	"\x0frefresh_options\x18\x03 \x01(\v2N.google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshOptionsB\x03\xe0A\x01R\x0frefresh-options\x12z\n" +
-	"\x0erefresh_status\x18\x06 \x01(\v2M.google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshStatusB\x03\xe0A\x03R\x0erefresh-status\x1a\x96\x02\n" +
-	"\x10UnityCatalogInfo\x12.\n" +
-	"\rinstance_name\x18\x01 \x01(\tB\x03\xe0A\x02H\x00R\rinstance-name\x88\x01\x01\x12,\n" +
-	"\fcatalog_name\x18\x02 \x01(\tB\x03\xe0A\x02H\x01R\fcatalog-name\x88\x01\x01\x12\\\n" +
-	" service_principal_application_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01H\x02R service-principal-application-id\x88\x01\x01B\x10\n" +
+	"\x0fSTATE_SECONDARY\x10\x03\x1aU\n" +
+	"\x19RestrictedLocationsConfig\x128\n" +
+	"\x14restricted_locations\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x14restricted-locations\x1a\xda\x12\n" +
+	"\x17FederatedCatalogOptions\x12\x88\x01\n" +
+	"\x12unity_catalog_info\x18\x02 \x01(\v2P.google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.UnityCatalogInfoB\x04\xe2A\x01\x01H\x00R\x12unity-catalog-info\x12\x85\x01\n" +
+	"\x11glue_catalog_info\x18\x04 \x01(\v2O.google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.GlueCatalogInfoB\x04\xe2A\x01\x01H\x00R\x11glue-catalog-info\x12\x94\x01\n" +
+	"\x16snowflake_catalog_info\x18\a \x01(\v2T.google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.SnowflakeCatalogInfoB\x04\xe2A\x01\x01H\x00R\x16snowflake-catalog-info\x12S\n" +
+	"\vsecret_name\x18\x01 \x01(\tB,\xe2A\x01\x01\xfaA%\n" +
+	"#secretmanager.googleapis.com/SecretH\x01R\vsecret-name\x88\x01\x01\x12m\n" +
+	"\x16service_directory_name\x18\x05 \x01(\tB0\xe2A\x01\x01\xfaA)\n" +
+	"'servicedirectory.googleapis.com/ServiceH\x02R\x16service-directory-name\x88\x01\x01\x12~\n" +
+	"\x0frefresh_options\x18\x03 \x01(\v2N.google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshOptionsB\x04\xe2A\x01\x01R\x0frefresh-options\x12{\n" +
+	"\x0erefresh_status\x18\x06 \x01(\v2M.google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshStatusB\x04\xe2A\x01\x03R\x0erefresh-status\x1a\x99\x02\n" +
+	"\x10UnityCatalogInfo\x12/\n" +
+	"\rinstance_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02H\x00R\rinstance-name\x88\x01\x01\x12-\n" +
+	"\fcatalog_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02H\x01R\fcatalog-name\x88\x01\x01\x12]\n" +
+	" service_principal_application_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01H\x02R service-principal-application-id\x88\x01\x01B\x10\n" +
 	"\x0e_instance_nameB\x0f\n" +
 	"\r_catalog_nameB#\n" +
-	"!_service_principal_application_id\x1a\xc5\x01\n" +
-	"\x0fGlueCatalogInfo\x12)\n" +
-	"\twarehouse\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05H\x00R\twarehouse\x88\x01\x01\x12+\n" +
+	"!_service_principal_application_id\x1a\xc4\x01\n" +
+	"\x0fGlueCatalogInfo\x12(\n" +
+	"\twarehouse\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x05H\x00R\twarehouse\x88\x01\x01\x12*\n" +
 	"\n" +
-	"aws_region\x18\x02 \x01(\tB\x06\xe0A\x02\xe0A\x05H\x01R\n" +
-	"aws-region\x88\x01\x01\x12,\n" +
-	"\faws_role_arn\x18\x03 \x01(\tB\x03\xe0A\x02H\x02R\faws-role-arn\x88\x01\x01B\f\n" +
+	"aws_region\x18\x02 \x01(\tB\x05\xe2A\x02\x02\x05H\x01R\n" +
+	"aws-region\x88\x01\x01\x12-\n" +
+	"\faws_role_arn\x18\x03 \x01(\tB\x04\xe2A\x01\x02H\x02R\faws-role-arn\x88\x01\x01B\f\n" +
 	"\n" +
 	"_warehouseB\r\n" +
 	"\v_aws_regionB\x0f\n" +
-	"\r_aws_role_arn\x1aw\n" +
-	"\x0fRefreshSchedule\x12O\n" +
-	"\x10refresh_interval\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01H\x00R\x10refresh-interval\x88\x01\x01B\x13\n" +
-	"\x11_refresh_interval\x1aA\n" +
-	"\fRefreshScope\x121\n" +
-	"\x11namespace_filters\x18\x01 \x03(\tB\x03\xe0A\x01R\x11namespace-filters\x1a\x8c\x02\n" +
-	"\x0eRefreshOptions\x12\x80\x01\n" +
-	"\x10refresh_schedule\x18\x01 \x01(\v2O.google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshScheduleB\x03\xe0A\x01R\x10refresh-schedule\x12w\n" +
-	"\rrefresh_scope\x18\x02 \x01(\v2L.google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshScopeB\x03\xe0A\x01R\rrefresh-scope\x1a\xf4\x01\n" +
-	"\rRefreshStatus\x12D\n" +
+	"\r_aws_role_arn\x1a\xe5\x01\n" +
+	"\x14SnowflakeCatalogInfo\x129\n" +
+	"\x12account_identifier\x18\x01 \x01(\tB\x04\xe2A\x01\x02H\x00R\x12account-identifier\x88\x01\x01\x12'\n" +
+	"\twarehouse\x18\x02 \x01(\tB\x04\xe2A\x01\x02H\x01R\twarehouse\x88\x01\x01\x121\n" +
+	"\x0esnowflake_role\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x02R\x0esnowflake-role\x88\x01\x01B\x15\n" +
+	"\x13_account_identifierB\f\n" +
 	"\n" +
-	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03H\x00R\n" +
-	"start-time\x88\x01\x01\x12@\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03H\x01R\bend-time\x88\x01\x01\x124\n" +
-	"\x06status\x18\x03 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03H\x02R\x06status\x88\x01\x01B\r\n" +
+	"_warehouseB\x11\n" +
+	"\x0f_snowflake_role\x1ax\n" +
+	"\x0fRefreshSchedule\x12P\n" +
+	"\x10refresh_interval\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01H\x00R\x10refresh-interval\x88\x01\x01B\x13\n" +
+	"\x11_refresh_interval\x1aB\n" +
+	"\fRefreshScope\x122\n" +
+	"\x11namespace_filters\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x11namespace-filters\x1a\x8e\x02\n" +
+	"\x0eRefreshOptions\x12\x81\x01\n" +
+	"\x10refresh_schedule\x18\x01 \x01(\v2O.google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshScheduleB\x04\xe2A\x01\x01R\x10refresh-schedule\x12x\n" +
+	"\rrefresh_scope\x18\x02 \x01(\v2L.google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshScopeB\x04\xe2A\x01\x01R\rrefresh-scope\x1a\xf7\x01\n" +
+	"\rRefreshStatus\x12E\n" +
+	"\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03H\x00R\n" +
+	"start-time\x88\x01\x01\x12A\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03H\x01R\bend-time\x88\x01\x01\x125\n" +
+	"\x06status\x18\x03 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03H\x02R\x06status\x88\x01\x01B\r\n" +
 	"\v_start_timeB\v\n" +
 	"\t_end_timeB\t\n" +
 	"\a_statusB\x15\n" +
@@ -2950,142 +3079,143 @@ const file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_rawDesc = "" +
 	"\x1bCREDENTIAL_MODE_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18CREDENTIAL_MODE_END_USER\x10\x01\x12&\n" +
 	"\"CREDENTIAL_MODE_VENDED_CREDENTIALS\x10\x02:]\xeaAZ\n" +
-	"\x1ebiglake.googleapis.com/Catalog\x12%projects/{project}/catalogs/{catalog}*\bcatalogs2\acatalog\"\xa7\x02\n" +
-	"\x1bCreateIcebergCatalogRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x123\n" +
-	"\x12iceberg_catalog_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x12iceberg-catalog-id\x12U\n" +
-	"\x0ficeberg_catalog\x18\x02 \x01(\v2'.google.cloud.biglake.v1.IcebergCatalogB\x03\xe0A\x02R\x0eicebergCatalog\x12/\n" +
-	"\x10primary_location\x18\x04 \x01(\tB\x03\xe0A\x01R\x10primary_location\"Y\n" +
-	"\x1bDeleteIcebergCatalogRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ebiglake.googleapis.com/CatalogR\x04name\"\xb6\x01\n" +
-	"\x1bUpdateIcebergCatalogRequest\x12U\n" +
-	"\x0ficeberg_catalog\x18\x01 \x01(\v2'.google.cloud.biglake.v1.IcebergCatalogB\x03\xe0A\x02R\x0eicebergCatalog\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"V\n" +
-	"\x18GetIcebergCatalogRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ebiglake.googleapis.com/CatalogR\x04name\"\xe7\x02\n" +
-	"\x1aListIcebergCatalogsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12X\n" +
-	"\x04view\x18\x02 \x01(\x0e2?.google.cloud.biglake.v1.ListIcebergCatalogsRequest.CatalogViewB\x03\xe0A\x01R\x04view\x12!\n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\tpage-size\x12#\n" +
+	"\x1ebiglake.googleapis.com/Catalog\x12%projects/{project}/catalogs/{catalog}*\bcatalogs2\acatalog\"\xab\x02\n" +
+	"\x1bCreateIcebergCatalogRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x124\n" +
+	"\x12iceberg_catalog_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x12iceberg-catalog-id\x12V\n" +
+	"\x0ficeberg_catalog\x18\x02 \x01(\v2'.google.cloud.biglake.v1.IcebergCatalogB\x04\xe2A\x01\x02R\x0eicebergCatalog\x120\n" +
+	"\x10primary_location\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x10primary_location\"Z\n" +
+	"\x1bDeleteIcebergCatalogRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ebiglake.googleapis.com/CatalogR\x04name\"\xb8\x01\n" +
+	"\x1bUpdateIcebergCatalogRequest\x12V\n" +
+	"\x0ficeberg_catalog\x18\x01 \x01(\v2'.google.cloud.biglake.v1.IcebergCatalogB\x04\xe2A\x01\x02R\x0eicebergCatalog\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"W\n" +
+	"\x18GetIcebergCatalogRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ebiglake.googleapis.com/CatalogR\x04name\"\x89\x03\n" +
+	"\x1aListIcebergCatalogsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12Y\n" +
+	"\x04view\x18\x02 \x01(\x0e2?.google.cloud.biglake.v1.ListIcebergCatalogsRequest.CatalogViewB\x04\xe2A\x01\x01R\x04view\x12\"\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\tpage-size\x12$\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\n" +
-	"page-token\"Z\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"page-token\x12\x1c\n" +
+	"\x06filter\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"Z\n" +
 	"\vCatalogView\x12\x1c\n" +
 	"\x18CATALOG_VIEW_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12CATALOG_VIEW_BASIC\x10\x01\x12\x15\n" +
-	"\x11CATALOG_VIEW_FULL\x10\x02\"\xcd\x01\n" +
-	"\x1bListIcebergCatalogsResponse\x12X\n" +
-	"\x10iceberg_catalogs\x18\x01 \x03(\v2'.google.cloud.biglake.v1.IcebergCatalogB\x03\xe0A\x03R\x10iceberg-catalogs\x12-\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\x0fnext-page-token\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x03R\vunreachable\"\x84\x02\n" +
-	"\x1dFailoverIcebergCatalogRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12,\n" +
-	"\x0fprimary_replica\x18\x02 \x01(\tB\x03\xe0A\x02R\x0eprimaryReplica\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12r\n" +
-	"%conditional_failover_replication_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\"conditionalFailoverReplicationTime\"l\n" +
-	"\x1eFailoverIcebergCatalogResponse\x12J\n" +
-	"\x10replication_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0freplicationTime\"\x8d\x01\n" +
-	"\x19UpdateIcebergTableRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x04name\x126\n" +
-	"\thttp_body\x18\x02 \x01(\v2\x14.google.api.HttpBodyB\x03\xe0A\x02R\bhttpBody\"u\n" +
-	"\x16GetIcebergTableRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x04name\x12!\n" +
-	"\tsnapshots\x18\x02 \x01(\tB\x03\xe0A\x01R\tsnapshots\"\x83\x01\n" +
-	"\x19DeleteIcebergTableRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x04name\x12,\n" +
-	"\x0fpurge_requested\x18\x02 \x01(\bB\x03\xe0A\x01R\x0epurgeRequested\"\x95\x01\n" +
-	"\x19CreateIcebergTableRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" biglake.googleapis.com/NamespaceR\x06parent\x126\n" +
-	"\thttp_body\x18\x03 \x01(\v2\x14.google.api.HttpBodyB\x03\xe0A\x02R\bhttpBody\"\xce\x01\n" +
-	"\x1bRegisterIcebergTableRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" biglake.googleapis.com/NamespaceR\x06parent\x12\x17\n" +
-	"\x04name\x18\x02 \x01(\tB\x03\xe0A\x02R\x04name\x121\n" +
-	"\x11metadata_location\x18\x03 \x01(\tB\x03\xe0A\x02R\x11metadata-location\x12!\n" +
-	"\toverwrite\x18\x04 \x01(\bB\x03\xe0A\x01R\toverwrite\"\x94\x01\n" +
-	" ReportIcebergTableMetricsRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x04name\x126\n" +
-	"\thttp_body\x18\x02 \x01(\v2\x14.google.api.HttpBodyB\x03\xe0A\x02R\bhttpBody\"\xac\x01\n" +
-	"\"ListIcebergTableIdentifiersRequest\x12\"\n" +
+	"\x11CATALOG_VIEW_FULL\x10\x02\"\xd0\x01\n" +
+	"\x1bListIcebergCatalogsResponse\x12Y\n" +
+	"\x10iceberg_catalogs\x18\x01 \x03(\v2'.google.cloud.biglake.v1.IcebergCatalogB\x04\xe2A\x01\x03R\x10iceberg-catalogs\x12.\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x0fnext-page-token\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\vunreachable\"\x88\x02\n" +
+	"\x1dFailoverIcebergCatalogRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12-\n" +
+	"\x0fprimary_replica\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0eprimaryReplica\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12s\n" +
+	"%conditional_failover_replication_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\"conditionalFailoverReplicationTime\"m\n" +
+	"\x1eFailoverIcebergCatalogResponse\x12K\n" +
+	"\x10replication_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0freplicationTime\"\x8f\x01\n" +
+	"\x19UpdateIcebergTableRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x04name\x127\n" +
+	"\thttp_body\x18\x02 \x01(\v2\x14.google.api.HttpBodyB\x04\xe2A\x01\x02R\bhttpBody\"w\n" +
+	"\x16GetIcebergTableRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x04name\x12\"\n" +
+	"\tsnapshots\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tsnapshots\"\x85\x01\n" +
+	"\x19DeleteIcebergTableRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x04name\x12-\n" +
+	"\x0fpurge_requested\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x0epurgeRequested\"\x97\x01\n" +
+	"\x19CreateIcebergTableRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" biglake.googleapis.com/NamespaceR\x06parent\x127\n" +
+	"\thttp_body\x18\x03 \x01(\v2\x14.google.api.HttpBodyB\x04\xe2A\x01\x02R\bhttpBody\"\xd2\x01\n" +
+	"\x1bRegisterIcebergTableRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" biglake.googleapis.com/NamespaceR\x06parent\x12\x18\n" +
+	"\x04name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04name\x122\n" +
+	"\x11metadata_location\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x11metadata-location\x12\"\n" +
+	"\toverwrite\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\toverwrite\"\x96\x01\n" +
+	" ReportIcebergTableMetricsRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x04name\x127\n" +
+	"\thttp_body\x18\x02 \x01(\v2\x14.google.api.HttpBodyB\x04\xe2A\x01\x02R\bhttpBody\"\xaf\x01\n" +
+	"\"ListIcebergTableIdentifiersRequest\x12#\n" +
 	"\n" +
-	"page_token\x18\x01 \x01(\tB\x03\xe0A\x01R\tpageToken\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12@\n" +
-	"\x06parent\x18\x03 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"page_token\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12A\n" +
+	"\x06parent\x18\x03 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" biglake.googleapis.com/NamespaceR\x06parent\"j\n" +
 	"\x0fTableIdentifier\x12C\n" +
 	"\tnamespace\x18\x01 \x03(\tB%\xfaA\"\n" +
 	" biglake.googleapis.com/NamespaceR\tnamespace\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\"\xa5\x01\n" +
-	"#ListIcebergTableIdentifiersResponse\x12O\n" +
-	"\videntifiers\x18\x01 \x03(\v2(.google.cloud.biglake.v1.TableIdentifierB\x03\xe0A\x03R\videntifiers\x12-\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\x0fnext-page-token\"\xd2\x01\n" +
-	"\x16IcebergNamespaceUpdate\x12\x1f\n" +
-	"\bremovals\x18\x02 \x03(\tB\x03\xe0A\x01R\bremovals\x12[\n" +
-	"\aupdates\x18\x03 \x03(\v2<.google.cloud.biglake.v1.IcebergNamespaceUpdate.UpdatesEntryB\x03\xe0A\x01R\aupdates\x1a:\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\"\xa7\x01\n" +
+	"#ListIcebergTableIdentifiersResponse\x12P\n" +
+	"\videntifiers\x18\x01 \x03(\v2(.google.cloud.biglake.v1.TableIdentifierB\x04\xe2A\x01\x03R\videntifiers\x12.\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x0fnext-page-token\"\xd4\x01\n" +
+	"\x16IcebergNamespaceUpdate\x12 \n" +
+	"\bremovals\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\bremovals\x12\\\n" +
+	"\aupdates\x18\x03 \x03(\v2<.google.cloud.biglake.v1.IcebergNamespaceUpdate.UpdatesEntryB\x04\xe2A\x01\x01R\aupdates\x1a:\n" +
 	"\fUpdatesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xcd\x01\n" +
-	"\x1dUpdateIcebergNamespaceRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" biglake.googleapis.com/NamespaceR\x04name\x12n\n" +
-	"\x18iceberg_namespace_update\x18\x02 \x01(\v2/.google.cloud.biglake.v1.IcebergNamespaceUpdateB\x03\xe0A\x02R\x16icebergNamespaceUpdate\"{\n" +
-	"\x1eUpdateIcebergNamespaceResponse\x12\x1d\n" +
-	"\aremoved\x18\x01 \x03(\tB\x03\xe0A\x03R\aremoved\x12\x1b\n" +
-	"\aupdated\x18\x02 \x03(\tB\x03\xe0A\x03R\x05added\x12\x1d\n" +
-	"\amissing\x18\x03 \x03(\tB\x03\xe0A\x03R\amissing\"]\n" +
-	"\x1dDeleteIcebergNamespaceRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" biglake.googleapis.com/NamespaceR\x04name\"\xd4\x01\n" +
-	"\x10IcebergNamespace\x12!\n" +
-	"\tnamespace\x18\x01 \x03(\tB\x03\xe0A\x02R\tnamespace\x12^\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xcf\x01\n" +
+	"\x1dUpdateIcebergNamespaceRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" biglake.googleapis.com/NamespaceR\x04name\x12o\n" +
+	"\x18iceberg_namespace_update\x18\x02 \x01(\v2/.google.cloud.biglake.v1.IcebergNamespaceUpdateB\x04\xe2A\x01\x02R\x16icebergNamespaceUpdate\"~\n" +
+	"\x1eUpdateIcebergNamespaceResponse\x12\x1e\n" +
+	"\aremoved\x18\x01 \x03(\tB\x04\xe2A\x01\x03R\aremoved\x12\x1c\n" +
+	"\aupdated\x18\x02 \x03(\tB\x04\xe2A\x01\x03R\x05added\x12\x1e\n" +
+	"\amissing\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\amissing\"^\n" +
+	"\x1dDeleteIcebergNamespaceRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" biglake.googleapis.com/NamespaceR\x04name\"\xd6\x01\n" +
+	"\x10IcebergNamespace\x12\"\n" +
+	"\tnamespace\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\tnamespace\x12_\n" +
 	"\n" +
-	"properties\x18\x02 \x03(\v29.google.cloud.biglake.v1.IcebergNamespace.PropertiesEntryB\x03\xe0A\x01R\n" +
+	"properties\x18\x02 \x03(\v29.google.cloud.biglake.v1.IcebergNamespace.PropertiesEntryB\x04\xe2A\x01\x01R\n" +
 	"properties\x1a=\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb5\x01\n" +
-	"\x1dCreateIcebergNamespaceRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ebiglake.googleapis.com/CatalogR\x06parent\x12T\n" +
-	"\x11iceberg_namespace\x18\x02 \x01(\v2).google.cloud.biglake.v1.IcebergNamespaceB\x03\xe0A\x02R\tnamespace\"C\n" +
-	"\x1eGetIcebergCatalogConfigRequest\x12!\n" +
-	"\twarehouse\x18\x01 \x01(\tB\x03\xe0A\x02R\twarehouse\"\xf3\x02\n" +
-	"\x14IcebergCatalogConfig\x12_\n" +
-	"\toverrides\x18\x01 \x03(\v2<.google.cloud.biglake.v1.IcebergCatalogConfig.OverridesEntryB\x03\xe0A\x03R\toverrides\x12\\\n" +
-	"\bdefaults\x18\x02 \x03(\v2;.google.cloud.biglake.v1.IcebergCatalogConfig.DefaultsEntryB\x03\xe0A\x03R\bdefaults\x12!\n" +
-	"\tendpoints\x18\x03 \x03(\tB\x03\xe0A\x03R\tendpoints\x1a<\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb7\x01\n" +
+	"\x1dCreateIcebergNamespaceRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ebiglake.googleapis.com/CatalogR\x06parent\x12U\n" +
+	"\x11iceberg_namespace\x18\x02 \x01(\v2).google.cloud.biglake.v1.IcebergNamespaceB\x04\xe2A\x01\x02R\tnamespace\"D\n" +
+	"\x1eGetIcebergCatalogConfigRequest\x12\"\n" +
+	"\twarehouse\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\twarehouse\"\xf6\x02\n" +
+	"\x14IcebergCatalogConfig\x12`\n" +
+	"\toverrides\x18\x01 \x03(\v2<.google.cloud.biglake.v1.IcebergCatalogConfig.OverridesEntryB\x04\xe2A\x01\x03R\toverrides\x12]\n" +
+	"\bdefaults\x18\x02 \x03(\v2;.google.cloud.biglake.v1.IcebergCatalogConfig.DefaultsEntryB\x04\xe2A\x01\x03R\bdefaults\x12\"\n" +
+	"\tendpoints\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\tendpoints\x1a<\n" +
 	"\x0eOverridesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a;\n" +
 	"\rDefaultsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"Z\n" +
-	"\x1aGetIcebergNamespaceRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" biglake.googleapis.com/NamespaceR\x04name\"\xa5\x01\n" +
-	"\x1cListIcebergNamespacesRequest\x12\"\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"[\n" +
+	"\x1aGetIcebergNamespaceRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" biglake.googleapis.com/NamespaceR\x04name\"\xa9\x01\n" +
+	"\x1cListIcebergNamespacesRequest\x12#\n" +
 	"\n" +
-	"page_token\x18\x01 \x01(\tB\x03\xe0A\x01R\tpageToken\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"page_token\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"api_parent\x18\x03 \x01(\tB\x03\xe0A\x02R\tapiParent\x12\x1b\n" +
-	"\x06parent\x18\x04 \x01(\tB\x03\xe0A\x01R\x06parent\"\xac\x01\n" +
+	"api_parent\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tapiParent\x12\x1c\n" +
+	"\x06parent\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06parent\"\xad\x01\n" +
 	"\x1dListIcebergNamespacesResponse\x12:\n" +
 	"\n" +
 	"namespaces\x18\x01 \x03(\v2\x1a.google.protobuf.ListValueR\n" +
 	"namespaces\x12(\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\x0fnext-page-token\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x03R\vunreachable\"\xb6\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\x0fnext-page-token\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\vunreachable\"\xb6\x01\n" +
 	"\x11StorageCredential\x12\x16\n" +
 	"\x06prefix\x18\x01 \x01(\tR\x06prefix\x12N\n" +
 	"\x06config\x18\x02 \x03(\v26.google.cloud.biglake.v1.StorageCredential.ConfigEntryR\x06config\x1a9\n" +
@@ -3137,153 +3267,155 @@ func file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_rawDescGZIP() []byt
 }
 
 var file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes = make([]protoimpl.MessageInfo, 45)
+var file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes = make([]protoimpl.MessageInfo, 46)
 var file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_goTypes = []any{
-	(IcebergCatalog_CatalogType)(0),                                 // 0: google.cloud.biglake.v1.IcebergCatalog.CatalogType
-	(IcebergCatalog_CredentialMode)(0),                              // 1: google.cloud.biglake.v1.IcebergCatalog.CredentialMode
-	(IcebergCatalog_Replica_State)(0),                               // 2: google.cloud.biglake.v1.IcebergCatalog.Replica.State
-	(ListIcebergCatalogsRequest_CatalogView)(0),                     // 3: google.cloud.biglake.v1.ListIcebergCatalogsRequest.CatalogView
-	(*IcebergCatalog)(nil),                                          // 4: google.cloud.biglake.v1.IcebergCatalog
-	(*CreateIcebergCatalogRequest)(nil),                             // 5: google.cloud.biglake.v1.CreateIcebergCatalogRequest
-	(*DeleteIcebergCatalogRequest)(nil),                             // 6: google.cloud.biglake.v1.DeleteIcebergCatalogRequest
-	(*UpdateIcebergCatalogRequest)(nil),                             // 7: google.cloud.biglake.v1.UpdateIcebergCatalogRequest
-	(*GetIcebergCatalogRequest)(nil),                                // 8: google.cloud.biglake.v1.GetIcebergCatalogRequest
-	(*ListIcebergCatalogsRequest)(nil),                              // 9: google.cloud.biglake.v1.ListIcebergCatalogsRequest
-	(*ListIcebergCatalogsResponse)(nil),                             // 10: google.cloud.biglake.v1.ListIcebergCatalogsResponse
-	(*FailoverIcebergCatalogRequest)(nil),                           // 11: google.cloud.biglake.v1.FailoverIcebergCatalogRequest
-	(*FailoverIcebergCatalogResponse)(nil),                          // 12: google.cloud.biglake.v1.FailoverIcebergCatalogResponse
-	(*UpdateIcebergTableRequest)(nil),                               // 13: google.cloud.biglake.v1.UpdateIcebergTableRequest
-	(*GetIcebergTableRequest)(nil),                                  // 14: google.cloud.biglake.v1.GetIcebergTableRequest
-	(*DeleteIcebergTableRequest)(nil),                               // 15: google.cloud.biglake.v1.DeleteIcebergTableRequest
-	(*CreateIcebergTableRequest)(nil),                               // 16: google.cloud.biglake.v1.CreateIcebergTableRequest
-	(*RegisterIcebergTableRequest)(nil),                             // 17: google.cloud.biglake.v1.RegisterIcebergTableRequest
-	(*ReportIcebergTableMetricsRequest)(nil),                        // 18: google.cloud.biglake.v1.ReportIcebergTableMetricsRequest
-	(*ListIcebergTableIdentifiersRequest)(nil),                      // 19: google.cloud.biglake.v1.ListIcebergTableIdentifiersRequest
-	(*TableIdentifier)(nil),                                         // 20: google.cloud.biglake.v1.TableIdentifier
-	(*ListIcebergTableIdentifiersResponse)(nil),                     // 21: google.cloud.biglake.v1.ListIcebergTableIdentifiersResponse
-	(*IcebergNamespaceUpdate)(nil),                                  // 22: google.cloud.biglake.v1.IcebergNamespaceUpdate
-	(*UpdateIcebergNamespaceRequest)(nil),                           // 23: google.cloud.biglake.v1.UpdateIcebergNamespaceRequest
-	(*UpdateIcebergNamespaceResponse)(nil),                          // 24: google.cloud.biglake.v1.UpdateIcebergNamespaceResponse
-	(*DeleteIcebergNamespaceRequest)(nil),                           // 25: google.cloud.biglake.v1.DeleteIcebergNamespaceRequest
-	(*IcebergNamespace)(nil),                                        // 26: google.cloud.biglake.v1.IcebergNamespace
-	(*CreateIcebergNamespaceRequest)(nil),                           // 27: google.cloud.biglake.v1.CreateIcebergNamespaceRequest
-	(*GetIcebergCatalogConfigRequest)(nil),                          // 28: google.cloud.biglake.v1.GetIcebergCatalogConfigRequest
-	(*IcebergCatalogConfig)(nil),                                    // 29: google.cloud.biglake.v1.IcebergCatalogConfig
-	(*GetIcebergNamespaceRequest)(nil),                              // 30: google.cloud.biglake.v1.GetIcebergNamespaceRequest
-	(*ListIcebergNamespacesRequest)(nil),                            // 31: google.cloud.biglake.v1.ListIcebergNamespacesRequest
-	(*ListIcebergNamespacesResponse)(nil),                           // 32: google.cloud.biglake.v1.ListIcebergNamespacesResponse
-	(*StorageCredential)(nil),                                       // 33: google.cloud.biglake.v1.StorageCredential
-	(*LoadIcebergTableCredentialsResponse)(nil),                     // 34: google.cloud.biglake.v1.LoadIcebergTableCredentialsResponse
-	(*IcebergCatalog_Replica)(nil),                                  // 35: google.cloud.biglake.v1.IcebergCatalog.Replica
-	(*IcebergCatalog_RestrictedLocationsConfig)(nil),                // 36: google.cloud.biglake.v1.IcebergCatalog.RestrictedLocationsConfig
-	(*IcebergCatalog_FederatedCatalogOptions)(nil),                  // 37: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions
-	(*IcebergCatalog_FederatedCatalogOptions_UnityCatalogInfo)(nil), // 38: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.UnityCatalogInfo
-	(*IcebergCatalog_FederatedCatalogOptions_GlueCatalogInfo)(nil),  // 39: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.GlueCatalogInfo
-	(*IcebergCatalog_FederatedCatalogOptions_RefreshSchedule)(nil),  // 40: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshSchedule
-	(*IcebergCatalog_FederatedCatalogOptions_RefreshScope)(nil),     // 41: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshScope
-	(*IcebergCatalog_FederatedCatalogOptions_RefreshOptions)(nil),   // 42: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshOptions
-	(*IcebergCatalog_FederatedCatalogOptions_RefreshStatus)(nil),    // 43: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshStatus
-	nil,                           // 44: google.cloud.biglake.v1.IcebergNamespaceUpdate.UpdatesEntry
-	nil,                           // 45: google.cloud.biglake.v1.IcebergNamespace.PropertiesEntry
-	nil,                           // 46: google.cloud.biglake.v1.IcebergCatalogConfig.OverridesEntry
-	nil,                           // 47: google.cloud.biglake.v1.IcebergCatalogConfig.DefaultsEntry
-	nil,                           // 48: google.cloud.biglake.v1.StorageCredential.ConfigEntry
-	(*timestamppb.Timestamp)(nil), // 49: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil), // 50: google.protobuf.FieldMask
-	(*httpbody.HttpBody)(nil),     // 51: google.api.HttpBody
-	(*structpb.ListValue)(nil),    // 52: google.protobuf.ListValue
-	(*durationpb.Duration)(nil),   // 53: google.protobuf.Duration
-	(*status.Status)(nil),         // 54: google.rpc.Status
-	(*emptypb.Empty)(nil),         // 55: google.protobuf.Empty
+	(IcebergCatalog_CatalogType)(0),                                     // 0: google.cloud.biglake.v1.IcebergCatalog.CatalogType
+	(IcebergCatalog_CredentialMode)(0),                                  // 1: google.cloud.biglake.v1.IcebergCatalog.CredentialMode
+	(IcebergCatalog_Replica_State)(0),                                   // 2: google.cloud.biglake.v1.IcebergCatalog.Replica.State
+	(ListIcebergCatalogsRequest_CatalogView)(0),                         // 3: google.cloud.biglake.v1.ListIcebergCatalogsRequest.CatalogView
+	(*IcebergCatalog)(nil),                                              // 4: google.cloud.biglake.v1.IcebergCatalog
+	(*CreateIcebergCatalogRequest)(nil),                                 // 5: google.cloud.biglake.v1.CreateIcebergCatalogRequest
+	(*DeleteIcebergCatalogRequest)(nil),                                 // 6: google.cloud.biglake.v1.DeleteIcebergCatalogRequest
+	(*UpdateIcebergCatalogRequest)(nil),                                 // 7: google.cloud.biglake.v1.UpdateIcebergCatalogRequest
+	(*GetIcebergCatalogRequest)(nil),                                    // 8: google.cloud.biglake.v1.GetIcebergCatalogRequest
+	(*ListIcebergCatalogsRequest)(nil),                                  // 9: google.cloud.biglake.v1.ListIcebergCatalogsRequest
+	(*ListIcebergCatalogsResponse)(nil),                                 // 10: google.cloud.biglake.v1.ListIcebergCatalogsResponse
+	(*FailoverIcebergCatalogRequest)(nil),                               // 11: google.cloud.biglake.v1.FailoverIcebergCatalogRequest
+	(*FailoverIcebergCatalogResponse)(nil),                              // 12: google.cloud.biglake.v1.FailoverIcebergCatalogResponse
+	(*UpdateIcebergTableRequest)(nil),                                   // 13: google.cloud.biglake.v1.UpdateIcebergTableRequest
+	(*GetIcebergTableRequest)(nil),                                      // 14: google.cloud.biglake.v1.GetIcebergTableRequest
+	(*DeleteIcebergTableRequest)(nil),                                   // 15: google.cloud.biglake.v1.DeleteIcebergTableRequest
+	(*CreateIcebergTableRequest)(nil),                                   // 16: google.cloud.biglake.v1.CreateIcebergTableRequest
+	(*RegisterIcebergTableRequest)(nil),                                 // 17: google.cloud.biglake.v1.RegisterIcebergTableRequest
+	(*ReportIcebergTableMetricsRequest)(nil),                            // 18: google.cloud.biglake.v1.ReportIcebergTableMetricsRequest
+	(*ListIcebergTableIdentifiersRequest)(nil),                          // 19: google.cloud.biglake.v1.ListIcebergTableIdentifiersRequest
+	(*TableIdentifier)(nil),                                             // 20: google.cloud.biglake.v1.TableIdentifier
+	(*ListIcebergTableIdentifiersResponse)(nil),                         // 21: google.cloud.biglake.v1.ListIcebergTableIdentifiersResponse
+	(*IcebergNamespaceUpdate)(nil),                                      // 22: google.cloud.biglake.v1.IcebergNamespaceUpdate
+	(*UpdateIcebergNamespaceRequest)(nil),                               // 23: google.cloud.biglake.v1.UpdateIcebergNamespaceRequest
+	(*UpdateIcebergNamespaceResponse)(nil),                              // 24: google.cloud.biglake.v1.UpdateIcebergNamespaceResponse
+	(*DeleteIcebergNamespaceRequest)(nil),                               // 25: google.cloud.biglake.v1.DeleteIcebergNamespaceRequest
+	(*IcebergNamespace)(nil),                                            // 26: google.cloud.biglake.v1.IcebergNamespace
+	(*CreateIcebergNamespaceRequest)(nil),                               // 27: google.cloud.biglake.v1.CreateIcebergNamespaceRequest
+	(*GetIcebergCatalogConfigRequest)(nil),                              // 28: google.cloud.biglake.v1.GetIcebergCatalogConfigRequest
+	(*IcebergCatalogConfig)(nil),                                        // 29: google.cloud.biglake.v1.IcebergCatalogConfig
+	(*GetIcebergNamespaceRequest)(nil),                                  // 30: google.cloud.biglake.v1.GetIcebergNamespaceRequest
+	(*ListIcebergNamespacesRequest)(nil),                                // 31: google.cloud.biglake.v1.ListIcebergNamespacesRequest
+	(*ListIcebergNamespacesResponse)(nil),                               // 32: google.cloud.biglake.v1.ListIcebergNamespacesResponse
+	(*StorageCredential)(nil),                                           // 33: google.cloud.biglake.v1.StorageCredential
+	(*LoadIcebergTableCredentialsResponse)(nil),                         // 34: google.cloud.biglake.v1.LoadIcebergTableCredentialsResponse
+	(*IcebergCatalog_Replica)(nil),                                      // 35: google.cloud.biglake.v1.IcebergCatalog.Replica
+	(*IcebergCatalog_RestrictedLocationsConfig)(nil),                    // 36: google.cloud.biglake.v1.IcebergCatalog.RestrictedLocationsConfig
+	(*IcebergCatalog_FederatedCatalogOptions)(nil),                      // 37: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions
+	(*IcebergCatalog_FederatedCatalogOptions_UnityCatalogInfo)(nil),     // 38: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.UnityCatalogInfo
+	(*IcebergCatalog_FederatedCatalogOptions_GlueCatalogInfo)(nil),      // 39: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.GlueCatalogInfo
+	(*IcebergCatalog_FederatedCatalogOptions_SnowflakeCatalogInfo)(nil), // 40: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.SnowflakeCatalogInfo
+	(*IcebergCatalog_FederatedCatalogOptions_RefreshSchedule)(nil),      // 41: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshSchedule
+	(*IcebergCatalog_FederatedCatalogOptions_RefreshScope)(nil),         // 42: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshScope
+	(*IcebergCatalog_FederatedCatalogOptions_RefreshOptions)(nil),       // 43: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshOptions
+	(*IcebergCatalog_FederatedCatalogOptions_RefreshStatus)(nil),        // 44: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshStatus
+	nil,                           // 45: google.cloud.biglake.v1.IcebergNamespaceUpdate.UpdatesEntry
+	nil,                           // 46: google.cloud.biglake.v1.IcebergNamespace.PropertiesEntry
+	nil,                           // 47: google.cloud.biglake.v1.IcebergCatalogConfig.OverridesEntry
+	nil,                           // 48: google.cloud.biglake.v1.IcebergCatalogConfig.DefaultsEntry
+	nil,                           // 49: google.cloud.biglake.v1.StorageCredential.ConfigEntry
+	(*timestamppb.Timestamp)(nil), // 50: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil), // 51: google.protobuf.FieldMask
+	(*httpbody.HttpBody)(nil),     // 52: google.api.HttpBody
+	(*structpb.ListValue)(nil),    // 53: google.protobuf.ListValue
+	(*durationpb.Duration)(nil),   // 54: google.protobuf.Duration
+	(*status.Status)(nil),         // 55: google.rpc.Status
+	(*emptypb.Empty)(nil),         // 56: google.protobuf.Empty
 }
 var file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_depIdxs = []int32{
 	1,  // 0: google.cloud.biglake.v1.IcebergCatalog.credential_mode:type_name -> google.cloud.biglake.v1.IcebergCatalog.CredentialMode
 	0,  // 1: google.cloud.biglake.v1.IcebergCatalog.catalog_type:type_name -> google.cloud.biglake.v1.IcebergCatalog.CatalogType
-	49, // 2: google.cloud.biglake.v1.IcebergCatalog.create_time:type_name -> google.protobuf.Timestamp
-	49, // 3: google.cloud.biglake.v1.IcebergCatalog.update_time:type_name -> google.protobuf.Timestamp
+	50, // 2: google.cloud.biglake.v1.IcebergCatalog.create_time:type_name -> google.protobuf.Timestamp
+	50, // 3: google.cloud.biglake.v1.IcebergCatalog.update_time:type_name -> google.protobuf.Timestamp
 	35, // 4: google.cloud.biglake.v1.IcebergCatalog.replicas:type_name -> google.cloud.biglake.v1.IcebergCatalog.Replica
 	36, // 5: google.cloud.biglake.v1.IcebergCatalog.restricted_locations_config:type_name -> google.cloud.biglake.v1.IcebergCatalog.RestrictedLocationsConfig
 	37, // 6: google.cloud.biglake.v1.IcebergCatalog.federated_catalog_options:type_name -> google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions
 	4,  // 7: google.cloud.biglake.v1.CreateIcebergCatalogRequest.iceberg_catalog:type_name -> google.cloud.biglake.v1.IcebergCatalog
 	4,  // 8: google.cloud.biglake.v1.UpdateIcebergCatalogRequest.iceberg_catalog:type_name -> google.cloud.biglake.v1.IcebergCatalog
-	50, // 9: google.cloud.biglake.v1.UpdateIcebergCatalogRequest.update_mask:type_name -> google.protobuf.FieldMask
+	51, // 9: google.cloud.biglake.v1.UpdateIcebergCatalogRequest.update_mask:type_name -> google.protobuf.FieldMask
 	3,  // 10: google.cloud.biglake.v1.ListIcebergCatalogsRequest.view:type_name -> google.cloud.biglake.v1.ListIcebergCatalogsRequest.CatalogView
 	4,  // 11: google.cloud.biglake.v1.ListIcebergCatalogsResponse.iceberg_catalogs:type_name -> google.cloud.biglake.v1.IcebergCatalog
-	49, // 12: google.cloud.biglake.v1.FailoverIcebergCatalogRequest.conditional_failover_replication_time:type_name -> google.protobuf.Timestamp
-	49, // 13: google.cloud.biglake.v1.FailoverIcebergCatalogResponse.replication_time:type_name -> google.protobuf.Timestamp
-	51, // 14: google.cloud.biglake.v1.UpdateIcebergTableRequest.http_body:type_name -> google.api.HttpBody
-	51, // 15: google.cloud.biglake.v1.CreateIcebergTableRequest.http_body:type_name -> google.api.HttpBody
-	51, // 16: google.cloud.biglake.v1.ReportIcebergTableMetricsRequest.http_body:type_name -> google.api.HttpBody
+	50, // 12: google.cloud.biglake.v1.FailoverIcebergCatalogRequest.conditional_failover_replication_time:type_name -> google.protobuf.Timestamp
+	50, // 13: google.cloud.biglake.v1.FailoverIcebergCatalogResponse.replication_time:type_name -> google.protobuf.Timestamp
+	52, // 14: google.cloud.biglake.v1.UpdateIcebergTableRequest.http_body:type_name -> google.api.HttpBody
+	52, // 15: google.cloud.biglake.v1.CreateIcebergTableRequest.http_body:type_name -> google.api.HttpBody
+	52, // 16: google.cloud.biglake.v1.ReportIcebergTableMetricsRequest.http_body:type_name -> google.api.HttpBody
 	20, // 17: google.cloud.biglake.v1.ListIcebergTableIdentifiersResponse.identifiers:type_name -> google.cloud.biglake.v1.TableIdentifier
-	44, // 18: google.cloud.biglake.v1.IcebergNamespaceUpdate.updates:type_name -> google.cloud.biglake.v1.IcebergNamespaceUpdate.UpdatesEntry
+	45, // 18: google.cloud.biglake.v1.IcebergNamespaceUpdate.updates:type_name -> google.cloud.biglake.v1.IcebergNamespaceUpdate.UpdatesEntry
 	22, // 19: google.cloud.biglake.v1.UpdateIcebergNamespaceRequest.iceberg_namespace_update:type_name -> google.cloud.biglake.v1.IcebergNamespaceUpdate
-	45, // 20: google.cloud.biglake.v1.IcebergNamespace.properties:type_name -> google.cloud.biglake.v1.IcebergNamespace.PropertiesEntry
+	46, // 20: google.cloud.biglake.v1.IcebergNamespace.properties:type_name -> google.cloud.biglake.v1.IcebergNamespace.PropertiesEntry
 	26, // 21: google.cloud.biglake.v1.CreateIcebergNamespaceRequest.iceberg_namespace:type_name -> google.cloud.biglake.v1.IcebergNamespace
-	46, // 22: google.cloud.biglake.v1.IcebergCatalogConfig.overrides:type_name -> google.cloud.biglake.v1.IcebergCatalogConfig.OverridesEntry
-	47, // 23: google.cloud.biglake.v1.IcebergCatalogConfig.defaults:type_name -> google.cloud.biglake.v1.IcebergCatalogConfig.DefaultsEntry
-	52, // 24: google.cloud.biglake.v1.ListIcebergNamespacesResponse.namespaces:type_name -> google.protobuf.ListValue
-	48, // 25: google.cloud.biglake.v1.StorageCredential.config:type_name -> google.cloud.biglake.v1.StorageCredential.ConfigEntry
+	47, // 22: google.cloud.biglake.v1.IcebergCatalogConfig.overrides:type_name -> google.cloud.biglake.v1.IcebergCatalogConfig.OverridesEntry
+	48, // 23: google.cloud.biglake.v1.IcebergCatalogConfig.defaults:type_name -> google.cloud.biglake.v1.IcebergCatalogConfig.DefaultsEntry
+	53, // 24: google.cloud.biglake.v1.ListIcebergNamespacesResponse.namespaces:type_name -> google.protobuf.ListValue
+	49, // 25: google.cloud.biglake.v1.StorageCredential.config:type_name -> google.cloud.biglake.v1.StorageCredential.ConfigEntry
 	33, // 26: google.cloud.biglake.v1.LoadIcebergTableCredentialsResponse.storage_credentials:type_name -> google.cloud.biglake.v1.StorageCredential
 	2,  // 27: google.cloud.biglake.v1.IcebergCatalog.Replica.state:type_name -> google.cloud.biglake.v1.IcebergCatalog.Replica.State
 	38, // 28: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.unity_catalog_info:type_name -> google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.UnityCatalogInfo
 	39, // 29: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.glue_catalog_info:type_name -> google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.GlueCatalogInfo
-	42, // 30: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.refresh_options:type_name -> google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshOptions
-	43, // 31: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.refresh_status:type_name -> google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshStatus
-	53, // 32: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshSchedule.refresh_interval:type_name -> google.protobuf.Duration
-	40, // 33: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshOptions.refresh_schedule:type_name -> google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshSchedule
-	41, // 34: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshOptions.refresh_scope:type_name -> google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshScope
-	49, // 35: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshStatus.start_time:type_name -> google.protobuf.Timestamp
-	49, // 36: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshStatus.end_time:type_name -> google.protobuf.Timestamp
-	54, // 37: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshStatus.status:type_name -> google.rpc.Status
-	28, // 38: google.cloud.biglake.v1.IcebergCatalogService.GetIcebergCatalogConfig:input_type -> google.cloud.biglake.v1.GetIcebergCatalogConfigRequest
-	31, // 39: google.cloud.biglake.v1.IcebergCatalogService.ListIcebergNamespaces:input_type -> google.cloud.biglake.v1.ListIcebergNamespacesRequest
-	30, // 40: google.cloud.biglake.v1.IcebergCatalogService.CheckIcebergNamespaceExists:input_type -> google.cloud.biglake.v1.GetIcebergNamespaceRequest
-	30, // 41: google.cloud.biglake.v1.IcebergCatalogService.GetIcebergNamespace:input_type -> google.cloud.biglake.v1.GetIcebergNamespaceRequest
-	27, // 42: google.cloud.biglake.v1.IcebergCatalogService.CreateIcebergNamespace:input_type -> google.cloud.biglake.v1.CreateIcebergNamespaceRequest
-	25, // 43: google.cloud.biglake.v1.IcebergCatalogService.DeleteIcebergNamespace:input_type -> google.cloud.biglake.v1.DeleteIcebergNamespaceRequest
-	23, // 44: google.cloud.biglake.v1.IcebergCatalogService.UpdateIcebergNamespace:input_type -> google.cloud.biglake.v1.UpdateIcebergNamespaceRequest
-	19, // 45: google.cloud.biglake.v1.IcebergCatalogService.ListIcebergTableIdentifiers:input_type -> google.cloud.biglake.v1.ListIcebergTableIdentifiersRequest
-	16, // 46: google.cloud.biglake.v1.IcebergCatalogService.CreateIcebergTable:input_type -> google.cloud.biglake.v1.CreateIcebergTableRequest
-	14, // 47: google.cloud.biglake.v1.IcebergCatalogService.CheckIcebergTableExists:input_type -> google.cloud.biglake.v1.GetIcebergTableRequest
-	15, // 48: google.cloud.biglake.v1.IcebergCatalogService.DeleteIcebergTable:input_type -> google.cloud.biglake.v1.DeleteIcebergTableRequest
-	14, // 49: google.cloud.biglake.v1.IcebergCatalogService.GetIcebergTable:input_type -> google.cloud.biglake.v1.GetIcebergTableRequest
-	14, // 50: google.cloud.biglake.v1.IcebergCatalogService.LoadIcebergTableCredentials:input_type -> google.cloud.biglake.v1.GetIcebergTableRequest
-	13, // 51: google.cloud.biglake.v1.IcebergCatalogService.UpdateIcebergTable:input_type -> google.cloud.biglake.v1.UpdateIcebergTableRequest
-	17, // 52: google.cloud.biglake.v1.IcebergCatalogService.RegisterIcebergTable:input_type -> google.cloud.biglake.v1.RegisterIcebergTableRequest
-	18, // 53: google.cloud.biglake.v1.IcebergCatalogService.ReportIcebergTableMetrics:input_type -> google.cloud.biglake.v1.ReportIcebergTableMetricsRequest
-	8,  // 54: google.cloud.biglake.v1.IcebergCatalogService.GetIcebergCatalog:input_type -> google.cloud.biglake.v1.GetIcebergCatalogRequest
-	9,  // 55: google.cloud.biglake.v1.IcebergCatalogService.ListIcebergCatalogs:input_type -> google.cloud.biglake.v1.ListIcebergCatalogsRequest
-	6,  // 56: google.cloud.biglake.v1.IcebergCatalogService.DeleteIcebergCatalog:input_type -> google.cloud.biglake.v1.DeleteIcebergCatalogRequest
-	7,  // 57: google.cloud.biglake.v1.IcebergCatalogService.UpdateIcebergCatalog:input_type -> google.cloud.biglake.v1.UpdateIcebergCatalogRequest
-	5,  // 58: google.cloud.biglake.v1.IcebergCatalogService.CreateIcebergCatalog:input_type -> google.cloud.biglake.v1.CreateIcebergCatalogRequest
-	11, // 59: google.cloud.biglake.v1.IcebergCatalogService.FailoverIcebergCatalog:input_type -> google.cloud.biglake.v1.FailoverIcebergCatalogRequest
-	29, // 60: google.cloud.biglake.v1.IcebergCatalogService.GetIcebergCatalogConfig:output_type -> google.cloud.biglake.v1.IcebergCatalogConfig
-	32, // 61: google.cloud.biglake.v1.IcebergCatalogService.ListIcebergNamespaces:output_type -> google.cloud.biglake.v1.ListIcebergNamespacesResponse
-	55, // 62: google.cloud.biglake.v1.IcebergCatalogService.CheckIcebergNamespaceExists:output_type -> google.protobuf.Empty
-	26, // 63: google.cloud.biglake.v1.IcebergCatalogService.GetIcebergNamespace:output_type -> google.cloud.biglake.v1.IcebergNamespace
-	26, // 64: google.cloud.biglake.v1.IcebergCatalogService.CreateIcebergNamespace:output_type -> google.cloud.biglake.v1.IcebergNamespace
-	55, // 65: google.cloud.biglake.v1.IcebergCatalogService.DeleteIcebergNamespace:output_type -> google.protobuf.Empty
-	24, // 66: google.cloud.biglake.v1.IcebergCatalogService.UpdateIcebergNamespace:output_type -> google.cloud.biglake.v1.UpdateIcebergNamespaceResponse
-	21, // 67: google.cloud.biglake.v1.IcebergCatalogService.ListIcebergTableIdentifiers:output_type -> google.cloud.biglake.v1.ListIcebergTableIdentifiersResponse
-	51, // 68: google.cloud.biglake.v1.IcebergCatalogService.CreateIcebergTable:output_type -> google.api.HttpBody
-	55, // 69: google.cloud.biglake.v1.IcebergCatalogService.CheckIcebergTableExists:output_type -> google.protobuf.Empty
-	55, // 70: google.cloud.biglake.v1.IcebergCatalogService.DeleteIcebergTable:output_type -> google.protobuf.Empty
-	51, // 71: google.cloud.biglake.v1.IcebergCatalogService.GetIcebergTable:output_type -> google.api.HttpBody
-	34, // 72: google.cloud.biglake.v1.IcebergCatalogService.LoadIcebergTableCredentials:output_type -> google.cloud.biglake.v1.LoadIcebergTableCredentialsResponse
-	51, // 73: google.cloud.biglake.v1.IcebergCatalogService.UpdateIcebergTable:output_type -> google.api.HttpBody
-	51, // 74: google.cloud.biglake.v1.IcebergCatalogService.RegisterIcebergTable:output_type -> google.api.HttpBody
-	55, // 75: google.cloud.biglake.v1.IcebergCatalogService.ReportIcebergTableMetrics:output_type -> google.protobuf.Empty
-	4,  // 76: google.cloud.biglake.v1.IcebergCatalogService.GetIcebergCatalog:output_type -> google.cloud.biglake.v1.IcebergCatalog
-	10, // 77: google.cloud.biglake.v1.IcebergCatalogService.ListIcebergCatalogs:output_type -> google.cloud.biglake.v1.ListIcebergCatalogsResponse
-	55, // 78: google.cloud.biglake.v1.IcebergCatalogService.DeleteIcebergCatalog:output_type -> google.protobuf.Empty
-	4,  // 79: google.cloud.biglake.v1.IcebergCatalogService.UpdateIcebergCatalog:output_type -> google.cloud.biglake.v1.IcebergCatalog
-	4,  // 80: google.cloud.biglake.v1.IcebergCatalogService.CreateIcebergCatalog:output_type -> google.cloud.biglake.v1.IcebergCatalog
-	12, // 81: google.cloud.biglake.v1.IcebergCatalogService.FailoverIcebergCatalog:output_type -> google.cloud.biglake.v1.FailoverIcebergCatalogResponse
-	60, // [60:82] is the sub-list for method output_type
-	38, // [38:60] is the sub-list for method input_type
-	38, // [38:38] is the sub-list for extension type_name
-	38, // [38:38] is the sub-list for extension extendee
-	0,  // [0:38] is the sub-list for field type_name
+	40, // 30: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.snowflake_catalog_info:type_name -> google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.SnowflakeCatalogInfo
+	43, // 31: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.refresh_options:type_name -> google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshOptions
+	44, // 32: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.refresh_status:type_name -> google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshStatus
+	54, // 33: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshSchedule.refresh_interval:type_name -> google.protobuf.Duration
+	41, // 34: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshOptions.refresh_schedule:type_name -> google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshSchedule
+	42, // 35: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshOptions.refresh_scope:type_name -> google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshScope
+	50, // 36: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshStatus.start_time:type_name -> google.protobuf.Timestamp
+	50, // 37: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshStatus.end_time:type_name -> google.protobuf.Timestamp
+	55, // 38: google.cloud.biglake.v1.IcebergCatalog.FederatedCatalogOptions.RefreshStatus.status:type_name -> google.rpc.Status
+	28, // 39: google.cloud.biglake.v1.IcebergCatalogService.GetIcebergCatalogConfig:input_type -> google.cloud.biglake.v1.GetIcebergCatalogConfigRequest
+	31, // 40: google.cloud.biglake.v1.IcebergCatalogService.ListIcebergNamespaces:input_type -> google.cloud.biglake.v1.ListIcebergNamespacesRequest
+	30, // 41: google.cloud.biglake.v1.IcebergCatalogService.CheckIcebergNamespaceExists:input_type -> google.cloud.biglake.v1.GetIcebergNamespaceRequest
+	30, // 42: google.cloud.biglake.v1.IcebergCatalogService.GetIcebergNamespace:input_type -> google.cloud.biglake.v1.GetIcebergNamespaceRequest
+	27, // 43: google.cloud.biglake.v1.IcebergCatalogService.CreateIcebergNamespace:input_type -> google.cloud.biglake.v1.CreateIcebergNamespaceRequest
+	25, // 44: google.cloud.biglake.v1.IcebergCatalogService.DeleteIcebergNamespace:input_type -> google.cloud.biglake.v1.DeleteIcebergNamespaceRequest
+	23, // 45: google.cloud.biglake.v1.IcebergCatalogService.UpdateIcebergNamespace:input_type -> google.cloud.biglake.v1.UpdateIcebergNamespaceRequest
+	19, // 46: google.cloud.biglake.v1.IcebergCatalogService.ListIcebergTableIdentifiers:input_type -> google.cloud.biglake.v1.ListIcebergTableIdentifiersRequest
+	16, // 47: google.cloud.biglake.v1.IcebergCatalogService.CreateIcebergTable:input_type -> google.cloud.biglake.v1.CreateIcebergTableRequest
+	14, // 48: google.cloud.biglake.v1.IcebergCatalogService.CheckIcebergTableExists:input_type -> google.cloud.biglake.v1.GetIcebergTableRequest
+	15, // 49: google.cloud.biglake.v1.IcebergCatalogService.DeleteIcebergTable:input_type -> google.cloud.biglake.v1.DeleteIcebergTableRequest
+	14, // 50: google.cloud.biglake.v1.IcebergCatalogService.GetIcebergTable:input_type -> google.cloud.biglake.v1.GetIcebergTableRequest
+	14, // 51: google.cloud.biglake.v1.IcebergCatalogService.LoadIcebergTableCredentials:input_type -> google.cloud.biglake.v1.GetIcebergTableRequest
+	13, // 52: google.cloud.biglake.v1.IcebergCatalogService.UpdateIcebergTable:input_type -> google.cloud.biglake.v1.UpdateIcebergTableRequest
+	17, // 53: google.cloud.biglake.v1.IcebergCatalogService.RegisterIcebergTable:input_type -> google.cloud.biglake.v1.RegisterIcebergTableRequest
+	18, // 54: google.cloud.biglake.v1.IcebergCatalogService.ReportIcebergTableMetrics:input_type -> google.cloud.biglake.v1.ReportIcebergTableMetricsRequest
+	8,  // 55: google.cloud.biglake.v1.IcebergCatalogService.GetIcebergCatalog:input_type -> google.cloud.biglake.v1.GetIcebergCatalogRequest
+	9,  // 56: google.cloud.biglake.v1.IcebergCatalogService.ListIcebergCatalogs:input_type -> google.cloud.biglake.v1.ListIcebergCatalogsRequest
+	6,  // 57: google.cloud.biglake.v1.IcebergCatalogService.DeleteIcebergCatalog:input_type -> google.cloud.biglake.v1.DeleteIcebergCatalogRequest
+	7,  // 58: google.cloud.biglake.v1.IcebergCatalogService.UpdateIcebergCatalog:input_type -> google.cloud.biglake.v1.UpdateIcebergCatalogRequest
+	5,  // 59: google.cloud.biglake.v1.IcebergCatalogService.CreateIcebergCatalog:input_type -> google.cloud.biglake.v1.CreateIcebergCatalogRequest
+	11, // 60: google.cloud.biglake.v1.IcebergCatalogService.FailoverIcebergCatalog:input_type -> google.cloud.biglake.v1.FailoverIcebergCatalogRequest
+	29, // 61: google.cloud.biglake.v1.IcebergCatalogService.GetIcebergCatalogConfig:output_type -> google.cloud.biglake.v1.IcebergCatalogConfig
+	32, // 62: google.cloud.biglake.v1.IcebergCatalogService.ListIcebergNamespaces:output_type -> google.cloud.biglake.v1.ListIcebergNamespacesResponse
+	56, // 63: google.cloud.biglake.v1.IcebergCatalogService.CheckIcebergNamespaceExists:output_type -> google.protobuf.Empty
+	26, // 64: google.cloud.biglake.v1.IcebergCatalogService.GetIcebergNamespace:output_type -> google.cloud.biglake.v1.IcebergNamespace
+	26, // 65: google.cloud.biglake.v1.IcebergCatalogService.CreateIcebergNamespace:output_type -> google.cloud.biglake.v1.IcebergNamespace
+	56, // 66: google.cloud.biglake.v1.IcebergCatalogService.DeleteIcebergNamespace:output_type -> google.protobuf.Empty
+	24, // 67: google.cloud.biglake.v1.IcebergCatalogService.UpdateIcebergNamespace:output_type -> google.cloud.biglake.v1.UpdateIcebergNamespaceResponse
+	21, // 68: google.cloud.biglake.v1.IcebergCatalogService.ListIcebergTableIdentifiers:output_type -> google.cloud.biglake.v1.ListIcebergTableIdentifiersResponse
+	52, // 69: google.cloud.biglake.v1.IcebergCatalogService.CreateIcebergTable:output_type -> google.api.HttpBody
+	56, // 70: google.cloud.biglake.v1.IcebergCatalogService.CheckIcebergTableExists:output_type -> google.protobuf.Empty
+	56, // 71: google.cloud.biglake.v1.IcebergCatalogService.DeleteIcebergTable:output_type -> google.protobuf.Empty
+	52, // 72: google.cloud.biglake.v1.IcebergCatalogService.GetIcebergTable:output_type -> google.api.HttpBody
+	34, // 73: google.cloud.biglake.v1.IcebergCatalogService.LoadIcebergTableCredentials:output_type -> google.cloud.biglake.v1.LoadIcebergTableCredentialsResponse
+	52, // 74: google.cloud.biglake.v1.IcebergCatalogService.UpdateIcebergTable:output_type -> google.api.HttpBody
+	52, // 75: google.cloud.biglake.v1.IcebergCatalogService.RegisterIcebergTable:output_type -> google.api.HttpBody
+	56, // 76: google.cloud.biglake.v1.IcebergCatalogService.ReportIcebergTableMetrics:output_type -> google.protobuf.Empty
+	4,  // 77: google.cloud.biglake.v1.IcebergCatalogService.GetIcebergCatalog:output_type -> google.cloud.biglake.v1.IcebergCatalog
+	10, // 78: google.cloud.biglake.v1.IcebergCatalogService.ListIcebergCatalogs:output_type -> google.cloud.biglake.v1.ListIcebergCatalogsResponse
+	56, // 79: google.cloud.biglake.v1.IcebergCatalogService.DeleteIcebergCatalog:output_type -> google.protobuf.Empty
+	4,  // 80: google.cloud.biglake.v1.IcebergCatalogService.UpdateIcebergCatalog:output_type -> google.cloud.biglake.v1.IcebergCatalog
+	4,  // 81: google.cloud.biglake.v1.IcebergCatalogService.CreateIcebergCatalog:output_type -> google.cloud.biglake.v1.IcebergCatalog
+	12, // 82: google.cloud.biglake.v1.IcebergCatalogService.FailoverIcebergCatalog:output_type -> google.cloud.biglake.v1.FailoverIcebergCatalogResponse
+	61, // [61:83] is the sub-list for method output_type
+	39, // [39:61] is the sub-list for method input_type
+	39, // [39:39] is the sub-list for extension type_name
+	39, // [39:39] is the sub-list for extension extendee
+	0,  // [0:39] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_init() }
@@ -3294,18 +3426,20 @@ func file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_init() {
 	file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[33].OneofWrappers = []any{
 		(*IcebergCatalog_FederatedCatalogOptions_UnityCatalogInfo_)(nil),
 		(*IcebergCatalog_FederatedCatalogOptions_GlueCatalogInfo_)(nil),
+		(*IcebergCatalog_FederatedCatalogOptions_SnowflakeCatalogInfo_)(nil),
 	}
 	file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[34].OneofWrappers = []any{}
 	file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[35].OneofWrappers = []any{}
 	file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[36].OneofWrappers = []any{}
-	file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[39].OneofWrappers = []any{}
+	file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[37].OneofWrappers = []any{}
+	file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_msgTypes[40].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_rawDesc), len(file_google_cloud_biglake_v1_iceberg_rest_catalog_proto_rawDesc)),
 			NumEnums:      4,
-			NumMessages:   45,
+			NumMessages:   46,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -15101,22 +15101,22 @@ var File_google_cloud_deploy_v1_cloud_deploy_proto protoreflect.FileDescriptor
 
 const file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/deploy/v1/cloud_deploy.proto\x12\x16google.cloud.deploy.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x1bgoogle/type/timeofday.proto\"\x82\a\n" +
-	"\x10DeliveryPipeline\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12`\n" +
-	"\vannotations\x18\x04 \x03(\v29.google.cloud.deploy.v1.DeliveryPipeline.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12L\n" +
-	"\x06labels\x18\x05 \x03(\v24.google.cloud.deploy.v1.DeliveryPipeline.LabelsEntryR\x06labels\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12V\n" +
-	"\x0fserial_pipeline\x18\b \x01(\v2&.google.cloud.deploy.v1.SerialPipelineB\x03\xe0A\x01H\x00R\x0eserialPipeline\x12L\n" +
-	"\tcondition\x18\v \x01(\v2).google.cloud.deploy.v1.PipelineConditionB\x03\xe0A\x03R\tcondition\x12\x12\n" +
+	")google/cloud/deploy/v1/cloud_deploy.proto\x12\x16google.cloud.deploy.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x1bgoogle/type/timeofday.proto\"\x8b\a\n" +
+	"\x10DeliveryPipeline\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12a\n" +
+	"\vannotations\x18\x04 \x03(\v29.google.cloud.deploy.v1.DeliveryPipeline.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12L\n" +
+	"\x06labels\x18\x05 \x03(\v24.google.cloud.deploy.v1.DeliveryPipeline.LabelsEntryR\x06labels\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12W\n" +
+	"\x0fserial_pipeline\x18\b \x01(\v2&.google.cloud.deploy.v1.SerialPipelineB\x04\xe2A\x01\x01H\x00R\x0eserialPipeline\x12M\n" +
+	"\tcondition\x18\v \x01(\v2).google.cloud.deploy.v1.PipelineConditionB\x04\xe2A\x01\x03R\tcondition\x12\x12\n" +
 	"\x04etag\x18\n" +
-	" \x01(\tR\x04etag\x12!\n" +
-	"\tsuspended\x18\f \x01(\bB\x03\xe0A\x01R\tsuspended\x1a>\n" +
+	" \x01(\tR\x04etag\x12\"\n" +
+	"\tsuspended\x18\f \x01(\bB\x04\xe2A\x01\x01R\tsuspended\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a9\n" +
@@ -15125,98 +15125,98 @@ const file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x7f\xeaA|\n" +
 	"+clouddeploy.googleapis.com/DeliveryPipeline\x12Mprojects/{project}/locations/{location}/deliveryPipelines/{delivery_pipeline}B\n" +
 	"\n" +
-	"\bpipeline\"L\n" +
-	"\x0eSerialPipeline\x12:\n" +
-	"\x06stages\x18\x01 \x03(\v2\x1d.google.cloud.deploy.v1.StageB\x03\xe0A\x01R\x06stages\"\xe9\x01\n" +
-	"\x05Stage\x12 \n" +
-	"\ttarget_id\x18\x01 \x01(\tB\x03\xe0A\x01R\btargetId\x12\x1f\n" +
-	"\bprofiles\x18\x02 \x03(\tB\x03\xe0A\x01R\bprofiles\x12A\n" +
-	"\bstrategy\x18\x05 \x01(\v2 .google.cloud.deploy.v1.StrategyB\x03\xe0A\x01R\bstrategy\x12Z\n" +
-	"\x11deploy_parameters\x18\x06 \x03(\v2(.google.cloud.deploy.v1.DeployParametersB\x03\xe0A\x01R\x10deployParameters\"\xdc\x02\n" +
-	"\x10DeployParameters\x12Q\n" +
-	"\x06values\x18\x01 \x03(\v24.google.cloud.deploy.v1.DeployParameters.ValuesEntryB\x03\xe0A\x02R\x06values\x12t\n" +
-	"\x13match_target_labels\x18\x02 \x03(\v2?.google.cloud.deploy.v1.DeployParameters.MatchTargetLabelsEntryB\x03\xe0A\x01R\x11matchTargetLabels\x1a9\n" +
+	"\bpipeline\"M\n" +
+	"\x0eSerialPipeline\x12;\n" +
+	"\x06stages\x18\x01 \x03(\v2\x1d.google.cloud.deploy.v1.StageB\x04\xe2A\x01\x01R\x06stages\"\xed\x01\n" +
+	"\x05Stage\x12!\n" +
+	"\ttarget_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\btargetId\x12 \n" +
+	"\bprofiles\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\bprofiles\x12B\n" +
+	"\bstrategy\x18\x05 \x01(\v2 .google.cloud.deploy.v1.StrategyB\x04\xe2A\x01\x01R\bstrategy\x12[\n" +
+	"\x11deploy_parameters\x18\x06 \x03(\v2(.google.cloud.deploy.v1.DeployParametersB\x04\xe2A\x01\x01R\x10deployParameters\"\xde\x02\n" +
+	"\x10DeployParameters\x12R\n" +
+	"\x06values\x18\x01 \x03(\v24.google.cloud.deploy.v1.DeployParameters.ValuesEntryB\x04\xe2A\x01\x02R\x06values\x12u\n" +
+	"\x13match_target_labels\x18\x02 \x03(\v2?.google.cloud.deploy.v1.DeployParameters.MatchTargetLabelsEntryB\x04\xe2A\x01\x01R\x11matchTargetLabels\x1a9\n" +
 	"\vValuesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aD\n" +
 	"\x16MatchTargetLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xa5\x01\n" +
-	"\bStrategy\x12C\n" +
-	"\bstandard\x18\x01 \x01(\v2 .google.cloud.deploy.v1.StandardB\x03\xe0A\x01H\x00R\bstandard\x12=\n" +
-	"\x06canary\x18\x02 \x01(\v2\x1e.google.cloud.deploy.v1.CanaryB\x03\xe0A\x01H\x00R\x06canaryB\x15\n" +
-	"\x13deployment_strategy\"*\n" +
-	"\tPredeploy\x12\x1d\n" +
-	"\aactions\x18\x01 \x03(\tB\x03\xe0A\x01R\aactions\"+\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xa7\x01\n" +
+	"\bStrategy\x12D\n" +
+	"\bstandard\x18\x01 \x01(\v2 .google.cloud.deploy.v1.StandardB\x04\xe2A\x01\x01H\x00R\bstandard\x12>\n" +
+	"\x06canary\x18\x02 \x01(\v2\x1e.google.cloud.deploy.v1.CanaryB\x04\xe2A\x01\x01H\x00R\x06canaryB\x15\n" +
+	"\x13deployment_strategy\"+\n" +
+	"\tPredeploy\x12\x1e\n" +
+	"\aactions\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\aactions\",\n" +
 	"\n" +
-	"Postdeploy\x12\x1d\n" +
-	"\aactions\x18\x01 \x03(\tB\x03\xe0A\x01R\aactions\"\xb6\x01\n" +
-	"\bStandard\x12\x1b\n" +
-	"\x06verify\x18\x01 \x01(\bB\x03\xe0A\x01R\x06verify\x12D\n" +
-	"\tpredeploy\x18\x02 \x01(\v2!.google.cloud.deploy.v1.PredeployB\x03\xe0A\x01R\tpredeploy\x12G\n" +
+	"Postdeploy\x12\x1e\n" +
+	"\aactions\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\aactions\"\xb9\x01\n" +
+	"\bStandard\x12\x1c\n" +
+	"\x06verify\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x06verify\x12E\n" +
+	"\tpredeploy\x18\x02 \x01(\v2!.google.cloud.deploy.v1.PredeployB\x04\xe2A\x01\x01R\tpredeploy\x12H\n" +
 	"\n" +
-	"postdeploy\x18\x03 \x01(\v2\".google.cloud.deploy.v1.PostdeployB\x03\xe0A\x01R\n" +
-	"postdeploy\"\xb2\x02\n" +
-	"\x06Canary\x12Q\n" +
-	"\x0eruntime_config\x18\x01 \x01(\v2%.google.cloud.deploy.v1.RuntimeConfigB\x03\xe0A\x01R\rruntimeConfig\x12\\\n" +
-	"\x11canary_deployment\x18\x02 \x01(\v2(.google.cloud.deploy.v1.CanaryDeploymentB\x03\xe0A\x01H\x00R\x10canaryDeployment\x12o\n" +
-	"\x18custom_canary_deployment\x18\x03 \x01(\v2..google.cloud.deploy.v1.CustomCanaryDeploymentB\x03\xe0A\x01H\x00R\x16customCanaryDeploymentB\x06\n" +
-	"\x04mode\"\xe5\x01\n" +
-	"\x10CanaryDeployment\x12%\n" +
-	"\vpercentages\x18\x01 \x03(\x05B\x03\xe0A\x02R\vpercentages\x12\x1b\n" +
-	"\x06verify\x18\x02 \x01(\bB\x03\xe0A\x01R\x06verify\x12D\n" +
-	"\tpredeploy\x18\x03 \x01(\v2!.google.cloud.deploy.v1.PredeployB\x03\xe0A\x01R\tpredeploy\x12G\n" +
+	"postdeploy\x18\x03 \x01(\v2\".google.cloud.deploy.v1.PostdeployB\x04\xe2A\x01\x01R\n" +
+	"postdeploy\"\xb5\x02\n" +
+	"\x06Canary\x12R\n" +
+	"\x0eruntime_config\x18\x01 \x01(\v2%.google.cloud.deploy.v1.RuntimeConfigB\x04\xe2A\x01\x01R\rruntimeConfig\x12]\n" +
+	"\x11canary_deployment\x18\x02 \x01(\v2(.google.cloud.deploy.v1.CanaryDeploymentB\x04\xe2A\x01\x01H\x00R\x10canaryDeployment\x12p\n" +
+	"\x18custom_canary_deployment\x18\x03 \x01(\v2..google.cloud.deploy.v1.CustomCanaryDeploymentB\x04\xe2A\x01\x01H\x00R\x16customCanaryDeploymentB\x06\n" +
+	"\x04mode\"\xe9\x01\n" +
+	"\x10CanaryDeployment\x12&\n" +
+	"\vpercentages\x18\x01 \x03(\x05B\x04\xe2A\x01\x02R\vpercentages\x12\x1c\n" +
+	"\x06verify\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x06verify\x12E\n" +
+	"\tpredeploy\x18\x03 \x01(\v2!.google.cloud.deploy.v1.PredeployB\x04\xe2A\x01\x01R\tpredeploy\x12H\n" +
 	"\n" +
-	"postdeploy\x18\x04 \x01(\v2\".google.cloud.deploy.v1.PostdeployB\x03\xe0A\x01R\n" +
-	"postdeploy\"\xa0\x03\n" +
-	"\x16CustomCanaryDeployment\x12d\n" +
-	"\rphase_configs\x18\x01 \x03(\v2:.google.cloud.deploy.v1.CustomCanaryDeployment.PhaseConfigB\x03\xe0A\x02R\fphaseConfigs\x1a\x9f\x02\n" +
-	"\vPhaseConfig\x12\x1e\n" +
-	"\bphase_id\x18\x01 \x01(\tB\x03\xe0A\x02R\aphaseId\x12#\n" +
+	"postdeploy\x18\x04 \x01(\v2\".google.cloud.deploy.v1.PostdeployB\x04\xe2A\x01\x01R\n" +
+	"postdeploy\"\xa7\x03\n" +
+	"\x16CustomCanaryDeployment\x12e\n" +
+	"\rphase_configs\x18\x01 \x03(\v2:.google.cloud.deploy.v1.CustomCanaryDeployment.PhaseConfigB\x04\xe2A\x01\x02R\fphaseConfigs\x1a\xa5\x02\n" +
+	"\vPhaseConfig\x12\x1f\n" +
+	"\bphase_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aphaseId\x12$\n" +
 	"\n" +
-	"percentage\x18\x02 \x01(\x05B\x03\xe0A\x02R\n" +
-	"percentage\x12\x1f\n" +
-	"\bprofiles\x18\x03 \x03(\tB\x03\xe0A\x01R\bprofiles\x12\x1b\n" +
-	"\x06verify\x18\x04 \x01(\bB\x03\xe0A\x01R\x06verify\x12D\n" +
-	"\tpredeploy\x18\x05 \x01(\v2!.google.cloud.deploy.v1.PredeployB\x03\xe0A\x01R\tpredeploy\x12G\n" +
+	"percentage\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\n" +
+	"percentage\x12 \n" +
+	"\bprofiles\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\bprofiles\x12\x1c\n" +
+	"\x06verify\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x06verify\x12E\n" +
+	"\tpredeploy\x18\x05 \x01(\v2!.google.cloud.deploy.v1.PredeployB\x04\xe2A\x01\x01R\tpredeploy\x12H\n" +
 	"\n" +
-	"postdeploy\x18\x06 \x01(\v2\".google.cloud.deploy.v1.PostdeployB\x03\xe0A\x01R\n" +
-	"postdeploy\"\xbc\b\n" +
-	"\x10KubernetesConfig\x12t\n" +
-	"\x14gateway_service_mesh\x18\x01 \x01(\v2;.google.cloud.deploy.v1.KubernetesConfig.GatewayServiceMeshB\x03\xe0A\x01H\x00R\x12gatewayServiceMesh\x12p\n" +
-	"\x12service_networking\x18\x02 \x01(\v2:.google.cloud.deploy.v1.KubernetesConfig.ServiceNetworkingB\x03\xe0A\x01H\x00R\x11serviceNetworking\x1a\xd5\x04\n" +
-	"\x12GatewayServiceMesh\x12\"\n" +
+	"postdeploy\x18\x06 \x01(\v2\".google.cloud.deploy.v1.PostdeployB\x04\xe2A\x01\x01R\n" +
+	"postdeploy\"\xcb\b\n" +
+	"\x10KubernetesConfig\x12u\n" +
+	"\x14gateway_service_mesh\x18\x01 \x01(\v2;.google.cloud.deploy.v1.KubernetesConfig.GatewayServiceMeshB\x04\xe2A\x01\x01H\x00R\x12gatewayServiceMesh\x12q\n" +
+	"\x12service_networking\x18\x02 \x01(\v2:.google.cloud.deploy.v1.KubernetesConfig.ServiceNetworkingB\x04\xe2A\x01\x01H\x00R\x11serviceNetworking\x1a\xde\x04\n" +
+	"\x12GatewayServiceMesh\x12#\n" +
 	"\n" +
-	"http_route\x18\x01 \x01(\tB\x03\xe0A\x02R\thttpRoute\x12\x1d\n" +
-	"\aservice\x18\x02 \x01(\tB\x03\xe0A\x02R\aservice\x12#\n" +
+	"http_route\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\thttpRoute\x12\x1e\n" +
+	"\aservice\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aservice\x12$\n" +
 	"\n" +
-	"deployment\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
-	"deployment\x12S\n" +
-	"\x16route_update_wait_time\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x13routeUpdateWaitTime\x12V\n" +
-	"\x17stable_cutback_duration\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x15stableCutbackDuration\x121\n" +
-	"\x12pod_selector_label\x18\x06 \x01(\tB\x03\xe0A\x01R\x10podSelectorLabel\x12\x81\x01\n" +
-	"\x12route_destinations\x18\b \x01(\v2M.google.cloud.deploy.v1.KubernetesConfig.GatewayServiceMesh.RouteDestinationsB\x03\xe0A\x01R\x11routeDestinations\x1as\n" +
-	"\x11RouteDestinations\x12,\n" +
-	"\x0fdestination_ids\x18\x01 \x03(\tB\x03\xe0A\x02R\x0edestinationIds\x120\n" +
-	"\x11propagate_service\x18\x02 \x01(\bB\x03\xe0A\x01R\x10propagateService\x1a\xd1\x01\n" +
-	"\x11ServiceNetworking\x12\x1d\n" +
-	"\aservice\x18\x01 \x01(\tB\x03\xe0A\x02R\aservice\x12#\n" +
+	"deployment\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"deployment\x12T\n" +
+	"\x16route_update_wait_time\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x13routeUpdateWaitTime\x12W\n" +
+	"\x17stable_cutback_duration\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x15stableCutbackDuration\x122\n" +
+	"\x12pod_selector_label\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x10podSelectorLabel\x12\x82\x01\n" +
+	"\x12route_destinations\x18\b \x01(\v2M.google.cloud.deploy.v1.KubernetesConfig.GatewayServiceMesh.RouteDestinationsB\x04\xe2A\x01\x01R\x11routeDestinations\x1au\n" +
+	"\x11RouteDestinations\x12-\n" +
+	"\x0fdestination_ids\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x0edestinationIds\x121\n" +
+	"\x11propagate_service\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x10propagateService\x1a\xd5\x01\n" +
+	"\x11ServiceNetworking\x12\x1e\n" +
+	"\aservice\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aservice\x12$\n" +
 	"\n" +
-	"deployment\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"deployment\x12E\n" +
-	"\x1cdisable_pod_overprovisioning\x18\x03 \x01(\bB\x03\xe0A\x01R\x1adisablePodOverprovisioning\x121\n" +
-	"\x12pod_selector_label\x18\x04 \x01(\tB\x03\xe0A\x01R\x10podSelectorLabelB\x14\n" +
-	"\x12service_definition\"\xf4\x01\n" +
-	"\x0eCloudRunConfig\x12?\n" +
-	"\x19automatic_traffic_control\x18\x01 \x01(\bB\x03\xe0A\x01R\x17automaticTrafficControl\x125\n" +
-	"\x14canary_revision_tags\x18\x02 \x03(\tB\x03\xe0A\x01R\x12canaryRevisionTags\x123\n" +
-	"\x13prior_revision_tags\x18\x03 \x03(\tB\x03\xe0A\x01R\x11priorRevisionTags\x125\n" +
-	"\x14stable_revision_tags\x18\x04 \x03(\tB\x03\xe0A\x01R\x12stableRevisionTags\"\xbe\x01\n" +
-	"\rRuntimeConfig\x12O\n" +
+	"deployment\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"deployment\x12F\n" +
+	"\x1cdisable_pod_overprovisioning\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x1adisablePodOverprovisioning\x122\n" +
+	"\x12pod_selector_label\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x10podSelectorLabelB\x14\n" +
+	"\x12service_definition\"\xf8\x01\n" +
+	"\x0eCloudRunConfig\x12@\n" +
+	"\x19automatic_traffic_control\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x17automaticTrafficControl\x126\n" +
+	"\x14canary_revision_tags\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x12canaryRevisionTags\x124\n" +
+	"\x13prior_revision_tags\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x11priorRevisionTags\x126\n" +
+	"\x14stable_revision_tags\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x12stableRevisionTags\"\xc0\x01\n" +
+	"\rRuntimeConfig\x12P\n" +
 	"\n" +
-	"kubernetes\x18\x01 \x01(\v2(.google.cloud.deploy.v1.KubernetesConfigB\x03\xe0A\x01H\x00R\n" +
-	"kubernetes\x12J\n" +
-	"\tcloud_run\x18\x02 \x01(\v2&.google.cloud.deploy.v1.CloudRunConfigB\x03\xe0A\x01H\x00R\bcloudRunB\x10\n" +
+	"kubernetes\x18\x01 \x01(\v2(.google.cloud.deploy.v1.KubernetesConfigB\x04\xe2A\x01\x01H\x00R\n" +
+	"kubernetes\x12K\n" +
+	"\tcloud_run\x18\x02 \x01(\v2&.google.cloud.deploy.v1.CloudRunConfigB\x04\xe2A\x01\x01H\x00R\bcloudRunB\x10\n" +
 	"\x0eruntime_config\"m\n" +
 	"\x16PipelineReadyCondition\x12\x16\n" +
 	"\x06status\x18\x03 \x01(\bR\x06status\x12;\n" +
@@ -15234,9 +15234,9 @@ const file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = "" +
 	"\x11PipelineCondition\x12h\n" +
 	"\x18pipeline_ready_condition\x18\x01 \x01(\v2..google.cloud.deploy.v1.PipelineReadyConditionR\x16pipelineReadyCondition\x12k\n" +
 	"\x19targets_present_condition\x18\x03 \x01(\v2/.google.cloud.deploy.v1.TargetsPresentConditionR\x17targetsPresentCondition\x12b\n" +
-	"\x16targets_type_condition\x18\x04 \x01(\v2,.google.cloud.deploy.v1.TargetsTypeConditionR\x14targetsTypeCondition\"\xda\x01\n" +
-	"\x1cListDeliveryPipelinesRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+clouddeploy.googleapis.com/DeliveryPipelineR\x06parent\x12\x1b\n" +
+	"\x16targets_type_condition\x18\x04 \x01(\v2,.google.cloud.deploy.v1.TargetsTypeConditionR\x14targetsTypeCondition\"\xdb\x01\n" +
+	"\x1cListDeliveryPipelinesRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+clouddeploy.googleapis.com/DeliveryPipelineR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -15245,73 +15245,73 @@ const file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = "" +
 	"\x1dListDeliveryPipelinesResponse\x12W\n" +
 	"\x12delivery_pipelines\x18\x01 \x03(\v2(.google.cloud.deploy.v1.DeliveryPipelineR\x11deliveryPipelines\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"e\n" +
-	"\x1aGetDeliveryPipelineRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+clouddeploy.googleapis.com/DeliveryPipelineR\x04name\"\xcd\x02\n" +
-	"\x1dCreateDeliveryPipelineRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+clouddeploy.googleapis.com/DeliveryPipelineR\x06parent\x125\n" +
-	"\x14delivery_pipeline_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x12deliveryPipelineId\x12Z\n" +
-	"\x11delivery_pipeline\x18\x03 \x01(\v2(.google.cloud.deploy.v1.DeliveryPipelineB\x03\xe0A\x02R\x10deliveryPipeline\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"f\n" +
+	"\x1aGetDeliveryPipelineRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+clouddeploy.googleapis.com/DeliveryPipelineR\x04name\"\xd2\x02\n" +
+	"\x1dCreateDeliveryPipelineRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+clouddeploy.googleapis.com/DeliveryPipelineR\x06parent\x126\n" +
+	"\x14delivery_pipeline_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12deliveryPipelineId\x12[\n" +
+	"\x11delivery_pipeline\x18\x03 \x01(\v2(.google.cloud.deploy.v1.DeliveryPipelineB\x04\xe2A\x01\x02R\x10deliveryPipeline\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xb5\x02\n" +
-	"\x1dUpdateDeliveryPipelineRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12Z\n" +
-	"\x11delivery_pipeline\x18\x02 \x01(\v2(.google.cloud.deploy.v1.DeliveryPipelineB\x03\xe0A\x02R\x10deliveryPipeline\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xba\x02\n" +
+	"\x1dUpdateDeliveryPipelineRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12[\n" +
+	"\x11delivery_pipeline\x18\x02 \x01(\v2(.google.cloud.deploy.v1.DeliveryPipelineB\x04\xe2A\x01\x02R\x10deliveryPipeline\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rallow_missing\x18\x04 \x01(\bB\x03\xe0A\x01R\fallowMissing\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x94\x02\n" +
-	"\x1dDeleteDeliveryPipelineRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+clouddeploy.googleapis.com/DeliveryPipelineR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rallow_missing\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\x9a\x02\n" +
+	"\x1dDeleteDeliveryPipelineRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+clouddeploy.googleapis.com/DeliveryPipelineR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rallow_missing\x18\x03 \x01(\bB\x03\xe0A\x01R\fallowMissing\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x19\n" +
-	"\x05force\x18\x06 \x01(\bB\x03\xe0A\x01R\x05force\x12\x17\n" +
-	"\x04etag\x18\x05 \x01(\tB\x03\xe0A\x01R\x04etag\"\x87\x01\n" +
-	"\x14RollbackTargetConfig\x12>\n" +
-	"\arollout\x18\x01 \x01(\v2\x1f.google.cloud.deploy.v1.RolloutB\x03\xe0A\x01R\arollout\x12/\n" +
-	"\x11starting_phase_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x0fstartingPhaseId\"\xed\x03\n" +
-	"\x15RollbackTargetRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+clouddeploy.googleapis.com/DeliveryPipelineR\x04name\x12 \n" +
-	"\ttarget_id\x18\x02 \x01(\tB\x03\xe0A\x02R\btargetId\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rallow_missing\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x1a\n" +
+	"\x05force\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x05force\x12\x18\n" +
+	"\x04etag\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\x89\x01\n" +
+	"\x14RollbackTargetConfig\x12?\n" +
+	"\arollout\x18\x01 \x01(\v2\x1f.google.cloud.deploy.v1.RolloutB\x04\xe2A\x01\x01R\arollout\x120\n" +
+	"\x11starting_phase_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0fstartingPhaseId\"\xf5\x03\n" +
+	"\x15RollbackTargetRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+clouddeploy.googleapis.com/DeliveryPipelineR\x04name\x12!\n" +
+	"\ttarget_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\btargetId\x12#\n" +
 	"\n" +
-	"rollout_id\x18\x03 \x01(\tB\x03\xe0A\x02R\trolloutId\x12\"\n" +
+	"rollout_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\trolloutId\x12#\n" +
 	"\n" +
-	"release_id\x18\x04 \x01(\tB\x03\xe0A\x01R\treleaseId\x124\n" +
-	"\x14rollout_to_roll_back\x18\x05 \x01(\tB\x03\xe0A\x01R\x11rolloutToRollBack\x12Z\n" +
-	"\x0frollback_config\x18\x06 \x01(\v2,.google.cloud.deploy.v1.RollbackTargetConfigB\x03\xe0A\x01R\x0erollbackConfig\x12(\n" +
-	"\rvalidate_only\x18\a \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12e\n" +
-	"\x16override_deploy_policy\x18\t \x03(\tB/\xe0A\x01\xfaA)\n" +
+	"release_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\treleaseId\x125\n" +
+	"\x14rollout_to_roll_back\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x11rolloutToRollBack\x12[\n" +
+	"\x0frollback_config\x18\x06 \x01(\v2,.google.cloud.deploy.v1.RollbackTargetConfigB\x04\xe2A\x01\x01R\x0erollbackConfig\x12)\n" +
+	"\rvalidate_only\x18\a \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12f\n" +
+	"\x16override_deploy_policy\x18\t \x03(\tB0\xe2A\x01\x01\xfaA)\n" +
 	"'clouddeploy.googleapis.com/DeployPolicyR\x14overrideDeployPolicy\"o\n" +
 	"\x16RollbackTargetResponse\x12U\n" +
-	"\x0frollback_config\x18\x01 \x01(\v2,.google.cloud.deploy.v1.RollbackTargetConfigR\x0erollbackConfig\"\xc0\f\n" +
-	"\x06Target\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12 \n" +
-	"\ttarget_id\x18\x02 \x01(\tB\x03\xe0A\x03R\btargetId\x12\x15\n" +
-	"\x03uid\x18\x03 \x01(\tB\x03\xe0A\x03R\x03uid\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12V\n" +
-	"\vannotations\x18\x05 \x03(\v2/.google.cloud.deploy.v1.Target.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12G\n" +
-	"\x06labels\x18\x06 \x03(\v2*.google.cloud.deploy.v1.Target.LabelsEntryB\x03\xe0A\x01R\x06labels\x12.\n" +
-	"\x10require_approval\x18\r \x01(\bB\x03\xe0A\x01R\x0frequireApproval\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12;\n" +
-	"\x03gke\x18\x0f \x01(\v2\".google.cloud.deploy.v1.GkeClusterB\x03\xe0A\x01H\x00R\x03gke\x12S\n" +
-	"\x0eanthos_cluster\x18\x11 \x01(\v2%.google.cloud.deploy.v1.AnthosClusterB\x03\xe0A\x01H\x00R\ranthosCluster\x12A\n" +
-	"\x03run\x18\x12 \x01(\v2(.google.cloud.deploy.v1.CloudRunLocationB\x03\xe0A\x01H\x00R\x03run\x12M\n" +
-	"\fmulti_target\x18\x13 \x01(\v2#.google.cloud.deploy.v1.MultiTargetB\x03\xe0A\x01H\x00R\vmultiTarget\x12P\n" +
-	"\rcustom_target\x18\x15 \x01(\v2$.google.cloud.deploy.v1.CustomTargetB\x03\xe0A\x01H\x00R\fcustomTarget\x12l\n" +
-	"\x13associated_entities\x18\x17 \x03(\v26.google.cloud.deploy.v1.Target.AssociatedEntitiesEntryB\x03\xe0A\x01R\x12associatedEntities\x12\x17\n" +
-	"\x04etag\x18\f \x01(\tB\x03\xe0A\x01R\x04etag\x12Y\n" +
-	"\x11execution_configs\x18\x10 \x03(\v2'.google.cloud.deploy.v1.ExecutionConfigB\x03\xe0A\x01R\x10executionConfigs\x12f\n" +
-	"\x11deploy_parameters\x18\x14 \x03(\v24.google.cloud.deploy.v1.Target.DeployParametersEntryB\x03\xe0A\x01R\x10deployParameters\x1a>\n" +
+	"\x0frollback_config\x18\x01 \x01(\v2,.google.cloud.deploy.v1.RollbackTargetConfigR\x0erollbackConfig\"\xd2\f\n" +
+	"\x06Target\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12!\n" +
+	"\ttarget_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\btargetId\x12\x16\n" +
+	"\x03uid\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12W\n" +
+	"\vannotations\x18\x05 \x03(\v2/.google.cloud.deploy.v1.Target.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12H\n" +
+	"\x06labels\x18\x06 \x03(\v2*.google.cloud.deploy.v1.Target.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12/\n" +
+	"\x10require_approval\x18\r \x01(\bB\x04\xe2A\x01\x01R\x0frequireApproval\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12<\n" +
+	"\x03gke\x18\x0f \x01(\v2\".google.cloud.deploy.v1.GkeClusterB\x04\xe2A\x01\x01H\x00R\x03gke\x12T\n" +
+	"\x0eanthos_cluster\x18\x11 \x01(\v2%.google.cloud.deploy.v1.AnthosClusterB\x04\xe2A\x01\x01H\x00R\ranthosCluster\x12B\n" +
+	"\x03run\x18\x12 \x01(\v2(.google.cloud.deploy.v1.CloudRunLocationB\x04\xe2A\x01\x01H\x00R\x03run\x12N\n" +
+	"\fmulti_target\x18\x13 \x01(\v2#.google.cloud.deploy.v1.MultiTargetB\x04\xe2A\x01\x01H\x00R\vmultiTarget\x12Q\n" +
+	"\rcustom_target\x18\x15 \x01(\v2$.google.cloud.deploy.v1.CustomTargetB\x04\xe2A\x01\x01H\x00R\fcustomTarget\x12m\n" +
+	"\x13associated_entities\x18\x17 \x03(\v26.google.cloud.deploy.v1.Target.AssociatedEntitiesEntryB\x04\xe2A\x01\x01R\x12associatedEntities\x12\x18\n" +
+	"\x04etag\x18\f \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12Z\n" +
+	"\x11execution_configs\x18\x10 \x03(\v2'.google.cloud.deploy.v1.ExecutionConfigB\x04\xe2A\x01\x01R\x10executionConfigs\x12g\n" +
+	"\x11deploy_parameters\x18\x14 \x03(\v24.google.cloud.deploy.v1.Target.DeployParametersEntryB\x04\xe2A\x01\x01R\x10deployParameters\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a9\n" +
@@ -15325,18 +15325,18 @@ const file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = "" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:`\xeaA]\n" +
 	"!clouddeploy.googleapis.com/Target\x128projects/{project}/locations/{location}/targets/{target}B\x13\n" +
-	"\x11deployment_target\"\xcf\x05\n" +
-	"\x0fExecutionConfig\x12^\n" +
-	"\x06usages\x18\x01 \x03(\x0e2A.google.cloud.deploy.v1.ExecutionConfig.ExecutionEnvironmentUsageB\x03\xe0A\x02R\x06usages\x12M\n" +
-	"\fdefault_pool\x18\x02 \x01(\v2#.google.cloud.deploy.v1.DefaultPoolB\x03\xe0A\x01H\x00R\vdefaultPool\x12M\n" +
-	"\fprivate_pool\x18\x03 \x01(\v2#.google.cloud.deploy.v1.PrivatePoolB\x03\xe0A\x01H\x00R\vprivatePool\x12M\n" +
-	"\vworker_pool\x18\x04 \x01(\tB,\xe0A\x01\xfaA&\n" +
+	"\x11deployment_target\"\xd7\x05\n" +
+	"\x0fExecutionConfig\x12_\n" +
+	"\x06usages\x18\x01 \x03(\x0e2A.google.cloud.deploy.v1.ExecutionConfig.ExecutionEnvironmentUsageB\x04\xe2A\x01\x02R\x06usages\x12N\n" +
+	"\fdefault_pool\x18\x02 \x01(\v2#.google.cloud.deploy.v1.DefaultPoolB\x04\xe2A\x01\x01H\x00R\vdefaultPool\x12N\n" +
+	"\fprivate_pool\x18\x03 \x01(\v2#.google.cloud.deploy.v1.PrivatePoolB\x04\xe2A\x01\x01H\x00R\vprivatePool\x12N\n" +
+	"\vworker_pool\x18\x04 \x01(\tB-\xe2A\x01\x01\xfaA&\n" +
 	"$cloudbuild.googleapis.com/WorkerPoolR\n" +
-	"workerPool\x12,\n" +
-	"\x0fservice_account\x18\x05 \x01(\tB\x03\xe0A\x01R\x0eserviceAccount\x12.\n" +
-	"\x10artifact_storage\x18\x06 \x01(\tB\x03\xe0A\x01R\x0fartifactStorage\x12K\n" +
-	"\x11execution_timeout\x18\a \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x10executionTimeout\x12\x1d\n" +
-	"\averbose\x18\b \x01(\bB\x03\xe0A\x01R\averbose\"\x8b\x01\n" +
+	"workerPool\x12-\n" +
+	"\x0fservice_account\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x0eserviceAccount\x12/\n" +
+	"\x10artifact_storage\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x0fartifactStorage\x12L\n" +
+	"\x11execution_timeout\x18\a \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x10executionTimeout\x12\x1e\n" +
+	"\averbose\x18\b \x01(\bB\x04\xe2A\x01\x01R\averbose\"\x8b\x01\n" +
 	"\x19ExecutionEnvironmentUsage\x12+\n" +
 	"'EXECUTION_ENVIRONMENT_USAGE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -15348,92 +15348,92 @@ const file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = "" +
 	"\tPREDEPLOY\x10\x04\x12\x0e\n" +
 	"\n" +
 	"POSTDEPLOY\x10\x05B\x17\n" +
-	"\x15execution_environment\"k\n" +
-	"\vDefaultPool\x12,\n" +
-	"\x0fservice_account\x18\x01 \x01(\tB\x03\xe0A\x01R\x0eserviceAccount\x12.\n" +
-	"\x10artifact_storage\x18\x02 \x01(\tB\x03\xe0A\x01R\x0fartifactStorage\"\xba\x01\n" +
-	"\vPrivatePool\x12M\n" +
-	"\vworker_pool\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"\x15execution_environment\"m\n" +
+	"\vDefaultPool\x12-\n" +
+	"\x0fservice_account\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0eserviceAccount\x12/\n" +
+	"\x10artifact_storage\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0fartifactStorage\"\xbd\x01\n" +
+	"\vPrivatePool\x12N\n" +
+	"\vworker_pool\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$cloudbuild.googleapis.com/WorkerPoolR\n" +
-	"workerPool\x12,\n" +
-	"\x0fservice_account\x18\x02 \x01(\tB\x03\xe0A\x01R\x0eserviceAccount\x12.\n" +
-	"\x10artifact_storage\x18\x03 \x01(\tB\x03\xe0A\x01R\x0fartifactStorage\"\xc0\x01\n" +
+	"workerPool\x12-\n" +
+	"\x0fservice_account\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0eserviceAccount\x12/\n" +
+	"\x10artifact_storage\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x0fartifactStorage\"\xc4\x01\n" +
 	"\n" +
-	"GkeCluster\x12B\n" +
-	"\acluster\x18\x01 \x01(\tB(\xe0A\x01\xfaA\"\n" +
-	" container.googleapis.com/ClusterR\acluster\x12$\n" +
-	"\vinternal_ip\x18\x02 \x01(\bB\x03\xe0A\x01R\n" +
-	"internalIp\x12 \n" +
-	"\tproxy_url\x18\x03 \x01(\tB\x03\xe0A\x01R\bproxyUrl\x12&\n" +
-	"\fdns_endpoint\x18\x04 \x01(\bB\x03\xe0A\x01R\vdnsEndpoint\"Y\n" +
-	"\rAnthosCluster\x12H\n" +
+	"GkeCluster\x12C\n" +
+	"\acluster\x18\x01 \x01(\tB)\xe2A\x01\x01\xfaA\"\n" +
+	" container.googleapis.com/ClusterR\acluster\x12%\n" +
+	"\vinternal_ip\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"internalIp\x12!\n" +
+	"\tproxy_url\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bproxyUrl\x12'\n" +
+	"\fdns_endpoint\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\vdnsEndpoint\"Z\n" +
+	"\rAnthosCluster\x12I\n" +
 	"\n" +
-	"membership\x18\x01 \x01(\tB(\xe0A\x01\xfaA\"\n" +
+	"membership\x18\x01 \x01(\tB)\xe2A\x01\x01\xfaA\"\n" +
 	" gkehub.googleapis.com/MembershipR\n" +
-	"membership\"Y\n" +
-	"\x10CloudRunLocation\x12E\n" +
-	"\blocation\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\blocation\"1\n" +
-	"\vMultiTarget\x12\"\n" +
+	"membership\"Z\n" +
+	"\x10CloudRunLocation\x12F\n" +
+	"\blocation\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\blocation\"2\n" +
+	"\vMultiTarget\x12#\n" +
 	"\n" +
-	"target_ids\x18\x01 \x03(\tB\x03\xe0A\x02R\ttargetIds\"q\n" +
-	"\fCustomTarget\x12a\n" +
-	"\x12custom_target_type\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+clouddeploy.googleapis.com/CustomTargetTypeR\x10customTargetType\"\xb5\x01\n" +
-	"\x12AssociatedEntities\x12J\n" +
-	"\fgke_clusters\x18\x02 \x03(\v2\".google.cloud.deploy.v1.GkeClusterB\x03\xe0A\x01R\vgkeClusters\x12S\n" +
-	"\x0fanthos_clusters\x18\x03 \x03(\v2%.google.cloud.deploy.v1.AnthosClusterB\x03\xe0A\x01R\x0eanthosClusters\"\xda\x01\n" +
-	"\x12ListTargetsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!clouddeploy.googleapis.com/TargetR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"target_ids\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\ttargetIds\"r\n" +
+	"\fCustomTarget\x12b\n" +
+	"\x12custom_target_type\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+clouddeploy.googleapis.com/CustomTargetTypeR\x10customTargetType\"\xb7\x01\n" +
+	"\x12AssociatedEntities\x12K\n" +
+	"\fgke_clusters\x18\x02 \x03(\v2\".google.cloud.deploy.v1.GkeClusterB\x04\xe2A\x01\x01R\vgkeClusters\x12T\n" +
+	"\x0fanthos_clusters\x18\x03 \x03(\v2%.google.cloud.deploy.v1.AnthosClusterB\x04\xe2A\x01\x01R\x0eanthosClusters\"\xdf\x01\n" +
+	"\x12ListTargetsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!clouddeploy.googleapis.com/TargetR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x99\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x99\x01\n" +
 	"\x13ListTargetsResponse\x128\n" +
 	"\atargets\x18\x01 \x03(\v2\x1e.google.cloud.deploy.v1.TargetR\atargets\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Q\n" +
-	"\x10GetTargetRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!clouddeploy.googleapis.com/TargetR\x04name\"\x85\x02\n" +
-	"\x13CreateTargetRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!clouddeploy.googleapis.com/TargetR\x06parent\x12 \n" +
-	"\ttarget_id\x18\x02 \x01(\tB\x03\xe0A\x02R\btargetId\x12;\n" +
-	"\x06target\x18\x03 \x01(\v2\x1e.google.cloud.deploy.v1.TargetB\x03\xe0A\x02R\x06target\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"R\n" +
+	"\x10GetTargetRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!clouddeploy.googleapis.com/TargetR\x04name\"\x8a\x02\n" +
+	"\x13CreateTargetRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!clouddeploy.googleapis.com/TargetR\x06parent\x12!\n" +
+	"\ttarget_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\btargetId\x12<\n" +
+	"\x06target\x18\x03 \x01(\v2\x1e.google.cloud.deploy.v1.TargetB\x04\xe2A\x01\x02R\x06target\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x8c\x02\n" +
-	"\x13UpdateTargetRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12;\n" +
-	"\x06target\x18\x02 \x01(\v2\x1e.google.cloud.deploy.v1.TargetB\x03\xe0A\x02R\x06target\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\x91\x02\n" +
+	"\x13UpdateTargetRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12<\n" +
+	"\x06target\x18\x02 \x01(\v2\x1e.google.cloud.deploy.v1.TargetB\x04\xe2A\x01\x02R\x06target\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rallow_missing\x18\x04 \x01(\bB\x03\xe0A\x01R\fallowMissing\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xe5\x01\n" +
-	"\x13DeleteTargetRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!clouddeploy.googleapis.com/TargetR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rallow_missing\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xea\x01\n" +
+	"\x13DeleteTargetRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!clouddeploy.googleapis.com/TargetR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rallow_missing\x18\x03 \x01(\bB\x03\xe0A\x01R\fallowMissing\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x17\n" +
-	"\x04etag\x18\x05 \x01(\tB\x03\xe0A\x01R\x04etag\"\xe2\x06\n" +
-	"\x10CustomTargetType\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x126\n" +
-	"\x15custom_target_type_id\x18\x02 \x01(\tB\x03\xe0A\x03R\x12customTargetTypeId\x12\x15\n" +
-	"\x03uid\x18\x03 \x01(\tB\x03\xe0A\x03R\x03uid\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x01R\vdescription\x12`\n" +
-	"\vannotations\x18\x05 \x03(\v29.google.cloud.deploy.v1.CustomTargetType.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12Q\n" +
-	"\x06labels\x18\x06 \x03(\v24.google.cloud.deploy.v1.CustomTargetType.LabelsEntryB\x03\xe0A\x01R\x06labels\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04etag\x18\t \x01(\tB\x03\xe0A\x01R\x04etag\x12a\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rallow_missing\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x18\n" +
+	"\x04etag\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xec\x06\n" +
+	"\x10CustomTargetType\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x127\n" +
+	"\x15custom_target_type_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x12customTargetTypeId\x12\x16\n" +
+	"\x03uid\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12a\n" +
+	"\vannotations\x18\x05 \x03(\v29.google.cloud.deploy.v1.CustomTargetType.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12R\n" +
+	"\x06labels\x18\x06 \x03(\v24.google.cloud.deploy.v1.CustomTargetType.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04etag\x18\t \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12b\n" +
 	"\x0ecustom_actions\x18\n" +
-	" \x01(\v23.google.cloud.deploy.v1.CustomTargetSkaffoldActionsB\x03\xe0A\x01H\x00R\rcustomActions\x1a>\n" +
+	" \x01(\v23.google.cloud.deploy.v1.CustomTargetSkaffoldActionsB\x04\xe2A\x01\x01H\x00R\rcustomActions\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a9\n" +
@@ -15442,82 +15442,82 @@ const file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x80\x01\xeaA}\n" +
 	"+clouddeploy.googleapis.com/CustomTargetType\x12Nprojects/{project}/locations/{location}/customTargetTypes/{custom_target_type}B\f\n" +
 	"\n" +
-	"definition\"\xd9\x01\n" +
-	"\x1bCustomTargetSkaffoldActions\x12(\n" +
-	"\rrender_action\x18\x01 \x01(\tB\x03\xe0A\x01R\frenderAction\x12(\n" +
-	"\rdeploy_action\x18\x02 \x01(\tB\x03\xe0A\x02R\fdeployAction\x12f\n" +
-	"\x18include_skaffold_modules\x18\x03 \x03(\v2'.google.cloud.deploy.v1.SkaffoldModulesB\x03\xe0A\x01R\x16includeSkaffoldModules\"\xc0\x05\n" +
-	"\x0fSkaffoldModules\x12\x1d\n" +
-	"\aconfigs\x18\x01 \x03(\tB\x03\xe0A\x01R\aconfigs\x12R\n" +
-	"\x03git\x18\x02 \x01(\v29.google.cloud.deploy.v1.SkaffoldModules.SkaffoldGitSourceB\x03\xe0A\x01H\x00R\x03git\x12r\n" +
-	"\x14google_cloud_storage\x18\x03 \x01(\v29.google.cloud.deploy.v1.SkaffoldModules.SkaffoldGCSSourceB\x03\xe0A\x01H\x00R\x12googleCloudStorage\x12{\n" +
-	"\x17google_cloud_build_repo\x18\x04 \x01(\v2=.google.cloud.deploy.v1.SkaffoldModules.SkaffoldGCBRepoSourceB\x03\xe0A\x01H\x00R\x14googleCloudBuildRepo\x1a\\\n" +
-	"\x11SkaffoldGitSource\x12\x17\n" +
-	"\x04repo\x18\x01 \x01(\tB\x03\xe0A\x02R\x04repo\x12\x17\n" +
-	"\x04path\x18\x02 \x01(\tB\x03\xe0A\x01R\x04path\x12\x15\n" +
-	"\x03ref\x18\x03 \x01(\tB\x03\xe0A\x01R\x03ref\x1aI\n" +
-	"\x11SkaffoldGCSSource\x12\x1b\n" +
-	"\x06source\x18\x01 \x01(\tB\x03\xe0A\x02R\x06source\x12\x17\n" +
-	"\x04path\x18\x02 \x01(\tB\x03\xe0A\x01R\x04path\x1a\x95\x01\n" +
-	"\x15SkaffoldGCBRepoSource\x12L\n" +
+	"definition\"\xdc\x01\n" +
+	"\x1bCustomTargetSkaffoldActions\x12)\n" +
+	"\rrender_action\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\frenderAction\x12)\n" +
+	"\rdeploy_action\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fdeployAction\x12g\n" +
+	"\x18include_skaffold_modules\x18\x03 \x03(\v2'.google.cloud.deploy.v1.SkaffoldModulesB\x04\xe2A\x01\x01R\x16includeSkaffoldModules\"\xcc\x05\n" +
+	"\x0fSkaffoldModules\x12\x1e\n" +
+	"\aconfigs\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\aconfigs\x12S\n" +
+	"\x03git\x18\x02 \x01(\v29.google.cloud.deploy.v1.SkaffoldModules.SkaffoldGitSourceB\x04\xe2A\x01\x01H\x00R\x03git\x12s\n" +
+	"\x14google_cloud_storage\x18\x03 \x01(\v29.google.cloud.deploy.v1.SkaffoldModules.SkaffoldGCSSourceB\x04\xe2A\x01\x01H\x00R\x12googleCloudStorage\x12|\n" +
+	"\x17google_cloud_build_repo\x18\x04 \x01(\v2=.google.cloud.deploy.v1.SkaffoldModules.SkaffoldGCBRepoSourceB\x04\xe2A\x01\x01H\x00R\x14googleCloudBuildRepo\x1a_\n" +
+	"\x11SkaffoldGitSource\x12\x18\n" +
+	"\x04repo\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04repo\x12\x18\n" +
+	"\x04path\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04path\x12\x16\n" +
+	"\x03ref\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x03ref\x1aK\n" +
+	"\x11SkaffoldGCSSource\x12\x1c\n" +
+	"\x06source\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06source\x12\x18\n" +
+	"\x04path\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04path\x1a\x98\x01\n" +
+	"\x15SkaffoldGCBRepoSource\x12M\n" +
 	"\n" +
-	"repository\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"repository\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$cloudbuild.googleapis.com/RepositoryR\n" +
-	"repository\x12\x17\n" +
-	"\x04path\x18\x02 \x01(\tB\x03\xe0A\x01R\x04path\x12\x15\n" +
-	"\x03ref\x18\x03 \x01(\tB\x03\xe0A\x01R\x03refB\b\n" +
-	"\x06source\"\xee\x01\n" +
-	"\x1cListCustomTargetTypesRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+clouddeploy.googleapis.com/CustomTargetTypeR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"repository\x12\x18\n" +
+	"\x04path\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04path\x12\x16\n" +
+	"\x03ref\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x03refB\b\n" +
+	"\x06source\"\xf3\x01\n" +
+	"\x1cListCustomTargetTypesRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+clouddeploy.googleapis.com/CustomTargetTypeR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xc3\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xc3\x01\n" +
 	"\x1dListCustomTargetTypesResponse\x12X\n" +
 	"\x13custom_target_types\x18\x01 \x03(\v2(.google.cloud.deploy.v1.CustomTargetTypeR\x11customTargetTypes\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"e\n" +
-	"\x1aGetCustomTargetTypeRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+clouddeploy.googleapis.com/CustomTargetTypeR\x04name\"\xcf\x02\n" +
-	"\x1dCreateCustomTargetTypeRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+clouddeploy.googleapis.com/CustomTargetTypeR\x06parent\x126\n" +
-	"\x15custom_target_type_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x12customTargetTypeId\x12[\n" +
-	"\x12custom_target_type\x18\x03 \x01(\v2(.google.cloud.deploy.v1.CustomTargetTypeB\x03\xe0A\x02R\x10customTargetType\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"f\n" +
+	"\x1aGetCustomTargetTypeRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+clouddeploy.googleapis.com/CustomTargetTypeR\x04name\"\xd4\x02\n" +
+	"\x1dCreateCustomTargetTypeRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\x12+clouddeploy.googleapis.com/CustomTargetTypeR\x06parent\x127\n" +
+	"\x15custom_target_type_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12customTargetTypeId\x12\\\n" +
+	"\x12custom_target_type\x18\x03 \x01(\v2(.google.cloud.deploy.v1.CustomTargetTypeB\x04\xe2A\x01\x02R\x10customTargetType\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xb6\x02\n" +
-	"\x1dUpdateCustomTargetTypeRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12[\n" +
-	"\x12custom_target_type\x18\x02 \x01(\v2(.google.cloud.deploy.v1.CustomTargetTypeB\x03\xe0A\x02R\x10customTargetType\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xbb\x02\n" +
+	"\x1dUpdateCustomTargetTypeRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12\\\n" +
+	"\x12custom_target_type\x18\x02 \x01(\v2(.google.cloud.deploy.v1.CustomTargetTypeB\x04\xe2A\x01\x02R\x10customTargetType\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rallow_missing\x18\x04 \x01(\bB\x03\xe0A\x01R\fallowMissing\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xf9\x01\n" +
-	"\x1dDeleteCustomTargetTypeRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+clouddeploy.googleapis.com/CustomTargetTypeR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rallow_missing\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xfe\x01\n" +
+	"\x1dDeleteCustomTargetTypeRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+clouddeploy.googleapis.com/CustomTargetTypeR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rallow_missing\x18\x03 \x01(\bB\x03\xe0A\x01R\fallowMissing\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x17\n" +
-	"\x04etag\x18\x05 \x01(\tB\x03\xe0A\x01R\x04etag\"\x99\a\n" +
-	"\fDeployPolicy\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12\\\n" +
-	"\vannotations\x18\x04 \x03(\v25.google.cloud.deploy.v1.DeployPolicy.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12H\n" +
-	"\x06labels\x18\x05 \x03(\v20.google.cloud.deploy.v1.DeployPolicy.LabelsEntryR\x06labels\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12!\n" +
-	"\tsuspended\x18\b \x01(\bB\x03\xe0A\x01R\tsuspended\x12W\n" +
-	"\tselectors\x18\f \x03(\v24.google.cloud.deploy.v1.DeployPolicyResourceSelectorB\x03\xe0A\x02R\tselectors\x12=\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rallow_missing\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x18\n" +
+	"\x04etag\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xa2\a\n" +
+	"\fDeployPolicy\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12]\n" +
+	"\vannotations\x18\x04 \x03(\v25.google.cloud.deploy.v1.DeployPolicy.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12H\n" +
+	"\x06labels\x18\x05 \x03(\v20.google.cloud.deploy.v1.DeployPolicy.LabelsEntryR\x06labels\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\"\n" +
+	"\tsuspended\x18\b \x01(\bB\x04\xe2A\x01\x01R\tsuspended\x12X\n" +
+	"\tselectors\x18\f \x03(\v24.google.cloud.deploy.v1.DeployPolicyResourceSelectorB\x04\xe2A\x01\x02R\tselectors\x12>\n" +
 	"\x05rules\x18\n" +
-	" \x03(\v2\".google.cloud.deploy.v1.PolicyRuleB\x03\xe0A\x02R\x05rules\x12\x12\n" +
+	" \x03(\v2\".google.cloud.deploy.v1.PolicyRuleB\x04\xe2A\x01\x02R\x05rules\x12\x12\n" +
 	"\x04etag\x18\v \x01(\tR\x04etag\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -15529,31 +15529,31 @@ const file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = "" +
 	"\x13INVOKER_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04USER\x10\x01\x12\x15\n" +
 	"\x11DEPLOY_AUTOMATION\x10\x02:w\xeaAt\n" +
-	"'clouddeploy.googleapis.com/DeployPolicy\x12Fprojects/{project}/locations/{location}/deployPolicies/{deploy_policy}R\x01\x01\"\xc9\x01\n" +
-	"\x1cDeployPolicyResourceSelector\x12c\n" +
-	"\x11delivery_pipeline\x18\x01 \x01(\v21.google.cloud.deploy.v1.DeliveryPipelineAttributeB\x03\xe0A\x01R\x10deliveryPipeline\x12D\n" +
-	"\x06target\x18\x02 \x01(\v2'.google.cloud.deploy.v1.TargetAttributeB\x03\xe0A\x01R\x06target\"\xc2\x01\n" +
-	"\x19DeliveryPipelineAttribute\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x01R\x02id\x12U\n" +
+	"'clouddeploy.googleapis.com/DeployPolicy\x12Fprojects/{project}/locations/{location}/deployPolicies/{deploy_policy}R\x01\x01\"\xcb\x01\n" +
+	"\x1cDeployPolicyResourceSelector\x12d\n" +
+	"\x11delivery_pipeline\x18\x01 \x01(\v21.google.cloud.deploy.v1.DeliveryPipelineAttributeB\x04\xe2A\x01\x01R\x10deliveryPipeline\x12E\n" +
+	"\x06target\x18\x02 \x01(\v2'.google.cloud.deploy.v1.TargetAttributeB\x04\xe2A\x01\x01R\x06target\"\xc3\x01\n" +
+	"\x19DeliveryPipelineAttribute\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x02id\x12U\n" +
 	"\x06labels\x18\x02 \x03(\v2=.google.cloud.deploy.v1.DeliveryPipelineAttribute.LabelsEntryR\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xae\x01\n" +
-	"\x0fTargetAttribute\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x01R\x02id\x12K\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xaf\x01\n" +
+	"\x0fTargetAttribute\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x02id\x12K\n" +
 	"\x06labels\x18\x02 \x03(\v23.google.cloud.deploy.v1.TargetAttribute.LabelsEntryR\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"x\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"y\n" +
 	"\n" +
-	"PolicyRule\x12b\n" +
-	"\x13rollout_restriction\x18\x02 \x01(\v2*.google.cloud.deploy.v1.RolloutRestrictionB\x03\xe0A\x01H\x00R\x12rolloutRestrictionB\x06\n" +
-	"\x04rule\"\xc8\x03\n" +
-	"\x12RolloutRestriction\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12M\n" +
-	"\binvokers\x18\x02 \x03(\x0e2,.google.cloud.deploy.v1.DeployPolicy.InvokerB\x03\xe0A\x01R\binvokers\x12X\n" +
-	"\aactions\x18\x03 \x03(\x0e29.google.cloud.deploy.v1.RolloutRestriction.RolloutActionsB\x03\xe0A\x01R\aactions\x12K\n" +
-	"\ftime_windows\x18\x04 \x01(\v2#.google.cloud.deploy.v1.TimeWindowsB\x03\xe0A\x02R\vtimeWindows\"\xa6\x01\n" +
+	"PolicyRule\x12c\n" +
+	"\x13rollout_restriction\x18\x02 \x01(\v2*.google.cloud.deploy.v1.RolloutRestrictionB\x04\xe2A\x01\x01H\x00R\x12rolloutRestrictionB\x06\n" +
+	"\x04rule\"\xcc\x03\n" +
+	"\x12RolloutRestriction\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12N\n" +
+	"\binvokers\x18\x02 \x03(\x0e2,.google.cloud.deploy.v1.DeployPolicy.InvokerB\x04\xe2A\x01\x01R\binvokers\x12Y\n" +
+	"\aactions\x18\x03 \x03(\x0e29.google.cloud.deploy.v1.RolloutRestriction.RolloutActionsB\x04\xe2A\x01\x01R\aactions\x12L\n" +
+	"\ftime_windows\x18\x04 \x01(\v2#.google.cloud.deploy.v1.TimeWindowsB\x04\xe2A\x01\x02R\vtimeWindows\"\xa6\x01\n" +
 	"\x0eRolloutActions\x12\x1f\n" +
 	"\x1bROLLOUT_ACTIONS_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aADVANCE\x10\x01\x12\v\n" +
@@ -15566,62 +15566,62 @@ const file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = "" +
 	"IGNORE_JOB\x10\x05\x12\r\n" +
 	"\tRETRY_JOB\x10\x06\x12\f\n" +
 	"\bROLLBACK\x10\a\x12\x14\n" +
-	"\x10TERMINATE_JOBRUN\x10\b\"\xd7\x01\n" +
-	"\vTimeWindows\x12 \n" +
-	"\ttime_zone\x18\x01 \x01(\tB\x03\xe0A\x02R\btimeZone\x12T\n" +
-	"\x10one_time_windows\x18\x02 \x03(\v2%.google.cloud.deploy.v1.OneTimeWindowB\x03\xe0A\x01R\x0eoneTimeWindows\x12P\n" +
-	"\x0eweekly_windows\x18\x03 \x03(\v2$.google.cloud.deploy.v1.WeeklyWindowB\x03\xe0A\x01R\rweeklyWindows\"\xed\x01\n" +
-	"\rOneTimeWindow\x125\n" +
+	"\x10TERMINATE_JOBRUN\x10\b\"\xda\x01\n" +
+	"\vTimeWindows\x12!\n" +
+	"\ttime_zone\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\btimeZone\x12U\n" +
+	"\x10one_time_windows\x18\x02 \x03(\v2%.google.cloud.deploy.v1.OneTimeWindowB\x04\xe2A\x01\x01R\x0eoneTimeWindows\x12Q\n" +
+	"\x0eweekly_windows\x18\x03 \x03(\v2$.google.cloud.deploy.v1.WeeklyWindowB\x04\xe2A\x01\x01R\rweeklyWindows\"\xf1\x01\n" +
+	"\rOneTimeWindow\x126\n" +
 	"\n" +
-	"start_date\x18\x01 \x01(\v2\x11.google.type.DateB\x03\xe0A\x02R\tstartDate\x12:\n" +
+	"start_date\x18\x01 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x02R\tstartDate\x12;\n" +
 	"\n" +
-	"start_time\x18\x02 \x01(\v2\x16.google.type.TimeOfDayB\x03\xe0A\x02R\tstartTime\x121\n" +
-	"\bend_date\x18\x03 \x01(\v2\x11.google.type.DateB\x03\xe0A\x02R\aendDate\x126\n" +
-	"\bend_time\x18\x04 \x01(\v2\x16.google.type.TimeOfDayB\x03\xe0A\x02R\aendTime\"\xc1\x01\n" +
-	"\fWeeklyWindow\x12=\n" +
-	"\fdays_of_week\x18\x01 \x03(\x0e2\x16.google.type.DayOfWeekB\x03\xe0A\x01R\n" +
-	"daysOfWeek\x12:\n" +
+	"start_time\x18\x02 \x01(\v2\x16.google.type.TimeOfDayB\x04\xe2A\x01\x02R\tstartTime\x122\n" +
+	"\bend_date\x18\x03 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x02R\aendDate\x127\n" +
+	"\bend_time\x18\x04 \x01(\v2\x16.google.type.TimeOfDayB\x04\xe2A\x01\x02R\aendTime\"\xc4\x01\n" +
+	"\fWeeklyWindow\x12>\n" +
+	"\fdays_of_week\x18\x01 \x03(\x0e2\x16.google.type.DayOfWeekB\x04\xe2A\x01\x01R\n" +
+	"daysOfWeek\x12;\n" +
 	"\n" +
-	"start_time\x18\x02 \x01(\v2\x16.google.type.TimeOfDayB\x03\xe0A\x01R\tstartTime\x126\n" +
-	"\bend_time\x18\x03 \x01(\v2\x16.google.type.TimeOfDayB\x03\xe0A\x01R\aendTime\"{\n" +
+	"start_time\x18\x02 \x01(\v2\x16.google.type.TimeOfDayB\x04\xe2A\x01\x01R\tstartTime\x127\n" +
+	"\bend_time\x18\x03 \x01(\v2\x16.google.type.TimeOfDayB\x04\xe2A\x01\x01R\aendTime\"{\n" +
 	"\x0fPolicyViolation\x12h\n" +
 	"\x18policy_violation_details\x18\x01 \x03(\v2..google.cloud.deploy.v1.PolicyViolationDetailsR\x16policyViolationDetails\"r\n" +
 	"\x16PolicyViolationDetails\x12\x16\n" +
 	"\x06policy\x18\x01 \x01(\tR\x06policy\x12\x17\n" +
 	"\arule_id\x18\x02 \x01(\tR\x06ruleId\x12'\n" +
-	"\x0ffailure_message\x18\x03 \x01(\tR\x0efailureMessage\"\x97\x1c\n" +
-	"\aRelease\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12W\n" +
-	"\vannotations\x18\x04 \x03(\v20.google.cloud.deploy.v1.Release.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12C\n" +
-	"\x06labels\x18\x05 \x03(\v2+.google.cloud.deploy.v1.Release.LabelsEntryR\x06labels\x12!\n" +
-	"\tabandoned\x18\x17 \x01(\bB\x03\xe0A\x03R\tabandoned\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12K\n" +
-	"\x11render_start_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0frenderStartTime\x12G\n" +
-	"\x0frender_end_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\rrenderEndTime\x123\n" +
-	"\x13skaffold_config_uri\x18\x11 \x01(\tB\x03\xe0A\x01R\x11skaffoldConfigUri\x125\n" +
-	"\x14skaffold_config_path\x18\t \x01(\tB\x03\xe0A\x01R\x12skaffoldConfigPath\x12S\n" +
+	"\x0ffailure_message\x18\x03 \x01(\tR\x0efailureMessage\"\xb0\x1c\n" +
+	"\aRelease\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12X\n" +
+	"\vannotations\x18\x04 \x03(\v20.google.cloud.deploy.v1.Release.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12C\n" +
+	"\x06labels\x18\x05 \x03(\v2+.google.cloud.deploy.v1.Release.LabelsEntryR\x06labels\x12\"\n" +
+	"\tabandoned\x18\x17 \x01(\bB\x04\xe2A\x01\x03R\tabandoned\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12L\n" +
+	"\x11render_start_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0frenderStartTime\x12H\n" +
+	"\x0frender_end_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\rrenderEndTime\x124\n" +
+	"\x13skaffold_config_uri\x18\x11 \x01(\tB\x04\xe2A\x01\x01R\x11skaffoldConfigUri\x126\n" +
+	"\x14skaffold_config_path\x18\t \x01(\tB\x04\xe2A\x01\x01R\x12skaffoldConfigPath\x12T\n" +
 	"\x0fbuild_artifacts\x18\n" +
-	" \x03(\v2%.google.cloud.deploy.v1.BuildArtifactB\x03\xe0A\x01R\x0ebuildArtifacts\x12k\n" +
-	"\x1adelivery_pipeline_snapshot\x18\v \x01(\v2(.google.cloud.deploy.v1.DeliveryPipelineB\x03\xe0A\x03R\x18deliveryPipelineSnapshot\x12N\n" +
-	"\x10target_snapshots\x18\f \x03(\v2\x1e.google.cloud.deploy.v1.TargetB\x03\xe0A\x03R\x0ftargetSnapshots\x12n\n" +
-	"\x1ccustom_target_type_snapshots\x18\x1b \x03(\v2(.google.cloud.deploy.v1.CustomTargetTypeB\x03\xe0A\x03R\x19customTargetTypeSnapshots\x12S\n" +
-	"\frender_state\x18\r \x01(\x0e2+.google.cloud.deploy.v1.Release.RenderStateB\x03\xe0A\x03R\vrenderState\x12\x12\n" +
-	"\x04etag\x18\x10 \x01(\tR\x04etag\x12.\n" +
-	"\x10skaffold_version\x18\x13 \x01(\tB\x03\xe0A\x01R\x0fskaffoldVersion\x12d\n" +
-	"\x10target_artifacts\x18\x14 \x03(\v24.google.cloud.deploy.v1.Release.TargetArtifactsEntryB\x03\xe0A\x03R\x0ftargetArtifacts\x12^\n" +
-	"\x0etarget_renders\x18\x16 \x03(\v22.google.cloud.deploy.v1.Release.TargetRendersEntryB\x03\xe0A\x03R\rtargetRenders\x12S\n" +
-	"\tcondition\x18\x18 \x01(\v20.google.cloud.deploy.v1.Release.ReleaseConditionB\x03\xe0A\x03R\tcondition\x12g\n" +
-	"\x11deploy_parameters\x18\x19 \x03(\v25.google.cloud.deploy.v1.Release.DeployParametersEntryB\x03\xe0A\x01R\x10deployParameters\x1a\x9c\x06\n" +
-	"\fTargetRender\x12P\n" +
-	"\x0frendering_build\x18\x01 \x01(\tB'\xe0A\x03\xfaA!\n" +
-	"\x1fcloudbuild.googleapis.com/BuildR\x0erenderingBuild\x12l\n" +
-	"\x0frendering_state\x18\x02 \x01(\x0e2>.google.cloud.deploy.v1.Release.TargetRender.TargetRenderStateB\x03\xe0A\x03R\x0erenderingState\x12G\n" +
-	"\bmetadata\x18\x06 \x01(\v2&.google.cloud.deploy.v1.RenderMetadataB\x03\xe0A\x03R\bmetadata\x12c\n" +
-	"\rfailure_cause\x18\x04 \x01(\x0e29.google.cloud.deploy.v1.Release.TargetRender.FailureCauseB\x03\xe0A\x03R\ffailureCause\x12,\n" +
-	"\x0ffailure_message\x18\x05 \x01(\tB\x03\xe0A\x03R\x0efailureMessage\"d\n" +
+	" \x03(\v2%.google.cloud.deploy.v1.BuildArtifactB\x04\xe2A\x01\x01R\x0ebuildArtifacts\x12l\n" +
+	"\x1adelivery_pipeline_snapshot\x18\v \x01(\v2(.google.cloud.deploy.v1.DeliveryPipelineB\x04\xe2A\x01\x03R\x18deliveryPipelineSnapshot\x12O\n" +
+	"\x10target_snapshots\x18\f \x03(\v2\x1e.google.cloud.deploy.v1.TargetB\x04\xe2A\x01\x03R\x0ftargetSnapshots\x12o\n" +
+	"\x1ccustom_target_type_snapshots\x18\x1b \x03(\v2(.google.cloud.deploy.v1.CustomTargetTypeB\x04\xe2A\x01\x03R\x19customTargetTypeSnapshots\x12T\n" +
+	"\frender_state\x18\r \x01(\x0e2+.google.cloud.deploy.v1.Release.RenderStateB\x04\xe2A\x01\x03R\vrenderState\x12\x12\n" +
+	"\x04etag\x18\x10 \x01(\tR\x04etag\x12/\n" +
+	"\x10skaffold_version\x18\x13 \x01(\tB\x04\xe2A\x01\x01R\x0fskaffoldVersion\x12e\n" +
+	"\x10target_artifacts\x18\x14 \x03(\v24.google.cloud.deploy.v1.Release.TargetArtifactsEntryB\x04\xe2A\x01\x03R\x0ftargetArtifacts\x12_\n" +
+	"\x0etarget_renders\x18\x16 \x03(\v22.google.cloud.deploy.v1.Release.TargetRendersEntryB\x04\xe2A\x01\x03R\rtargetRenders\x12T\n" +
+	"\tcondition\x18\x18 \x01(\v20.google.cloud.deploy.v1.Release.ReleaseConditionB\x04\xe2A\x01\x03R\tcondition\x12h\n" +
+	"\x11deploy_parameters\x18\x19 \x03(\v25.google.cloud.deploy.v1.Release.DeployParametersEntryB\x04\xe2A\x01\x01R\x10deployParameters\x1a\xa1\x06\n" +
+	"\fTargetRender\x12Q\n" +
+	"\x0frendering_build\x18\x01 \x01(\tB(\xe2A\x01\x03\xfaA!\n" +
+	"\x1fcloudbuild.googleapis.com/BuildR\x0erenderingBuild\x12m\n" +
+	"\x0frendering_state\x18\x02 \x01(\x0e2>.google.cloud.deploy.v1.Release.TargetRender.TargetRenderStateB\x04\xe2A\x01\x03R\x0erenderingState\x12H\n" +
+	"\bmetadata\x18\x06 \x01(\v2&.google.cloud.deploy.v1.RenderMetadataB\x04\xe2A\x01\x03R\bmetadata\x12d\n" +
+	"\rfailure_cause\x18\x04 \x01(\x0e29.google.cloud.deploy.v1.Release.TargetRender.FailureCauseB\x04\xe2A\x01\x03R\ffailureCause\x12-\n" +
+	"\x0ffailure_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x0efailureMessage\"d\n" +
 	"\x11TargetRenderState\x12#\n" +
 	"\x1fTARGET_RENDER_STATE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tSUCCEEDED\x10\x01\x12\n" +
@@ -15668,32 +15668,32 @@ const file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = "" +
 	"\n" +
 	"\x06FAILED\x10\x02\x12\x0f\n" +
 	"\vIN_PROGRESS\x10\x03:\x8a\x01\xeaA\x86\x01\n" +
-	"\"clouddeploy.googleapis.com/Release\x12`projects/{project}/locations/{location}/deliveryPipelines/{delivery_pipeline}/releases/{release}\"\xb1\x02\n" +
-	"\x19CreateDeployPolicyRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'clouddeploy.googleapis.com/DeployPolicyR\x06parent\x12-\n" +
-	"\x10deploy_policy_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x0edeployPolicyId\x12N\n" +
-	"\rdeploy_policy\x18\x03 \x01(\v2$.google.cloud.deploy.v1.DeployPolicyB\x03\xe0A\x02R\fdeployPolicy\x12\"\n" +
+	"\"clouddeploy.googleapis.com/Release\x12`projects/{project}/locations/{location}/deliveryPipelines/{delivery_pipeline}/releases/{release}\"\xb6\x02\n" +
+	"\x19CreateDeployPolicyRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'clouddeploy.googleapis.com/DeployPolicyR\x06parent\x12.\n" +
+	"\x10deploy_policy_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0edeployPolicyId\x12O\n" +
+	"\rdeploy_policy\x18\x03 \x01(\v2$.google.cloud.deploy.v1.DeployPolicyB\x04\xe2A\x01\x02R\fdeployPolicy\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xa5\x02\n" +
-	"\x19UpdateDeployPolicyRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12N\n" +
-	"\rdeploy_policy\x18\x02 \x01(\v2$.google.cloud.deploy.v1.DeployPolicyB\x03\xe0A\x02R\fdeployPolicy\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xaa\x02\n" +
+	"\x19UpdateDeployPolicyRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12O\n" +
+	"\rdeploy_policy\x18\x02 \x01(\v2$.google.cloud.deploy.v1.DeployPolicyB\x04\xe2A\x01\x02R\fdeployPolicy\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rallow_missing\x18\x04 \x01(\bB\x03\xe0A\x01R\fallowMissing\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xf1\x01\n" +
-	"\x19DeleteDeployPolicyRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'clouddeploy.googleapis.com/DeployPolicyR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rallow_missing\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xf6\x01\n" +
+	"\x19DeleteDeployPolicyRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'clouddeploy.googleapis.com/DeployPolicyR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rallow_missing\x18\x03 \x01(\bB\x03\xe0A\x01R\fallowMissing\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x17\n" +
-	"\x04etag\x18\x05 \x01(\tB\x03\xe0A\x01R\x04etag\"\xd3\x01\n" +
-	"\x19ListDeployPoliciesRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'clouddeploy.googleapis.com/DeployPolicyR\x06parent\x12\x1b\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rallow_missing\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x18\n" +
+	"\x04etag\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xd4\x01\n" +
+	"\x19ListDeployPoliciesRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'clouddeploy.googleapis.com/DeployPolicyR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -15702,88 +15702,88 @@ const file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = "" +
 	"\x1aListDeployPoliciesResponse\x12M\n" +
 	"\x0fdeploy_policies\x18\x01 \x03(\v2$.google.cloud.deploy.v1.DeployPolicyR\x0edeployPolicies\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"]\n" +
-	"\x16GetDeployPolicyRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'clouddeploy.googleapis.com/DeployPolicyR\x04name\"A\n" +
-	"\rBuildArtifact\x12\x19\n" +
-	"\x05image\x18\x03 \x01(\tB\x03\xe0A\x01R\x05image\x12\x15\n" +
-	"\x03tag\x18\x02 \x01(\tB\x03\xe0A\x01R\x03tag\"\xab\x04\n" +
-	"\x0eTargetArtifact\x12(\n" +
-	"\fartifact_uri\x18\x04 \x01(\tB\x03\xe0A\x03H\x00R\vartifactUri\x125\n" +
-	"\x14skaffold_config_path\x18\x02 \x01(\tB\x03\xe0A\x03R\x12skaffoldConfigPath\x12(\n" +
-	"\rmanifest_path\x18\x03 \x01(\tB\x03\xe0A\x03R\fmanifestPath\x12h\n" +
-	"\x0fphase_artifacts\x18\x05 \x03(\v2:.google.cloud.deploy.v1.TargetArtifact.PhaseArtifactsEntryB\x03\xe0A\x03R\x0ephaseArtifacts\x1a\xa3\x01\n" +
-	"\rPhaseArtifact\x125\n" +
-	"\x14skaffold_config_path\x18\x01 \x01(\tB\x03\xe0A\x03R\x12skaffoldConfigPath\x12(\n" +
-	"\rmanifest_path\x18\x03 \x01(\tB\x03\xe0A\x03R\fmanifestPath\x121\n" +
-	"\x12job_manifests_path\x18\x04 \x01(\tB\x03\xe0A\x03R\x10jobManifestsPath\x1aw\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"^\n" +
+	"\x16GetDeployPolicyRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'clouddeploy.googleapis.com/DeployPolicyR\x04name\"C\n" +
+	"\rBuildArtifact\x12\x1a\n" +
+	"\x05image\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x05image\x12\x16\n" +
+	"\x03tag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x03tag\"\xb2\x04\n" +
+	"\x0eTargetArtifact\x12)\n" +
+	"\fartifact_uri\x18\x04 \x01(\tB\x04\xe2A\x01\x03H\x00R\vartifactUri\x126\n" +
+	"\x14skaffold_config_path\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x12skaffoldConfigPath\x12)\n" +
+	"\rmanifest_path\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\fmanifestPath\x12i\n" +
+	"\x0fphase_artifacts\x18\x05 \x03(\v2:.google.cloud.deploy.v1.TargetArtifact.PhaseArtifactsEntryB\x04\xe2A\x01\x03R\x0ephaseArtifacts\x1a\xa6\x01\n" +
+	"\rPhaseArtifact\x126\n" +
+	"\x14skaffold_config_path\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x12skaffoldConfigPath\x12)\n" +
+	"\rmanifest_path\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\fmanifestPath\x122\n" +
+	"\x12job_manifests_path\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x10jobManifestsPath\x1aw\n" +
 	"\x13PhaseArtifactsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12J\n" +
 	"\x05value\x18\x02 \x01(\v24.google.cloud.deploy.v1.TargetArtifact.PhaseArtifactR\x05value:\x028\x01B\x05\n" +
-	"\x03uri\"d\n" +
-	"\x0eDeployArtifact\x12&\n" +
-	"\fartifact_uri\x18\x01 \x01(\tB\x03\xe0A\x03R\vartifactUri\x12*\n" +
-	"\x0emanifest_paths\x18\x02 \x03(\tB\x03\xe0A\x03R\rmanifestPaths\"V\n" +
-	"\x16CloudRunRenderMetadata\x12<\n" +
-	"\aservice\x18\x01 \x01(\tB\"\xe0A\x03\xfaA\x1c\n" +
-	"\x1arun.googleapis.com/ServiceR\aservice\"\xa7\x01\n" +
-	"\x0eRenderMetadata\x12P\n" +
-	"\tcloud_run\x18\x01 \x01(\v2..google.cloud.deploy.v1.CloudRunRenderMetadataB\x03\xe0A\x03R\bcloudRun\x12C\n" +
-	"\x06custom\x18\x02 \x01(\v2&.google.cloud.deploy.v1.CustomMetadataB\x03\xe0A\x03R\x06custom\"\xe5\x01\n" +
-	"\x13ListReleasesRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+clouddeploy.googleapis.com/DeliveryPipelineR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x03uri\"f\n" +
+	"\x0eDeployArtifact\x12'\n" +
+	"\fartifact_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\vartifactUri\x12+\n" +
+	"\x0emanifest_paths\x18\x02 \x03(\tB\x04\xe2A\x01\x03R\rmanifestPaths\"W\n" +
+	"\x16CloudRunRenderMetadata\x12=\n" +
+	"\aservice\x18\x01 \x01(\tB#\xe2A\x01\x03\xfaA\x1c\n" +
+	"\x1arun.googleapis.com/ServiceR\aservice\"\xa9\x01\n" +
+	"\x0eRenderMetadata\x12Q\n" +
+	"\tcloud_run\x18\x01 \x01(\v2..google.cloud.deploy.v1.CloudRunRenderMetadataB\x04\xe2A\x01\x03R\bcloudRun\x12D\n" +
+	"\x06custom\x18\x02 \x01(\v2&.google.cloud.deploy.v1.CustomMetadataB\x04\xe2A\x01\x03R\x06custom\"\xea\x01\n" +
+	"\x13ListReleasesRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+clouddeploy.googleapis.com/DeliveryPipelineR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x9d\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x9d\x01\n" +
 	"\x14ListReleasesResponse\x12;\n" +
 	"\breleases\x18\x01 \x03(\v2\x1f.google.cloud.deploy.v1.ReleaseR\breleases\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"S\n" +
-	"\x11GetReleaseRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"clouddeploy.googleapis.com/ReleaseR\x04name\"\xfc\x02\n" +
-	"\x14CreateReleaseRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+clouddeploy.googleapis.com/DeliveryPipelineR\x06parent\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"T\n" +
+	"\x11GetReleaseRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"clouddeploy.googleapis.com/ReleaseR\x04name\"\x82\x03\n" +
+	"\x14CreateReleaseRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+clouddeploy.googleapis.com/DeliveryPipelineR\x06parent\x12#\n" +
 	"\n" +
-	"release_id\x18\x02 \x01(\tB\x03\xe0A\x02R\treleaseId\x12>\n" +
-	"\arelease\x18\x03 \x01(\v2\x1f.google.cloud.deploy.v1.ReleaseB\x03\xe0A\x02R\arelease\x12\"\n" +
+	"release_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\treleaseId\x12?\n" +
+	"\arelease\x18\x03 \x01(\v2\x1f.google.cloud.deploy.v1.ReleaseB\x04\xe2A\x01\x02R\arelease\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12e\n" +
-	"\x16override_deploy_policy\x18\x06 \x03(\tB/\xe0A\x01\xfaA)\n" +
-	"'clouddeploy.googleapis.com/DeployPolicyR\x14overrideDeployPolicy\"\xea\x11\n" +
-	"\aRollout\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12W\n" +
-	"\vannotations\x18\x04 \x03(\v20.google.cloud.deploy.v1.Rollout.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12C\n" +
-	"\x06labels\x18\x05 \x03(\v2+.google.cloud.deploy.v1.Rollout.LabelsEntryR\x06labels\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12B\n" +
-	"\fapprove_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vapproveTime\x12B\n" +
-	"\fenqueue_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\venqueueTime\x12K\n" +
-	"\x11deploy_start_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0fdeployStartTime\x12G\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12f\n" +
+	"\x16override_deploy_policy\x18\x06 \x03(\tB0\xe2A\x01\x01\xfaA)\n" +
+	"'clouddeploy.googleapis.com/DeployPolicyR\x14overrideDeployPolicy\"\xff\x11\n" +
+	"\aRollout\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12X\n" +
+	"\vannotations\x18\x04 \x03(\v20.google.cloud.deploy.v1.Rollout.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12C\n" +
+	"\x06labels\x18\x05 \x03(\v2+.google.cloud.deploy.v1.Rollout.LabelsEntryR\x06labels\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12C\n" +
+	"\fapprove_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\vapproveTime\x12C\n" +
+	"\fenqueue_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\venqueueTime\x12L\n" +
+	"\x11deploy_start_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0fdeployStartTime\x12H\n" +
 	"\x0fdeploy_end_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\rdeployEndTime\x12 \n" +
-	"\ttarget_id\x18\x12 \x01(\tB\x03\xe0A\x02R\btargetId\x12Y\n" +
-	"\x0eapproval_state\x18\f \x01(\x0e2-.google.cloud.deploy.v1.Rollout.ApprovalStateB\x03\xe0A\x03R\rapprovalState\x12@\n" +
-	"\x05state\x18\r \x01(\x0e2%.google.cloud.deploy.v1.Rollout.StateB\x03\xe0A\x03R\x05state\x12*\n" +
-	"\x0efailure_reason\x18\x0e \x01(\tB\x03\xe0A\x03R\rfailureReason\x12P\n" +
-	"\x0fdeploying_build\x18\x11 \x01(\tB'\xe0A\x03\xfaA!\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\rdeployEndTime\x12!\n" +
+	"\ttarget_id\x18\x12 \x01(\tB\x04\xe2A\x01\x02R\btargetId\x12Z\n" +
+	"\x0eapproval_state\x18\f \x01(\x0e2-.google.cloud.deploy.v1.Rollout.ApprovalStateB\x04\xe2A\x01\x03R\rapprovalState\x12A\n" +
+	"\x05state\x18\r \x01(\x0e2%.google.cloud.deploy.v1.Rollout.StateB\x04\xe2A\x01\x03R\x05state\x12+\n" +
+	"\x0efailure_reason\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\rfailureReason\x12Q\n" +
+	"\x0fdeploying_build\x18\x11 \x01(\tB(\xe2A\x01\x03\xfaA!\n" +
 	"\x1fcloudbuild.googleapis.com/BuildR\x0edeployingBuild\x12\x12\n" +
-	"\x04etag\x18\x10 \x01(\tR\x04etag\x12c\n" +
-	"\x14deploy_failure_cause\x18\x13 \x01(\x0e2,.google.cloud.deploy.v1.Rollout.FailureCauseB\x03\xe0A\x03R\x12deployFailureCause\x12:\n" +
-	"\x06phases\x18\x17 \x03(\v2\x1d.google.cloud.deploy.v1.PhaseB\x03\xe0A\x03R\x06phases\x12A\n" +
-	"\bmetadata\x18\x18 \x01(\v2 .google.cloud.deploy.v1.MetadataB\x03\xe0A\x03R\bmetadata\x122\n" +
-	"\x12controller_rollout\x18\x19 \x01(\tB\x03\xe0A\x03R\x11controllerRollout\x123\n" +
-	"\x13rollback_of_rollout\x18\x1a \x01(\tB\x03\xe0A\x03R\x11rollbackOfRollout\x12:\n" +
-	"\x17rolled_back_by_rollouts\x18\x1b \x03(\tB\x03\xe0A\x03R\x14rolledBackByRollouts\x12D\n" +
-	"\x1cactive_repair_automation_run\x18\x1c \x01(\tB\x03\xe0A\x03R\x19activeRepairAutomationRun\x1a>\n" +
+	"\x04etag\x18\x10 \x01(\tR\x04etag\x12d\n" +
+	"\x14deploy_failure_cause\x18\x13 \x01(\x0e2,.google.cloud.deploy.v1.Rollout.FailureCauseB\x04\xe2A\x01\x03R\x12deployFailureCause\x12;\n" +
+	"\x06phases\x18\x17 \x03(\v2\x1d.google.cloud.deploy.v1.PhaseB\x04\xe2A\x01\x03R\x06phases\x12B\n" +
+	"\bmetadata\x18\x18 \x01(\v2 .google.cloud.deploy.v1.MetadataB\x04\xe2A\x01\x03R\bmetadata\x123\n" +
+	"\x12controller_rollout\x18\x19 \x01(\tB\x04\xe2A\x01\x03R\x11controllerRollout\x124\n" +
+	"\x13rollback_of_rollout\x18\x1a \x01(\tB\x04\xe2A\x01\x03R\x11rollbackOfRollout\x12;\n" +
+	"\x17rolled_back_by_rollouts\x18\x1b \x03(\tB\x04\xe2A\x01\x03R\x14rolledBackByRollouts\x12E\n" +
+	"\x1cactive_repair_automation_run\x18\x1c \x01(\tB\x04\xe2A\x01\x03R\x19activeRepairAutomationRun\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a9\n" +
@@ -15822,41 +15822,41 @@ const file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = "" +
 	"\x1dVERIFICATION_CONFIG_NOT_FOUND\x10\x06\x12\x1e\n" +
 	"\x1aCLOUD_BUILD_REQUEST_FAILED\x10\a\x12#\n" +
 	"\x1fOPERATION_FEATURE_NOT_SUPPORTED\x10\b:\x9d\x01\xeaA\x99\x01\n" +
-	"\"clouddeploy.googleapis.com/Rollout\x12sprojects/{project}/locations/{location}/deliveryPipelines/{delivery_pipeline}/releases/{release}/rollouts/{rollout}\"\xf3\x01\n" +
-	"\bMetadata\x12J\n" +
-	"\tcloud_run\x18\x01 \x01(\v2(.google.cloud.deploy.v1.CloudRunMetadataB\x03\xe0A\x03R\bcloudRun\x12V\n" +
+	"\"clouddeploy.googleapis.com/Rollout\x12sprojects/{project}/locations/{location}/deliveryPipelines/{delivery_pipeline}/releases/{release}/rollouts/{rollout}\"\xf6\x01\n" +
+	"\bMetadata\x12K\n" +
+	"\tcloud_run\x18\x01 \x01(\v2(.google.cloud.deploy.v1.CloudRunMetadataB\x04\xe2A\x01\x03R\bcloudRun\x12W\n" +
 	"\n" +
-	"automation\x18\x02 \x01(\v21.google.cloud.deploy.v1.AutomationRolloutMetadataB\x03\xe0A\x03R\n" +
-	"automation\x12C\n" +
-	"\x06custom\x18\x03 \x01(\v2&.google.cloud.deploy.v1.CustomMetadataB\x03\xe0A\x03R\x06custom\"\x85\x02\n" +
-	"\x14DeployJobRunMetadata\x12J\n" +
-	"\tcloud_run\x18\x01 \x01(\v2(.google.cloud.deploy.v1.CloudRunMetadataB\x03\xe0A\x03R\bcloudRun\x12\\\n" +
-	"\rcustom_target\x18\x02 \x01(\v22.google.cloud.deploy.v1.CustomTargetDeployMetadataB\x03\xe0A\x03R\fcustomTarget\x12C\n" +
-	"\x06custom\x18\x03 \x01(\v2&.google.cloud.deploy.v1.CustomMetadataB\x03\xe0A\x03R\x06custom\"\xcb\x01\n" +
-	"\x10CloudRunMetadata\x12<\n" +
-	"\aservice\x18\x01 \x01(\tB\"\xe0A\x03\xfaA\x1c\n" +
-	"\x1arun.googleapis.com/ServiceR\aservice\x12&\n" +
-	"\fservice_urls\x18\x02 \x03(\tB\x03\xe0A\x03R\vserviceUrls\x12\x1f\n" +
-	"\brevision\x18\x03 \x01(\tB\x03\xe0A\x03R\brevision\x120\n" +
-	"\x03job\x18\x04 \x01(\tB\x1e\xe0A\x03\xfaA\x18\n" +
-	"\x16run.googleapis.com/JobR\x03job\"D\n" +
-	"\x1aCustomTargetDeployMetadata\x12&\n" +
-	"\fskip_message\x18\x01 \x01(\tB\x03\xe0A\x03R\vskipMessage\"\xce\x01\n" +
-	"\x19AutomationRolloutMetadata\x129\n" +
-	"\x16promote_automation_run\x18\x01 \x01(\tB\x03\xe0A\x03R\x14promoteAutomationRun\x12;\n" +
-	"\x17advance_automation_runs\x18\x02 \x03(\tB\x03\xe0A\x03R\x15advanceAutomationRuns\x129\n" +
-	"\x16repair_automation_runs\x18\x03 \x03(\tB\x03\xe0A\x03R\x14repairAutomationRuns\"\x9c\x01\n" +
-	"\x0eCustomMetadata\x12O\n" +
-	"\x06values\x18\x01 \x03(\v22.google.cloud.deploy.v1.CustomMetadata.ValuesEntryB\x03\xe0A\x03R\x06values\x1a9\n" +
+	"automation\x18\x02 \x01(\v21.google.cloud.deploy.v1.AutomationRolloutMetadataB\x04\xe2A\x01\x03R\n" +
+	"automation\x12D\n" +
+	"\x06custom\x18\x03 \x01(\v2&.google.cloud.deploy.v1.CustomMetadataB\x04\xe2A\x01\x03R\x06custom\"\x88\x02\n" +
+	"\x14DeployJobRunMetadata\x12K\n" +
+	"\tcloud_run\x18\x01 \x01(\v2(.google.cloud.deploy.v1.CloudRunMetadataB\x04\xe2A\x01\x03R\bcloudRun\x12]\n" +
+	"\rcustom_target\x18\x02 \x01(\v22.google.cloud.deploy.v1.CustomTargetDeployMetadataB\x04\xe2A\x01\x03R\fcustomTarget\x12D\n" +
+	"\x06custom\x18\x03 \x01(\v2&.google.cloud.deploy.v1.CustomMetadataB\x04\xe2A\x01\x03R\x06custom\"\xcf\x01\n" +
+	"\x10CloudRunMetadata\x12=\n" +
+	"\aservice\x18\x01 \x01(\tB#\xe2A\x01\x03\xfaA\x1c\n" +
+	"\x1arun.googleapis.com/ServiceR\aservice\x12'\n" +
+	"\fservice_urls\x18\x02 \x03(\tB\x04\xe2A\x01\x03R\vserviceUrls\x12 \n" +
+	"\brevision\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\brevision\x121\n" +
+	"\x03job\x18\x04 \x01(\tB\x1f\xe2A\x01\x03\xfaA\x18\n" +
+	"\x16run.googleapis.com/JobR\x03job\"E\n" +
+	"\x1aCustomTargetDeployMetadata\x12'\n" +
+	"\fskip_message\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\vskipMessage\"\xd1\x01\n" +
+	"\x19AutomationRolloutMetadata\x12:\n" +
+	"\x16promote_automation_run\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x14promoteAutomationRun\x12<\n" +
+	"\x17advance_automation_runs\x18\x02 \x03(\tB\x04\xe2A\x01\x03R\x15advanceAutomationRuns\x12:\n" +
+	"\x16repair_automation_runs\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\x14repairAutomationRuns\"\x9d\x01\n" +
+	"\x0eCustomMetadata\x12P\n" +
+	"\x06values\x18\x01 \x03(\v22.google.cloud.deploy.v1.CustomMetadata.ValuesEntryB\x04\xe2A\x01\x03R\x06values\x1a9\n" +
 	"\vValuesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb6\x03\n" +
-	"\x05Phase\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x03R\x02id\x12>\n" +
-	"\x05state\x18\x03 \x01(\x0e2#.google.cloud.deploy.v1.Phase.StateB\x03\xe0A\x03R\x05state\x12&\n" +
-	"\fskip_message\x18\x06 \x01(\tB\x03\xe0A\x03R\vskipMessage\x12V\n" +
-	"\x0fdeployment_jobs\x18\x04 \x01(\v2&.google.cloud.deploy.v1.DeploymentJobsB\x03\xe0A\x03H\x00R\x0edeploymentJobs\x12]\n" +
-	"\x12child_rollout_jobs\x18\x05 \x01(\v2(.google.cloud.deploy.v1.ChildRolloutJobsB\x03\xe0A\x03H\x00R\x10childRolloutJobs\"q\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xbb\x03\n" +
+	"\x05Phase\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x02id\x12?\n" +
+	"\x05state\x18\x03 \x01(\x0e2#.google.cloud.deploy.v1.Phase.StateB\x04\xe2A\x01\x03R\x05state\x12'\n" +
+	"\fskip_message\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\vskipMessage\x12W\n" +
+	"\x0fdeployment_jobs\x18\x04 \x01(\v2&.google.cloud.deploy.v1.DeploymentJobsB\x04\xe2A\x01\x03H\x00R\x0edeploymentJobs\x12^\n" +
+	"\x12child_rollout_jobs\x18\x05 \x01(\v2(.google.cloud.deploy.v1.ChildRolloutJobsB\x04\xe2A\x01\x03H\x00R\x10childRolloutJobs\"q\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPENDING\x10\x01\x12\x0f\n" +
@@ -15866,32 +15866,32 @@ const file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = "" +
 	"\x06FAILED\x10\x04\x12\v\n" +
 	"\aABORTED\x10\x05\x12\v\n" +
 	"\aSKIPPED\x10\x06B\x06\n" +
-	"\x04jobs\"\xa2\x02\n" +
-	"\x0eDeploymentJobs\x12E\n" +
-	"\rpredeploy_job\x18\x03 \x01(\v2\x1b.google.cloud.deploy.v1.JobB\x03\xe0A\x03R\fpredeployJob\x12?\n" +
+	"\x04jobs\"\xa6\x02\n" +
+	"\x0eDeploymentJobs\x12F\n" +
+	"\rpredeploy_job\x18\x03 \x01(\v2\x1b.google.cloud.deploy.v1.JobB\x04\xe2A\x01\x03R\fpredeployJob\x12@\n" +
 	"\n" +
-	"deploy_job\x18\x01 \x01(\v2\x1b.google.cloud.deploy.v1.JobB\x03\xe0A\x03R\tdeployJob\x12?\n" +
+	"deploy_job\x18\x01 \x01(\v2\x1b.google.cloud.deploy.v1.JobB\x04\xe2A\x01\x03R\tdeployJob\x12@\n" +
 	"\n" +
-	"verify_job\x18\x02 \x01(\v2\x1b.google.cloud.deploy.v1.JobB\x03\xe0A\x03R\tverifyJob\x12G\n" +
-	"\x0epostdeploy_job\x18\x04 \x01(\v2\x1b.google.cloud.deploy.v1.JobB\x03\xe0A\x03R\rpostdeployJob\"\xb8\x01\n" +
-	"\x10ChildRolloutJobs\x12P\n" +
-	"\x13create_rollout_jobs\x18\x01 \x03(\v2\x1b.google.cloud.deploy.v1.JobB\x03\xe0A\x03R\x11createRolloutJobs\x12R\n" +
-	"\x14advance_rollout_jobs\x18\x02 \x03(\v2\x1b.google.cloud.deploy.v1.JobB\x03\xe0A\x03R\x12advanceRolloutJobs\"\xf9\x06\n" +
-	"\x03Job\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x03R\x02id\x12<\n" +
-	"\x05state\x18\x02 \x01(\x0e2!.google.cloud.deploy.v1.Job.StateB\x03\xe0A\x03R\x05state\x12&\n" +
-	"\fskip_message\x18\b \x01(\tB\x03\xe0A\x03R\vskipMessage\x12B\n" +
-	"\ajob_run\x18\x03 \x01(\tB)\xe0A\x03\xfaA#\n" +
-	"!clouddeploy.googleapis.com/JobRunR\x06jobRun\x12G\n" +
+	"verify_job\x18\x02 \x01(\v2\x1b.google.cloud.deploy.v1.JobB\x04\xe2A\x01\x03R\tverifyJob\x12H\n" +
+	"\x0epostdeploy_job\x18\x04 \x01(\v2\x1b.google.cloud.deploy.v1.JobB\x04\xe2A\x01\x03R\rpostdeployJob\"\xba\x01\n" +
+	"\x10ChildRolloutJobs\x12Q\n" +
+	"\x13create_rollout_jobs\x18\x01 \x03(\v2\x1b.google.cloud.deploy.v1.JobB\x04\xe2A\x01\x03R\x11createRolloutJobs\x12S\n" +
+	"\x14advance_rollout_jobs\x18\x02 \x03(\v2\x1b.google.cloud.deploy.v1.JobB\x04\xe2A\x01\x03R\x12advanceRolloutJobs\"\x83\a\n" +
+	"\x03Job\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x02id\x12=\n" +
+	"\x05state\x18\x02 \x01(\x0e2!.google.cloud.deploy.v1.Job.StateB\x04\xe2A\x01\x03R\x05state\x12'\n" +
+	"\fskip_message\x18\b \x01(\tB\x04\xe2A\x01\x03R\vskipMessage\x12C\n" +
+	"\ajob_run\x18\x03 \x01(\tB*\xe2A\x01\x03\xfaA#\n" +
+	"!clouddeploy.googleapis.com/JobRunR\x06jobRun\x12H\n" +
 	"\n" +
-	"deploy_job\x18\x04 \x01(\v2!.google.cloud.deploy.v1.DeployJobB\x03\xe0A\x03H\x00R\tdeployJob\x12G\n" +
+	"deploy_job\x18\x04 \x01(\v2!.google.cloud.deploy.v1.DeployJobB\x04\xe2A\x01\x03H\x00R\tdeployJob\x12H\n" +
 	"\n" +
-	"verify_job\x18\x05 \x01(\v2!.google.cloud.deploy.v1.VerifyJobB\x03\xe0A\x03H\x00R\tverifyJob\x12P\n" +
-	"\rpredeploy_job\x18\t \x01(\v2$.google.cloud.deploy.v1.PredeployJobB\x03\xe0A\x03H\x00R\fpredeployJob\x12S\n" +
+	"verify_job\x18\x05 \x01(\v2!.google.cloud.deploy.v1.VerifyJobB\x04\xe2A\x01\x03H\x00R\tverifyJob\x12Q\n" +
+	"\rpredeploy_job\x18\t \x01(\v2$.google.cloud.deploy.v1.PredeployJobB\x04\xe2A\x01\x03H\x00R\fpredeployJob\x12T\n" +
 	"\x0epostdeploy_job\x18\n" +
-	" \x01(\v2%.google.cloud.deploy.v1.PostdeployJobB\x03\xe0A\x03H\x00R\rpostdeployJob\x12m\n" +
-	"\x18create_child_rollout_job\x18\x06 \x01(\v2-.google.cloud.deploy.v1.CreateChildRolloutJobB\x03\xe0A\x03H\x00R\x15createChildRolloutJob\x12p\n" +
-	"\x19advance_child_rollout_job\x18\a \x01(\v2..google.cloud.deploy.v1.AdvanceChildRolloutJobB\x03\xe0A\x03H\x00R\x16advanceChildRolloutJob\"\x8c\x01\n" +
+	" \x01(\v2%.google.cloud.deploy.v1.PostdeployJobB\x04\xe2A\x01\x03H\x00R\rpostdeployJob\x12n\n" +
+	"\x18create_child_rollout_job\x18\x06 \x01(\v2-.google.cloud.deploy.v1.CreateChildRolloutJobB\x04\xe2A\x01\x03H\x00R\x15createChildRolloutJob\x12q\n" +
+	"\x19advance_child_rollout_job\x18\a \x01(\v2..google.cloud.deploy.v1.AdvanceChildRolloutJobB\x04\xe2A\x01\x03H\x00R\x16advanceChildRolloutJob\"\x8c\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPENDING\x10\x01\x12\f\n" +
@@ -15906,110 +15906,110 @@ const file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = "" +
 	"\n" +
 	"\bjob_type\"\v\n" +
 	"\tDeployJob\"\v\n" +
-	"\tVerifyJob\"-\n" +
-	"\fPredeployJob\x12\x1d\n" +
-	"\aactions\x18\x01 \x03(\tB\x03\xe0A\x03R\aactions\".\n" +
-	"\rPostdeployJob\x12\x1d\n" +
-	"\aactions\x18\x01 \x03(\tB\x03\xe0A\x03R\aactions\"\x17\n" +
+	"\tVerifyJob\".\n" +
+	"\fPredeployJob\x12\x1e\n" +
+	"\aactions\x18\x01 \x03(\tB\x04\xe2A\x01\x03R\aactions\"/\n" +
+	"\rPostdeployJob\x12\x1e\n" +
+	"\aactions\x18\x01 \x03(\tB\x04\xe2A\x01\x03R\aactions\"\x17\n" +
 	"\x15CreateChildRolloutJob\"\x18\n" +
-	"\x16AdvanceChildRolloutJob\"\xdc\x01\n" +
-	"\x13ListRolloutsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"clouddeploy.googleapis.com/ReleaseR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x16AdvanceChildRolloutJob\"\xe1\x01\n" +
+	"\x13ListRolloutsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"clouddeploy.googleapis.com/ReleaseR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x9d\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x9d\x01\n" +
 	"\x14ListRolloutsResponse\x12;\n" +
 	"\brollouts\x18\x01 \x03(\v2\x1f.google.cloud.deploy.v1.RolloutR\brollouts\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"S\n" +
-	"\x11GetRolloutRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"clouddeploy.googleapis.com/RolloutR\x04name\"\xa4\x03\n" +
-	"\x14CreateRolloutRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"clouddeploy.googleapis.com/ReleaseR\x06parent\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"T\n" +
+	"\x11GetRolloutRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"clouddeploy.googleapis.com/RolloutR\x04name\"\xab\x03\n" +
+	"\x14CreateRolloutRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"clouddeploy.googleapis.com/ReleaseR\x06parent\x12#\n" +
 	"\n" +
-	"rollout_id\x18\x02 \x01(\tB\x03\xe0A\x02R\trolloutId\x12>\n" +
-	"\arollout\x18\x03 \x01(\v2\x1f.google.cloud.deploy.v1.RolloutB\x03\xe0A\x02R\arollout\x12\"\n" +
+	"rollout_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\trolloutId\x12?\n" +
+	"\arollout\x18\x03 \x01(\v2\x1f.google.cloud.deploy.v1.RolloutB\x04\xe2A\x01\x02R\arollout\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12e\n" +
-	"\x16override_deploy_policy\x18\x06 \x03(\tB/\xe0A\x01\xfaA)\n" +
-	"'clouddeploy.googleapis.com/DeployPolicyR\x14overrideDeployPolicy\x12/\n" +
-	"\x11starting_phase_id\x18\a \x01(\tB\x03\xe0A\x01R\x0fstartingPhaseId\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"\xdf\x01\n" +
-	"\x15ApproveRolloutRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12f\n" +
+	"\x16override_deploy_policy\x18\x06 \x03(\tB0\xe2A\x01\x01\xfaA)\n" +
+	"'clouddeploy.googleapis.com/DeployPolicyR\x14overrideDeployPolicy\x120\n" +
+	"\x11starting_phase_id\x18\a \x01(\tB\x04\xe2A\x01\x01R\x0fstartingPhaseId\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"\xe2\x01\n" +
+	"\x15ApproveRolloutRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"clouddeploy.googleapis.com/RolloutR\x04name\x12 \n" +
+	"\bapproved\x18\x02 \x01(\bB\x04\xe2A\x01\x02R\bapproved\x12f\n" +
+	"\x16override_deploy_policy\x18\x03 \x03(\tB0\xe2A\x01\x01\xfaA)\n" +
+	"'clouddeploy.googleapis.com/DeployPolicyR\x14overrideDeployPolicy\"\x18\n" +
+	"\x16ApproveRolloutResponse\"\xe1\x01\n" +
+	"\x15AdvanceRolloutRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"clouddeploy.googleapis.com/RolloutR\x04name\x12\x1f\n" +
-	"\bapproved\x18\x02 \x01(\bB\x03\xe0A\x02R\bapproved\x12e\n" +
-	"\x16override_deploy_policy\x18\x03 \x03(\tB/\xe0A\x01\xfaA)\n" +
+	"\bphase_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aphaseId\x12f\n" +
+	"\x16override_deploy_policy\x18\x03 \x03(\tB0\xe2A\x01\x01\xfaA)\n" +
 	"'clouddeploy.googleapis.com/DeployPolicyR\x14overrideDeployPolicy\"\x18\n" +
-	"\x16ApproveRolloutResponse\"\xde\x01\n" +
-	"\x15AdvanceRolloutRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"clouddeploy.googleapis.com/RolloutR\x04name\x12\x1e\n" +
-	"\bphase_id\x18\x02 \x01(\tB\x03\xe0A\x02R\aphaseId\x12e\n" +
-	"\x16override_deploy_policy\x18\x03 \x03(\tB/\xe0A\x01\xfaA)\n" +
-	"'clouddeploy.googleapis.com/DeployPolicyR\x14overrideDeployPolicy\"\x18\n" +
-	"\x16AdvanceRolloutResponse\"\xbd\x01\n" +
-	"\x14CancelRolloutRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"clouddeploy.googleapis.com/RolloutR\x04name\x12e\n" +
-	"\x16override_deploy_policy\x18\x02 \x03(\tB/\xe0A\x01\xfaA)\n" +
+	"\x16AdvanceRolloutResponse\"\xbf\x01\n" +
+	"\x14CancelRolloutRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"clouddeploy.googleapis.com/RolloutR\x04name\x12f\n" +
+	"\x16override_deploy_policy\x18\x02 \x03(\tB0\xe2A\x01\x01\xfaA)\n" +
 	"'clouddeploy.googleapis.com/DeployPolicyR\x14overrideDeployPolicy\"\x17\n" +
-	"\x15CancelRolloutResponse\"\xfb\x01\n" +
-	"\x10IgnoreJobRequest\x12D\n" +
-	"\arollout\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"clouddeploy.googleapis.com/RolloutR\arollout\x12\x1e\n" +
-	"\bphase_id\x18\x02 \x01(\tB\x03\xe0A\x02R\aphaseId\x12\x1a\n" +
-	"\x06job_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x05jobId\x12e\n" +
-	"\x16override_deploy_policy\x18\x04 \x03(\tB/\xe0A\x01\xfaA)\n" +
+	"\x15CancelRolloutResponse\"\xff\x01\n" +
+	"\x10IgnoreJobRequest\x12E\n" +
+	"\arollout\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"clouddeploy.googleapis.com/RolloutR\arollout\x12\x1f\n" +
+	"\bphase_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aphaseId\x12\x1b\n" +
+	"\x06job_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x05jobId\x12f\n" +
+	"\x16override_deploy_policy\x18\x04 \x03(\tB0\xe2A\x01\x01\xfaA)\n" +
 	"'clouddeploy.googleapis.com/DeployPolicyR\x14overrideDeployPolicy\"\x13\n" +
-	"\x11IgnoreJobResponse\"\xfa\x01\n" +
-	"\x0fRetryJobRequest\x12D\n" +
-	"\arollout\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"clouddeploy.googleapis.com/RolloutR\arollout\x12\x1e\n" +
-	"\bphase_id\x18\x02 \x01(\tB\x03\xe0A\x02R\aphaseId\x12\x1a\n" +
-	"\x06job_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x05jobId\x12e\n" +
-	"\x16override_deploy_policy\x18\x04 \x03(\tB/\xe0A\x01\xfaA)\n" +
+	"\x11IgnoreJobResponse\"\xfe\x01\n" +
+	"\x0fRetryJobRequest\x12E\n" +
+	"\arollout\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"clouddeploy.googleapis.com/RolloutR\arollout\x12\x1f\n" +
+	"\bphase_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\aphaseId\x12\x1b\n" +
+	"\x06job_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x05jobId\x12f\n" +
+	"\x16override_deploy_policy\x18\x04 \x03(\tB0\xe2A\x01\x01\xfaA)\n" +
 	"'clouddeploy.googleapis.com/DeployPolicyR\x14overrideDeployPolicy\"\x12\n" +
-	"\x10RetryJobResponse\"W\n" +
-	"\x15AbandonReleaseRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"\x10RetryJobResponse\"X\n" +
+	"\x15AbandonReleaseRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"clouddeploy.googleapis.com/ReleaseR\x04name\"\x18\n" +
-	"\x16AbandonReleaseResponse\"\x8c\n" +
+	"\x16AbandonReleaseResponse\"\x9b\n" +
 	"\n" +
-	"\x06JobRun\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12\x1e\n" +
-	"\bphase_id\x18\x03 \x01(\tB\x03\xe0A\x03R\aphaseId\x12\x1a\n" +
-	"\x06job_id\x18\x04 \x01(\tB\x03\xe0A\x03R\x05jobId\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12>\n" +
+	"\x06JobRun\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12\x1f\n" +
+	"\bphase_id\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\aphaseId\x12\x1b\n" +
+	"\x06job_id\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x05jobId\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12?\n" +
 	"\n" +
-	"start_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12?\n" +
-	"\x05state\x18\b \x01(\x0e2$.google.cloud.deploy.v1.JobRun.StateB\x03\xe0A\x03R\x05state\x12Q\n" +
-	"\x0edeploy_job_run\x18\t \x01(\v2$.google.cloud.deploy.v1.DeployJobRunB\x03\xe0A\x03H\x00R\fdeployJobRun\x12Q\n" +
+	"start_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12@\n" +
+	"\x05state\x18\b \x01(\x0e2$.google.cloud.deploy.v1.JobRun.StateB\x04\xe2A\x01\x03R\x05state\x12R\n" +
+	"\x0edeploy_job_run\x18\t \x01(\v2$.google.cloud.deploy.v1.DeployJobRunB\x04\xe2A\x01\x03H\x00R\fdeployJobRun\x12R\n" +
 	"\x0everify_job_run\x18\n" +
-	" \x01(\v2$.google.cloud.deploy.v1.VerifyJobRunB\x03\xe0A\x03H\x00R\fverifyJobRun\x12Z\n" +
-	"\x11predeploy_job_run\x18\x0e \x01(\v2'.google.cloud.deploy.v1.PredeployJobRunB\x03\xe0A\x03H\x00R\x0fpredeployJobRun\x12]\n" +
-	"\x12postdeploy_job_run\x18\x0f \x01(\v2(.google.cloud.deploy.v1.PostdeployJobRunB\x03\xe0A\x03H\x00R\x10postdeployJobRun\x12w\n" +
-	"\x1ccreate_child_rollout_job_run\x18\f \x01(\v20.google.cloud.deploy.v1.CreateChildRolloutJobRunB\x03\xe0A\x03H\x00R\x18createChildRolloutJobRun\x12z\n" +
-	"\x1dadvance_child_rollout_job_run\x18\r \x01(\v21.google.cloud.deploy.v1.AdvanceChildRolloutJobRunB\x03\xe0A\x03H\x00R\x19advanceChildRolloutJobRun\x12\x17\n" +
-	"\x04etag\x18\v \x01(\tB\x03\xe0A\x03R\x04etag\"k\n" +
+	" \x01(\v2$.google.cloud.deploy.v1.VerifyJobRunB\x04\xe2A\x01\x03H\x00R\fverifyJobRun\x12[\n" +
+	"\x11predeploy_job_run\x18\x0e \x01(\v2'.google.cloud.deploy.v1.PredeployJobRunB\x04\xe2A\x01\x03H\x00R\x0fpredeployJobRun\x12^\n" +
+	"\x12postdeploy_job_run\x18\x0f \x01(\v2(.google.cloud.deploy.v1.PostdeployJobRunB\x04\xe2A\x01\x03H\x00R\x10postdeployJobRun\x12x\n" +
+	"\x1ccreate_child_rollout_job_run\x18\f \x01(\v20.google.cloud.deploy.v1.CreateChildRolloutJobRunB\x04\xe2A\x01\x03H\x00R\x18createChildRolloutJobRun\x12{\n" +
+	"\x1dadvance_child_rollout_job_run\x18\r \x01(\v21.google.cloud.deploy.v1.AdvanceChildRolloutJobRunB\x04\xe2A\x01\x03H\x00R\x19advanceChildRolloutJobRun\x12\x18\n" +
+	"\x04etag\x18\v \x01(\tB\x04\xe2A\x01\x03R\x04etag\"k\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vIN_PROGRESS\x10\x01\x12\r\n" +
@@ -16020,14 +16020,14 @@ const file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = "" +
 	"\n" +
 	"TERMINATED\x10\x05:\xaf\x01\xeaA\xab\x01\n" +
 	"!clouddeploy.googleapis.com/JobRun\x12\x85\x01projects/{project}/locations/{location}/deliveryPipelines/{delivery_pipeline}/releases/{release}/rollouts/{rollout}/jobRuns/{job_run}B\t\n" +
-	"\ajob_run\"\xce\x04\n" +
-	"\fDeployJobRun\x12=\n" +
-	"\x05build\x18\x01 \x01(\tB'\xe0A\x03\xfaA!\n" +
-	"\x1fcloudbuild.googleapis.com/BuildR\x05build\x12[\n" +
-	"\rfailure_cause\x18\x02 \x01(\x0e21.google.cloud.deploy.v1.DeployJobRun.FailureCauseB\x03\xe0A\x03R\ffailureCause\x12,\n" +
-	"\x0ffailure_message\x18\x03 \x01(\tB\x03\xe0A\x03R\x0efailureMessage\x12M\n" +
-	"\bmetadata\x18\x04 \x01(\v2,.google.cloud.deploy.v1.DeployJobRunMetadataB\x03\xe0A\x03R\bmetadata\x12G\n" +
-	"\bartifact\x18\x05 \x01(\v2&.google.cloud.deploy.v1.DeployArtifactB\x03\xe0A\x03R\bartifact\"\xdb\x01\n" +
+	"\ajob_run\"\xd3\x04\n" +
+	"\fDeployJobRun\x12>\n" +
+	"\x05build\x18\x01 \x01(\tB(\xe2A\x01\x03\xfaA!\n" +
+	"\x1fcloudbuild.googleapis.com/BuildR\x05build\x12\\\n" +
+	"\rfailure_cause\x18\x02 \x01(\x0e21.google.cloud.deploy.v1.DeployJobRun.FailureCauseB\x04\xe2A\x01\x03R\ffailureCause\x12-\n" +
+	"\x0ffailure_message\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x0efailureMessage\x12N\n" +
+	"\bmetadata\x18\x04 \x01(\v2,.google.cloud.deploy.v1.DeployJobRunMetadataB\x04\xe2A\x01\x03R\bmetadata\x12H\n" +
+	"\bartifact\x18\x05 \x01(\v2&.google.cloud.deploy.v1.DeployArtifactB\x04\xe2A\x01\x03R\bartifact\"\xdb\x01\n" +
 	"\fFailureCause\x12\x1d\n" +
 	"\x19FAILURE_CAUSE_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17CLOUD_BUILD_UNAVAILABLE\x10\x01\x12\x14\n" +
@@ -16035,68 +16035,68 @@ const file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = "" +
 	"\x11DEADLINE_EXCEEDED\x10\x03\x12 \n" +
 	"\x1cMISSING_RESOURCES_FOR_CANARY\x10\x04\x12\x1e\n" +
 	"\x1aCLOUD_BUILD_REQUEST_FAILED\x10\x05\x12 \n" +
-	"\x1cDEPLOY_FEATURE_NOT_SUPPORTED\x10\x06\"\xe8\x03\n" +
-	"\fVerifyJobRun\x12=\n" +
-	"\x05build\x18\x01 \x01(\tB'\xe0A\x03\xfaA!\n" +
-	"\x1fcloudbuild.googleapis.com/BuildR\x05build\x12&\n" +
-	"\fartifact_uri\x18\x02 \x01(\tB\x03\xe0A\x03R\vartifactUri\x12)\n" +
-	"\x0eevent_log_path\x18\x03 \x01(\tB\x03\xe0A\x03R\feventLogPath\x12[\n" +
-	"\rfailure_cause\x18\x04 \x01(\x0e21.google.cloud.deploy.v1.VerifyJobRun.FailureCauseB\x03\xe0A\x03R\ffailureCause\x12,\n" +
-	"\x0ffailure_message\x18\x05 \x01(\tB\x03\xe0A\x03R\x0efailureMessage\"\xba\x01\n" +
+	"\x1cDEPLOY_FEATURE_NOT_SUPPORTED\x10\x06\"\xed\x03\n" +
+	"\fVerifyJobRun\x12>\n" +
+	"\x05build\x18\x01 \x01(\tB(\xe2A\x01\x03\xfaA!\n" +
+	"\x1fcloudbuild.googleapis.com/BuildR\x05build\x12'\n" +
+	"\fartifact_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vartifactUri\x12*\n" +
+	"\x0eevent_log_path\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\feventLogPath\x12\\\n" +
+	"\rfailure_cause\x18\x04 \x01(\x0e21.google.cloud.deploy.v1.VerifyJobRun.FailureCauseB\x04\xe2A\x01\x03R\ffailureCause\x12-\n" +
+	"\x0ffailure_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x0efailureMessage\"\xba\x01\n" +
 	"\fFailureCause\x12\x1d\n" +
 	"\x19FAILURE_CAUSE_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17CLOUD_BUILD_UNAVAILABLE\x10\x01\x12\x14\n" +
 	"\x10EXECUTION_FAILED\x10\x02\x12\x15\n" +
 	"\x11DEADLINE_EXCEEDED\x10\x03\x12!\n" +
 	"\x1dVERIFICATION_CONFIG_NOT_FOUND\x10\x04\x12\x1e\n" +
-	"\x1aCLOUD_BUILD_REQUEST_FAILED\x10\x05\"\xf8\x02\n" +
-	"\x0fPredeployJobRun\x12=\n" +
-	"\x05build\x18\x01 \x01(\tB'\xe0A\x03\xfaA!\n" +
-	"\x1fcloudbuild.googleapis.com/BuildR\x05build\x12^\n" +
-	"\rfailure_cause\x18\x02 \x01(\x0e24.google.cloud.deploy.v1.PredeployJobRun.FailureCauseB\x03\xe0A\x03R\ffailureCause\x12,\n" +
-	"\x0ffailure_message\x18\x03 \x01(\tB\x03\xe0A\x03R\x0efailureMessage\"\x97\x01\n" +
-	"\fFailureCause\x12\x1d\n" +
-	"\x19FAILURE_CAUSE_UNSPECIFIED\x10\x00\x12\x1b\n" +
-	"\x17CLOUD_BUILD_UNAVAILABLE\x10\x01\x12\x14\n" +
-	"\x10EXECUTION_FAILED\x10\x02\x12\x15\n" +
-	"\x11DEADLINE_EXCEEDED\x10\x03\x12\x1e\n" +
-	"\x1aCLOUD_BUILD_REQUEST_FAILED\x10\x04\"\xfa\x02\n" +
-	"\x10PostdeployJobRun\x12=\n" +
-	"\x05build\x18\x01 \x01(\tB'\xe0A\x03\xfaA!\n" +
+	"\x1aCLOUD_BUILD_REQUEST_FAILED\x10\x05\"\xfb\x02\n" +
+	"\x0fPredeployJobRun\x12>\n" +
+	"\x05build\x18\x01 \x01(\tB(\xe2A\x01\x03\xfaA!\n" +
 	"\x1fcloudbuild.googleapis.com/BuildR\x05build\x12_\n" +
-	"\rfailure_cause\x18\x02 \x01(\x0e25.google.cloud.deploy.v1.PostdeployJobRun.FailureCauseB\x03\xe0A\x03R\ffailureCause\x12,\n" +
-	"\x0ffailure_message\x18\x03 \x01(\tB\x03\xe0A\x03R\x0efailureMessage\"\x97\x01\n" +
+	"\rfailure_cause\x18\x02 \x01(\x0e24.google.cloud.deploy.v1.PredeployJobRun.FailureCauseB\x04\xe2A\x01\x03R\ffailureCause\x12-\n" +
+	"\x0ffailure_message\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x0efailureMessage\"\x97\x01\n" +
 	"\fFailureCause\x12\x1d\n" +
 	"\x19FAILURE_CAUSE_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17CLOUD_BUILD_UNAVAILABLE\x10\x01\x12\x14\n" +
 	"\x10EXECUTION_FAILED\x10\x02\x12\x15\n" +
 	"\x11DEADLINE_EXCEEDED\x10\x03\x12\x1e\n" +
-	"\x1aCLOUD_BUILD_REQUEST_FAILED\x10\x04\"h\n" +
-	"\x18CreateChildRolloutJobRun\x12\x1d\n" +
-	"\arollout\x18\x01 \x01(\tB\x03\xe0A\x03R\arollout\x12-\n" +
-	"\x10rollout_phase_id\x18\x02 \x01(\tB\x03\xe0A\x03R\x0erolloutPhaseId\"i\n" +
-	"\x19AdvanceChildRolloutJobRun\x12\x1d\n" +
-	"\arollout\x18\x01 \x01(\tB\x03\xe0A\x03R\arollout\x12-\n" +
-	"\x10rollout_phase_id\x18\x02 \x01(\tB\x03\xe0A\x03R\x0erolloutPhaseId\"\xdb\x01\n" +
-	"\x12ListJobRunsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"clouddeploy.googleapis.com/RolloutR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x1aCLOUD_BUILD_REQUEST_FAILED\x10\x04\"\xfd\x02\n" +
+	"\x10PostdeployJobRun\x12>\n" +
+	"\x05build\x18\x01 \x01(\tB(\xe2A\x01\x03\xfaA!\n" +
+	"\x1fcloudbuild.googleapis.com/BuildR\x05build\x12`\n" +
+	"\rfailure_cause\x18\x02 \x01(\x0e25.google.cloud.deploy.v1.PostdeployJobRun.FailureCauseB\x04\xe2A\x01\x03R\ffailureCause\x12-\n" +
+	"\x0ffailure_message\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x0efailureMessage\"\x97\x01\n" +
+	"\fFailureCause\x12\x1d\n" +
+	"\x19FAILURE_CAUSE_UNSPECIFIED\x10\x00\x12\x1b\n" +
+	"\x17CLOUD_BUILD_UNAVAILABLE\x10\x01\x12\x14\n" +
+	"\x10EXECUTION_FAILED\x10\x02\x12\x15\n" +
+	"\x11DEADLINE_EXCEEDED\x10\x03\x12\x1e\n" +
+	"\x1aCLOUD_BUILD_REQUEST_FAILED\x10\x04\"j\n" +
+	"\x18CreateChildRolloutJobRun\x12\x1e\n" +
+	"\arollout\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\arollout\x12.\n" +
+	"\x10rollout_phase_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x0erolloutPhaseId\"k\n" +
+	"\x19AdvanceChildRolloutJobRun\x12\x1e\n" +
+	"\arollout\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\arollout\x12.\n" +
+	"\x10rollout_phase_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x0erolloutPhaseId\"\xe0\x01\n" +
+	"\x12ListJobRunsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"clouddeploy.googleapis.com/RolloutR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x9a\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x9a\x01\n" +
 	"\x13ListJobRunsResponse\x129\n" +
 	"\bjob_runs\x18\x01 \x03(\v2\x1e.google.cloud.deploy.v1.JobRunR\ajobRuns\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Q\n" +
-	"\x10GetJobRunRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!clouddeploy.googleapis.com/JobRunR\x04name\"\xbe\x01\n" +
-	"\x16TerminateJobRunRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!clouddeploy.googleapis.com/JobRunR\x04name\x12e\n" +
-	"\x16override_deploy_policy\x18\x02 \x03(\tB/\xe0A\x01\xfaA)\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"R\n" +
+	"\x10GetJobRunRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!clouddeploy.googleapis.com/JobRunR\x04name\"\xc0\x01\n" +
+	"\x16TerminateJobRunRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!clouddeploy.googleapis.com/JobRunR\x04name\x12f\n" +
+	"\x16override_deploy_policy\x18\x02 \x03(\tB0\xe2A\x01\x01\xfaA)\n" +
 	"'clouddeploy.googleapis.com/DeployPolicyR\x14overrideDeployPolicy\"\x19\n" +
 	"\x17TerminateJobRunResponse\"\x86\x02\n" +
 	"\x06Config\x12\x12\n" +
@@ -16108,116 +16108,116 @@ const file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = "" +
 	"\aversion\x18\x01 \x01(\tR\aversion\x12N\n" +
 	"\x15maintenance_mode_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x13maintenanceModeTime\x12R\n" +
 	"\x17support_expiration_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x15supportExpirationTime\x12;\n" +
-	"\x10support_end_date\x18\x02 \x01(\v2\x11.google.type.DateR\x0esupportEndDate\"Q\n" +
-	"\x10GetConfigRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!clouddeploy.googleapis.com/ConfigR\x04name\"\xa6\a\n" +
+	"\x10support_end_date\x18\x02 \x01(\v2\x11.google.type.DateR\x0esupportEndDate\"R\n" +
+	"\x10GetConfigRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!clouddeploy.googleapis.com/ConfigR\x04name\"\xb2\a\n" +
 	"\n" +
-	"Automation\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12Z\n" +
-	"\vannotations\x18\x06 \x03(\v23.google.cloud.deploy.v1.Automation.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12K\n" +
-	"\x06labels\x18\a \x03(\v2..google.cloud.deploy.v1.Automation.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x17\n" +
-	"\x04etag\x18\b \x01(\tB\x03\xe0A\x01R\x04etag\x12!\n" +
-	"\tsuspended\x18\t \x01(\bB\x03\xe0A\x01R\tsuspended\x12,\n" +
+	"Automation\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12[\n" +
+	"\vannotations\x18\x06 \x03(\v23.google.cloud.deploy.v1.Automation.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12L\n" +
+	"\x06labels\x18\a \x03(\v2..google.cloud.deploy.v1.Automation.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12\x18\n" +
+	"\x04etag\x18\b \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12\"\n" +
+	"\tsuspended\x18\t \x01(\bB\x04\xe2A\x01\x01R\tsuspended\x12-\n" +
 	"\x0fservice_account\x18\n" +
-	" \x01(\tB\x03\xe0A\x02R\x0eserviceAccount\x12S\n" +
-	"\bselector\x18\v \x01(\v22.google.cloud.deploy.v1.AutomationResourceSelectorB\x03\xe0A\x02R\bselector\x12A\n" +
-	"\x05rules\x18\x0e \x03(\v2&.google.cloud.deploy.v1.AutomationRuleB\x03\xe0A\x02R\x05rules\x1a>\n" +
+	" \x01(\tB\x04\xe2A\x01\x02R\x0eserviceAccount\x12T\n" +
+	"\bselector\x18\v \x01(\v22.google.cloud.deploy.v1.AutomationResourceSelectorB\x04\xe2A\x01\x02R\bselector\x12B\n" +
+	"\x05rules\x18\x0e \x03(\v2&.google.cloud.deploy.v1.AutomationRuleB\x04\xe2A\x01\x02R\x05rules\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x96\x01\xeaA\x92\x01\n" +
-	"%clouddeploy.googleapis.com/Automation\x12fprojects/{project}/locations/{location}/deliveryPipelines/{delivery_pipeline}/automations/{automation}R\x01\x01\"d\n" +
-	"\x1aAutomationResourceSelector\x12F\n" +
-	"\atargets\x18\x01 \x03(\v2'.google.cloud.deploy.v1.TargetAttributeB\x03\xe0A\x01R\atargets\"\xb9\x03\n" +
-	"\x0eAutomationRule\x12c\n" +
-	"\x14promote_release_rule\x18\x01 \x01(\v2*.google.cloud.deploy.v1.PromoteReleaseRuleB\x03\xe0A\x01H\x00R\x12promoteReleaseRule\x12c\n" +
-	"\x14advance_rollout_rule\x18\x02 \x01(\v2*.google.cloud.deploy.v1.AdvanceRolloutRuleB\x03\xe0A\x01H\x00R\x12advanceRolloutRule\x12`\n" +
-	"\x13repair_rollout_rule\x18\x03 \x01(\v2).google.cloud.deploy.v1.RepairRolloutRuleB\x03\xe0A\x01H\x00R\x11repairRolloutRule\x12s\n" +
-	"\x1atimed_promote_release_rule\x18\x04 \x01(\v2/.google.cloud.deploy.v1.TimedPromoteReleaseRuleB\x03\xe0A\x01H\x00R\x17timedPromoteReleaseRuleB\x06\n" +
-	"\x04rule\"\xb0\x02\n" +
-	"\x17TimedPromoteReleaseRule\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x127\n" +
-	"\x15destination_target_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x13destinationTargetId\x12\x1f\n" +
-	"\bschedule\x18\x03 \x01(\tB\x03\xe0A\x02R\bschedule\x12 \n" +
-	"\ttime_zone\x18\x04 \x01(\tB\x03\xe0A\x02R\btimeZone\x12R\n" +
-	"\tcondition\x18\x05 \x01(\v2/.google.cloud.deploy.v1.AutomationRuleConditionB\x03\xe0A\x03R\tcondition\x120\n" +
-	"\x11destination_phase\x18\x06 \x01(\tB\x03\xe0A\x01R\x10destinationPhase\"\x9c\x02\n" +
-	"\x12PromoteReleaseRule\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x122\n" +
-	"\x04wait\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x04wait\x127\n" +
-	"\x15destination_target_id\x18\a \x01(\tB\x03\xe0A\x01R\x13destinationTargetId\x12R\n" +
-	"\tcondition\x18\x05 \x01(\v2/.google.cloud.deploy.v1.AutomationRuleConditionB\x03\xe0A\x03R\tcondition\x120\n" +
-	"\x11destination_phase\x18\b \x01(\tB\x03\xe0A\x01R\x10destinationPhase\"\xdb\x01\n" +
-	"\x12AdvanceRolloutRule\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12(\n" +
-	"\rsource_phases\x18\x06 \x03(\tB\x03\xe0A\x01R\fsourcePhases\x122\n" +
-	"\x04wait\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x04wait\x12R\n" +
-	"\tcondition\x18\x05 \x01(\v2/.google.cloud.deploy.v1.AutomationRuleConditionB\x03\xe0A\x03R\tcondition\"\x87\x02\n" +
-	"\x11RepairRolloutRule\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12\x1b\n" +
-	"\x06phases\x18\a \x03(\tB\x03\xe0A\x01R\x06phases\x12\x17\n" +
-	"\x04jobs\x18\x03 \x03(\tB\x03\xe0A\x01R\x04jobs\x12R\n" +
-	"\tcondition\x18\x06 \x01(\v2/.google.cloud.deploy.v1.AutomationRuleConditionB\x03\xe0A\x03R\tcondition\x12S\n" +
-	"\rrepair_phases\x18\b \x03(\v2).google.cloud.deploy.v1.RepairPhaseConfigB\x03\xe0A\x02R\frepairPhases\"\xa4\x01\n" +
-	"\x11RepairPhaseConfig\x12:\n" +
-	"\x05retry\x18\x01 \x01(\v2\x1d.google.cloud.deploy.v1.RetryB\x03\xe0A\x01H\x00R\x05retry\x12C\n" +
-	"\brollback\x18\x02 \x01(\v2 .google.cloud.deploy.v1.RollbackB\x03\xe0A\x01H\x00R\brollbackB\x0e\n" +
-	"\frepair_phase\"\xa9\x01\n" +
-	"\x05Retry\x12\x1f\n" +
-	"\battempts\x18\x01 \x01(\x03B\x03\xe0A\x02R\battempts\x122\n" +
-	"\x04wait\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x04wait\x12K\n" +
-	"\fbackoff_mode\x18\x03 \x01(\x0e2#.google.cloud.deploy.v1.BackoffModeB\x03\xe0A\x01R\vbackoffMode\"\x8f\x01\n" +
-	"\bRollback\x120\n" +
-	"\x11destination_phase\x18\x01 \x01(\tB\x03\xe0A\x01R\x10destinationPhase\x12Q\n" +
-	"#disable_rollback_if_rollout_pending\x18\x02 \x01(\bB\x03\xe0A\x01R\x1fdisableRollbackIfRolloutPending\"\xa7\x02\n" +
-	"\x17AutomationRuleCondition\x12p\n" +
-	"\x19targets_present_condition\x18\x01 \x01(\v2/.google.cloud.deploy.v1.TargetsPresentConditionB\x03\xe0A\x01R\x17targetsPresentCondition\x12\x82\x01\n" +
-	"\x1ftimed_promote_release_condition\x18\x02 \x01(\v24.google.cloud.deploy.v1.TimedPromoteReleaseConditionB\x03\xe0A\x01H\x00R\x1ctimedPromoteReleaseConditionB\x15\n" +
-	"\x13rule_type_condition\"\xc8\x02\n" +
-	"\x1cTimedPromoteReleaseCondition\x12O\n" +
-	"\x13next_promotion_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x11nextPromotionTime\x12d\n" +
-	"\ftargets_list\x18\x02 \x03(\v2<.google.cloud.deploy.v1.TimedPromoteReleaseCondition.TargetsB\x03\xe0A\x03R\vtargetsList\x1aq\n" +
-	"\aTargets\x12-\n" +
-	"\x10source_target_id\x18\x01 \x01(\tB\x03\xe0A\x01R\x0esourceTargetId\x127\n" +
-	"\x15destination_target_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x13destinationTargetId\"\xa1\x02\n" +
-	"\x17CreateAutomationRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%clouddeploy.googleapis.com/AutomationR\x06parent\x12(\n" +
-	"\rautomation_id\x18\x02 \x01(\tB\x03\xe0A\x02R\fautomationId\x12G\n" +
+	"%clouddeploy.googleapis.com/Automation\x12fprojects/{project}/locations/{location}/deliveryPipelines/{delivery_pipeline}/automations/{automation}R\x01\x01\"e\n" +
+	"\x1aAutomationResourceSelector\x12G\n" +
+	"\atargets\x18\x01 \x03(\v2'.google.cloud.deploy.v1.TargetAttributeB\x04\xe2A\x01\x01R\atargets\"\xbd\x03\n" +
+	"\x0eAutomationRule\x12d\n" +
+	"\x14promote_release_rule\x18\x01 \x01(\v2*.google.cloud.deploy.v1.PromoteReleaseRuleB\x04\xe2A\x01\x01H\x00R\x12promoteReleaseRule\x12d\n" +
+	"\x14advance_rollout_rule\x18\x02 \x01(\v2*.google.cloud.deploy.v1.AdvanceRolloutRuleB\x04\xe2A\x01\x01H\x00R\x12advanceRolloutRule\x12a\n" +
+	"\x13repair_rollout_rule\x18\x03 \x01(\v2).google.cloud.deploy.v1.RepairRolloutRuleB\x04\xe2A\x01\x01H\x00R\x11repairRolloutRule\x12t\n" +
+	"\x1atimed_promote_release_rule\x18\x04 \x01(\v2/.google.cloud.deploy.v1.TimedPromoteReleaseRuleB\x04\xe2A\x01\x01H\x00R\x17timedPromoteReleaseRuleB\x06\n" +
+	"\x04rule\"\xb6\x02\n" +
+	"\x17TimedPromoteReleaseRule\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x128\n" +
+	"\x15destination_target_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x13destinationTargetId\x12 \n" +
+	"\bschedule\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\bschedule\x12!\n" +
+	"\ttime_zone\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\btimeZone\x12S\n" +
+	"\tcondition\x18\x05 \x01(\v2/.google.cloud.deploy.v1.AutomationRuleConditionB\x04\xe2A\x01\x03R\tcondition\x121\n" +
+	"\x11destination_phase\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x10destinationPhase\"\xa1\x02\n" +
+	"\x12PromoteReleaseRule\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x123\n" +
+	"\x04wait\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x04wait\x128\n" +
+	"\x15destination_target_id\x18\a \x01(\tB\x04\xe2A\x01\x01R\x13destinationTargetId\x12S\n" +
+	"\tcondition\x18\x05 \x01(\v2/.google.cloud.deploy.v1.AutomationRuleConditionB\x04\xe2A\x01\x03R\tcondition\x121\n" +
+	"\x11destination_phase\x18\b \x01(\tB\x04\xe2A\x01\x01R\x10destinationPhase\"\xdf\x01\n" +
+	"\x12AdvanceRolloutRule\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12)\n" +
+	"\rsource_phases\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\fsourcePhases\x123\n" +
+	"\x04wait\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x04wait\x12S\n" +
+	"\tcondition\x18\x05 \x01(\v2/.google.cloud.deploy.v1.AutomationRuleConditionB\x04\xe2A\x01\x03R\tcondition\"\x8c\x02\n" +
+	"\x11RepairRolloutRule\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12\x1c\n" +
+	"\x06phases\x18\a \x03(\tB\x04\xe2A\x01\x01R\x06phases\x12\x18\n" +
+	"\x04jobs\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x04jobs\x12S\n" +
+	"\tcondition\x18\x06 \x01(\v2/.google.cloud.deploy.v1.AutomationRuleConditionB\x04\xe2A\x01\x03R\tcondition\x12T\n" +
+	"\rrepair_phases\x18\b \x03(\v2).google.cloud.deploy.v1.RepairPhaseConfigB\x04\xe2A\x01\x02R\frepairPhases\"\xa6\x01\n" +
+	"\x11RepairPhaseConfig\x12;\n" +
+	"\x05retry\x18\x01 \x01(\v2\x1d.google.cloud.deploy.v1.RetryB\x04\xe2A\x01\x01H\x00R\x05retry\x12D\n" +
+	"\brollback\x18\x02 \x01(\v2 .google.cloud.deploy.v1.RollbackB\x04\xe2A\x01\x01H\x00R\brollbackB\x0e\n" +
+	"\frepair_phase\"\xac\x01\n" +
+	"\x05Retry\x12 \n" +
+	"\battempts\x18\x01 \x01(\x03B\x04\xe2A\x01\x02R\battempts\x123\n" +
+	"\x04wait\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x04wait\x12L\n" +
+	"\fbackoff_mode\x18\x03 \x01(\x0e2#.google.cloud.deploy.v1.BackoffModeB\x04\xe2A\x01\x01R\vbackoffMode\"\x91\x01\n" +
+	"\bRollback\x121\n" +
+	"\x11destination_phase\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x10destinationPhase\x12R\n" +
+	"#disable_rollback_if_rollout_pending\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x1fdisableRollbackIfRolloutPending\"\xa9\x02\n" +
+	"\x17AutomationRuleCondition\x12q\n" +
+	"\x19targets_present_condition\x18\x01 \x01(\v2/.google.cloud.deploy.v1.TargetsPresentConditionB\x04\xe2A\x01\x01R\x17targetsPresentCondition\x12\x83\x01\n" +
+	"\x1ftimed_promote_release_condition\x18\x02 \x01(\v24.google.cloud.deploy.v1.TimedPromoteReleaseConditionB\x04\xe2A\x01\x01H\x00R\x1ctimedPromoteReleaseConditionB\x15\n" +
+	"\x13rule_type_condition\"\xcc\x02\n" +
+	"\x1cTimedPromoteReleaseCondition\x12P\n" +
+	"\x13next_promotion_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x11nextPromotionTime\x12e\n" +
+	"\ftargets_list\x18\x02 \x03(\v2<.google.cloud.deploy.v1.TimedPromoteReleaseCondition.TargetsB\x04\xe2A\x01\x03R\vtargetsList\x1as\n" +
+	"\aTargets\x12.\n" +
+	"\x10source_target_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0esourceTargetId\x128\n" +
+	"\x15destination_target_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x13destinationTargetId\"\xa6\x02\n" +
+	"\x17CreateAutomationRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%clouddeploy.googleapis.com/AutomationR\x06parent\x12)\n" +
+	"\rautomation_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fautomationId\x12H\n" +
 	"\n" +
-	"automation\x18\x03 \x01(\v2\".google.cloud.deploy.v1.AutomationB\x03\xe0A\x02R\n" +
-	"automation\x12\"\n" +
+	"automation\x18\x03 \x01(\v2\".google.cloud.deploy.v1.AutomationB\x04\xe2A\x01\x02R\n" +
+	"automation\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x9c\x02\n" +
-	"\x17UpdateAutomationRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12G\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xa1\x02\n" +
+	"\x17UpdateAutomationRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12H\n" +
 	"\n" +
-	"automation\x18\x02 \x01(\v2\".google.cloud.deploy.v1.AutomationB\x03\xe0A\x02R\n" +
-	"automation\x12\"\n" +
+	"automation\x18\x02 \x01(\v2\".google.cloud.deploy.v1.AutomationB\x04\xe2A\x01\x02R\n" +
+	"automation\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rallow_missing\x18\x04 \x01(\bB\x03\xe0A\x01R\fallowMissing\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xed\x01\n" +
-	"\x17DeleteAutomationRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%clouddeploy.googleapis.com/AutomationR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rallow_missing\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xf2\x01\n" +
+	"\x17DeleteAutomationRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%clouddeploy.googleapis.com/AutomationR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rallow_missing\x18\x03 \x01(\bB\x03\xe0A\x01R\fallowMissing\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x17\n" +
-	"\x04etag\x18\x05 \x01(\tB\x03\xe0A\x01R\x04etag\"\xce\x01\n" +
-	"\x16ListAutomationsRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%clouddeploy.googleapis.com/AutomationR\x06parent\x12\x1b\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rallow_missing\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x18\n" +
+	"\x04etag\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xcf\x01\n" +
+	"\x16ListAutomationsRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%clouddeploy.googleapis.com/AutomationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -16226,33 +16226,33 @@ const file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = "" +
 	"\x17ListAutomationsResponse\x12D\n" +
 	"\vautomations\x18\x01 \x03(\v2\".google.cloud.deploy.v1.AutomationR\vautomations\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Y\n" +
-	"\x14GetAutomationRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%clouddeploy.googleapis.com/AutomationR\x04name\"\x95\f\n" +
-	"\rAutomationRun\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04etag\x18\x04 \x01(\tB\x03\xe0A\x03R\x04etag\x12,\n" +
-	"\x0fservice_account\x18\x05 \x01(\tB\x03\xe0A\x03R\x0eserviceAccount\x12X\n" +
-	"\x13automation_snapshot\x18\x06 \x01(\v2\".google.cloud.deploy.v1.AutomationB\x03\xe0A\x03R\x12automationSnapshot\x12 \n" +
-	"\ttarget_id\x18\a \x01(\tB\x03\xe0A\x03R\btargetId\x12F\n" +
-	"\x05state\x18\b \x01(\x0e2+.google.cloud.deploy.v1.AutomationRun.StateB\x03\xe0A\x03R\x05state\x120\n" +
-	"\x11state_description\x18\t \x01(\tB\x03\xe0A\x03R\x10stateDescription\x12W\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Z\n" +
+	"\x14GetAutomationRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%clouddeploy.googleapis.com/AutomationR\x04name\"\xa7\f\n" +
+	"\rAutomationRun\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04etag\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12-\n" +
+	"\x0fservice_account\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x0eserviceAccount\x12Y\n" +
+	"\x13automation_snapshot\x18\x06 \x01(\v2\".google.cloud.deploy.v1.AutomationB\x04\xe2A\x01\x03R\x12automationSnapshot\x12!\n" +
+	"\ttarget_id\x18\a \x01(\tB\x04\xe2A\x01\x03R\btargetId\x12G\n" +
+	"\x05state\x18\b \x01(\x0e2+.google.cloud.deploy.v1.AutomationRun.StateB\x04\xe2A\x01\x03R\x05state\x121\n" +
+	"\x11state_description\x18\t \x01(\tB\x04\xe2A\x01\x03R\x10stateDescription\x12X\n" +
 	"\x10policy_violation\x18\n" +
-	" \x01(\v2'.google.cloud.deploy.v1.PolicyViolationB\x03\xe0A\x03R\x0fpolicyViolation\x12@\n" +
-	"\vexpire_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12\x1c\n" +
-	"\arule_id\x18\f \x01(\tB\x03\xe0A\x03R\x06ruleId\x12(\n" +
-	"\rautomation_id\x18\x0f \x01(\tB\x03\xe0A\x03R\fautomationId\x12r\n" +
-	"\x19promote_release_operation\x18\r \x01(\v2/.google.cloud.deploy.v1.PromoteReleaseOperationB\x03\xe0A\x03H\x00R\x17promoteReleaseOperation\x12r\n" +
-	"\x19advance_rollout_operation\x18\x0e \x01(\v2/.google.cloud.deploy.v1.AdvanceRolloutOperationB\x03\xe0A\x03H\x00R\x17advanceRolloutOperation\x12o\n" +
-	"\x18repair_rollout_operation\x18\x11 \x01(\v2..google.cloud.deploy.v1.RepairRolloutOperationB\x03\xe0A\x03H\x00R\x16repairRolloutOperation\x12\x82\x01\n" +
-	"\x1ftimed_promote_release_operation\x18\x13 \x01(\v24.google.cloud.deploy.v1.TimedPromoteReleaseOperationB\x03\xe0A\x03H\x00R\x1ctimedPromoteReleaseOperation\x12G\n" +
-	"\x0fwait_until_time\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\rwaitUntilTime\"s\n" +
+	" \x01(\v2'.google.cloud.deploy.v1.PolicyViolationB\x04\xe2A\x01\x03R\x0fpolicyViolation\x12A\n" +
+	"\vexpire_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12\x1d\n" +
+	"\arule_id\x18\f \x01(\tB\x04\xe2A\x01\x03R\x06ruleId\x12)\n" +
+	"\rautomation_id\x18\x0f \x01(\tB\x04\xe2A\x01\x03R\fautomationId\x12s\n" +
+	"\x19promote_release_operation\x18\r \x01(\v2/.google.cloud.deploy.v1.PromoteReleaseOperationB\x04\xe2A\x01\x03H\x00R\x17promoteReleaseOperation\x12s\n" +
+	"\x19advance_rollout_operation\x18\x0e \x01(\v2/.google.cloud.deploy.v1.AdvanceRolloutOperationB\x04\xe2A\x01\x03H\x00R\x17advanceRolloutOperation\x12p\n" +
+	"\x18repair_rollout_operation\x18\x11 \x01(\v2..google.cloud.deploy.v1.RepairRolloutOperationB\x04\xe2A\x01\x03H\x00R\x16repairRolloutOperation\x12\x83\x01\n" +
+	"\x1ftimed_promote_release_operation\x18\x13 \x01(\v24.google.cloud.deploy.v1.TimedPromoteReleaseOperationB\x04\xe2A\x01\x03H\x00R\x1ctimedPromoteReleaseOperation\x12H\n" +
+	"\x0fwait_until_time\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\rwaitUntilTime\"s\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tSUCCEEDED\x10\x01\x12\r\n" +
@@ -16263,52 +16263,52 @@ const file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = "" +
 	"\aPENDING\x10\x05\x12\v\n" +
 	"\aABORTED\x10\x06:\x9d\x01\xeaA\x99\x01\n" +
 	"(clouddeploy.googleapis.com/AutomationRun\x12mprojects/{project}/locations/{location}/deliveryPipelines/{delivery_pipeline}/automationRuns/{automation_run}B\v\n" +
-	"\toperation\"\xa9\x01\n" +
-	"\x17PromoteReleaseOperation\x12 \n" +
-	"\ttarget_id\x18\x01 \x01(\tB\x03\xe0A\x03R\btargetId\x122\n" +
-	"\x04wait\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\x04wait\x12\x1d\n" +
-	"\arollout\x18\x03 \x01(\tB\x03\xe0A\x03R\arollout\x12\x19\n" +
-	"\x05phase\x18\x04 \x01(\tB\x03\xe0A\x03R\x05phase\"\xc6\x01\n" +
-	"\x17AdvanceRolloutOperation\x12&\n" +
-	"\fsource_phase\x18\x05 \x01(\tB\x03\xe0A\x03R\vsourcePhase\x122\n" +
-	"\x04wait\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\x04wait\x12\x1d\n" +
-	"\arollout\x18\x03 \x01(\tB\x03\xe0A\x03R\arollout\x120\n" +
-	"\x11destination_phase\x18\x04 \x01(\tB\x03\xe0A\x03R\x10destinationPhase\"\x84\x02\n" +
-	"\x16RepairRolloutOperation\x12\x1d\n" +
-	"\arollout\x18\x01 \x01(\tB\x03\xe0A\x03R\arollout\x12@\n" +
-	"\x1acurrent_repair_phase_index\x18\x06 \x01(\x03B\x03\xe0A\x03R\x17currentRepairPhaseIndex\x12M\n" +
-	"\rrepair_phases\x18\x03 \x03(\v2#.google.cloud.deploy.v1.RepairPhaseB\x03\xe0A\x03R\frepairPhases\x12\x1e\n" +
-	"\bphase_id\x18\x04 \x01(\tB\x03\xe0A\x03R\aphaseId\x12\x1a\n" +
-	"\x06job_id\x18\x05 \x01(\tB\x03\xe0A\x03R\x05jobId\"z\n" +
-	"\x1cTimedPromoteReleaseOperation\x12 \n" +
-	"\ttarget_id\x18\x01 \x01(\tB\x03\xe0A\x03R\btargetId\x12\x1d\n" +
-	"\arelease\x18\x02 \x01(\tB\x03\xe0A\x03R\arelease\x12\x19\n" +
-	"\x05phase\x18\x03 \x01(\tB\x03\xe0A\x03R\x05phase\"\xaa\x01\n" +
-	"\vRepairPhase\x12?\n" +
-	"\x05retry\x18\x01 \x01(\v2\".google.cloud.deploy.v1.RetryPhaseB\x03\xe0A\x03H\x00R\x05retry\x12J\n" +
-	"\brollback\x18\x02 \x01(\v2'.google.cloud.deploy.v1.RollbackAttemptB\x03\xe0A\x03H\x00R\brollbackB\x0e\n" +
-	"\frepair_phase\"\xcc\x01\n" +
+	"\toperation\"\xad\x01\n" +
+	"\x17PromoteReleaseOperation\x12!\n" +
+	"\ttarget_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\btargetId\x123\n" +
+	"\x04wait\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\x04wait\x12\x1e\n" +
+	"\arollout\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\arollout\x12\x1a\n" +
+	"\x05phase\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x05phase\"\xca\x01\n" +
+	"\x17AdvanceRolloutOperation\x12'\n" +
+	"\fsource_phase\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\vsourcePhase\x123\n" +
+	"\x04wait\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\x04wait\x12\x1e\n" +
+	"\arollout\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\arollout\x121\n" +
+	"\x11destination_phase\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x10destinationPhase\"\x89\x02\n" +
+	"\x16RepairRolloutOperation\x12\x1e\n" +
+	"\arollout\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\arollout\x12A\n" +
+	"\x1acurrent_repair_phase_index\x18\x06 \x01(\x03B\x04\xe2A\x01\x03R\x17currentRepairPhaseIndex\x12N\n" +
+	"\rrepair_phases\x18\x03 \x03(\v2#.google.cloud.deploy.v1.RepairPhaseB\x04\xe2A\x01\x03R\frepairPhases\x12\x1f\n" +
+	"\bphase_id\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\aphaseId\x12\x1b\n" +
+	"\x06job_id\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x05jobId\"}\n" +
+	"\x1cTimedPromoteReleaseOperation\x12!\n" +
+	"\ttarget_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\btargetId\x12\x1e\n" +
+	"\arelease\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\arelease\x12\x1a\n" +
+	"\x05phase\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x05phase\"\xac\x01\n" +
+	"\vRepairPhase\x12@\n" +
+	"\x05retry\x18\x01 \x01(\v2\".google.cloud.deploy.v1.RetryPhaseB\x04\xe2A\x01\x03H\x00R\x05retry\x12K\n" +
+	"\brollback\x18\x02 \x01(\v2'.google.cloud.deploy.v1.RollbackAttemptB\x04\xe2A\x01\x03H\x00R\brollbackB\x0e\n" +
+	"\frepair_phase\"\xcf\x01\n" +
 	"\n" +
-	"RetryPhase\x12*\n" +
-	"\x0etotal_attempts\x18\x01 \x01(\x03B\x03\xe0A\x03R\rtotalAttempts\x12K\n" +
-	"\fbackoff_mode\x18\x02 \x01(\x0e2#.google.cloud.deploy.v1.BackoffModeB\x03\xe0A\x03R\vbackoffMode\x12E\n" +
-	"\battempts\x18\x05 \x03(\v2$.google.cloud.deploy.v1.RetryAttemptB\x03\xe0A\x03R\battempts\"\xc5\x01\n" +
-	"\fRetryAttempt\x12\x1d\n" +
-	"\aattempt\x18\x01 \x01(\x03B\x03\xe0A\x03R\aattempt\x122\n" +
-	"\x04wait\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\x04wait\x12>\n" +
-	"\x05state\x18\x05 \x01(\x0e2#.google.cloud.deploy.v1.RepairStateB\x03\xe0A\x03R\x05state\x12\"\n" +
+	"RetryPhase\x12+\n" +
+	"\x0etotal_attempts\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\rtotalAttempts\x12L\n" +
+	"\fbackoff_mode\x18\x02 \x01(\x0e2#.google.cloud.deploy.v1.BackoffModeB\x04\xe2A\x01\x03R\vbackoffMode\x12F\n" +
+	"\battempts\x18\x05 \x03(\v2$.google.cloud.deploy.v1.RetryAttemptB\x04\xe2A\x01\x03R\battempts\"\xc9\x01\n" +
+	"\fRetryAttempt\x12\x1e\n" +
+	"\aattempt\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\aattempt\x123\n" +
+	"\x04wait\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\x04wait\x12?\n" +
+	"\x05state\x18\x05 \x01(\x0e2#.google.cloud.deploy.v1.RepairStateB\x04\xe2A\x01\x03R\x05state\x12#\n" +
 	"\n" +
-	"state_desc\x18\x06 \x01(\tB\x03\xe0A\x03R\tstateDesc\"\x9e\x02\n" +
-	"\x0fRollbackAttempt\x120\n" +
-	"\x11destination_phase\x18\x01 \x01(\tB\x03\xe0A\x03R\x10destinationPhase\x12\"\n" +
+	"state_desc\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\tstateDesc\"\xa3\x02\n" +
+	"\x0fRollbackAttempt\x121\n" +
+	"\x11destination_phase\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x10destinationPhase\x12#\n" +
 	"\n" +
-	"rollout_id\x18\x02 \x01(\tB\x03\xe0A\x03R\trolloutId\x12>\n" +
-	"\x05state\x18\x03 \x01(\x0e2#.google.cloud.deploy.v1.RepairStateB\x03\xe0A\x03R\x05state\x12\"\n" +
+	"rollout_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\trolloutId\x12?\n" +
+	"\x05state\x18\x03 \x01(\x0e2#.google.cloud.deploy.v1.RepairStateB\x04\xe2A\x01\x03R\x05state\x12#\n" +
 	"\n" +
-	"state_desc\x18\x04 \x01(\tB\x03\xe0A\x03R\tstateDesc\x12Q\n" +
-	"#disable_rollback_if_rollout_pending\x18\x05 \x01(\bB\x03\xe0A\x03R\x1fdisableRollbackIfRolloutPending\"\xd4\x01\n" +
-	"\x19ListAutomationRunsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(clouddeploy.googleapis.com/AutomationRunR\x06parent\x12\x1b\n" +
+	"state_desc\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\tstateDesc\x12R\n" +
+	"#disable_rollback_if_rollout_pending\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\x1fdisableRollbackIfRolloutPending\"\xd5\x01\n" +
+	"\x19ListAutomationRunsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(clouddeploy.googleapis.com/AutomationRunR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -16317,12 +16317,12 @@ const file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = "" +
 	"\x1aListAutomationRunsResponse\x12N\n" +
 	"\x0fautomation_runs\x18\x01 \x03(\v2%.google.cloud.deploy.v1.AutomationRunR\x0eautomationRuns\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"_\n" +
-	"\x17GetAutomationRunRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(clouddeploy.googleapis.com/AutomationRunR\x04name\"b\n" +
-	"\x1aCancelAutomationRunRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"`\n" +
+	"\x17GetAutomationRunRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(clouddeploy.googleapis.com/AutomationRunR\x04name\"c\n" +
+	"\x1aCancelAutomationRunRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(clouddeploy.googleapis.com/AutomationRunR\x04name\"\x1d\n" +
 	"\x1bCancelAutomationRunResponse*\xb9\x01\n" +
 	"\x14SkaffoldSupportState\x12&\n" +

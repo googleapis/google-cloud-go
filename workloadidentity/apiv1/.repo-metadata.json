@@ -1,0 +1,10 @@
+{
+    "api_shortname": "workloadidentity",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/workloadidentity/latest/apiv1",
+    "client_library_type": "generated",
+    "description": "Workload Identity API",
+    "distribution_name": "cloud.google.com/go/workloadidentity/apiv1",
+    "language": "go",
+    "library_type": "GAPIC_AUTO",
+    "release_level": "preview"
+}

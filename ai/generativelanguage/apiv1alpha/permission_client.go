@@ -266,6 +266,47 @@ func NewPermissionClient(ctx context.Context, opts ...option.ClientOption) (*Per
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreatePermission = append(client.CallOptions.CreatePermission, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPermission = append(client.CallOptions.GetPermission, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPermissions = append(client.CallOptions.ListPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePermission = append(client.CallOptions.UpdatePermission, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePermission = append(client.CallOptions.DeletePermission, gax.WithClientTracing(tracing))
+		client.CallOptions.TransferOwnership = append(client.CallOptions.TransferOwnership, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreatePermission = append(client.CallOptions.CreatePermission, gax.WithClientLogging(logging))
+		client.CallOptions.GetPermission = append(client.CallOptions.GetPermission, gax.WithClientLogging(logging))
+		client.CallOptions.ListPermissions = append(client.CallOptions.ListPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePermission = append(client.CallOptions.UpdatePermission, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePermission = append(client.CallOptions.DeletePermission, gax.WithClientLogging(logging))
+		client.CallOptions.TransferOwnership = append(client.CallOptions.TransferOwnership, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -364,6 +405,47 @@ func NewPermissionRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		callOpts.CreatePermission = append(callOpts.CreatePermission, gax.WithClientTracing(tracing))
+		callOpts.GetPermission = append(callOpts.GetPermission, gax.WithClientTracing(tracing))
+		callOpts.ListPermissions = append(callOpts.ListPermissions, gax.WithClientTracing(tracing))
+		callOpts.UpdatePermission = append(callOpts.UpdatePermission, gax.WithClientTracing(tracing))
+		callOpts.DeletePermission = append(callOpts.DeletePermission, gax.WithClientTracing(tracing))
+		callOpts.TransferOwnership = append(callOpts.TransferOwnership, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		callOpts.CreatePermission = append(callOpts.CreatePermission, gax.WithClientLogging(logging))
+		callOpts.GetPermission = append(callOpts.GetPermission, gax.WithClientLogging(logging))
+		callOpts.ListPermissions = append(callOpts.ListPermissions, gax.WithClientLogging(logging))
+		callOpts.UpdatePermission = append(callOpts.UpdatePermission, gax.WithClientLogging(logging))
+		callOpts.DeletePermission = append(callOpts.DeletePermission, gax.WithClientLogging(logging))
+		callOpts.TransferOwnership = append(callOpts.TransferOwnership, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &PermissionClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -410,9 +492,6 @@ func (c *permissionGRPCClient) CreatePermission(ctx context.Context, req *genera
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.PermissionService/CreatePermission")
 	}
@@ -434,9 +513,6 @@ func (c *permissionGRPCClient) GetPermission(ctx context.Context, req *generativ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.PermissionService/GetPermission")
 	}
@@ -458,9 +534,6 @@ func (c *permissionGRPCClient) ListPermissions(ctx context.Context, req *generat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.PermissionService/ListPermissions")
 	}
@@ -531,9 +604,6 @@ func (c *permissionGRPCClient) DeletePermission(ctx context.Context, req *genera
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.PermissionService/DeletePermission")
 	}
@@ -551,9 +621,6 @@ func (c *permissionGRPCClient) TransferOwnership(ctx context.Context, req *gener
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.PermissionService/TransferOwnership")
 	}
@@ -653,6 +720,11 @@ func (c *permissionRESTClient) CreatePermission(ctx context.Context, req *genera
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/permissions", req.GetParent())
 
 	params := url.Values{}
@@ -666,9 +738,6 @@ func (c *permissionRESTClient) CreatePermission(ctx context.Context, req *genera
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.PermissionService/CreatePermission")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=tunedModels/*}/permissions")
@@ -710,6 +779,11 @@ func (c *permissionRESTClient) GetPermission(ctx context.Context, req *generativ
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -723,9 +797,6 @@ func (c *permissionRESTClient) GetPermission(ctx context.Context, req *generativ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.PermissionService/GetPermission")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=tunedModels/*/permissions/*}")
@@ -778,6 +849,11 @@ func (c *permissionRESTClient) ListPermissions(ctx context.Context, req *generat
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/permissions", req.GetParent())
@@ -852,6 +928,11 @@ func (c *permissionRESTClient) UpdatePermission(ctx context.Context, req *genera
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPermission().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetPermission().GetName())
 
 	params := url.Values{}
@@ -913,6 +994,11 @@ func (c *permissionRESTClient) DeletePermission(ctx context.Context, req *genera
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
@@ -926,9 +1012,6 @@ func (c *permissionRESTClient) DeletePermission(ctx context.Context, req *genera
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.PermissionService/DeletePermission")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=tunedModels/*/permissions/*}")
@@ -963,6 +1046,11 @@ func (c *permissionRESTClient) TransferOwnership(ctx context.Context, req *gener
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:transferOwnership", req.GetName())
 
 	params := url.Values{}
@@ -976,9 +1064,6 @@ func (c *permissionRESTClient) TransferOwnership(ctx context.Context, req *gener
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.PermissionService/TransferOwnership")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=tunedModels/*}:transferOwnership")
@@ -1018,6 +1103,11 @@ func (c *permissionRESTClient) TransferOwnership(ctx context.Context, req *gener
 func (c *permissionRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -1085,6 +1175,11 @@ func (c *permissionRESTClient) ListOperations(ctx context.Context, req *longrunn
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/operations", req.GetName())

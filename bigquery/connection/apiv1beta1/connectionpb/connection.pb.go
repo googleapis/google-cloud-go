@@ -842,68 +842,68 @@ var File_google_cloud_bigquery_connection_v1beta1_connection_proto protoreflect.
 
 const file_google_cloud_bigquery_connection_v1beta1_connection_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/bigquery/connection/v1beta1/connection.proto\x12(google.cloud.bigquery.connection.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xe1\x01\n" +
-	"\x17CreateConnectionRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12(\n" +
-	"\rconnection_id\x18\x02 \x01(\tB\x03\xe0A\x01R\fconnectionId\x12Y\n" +
+	"9google/cloud/bigquery/connection/v1beta1/connection.proto\x12(google.cloud.bigquery.connection.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xe4\x01\n" +
+	"\x17CreateConnectionRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12)\n" +
+	"\rconnection_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\fconnectionId\x12Z\n" +
 	"\n" +
-	"connection\x18\x03 \x01(\v24.google.cloud.bigquery.connection.v1beta1.ConnectionB\x03\xe0A\x02R\n" +
-	"connection\"`\n" +
-	"\x14GetConnectionRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",bigqueryconnection.googleapis.com/ConnectionR\x04name\"\xbe\x01\n" +
-	"\x16ListConnectionsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12B\n" +
-	"\vmax_results\x18\x02 \x01(\v2\x1c.google.protobuf.UInt32ValueB\x03\xe0A\x02R\n" +
+	"connection\x18\x03 \x01(\v24.google.cloud.bigquery.connection.v1beta1.ConnectionB\x04\xe2A\x01\x02R\n" +
+	"connection\"a\n" +
+	"\x14GetConnectionRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",bigqueryconnection.googleapis.com/ConnectionR\x04name\"\xc0\x01\n" +
+	"\x16ListConnectionsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12C\n" +
+	"\vmax_results\x18\x02 \x01(\v2\x1c.google.protobuf.UInt32ValueB\x04\xe2A\x01\x02R\n" +
 	"maxResults\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x99\x01\n" +
 	"\x17ListConnectionsResponse\x12&\n" +
 	"\x0fnext_page_token\x18\x01 \x01(\tR\rnextPageToken\x12V\n" +
-	"\vconnections\x18\x02 \x03(\v24.google.cloud.bigquery.connection.v1beta1.ConnectionR\vconnections\"\x80\x02\n" +
-	"\x17UpdateConnectionRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",bigqueryconnection.googleapis.com/ConnectionR\x04name\x12Y\n" +
+	"\vconnections\x18\x02 \x03(\v24.google.cloud.bigquery.connection.v1beta1.ConnectionR\vconnections\"\x83\x02\n" +
+	"\x17UpdateConnectionRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",bigqueryconnection.googleapis.com/ConnectionR\x04name\x12Z\n" +
 	"\n" +
-	"connection\x18\x02 \x01(\v24.google.cloud.bigquery.connection.v1beta1.ConnectionB\x03\xe0A\x02R\n" +
-	"connection\x12@\n" +
-	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xa1\x01\n" +
-	"!UpdateConnectionCredentialRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12c\n" +
+	"connection\x18\x02 \x01(\v24.google.cloud.bigquery.connection.v1beta1.ConnectionB\x04\xe2A\x01\x02R\n" +
+	"connection\x12A\n" +
+	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xa3\x01\n" +
+	"!UpdateConnectionCredentialRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12d\n" +
 	"\n" +
-	"credential\x18\x02 \x01(\v2>.google.cloud.bigquery.connection.v1beta1.ConnectionCredentialB\x03\xe0A\x02R\n" +
-	"credential\"c\n" +
-	"\x17DeleteConnectionRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",bigqueryconnection.googleapis.com/ConnectionR\x04name\"\xd0\x03\n" +
+	"credential\x18\x02 \x01(\v2>.google.cloud.bigquery.connection.v1beta1.ConnectionCredentialB\x04\xe2A\x01\x02R\n" +
+	"credential\"d\n" +
+	"\x17DeleteConnectionRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",bigqueryconnection.googleapis.com/ConnectionR\x04name\"\xd3\x03\n" +
 	"\n" +
 	"Connection\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12#\n" +
 	"\rfriendly_name\x18\x02 \x01(\tR\ffriendlyName\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12[\n" +
-	"\tcloud_sql\x18\x04 \x01(\v2<.google.cloud.bigquery.connection.v1beta1.CloudSqlPropertiesH\x00R\bcloudSql\x12(\n" +
-	"\rcreation_time\x18\x05 \x01(\x03B\x03\xe0A\x03R\fcreationTime\x121\n" +
-	"\x12last_modified_time\x18\x06 \x01(\x03B\x03\xe0A\x03R\x10lastModifiedTime\x12*\n" +
-	"\x0ehas_credential\x18\a \x01(\bB\x03\xe0A\x03R\rhasCredential:s\xeaAp\n" +
+	"\tcloud_sql\x18\x04 \x01(\v2<.google.cloud.bigquery.connection.v1beta1.CloudSqlPropertiesH\x00R\bcloudSql\x12)\n" +
+	"\rcreation_time\x18\x05 \x01(\x03B\x04\xe2A\x01\x03R\fcreationTime\x122\n" +
+	"\x12last_modified_time\x18\x06 \x01(\x03B\x04\xe2A\x01\x03R\x10lastModifiedTime\x12+\n" +
+	"\x0ehas_credential\x18\a \x01(\bB\x04\xe2A\x01\x03R\rhasCredential:s\xeaAp\n" +
 	",bigqueryconnection.googleapis.com/Connection\x12@projects/{project}/locations/{location}/connections/{connection}B\f\n" +
 	"\n" +
 	"properties\"\x81\x01\n" +
 	"\x14ConnectionCredential\x12[\n" +
 	"\tcloud_sql\x18\x01 \x01(\v2<.google.cloud.bigquery.connection.v1beta1.CloudSqlCredentialH\x00R\bcloudSqlB\f\n" +
 	"\n" +
-	"credential\"\x8e\x03\n" +
+	"credential\"\x90\x03\n" +
 	"\x12CloudSqlProperties\x12\x1f\n" +
 	"\vinstance_id\x18\x01 \x01(\tR\n" +
 	"instanceId\x12\x1a\n" +
 	"\bdatabase\x18\x02 \x01(\tR\bdatabase\x12]\n" +
-	"\x04type\x18\x03 \x01(\x0e2I.google.cloud.bigquery.connection.v1beta1.CloudSqlProperties.DatabaseTypeR\x04type\x12a\n" +
+	"\x04type\x18\x03 \x01(\x0e2I.google.cloud.bigquery.connection.v1beta1.CloudSqlProperties.DatabaseTypeR\x04type\x12b\n" +
 	"\n" +
-	"credential\x18\x04 \x01(\v2<.google.cloud.bigquery.connection.v1beta1.CloudSqlCredentialB\x03\xe0A\x04R\n" +
-	"credential\x121\n" +
-	"\x12service_account_id\x18\x05 \x01(\tB\x03\xe0A\x03R\x10serviceAccountId\"F\n" +
+	"credential\x18\x04 \x01(\v2<.google.cloud.bigquery.connection.v1beta1.CloudSqlCredentialB\x04\xe2A\x01\x04R\n" +
+	"credential\x122\n" +
+	"\x12service_account_id\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x10serviceAccountId\"F\n" +
 	"\fDatabaseType\x12\x1d\n" +
 	"\x19DATABASE_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bPOSTGRES\x10\x01\x12\t\n" +

@@ -131,15 +131,15 @@ var File_google_ads_datamanager_v1_user_list_license_metrics_proto protoreflect.
 
 const file_google_ads_datamanager_v1_user_list_license_metrics_proto_rawDesc = "" +
 	"\n" +
-	"9google/ads/datamanager/v1/user_list_license_metrics.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xe5\x01\n" +
-	"\x16UserListLicenseMetrics\x12$\n" +
-	"\vclick_count\x18\x01 \x01(\x03B\x03\xe0A\x03R\n" +
-	"clickCount\x12.\n" +
-	"\x10impression_count\x18\x02 \x01(\x03B\x03\xe0A\x03R\x0fimpressionCount\x121\n" +
-	"\x12revenue_usd_micros\x18\x03 \x01(\x03B\x03\xe0A\x03R\x10revenueUsdMicros\x12\"\n" +
+	"9google/ads/datamanager/v1/user_list_license_metrics.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xea\x01\n" +
+	"\x16UserListLicenseMetrics\x12%\n" +
+	"\vclick_count\x18\x01 \x01(\x03B\x04\xe2A\x01\x03R\n" +
+	"clickCount\x12/\n" +
+	"\x10impression_count\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\x0fimpressionCount\x122\n" +
+	"\x12revenue_usd_micros\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\x10revenueUsdMicros\x12#\n" +
 	"\n" +
-	"start_date\x18\x04 \x01(\x03B\x03\xe0A\x03R\tstartDate\x12\x1e\n" +
-	"\bend_date\x18\x05 \x01(\x03B\x03\xe0A\x03R\aendDateB\xd8\x01\n" +
+	"start_date\x18\x04 \x01(\x03B\x04\xe2A\x01\x03R\tstartDate\x12\x1f\n" +
+	"\bend_date\x18\x05 \x01(\x03B\x04\xe2A\x01\x03R\aendDateB\xd8\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\x1bUserListLicenseMetricsProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 
 var (

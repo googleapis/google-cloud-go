@@ -3329,13 +3329,13 @@ const file_google_shopping_merchant_products_v1beta_products_common_proto_rawDes
 	"\acontent\x18\x02 \x01(\tH\x01R\acontent\x88\x01\x01B\x16\n" +
 	"\x14_digital_source_typeB\n" +
 	"\n" +
-	"\b_content\"F\n" +
-	"\x10ProductDimension\x12\x19\n" +
-	"\x05value\x18\x01 \x01(\x01B\x03\xe0A\x02R\x05value\x12\x17\n" +
-	"\x04unit\x18\x02 \x01(\tB\x03\xe0A\x02R\x04unit\"C\n" +
-	"\rProductWeight\x12\x19\n" +
-	"\x05value\x18\x01 \x01(\x01B\x03\xe0A\x02R\x05value\x12\x17\n" +
-	"\x04unit\x18\x02 \x01(\tB\x03\xe0A\x02R\x04unit\"\x90\n" +
+	"\b_content\"H\n" +
+	"\x10ProductDimension\x12\x1a\n" +
+	"\x05value\x18\x01 \x01(\x01B\x04\xe2A\x01\x02R\x05value\x12\x18\n" +
+	"\x04unit\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04unit\"E\n" +
+	"\rProductWeight\x12\x1a\n" +
+	"\x05value\x18\x01 \x01(\x01B\x04\xe2A\x01\x02R\x05value\x12\x18\n" +
+	"\x04unit\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04unit\"\x90\n" +
 	"\n" +
 	"\rProductStatus\x12|\n" +
 	"\x14destination_statuses\x18\x03 \x03(\v2I.google.shopping.merchant.products.v1beta.ProductStatus.DestinationStatusR\x13destinationStatuses\x12r\n" +

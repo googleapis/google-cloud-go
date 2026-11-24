@@ -936,6 +936,103 @@ func NewFirestoreAdminClient(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "firestore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/firestore/apiv1/admin",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "firestore.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateIndex = append(client.CallOptions.CreateIndex, gax.WithClientTracing(tracing))
+		client.CallOptions.ListIndexes = append(client.CallOptions.ListIndexes, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIndex = append(client.CallOptions.GetIndex, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteIndex = append(client.CallOptions.DeleteIndex, gax.WithClientTracing(tracing))
+		client.CallOptions.GetField = append(client.CallOptions.GetField, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateField = append(client.CallOptions.UpdateField, gax.WithClientTracing(tracing))
+		client.CallOptions.ListFields = append(client.CallOptions.ListFields, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportDocuments = append(client.CallOptions.ExportDocuments, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportDocuments = append(client.CallOptions.ImportDocuments, gax.WithClientTracing(tracing))
+		client.CallOptions.BulkDeleteDocuments = append(client.CallOptions.BulkDeleteDocuments, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateDatabase = append(client.CallOptions.CreateDatabase, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDatabase = append(client.CallOptions.GetDatabase, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDatabases = append(client.CallOptions.ListDatabases, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDatabase = append(client.CallOptions.UpdateDatabase, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDatabase = append(client.CallOptions.DeleteDatabase, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateUserCreds = append(client.CallOptions.CreateUserCreds, gax.WithClientTracing(tracing))
+		client.CallOptions.GetUserCreds = append(client.CallOptions.GetUserCreds, gax.WithClientTracing(tracing))
+		client.CallOptions.ListUserCreds = append(client.CallOptions.ListUserCreds, gax.WithClientTracing(tracing))
+		client.CallOptions.EnableUserCreds = append(client.CallOptions.EnableUserCreds, gax.WithClientTracing(tracing))
+		client.CallOptions.DisableUserCreds = append(client.CallOptions.DisableUserCreds, gax.WithClientTracing(tracing))
+		client.CallOptions.ResetUserPassword = append(client.CallOptions.ResetUserPassword, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteUserCreds = append(client.CallOptions.DeleteUserCreds, gax.WithClientTracing(tracing))
+		client.CallOptions.GetBackup = append(client.CallOptions.GetBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.ListBackups = append(client.CallOptions.ListBackups, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteBackup = append(client.CallOptions.DeleteBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.RestoreDatabase = append(client.CallOptions.RestoreDatabase, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateBackupSchedule = append(client.CallOptions.CreateBackupSchedule, gax.WithClientTracing(tracing))
+		client.CallOptions.GetBackupSchedule = append(client.CallOptions.GetBackupSchedule, gax.WithClientTracing(tracing))
+		client.CallOptions.ListBackupSchedules = append(client.CallOptions.ListBackupSchedules, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateBackupSchedule = append(client.CallOptions.UpdateBackupSchedule, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteBackupSchedule = append(client.CallOptions.DeleteBackupSchedule, gax.WithClientTracing(tracing))
+		client.CallOptions.CloneDatabase = append(client.CallOptions.CloneDatabase, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "firestore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/firestore/apiv1/admin",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "firestore.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateIndex = append(client.CallOptions.CreateIndex, gax.WithClientLogging(logging))
+		client.CallOptions.ListIndexes = append(client.CallOptions.ListIndexes, gax.WithClientLogging(logging))
+		client.CallOptions.GetIndex = append(client.CallOptions.GetIndex, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteIndex = append(client.CallOptions.DeleteIndex, gax.WithClientLogging(logging))
+		client.CallOptions.GetField = append(client.CallOptions.GetField, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateField = append(client.CallOptions.UpdateField, gax.WithClientLogging(logging))
+		client.CallOptions.ListFields = append(client.CallOptions.ListFields, gax.WithClientLogging(logging))
+		client.CallOptions.ExportDocuments = append(client.CallOptions.ExportDocuments, gax.WithClientLogging(logging))
+		client.CallOptions.ImportDocuments = append(client.CallOptions.ImportDocuments, gax.WithClientLogging(logging))
+		client.CallOptions.BulkDeleteDocuments = append(client.CallOptions.BulkDeleteDocuments, gax.WithClientLogging(logging))
+		client.CallOptions.CreateDatabase = append(client.CallOptions.CreateDatabase, gax.WithClientLogging(logging))
+		client.CallOptions.GetDatabase = append(client.CallOptions.GetDatabase, gax.WithClientLogging(logging))
+		client.CallOptions.ListDatabases = append(client.CallOptions.ListDatabases, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDatabase = append(client.CallOptions.UpdateDatabase, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDatabase = append(client.CallOptions.DeleteDatabase, gax.WithClientLogging(logging))
+		client.CallOptions.CreateUserCreds = append(client.CallOptions.CreateUserCreds, gax.WithClientLogging(logging))
+		client.CallOptions.GetUserCreds = append(client.CallOptions.GetUserCreds, gax.WithClientLogging(logging))
+		client.CallOptions.ListUserCreds = append(client.CallOptions.ListUserCreds, gax.WithClientLogging(logging))
+		client.CallOptions.EnableUserCreds = append(client.CallOptions.EnableUserCreds, gax.WithClientLogging(logging))
+		client.CallOptions.DisableUserCreds = append(client.CallOptions.DisableUserCreds, gax.WithClientLogging(logging))
+		client.CallOptions.ResetUserPassword = append(client.CallOptions.ResetUserPassword, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteUserCreds = append(client.CallOptions.DeleteUserCreds, gax.WithClientLogging(logging))
+		client.CallOptions.GetBackup = append(client.CallOptions.GetBackup, gax.WithClientLogging(logging))
+		client.CallOptions.ListBackups = append(client.CallOptions.ListBackups, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteBackup = append(client.CallOptions.DeleteBackup, gax.WithClientLogging(logging))
+		client.CallOptions.RestoreDatabase = append(client.CallOptions.RestoreDatabase, gax.WithClientLogging(logging))
+		client.CallOptions.CreateBackupSchedule = append(client.CallOptions.CreateBackupSchedule, gax.WithClientLogging(logging))
+		client.CallOptions.GetBackupSchedule = append(client.CallOptions.GetBackupSchedule, gax.WithClientLogging(logging))
+		client.CallOptions.ListBackupSchedules = append(client.CallOptions.ListBackupSchedules, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateBackupSchedule = append(client.CallOptions.UpdateBackupSchedule, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteBackupSchedule = append(client.CallOptions.DeleteBackupSchedule, gax.WithClientLogging(logging))
+		client.CallOptions.CloneDatabase = append(client.CallOptions.CloneDatabase, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1105,6 +1202,103 @@ func NewFirestoreAdminRESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "firestore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/firestore/apiv1/admin",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "firestore.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateIndex = append(callOpts.CreateIndex, gax.WithClientTracing(tracing))
+		callOpts.ListIndexes = append(callOpts.ListIndexes, gax.WithClientTracing(tracing))
+		callOpts.GetIndex = append(callOpts.GetIndex, gax.WithClientTracing(tracing))
+		callOpts.DeleteIndex = append(callOpts.DeleteIndex, gax.WithClientTracing(tracing))
+		callOpts.GetField = append(callOpts.GetField, gax.WithClientTracing(tracing))
+		callOpts.UpdateField = append(callOpts.UpdateField, gax.WithClientTracing(tracing))
+		callOpts.ListFields = append(callOpts.ListFields, gax.WithClientTracing(tracing))
+		callOpts.ExportDocuments = append(callOpts.ExportDocuments, gax.WithClientTracing(tracing))
+		callOpts.ImportDocuments = append(callOpts.ImportDocuments, gax.WithClientTracing(tracing))
+		callOpts.BulkDeleteDocuments = append(callOpts.BulkDeleteDocuments, gax.WithClientTracing(tracing))
+		callOpts.CreateDatabase = append(callOpts.CreateDatabase, gax.WithClientTracing(tracing))
+		callOpts.GetDatabase = append(callOpts.GetDatabase, gax.WithClientTracing(tracing))
+		callOpts.ListDatabases = append(callOpts.ListDatabases, gax.WithClientTracing(tracing))
+		callOpts.UpdateDatabase = append(callOpts.UpdateDatabase, gax.WithClientTracing(tracing))
+		callOpts.DeleteDatabase = append(callOpts.DeleteDatabase, gax.WithClientTracing(tracing))
+		callOpts.CreateUserCreds = append(callOpts.CreateUserCreds, gax.WithClientTracing(tracing))
+		callOpts.GetUserCreds = append(callOpts.GetUserCreds, gax.WithClientTracing(tracing))
+		callOpts.ListUserCreds = append(callOpts.ListUserCreds, gax.WithClientTracing(tracing))
+		callOpts.EnableUserCreds = append(callOpts.EnableUserCreds, gax.WithClientTracing(tracing))
+		callOpts.DisableUserCreds = append(callOpts.DisableUserCreds, gax.WithClientTracing(tracing))
+		callOpts.ResetUserPassword = append(callOpts.ResetUserPassword, gax.WithClientTracing(tracing))
+		callOpts.DeleteUserCreds = append(callOpts.DeleteUserCreds, gax.WithClientTracing(tracing))
+		callOpts.GetBackup = append(callOpts.GetBackup, gax.WithClientTracing(tracing))
+		callOpts.ListBackups = append(callOpts.ListBackups, gax.WithClientTracing(tracing))
+		callOpts.DeleteBackup = append(callOpts.DeleteBackup, gax.WithClientTracing(tracing))
+		callOpts.RestoreDatabase = append(callOpts.RestoreDatabase, gax.WithClientTracing(tracing))
+		callOpts.CreateBackupSchedule = append(callOpts.CreateBackupSchedule, gax.WithClientTracing(tracing))
+		callOpts.GetBackupSchedule = append(callOpts.GetBackupSchedule, gax.WithClientTracing(tracing))
+		callOpts.ListBackupSchedules = append(callOpts.ListBackupSchedules, gax.WithClientTracing(tracing))
+		callOpts.UpdateBackupSchedule = append(callOpts.UpdateBackupSchedule, gax.WithClientTracing(tracing))
+		callOpts.DeleteBackupSchedule = append(callOpts.DeleteBackupSchedule, gax.WithClientTracing(tracing))
+		callOpts.CloneDatabase = append(callOpts.CloneDatabase, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "firestore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/firestore/apiv1/admin",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "firestore.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateIndex = append(callOpts.CreateIndex, gax.WithClientLogging(logging))
+		callOpts.ListIndexes = append(callOpts.ListIndexes, gax.WithClientLogging(logging))
+		callOpts.GetIndex = append(callOpts.GetIndex, gax.WithClientLogging(logging))
+		callOpts.DeleteIndex = append(callOpts.DeleteIndex, gax.WithClientLogging(logging))
+		callOpts.GetField = append(callOpts.GetField, gax.WithClientLogging(logging))
+		callOpts.UpdateField = append(callOpts.UpdateField, gax.WithClientLogging(logging))
+		callOpts.ListFields = append(callOpts.ListFields, gax.WithClientLogging(logging))
+		callOpts.ExportDocuments = append(callOpts.ExportDocuments, gax.WithClientLogging(logging))
+		callOpts.ImportDocuments = append(callOpts.ImportDocuments, gax.WithClientLogging(logging))
+		callOpts.BulkDeleteDocuments = append(callOpts.BulkDeleteDocuments, gax.WithClientLogging(logging))
+		callOpts.CreateDatabase = append(callOpts.CreateDatabase, gax.WithClientLogging(logging))
+		callOpts.GetDatabase = append(callOpts.GetDatabase, gax.WithClientLogging(logging))
+		callOpts.ListDatabases = append(callOpts.ListDatabases, gax.WithClientLogging(logging))
+		callOpts.UpdateDatabase = append(callOpts.UpdateDatabase, gax.WithClientLogging(logging))
+		callOpts.DeleteDatabase = append(callOpts.DeleteDatabase, gax.WithClientLogging(logging))
+		callOpts.CreateUserCreds = append(callOpts.CreateUserCreds, gax.WithClientLogging(logging))
+		callOpts.GetUserCreds = append(callOpts.GetUserCreds, gax.WithClientLogging(logging))
+		callOpts.ListUserCreds = append(callOpts.ListUserCreds, gax.WithClientLogging(logging))
+		callOpts.EnableUserCreds = append(callOpts.EnableUserCreds, gax.WithClientLogging(logging))
+		callOpts.DisableUserCreds = append(callOpts.DisableUserCreds, gax.WithClientLogging(logging))
+		callOpts.ResetUserPassword = append(callOpts.ResetUserPassword, gax.WithClientLogging(logging))
+		callOpts.DeleteUserCreds = append(callOpts.DeleteUserCreds, gax.WithClientLogging(logging))
+		callOpts.GetBackup = append(callOpts.GetBackup, gax.WithClientLogging(logging))
+		callOpts.ListBackups = append(callOpts.ListBackups, gax.WithClientLogging(logging))
+		callOpts.DeleteBackup = append(callOpts.DeleteBackup, gax.WithClientLogging(logging))
+		callOpts.RestoreDatabase = append(callOpts.RestoreDatabase, gax.WithClientLogging(logging))
+		callOpts.CreateBackupSchedule = append(callOpts.CreateBackupSchedule, gax.WithClientLogging(logging))
+		callOpts.GetBackupSchedule = append(callOpts.GetBackupSchedule, gax.WithClientLogging(logging))
+		callOpts.ListBackupSchedules = append(callOpts.ListBackupSchedules, gax.WithClientLogging(logging))
+		callOpts.UpdateBackupSchedule = append(callOpts.UpdateBackupSchedule, gax.WithClientLogging(logging))
+		callOpts.DeleteBackupSchedule = append(callOpts.DeleteBackupSchedule, gax.WithClientLogging(logging))
+		callOpts.CloneDatabase = append(callOpts.CloneDatabase, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1161,9 +1355,6 @@ func (c *firestoreAdminGRPCClient) CreateIndex(ctx context.Context, req *adminpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/CreateIndex")
 	}
@@ -1191,9 +1382,6 @@ func (c *firestoreAdminGRPCClient) ListIndexes(ctx context.Context, req *adminpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/ListIndexes")
 	}
@@ -1243,9 +1431,6 @@ func (c *firestoreAdminGRPCClient) GetIndex(ctx context.Context, req *adminpb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/GetIndex")
 	}
@@ -1267,9 +1452,6 @@ func (c *firestoreAdminGRPCClient) DeleteIndex(ctx context.Context, req *adminpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/DeleteIndex")
 	}
@@ -1287,9 +1469,6 @@ func (c *firestoreAdminGRPCClient) GetField(ctx context.Context, req *adminpb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/GetField")
 	}
@@ -1338,9 +1517,6 @@ func (c *firestoreAdminGRPCClient) ListFields(ctx context.Context, req *adminpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/ListFields")
 	}
@@ -1390,9 +1566,6 @@ func (c *firestoreAdminGRPCClient) ExportDocuments(ctx context.Context, req *adm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/ExportDocuments")
 	}
@@ -1420,9 +1593,6 @@ func (c *firestoreAdminGRPCClient) ImportDocuments(ctx context.Context, req *adm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/ImportDocuments")
 	}
@@ -1450,9 +1620,6 @@ func (c *firestoreAdminGRPCClient) BulkDeleteDocuments(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/BulkDeleteDocuments")
 	}
@@ -1480,9 +1647,6 @@ func (c *firestoreAdminGRPCClient) CreateDatabase(ctx context.Context, req *admi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/CreateDatabase")
 	}
@@ -1510,9 +1674,6 @@ func (c *firestoreAdminGRPCClient) GetDatabase(ctx context.Context, req *adminpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/GetDatabase")
 	}
@@ -1534,9 +1695,6 @@ func (c *firestoreAdminGRPCClient) ListDatabases(ctx context.Context, req *admin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/ListDatabases")
 	}
@@ -1585,9 +1743,6 @@ func (c *firestoreAdminGRPCClient) DeleteDatabase(ctx context.Context, req *admi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/DeleteDatabase")
 	}
@@ -1615,9 +1770,6 @@ func (c *firestoreAdminGRPCClient) CreateUserCreds(ctx context.Context, req *adm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/CreateUserCreds")
 	}
@@ -1639,9 +1791,6 @@ func (c *firestoreAdminGRPCClient) GetUserCreds(ctx context.Context, req *adminp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/GetUserCreds")
 	}
@@ -1663,9 +1812,6 @@ func (c *firestoreAdminGRPCClient) ListUserCreds(ctx context.Context, req *admin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/ListUserCreds")
 	}
@@ -1687,9 +1833,6 @@ func (c *firestoreAdminGRPCClient) EnableUserCreds(ctx context.Context, req *adm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/EnableUserCreds")
 	}
@@ -1711,9 +1854,6 @@ func (c *firestoreAdminGRPCClient) DisableUserCreds(ctx context.Context, req *ad
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/DisableUserCreds")
 	}
@@ -1735,9 +1875,6 @@ func (c *firestoreAdminGRPCClient) ResetUserPassword(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/ResetUserPassword")
 	}
@@ -1759,9 +1896,6 @@ func (c *firestoreAdminGRPCClient) DeleteUserCreds(ctx context.Context, req *adm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/DeleteUserCreds")
 	}
@@ -1779,9 +1913,6 @@ func (c *firestoreAdminGRPCClient) GetBackup(ctx context.Context, req *adminpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/GetBackup")
 	}
@@ -1803,9 +1934,6 @@ func (c *firestoreAdminGRPCClient) ListBackups(ctx context.Context, req *adminpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/ListBackups")
 	}
@@ -1827,9 +1955,6 @@ func (c *firestoreAdminGRPCClient) DeleteBackup(ctx context.Context, req *adminp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/DeleteBackup")
 	}
@@ -1847,9 +1972,6 @@ func (c *firestoreAdminGRPCClient) RestoreDatabase(ctx context.Context, req *adm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/RestoreDatabase")
 	}
@@ -1877,9 +1999,6 @@ func (c *firestoreAdminGRPCClient) CreateBackupSchedule(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/CreateBackupSchedule")
 	}
@@ -1901,9 +2020,6 @@ func (c *firestoreAdminGRPCClient) GetBackupSchedule(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/GetBackupSchedule")
 	}
@@ -1925,9 +2041,6 @@ func (c *firestoreAdminGRPCClient) ListBackupSchedules(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/ListBackupSchedules")
 	}
@@ -1970,9 +2083,6 @@ func (c *firestoreAdminGRPCClient) DeleteBackupSchedule(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/DeleteBackupSchedule")
 	}
@@ -2007,9 +2117,6 @@ func (c *firestoreAdminGRPCClient) CloneDatabase(ctx context.Context, req *admin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/CloneDatabase")
 	}
@@ -2153,6 +2260,11 @@ func (c *firestoreAdminRESTClient) CreateIndex(ctx context.Context, req *adminpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/indexes", req.GetParent())
 
 	params := url.Values{}
@@ -2166,9 +2278,6 @@ func (c *firestoreAdminRESTClient) CreateIndex(ctx context.Context, req *adminpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/CreateIndex")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/databases/*/collectionGroups/*}/indexes")
@@ -2228,6 +2337,11 @@ func (c *firestoreAdminRESTClient) ListIndexes(ctx context.Context, req *adminpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/indexes", req.GetParent())
@@ -2298,6 +2412,11 @@ func (c *firestoreAdminRESTClient) GetIndex(ctx context.Context, req *adminpb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2311,9 +2430,6 @@ func (c *firestoreAdminRESTClient) GetIndex(ctx context.Context, req *adminpb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/GetIndex")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/databases/*/collectionGroups/*/indexes/*}")
@@ -2355,6 +2471,11 @@ func (c *firestoreAdminRESTClient) DeleteIndex(ctx context.Context, req *adminpb
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2368,9 +2489,6 @@ func (c *firestoreAdminRESTClient) DeleteIndex(ctx context.Context, req *adminpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/DeleteIndex")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/databases/*/collectionGroups/*/indexes/*}")
@@ -2397,6 +2515,11 @@ func (c *firestoreAdminRESTClient) GetField(ctx context.Context, req *adminpb.Ge
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2410,9 +2533,6 @@ func (c *firestoreAdminRESTClient) GetField(ctx context.Context, req *adminpb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/GetField")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/databases/*/collectionGroups/*/fields/*}")
@@ -2473,6 +2593,11 @@ func (c *firestoreAdminRESTClient) UpdateField(ctx context.Context, req *adminpb
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetField().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetField().GetName())
@@ -2564,6 +2689,11 @@ func (c *firestoreAdminRESTClient) ListFields(ctx context.Context, req *adminpb.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/fields", req.GetParent())
 
 		params := url.Values{}
@@ -2648,6 +2778,11 @@ func (c *firestoreAdminRESTClient) ExportDocuments(ctx context.Context, req *adm
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:exportDocuments", req.GetName())
 
 	params := url.Values{}
@@ -2661,9 +2796,6 @@ func (c *firestoreAdminRESTClient) ExportDocuments(ctx context.Context, req *adm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/ExportDocuments")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/databases/*}:exportDocuments")
@@ -2722,6 +2854,11 @@ func (c *firestoreAdminRESTClient) ImportDocuments(ctx context.Context, req *adm
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:importDocuments", req.GetName())
 
 	params := url.Values{}
@@ -2735,9 +2872,6 @@ func (c *firestoreAdminRESTClient) ImportDocuments(ctx context.Context, req *adm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/ImportDocuments")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/databases/*}:importDocuments")
@@ -2799,6 +2933,11 @@ func (c *firestoreAdminRESTClient) BulkDeleteDocuments(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:bulkDeleteDocuments", req.GetName())
 
 	params := url.Values{}
@@ -2812,9 +2951,6 @@ func (c *firestoreAdminRESTClient) BulkDeleteDocuments(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/BulkDeleteDocuments")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/databases/*}:bulkDeleteDocuments")
@@ -2870,6 +3006,11 @@ func (c *firestoreAdminRESTClient) CreateDatabase(ctx context.Context, req *admi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/databases", req.GetParent())
 
 	params := url.Values{}
@@ -2884,9 +3025,6 @@ func (c *firestoreAdminRESTClient) CreateDatabase(ctx context.Context, req *admi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/CreateDatabase")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*}/databases")
@@ -2935,6 +3073,11 @@ func (c *firestoreAdminRESTClient) GetDatabase(ctx context.Context, req *adminpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2948,9 +3091,6 @@ func (c *firestoreAdminRESTClient) GetDatabase(ctx context.Context, req *adminpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/GetDatabase")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/databases/*}")
@@ -2992,6 +3132,11 @@ func (c *firestoreAdminRESTClient) ListDatabases(ctx context.Context, req *admin
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/databases", req.GetParent())
 
 	params := url.Values{}
@@ -3008,9 +3153,6 @@ func (c *firestoreAdminRESTClient) ListDatabases(ctx context.Context, req *admin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/ListDatabases")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*}/databases")
@@ -3057,6 +3199,11 @@ func (c *firestoreAdminRESTClient) UpdateDatabase(ctx context.Context, req *admi
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDatabase().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDatabase().GetName())
@@ -3127,6 +3274,11 @@ func (c *firestoreAdminRESTClient) DeleteDatabase(ctx context.Context, req *admi
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3143,9 +3295,6 @@ func (c *firestoreAdminRESTClient) DeleteDatabase(ctx context.Context, req *admi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/DeleteDatabase")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/databases/*}")
@@ -3201,6 +3350,11 @@ func (c *firestoreAdminRESTClient) CreateUserCreds(ctx context.Context, req *adm
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/userCreds", req.GetParent())
 
 	params := url.Values{}
@@ -3215,9 +3369,6 @@ func (c *firestoreAdminRESTClient) CreateUserCreds(ctx context.Context, req *adm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/CreateUserCreds")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/databases/*}/userCreds")
@@ -3260,6 +3411,11 @@ func (c *firestoreAdminRESTClient) GetUserCreds(ctx context.Context, req *adminp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3273,9 +3429,6 @@ func (c *firestoreAdminRESTClient) GetUserCreds(ctx context.Context, req *adminp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/GetUserCreds")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/databases/*/userCreds/*}")
@@ -3318,6 +3471,11 @@ func (c *firestoreAdminRESTClient) ListUserCreds(ctx context.Context, req *admin
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/userCreds", req.GetParent())
 
 	params := url.Values{}
@@ -3331,9 +3489,6 @@ func (c *firestoreAdminRESTClient) ListUserCreds(ctx context.Context, req *admin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/ListUserCreds")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/databases/*}/userCreds")
@@ -3381,6 +3536,11 @@ func (c *firestoreAdminRESTClient) EnableUserCreds(ctx context.Context, req *adm
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:enable", req.GetName())
 
 	params := url.Values{}
@@ -3394,9 +3554,6 @@ func (c *firestoreAdminRESTClient) EnableUserCreds(ctx context.Context, req *adm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/EnableUserCreds")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/databases/*/userCreds/*}:enable")
@@ -3444,6 +3601,11 @@ func (c *firestoreAdminRESTClient) DisableUserCreds(ctx context.Context, req *ad
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:disable", req.GetName())
 
 	params := url.Values{}
@@ -3457,9 +3619,6 @@ func (c *firestoreAdminRESTClient) DisableUserCreds(ctx context.Context, req *ad
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/DisableUserCreds")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/databases/*/userCreds/*}:disable")
@@ -3507,6 +3666,11 @@ func (c *firestoreAdminRESTClient) ResetUserPassword(ctx context.Context, req *a
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:resetPassword", req.GetName())
 
 	params := url.Values{}
@@ -3520,9 +3684,6 @@ func (c *firestoreAdminRESTClient) ResetUserPassword(ctx context.Context, req *a
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/ResetUserPassword")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/databases/*/userCreds/*}:resetPassword")
@@ -3564,6 +3725,11 @@ func (c *firestoreAdminRESTClient) DeleteUserCreds(ctx context.Context, req *adm
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3577,9 +3743,6 @@ func (c *firestoreAdminRESTClient) DeleteUserCreds(ctx context.Context, req *adm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/DeleteUserCreds")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/databases/*/userCreds/*}")
@@ -3606,6 +3769,11 @@ func (c *firestoreAdminRESTClient) GetBackup(ctx context.Context, req *adminpb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3619,9 +3787,6 @@ func (c *firestoreAdminRESTClient) GetBackup(ctx context.Context, req *adminpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/GetBackup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backups/*}")
@@ -3663,6 +3828,11 @@ func (c *firestoreAdminRESTClient) ListBackups(ctx context.Context, req *adminpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/backups", req.GetParent())
 
 	params := url.Values{}
@@ -3679,9 +3849,6 @@ func (c *firestoreAdminRESTClient) ListBackups(ctx context.Context, req *adminpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/ListBackups")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/backups")
@@ -3723,6 +3890,11 @@ func (c *firestoreAdminRESTClient) DeleteBackup(ctx context.Context, req *adminp
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3736,9 +3908,6 @@ func (c *firestoreAdminRESTClient) DeleteBackup(ctx context.Context, req *adminp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/DeleteBackup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backups/*}")
@@ -3787,6 +3956,11 @@ func (c *firestoreAdminRESTClient) RestoreDatabase(ctx context.Context, req *adm
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/databases:restore", req.GetParent())
 
 	params := url.Values{}
@@ -3800,9 +3974,6 @@ func (c *firestoreAdminRESTClient) RestoreDatabase(ctx context.Context, req *adm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/RestoreDatabase")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*}/databases:restore")
@@ -3860,6 +4031,11 @@ func (c *firestoreAdminRESTClient) CreateBackupSchedule(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/backupSchedules", req.GetParent())
 
 	params := url.Values{}
@@ -3873,9 +4049,6 @@ func (c *firestoreAdminRESTClient) CreateBackupSchedule(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/CreateBackupSchedule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/databases/*}/backupSchedules")
@@ -3917,6 +4090,11 @@ func (c *firestoreAdminRESTClient) GetBackupSchedule(ctx context.Context, req *a
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3930,9 +4108,6 @@ func (c *firestoreAdminRESTClient) GetBackupSchedule(ctx context.Context, req *a
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/GetBackupSchedule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/databases/*/backupSchedules/*}")
@@ -3974,6 +4149,11 @@ func (c *firestoreAdminRESTClient) ListBackupSchedules(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/backupSchedules", req.GetParent())
 
 	params := url.Values{}
@@ -3987,9 +4167,6 @@ func (c *firestoreAdminRESTClient) ListBackupSchedules(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/ListBackupSchedules")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/databases/*}/backupSchedules")
@@ -4036,6 +4213,11 @@ func (c *firestoreAdminRESTClient) UpdateBackupSchedule(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetBackupSchedule().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetBackupSchedule().GetName())
@@ -4099,6 +4281,11 @@ func (c *firestoreAdminRESTClient) DeleteBackupSchedule(ctx context.Context, req
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4112,9 +4299,6 @@ func (c *firestoreAdminRESTClient) DeleteBackupSchedule(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/DeleteBackupSchedule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/databases/*/backupSchedules/*}")
@@ -4163,6 +4347,11 @@ func (c *firestoreAdminRESTClient) CloneDatabase(ctx context.Context, req *admin
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/databases:clone", req.GetParent())
 
 	params := url.Values{}
@@ -4193,9 +4382,6 @@ func (c *firestoreAdminRESTClient) CloneDatabase(ctx context.Context, req *admin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//firestore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.admin.v1.FirestoreAdmin/CloneDatabase")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*}/databases:clone")
@@ -4250,6 +4436,11 @@ func (c *firestoreAdminRESTClient) CancelOperation(ctx context.Context, req *lon
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -4289,6 +4480,11 @@ func (c *firestoreAdminRESTClient) DeleteOperation(ctx context.Context, req *lon
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4326,6 +4522,11 @@ func (c *firestoreAdminRESTClient) DeleteOperation(ctx context.Context, req *lon
 func (c *firestoreAdminRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -4393,6 +4594,11 @@ func (c *firestoreAdminRESTClient) ListOperations(ctx context.Context, req *long
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

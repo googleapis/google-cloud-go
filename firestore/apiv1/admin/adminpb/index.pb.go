@@ -1235,21 +1235,21 @@ var File_google_firestore_admin_v1_index_proto protoreflect.FileDescriptor
 
 const file_google_firestore_admin_v1_index_proto_rawDesc = "" +
 	"\n" +
-	"%google/firestore/admin/v1/index.proto\x12\x19google.firestore.admin.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xa4\x15\n" +
+	"%google/firestore/admin/v1/index.proto\x12\x19google.firestore.admin.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xb2\x15\n" +
 	"\x05Index\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12L\n" +
 	"\vquery_scope\x18\x02 \x01(\x0e2+.google.firestore.admin.v1.Index.QueryScopeR\n" +
 	"queryScope\x12F\n" +
 	"\tapi_scope\x18\x05 \x01(\x0e2).google.firestore.admin.v1.Index.ApiScopeR\bapiScope\x12C\n" +
 	"\x06fields\x18\x03 \x03(\v2+.google.firestore.admin.v1.Index.IndexFieldR\x06fields\x12<\n" +
-	"\x05state\x18\x04 \x01(\x0e2&.google.firestore.admin.v1.Index.StateR\x05state\x12G\n" +
-	"\adensity\x18\x06 \x01(\x0e2(.google.firestore.admin.v1.Index.DensityB\x03\xe0A\x05R\adensity\x12\x1f\n" +
-	"\bmultikey\x18\a \x01(\bB\x03\xe0A\x01R\bmultikey\x12$\n" +
-	"\vshard_count\x18\b \x01(\x05B\x03\xe0A\x01R\n" +
-	"shardCount\x12\x1b\n" +
+	"\x05state\x18\x04 \x01(\x0e2&.google.firestore.admin.v1.Index.StateR\x05state\x12H\n" +
+	"\adensity\x18\x06 \x01(\x0e2(.google.firestore.admin.v1.Index.DensityB\x04\xe2A\x01\x05R\adensity\x12 \n" +
+	"\bmultikey\x18\a \x01(\bB\x04\xe2A\x01\x01R\bmultikey\x12%\n" +
+	"\vshard_count\x18\b \x01(\x05B\x04\xe2A\x01\x01R\n" +
+	"shardCount\x12\x1c\n" +
 	"\x06unique\x18\n" +
-	" \x01(\bB\x03\xe0A\x01R\x06unique\x12j\n" +
-	"\x14search_index_options\x18\t \x01(\v23.google.firestore.admin.v1.Index.SearchIndexOptionsB\x03\xe0A\x01R\x12searchIndexOptions\x1a\xf6\v\n" +
+	" \x01(\bB\x04\xe2A\x01\x01R\x06unique\x12k\n" +
+	"\x14search_index_options\x18\t \x01(\v23.google.firestore.admin.v1.Index.SearchIndexOptionsB\x04\xe2A\x01\x01R\x12searchIndexOptions\x1a\xfd\v\n" +
 	"\n" +
 	"IndexField\x12\x1d\n" +
 	"\n" +
@@ -1257,25 +1257,25 @@ const file_google_firestore_admin_v1_index_proto_rawDesc = "" +
 	"\x05order\x18\x02 \x01(\x0e21.google.firestore.admin.v1.Index.IndexField.OrderH\x00R\x05order\x12\\\n" +
 	"\farray_config\x18\x03 \x01(\x0e27.google.firestore.admin.v1.Index.IndexField.ArrayConfigH\x00R\varrayConfig\x12_\n" +
 	"\rvector_config\x18\x04 \x01(\v28.google.firestore.admin.v1.Index.IndexField.VectorConfigH\x00R\fvectorConfig\x12_\n" +
-	"\rsearch_config\x18\x05 \x01(\v28.google.firestore.admin.v1.Index.IndexField.SearchConfigH\x00R\fsearchConfig\x1a\xa0\x01\n" +
-	"\fVectorConfig\x12!\n" +
-	"\tdimension\x18\x01 \x01(\x05B\x03\xe0A\x02R\tdimension\x12X\n" +
+	"\rsearch_config\x18\x05 \x01(\v28.google.firestore.admin.v1.Index.IndexField.SearchConfigH\x00R\fsearchConfig\x1a\xa1\x01\n" +
+	"\fVectorConfig\x12\"\n" +
+	"\tdimension\x18\x01 \x01(\x05B\x04\xe2A\x01\x02R\tdimension\x12X\n" +
 	"\x04flat\x18\x02 \x01(\v2B.google.firestore.admin.v1.Index.IndexField.VectorConfig.FlatIndexH\x00R\x04flat\x1a\v\n" +
 	"\tFlatIndexB\x06\n" +
-	"\x04type\x1a\xb2\x06\n" +
-	"\fSearchConfig\x12i\n" +
-	"\ttext_spec\x18\x01 \x01(\v2G.google.firestore.admin.v1.Index.IndexField.SearchConfig.SearchTextSpecB\x03\xe0A\x01R\btextSpec\x12f\n" +
-	"\bgeo_spec\x18\x02 \x01(\v2F.google.firestore.admin.v1.Index.IndexField.SearchConfig.SearchGeoSpecB\x03\xe0A\x01R\ageoSpec\x1a\xed\x01\n" +
-	"\x13SearchTextIndexSpec\x12j\n" +
+	"\x04type\x1a\xb8\x06\n" +
+	"\fSearchConfig\x12j\n" +
+	"\ttext_spec\x18\x01 \x01(\v2G.google.firestore.admin.v1.Index.IndexField.SearchConfig.SearchTextSpecB\x04\xe2A\x01\x01R\btextSpec\x12g\n" +
+	"\bgeo_spec\x18\x02 \x01(\v2F.google.firestore.admin.v1.Index.IndexField.SearchConfig.SearchGeoSpecB\x04\xe2A\x01\x01R\ageoSpec\x1a\xef\x01\n" +
+	"\x13SearchTextIndexSpec\x12k\n" +
 	"\n" +
-	"index_type\x18\x01 \x01(\x0e2F.google.firestore.admin.v1.Index.IndexField.SearchConfig.TextIndexTypeB\x03\xe0A\x02R\tindexType\x12j\n" +
+	"index_type\x18\x01 \x01(\x0e2F.google.firestore.admin.v1.Index.IndexField.SearchConfig.TextIndexTypeB\x04\xe2A\x01\x02R\tindexType\x12k\n" +
 	"\n" +
-	"match_type\x18\x02 \x01(\x0e2F.google.firestore.admin.v1.Index.IndexField.SearchConfig.TextMatchTypeB\x03\xe0A\x02R\tmatchType\x1a\x84\x01\n" +
-	"\x0eSearchTextSpec\x12r\n" +
-	"\vindex_specs\x18\x01 \x03(\v2L.google.firestore.admin.v1.Index.IndexField.SearchConfig.SearchTextIndexSpecB\x03\xe0A\x02R\n" +
-	"indexSpecs\x1aQ\n" +
-	"\rSearchGeoSpec\x12@\n" +
-	"\x1ageo_json_indexing_disabled\x18\x01 \x01(\bB\x03\xe0A\x01R\x17geoJsonIndexingDisabled\"?\n" +
+	"match_type\x18\x02 \x01(\x0e2F.google.firestore.admin.v1.Index.IndexField.SearchConfig.TextMatchTypeB\x04\xe2A\x01\x02R\tmatchType\x1a\x85\x01\n" +
+	"\x0eSearchTextSpec\x12s\n" +
+	"\vindex_specs\x18\x01 \x03(\v2L.google.firestore.admin.v1.Index.IndexField.SearchConfig.SearchTextIndexSpecB\x04\xe2A\x01\x02R\n" +
+	"indexSpecs\x1aR\n" +
+	"\rSearchGeoSpec\x12A\n" +
+	"\x1ageo_json_indexing_disabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x17geoJsonIndexingDisabled\"?\n" +
 	"\rTextIndexType\x12\x1f\n" +
 	"\x1bTEXT_INDEX_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tTOKENIZED\x10\x01\"D\n" +
@@ -1291,10 +1291,10 @@ const file_google_firestore_admin_v1_index_proto_rawDesc = "" +
 	"\x18ARRAY_CONFIG_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCONTAINS\x10\x01B\f\n" +
 	"\n" +
-	"value_mode\x1a\x8d\x01\n" +
-	"\x12SearchIndexOptions\x12(\n" +
-	"\rtext_language\x18\x01 \x01(\tB\x03\xe0A\x01R\ftextLanguage\x12M\n" +
-	"!text_language_override_field_path\x18\x02 \x01(\tB\x03\xe0A\x01R\x1dtextLanguageOverrideFieldPath\"i\n" +
+	"value_mode\x1a\x8f\x01\n" +
+	"\x12SearchIndexOptions\x12)\n" +
+	"\rtext_language\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\ftextLanguage\x12N\n" +
+	"!text_language_override_field_path\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x1dtextLanguageOverrideFieldPath\"i\n" +
 	"\n" +
 	"QueryScope\x12\x1b\n" +
 	"\x17QUERY_SCOPE_UNSPECIFIED\x10\x00\x12\x0e\n" +

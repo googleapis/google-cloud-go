@@ -463,6 +463,55 @@ func NewSaasRolloutsClient(ctx context.Context, opts ...option.ClientOption) (*S
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "saasservicemgmt",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/saasplatform/saasservicemgmt/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "saasservicemgmt.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListRollouts = append(client.CallOptions.ListRollouts, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRollout = append(client.CallOptions.GetRollout, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateRollout = append(client.CallOptions.CreateRollout, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateRollout = append(client.CallOptions.UpdateRollout, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteRollout = append(client.CallOptions.DeleteRollout, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRolloutKinds = append(client.CallOptions.ListRolloutKinds, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRolloutKind = append(client.CallOptions.GetRolloutKind, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateRolloutKind = append(client.CallOptions.CreateRolloutKind, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateRolloutKind = append(client.CallOptions.UpdateRolloutKind, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteRolloutKind = append(client.CallOptions.DeleteRolloutKind, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "saasservicemgmt",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/saasplatform/saasservicemgmt/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "saasservicemgmt.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListRollouts = append(client.CallOptions.ListRollouts, gax.WithClientLogging(logging))
+		client.CallOptions.GetRollout = append(client.CallOptions.GetRollout, gax.WithClientLogging(logging))
+		client.CallOptions.CreateRollout = append(client.CallOptions.CreateRollout, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateRollout = append(client.CallOptions.UpdateRollout, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteRollout = append(client.CallOptions.DeleteRollout, gax.WithClientLogging(logging))
+		client.CallOptions.ListRolloutKinds = append(client.CallOptions.ListRolloutKinds, gax.WithClientLogging(logging))
+		client.CallOptions.GetRolloutKind = append(client.CallOptions.GetRolloutKind, gax.WithClientLogging(logging))
+		client.CallOptions.CreateRolloutKind = append(client.CallOptions.CreateRolloutKind, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateRolloutKind = append(client.CallOptions.UpdateRolloutKind, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteRolloutKind = append(client.CallOptions.DeleteRolloutKind, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -565,6 +614,55 @@ func NewSaasRolloutsRESTClient(ctx context.Context, opts ...option.ClientOption)
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "saasservicemgmt",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/saasplatform/saasservicemgmt/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "saasservicemgmt.googleapis.com",
+			}),
+		)
+
+		callOpts.ListRollouts = append(callOpts.ListRollouts, gax.WithClientTracing(tracing))
+		callOpts.GetRollout = append(callOpts.GetRollout, gax.WithClientTracing(tracing))
+		callOpts.CreateRollout = append(callOpts.CreateRollout, gax.WithClientTracing(tracing))
+		callOpts.UpdateRollout = append(callOpts.UpdateRollout, gax.WithClientTracing(tracing))
+		callOpts.DeleteRollout = append(callOpts.DeleteRollout, gax.WithClientTracing(tracing))
+		callOpts.ListRolloutKinds = append(callOpts.ListRolloutKinds, gax.WithClientTracing(tracing))
+		callOpts.GetRolloutKind = append(callOpts.GetRolloutKind, gax.WithClientTracing(tracing))
+		callOpts.CreateRolloutKind = append(callOpts.CreateRolloutKind, gax.WithClientTracing(tracing))
+		callOpts.UpdateRolloutKind = append(callOpts.UpdateRolloutKind, gax.WithClientTracing(tracing))
+		callOpts.DeleteRolloutKind = append(callOpts.DeleteRolloutKind, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "saasservicemgmt",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/saasplatform/saasservicemgmt/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "saasservicemgmt.googleapis.com",
+			}),
+		)
+
+		callOpts.ListRollouts = append(callOpts.ListRollouts, gax.WithClientLogging(logging))
+		callOpts.GetRollout = append(callOpts.GetRollout, gax.WithClientLogging(logging))
+		callOpts.CreateRollout = append(callOpts.CreateRollout, gax.WithClientLogging(logging))
+		callOpts.UpdateRollout = append(callOpts.UpdateRollout, gax.WithClientLogging(logging))
+		callOpts.DeleteRollout = append(callOpts.DeleteRollout, gax.WithClientLogging(logging))
+		callOpts.ListRolloutKinds = append(callOpts.ListRolloutKinds, gax.WithClientLogging(logging))
+		callOpts.GetRolloutKind = append(callOpts.GetRolloutKind, gax.WithClientLogging(logging))
+		callOpts.CreateRolloutKind = append(callOpts.CreateRolloutKind, gax.WithClientLogging(logging))
+		callOpts.UpdateRolloutKind = append(callOpts.UpdateRolloutKind, gax.WithClientLogging(logging))
+		callOpts.DeleteRolloutKind = append(callOpts.DeleteRolloutKind, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	return &SaasRolloutsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -611,9 +709,6 @@ func (c *saasRolloutsGRPCClient) ListRollouts(ctx context.Context, req *saasserv
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts/ListRollouts")
 	}
@@ -663,9 +758,6 @@ func (c *saasRolloutsGRPCClient) GetRollout(ctx context.Context, req *saasservic
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts/GetRollout")
 	}
@@ -687,9 +779,6 @@ func (c *saasRolloutsGRPCClient) CreateRollout(ctx context.Context, req *saasser
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts/CreateRollout")
 	}
@@ -732,9 +821,6 @@ func (c *saasRolloutsGRPCClient) DeleteRollout(ctx context.Context, req *saasser
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts/DeleteRollout")
 	}
@@ -752,9 +838,6 @@ func (c *saasRolloutsGRPCClient) ListRolloutKinds(ctx context.Context, req *saas
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts/ListRolloutKinds")
 	}
@@ -804,9 +887,6 @@ func (c *saasRolloutsGRPCClient) GetRolloutKind(ctx context.Context, req *saasse
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts/GetRolloutKind")
 	}
@@ -828,9 +908,6 @@ func (c *saasRolloutsGRPCClient) CreateRolloutKind(ctx context.Context, req *saa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts/CreateRolloutKind")
 	}
@@ -873,9 +950,6 @@ func (c *saasRolloutsGRPCClient) DeleteRolloutKind(ctx context.Context, req *saa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts/DeleteRolloutKind")
 	}
@@ -977,6 +1051,11 @@ func (c *saasRolloutsRESTClient) ListRollouts(ctx context.Context, req *saasserv
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/rollouts", req.GetParent())
 
 		params := url.Values{}
@@ -1048,6 +1127,11 @@ func (c *saasRolloutsRESTClient) GetRollout(ctx context.Context, req *saasservic
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1061,9 +1145,6 @@ func (c *saasRolloutsRESTClient) GetRollout(ctx context.Context, req *saasservic
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts/GetRollout")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/rollouts/*}")
@@ -1112,6 +1193,11 @@ func (c *saasRolloutsRESTClient) CreateRollout(ctx context.Context, req *saasser
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/rollouts", req.GetParent())
 
 	params := url.Values{}
@@ -1132,9 +1218,6 @@ func (c *saasRolloutsRESTClient) CreateRollout(ctx context.Context, req *saasser
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts/CreateRollout")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*}/rollouts")
@@ -1181,6 +1264,11 @@ func (c *saasRolloutsRESTClient) UpdateRollout(ctx context.Context, req *saasser
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRollout().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetRollout().GetName())
@@ -1250,6 +1338,11 @@ func (c *saasRolloutsRESTClient) DeleteRollout(ctx context.Context, req *saasser
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1272,9 +1365,6 @@ func (c *saasRolloutsRESTClient) DeleteRollout(ctx context.Context, req *saasser
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts/DeleteRollout")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/rollouts/*}")
@@ -1312,6 +1402,11 @@ func (c *saasRolloutsRESTClient) ListRolloutKinds(ctx context.Context, req *saas
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/rolloutKinds", req.GetParent())
@@ -1385,6 +1480,11 @@ func (c *saasRolloutsRESTClient) GetRolloutKind(ctx context.Context, req *saasse
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1398,9 +1498,6 @@ func (c *saasRolloutsRESTClient) GetRolloutKind(ctx context.Context, req *saasse
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts/GetRolloutKind")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/rolloutKinds/*}")
@@ -1449,6 +1546,11 @@ func (c *saasRolloutsRESTClient) CreateRolloutKind(ctx context.Context, req *saa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/rolloutKinds", req.GetParent())
 
 	params := url.Values{}
@@ -1469,9 +1571,6 @@ func (c *saasRolloutsRESTClient) CreateRolloutKind(ctx context.Context, req *saa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts/CreateRolloutKind")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*}/rolloutKinds")
@@ -1518,6 +1617,11 @@ func (c *saasRolloutsRESTClient) UpdateRolloutKind(ctx context.Context, req *saa
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRolloutKind().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetRolloutKind().GetName())
@@ -1587,6 +1691,11 @@ func (c *saasRolloutsRESTClient) DeleteRolloutKind(ctx context.Context, req *saa
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1609,9 +1718,6 @@ func (c *saasRolloutsRESTClient) DeleteRolloutKind(ctx context.Context, req *saa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//saasservicemgmt.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasRollouts/DeleteRolloutKind")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/rolloutKinds/*}")
@@ -1636,6 +1742,11 @@ func (c *saasRolloutsRESTClient) DeleteRolloutKind(ctx context.Context, req *saa
 func (c *saasRolloutsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
@@ -1718,6 +1829,11 @@ func (c *saasRolloutsRESTClient) ListLocations(ctx context.Context, req *locatio
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/locations", req.GetName())

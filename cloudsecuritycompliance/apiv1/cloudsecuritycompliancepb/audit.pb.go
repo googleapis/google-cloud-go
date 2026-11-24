@@ -1508,59 +1508,59 @@ var File_google_cloud_cloudsecuritycompliance_v1_audit_proto protoreflect.FileDe
 
 const file_google_cloud_cloudsecuritycompliance_v1_audit_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/cloudsecuritycompliance/v1/audit.proto\x12'google.cloud.cloudsecuritycompliance.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/cloudsecuritycompliance/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xad\x02\n" +
-	"(GenerateFrameworkAuditScopeReportRequest\x12\x19\n" +
-	"\x05scope\x18\x01 \x01(\tB\x03\xe0A\x02R\x05scope\x12\x82\x01\n" +
-	"\rreport_format\x18\x02 \x01(\x0e2X.google.cloud.cloudsecuritycompliance.v1.GenerateFrameworkAuditScopeReportRequest.FormatB\x03\xe0A\x02R\freportFormat\x126\n" +
-	"\x14compliance_framework\x18\x03 \x01(\tB\x03\xe0A\x02R\x13complianceFramework\")\n" +
+	"3google/cloud/cloudsecuritycompliance/v1/audit.proto\x12'google.cloud.cloudsecuritycompliance.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/cloudsecuritycompliance/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb0\x02\n" +
+	"(GenerateFrameworkAuditScopeReportRequest\x12\x1a\n" +
+	"\x05scope\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05scope\x12\x83\x01\n" +
+	"\rreport_format\x18\x02 \x01(\x0e2X.google.cloud.cloudsecuritycompliance.v1.GenerateFrameworkAuditScopeReportRequest.FormatB\x04\xe2A\x01\x02R\freportFormat\x127\n" +
+	"\x14compliance_framework\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x13complianceFramework\")\n" +
 	"\x06Format\x12\x16\n" +
 	"\x12FORMAT_UNSPECIFIED\x10\x00\x12\a\n" +
-	"\x03ODF\x10\x01\"\xd6\x04\n" +
+	"\x03ODF\x10\x01\"\xd8\x04\n" +
 	")GenerateFrameworkAuditScopeReportResponse\x124\n" +
-	"\x15scope_report_contents\x18\x03 \x01(\fH\x00R\x13scopeReportContents\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x126\n" +
-	"\x14compliance_framework\x18\x02 \x01(\tB\x03\xe0A\x02R\x13complianceFramework:\x91\x03\xeaA\x8d\x03\n" +
+	"\x15scope_report_contents\x18\x03 \x01(\fH\x00R\x13scopeReportContents\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x127\n" +
+	"\x14compliance_framework\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x13complianceFramework:\x91\x03\xeaA\x8d\x03\n" +
 	"Pcloudsecuritycompliance.googleapis.com/GenerateFrameworkAuditScopeReportResponse\x12sprojects/{project}/locations/{location}/frameworkAuditScopeReports/{generate_framework_audit_scope_report_response}\x12}organizations/{organization}/locations/{location}/frameworkAuditScopeReports/{generate_framework_audit_scope_report_response}*\x1aframeworkAuditScopeReports2)generateFrameworkAuditScopeReportResponseB\x0e\n" +
-	"\faudit_report\"\xf9\x01\n" +
-	"\rReportSummary\x12$\n" +
-	"\vtotal_count\x18\x01 \x01(\x05B\x03\xe0A\x03R\n" +
-	"totalCount\x12,\n" +
-	"\x0fcompliant_count\x18\x02 \x01(\x05B\x03\xe0A\x03R\x0ecompliantCount\x12,\n" +
-	"\x0fviolation_count\x18\x03 \x01(\x05B\x03\xe0A\x03R\x0eviolationCount\x12@\n" +
-	"\x1amanual_review_needed_count\x18\x04 \x01(\x05B\x03\xe0A\x03R\x17manualReviewNeededCount\x12$\n" +
-	"\verror_count\x18\x05 \x01(\x05B\x03\xe0A\x03R\n" +
-	"errorCount\"\x8e\x02\n" +
-	"\x1bCreateFrameworkAuditRequest\x12U\n" +
-	"\x06parent\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\x125cloudsecuritycompliance.googleapis.com/FrameworkAuditR\x06parent\x121\n" +
-	"\x12framework_audit_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x10frameworkAuditId\x12e\n" +
-	"\x0fframework_audit\x18\x03 \x01(\v27.google.cloud.cloudsecuritycompliance.v1.FrameworkAuditB\x03\xe0A\x02R\x0eframeworkAudit\"\x85\x01\n" +
+	"\faudit_report\"\xfe\x01\n" +
+	"\rReportSummary\x12%\n" +
+	"\vtotal_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\n" +
+	"totalCount\x12-\n" +
+	"\x0fcompliant_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\x0ecompliantCount\x12-\n" +
+	"\x0fviolation_count\x18\x03 \x01(\x05B\x04\xe2A\x01\x03R\x0eviolationCount\x12A\n" +
+	"\x1amanual_review_needed_count\x18\x04 \x01(\x05B\x04\xe2A\x01\x03R\x17manualReviewNeededCount\x12%\n" +
+	"\verror_count\x18\x05 \x01(\x05B\x04\xe2A\x01\x03R\n" +
+	"errorCount\"\x91\x02\n" +
+	"\x1bCreateFrameworkAuditRequest\x12V\n" +
+	"\x06parent\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\x125cloudsecuritycompliance.googleapis.com/FrameworkAuditR\x06parent\x122\n" +
+	"\x12framework_audit_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x10frameworkAuditId\x12f\n" +
+	"\x0fframework_audit\x18\x03 \x01(\v27.google.cloud.cloudsecuritycompliance.v1.FrameworkAuditB\x04\xe2A\x01\x02R\x0eframeworkAudit\"\x85\x01\n" +
 	"\x19FrameworkAuditDestination\x12T\n" +
 	"\x06bucket\x18\x01 \x01(\v2:.google.cloud.cloudsecuritycompliance.v1.BucketDestinationH\x00R\x06bucketB\x12\n" +
-	"\x10destination_type\"\xe0\x01\n" +
-	"\x11BucketDestination\x12\"\n" +
+	"\x10destination_type\"\xe2\x01\n" +
+	"\x11BucketDestination\x12#\n" +
 	"\n" +
-	"bucket_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\tbucketUri\x12|\n" +
-	"\x16framework_audit_format\x18\x03 \x01(\x0e2A.google.cloud.cloudsecuritycompliance.v1.BucketDestination.FormatB\x03\xe0A\x01R\x14frameworkAuditFormat\")\n" +
+	"bucket_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tbucketUri\x12}\n" +
+	"\x16framework_audit_format\x18\x03 \x01(\x0e2A.google.cloud.cloudsecuritycompliance.v1.BucketDestination.FormatB\x04\xe2A\x01\x01R\x14frameworkAuditFormat\")\n" +
 	"\x06Format\x12\x16\n" +
 	"\x12FORMAT_UNSPECIFIED\x10\x00\x12\a\n" +
-	"\x03ODF\x10\x01\"\x93\v\n" +
-	"\x0eFrameworkAudit\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x03R\x04name\x121\n" +
-	"\x12framework_audit_id\x18\x02 \x01(\tB\x03\xe0A\x03R\x10frameworkAuditId\x126\n" +
-	"\x14compliance_framework\x18\x03 \x01(\tB\x03\xe0A\x03R\x13complianceFramework\x12\x19\n" +
-	"\x05scope\x18\x04 \x01(\tB\x03\xe0A\x03R\x05scope\x12\x87\x01\n" +
-	"\x1bframework_audit_destination\x18\x05 \x01(\v2B.google.cloud.cloudsecuritycompliance.v1.FrameworkAuditDestinationB\x03\xe0A\x02R\x19frameworkAuditDestination\x12>\n" +
+	"\x03ODF\x10\x01\"\x9e\v\n" +
+	"\x0eFrameworkAudit\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x03R\x04name\x122\n" +
+	"\x12framework_audit_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x10frameworkAuditId\x127\n" +
+	"\x14compliance_framework\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x13complianceFramework\x12\x1a\n" +
+	"\x05scope\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x05scope\x12\x88\x01\n" +
+	"\x1bframework_audit_destination\x18\x05 \x01(\v2B.google.cloud.cloudsecuritycompliance.v1.FrameworkAuditDestinationB\x04\xe2A\x01\x02R\x19frameworkAuditDestination\x12?\n" +
 	"\n" +
-	"start_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12@\n" +
-	"\vfinish_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"finishTime\x12h\n" +
-	"\x10compliance_state\x18\b \x01(\x0e28.google.cloud.cloudsecuritycompliance.v1.ComplianceStateB\x03\xe0A\x03R\x0fcomplianceState\x12b\n" +
-	"\x0ereport_summary\x18\t \x01(\v26.google.cloud.cloudsecuritycompliance.v1.ReportSummaryB\x03\xe0A\x03R\rreportSummary\x12\x95\x01\n" +
+	"start_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12A\n" +
+	"\vfinish_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"finishTime\x12i\n" +
+	"\x10compliance_state\x18\b \x01(\x0e28.google.cloud.cloudsecuritycompliance.v1.ComplianceStateB\x04\xe2A\x01\x03R\x0fcomplianceState\x12c\n" +
+	"\x0ereport_summary\x18\t \x01(\v26.google.cloud.cloudsecuritycompliance.v1.ReportSummaryB\x04\xe2A\x01\x03R\rreportSummary\x12\x96\x01\n" +
 	"!cloud_control_group_audit_details\x18\n" +
-	" \x03(\v2F.google.cloud.cloudsecuritycompliance.v1.CloudControlGroupAuditDetailsB\x03\xe0A\x01R\x1dcloudControlGroupAuditDetails\x12\x85\x01\n" +
-	"\x1bcloud_control_audit_details\x18\v \x03(\v2A.google.cloud.cloudsecuritycompliance.v1.CloudControlAuditDetailsB\x03\xe0A\x01R\x18cloudControlAuditDetails\x12&\n" +
-	"\foperation_id\x18\f \x01(\tB\x03\xe0A\x03R\voperationId\x12X\n" +
-	"\x05state\x18\r \x01(\x0e2=.google.cloud.cloudsecuritycompliance.v1.FrameworkAudit.StateB\x03\xe0A\x03R\x05state\"d\n" +
+	" \x03(\v2F.google.cloud.cloudsecuritycompliance.v1.CloudControlGroupAuditDetailsB\x04\xe2A\x01\x01R\x1dcloudControlGroupAuditDetails\x12\x86\x01\n" +
+	"\x1bcloud_control_audit_details\x18\v \x03(\v2A.google.cloud.cloudsecuritycompliance.v1.CloudControlAuditDetailsB\x04\xe2A\x01\x01R\x18cloudControlAuditDetails\x12'\n" +
+	"\foperation_id\x18\f \x01(\tB\x04\xe2A\x01\x03R\voperationId\x12Y\n" +
+	"\x05state\x18\r \x01(\x0e2=.google.cloud.cloudsecuritycompliance.v1.FrameworkAudit.StateB\x04\xe2A\x01\x03R\x05state\"d\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tSCHEDULED\x10\x01\x12\v\n" +
@@ -1569,55 +1569,55 @@ const file_google_cloud_cloudsecuritycompliance_v1_audit_proto_rawDesc = "" +
 	"\n" +
 	"\x06FAILED\x10\x04\x12\r\n" +
 	"\tSUCCEEDED\x10\x05:\xfc\x01\xeaA\xf8\x01\n" +
-	"5cloudsecuritycompliance.googleapis.com/FrameworkAudit\x12Iprojects/{project}/locations/{location}/frameworkAudits/{framework_audit}\x12Sorganizations/{organization}/locations/{location}/frameworkAudits/{framework_audit}*\x0fframeworkAudits2\x0eframeworkAudit\"\xd6\x01\n" +
-	"\x1aListFrameworkAuditsRequest\x12U\n" +
-	"\x06parent\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\x125cloudsecuritycompliance.googleapis.com/FrameworkAuditR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"5cloudsecuritycompliance.googleapis.com/FrameworkAudit\x12Iprojects/{project}/locations/{location}/frameworkAudits/{framework_audit}\x12Sorganizations/{organization}/locations/{location}/frameworkAudits/{framework_audit}*\x0fframeworkAudits2\x0eframeworkAudit\"\xda\x01\n" +
+	"\x1aListFrameworkAuditsRequest\x12V\n" +
+	"\x06parent\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\x125cloudsecuritycompliance.googleapis.com/FrameworkAuditR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xa9\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xa9\x01\n" +
 	"\x1bListFrameworkAuditsResponse\x12b\n" +
 	"\x10framework_audits\x18\x01 \x03(\v27.google.cloud.cloudsecuritycompliance.v1.FrameworkAuditR\x0fframeworkAudits\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"m\n" +
-	"\x18GetFrameworkAuditRequest\x12Q\n" +
-	"\x04name\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\n" +
-	"5cloudsecuritycompliance.googleapis.com/FrameworkAuditR\x04name\"\x88\b\n" +
-	"\x1dCloudControlGroupAuditDetails\x128\n" +
-	"\x16cloud_control_group_id\x18\x01 \x01(\tB\x03\xe0A\x03R\x13cloudControlGroupId\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x03R\vdescription\x124\n" +
-	"\x13responsibility_type\x18\x04 \x01(\tB\x03\xe0A\x03R\x12responsibilityType\x12O\n" +
-	"!google_responsibility_description\x18\x05 \x01(\tB\x03\xe0A\x03R\x1fgoogleResponsibilityDescription\x12U\n" +
-	"$google_responsibility_implementation\x18\x06 \x01(\tB\x03\xe0A\x03R\"googleResponsibilityImplementation\x12S\n" +
-	"#customer_responsibility_description\x18\a \x01(\tB\x03\xe0A\x03R!customerResponsibilityDescription\x12Y\n" +
-	"&customer_responsibility_implementation\x18\b \x01(\tB\x03\xe0A\x03R$customerResponsibilityImplementation\x12h\n" +
-	"\x10compliance_state\x18\t \x01(\x0e28.google.cloud.cloudsecuritycompliance.v1.ComplianceStateB\x03\xe0A\x03R\x0fcomplianceState\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"n\n" +
+	"\x18GetFrameworkAuditRequest\x12R\n" +
+	"\x04name\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\n" +
+	"5cloudsecuritycompliance.googleapis.com/FrameworkAuditR\x04name\"\x95\b\n" +
+	"\x1dCloudControlGroupAuditDetails\x129\n" +
+	"\x16cloud_control_group_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x13cloudControlGroupId\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x125\n" +
+	"\x13responsibility_type\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x12responsibilityType\x12P\n" +
+	"!google_responsibility_description\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x1fgoogleResponsibilityDescription\x12V\n" +
+	"$google_responsibility_implementation\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\"googleResponsibilityImplementation\x12T\n" +
+	"#customer_responsibility_description\x18\a \x01(\tB\x04\xe2A\x01\x03R!customerResponsibilityDescription\x12Z\n" +
+	"&customer_responsibility_implementation\x18\b \x01(\tB\x04\xe2A\x01\x03R$customerResponsibilityImplementation\x12i\n" +
+	"\x10compliance_state\x18\t \x01(\x0e28.google.cloud.cloudsecuritycompliance.v1.ComplianceStateB\x04\xe2A\x01\x03R\x0fcomplianceState\x12#\n" +
 	"\n" +
 	"control_id\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\tcontrolId\x12b\n" +
-	"\x0econtrol_family\x18\v \x01(\v26.google.cloud.cloudsecuritycompliance.v1.ControlFamilyB\x03\xe0A\x03R\rcontrolFamily\x12z\n" +
-	"\x15cloud_control_details\x18\f \x03(\v2A.google.cloud.cloudsecuritycompliance.v1.CloudControlAuditDetailsB\x03\xe0A\x03R\x13cloudControlDetails\x12b\n" +
-	"\x0ereport_summary\x18\r \x01(\v26.google.cloud.cloudsecuritycompliance.v1.ReportSummaryB\x03\xe0A\x03R\rreportSummary\"\xd2\x02\n" +
-	"\x0eFindingDetails\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12h\n" +
-	"\x10compliance_state\x18\x02 \x01(\x0e28.google.cloud.cloudsecuritycompliance.v1.ComplianceStateB\x03\xe0A\x03R\x0fcomplianceState\x12b\n" +
-	"\vobservation\x18\x03 \x01(\v2;.google.cloud.cloudsecuritycompliance.v1.ObservationDetailsB\x03\xe0A\x03R\vobservation\x12Y\n" +
-	"\bevidence\x18\x04 \x01(\v28.google.cloud.cloudsecuritycompliance.v1.EvidenceDetailsB\x03\xe0A\x03R\bevidence\"\x8b\x01\n" +
-	"\x12ObservationDetails\x12(\n" +
-	"\rcurrent_value\x18\x01 \x01(\tB\x03\xe0A\x03R\fcurrentValue\x12*\n" +
-	"\x0eexpected_value\x18\x02 \x01(\tB\x03\xe0A\x01R\rexpectedValue\x12\x1f\n" +
-	"\bguidance\x18\x03 \x01(\tB\x03\xe0A\x03R\bguidance\"{\n" +
-	"\x0fEvidenceDetails\x12\x1f\n" +
-	"\bresource\x18\x01 \x01(\tB\x03\xe0A\x03R\bresource\x12\x1d\n" +
-	"\aservice\x18\x02 \x01(\tB\x03\xe0A\x03R\aservice\x12(\n" +
-	"\revidence_path\x18\x03 \x01(\tB\x03\xe0A\x03R\fevidencePath\"\xdc\x03\n" +
-	"\x18CloudControlAuditDetails\x12(\n" +
-	"\rcloud_control\x18\x01 \x01(\tB\x03\xe0A\x03R\fcloudControl\x12-\n" +
-	"\x10cloud_control_id\x18\x02 \x01(\tB\x03\xe0A\x03R\x0ecloudControlId\x12?\n" +
-	"\x19cloud_control_description\x18\x03 \x01(\tB\x03\xe0A\x03R\x17cloudControlDescription\x12h\n" +
-	"\x10compliance_state\x18\x04 \x01(\x0e28.google.cloud.cloudsecuritycompliance.v1.ComplianceStateB\x03\xe0A\x03R\x0fcomplianceState\x12b\n" +
-	"\x0ereport_summary\x18\x05 \x01(\v26.google.cloud.cloudsecuritycompliance.v1.ReportSummaryB\x03\xe0A\x03R\rreportSummary\x12X\n" +
-	"\bfindings\x18\x06 \x03(\v27.google.cloud.cloudsecuritycompliance.v1.FindingDetailsB\x03\xe0A\x03R\bfindings*\x8f\x01\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\tcontrolId\x12c\n" +
+	"\x0econtrol_family\x18\v \x01(\v26.google.cloud.cloudsecuritycompliance.v1.ControlFamilyB\x04\xe2A\x01\x03R\rcontrolFamily\x12{\n" +
+	"\x15cloud_control_details\x18\f \x03(\v2A.google.cloud.cloudsecuritycompliance.v1.CloudControlAuditDetailsB\x04\xe2A\x01\x03R\x13cloudControlDetails\x12c\n" +
+	"\x0ereport_summary\x18\r \x01(\v26.google.cloud.cloudsecuritycompliance.v1.ReportSummaryB\x04\xe2A\x01\x03R\rreportSummary\"\xd6\x02\n" +
+	"\x0eFindingDetails\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12i\n" +
+	"\x10compliance_state\x18\x02 \x01(\x0e28.google.cloud.cloudsecuritycompliance.v1.ComplianceStateB\x04\xe2A\x01\x03R\x0fcomplianceState\x12c\n" +
+	"\vobservation\x18\x03 \x01(\v2;.google.cloud.cloudsecuritycompliance.v1.ObservationDetailsB\x04\xe2A\x01\x03R\vobservation\x12Z\n" +
+	"\bevidence\x18\x04 \x01(\v28.google.cloud.cloudsecuritycompliance.v1.EvidenceDetailsB\x04\xe2A\x01\x03R\bevidence\"\x8e\x01\n" +
+	"\x12ObservationDetails\x12)\n" +
+	"\rcurrent_value\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\fcurrentValue\x12+\n" +
+	"\x0eexpected_value\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rexpectedValue\x12 \n" +
+	"\bguidance\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\bguidance\"~\n" +
+	"\x0fEvidenceDetails\x12 \n" +
+	"\bresource\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\bresource\x12\x1e\n" +
+	"\aservice\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\aservice\x12)\n" +
+	"\revidence_path\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\fevidencePath\"\xe2\x03\n" +
+	"\x18CloudControlAuditDetails\x12)\n" +
+	"\rcloud_control\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\fcloudControl\x12.\n" +
+	"\x10cloud_control_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x0ecloudControlId\x12@\n" +
+	"\x19cloud_control_description\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x17cloudControlDescription\x12i\n" +
+	"\x10compliance_state\x18\x04 \x01(\x0e28.google.cloud.cloudsecuritycompliance.v1.ComplianceStateB\x04\xe2A\x01\x03R\x0fcomplianceState\x12c\n" +
+	"\x0ereport_summary\x18\x05 \x01(\v26.google.cloud.cloudsecuritycompliance.v1.ReportSummaryB\x04\xe2A\x01\x03R\rreportSummary\x12Y\n" +
+	"\bfindings\x18\x06 \x03(\v27.google.cloud.cloudsecuritycompliance.v1.FindingDetailsB\x04\xe2A\x01\x03R\bfindings*\x8f\x01\n" +
 	"\x0fComplianceState\x12 \n" +
 	"\x1cCOMPLIANCE_STATE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tCOMPLIANT\x10\x01\x12\r\n" +

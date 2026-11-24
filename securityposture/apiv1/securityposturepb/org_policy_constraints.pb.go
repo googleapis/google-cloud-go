@@ -151,13 +151,13 @@ var File_google_cloud_securityposture_v1_org_policy_constraints_proto protorefle
 
 const file_google_cloud_securityposture_v1_org_policy_constraints_proto_rawDesc = "" +
 	"\n" +
-	"<google/cloud/securityposture/v1/org_policy_constraints.proto\x12\x1fgoogle.cloud.securityposture.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a7google/cloud/securityposture/v1/org_policy_config.proto\"\xa1\x01\n" +
-	"\x13OrgPolicyConstraint\x125\n" +
-	"\x14canned_constraint_id\x18\x01 \x01(\tB\x03\xe0A\x02R\x12cannedConstraintId\x12S\n" +
-	"\fpolicy_rules\x18\x02 \x03(\v2+.google.cloud.securityposture.v1.PolicyRuleB\x03\xe0A\x02R\vpolicyRules\"\xd5\x01\n" +
-	"\x19OrgPolicyConstraintCustom\x12c\n" +
-	"\x11custom_constraint\x18\x01 \x01(\v21.google.cloud.securityposture.v1.CustomConstraintB\x03\xe0A\x02R\x10customConstraint\x12S\n" +
-	"\fpolicy_rules\x18\x02 \x03(\v2+.google.cloud.securityposture.v1.PolicyRuleB\x03\xe0A\x02R\vpolicyRulesB\x91\x01\n" +
+	"<google/cloud/securityposture/v1/org_policy_constraints.proto\x12\x1fgoogle.cloud.securityposture.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a7google/cloud/securityposture/v1/org_policy_config.proto\"\xa3\x01\n" +
+	"\x13OrgPolicyConstraint\x126\n" +
+	"\x14canned_constraint_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x12cannedConstraintId\x12T\n" +
+	"\fpolicy_rules\x18\x02 \x03(\v2+.google.cloud.securityposture.v1.PolicyRuleB\x04\xe2A\x01\x02R\vpolicyRules\"\xd7\x01\n" +
+	"\x19OrgPolicyConstraintCustom\x12d\n" +
+	"\x11custom_constraint\x18\x01 \x01(\v21.google.cloud.securityposture.v1.CustomConstraintB\x04\xe2A\x01\x02R\x10customConstraint\x12T\n" +
+	"\fpolicy_rules\x18\x02 \x03(\v2+.google.cloud.securityposture.v1.PolicyRuleB\x04\xe2A\x01\x02R\vpolicyRulesB\x91\x01\n" +
 	"#com.google.cloud.securityposture.v1B\x19OrgPolicyConstraintsProtoP\x01ZMcloud.google.com/go/securityposture/apiv1/securityposturepb;securityposturepbb\x06proto3"
 
 var (

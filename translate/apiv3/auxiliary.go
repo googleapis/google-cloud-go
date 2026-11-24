@@ -18,12 +18,14 @@ package translate
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	translatepb "cloud.google.com/go/translate/apiv3/translatepb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -688,6 +690,12 @@ func (op *UpdateGlossaryOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AdaptiveMtDatasetIterator) All() iter.Seq2[*translatepb.AdaptiveMtDataset, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AdaptiveMtDatasetIterator manages a stream of *translatepb.AdaptiveMtDataset.
 type AdaptiveMtDatasetIterator struct {
 	items    []*translatepb.AdaptiveMtDataset
@@ -733,6 +741,12 @@ func (it *AdaptiveMtDatasetIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AdaptiveMtFileIterator) All() iter.Seq2[*translatepb.AdaptiveMtFile, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AdaptiveMtFileIterator manages a stream of *translatepb.AdaptiveMtFile.
@@ -782,6 +796,12 @@ func (it *AdaptiveMtFileIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AdaptiveMtSentenceIterator) All() iter.Seq2[*translatepb.AdaptiveMtSentence, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AdaptiveMtSentenceIterator manages a stream of *translatepb.AdaptiveMtSentence.
 type AdaptiveMtSentenceIterator struct {
 	items    []*translatepb.AdaptiveMtSentence
@@ -827,6 +847,12 @@ func (it *AdaptiveMtSentenceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DatasetIterator) All() iter.Seq2[*translatepb.Dataset, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DatasetIterator manages a stream of *translatepb.Dataset.
@@ -876,6 +902,12 @@ func (it *DatasetIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ExampleIterator) All() iter.Seq2[*translatepb.Example, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ExampleIterator manages a stream of *translatepb.Example.
 type ExampleIterator struct {
 	items    []*translatepb.Example
@@ -921,6 +953,12 @@ func (it *ExampleIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GlossaryEntryIterator) All() iter.Seq2[*translatepb.GlossaryEntry, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // GlossaryEntryIterator manages a stream of *translatepb.GlossaryEntry.
@@ -970,6 +1008,12 @@ func (it *GlossaryEntryIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GlossaryIterator) All() iter.Seq2[*translatepb.Glossary, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // GlossaryIterator manages a stream of *translatepb.Glossary.
 type GlossaryIterator struct {
 	items    []*translatepb.Glossary
@@ -1015,6 +1059,12 @@ func (it *GlossaryIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -1064,6 +1114,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ModelIterator) All() iter.Seq2[*translatepb.Model, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ModelIterator manages a stream of *translatepb.Model.
 type ModelIterator struct {
 	items    []*translatepb.Model
@@ -1109,6 +1165,12 @@ func (it *ModelIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.

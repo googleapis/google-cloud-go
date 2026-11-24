@@ -463,30 +463,30 @@ var File_google_cloud_discoveryengine_v1alpha_sample_query_set_service_proto pro
 
 const file_google_cloud_discoveryengine_v1alpha_sample_query_set_service_proto_rawDesc = "" +
 	"\n" +
-	"Cgoogle/cloud/discoveryengine/v1alpha/sample_query_set_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a;google/cloud/discoveryengine/v1alpha/sample_query_set.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"e\n" +
-	"\x18GetSampleQuerySetRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-discoveryengine.googleapis.com/SampleQuerySetR\x04name\"\xa1\x01\n" +
-	"\x1aListSampleQuerySetsRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"Cgoogle/cloud/discoveryengine/v1alpha/sample_query_set_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a;google/cloud/discoveryengine/v1alpha/sample_query_set.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"f\n" +
+	"\x18GetSampleQuerySetRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-discoveryengine.googleapis.com/SampleQuerySetR\x04name\"\xa2\x01\n" +
+	"\x1aListSampleQuerySetsRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'discoveryengine.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa7\x01\n" +
 	"\x1bListSampleQuerySetsResponse\x12`\n" +
 	"\x11sample_query_sets\x18\x01 \x03(\v24.google.cloud.discoveryengine.v1alpha.SampleQuerySetR\x0fsampleQuerySets\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xff\x01\n" +
-	"\x1bCreateSampleQuerySetRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'discoveryengine.googleapis.com/LocationR\x06parent\x12c\n" +
-	"\x10sample_query_set\x18\x02 \x01(\v24.google.cloud.discoveryengine.v1alpha.SampleQuerySetB\x03\xe0A\x02R\x0esampleQuerySet\x122\n" +
-	"\x13sample_query_set_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x10sampleQuerySetId\"\xbf\x01\n" +
-	"\x1bUpdateSampleQuerySetRequest\x12c\n" +
-	"\x10sample_query_set\x18\x01 \x01(\v24.google.cloud.discoveryengine.v1alpha.SampleQuerySetB\x03\xe0A\x02R\x0esampleQuerySet\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x82\x02\n" +
+	"\x1bCreateSampleQuerySetRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'discoveryengine.googleapis.com/LocationR\x06parent\x12d\n" +
+	"\x10sample_query_set\x18\x02 \x01(\v24.google.cloud.discoveryengine.v1alpha.SampleQuerySetB\x04\xe2A\x01\x02R\x0esampleQuerySet\x123\n" +
+	"\x13sample_query_set_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x10sampleQuerySetId\"\xc0\x01\n" +
+	"\x1bUpdateSampleQuerySetRequest\x12d\n" +
+	"\x10sample_query_set\x18\x01 \x01(\v24.google.cloud.discoveryengine.v1alpha.SampleQuerySetB\x04\xe2A\x01\x02R\x0esampleQuerySet\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"h\n" +
-	"\x1bDeleteSampleQuerySetRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
+	"updateMask\"i\n" +
+	"\x1bDeleteSampleQuerySetRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
 	"-discoveryengine.googleapis.com/SampleQuerySetR\x04name2\x91\n" +
 	"\n" +
 	"\x15SampleQuerySetService\x12\xd2\x01\n" +

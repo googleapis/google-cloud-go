@@ -221,14 +221,21 @@ func (c *PolicyBasedRoutingClient) GetLocation(ctx context.Context, req *locatio
 }
 
 // ListLocations lists information about the supported locations for this service.
-// This method can be called in two ways:
 //
-//	List all public locations: Use the path GET /v1/locations.
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
-//	List project-visible locations: Use the path
-//	GET /v1/projects/{project_id}/locations. This may include public
-//	locations as well as private or other locations specifically visible
-//	to the project.
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *PolicyBasedRoutingClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -376,6 +383,57 @@ func NewPolicyBasedRoutingClient(ctx context.Context, opts ...option.ClientOptio
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "networkconnectivity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networkconnectivity/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "networkconnectivity.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListPolicyBasedRoutes = append(client.CallOptions.ListPolicyBasedRoutes, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPolicyBasedRoute = append(client.CallOptions.GetPolicyBasedRoute, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePolicyBasedRoute = append(client.CallOptions.CreatePolicyBasedRoute, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePolicyBasedRoute = append(client.CallOptions.DeletePolicyBasedRoute, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "networkconnectivity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networkconnectivity/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "networkconnectivity.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListPolicyBasedRoutes = append(client.CallOptions.ListPolicyBasedRoutes, gax.WithClientLogging(logging))
+		client.CallOptions.GetPolicyBasedRoute = append(client.CallOptions.GetPolicyBasedRoute, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePolicyBasedRoute = append(client.CallOptions.CreatePolicyBasedRoute, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePolicyBasedRoute = append(client.CallOptions.DeletePolicyBasedRoute, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -423,9 +481,6 @@ func (c *policyBasedRoutingGRPCClient) ListPolicyBasedRoutes(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1beta.PolicyBasedRoutingService/ListPolicyBasedRoutes")
 	}
@@ -475,9 +530,6 @@ func (c *policyBasedRoutingGRPCClient) GetPolicyBasedRoute(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1beta.PolicyBasedRoutingService/GetPolicyBasedRoute")
 	}
@@ -499,9 +551,6 @@ func (c *policyBasedRoutingGRPCClient) CreatePolicyBasedRoute(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1beta.PolicyBasedRoutingService/CreatePolicyBasedRoute")
 	}
@@ -529,9 +578,6 @@ func (c *policyBasedRoutingGRPCClient) DeletePolicyBasedRoute(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1beta.PolicyBasedRoutingService/DeletePolicyBasedRoute")
 	}
@@ -629,9 +675,6 @@ func (c *policyBasedRoutingGRPCClient) GetIamPolicy(ctx context.Context, req *ia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 	}
@@ -653,9 +696,6 @@ func (c *policyBasedRoutingGRPCClient) SetIamPolicy(ctx context.Context, req *ia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 	}
@@ -677,9 +717,6 @@ func (c *policyBasedRoutingGRPCClient) TestIamPermissions(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 	}

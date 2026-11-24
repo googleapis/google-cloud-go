@@ -82,9 +82,11 @@ type RevisionTemplate struct {
 	// running revision, and determines what permissions the revision has. If not
 	// provided, the revision will use the project's default service account.
 	ServiceAccount string `protobuf:"bytes,9,opt,name=service_account,json=serviceAccount,proto3" json:"service_account,omitempty"`
-	// Holds the single container that defines the unit of execution for this
+	// Holds the list which define the units of execution for this
 	// Revision.
 	Containers []*Container `protobuf:"bytes,10,rep,name=containers,proto3" json:"containers,omitempty"`
+	// Optional. Configuration for sandboxes.
+	Sandboxes *SandboxConfiguration `protobuf:"bytes,31,opt,name=sandboxes,proto3" json:"sandboxes,omitempty"`
 	// Optional. A list of Volumes to make available to containers.
 	Volumes []*Volume `protobuf:"bytes,11,rep,name=volumes,proto3" json:"volumes,omitempty"`
 	// Optional. The sandbox environment to host this Revision.
@@ -110,10 +112,18 @@ type RevisionTemplate struct {
 	HealthCheckDisabled bool `protobuf:"varint,20,opt,name=health_check_disabled,json=healthCheckDisabled,proto3" json:"health_check_disabled,omitempty"`
 	// Optional. The node selector for the revision template.
 	NodeSelector *NodeSelector `protobuf:"bytes,21,opt,name=node_selector,json=nodeSelector,proto3" json:"node_selector,omitempty"`
+	// Optional. The Revision's workload identity settings.
+	WorkloadIdentityConfig *WorkloadIdentityConfig `protobuf:"bytes,27,opt,name=workload_identity_config,json=workloadIdentityConfig,proto3" json:"workload_identity_config,omitempty"`
 	// Optional. True if GPU zonal redundancy is disabled on this revision.
 	GpuZonalRedundancyDisabled *bool `protobuf:"varint,24,opt,name=gpu_zonal_redundancy_disabled,json=gpuZonalRedundancyDisabled,proto3,oneof" json:"gpu_zonal_redundancy_disabled,omitempty"`
-	unknownFields              protoimpl.UnknownFields
-	sizeCache                  protoimpl.SizeCache
+	// Optional. Arbitrary identifier for the API client.
+	Client string `protobuf:"bytes,28,opt,name=client,proto3" json:"client,omitempty"`
+	// Optional. Arbitrary version identifier for the API client.
+	ClientVersion string `protobuf:"bytes,29,opt,name=client_version,json=clientVersion,proto3" json:"client_version,omitempty"`
+	// Optional. The ambient networking configuration for this revision.
+	AmbientNetworking *AmbientNetworking `protobuf:"bytes,33,opt,name=ambient_networking,json=ambientNetworking,proto3" json:"ambient_networking,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *RevisionTemplate) Reset() {
@@ -202,6 +212,13 @@ func (x *RevisionTemplate) GetContainers() []*Container {
 	return nil
 }
 
+func (x *RevisionTemplate) GetSandboxes() *SandboxConfiguration {
+	if x != nil {
+		return x.Sandboxes
+	}
+	return nil
+}
+
 func (x *RevisionTemplate) GetVolumes() []*Volume {
 	if x != nil {
 		return x.Volumes
@@ -272,6 +289,13 @@ func (x *RevisionTemplate) GetNodeSelector() *NodeSelector {
 	return nil
 }
 
+func (x *RevisionTemplate) GetWorkloadIdentityConfig() *WorkloadIdentityConfig {
+	if x != nil {
+		return x.WorkloadIdentityConfig
+	}
+	return nil
+}
+
 func (x *RevisionTemplate) GetGpuZonalRedundancyDisabled() bool {
 	if x != nil && x.GpuZonalRedundancyDisabled != nil {
 		return *x.GpuZonalRedundancyDisabled
@@ -279,37 +303,63 @@ func (x *RevisionTemplate) GetGpuZonalRedundancyDisabled() bool {
 	return false
 }
 
+func (x *RevisionTemplate) GetClient() string {
+	if x != nil {
+		return x.Client
+	}
+	return ""
+}
+
+func (x *RevisionTemplate) GetClientVersion() string {
+	if x != nil {
+		return x.ClientVersion
+	}
+	return ""
+}
+
+func (x *RevisionTemplate) GetAmbientNetworking() *AmbientNetworking {
+	if x != nil {
+		return x.AmbientNetworking
+	}
+	return nil
+}
+
 var File_google_cloud_run_v2_revision_template_proto protoreflect.FileDescriptor
 
 const file_google_cloud_run_v2_revision_template_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/run/v2/revision_template.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a!google/cloud/run/v2/k8s.min.proto\x1a)google/cloud/run/v2/vendor_settings.proto\x1a\x1egoogle/protobuf/duration.proto\"\xc7\f\n" +
-	"\x10RevisionTemplate\x12?\n" +
-	"\brevision\x18\x01 \x01(\tB#\xe0A\x01\xfaA\x1d\n" +
-	"\x1brun.googleapis.com/RevisionR\brevision\x12N\n" +
-	"\x06labels\x18\x02 \x03(\v21.google.cloud.run.v2.RevisionTemplate.LabelsEntryB\x03\xe0A\x01R\x06labels\x12]\n" +
-	"\vannotations\x18\x03 \x03(\v26.google.cloud.run.v2.RevisionTemplate.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12C\n" +
-	"\ascaling\x18\x04 \x01(\v2$.google.cloud.run.v2.RevisionScalingB\x03\xe0A\x01R\ascaling\x12B\n" +
+	"+google/cloud/run/v2/revision_template.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a!google/cloud/run/v2/k8s.min.proto\x1a!google/cloud/run/v2/sandbox.proto\x1a)google/cloud/run/v2/vendor_settings.proto\x1a\x1egoogle/protobuf/duration.proto\"\xbc\x0f\n" +
+	"\x10RevisionTemplate\x12@\n" +
+	"\brevision\x18\x01 \x01(\tB$\xe2A\x01\x01\xfaA\x1d\n" +
+	"\x1brun.googleapis.com/RevisionR\brevision\x12O\n" +
+	"\x06labels\x18\x02 \x03(\v21.google.cloud.run.v2.RevisionTemplate.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12^\n" +
+	"\vannotations\x18\x03 \x03(\v26.google.cloud.run.v2.RevisionTemplate.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12D\n" +
+	"\ascaling\x18\x04 \x01(\v2$.google.cloud.run.v2.RevisionScalingB\x04\xe2A\x01\x01R\ascaling\x12C\n" +
 	"\n" +
-	"vpc_access\x18\x06 \x01(\v2\x1e.google.cloud.run.v2.VpcAccessB\x03\xe0A\x01R\tvpcAccess\x128\n" +
-	"\atimeout\x18\b \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\atimeout\x12,\n" +
-	"\x0fservice_account\x18\t \x01(\tB\x03\xe0A\x01R\x0eserviceAccount\x12>\n" +
+	"vpc_access\x18\x06 \x01(\v2\x1e.google.cloud.run.v2.VpcAccessB\x04\xe2A\x01\x01R\tvpcAccess\x129\n" +
+	"\atimeout\x18\b \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\atimeout\x12-\n" +
+	"\x0fservice_account\x18\t \x01(\tB\x04\xe2A\x01\x01R\x0eserviceAccount\x12>\n" +
 	"\n" +
 	"containers\x18\n" +
 	" \x03(\v2\x1e.google.cloud.run.v2.ContainerR\n" +
-	"containers\x12:\n" +
-	"\avolumes\x18\v \x03(\v2\x1b.google.cloud.run.v2.VolumeB\x03\xe0A\x01R\avolumes\x12c\n" +
-	"\x15execution_environment\x18\r \x01(\x0e2).google.cloud.run.v2.ExecutionEnvironmentB\x03\xe0A\x01R\x14executionEnvironment\x12M\n" +
+	"containers\x12M\n" +
+	"\tsandboxes\x18\x1f \x01(\v2).google.cloud.run.v2.SandboxConfigurationB\x04\xe2A\x01\x01R\tsandboxes\x12;\n" +
+	"\avolumes\x18\v \x03(\v2\x1b.google.cloud.run.v2.VolumeB\x04\xe2A\x01\x01R\avolumes\x12d\n" +
+	"\x15execution_environment\x18\r \x01(\x0e2).google.cloud.run.v2.ExecutionEnvironmentB\x04\xe2A\x01\x01R\x14executionEnvironment\x12M\n" +
 	"\x0eencryption_key\x18\x0e \x01(\tB&\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\rencryptionKey\x12L\n" +
-	" max_instance_request_concurrency\x18\x0f \x01(\x05B\x03\xe0A\x01R\x1dmaxInstanceRequestConcurrency\x12H\n" +
-	"\fservice_mesh\x18\x10 \x01(\v2 .google.cloud.run.v2.ServiceMeshB\x03\xe0A\x01R\vserviceMesh\x12\x80\x01\n" +
-	" encryption_key_revocation_action\x18\x11 \x01(\x0e22.google.cloud.run.v2.EncryptionKeyRevocationActionB\x03\xe0A\x01R\x1dencryptionKeyRevocationAction\x12g\n" +
-	" encryption_key_shutdown_duration\x18\x12 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x1dencryptionKeyShutdownDuration\x12.\n" +
-	"\x10session_affinity\x18\x13 \x01(\bB\x03\xe0A\x01R\x0fsessionAffinity\x127\n" +
-	"\x15health_check_disabled\x18\x14 \x01(\bB\x03\xe0A\x01R\x13healthCheckDisabled\x12K\n" +
-	"\rnode_selector\x18\x15 \x01(\v2!.google.cloud.run.v2.NodeSelectorB\x03\xe0A\x01R\fnodeSelector\x12K\n" +
-	"\x1dgpu_zonal_redundancy_disabled\x18\x18 \x01(\bB\x03\xe0A\x01H\x00R\x1agpuZonalRedundancyDisabled\x88\x01\x01\x1a9\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\rencryptionKey\x12M\n" +
+	" max_instance_request_concurrency\x18\x0f \x01(\x05B\x04\xe2A\x01\x01R\x1dmaxInstanceRequestConcurrency\x12I\n" +
+	"\fservice_mesh\x18\x10 \x01(\v2 .google.cloud.run.v2.ServiceMeshB\x04\xe2A\x01\x01R\vserviceMesh\x12\x81\x01\n" +
+	" encryption_key_revocation_action\x18\x11 \x01(\x0e22.google.cloud.run.v2.EncryptionKeyRevocationActionB\x04\xe2A\x01\x01R\x1dencryptionKeyRevocationAction\x12h\n" +
+	" encryption_key_shutdown_duration\x18\x12 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x1dencryptionKeyShutdownDuration\x12/\n" +
+	"\x10session_affinity\x18\x13 \x01(\bB\x04\xe2A\x01\x01R\x0fsessionAffinity\x128\n" +
+	"\x15health_check_disabled\x18\x14 \x01(\bB\x04\xe2A\x01\x01R\x13healthCheckDisabled\x12L\n" +
+	"\rnode_selector\x18\x15 \x01(\v2!.google.cloud.run.v2.NodeSelectorB\x04\xe2A\x01\x01R\fnodeSelector\x12k\n" +
+	"\x18workload_identity_config\x18\x1b \x01(\v2+.google.cloud.run.v2.WorkloadIdentityConfigB\x04\xe2A\x01\x01R\x16workloadIdentityConfig\x12L\n" +
+	"\x1dgpu_zonal_redundancy_disabled\x18\x18 \x01(\bB\x04\xe2A\x01\x01H\x00R\x1agpuZonalRedundancyDisabled\x88\x01\x01\x12\x1c\n" +
+	"\x06client\x18\x1c \x01(\tB\x04\xe2A\x01\x01R\x06client\x12+\n" +
+	"\x0eclient_version\x18\x1d \x01(\tB\x04\xe2A\x01\x01R\rclientVersion\x12[\n" +
+	"\x12ambient_networking\x18! \x01(\v2&.google.cloud.run.v2.AmbientNetworkingB\x04\xe2A\x01\x01R\x11ambientNetworking\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +
@@ -340,11 +390,14 @@ var file_google_cloud_run_v2_revision_template_proto_goTypes = []any{
 	(*VpcAccess)(nil),                  // 4: google.cloud.run.v2.VpcAccess
 	(*durationpb.Duration)(nil),        // 5: google.protobuf.Duration
 	(*Container)(nil),                  // 6: google.cloud.run.v2.Container
-	(*Volume)(nil),                     // 7: google.cloud.run.v2.Volume
-	(ExecutionEnvironment)(0),          // 8: google.cloud.run.v2.ExecutionEnvironment
-	(*ServiceMesh)(nil),                // 9: google.cloud.run.v2.ServiceMesh
-	(EncryptionKeyRevocationAction)(0), // 10: google.cloud.run.v2.EncryptionKeyRevocationAction
-	(*NodeSelector)(nil),               // 11: google.cloud.run.v2.NodeSelector
+	(*SandboxConfiguration)(nil),       // 7: google.cloud.run.v2.SandboxConfiguration
+	(*Volume)(nil),                     // 8: google.cloud.run.v2.Volume
+	(ExecutionEnvironment)(0),          // 9: google.cloud.run.v2.ExecutionEnvironment
+	(*ServiceMesh)(nil),                // 10: google.cloud.run.v2.ServiceMesh
+	(EncryptionKeyRevocationAction)(0), // 11: google.cloud.run.v2.EncryptionKeyRevocationAction
+	(*NodeSelector)(nil),               // 12: google.cloud.run.v2.NodeSelector
+	(*WorkloadIdentityConfig)(nil),     // 13: google.cloud.run.v2.WorkloadIdentityConfig
+	(*AmbientNetworking)(nil),          // 14: google.cloud.run.v2.AmbientNetworking
 }
 var file_google_cloud_run_v2_revision_template_proto_depIdxs = []int32{
 	1,  // 0: google.cloud.run.v2.RevisionTemplate.labels:type_name -> google.cloud.run.v2.RevisionTemplate.LabelsEntry
@@ -353,17 +406,20 @@ var file_google_cloud_run_v2_revision_template_proto_depIdxs = []int32{
 	4,  // 3: google.cloud.run.v2.RevisionTemplate.vpc_access:type_name -> google.cloud.run.v2.VpcAccess
 	5,  // 4: google.cloud.run.v2.RevisionTemplate.timeout:type_name -> google.protobuf.Duration
 	6,  // 5: google.cloud.run.v2.RevisionTemplate.containers:type_name -> google.cloud.run.v2.Container
-	7,  // 6: google.cloud.run.v2.RevisionTemplate.volumes:type_name -> google.cloud.run.v2.Volume
-	8,  // 7: google.cloud.run.v2.RevisionTemplate.execution_environment:type_name -> google.cloud.run.v2.ExecutionEnvironment
-	9,  // 8: google.cloud.run.v2.RevisionTemplate.service_mesh:type_name -> google.cloud.run.v2.ServiceMesh
-	10, // 9: google.cloud.run.v2.RevisionTemplate.encryption_key_revocation_action:type_name -> google.cloud.run.v2.EncryptionKeyRevocationAction
-	5,  // 10: google.cloud.run.v2.RevisionTemplate.encryption_key_shutdown_duration:type_name -> google.protobuf.Duration
-	11, // 11: google.cloud.run.v2.RevisionTemplate.node_selector:type_name -> google.cloud.run.v2.NodeSelector
-	12, // [12:12] is the sub-list for method output_type
-	12, // [12:12] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	7,  // 6: google.cloud.run.v2.RevisionTemplate.sandboxes:type_name -> google.cloud.run.v2.SandboxConfiguration
+	8,  // 7: google.cloud.run.v2.RevisionTemplate.volumes:type_name -> google.cloud.run.v2.Volume
+	9,  // 8: google.cloud.run.v2.RevisionTemplate.execution_environment:type_name -> google.cloud.run.v2.ExecutionEnvironment
+	10, // 9: google.cloud.run.v2.RevisionTemplate.service_mesh:type_name -> google.cloud.run.v2.ServiceMesh
+	11, // 10: google.cloud.run.v2.RevisionTemplate.encryption_key_revocation_action:type_name -> google.cloud.run.v2.EncryptionKeyRevocationAction
+	5,  // 11: google.cloud.run.v2.RevisionTemplate.encryption_key_shutdown_duration:type_name -> google.protobuf.Duration
+	12, // 12: google.cloud.run.v2.RevisionTemplate.node_selector:type_name -> google.cloud.run.v2.NodeSelector
+	13, // 13: google.cloud.run.v2.RevisionTemplate.workload_identity_config:type_name -> google.cloud.run.v2.WorkloadIdentityConfig
+	14, // 14: google.cloud.run.v2.RevisionTemplate.ambient_networking:type_name -> google.cloud.run.v2.AmbientNetworking
+	15, // [15:15] is the sub-list for method output_type
+	15, // [15:15] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_run_v2_revision_template_proto_init() }
@@ -372,6 +428,7 @@ func file_google_cloud_run_v2_revision_template_proto_init() {
 		return
 	}
 	file_google_cloud_run_v2_k8s_min_proto_init()
+	file_google_cloud_run_v2_sandbox_proto_init()
 	file_google_cloud_run_v2_vendor_settings_proto_init()
 	file_google_cloud_run_v2_revision_template_proto_msgTypes[0].OneofWrappers = []any{}
 	type x struct{}

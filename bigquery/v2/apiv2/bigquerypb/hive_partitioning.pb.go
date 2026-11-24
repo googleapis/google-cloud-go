@@ -161,12 +161,12 @@ var File_google_cloud_bigquery_v2_hive_partitioning_proto protoreflect.FileDescr
 
 const file_google_cloud_bigquery_v2_hive_partitioning_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/bigquery/v2/hive_partitioning.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xdb\x01\n" +
-	"\x17HivePartitioningOptions\x12\x17\n" +
-	"\x04mode\x18\x01 \x01(\tB\x03\xe0A\x01R\x04mode\x12/\n" +
-	"\x11source_uri_prefix\x18\x02 \x01(\tB\x03\xe0A\x01R\x0fsourceUriPrefix\x12Y\n" +
-	"\x18require_partition_filter\x18\x03 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x16requirePartitionFilter\x12\x1b\n" +
-	"\x06fields\x18\x04 \x03(\tB\x03\xe0A\x03R\x06fieldsBr\n" +
+	"0google/cloud/bigquery/v2/hive_partitioning.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xdf\x01\n" +
+	"\x17HivePartitioningOptions\x12\x18\n" +
+	"\x04mode\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04mode\x120\n" +
+	"\x11source_uri_prefix\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0fsourceUriPrefix\x12Z\n" +
+	"\x18require_partition_filter\x18\x03 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x16requirePartitionFilter\x12\x1c\n" +
+	"\x06fields\x18\x04 \x03(\tB\x04\xe2A\x01\x03R\x06fieldsBr\n" +
 	"\x1ccom.google.cloud.bigquery.v2B\x15HivePartitioningProtoZ;cloud.google.com/go/bigquery/v2/apiv2/bigquerypb;bigquerypbb\x06proto3"
 
 var (

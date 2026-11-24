@@ -1506,102 +1506,103 @@ var File_google_cloud_cloudsecuritycompliance_v1_deployment_proto protoreflect.F
 
 const file_google_cloud_cloudsecuritycompliance_v1_deployment_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/cloudsecuritycompliance/v1/deployment.proto\x12'google.cloud.cloudsecuritycompliance.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/cloudsecuritycompliance/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf6\t\n" +
-	"\x13FrameworkDeployment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12x\n" +
-	"\x16target_resource_config\x18\x02 \x01(\v2=.google.cloud.cloudsecuritycompliance.v1.TargetResourceConfigB\x03\xe0A\x02R\x14targetResourceConfig\x12=\n" +
-	"\x18computed_target_resource\x18\x03 \x01(\tB\x03\xe0A\x03R\x16computedTargetResource\x12^\n" +
-	"\tframework\x18\x04 \x01(\v2;.google.cloud.cloudsecuritycompliance.v1.FrameworkReferenceB\x03\xe0A\x02R\tframework\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12x\n" +
-	"\x16cloud_control_metadata\x18\x06 \x03(\v2=.google.cloud.cloudsecuritycompliance.v1.CloudControlMetadataB\x03\xe0A\x02R\x14cloudControlMetadata\x12h\n" +
-	"\x10deployment_state\x18\a \x01(\x0e28.google.cloud.cloudsecuritycompliance.v1.DeploymentStateB\x03\xe0A\x03R\x0fdeploymentState\x12@\n" +
-	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
+	"8google/cloud/cloudsecuritycompliance/v1/deployment.proto\x12'google.cloud.cloudsecuritycompliance.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/cloudsecuritycompliance/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x82\n" +
+	"\n" +
+	"\x13FrameworkDeployment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12y\n" +
+	"\x16target_resource_config\x18\x02 \x01(\v2=.google.cloud.cloudsecuritycompliance.v1.TargetResourceConfigB\x04\xe2A\x01\x02R\x14targetResourceConfig\x12>\n" +
+	"\x18computed_target_resource\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x16computedTargetResource\x12_\n" +
+	"\tframework\x18\x04 \x01(\v2;.google.cloud.cloudsecuritycompliance.v1.FrameworkReferenceB\x04\xe2A\x01\x02R\tframework\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12y\n" +
+	"\x16cloud_control_metadata\x18\x06 \x03(\v2=.google.cloud.cloudsecuritycompliance.v1.CloudControlMetadataB\x04\xe2A\x01\x02R\x14cloudControlMetadata\x12i\n" +
+	"\x10deployment_state\x18\a \x01(\x0e28.google.cloud.cloudsecuritycompliance.v1.DeploymentStateB\x04\xe2A\x01\x03R\x0fdeploymentState\x12A\n" +
+	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
 	"\vupdate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04etag\x18\v \x01(\tB\x03\xe0A\x01R\x04etag\x12D\n" +
-	"\x1ctarget_resource_display_name\x18\r \x01(\tB\x03\xe0A\x03R\x19targetResourceDisplayName\x12\x9c\x01\n" +
-	"#cloud_control_deployment_references\x18\x0e \x03(\v2H.google.cloud.cloudsecuritycompliance.v1.CloudControlDeploymentReferenceB\x03\xe0A\x03R cloudControlDeploymentReferences:\x9f\x02\xeaA\x9b\x02\n" +
-	":cloudsecuritycompliance.googleapis.com/FrameworkDeployment\x12]organizations/{organization}/locations/{location}/frameworkDeployments/{framework_deployment}\x12Sprojects/{project}/locations/{location}/frameworkDeployments/{framework_deployment}*\x14frameworkDeployments2\x13frameworkDeployment\"\xa1\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04etag\x18\v \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12E\n" +
+	"\x1ctarget_resource_display_name\x18\r \x01(\tB\x04\xe2A\x01\x03R\x19targetResourceDisplayName\x12\x9d\x01\n" +
+	"#cloud_control_deployment_references\x18\x0e \x03(\v2H.google.cloud.cloudsecuritycompliance.v1.CloudControlDeploymentReferenceB\x04\xe2A\x01\x03R cloudControlDeploymentReferences:\x9f\x02\xeaA\x9b\x02\n" +
+	":cloudsecuritycompliance.googleapis.com/FrameworkDeployment\x12]organizations/{organization}/locations/{location}/frameworkDeployments/{framework_deployment}\x12Sprojects/{project}/locations/{location}/frameworkDeployments/{framework_deployment}*\x14frameworkDeployments2\x13frameworkDeployment\"\xad\n" +
 	"\n" +
-	"\x16CloudControlDeployment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12x\n" +
-	"\x16target_resource_config\x18\x02 \x01(\v2=.google.cloud.cloudsecuritycompliance.v1.TargetResourceConfigB\x03\xe0A\x02R\x14targetResourceConfig\x12,\n" +
-	"\x0ftarget_resource\x18\x03 \x01(\tB\x03\xe0A\x03R\x0etargetResource\x12x\n" +
-	"\x16cloud_control_metadata\x18\x04 \x01(\v2=.google.cloud.cloudsecuritycompliance.v1.CloudControlMetadataB\x03\xe0A\x02R\x14cloudControlMetadata\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12h\n" +
-	"\x10deployment_state\x18\x06 \x01(\x0e28.google.cloud.cloudsecuritycompliance.v1.DeploymentStateB\x03\xe0A\x03R\x0fdeploymentState\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04etag\x18\t \x01(\tB\x03\xe0A\x01R\x04etag\x12\x89\x01\n" +
+	"\x16CloudControlDeployment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12y\n" +
+	"\x16target_resource_config\x18\x02 \x01(\v2=.google.cloud.cloudsecuritycompliance.v1.TargetResourceConfigB\x04\xe2A\x01\x02R\x14targetResourceConfig\x12-\n" +
+	"\x0ftarget_resource\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x0etargetResource\x12y\n" +
+	"\x16cloud_control_metadata\x18\x04 \x01(\v2=.google.cloud.cloudsecuritycompliance.v1.CloudControlMetadataB\x04\xe2A\x01\x02R\x14cloudControlMetadata\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12i\n" +
+	"\x10deployment_state\x18\x06 \x01(\x0e28.google.cloud.cloudsecuritycompliance.v1.DeploymentStateB\x04\xe2A\x01\x03R\x0fdeploymentState\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04etag\x18\t \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12\x8a\x01\n" +
 	"#parameter_substituted_cloud_control\x18\n" +
-	" \x01(\v25.google.cloud.cloudsecuritycompliance.v1.CloudControlB\x03\xe0A\x03R parameterSubstitutedCloudControl\x12\x92\x01\n" +
-	"\x1fframework_deployment_references\x18\v \x03(\v2E.google.cloud.cloudsecuritycompliance.v1.FrameworkDeploymentReferenceB\x03\xe0A\x03R\x1dframeworkDeploymentReferences\x12D\n" +
-	"\x1ctarget_resource_display_name\x18\f \x01(\tB\x03\xe0A\x03R\x19targetResourceDisplayName:\xb6\x02\xeaA\xb2\x02\n" +
-	"=cloudsecuritycompliance.googleapis.com/CloudControlDeployment\x12dorganizations/{organization}/locations/{location}/cloudControlDeployments/{cloud_control_deployment}\x12Zprojects/{project}/locations/{location}/cloudControlDeployments/{cloud_control_deployment}*\x17cloudControlDeployments2\x16cloudControlDeployment\"\x80\x02\n" +
-	"\x14TargetResourceConfig\x12?\n" +
-	"\x18existing_target_resource\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\x16existingTargetResource\x12\x93\x01\n" +
-	"\x1ftarget_resource_creation_config\x18\x02 \x01(\v2E.google.cloud.cloudsecuritycompliance.v1.TargetResourceCreationConfigB\x03\xe0A\x01H\x00R\x1ctargetResourceCreationConfigB\x11\n" +
-	"\x0fresource_config\"\xb5\x02\n" +
-	"\x1cTargetResourceCreationConfig\x12z\n" +
-	"\x16folder_creation_config\x18\x01 \x01(\v2=.google.cloud.cloudsecuritycompliance.v1.FolderCreationConfigB\x03\xe0A\x01H\x00R\x14folderCreationConfig\x12}\n" +
-	"\x17project_creation_config\x18\x02 \x01(\v2>.google.cloud.cloudsecuritycompliance.v1.ProjectCreationConfigB\x03\xe0A\x01H\x00R\x15projectCreationConfigB\x1a\n" +
-	"\x18resource_creation_config\"h\n" +
-	"\x14FolderCreationConfig\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x123\n" +
-	"\x13folder_display_name\x18\x02 \x01(\tB\x03\xe0A\x02R\x11folderDisplayName\"\x9e\x01\n" +
-	"\x15ProjectCreationConfig\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x125\n" +
-	"\x14project_display_name\x18\x02 \x01(\tB\x03\xe0A\x02R\x12projectDisplayName\x121\n" +
-	"\x12billing_account_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x10billingAccountId\"\xf7\x01\n" +
-	"\x14CloudControlMetadata\x12u\n" +
-	"\x15cloud_control_details\x18\x01 \x01(\v2<.google.cloud.cloudsecuritycompliance.v1.CloudControlDetailsB\x03\xe0A\x02R\x13cloudControlDetails\x12h\n" +
-	"\x10enforcement_mode\x18\x02 \x01(\x0e28.google.cloud.cloudsecuritycompliance.v1.EnforcementModeB\x03\xe0A\x02R\x0fenforcementMode\"\xb1\x02\n" +
-	" CreateFrameworkDeploymentRequest\x12Z\n" +
-	"\x06parent\x18\x01 \x01(\tBB\xe0A\x02\xfaA<\x12:cloudsecuritycompliance.googleapis.com/FrameworkDeploymentR\x06parent\x12;\n" +
-	"\x17framework_deployment_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x15frameworkDeploymentId\x12t\n" +
-	"\x14framework_deployment\x18\x03 \x01(\v2<.google.cloud.cloudsecuritycompliance.v1.FrameworkDeploymentB\x03\xe0A\x02R\x13frameworkDeployment\"\x93\x01\n" +
-	" DeleteFrameworkDeploymentRequest\x12V\n" +
-	"\x04name\x18\x01 \x01(\tBB\xe0A\x02\xfaA<\n" +
-	":cloudsecuritycompliance.googleapis.com/FrameworkDeploymentR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\"w\n" +
-	"\x1dGetFrameworkDeploymentRequest\x12V\n" +
-	"\x04name\x18\x01 \x01(\tBB\xe0A\x02\xfaA<\n" +
-	":cloudsecuritycompliance.googleapis.com/FrameworkDeploymentR\x04name\"\x80\x02\n" +
-	"\x1fListFrameworkDeploymentsRequest\x12Z\n" +
-	"\x06parent\x18\x01 \x01(\tBB\xe0A\x02\xfaA<\x12:cloudsecuritycompliance.googleapis.com/FrameworkDeploymentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	" \x01(\v25.google.cloud.cloudsecuritycompliance.v1.CloudControlB\x04\xe2A\x01\x03R parameterSubstitutedCloudControl\x12\x93\x01\n" +
+	"\x1fframework_deployment_references\x18\v \x03(\v2E.google.cloud.cloudsecuritycompliance.v1.FrameworkDeploymentReferenceB\x04\xe2A\x01\x03R\x1dframeworkDeploymentReferences\x12E\n" +
+	"\x1ctarget_resource_display_name\x18\f \x01(\tB\x04\xe2A\x01\x03R\x19targetResourceDisplayName:\xb6\x02\xeaA\xb2\x02\n" +
+	"=cloudsecuritycompliance.googleapis.com/CloudControlDeployment\x12dorganizations/{organization}/locations/{location}/cloudControlDeployments/{cloud_control_deployment}\x12Zprojects/{project}/locations/{location}/cloudControlDeployments/{cloud_control_deployment}*\x17cloudControlDeployments2\x16cloudControlDeployment\"\x82\x02\n" +
+	"\x14TargetResourceConfig\x12@\n" +
+	"\x18existing_target_resource\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\x16existingTargetResource\x12\x94\x01\n" +
+	"\x1ftarget_resource_creation_config\x18\x02 \x01(\v2E.google.cloud.cloudsecuritycompliance.v1.TargetResourceCreationConfigB\x04\xe2A\x01\x01H\x00R\x1ctargetResourceCreationConfigB\x11\n" +
+	"\x0fresource_config\"\xb7\x02\n" +
+	"\x1cTargetResourceCreationConfig\x12{\n" +
+	"\x16folder_creation_config\x18\x01 \x01(\v2=.google.cloud.cloudsecuritycompliance.v1.FolderCreationConfigB\x04\xe2A\x01\x01H\x00R\x14folderCreationConfig\x12~\n" +
+	"\x17project_creation_config\x18\x02 \x01(\v2>.google.cloud.cloudsecuritycompliance.v1.ProjectCreationConfigB\x04\xe2A\x01\x01H\x00R\x15projectCreationConfigB\x1a\n" +
+	"\x18resource_creation_config\"j\n" +
+	"\x14FolderCreationConfig\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x124\n" +
+	"\x13folder_display_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x11folderDisplayName\"\xa1\x01\n" +
+	"\x15ProjectCreationConfig\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x126\n" +
+	"\x14project_display_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12projectDisplayName\x122\n" +
+	"\x12billing_account_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x10billingAccountId\"\xf9\x01\n" +
+	"\x14CloudControlMetadata\x12v\n" +
+	"\x15cloud_control_details\x18\x01 \x01(\v2<.google.cloud.cloudsecuritycompliance.v1.CloudControlDetailsB\x04\xe2A\x01\x02R\x13cloudControlDetails\x12i\n" +
+	"\x10enforcement_mode\x18\x02 \x01(\x0e28.google.cloud.cloudsecuritycompliance.v1.EnforcementModeB\x04\xe2A\x01\x02R\x0fenforcementMode\"\xb4\x02\n" +
+	" CreateFrameworkDeploymentRequest\x12[\n" +
+	"\x06parent\x18\x01 \x01(\tBC\xe2A\x01\x02\xfaA<\x12:cloudsecuritycompliance.googleapis.com/FrameworkDeploymentR\x06parent\x12<\n" +
+	"\x17framework_deployment_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x15frameworkDeploymentId\x12u\n" +
+	"\x14framework_deployment\x18\x03 \x01(\v2<.google.cloud.cloudsecuritycompliance.v1.FrameworkDeploymentB\x04\xe2A\x01\x02R\x13frameworkDeployment\"\x95\x01\n" +
+	" DeleteFrameworkDeploymentRequest\x12W\n" +
+	"\x04name\x18\x01 \x01(\tBC\xe2A\x01\x02\xfaA<\n" +
+	":cloudsecuritycompliance.googleapis.com/FrameworkDeploymentR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"x\n" +
+	"\x1dGetFrameworkDeploymentRequest\x12W\n" +
+	"\x04name\x18\x01 \x01(\tBC\xe2A\x01\x02\xfaA<\n" +
+	":cloudsecuritycompliance.googleapis.com/FrameworkDeploymentR\x04name\"\x85\x02\n" +
+	"\x1fListFrameworkDeploymentsRequest\x12[\n" +
+	"\x06parent\x18\x01 \x01(\tBC\xe2A\x01\x02\xfaA<\x12:cloudsecuritycompliance.googleapis.com/FrameworkDeploymentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xbd\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xbd\x01\n" +
 	" ListFrameworkDeploymentsResponse\x12q\n" +
 	"\x15framework_deployments\x18\x01 \x03(\v2<.google.cloud.cloudsecuritycompliance.v1.FrameworkDeploymentR\x14frameworkDeployments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"}\n" +
-	" GetCloudControlDeploymentRequest\x12Y\n" +
-	"\x04name\x18\x01 \x01(\tBE\xe0A\x02\xfaA?\n" +
-	"=cloudsecuritycompliance.googleapis.com/CloudControlDeploymentR\x04name\"\x86\x02\n" +
-	"\"ListCloudControlDeploymentsRequest\x12]\n" +
-	"\x06parent\x18\x01 \x01(\tBE\xe0A\x02\xfaA?\x12=cloudsecuritycompliance.googleapis.com/CloudControlDeploymentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"~\n" +
+	" GetCloudControlDeploymentRequest\x12Z\n" +
+	"\x04name\x18\x01 \x01(\tBF\xe2A\x01\x02\xfaA?\n" +
+	"=cloudsecuritycompliance.googleapis.com/CloudControlDeploymentR\x04name\"\x8b\x02\n" +
+	"\"ListCloudControlDeploymentsRequest\x12^\n" +
+	"\x06parent\x18\x01 \x01(\tBF\xe2A\x01\x02\xfaA?\x12=cloudsecuritycompliance.googleapis.com/CloudControlDeploymentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xca\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xca\x01\n" +
 	"#ListCloudControlDeploymentsResponse\x12{\n" +
 	"\x19cloud_control_deployments\x18\x01 \x03(\v2?.google.cloud.cloudsecuritycompliance.v1.CloudControlDeploymentR\x17cloudControlDeployments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa2\x01\n" +
-	"\x1fCloudControlDeploymentReference\x12\x7f\n" +
-	"\x18cloud_control_deployment\x18\x01 \x01(\tBE\xe0A\x03\xfaA?\n" +
-	"=cloudsecuritycompliance.googleapis.com/CloudControlDeploymentR\x16cloudControlDeployment\"\xc3\x02\n" +
-	"\x1cFrameworkDeploymentReference\x12u\n" +
-	"\x14framework_deployment\x18\x01 \x01(\tBB\xe0A\x03\xfaA<\n" +
-	":cloudsecuritycompliance.googleapis.com/FrameworkDeploymentR\x13frameworkDeployment\x12q\n" +
-	"\x13framework_reference\x18\x02 \x01(\v2;.google.cloud.cloudsecuritycompliance.v1.FrameworkReferenceB\x03\xe0A\x01R\x12frameworkReference\x129\n" +
-	"\x16framework_display_name\x18\x03 \x01(\tB\x03\xe0A\x01R\x14frameworkDisplayName*\xbb\x02\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa4\x01\n" +
+	"\x1fCloudControlDeploymentReference\x12\x80\x01\n" +
+	"\x18cloud_control_deployment\x18\x01 \x01(\tBF\xe2A\x01\x03\xfaA?\n" +
+	"=cloudsecuritycompliance.googleapis.com/CloudControlDeploymentR\x16cloudControlDeployment\"\xc6\x02\n" +
+	"\x1cFrameworkDeploymentReference\x12v\n" +
+	"\x14framework_deployment\x18\x01 \x01(\tBC\xe2A\x01\x03\xfaA<\n" +
+	":cloudsecuritycompliance.googleapis.com/FrameworkDeploymentR\x13frameworkDeployment\x12r\n" +
+	"\x13framework_reference\x18\x02 \x01(\v2;.google.cloud.cloudsecuritycompliance.v1.FrameworkReferenceB\x04\xe2A\x01\x01R\x12frameworkReference\x12:\n" +
+	"\x16framework_display_name\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x14frameworkDisplayName*\xbb\x02\n" +
 	"\x0fDeploymentState\x12 \n" +
 	"\x1cDEPLOYMENT_STATE_UNSPECIFIED\x10\x00\x12\x1f\n" +
 	"\x1bDEPLOYMENT_STATE_VALIDATING\x10\x01\x12\x1d\n" +

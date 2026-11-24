@@ -2177,27 +2177,27 @@ var File_google_cloud_dataproc_v1_workflow_templates_proto protoreflect.FileDesc
 
 const file_google_cloud_dataproc_v1_workflow_templates_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/dataproc/v1/workflow_templates.proto\x12\x18google.cloud.dataproc.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/dataproc/v1/clusters.proto\x1a#google/cloud/dataproc/v1/jobs.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb1\b\n" +
-	"\x10WorkflowTemplate\x12\x13\n" +
-	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1d\n" +
-	"\aversion\x18\x03 \x01(\x05B\x03\xe0A\x01R\aversion\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12S\n" +
-	"\x06labels\x18\x06 \x03(\v26.google.cloud.dataproc.v1.WorkflowTemplate.LabelsEntryB\x03\xe0A\x01R\x06labels\x12V\n" +
-	"\tplacement\x18\a \x01(\v23.google.cloud.dataproc.v1.WorkflowTemplatePlacementB\x03\xe0A\x02R\tplacement\x12=\n" +
-	"\x04jobs\x18\b \x03(\v2$.google.cloud.dataproc.v1.OrderedJobB\x03\xe0A\x02R\x04jobs\x12P\n" +
+	"1google/cloud/dataproc/v1/workflow_templates.proto\x12\x18google.cloud.dataproc.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/dataproc/v1/clusters.proto\x1a#google/cloud/dataproc/v1/jobs.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbd\b\n" +
+	"\x10WorkflowTemplate\x12\x14\n" +
+	"\x02id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x1e\n" +
+	"\aversion\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\aversion\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12T\n" +
+	"\x06labels\x18\x06 \x03(\v26.google.cloud.dataproc.v1.WorkflowTemplate.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12W\n" +
+	"\tplacement\x18\a \x01(\v23.google.cloud.dataproc.v1.WorkflowTemplatePlacementB\x04\xe2A\x01\x02R\tplacement\x12>\n" +
+	"\x04jobs\x18\b \x03(\v2$.google.cloud.dataproc.v1.OrderedJobB\x04\xe2A\x01\x02R\x04jobs\x12Q\n" +
 	"\n" +
-	"parameters\x18\t \x03(\v2+.google.cloud.dataproc.v1.TemplateParameterB\x03\xe0A\x01R\n" +
-	"parameters\x12?\n" +
+	"parameters\x18\t \x03(\v2+.google.cloud.dataproc.v1.TemplateParameterB\x04\xe2A\x01\x01R\n" +
+	"parameters\x12@\n" +
 	"\vdag_timeout\x18\n" +
-	" \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\n" +
-	"dagTimeout\x12m\n" +
-	"\x11encryption_config\x18\v \x01(\v2;.google.cloud.dataproc.v1.WorkflowTemplate.EncryptionConfigB\x03\xe0A\x01R\x10encryptionConfig\x1aV\n" +
-	"\x10EncryptionConfig\x12B\n" +
-	"\akms_key\x18\x01 \x01(\tB)\xe0A\x01\xfaA#\n" +
+	" \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\n" +
+	"dagTimeout\x12n\n" +
+	"\x11encryption_config\x18\v \x01(\v2;.google.cloud.dataproc.v1.WorkflowTemplate.EncryptionConfigB\x04\xe2A\x01\x01R\x10encryptionConfig\x1aW\n" +
+	"\x10EncryptionConfig\x12C\n" +
+	"\akms_key\x18\x01 \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -2206,82 +2206,82 @@ const file_google_cloud_dataproc_v1_workflow_templates_proto_rawDesc = "" +
 	"\x19WorkflowTemplatePlacement\x12S\n" +
 	"\x0fmanaged_cluster\x18\x01 \x01(\v2(.google.cloud.dataproc.v1.ManagedClusterH\x00R\x0emanagedCluster\x12V\n" +
 	"\x10cluster_selector\x18\x02 \x01(\v2).google.cloud.dataproc.v1.ClusterSelectorH\x00R\x0fclusterSelectorB\v\n" +
-	"\tplacement\"\x8c\x02\n" +
-	"\x0eManagedCluster\x12&\n" +
-	"\fcluster_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vclusterName\x12D\n" +
-	"\x06config\x18\x03 \x01(\v2'.google.cloud.dataproc.v1.ClusterConfigB\x03\xe0A\x02R\x06config\x12Q\n" +
-	"\x06labels\x18\x04 \x03(\v24.google.cloud.dataproc.v1.ManagedCluster.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a9\n" +
+	"\tplacement\"\x8f\x02\n" +
+	"\x0eManagedCluster\x12'\n" +
+	"\fcluster_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vclusterName\x12E\n" +
+	"\x06config\x18\x03 \x01(\v2'.google.cloud.dataproc.v1.ClusterConfigB\x04\xe2A\x01\x02R\x06config\x12R\n" +
+	"\x06labels\x18\x04 \x03(\v24.google.cloud.dataproc.v1.ManagedCluster.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xd6\x01\n" +
-	"\x0fClusterSelector\x12\x17\n" +
-	"\x04zone\x18\x01 \x01(\tB\x03\xe0A\x01R\x04zone\x12h\n" +
-	"\x0ecluster_labels\x18\x02 \x03(\v2<.google.cloud.dataproc.v1.ClusterSelector.ClusterLabelsEntryB\x03\xe0A\x02R\rclusterLabels\x1a@\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xd8\x01\n" +
+	"\x0fClusterSelector\x12\x18\n" +
+	"\x04zone\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04zone\x12i\n" +
+	"\x0ecluster_labels\x18\x02 \x03(\v2<.google.cloud.dataproc.v1.ClusterSelector.ClusterLabelsEntryB\x04\xe2A\x01\x02R\rclusterLabels\x1a@\n" +
 	"\x12ClusterLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xa8\b\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb6\b\n" +
 	"\n" +
-	"OrderedJob\x12\x1c\n" +
-	"\astep_id\x18\x01 \x01(\tB\x03\xe0A\x02R\x06stepId\x12I\n" +
+	"OrderedJob\x12\x1d\n" +
+	"\astep_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06stepId\x12J\n" +
 	"\n" +
-	"hadoop_job\x18\x02 \x01(\v2#.google.cloud.dataproc.v1.HadoopJobB\x03\xe0A\x01H\x00R\thadoopJob\x12F\n" +
-	"\tspark_job\x18\x03 \x01(\v2\".google.cloud.dataproc.v1.SparkJobB\x03\xe0A\x01H\x00R\bsparkJob\x12L\n" +
-	"\vpyspark_job\x18\x04 \x01(\v2$.google.cloud.dataproc.v1.PySparkJobB\x03\xe0A\x01H\x00R\n" +
-	"pysparkJob\x12C\n" +
-	"\bhive_job\x18\x05 \x01(\v2!.google.cloud.dataproc.v1.HiveJobB\x03\xe0A\x01H\x00R\ahiveJob\x12@\n" +
-	"\apig_job\x18\x06 \x01(\v2 .google.cloud.dataproc.v1.PigJobB\x03\xe0A\x01H\x00R\x06pigJob\x12J\n" +
-	"\vspark_r_job\x18\v \x01(\v2#.google.cloud.dataproc.v1.SparkRJobB\x03\xe0A\x01H\x00R\tsparkRJob\x12P\n" +
-	"\rspark_sql_job\x18\a \x01(\v2%.google.cloud.dataproc.v1.SparkSqlJobB\x03\xe0A\x01H\x00R\vsparkSqlJob\x12I\n" +
+	"hadoop_job\x18\x02 \x01(\v2#.google.cloud.dataproc.v1.HadoopJobB\x04\xe2A\x01\x01H\x00R\thadoopJob\x12G\n" +
+	"\tspark_job\x18\x03 \x01(\v2\".google.cloud.dataproc.v1.SparkJobB\x04\xe2A\x01\x01H\x00R\bsparkJob\x12M\n" +
+	"\vpyspark_job\x18\x04 \x01(\v2$.google.cloud.dataproc.v1.PySparkJobB\x04\xe2A\x01\x01H\x00R\n" +
+	"pysparkJob\x12D\n" +
+	"\bhive_job\x18\x05 \x01(\v2!.google.cloud.dataproc.v1.HiveJobB\x04\xe2A\x01\x01H\x00R\ahiveJob\x12A\n" +
+	"\apig_job\x18\x06 \x01(\v2 .google.cloud.dataproc.v1.PigJobB\x04\xe2A\x01\x01H\x00R\x06pigJob\x12K\n" +
+	"\vspark_r_job\x18\v \x01(\v2#.google.cloud.dataproc.v1.SparkRJobB\x04\xe2A\x01\x01H\x00R\tsparkRJob\x12Q\n" +
+	"\rspark_sql_job\x18\a \x01(\v2%.google.cloud.dataproc.v1.SparkSqlJobB\x04\xe2A\x01\x01H\x00R\vsparkSqlJob\x12J\n" +
 	"\n" +
-	"presto_job\x18\f \x01(\v2#.google.cloud.dataproc.v1.PrestoJobB\x03\xe0A\x01H\x00R\tprestoJob\x12F\n" +
-	"\ttrino_job\x18\r \x01(\v2\".google.cloud.dataproc.v1.TrinoJobB\x03\xe0A\x01H\x00R\btrinoJob\x12F\n" +
-	"\tflink_job\x18\x0e \x01(\v2\".google.cloud.dataproc.v1.FlinkJobB\x03\xe0A\x01H\x00R\bflinkJob\x12M\n" +
-	"\x06labels\x18\b \x03(\v20.google.cloud.dataproc.v1.OrderedJob.LabelsEntryB\x03\xe0A\x01R\x06labels\x12L\n" +
+	"presto_job\x18\f \x01(\v2#.google.cloud.dataproc.v1.PrestoJobB\x04\xe2A\x01\x01H\x00R\tprestoJob\x12G\n" +
+	"\ttrino_job\x18\r \x01(\v2\".google.cloud.dataproc.v1.TrinoJobB\x04\xe2A\x01\x01H\x00R\btrinoJob\x12G\n" +
+	"\tflink_job\x18\x0e \x01(\v2\".google.cloud.dataproc.v1.FlinkJobB\x04\xe2A\x01\x01H\x00R\bflinkJob\x12N\n" +
+	"\x06labels\x18\b \x03(\v20.google.cloud.dataproc.v1.OrderedJob.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12M\n" +
 	"\n" +
-	"scheduling\x18\t \x01(\v2'.google.cloud.dataproc.v1.JobSchedulingB\x03\xe0A\x01R\n" +
-	"scheduling\x127\n" +
+	"scheduling\x18\t \x01(\v2'.google.cloud.dataproc.v1.JobSchedulingB\x04\xe2A\x01\x01R\n" +
+	"scheduling\x128\n" +
 	"\x15prerequisite_step_ids\x18\n" +
-	" \x03(\tB\x03\xe0A\x01R\x13prerequisiteStepIds\x1a9\n" +
+	" \x03(\tB\x04\xe2A\x01\x01R\x13prerequisiteStepIds\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\n" +
 	"\n" +
-	"\bjob_type\"\xc4\x01\n" +
-	"\x11TemplateParameter\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x1b\n" +
-	"\x06fields\x18\x02 \x03(\tB\x03\xe0A\x02R\x06fields\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12R\n" +
+	"\bjob_type\"\xc8\x01\n" +
+	"\x11TemplateParameter\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x1c\n" +
+	"\x06fields\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x06fields\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12S\n" +
 	"\n" +
-	"validation\x18\x04 \x01(\v2-.google.cloud.dataproc.v1.ParameterValidationB\x03\xe0A\x01R\n" +
+	"validation\x18\x04 \x01(\v2-.google.cloud.dataproc.v1.ParameterValidationB\x04\xe2A\x01\x01R\n" +
 	"validation\"\xb0\x01\n" +
 	"\x13ParameterValidation\x12A\n" +
 	"\x05regex\x18\x01 \x01(\v2).google.cloud.dataproc.v1.RegexValidationH\x00R\x05regex\x12C\n" +
 	"\x06values\x18\x02 \x01(\v2).google.cloud.dataproc.v1.ValueValidationH\x00R\x06valuesB\x11\n" +
-	"\x0fvalidation_type\"0\n" +
-	"\x0fRegexValidation\x12\x1d\n" +
-	"\aregexes\x18\x01 \x03(\tB\x03\xe0A\x02R\aregexes\".\n" +
-	"\x0fValueValidation\x12\x1b\n" +
-	"\x06values\x18\x01 \x03(\tB\x03\xe0A\x02R\x06values\"\xff\a\n" +
-	"\x10WorkflowMetadata\x12\x1f\n" +
-	"\btemplate\x18\x01 \x01(\tB\x03\xe0A\x03R\btemplate\x12\x1d\n" +
-	"\aversion\x18\x02 \x01(\x05B\x03\xe0A\x03R\aversion\x12V\n" +
-	"\x0ecreate_cluster\x18\x03 \x01(\v2*.google.cloud.dataproc.v1.ClusterOperationB\x03\xe0A\x03R\rcreateCluster\x12B\n" +
-	"\x05graph\x18\x04 \x01(\v2'.google.cloud.dataproc.v1.WorkflowGraphB\x03\xe0A\x03R\x05graph\x12V\n" +
-	"\x0edelete_cluster\x18\x05 \x01(\v2*.google.cloud.dataproc.v1.ClusterOperationB\x03\xe0A\x03R\rdeleteCluster\x12K\n" +
-	"\x05state\x18\x06 \x01(\x0e20.google.cloud.dataproc.v1.WorkflowMetadata.StateB\x03\xe0A\x03R\x05state\x12&\n" +
-	"\fcluster_name\x18\a \x01(\tB\x03\xe0A\x03R\vclusterName\x12Z\n" +
+	"\x0fvalidation_type\"1\n" +
+	"\x0fRegexValidation\x12\x1e\n" +
+	"\aregexes\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\aregexes\"/\n" +
+	"\x0fValueValidation\x12\x1c\n" +
+	"\x06values\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x06values\"\x8c\b\n" +
+	"\x10WorkflowMetadata\x12 \n" +
+	"\btemplate\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\btemplate\x12\x1e\n" +
+	"\aversion\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\aversion\x12W\n" +
+	"\x0ecreate_cluster\x18\x03 \x01(\v2*.google.cloud.dataproc.v1.ClusterOperationB\x04\xe2A\x01\x03R\rcreateCluster\x12C\n" +
+	"\x05graph\x18\x04 \x01(\v2'.google.cloud.dataproc.v1.WorkflowGraphB\x04\xe2A\x01\x03R\x05graph\x12W\n" +
+	"\x0edelete_cluster\x18\x05 \x01(\v2*.google.cloud.dataproc.v1.ClusterOperationB\x04\xe2A\x01\x03R\rdeleteCluster\x12L\n" +
+	"\x05state\x18\x06 \x01(\x0e20.google.cloud.dataproc.v1.WorkflowMetadata.StateB\x04\xe2A\x01\x03R\x05state\x12'\n" +
+	"\fcluster_name\x18\a \x01(\tB\x04\xe2A\x01\x03R\vclusterName\x12Z\n" +
 	"\n" +
 	"parameters\x18\b \x03(\v2:.google.cloud.dataproc.v1.WorkflowMetadata.ParametersEntryR\n" +
-	"parameters\x12>\n" +
+	"parameters\x12?\n" +
 	"\n" +
-	"start_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
+	"start_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
 	"\bend_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12&\n" +
-	"\fcluster_uuid\x18\v \x01(\tB\x03\xe0A\x03R\vclusterUuid\x12?\n" +
-	"\vdag_timeout\x18\f \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\n" +
-	"dagTimeout\x12E\n" +
-	"\x0edag_start_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fdagStartTime\x12A\n" +
-	"\fdag_end_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12'\n" +
+	"\fcluster_uuid\x18\v \x01(\tB\x04\xe2A\x01\x03R\vclusterUuid\x12@\n" +
+	"\vdag_timeout\x18\f \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\n" +
+	"dagTimeout\x12F\n" +
+	"\x0edag_start_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fdagStartTime\x12B\n" +
+	"\fdag_end_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"dagEndTime\x1a=\n" +
 	"\x0fParametersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -2290,19 +2290,19 @@ const file_google_cloud_dataproc_v1_workflow_templates_proto_rawDesc = "" +
 	"\aUNKNOWN\x10\x00\x12\v\n" +
 	"\aPENDING\x10\x01\x12\v\n" +
 	"\aRUNNING\x10\x02\x12\b\n" +
-	"\x04DONE\x10\x03\"n\n" +
-	"\x10ClusterOperation\x12&\n" +
-	"\foperation_id\x18\x01 \x01(\tB\x03\xe0A\x03R\voperationId\x12\x19\n" +
-	"\x05error\x18\x02 \x01(\tB\x03\xe0A\x03R\x05error\x12\x17\n" +
-	"\x04done\x18\x03 \x01(\bB\x03\xe0A\x03R\x04done\"R\n" +
-	"\rWorkflowGraph\x12A\n" +
-	"\x05nodes\x18\x01 \x03(\v2&.google.cloud.dataproc.v1.WorkflowNodeB\x03\xe0A\x03R\x05nodes\"\xd5\x02\n" +
-	"\fWorkflowNode\x12\x1c\n" +
-	"\astep_id\x18\x01 \x01(\tB\x03\xe0A\x03R\x06stepId\x127\n" +
-	"\x15prerequisite_step_ids\x18\x02 \x03(\tB\x03\xe0A\x03R\x13prerequisiteStepIds\x12\x1a\n" +
-	"\x06job_id\x18\x03 \x01(\tB\x03\xe0A\x03R\x05jobId\x12K\n" +
-	"\x05state\x18\x05 \x01(\x0e20.google.cloud.dataproc.v1.WorkflowNode.NodeStateB\x03\xe0A\x03R\x05state\x12\x19\n" +
-	"\x05error\x18\x06 \x01(\tB\x03\xe0A\x03R\x05error\"j\n" +
+	"\x04DONE\x10\x03\"q\n" +
+	"\x10ClusterOperation\x12'\n" +
+	"\foperation_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\voperationId\x12\x1a\n" +
+	"\x05error\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05error\x12\x18\n" +
+	"\x04done\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\x04done\"S\n" +
+	"\rWorkflowGraph\x12B\n" +
+	"\x05nodes\x18\x01 \x03(\v2&.google.cloud.dataproc.v1.WorkflowNodeB\x04\xe2A\x01\x03R\x05nodes\"\xda\x02\n" +
+	"\fWorkflowNode\x12\x1d\n" +
+	"\astep_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06stepId\x128\n" +
+	"\x15prerequisite_step_ids\x18\x02 \x03(\tB\x04\xe2A\x01\x03R\x13prerequisiteStepIds\x12\x1b\n" +
+	"\x06job_id\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x05jobId\x12L\n" +
+	"\x05state\x18\x05 \x01(\x0e20.google.cloud.dataproc.v1.WorkflowNode.NodeStateB\x04\xe2A\x01\x03R\x05state\x12\x1a\n" +
+	"\x05error\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x05error\"j\n" +
 	"\tNodeState\x12\x1a\n" +
 	"\x16NODE_STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aBLOCKED\x10\x01\x12\f\n" +
@@ -2310,46 +2310,46 @@ const file_google_cloud_dataproc_v1_workflow_templates_proto_rawDesc = "" +
 	"\aRUNNING\x10\x03\x12\r\n" +
 	"\tCOMPLETED\x10\x04\x12\n" +
 	"\n" +
-	"\x06FAILED\x10\x05\"\xb6\x01\n" +
-	"\x1dCreateWorkflowTemplateRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(dataproc.googleapis.com/WorkflowTemplateR\x06parent\x12K\n" +
-	"\btemplate\x18\x02 \x01(\v2*.google.cloud.dataproc.v1.WorkflowTemplateB\x03\xe0A\x02R\btemplate\"\x81\x01\n" +
-	"\x1aGetWorkflowTemplateRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(dataproc.googleapis.com/WorkflowTemplateR\x04name\x12\x1d\n" +
-	"\aversion\x18\x02 \x01(\x05B\x03\xe0A\x01R\aversion\"\xdf\x02\n" +
-	"\"InstantiateWorkflowTemplateRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(dataproc.googleapis.com/WorkflowTemplateR\x04name\x12\x1d\n" +
-	"\aversion\x18\x02 \x01(\x05B\x03\xe0A\x01R\aversion\x12\"\n" +
+	"\x06FAILED\x10\x05\"\xb8\x01\n" +
+	"\x1dCreateWorkflowTemplateRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(dataproc.googleapis.com/WorkflowTemplateR\x06parent\x12L\n" +
+	"\btemplate\x18\x02 \x01(\v2*.google.cloud.dataproc.v1.WorkflowTemplateB\x04\xe2A\x01\x02R\btemplate\"\x83\x01\n" +
+	"\x1aGetWorkflowTemplateRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(dataproc.googleapis.com/WorkflowTemplateR\x04name\x12\x1e\n" +
+	"\aversion\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\aversion\"\xe3\x02\n" +
+	"\"InstantiateWorkflowTemplateRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(dataproc.googleapis.com/WorkflowTemplateR\x04name\x12\x1e\n" +
+	"\aversion\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\aversion\x12#\n" +
 	"\n" +
-	"request_id\x18\x05 \x01(\tB\x03\xe0A\x01R\trequestId\x12q\n" +
+	"request_id\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12r\n" +
 	"\n" +
-	"parameters\x18\x06 \x03(\v2L.google.cloud.dataproc.v1.InstantiateWorkflowTemplateRequest.ParametersEntryB\x03\xe0A\x01R\n" +
+	"parameters\x18\x06 \x03(\v2L.google.cloud.dataproc.v1.InstantiateWorkflowTemplateRequest.ParametersEntryB\x04\xe2A\x01\x01R\n" +
 	"parameters\x1a=\n" +
 	"\x0fParametersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xe5\x01\n" +
-	"(InstantiateInlineWorkflowTemplateRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(dataproc.googleapis.com/WorkflowTemplateR\x06parent\x12K\n" +
-	"\btemplate\x18\x02 \x01(\v2*.google.cloud.dataproc.v1.WorkflowTemplateB\x03\xe0A\x02R\btemplate\x12\"\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xe8\x01\n" +
+	"(InstantiateInlineWorkflowTemplateRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(dataproc.googleapis.com/WorkflowTemplateR\x06parent\x12L\n" +
+	"\btemplate\x18\x02 \x01(\v2*.google.cloud.dataproc.v1.WorkflowTemplateB\x04\xe2A\x01\x02R\btemplate\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"l\n" +
-	"\x1dUpdateWorkflowTemplateRequest\x12K\n" +
-	"\btemplate\x18\x01 \x01(\v2*.google.cloud.dataproc.v1.WorkflowTemplateB\x03\xe0A\x02R\btemplate\"\xae\x01\n" +
-	"\x1cListWorkflowTemplatesRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(dataproc.googleapis.com/WorkflowTemplateR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"m\n" +
+	"\x1dUpdateWorkflowTemplateRequest\x12L\n" +
+	"\btemplate\x18\x01 \x01(\v2*.google.cloud.dataproc.v1.WorkflowTemplateB\x04\xe2A\x01\x02R\btemplate\"\xb1\x01\n" +
+	"\x1cListWorkflowTemplatesRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(dataproc.googleapis.com/WorkflowTemplateR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xc2\x01\n" +
-	"\x1dListWorkflowTemplatesResponse\x12M\n" +
-	"\ttemplates\x18\x01 \x03(\v2*.google.cloud.dataproc.v1.WorkflowTemplateB\x03\xe0A\x03R\ttemplates\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x03R\vunreachable\"\x84\x01\n" +
-	"\x1dDeleteWorkflowTemplateRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(dataproc.googleapis.com/WorkflowTemplateR\x04name\x12\x1d\n" +
-	"\aversion\x18\x02 \x01(\x05B\x03\xe0A\x01R\aversion2\xe6\x10\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xc5\x01\n" +
+	"\x1dListWorkflowTemplatesResponse\x12N\n" +
+	"\ttemplates\x18\x01 \x03(\v2*.google.cloud.dataproc.v1.WorkflowTemplateB\x04\xe2A\x01\x03R\ttemplates\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\vunreachable\"\x86\x01\n" +
+	"\x1dDeleteWorkflowTemplateRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(dataproc.googleapis.com/WorkflowTemplateR\x04name\x12\x1e\n" +
+	"\aversion\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\aversion2\xe6\x10\n" +
 	"\x17WorkflowTemplateService\x12\x9b\x02\n" +
 	"\x16CreateWorkflowTemplate\x127.google.cloud.dataproc.v1.CreateWorkflowTemplateRequest\x1a*.google.cloud.dataproc.v1.WorkflowTemplate\"\x9b\x01\xdaA\x0fparent,template\x82\xd3\xe4\x93\x02\x82\x01:\btemplateZ?:\btemplate\"3/v1/{parent=projects/*/regions/*}/workflowTemplates\"5/v1/{parent=projects/*/locations/*}/workflowTemplates\x12\xf4\x01\n" +
 	"\x13GetWorkflowTemplate\x124.google.cloud.dataproc.v1.GetWorkflowTemplateRequest\x1a*.google.cloud.dataproc.v1.WorkflowTemplate\"{\xdaA\x04name\x82\xd3\xe4\x93\x02nZ5\x123/v1/{name=projects/*/regions/*/workflowTemplates/*}\x125/v1/{name=projects/*/locations/*/workflowTemplates/*}\x12\xd5\x02\n" +

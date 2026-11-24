@@ -201,14 +201,14 @@ var File_google_cloud_securitycenter_v1_effective_event_threat_detection_custom_
 
 const file_google_cloud_securitycenter_v1_effective_event_threat_detection_custom_module_proto_rawDesc = "" +
 	"\n" +
-	"Sgoogle/cloud/securitycenter/v1/effective_event_threat_detection_custom_module.proto\x12\x1egoogle.cloud.securitycenter.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x89\x06\n" +
-	")EffectiveEventThreatDetectionCustomModule\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x124\n" +
-	"\x06config\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x03R\x06config\x12\x89\x01\n" +
-	"\x10enablement_state\x18\x03 \x01(\x0e2Y.google.cloud.securitycenter.v1.EffectiveEventThreatDetectionCustomModule.EnablementStateB\x03\xe0A\x03R\x0fenablementState\x12\x17\n" +
-	"\x04type\x18\x04 \x01(\tB\x03\xe0A\x03R\x04type\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x03R\vdescription\"N\n" +
+	"Sgoogle/cloud/securitycenter/v1/effective_event_threat_detection_custom_module.proto\x12\x1egoogle.cloud.securitycenter.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x8f\x06\n" +
+	")EffectiveEventThreatDetectionCustomModule\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x125\n" +
+	"\x06config\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x03R\x06config\x12\x8a\x01\n" +
+	"\x10enablement_state\x18\x03 \x01(\x0e2Y.google.cloud.securitycenter.v1.EffectiveEventThreatDetectionCustomModule.EnablementStateB\x04\xe2A\x01\x03R\x0fenablementState\x12\x18\n" +
+	"\x04type\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04type\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\vdescription\"N\n" +
 	"\x0fEnablementState\x12 \n" +
 	"\x1cENABLEMENT_STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aENABLED\x10\x01\x12\f\n" +

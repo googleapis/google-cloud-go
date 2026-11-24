@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	CompletionService_CompleteQuery_FullMethodName                   = "/google.cloud.discoveryengine.v1.CompletionService/CompleteQuery"
+	CompletionService_AdvancedCompleteQuery_FullMethodName           = "/google.cloud.discoveryengine.v1.CompletionService/AdvancedCompleteQuery"
 	CompletionService_ImportSuggestionDenyListEntries_FullMethodName = "/google.cloud.discoveryengine.v1.CompletionService/ImportSuggestionDenyListEntries"
 	CompletionService_PurgeSuggestionDenyListEntries_FullMethodName  = "/google.cloud.discoveryengine.v1.CompletionService/PurgeSuggestionDenyListEntries"
 	CompletionService_ImportCompletionSuggestions_FullMethodName     = "/google.cloud.discoveryengine.v1.CompletionService/ImportCompletionSuggestions"
@@ -48,6 +49,8 @@ const (
 type CompletionServiceClient interface {
 	// Completes the specified user input with keyword suggestions.
 	CompleteQuery(ctx context.Context, in *CompleteQueryRequest, opts ...grpc.CallOption) (*CompleteQueryResponse, error)
+	// Completes the user input with advanced keyword suggestions.
+	AdvancedCompleteQuery(ctx context.Context, in *AdvancedCompleteQueryRequest, opts ...grpc.CallOption) (*AdvancedCompleteQueryResponse, error)
 	// Imports all
 	// [SuggestionDenyListEntry][google.cloud.discoveryengine.v1.SuggestionDenyListEntry]
 	// for a DataStore.
@@ -77,6 +80,15 @@ func NewCompletionServiceClient(cc grpc.ClientConnInterface) CompletionServiceCl
 func (c *completionServiceClient) CompleteQuery(ctx context.Context, in *CompleteQueryRequest, opts ...grpc.CallOption) (*CompleteQueryResponse, error) {
 	out := new(CompleteQueryResponse)
 	err := c.cc.Invoke(ctx, CompletionService_CompleteQuery_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *completionServiceClient) AdvancedCompleteQuery(ctx context.Context, in *AdvancedCompleteQueryRequest, opts ...grpc.CallOption) (*AdvancedCompleteQueryResponse, error) {
+	out := new(AdvancedCompleteQueryResponse)
+	err := c.cc.Invoke(ctx, CompletionService_AdvancedCompleteQuery_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -125,6 +137,8 @@ func (c *completionServiceClient) PurgeCompletionSuggestions(ctx context.Context
 type CompletionServiceServer interface {
 	// Completes the specified user input with keyword suggestions.
 	CompleteQuery(context.Context, *CompleteQueryRequest) (*CompleteQueryResponse, error)
+	// Completes the user input with advanced keyword suggestions.
+	AdvancedCompleteQuery(context.Context, *AdvancedCompleteQueryRequest) (*AdvancedCompleteQueryResponse, error)
 	// Imports all
 	// [SuggestionDenyListEntry][google.cloud.discoveryengine.v1.SuggestionDenyListEntry]
 	// for a DataStore.
@@ -149,6 +163,9 @@ type UnimplementedCompletionServiceServer struct {
 
 func (UnimplementedCompletionServiceServer) CompleteQuery(context.Context, *CompleteQueryRequest) (*CompleteQueryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CompleteQuery not implemented")
+}
+func (UnimplementedCompletionServiceServer) AdvancedCompleteQuery(context.Context, *AdvancedCompleteQueryRequest) (*AdvancedCompleteQueryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AdvancedCompleteQuery not implemented")
 }
 func (UnimplementedCompletionServiceServer) ImportSuggestionDenyListEntries(context.Context, *ImportSuggestionDenyListEntriesRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ImportSuggestionDenyListEntries not implemented")
@@ -188,6 +205,24 @@ func _CompletionService_CompleteQuery_Handler(srv interface{}, ctx context.Conte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CompletionServiceServer).CompleteQuery(ctx, req.(*CompleteQueryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CompletionService_AdvancedCompleteQuery_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AdvancedCompleteQueryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompletionServiceServer).AdvancedCompleteQuery(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CompletionService_AdvancedCompleteQuery_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompletionServiceServer).AdvancedCompleteQuery(ctx, req.(*AdvancedCompleteQueryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -274,6 +309,10 @@ var CompletionService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CompleteQuery",
 			Handler:    _CompletionService_CompleteQuery_Handler,
+		},
+		{
+			MethodName: "AdvancedCompleteQuery",
+			Handler:    _CompletionService_AdvancedCompleteQuery_Handler,
 		},
 		{
 			MethodName: "ImportSuggestionDenyListEntries",

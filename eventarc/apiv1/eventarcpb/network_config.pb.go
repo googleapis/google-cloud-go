@@ -89,9 +89,9 @@ var File_google_cloud_eventarc_v1_network_config_proto protoreflect.FileDescript
 
 const file_google_cloud_eventarc_v1_network_config_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/eventarc/v1/network_config.proto\x12\x18google.cloud.eventarc.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"p\n" +
-	"\rNetworkConfig\x12_\n" +
-	"\x12network_attachment\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"-google/cloud/eventarc/v1/network_config.proto\x12\x18google.cloud.eventarc.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"q\n" +
+	"\rNetworkConfig\x12`\n" +
+	"\x12network_attachment\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(compute.googleapis.com/NetworkAttachmentR\x11networkAttachmentB\xc2\x01\n" +
 	"\x1ccom.google.cloud.eventarc.v1B\x12NetworkConfigProtoP\x01Z8cloud.google.com/go/eventarc/apiv1/eventarcpb;eventarcpb\xaa\x02\x18Google.Cloud.Eventarc.V1\xca\x02\x18Google\\Cloud\\Eventarc\\V1\xea\x02\x1bGoogle::Cloud::Eventarc::V1b\x06proto3"
 

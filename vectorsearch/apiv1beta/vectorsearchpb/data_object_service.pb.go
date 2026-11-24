@@ -542,40 +542,40 @@ var File_google_cloud_vectorsearch_v1beta_data_object_service_proto protoreflect
 
 const file_google_cloud_vectorsearch_v1beta_data_object_service_proto_rawDesc = "" +
 	"\n" +
-	":google/cloud/vectorsearch/v1beta/data_object_service.proto\x12 google.cloud.vectorsearch.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/vectorsearch/v1beta/data_object.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xe0\x01\n" +
-	"\x17CreateDataObjectRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vectorsearch.googleapis.com/CollectionR\x06parent\x12)\n" +
-	"\x0edata_object_id\x18\x02 \x01(\tB\x03\xe0A\x02R\fdataObjectId\x12R\n" +
-	"\vdata_object\x18\x03 \x01(\v2,.google.cloud.vectorsearch.v1beta.DataObjectB\x03\xe0A\x02R\n" +
-	"dataObject\"\xc3\x01\n" +
-	"\x1dBatchCreateDataObjectsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vectorsearch.googleapis.com/CollectionR\x06parent\x12Z\n" +
-	"\brequests\x18\x02 \x03(\v29.google.cloud.vectorsearch.v1beta.CreateDataObjectRequestB\x03\xe0A\x02R\brequests\"v\n" +
-	"\x1eBatchCreateDataObjectsResponse\x12T\n" +
-	"\fdata_objects\x18\x01 \x03(\v2,.google.cloud.vectorsearch.v1beta.DataObjectB\x03\xe0A\x03R\vdataObjects\"Z\n" +
-	"\x14GetDataObjectRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vectorsearch.googleapis.com/DataObjectR\x04name\"\xaf\x01\n" +
-	"\x17UpdateDataObjectRequest\x12R\n" +
-	"\vdata_object\x18\x01 \x01(\v2,.google.cloud.vectorsearch.v1beta.DataObjectB\x03\xe0A\x02R\n" +
-	"dataObject\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xc3\x01\n" +
-	"\x1dBatchUpdateDataObjectsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vectorsearch.googleapis.com/CollectionR\x06parent\x12Z\n" +
-	"\brequests\x18\x02 \x03(\v29.google.cloud.vectorsearch.v1beta.UpdateDataObjectRequestB\x03\xe0A\x02R\brequests\" \n" +
-	"\x1eBatchUpdateDataObjectsResponse\"v\n" +
-	"\x17DeleteDataObjectRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vectorsearch.googleapis.com/DataObjectR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\"\xc3\x01\n" +
-	"\x1dBatchDeleteDataObjectsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vectorsearch.googleapis.com/CollectionR\x06parent\x12Z\n" +
-	"\brequests\x18\x03 \x03(\v29.google.cloud.vectorsearch.v1beta.DeleteDataObjectRequestB\x03\xe0A\x02R\brequests2\xc0\r\n" +
+	":google/cloud/vectorsearch/v1beta/data_object_service.proto\x12 google.cloud.vectorsearch.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/vectorsearch/v1beta/data_object.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xe3\x01\n" +
+	"\x17CreateDataObjectRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vectorsearch.googleapis.com/CollectionR\x06parent\x12*\n" +
+	"\x0edata_object_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fdataObjectId\x12S\n" +
+	"\vdata_object\x18\x03 \x01(\v2,.google.cloud.vectorsearch.v1beta.DataObjectB\x04\xe2A\x01\x02R\n" +
+	"dataObject\"\xc5\x01\n" +
+	"\x1dBatchCreateDataObjectsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vectorsearch.googleapis.com/CollectionR\x06parent\x12[\n" +
+	"\brequests\x18\x02 \x03(\v29.google.cloud.vectorsearch.v1beta.CreateDataObjectRequestB\x04\xe2A\x01\x02R\brequests\"w\n" +
+	"\x1eBatchCreateDataObjectsResponse\x12U\n" +
+	"\fdata_objects\x18\x01 \x03(\v2,.google.cloud.vectorsearch.v1beta.DataObjectB\x04\xe2A\x01\x03R\vdataObjects\"[\n" +
+	"\x14GetDataObjectRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vectorsearch.googleapis.com/DataObjectR\x04name\"\xb1\x01\n" +
+	"\x17UpdateDataObjectRequest\x12S\n" +
+	"\vdata_object\x18\x01 \x01(\v2,.google.cloud.vectorsearch.v1beta.DataObjectB\x04\xe2A\x01\x02R\n" +
+	"dataObject\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\xc5\x01\n" +
+	"\x1dBatchUpdateDataObjectsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vectorsearch.googleapis.com/CollectionR\x06parent\x12[\n" +
+	"\brequests\x18\x02 \x03(\v29.google.cloud.vectorsearch.v1beta.UpdateDataObjectRequestB\x04\xe2A\x01\x02R\brequests\" \n" +
+	"\x1eBatchUpdateDataObjectsResponse\"x\n" +
+	"\x17DeleteDataObjectRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vectorsearch.googleapis.com/DataObjectR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xc5\x01\n" +
+	"\x1dBatchDeleteDataObjectsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&vectorsearch.googleapis.com/CollectionR\x06parent\x12[\n" +
+	"\brequests\x18\x03 \x03(\v29.google.cloud.vectorsearch.v1beta.DeleteDataObjectRequestB\x04\xe2A\x01\x02R\brequests2\xc0\r\n" +
 	"\x11DataObjectService\x12\xf7\x01\n" +
 	"\x10CreateDataObject\x129.google.cloud.vectorsearch.v1beta.CreateDataObjectRequest\x1a,.google.cloud.vectorsearch.v1beta.DataObject\"z\xdaA!parent,data_object,data_object_id\x82\xd3\xe4\x93\x02P:\vdata_object\"A/v1beta/{parent=projects/*/locations/*/collections/*}/dataObjects\x12\xf5\x01\n" +
 	"\x16BatchCreateDataObjects\x12?.google.cloud.vectorsearch.v1beta.BatchCreateDataObjectsRequest\x1a@.google.cloud.vectorsearch.v1beta.BatchCreateDataObjectsResponse\"X\x82\xd3\xe4\x93\x02R:\x01*\"M/v1beta/{parent=projects/*/locations/*/collections/*}/dataObjects:batchCreate\x12\xc7\x01\n" +

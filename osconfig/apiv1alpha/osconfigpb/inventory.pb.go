@@ -1441,12 +1441,12 @@ var File_google_cloud_osconfig_v1alpha_inventory_proto protoreflect.FileDescript
 
 const file_google_cloud_osconfig_v1alpha_inventory_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/osconfig/v1alpha/inventory.proto\x12\x1dgoogle.cloud.osconfig.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\"\xd9\x1b\n" +
-	"\tInventory\x12\x17\n" +
-	"\x04name\x18\x03 \x01(\tB\x03\xe0A\x03R\x04name\x12M\n" +
-	"\aos_info\x18\x01 \x01(\v2/.google.cloud.osconfig.v1alpha.Inventory.OsInfoB\x03\xe0A\x03R\x06osInfo\x12N\n" +
-	"\x05items\x18\x02 \x03(\v23.google.cloud.osconfig.v1alpha.Inventory.ItemsEntryB\x03\xe0A\x03R\x05items\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"-google/cloud/osconfig/v1alpha/inventory.proto\x12\x1dgoogle.cloud.osconfig.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\"\xdd\x1b\n" +
+	"\tInventory\x12\x18\n" +
+	"\x04name\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12N\n" +
+	"\aos_info\x18\x01 \x01(\v2/.google.cloud.osconfig.v1alpha.Inventory.OsInfoB\x04\xe2A\x01\x03R\x06osInfo\x12O\n" +
+	"\x05items\x18\x02 \x03(\v23.google.cloud.osconfig.v1alpha.Inventory.ItemsEntryB\x04\xe2A\x01\x03R\x05items\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x1a\xa2\x02\n" +
 	"\x06OsInfo\x12\x1a\n" +
 	"\bhostname\x18\t \x01(\tR\bhostname\x12\x1b\n" +
@@ -1537,13 +1537,13 @@ const file_google_cloud_osconfig_v1alpha_inventory_proto_rawDesc = "" +
 	"ItemsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12C\n" +
 	"\x05value\x18\x02 \x01(\v2-.google.cloud.osconfig.v1alpha.Inventory.ItemR\x05value:\x028\x01:n\xeaAk\n" +
-	"!osconfig.googleapis.com/Inventory\x12Fprojects/{project}/locations/{location}/instances/{instance}/inventory\"\x96\x01\n" +
-	"\x13GetInventoryRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"!osconfig.googleapis.com/Inventory\x12Fprojects/{project}/locations/{location}/instances/{instance}/inventory\"\x97\x01\n" +
+	"\x13GetInventoryRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!osconfig.googleapis.com/InventoryR\x04name\x12@\n" +
-	"\x04view\x18\x02 \x01(\x0e2,.google.cloud.osconfig.v1alpha.InventoryViewR\x04view\"\xef\x01\n" +
-	"\x16ListInventoriesRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"\x04view\x18\x02 \x01(\x0e2,.google.cloud.osconfig.v1alpha.InventoryViewR\x04view\"\xf0\x01\n" +
+	"\x16ListInventoriesRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fcompute.googleapis.com/InstanceR\x06parent\x12@\n" +
 	"\x04view\x18\x02 \x01(\x0e2,.google.cloud.osconfig.v1alpha.InventoryViewR\x04view\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +

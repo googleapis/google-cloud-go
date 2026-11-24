@@ -357,9 +357,9 @@ var File_google_firestore_admin_v1_field_proto protoreflect.FileDescriptor
 
 const file_google_firestore_admin_v1_field_proto_rawDesc = "" +
 	"\n" +
-	"%google/firestore/admin/v1/field.proto\x12\x19google.firestore.admin.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/firestore/admin/v1/index.proto\x1a\x1egoogle/protobuf/duration.proto\"\xee\x05\n" +
-	"\x05Field\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12O\n" +
+	"%google/firestore/admin/v1/field.proto\x12\x19google.firestore.admin.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/firestore/admin/v1/index.proto\x1a\x1egoogle/protobuf/duration.proto\"\xf1\x05\n" +
+	"\x05Field\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12O\n" +
 	"\findex_config\x18\x02 \x01(\v2,.google.firestore.admin.v1.Field.IndexConfigR\vindexConfig\x12I\n" +
 	"\n" +
 	"ttl_config\x18\x03 \x01(\v2*.google.firestore.admin.v1.Field.TtlConfigR\tttlConfig\x1a\xc0\x01\n" +
@@ -367,10 +367,10 @@ const file_google_firestore_admin_v1_field_proto_rawDesc = "" +
 	"\aindexes\x18\x01 \x03(\v2 .google.firestore.admin.v1.IndexR\aindexes\x120\n" +
 	"\x14uses_ancestor_config\x18\x02 \x01(\bR\x12usesAncestorConfig\x12%\n" +
 	"\x0eancestor_field\x18\x03 \x01(\tR\rancestorField\x12\x1c\n" +
-	"\treverting\x18\x04 \x01(\bR\treverting\x1a\xf1\x01\n" +
-	"\tTtlConfig\x12K\n" +
-	"\x05state\x18\x01 \x01(\x0e20.google.firestore.admin.v1.Field.TtlConfig.StateB\x03\xe0A\x03R\x05state\x12K\n" +
-	"\x11expiration_offset\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x10expirationOffset\"J\n" +
+	"\treverting\x18\x04 \x01(\bR\treverting\x1a\xf3\x01\n" +
+	"\tTtlConfig\x12L\n" +
+	"\x05state\x18\x01 \x01(\x0e20.google.firestore.admin.v1.Field.TtlConfig.StateB\x04\xe2A\x01\x03R\x05state\x12L\n" +
+	"\x11expiration_offset\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x10expirationOffset\"J\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\n" +

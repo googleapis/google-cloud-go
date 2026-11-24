@@ -466,17 +466,17 @@ var File_google_cloud_video_stitcher_v1_live_configs_proto protoreflect.FileDesc
 
 const file_google_cloud_video_stitcher_v1_live_configs_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/video/stitcher/v1/live_configs.proto\x12\x1egoogle.cloud.video.stitcher.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/video/stitcher/v1/fetch_options.proto\x1a\x1egoogle/protobuf/duration.proto\"\xda\a\n" +
+	"1google/cloud/video/stitcher/v1/live_configs.proto\x12\x1egoogle.cloud.video.stitcher.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/video/stitcher/v1/fetch_options.proto\x1a\x1egoogle/protobuf/duration.proto\"\xde\a\n" +
 	"\n" +
-	"LiveConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\"\n" +
+	"LiveConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12#\n" +
 	"\n" +
-	"source_uri\x18\x02 \x01(\tB\x03\xe0A\x02R\tsourceUri\x12\x1c\n" +
+	"source_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tsourceUri\x12\x1c\n" +
 	"\n" +
 	"ad_tag_uri\x18\x03 \x01(\tR\badTagUri\x12U\n" +
-	"\x0fgam_live_config\x18\x04 \x01(\v2-.google.cloud.video.stitcher.v1.GamLiveConfigR\rgamLiveConfig\x12K\n" +
-	"\x05state\x18\x05 \x01(\x0e20.google.cloud.video.stitcher.v1.LiveConfig.StateB\x03\xe0A\x03R\x05state\x12P\n" +
-	"\vad_tracking\x18\x06 \x01(\x0e2*.google.cloud.video.stitcher.v1.AdTrackingB\x03\xe0A\x02R\n" +
+	"\x0fgam_live_config\x18\x04 \x01(\v2-.google.cloud.video.stitcher.v1.GamLiveConfigR\rgamLiveConfig\x12L\n" +
+	"\x05state\x18\x05 \x01(\x0e20.google.cloud.video.stitcher.v1.LiveConfig.StateB\x04\xe2A\x01\x03R\x05state\x12Q\n" +
+	"\vad_tracking\x18\x06 \x01(\x0e2*.google.cloud.video.stitcher.v1.AdTrackingB\x04\xe2A\x01\x02R\n" +
 	"adTracking\x12L\n" +
 	"\rdefault_slate\x18\a \x01(\tB'\xfaA$\n" +
 	"\"videostitcher.googleapis.com/SlateR\fdefaultSlate\x12e\n" +
@@ -493,14 +493,14 @@ const file_google_cloud_video_stitcher_v1_live_configs_proto_rawDesc = "" +
 	"\x1cSTITCHING_POLICY_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vCUT_CURRENT\x10\x01\x12\x0f\n" +
 	"\vCOMPLETE_AD\x10\x02:o\xeaAl\n" +
-	"'videostitcher.googleapis.com/LiveConfig\x12Aprojects/{project}/locations/{location}/liveConfigs/{live_config}\"\x89\x01\n" +
-	"\x0ePrefetchConfig\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x02R\aenabled\x12X\n" +
-	"\x1binitial_ad_request_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x18initialAdRequestDuration\"\x88\x01\n" +
-	"\rGamLiveConfig\x12&\n" +
-	"\fnetwork_code\x18\x01 \x01(\tB\x03\xe0A\x02R\vnetworkCode\x12 \n" +
-	"\tasset_key\x18\x02 \x01(\tB\x03\xe0A\x03R\bassetKey\x12-\n" +
-	"\x10custom_asset_key\x18\x03 \x01(\tB\x03\xe0A\x03R\x0ecustomAssetKey*A\n" +
+	"'videostitcher.googleapis.com/LiveConfig\x12Aprojects/{project}/locations/{location}/liveConfigs/{live_config}\"\x8a\x01\n" +
+	"\x0ePrefetchConfig\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x02R\aenabled\x12X\n" +
+	"\x1binitial_ad_request_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x18initialAdRequestDuration\"\x8b\x01\n" +
+	"\rGamLiveConfig\x12'\n" +
+	"\fnetwork_code\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vnetworkCode\x12!\n" +
+	"\tasset_key\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\bassetKey\x12.\n" +
+	"\x10custom_asset_key\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x0ecustomAssetKey*A\n" +
 	"\n" +
 	"AdTracking\x12\x1b\n" +
 	"\x17AD_TRACKING_UNSPECIFIED\x10\x00\x12\n" +

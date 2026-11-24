@@ -389,23 +389,23 @@ var File_google_cloud_cloudsecuritycompliance_v1_cm_enrollment_service_proto pro
 
 const file_google_cloud_cloudsecuritycompliance_v1_cm_enrollment_service_proto_rawDesc = "" +
 	"\n" +
-	"Cgoogle/cloud/cloudsecuritycompliance/v1/cm_enrollment_service.proto\x12'google.cloud.cloudsecuritycompliance.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xbe\x01\n" +
-	"\x19UpdateCmEnrollmentRequest\x12_\n" +
-	"\rcm_enrollment\x18\x01 \x01(\v25.google.cloud.cloudsecuritycompliance.v1.CmEnrollmentB\x03\xe0A\x02R\fcmEnrollment\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"x\n" +
-	"%CalculateEffectiveCmEnrollmentRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3cloudsecuritycompliance.googleapis.com/CmEnrollmentR\x04name\"\xf5\x02\n" +
-	"\fCmEnrollment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1f\n" +
-	"\benrolled\x18\x02 \x01(\bB\x03\xe0A\x01R\benrolled\x12\\\n" +
-	"\faudit_config\x18\x03 \x01(\v24.google.cloud.cloudsecuritycompliance.v1.AuditConfigB\x03\xe0A\x01R\vauditConfig:\xcc\x01\xeaA\xc8\x01\n" +
+	"Cgoogle/cloud/cloudsecuritycompliance/v1/cm_enrollment_service.proto\x12'google.cloud.cloudsecuritycompliance.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xc0\x01\n" +
+	"\x19UpdateCmEnrollmentRequest\x12`\n" +
+	"\rcm_enrollment\x18\x01 \x01(\v25.google.cloud.cloudsecuritycompliance.v1.CmEnrollmentB\x04\xe2A\x01\x02R\fcmEnrollment\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"y\n" +
+	"%CalculateEffectiveCmEnrollmentRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3cloudsecuritycompliance.googleapis.com/CmEnrollmentR\x04name\"\xf8\x02\n" +
+	"\fCmEnrollment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12 \n" +
+	"\benrolled\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\benrolled\x12]\n" +
+	"\faudit_config\x18\x03 \x01(\v24.google.cloud.cloudsecuritycompliance.v1.AuditConfigB\x04\xe2A\x01\x01R\vauditConfig:\xcc\x01\xeaA\xc8\x01\n" +
 	"3cloudsecuritycompliance.googleapis.com/CmEnrollment\x12>organizations/{organization}/locations/{location}/cmEnrollment\x124projects/{project}/locations/{location}/cmEnrollment*\rcmEnrollments2\fcmEnrollment\"\x84\x01\n" +
 	"&CalculateEffectiveCmEnrollmentResponse\x12Z\n" +
-	"\rcm_enrollment\x18\x01 \x01(\v25.google.cloud.cloudsecuritycompliance.v1.CmEnrollmentR\fcmEnrollment\"\xd8\x01\n" +
-	"\vAuditConfig\x12s\n" +
-	"\fdestinations\x18\x01 \x03(\v2J.google.cloud.cloudsecuritycompliance.v1.AuditConfig.CmEligibleDestinationB\x03\xe0A\x02R\fdestinations\x1aT\n" +
+	"\rcm_enrollment\x18\x01 \x01(\v25.google.cloud.cloudsecuritycompliance.v1.CmEnrollmentR\fcmEnrollment\"\xd9\x01\n" +
+	"\vAuditConfig\x12t\n" +
+	"\fdestinations\x18\x01 \x03(\v2J.google.cloud.cloudsecuritycompliance.v1.AuditConfig.CmEligibleDestinationB\x04\xe2A\x01\x02R\fdestinations\x1aT\n" +
 	"\x15CmEligibleDestination\x12\x1f\n" +
 	"\n" +
 	"gcs_bucket\x18\x01 \x01(\tH\x00R\tgcsBucketB\x1a\n" +

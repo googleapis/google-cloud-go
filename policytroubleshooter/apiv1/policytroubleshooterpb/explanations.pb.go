@@ -671,22 +671,22 @@ var File_google_cloud_policytroubleshooter_v1_explanations_proto protoreflect.Fi
 
 const file_google_cloud_policytroubleshooter_v1_explanations_proto_rawDesc = "" +
 	"\n" +
-	"7google/cloud/policytroubleshooter/v1/explanations.proto\x12$google.cloud.policytroubleshooter.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x16google/type/expr.proto\"\x88\x01\n" +
-	"\vAccessTuple\x12!\n" +
-	"\tprincipal\x18\x01 \x01(\tB\x03\xe0A\x02R\tprincipal\x121\n" +
-	"\x12full_resource_name\x18\x02 \x01(\tB\x03\xe0A\x02R\x10fullResourceName\x12#\n" +
+	"7google/cloud/policytroubleshooter/v1/explanations.proto\x12$google.cloud.policytroubleshooter.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x16google/type/expr.proto\"\x8b\x01\n" +
+	"\vAccessTuple\x12\"\n" +
+	"\tprincipal\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprincipal\x122\n" +
+	"\x12full_resource_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x10fullResourceName\x12$\n" +
 	"\n" +
-	"permission\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
+	"permission\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"permission\"\xfe\x02\n" +
 	"\x0fExplainedPolicy\x12I\n" +
 	"\x06access\x18\x01 \x01(\x0e21.google.cloud.policytroubleshooter.v1.AccessStateR\x06access\x12,\n" +
 	"\x12full_resource_name\x18\x02 \x01(\tR\x10fullResourceName\x12-\n" +
 	"\x06policy\x18\x03 \x01(\v2\x15.google.iam.v1.PolicyR\x06policy\x12k\n" +
 	"\x14binding_explanations\x18\x04 \x03(\v28.google.cloud.policytroubleshooter.v1.BindingExplanationR\x13bindingExplanations\x12V\n" +
-	"\trelevance\x18\x05 \x01(\x0e28.google.cloud.policytroubleshooter.v1.HeuristicRelevanceR\trelevance\"\x80\n" +
+	"\trelevance\x18\x05 \x01(\x0e28.google.cloud.policytroubleshooter.v1.HeuristicRelevanceR\trelevance\"\x81\n" +
 	"\n" +
-	"\x12BindingExplanation\x12N\n" +
-	"\x06access\x18\x01 \x01(\x0e21.google.cloud.policytroubleshooter.v1.AccessStateB\x03\xe0A\x02R\x06access\x12\x12\n" +
+	"\x12BindingExplanation\x12O\n" +
+	"\x06access\x18\x01 \x01(\x0e21.google.cloud.policytroubleshooter.v1.AccessStateB\x04\xe2A\x01\x02R\x06access\x12\x12\n" +
 	"\x04role\x18\x02 \x01(\tR\x04role\x12p\n" +
 	"\x0frole_permission\x18\x03 \x01(\x0e2G.google.cloud.policytroubleshooter.v1.BindingExplanation.RolePermissionR\x0erolePermission\x12t\n" +
 	"\x19role_permission_relevance\x18\x04 \x01(\x0e28.google.cloud.policytroubleshooter.v1.HeuristicRelevanceR\x17rolePermissionRelevance\x12k\n" +

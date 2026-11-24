@@ -266,9 +266,9 @@ var File_google_cloud_retail_v2beta_project_proto protoreflect.FileDescriptor
 
 const file_google_cloud_retail_v2beta_project_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/retail/v2beta/project.proto\x12\x1agoogle.cloud.retail.v2beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xc1\x04\n" +
-	"\vAlertConfig\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x04name\x12Z\n" +
+	"(google/cloud/retail/v2beta/project.proto\x12\x1agoogle.cloud.retail.v2beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xc0\x04\n" +
+	"\vAlertConfig\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x05R\x04name\x12Z\n" +
 	"\x0ealert_policies\x18\x02 \x03(\v23.google.cloud.retail.v2beta.AlertConfig.AlertPolicyR\ralertPolicies\x1a\xf1\x02\n" +
 	"\vAlertPolicy\x12\x1f\n" +
 	"\valert_group\x18\x01 \x01(\tR\n" +

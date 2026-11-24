@@ -484,10 +484,10 @@ var File_google_cloud_retail_v2beta_serving_config_proto protoreflect.FileDescri
 
 const file_google_cloud_retail_v2beta_serving_config_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/retail/v2beta/serving_config.proto\x12\x1agoogle.cloud.retail.v2beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/retail/v2beta/common.proto\x1a/google/cloud/retail/v2beta/search_service.proto\"\x9a\v\n" +
-	"\rServingConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12\x19\n" +
+	"/google/cloud/retail/v2beta/serving_config.proto\x12\x1agoogle.cloud.retail.v2beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/retail/v2beta/common.proto\x1a/google/cloud/retail/v2beta/search_service.proto\"\x9b\v\n" +
+	"\rServingConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12\x19\n" +
 	"\bmodel_id\x18\x03 \x01(\tR\amodelId\x122\n" +
 	"\x15price_reranking_level\x18\x04 \x01(\tR\x13priceRerankingLevel\x12*\n" +
 	"\x11facet_control_ids\x18\x05 \x03(\tR\x0ffacetControlIds\x12h\n" +
@@ -505,8 +505,8 @@ const file_google_cloud_retail_v2beta_serving_config_proto_rawDesc = "" +
 	"\x0ediversity_type\x18\x14 \x01(\x0e27.google.cloud.retail.v2beta.ServingConfig.DiversityTypeR\rdiversityType\x12?\n" +
 	"\x1cenable_category_filter_level\x18\x10 \x01(\tR\x19enableCategoryFilterLevel\x120\n" +
 	"\x14ignore_recs_denylist\x18\x18 \x01(\bR\x12ignoreRecsDenylist\x12p\n" +
-	"\x14personalization_spec\x18\x15 \x01(\v2=.google.cloud.retail.v2beta.SearchRequest.PersonalizationSpecR\x13personalizationSpec\x12W\n" +
-	"\x0esolution_types\x18\x13 \x03(\x0e2(.google.cloud.retail.v2beta.SolutionTypeB\x06\xe0A\x02\xe0A\x05R\rsolutionTypes\"d\n" +
+	"\x14personalization_spec\x18\x15 \x01(\v2=.google.cloud.retail.v2beta.SearchRequest.PersonalizationSpecR\x13personalizationSpec\x12V\n" +
+	"\x0esolution_types\x18\x13 \x03(\x0e2(.google.cloud.retail.v2beta.SolutionTypeB\x05\xe2A\x02\x02\x05R\rsolutionTypes\"d\n" +
 	"\rDiversityType\x12\x1e\n" +
 	"\x1aDIVERSITY_TYPE_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14RULE_BASED_DIVERSITY\x10\x02\x12\x19\n" +

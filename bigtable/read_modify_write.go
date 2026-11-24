@@ -28,6 +28,16 @@ import (
 // ApplyReadModifyWrite applies a ReadModifyWrite to a specific row.
 // It returns the newly written cells.
 func (t *Table) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadModifyWrite) (Row, error) {
+	if t.divertible != nil {
+		return t.divertible.ApplyReadModifyWrite(ctx, row, m)
+	}
+	return t.applyReadModifyWriteClassic(ctx, row, m)
+}
+
+func (t *Table) applyReadModifyWriteClassic(ctx context.Context, row string, m *ReadModifyWrite) (Row, error) {
+	if t.materializedView != "" {
+		return nil, errMaterializedViewWrite
+	}
 	ctx = mergeOutgoingMetadata(ctx, t.md)
 
 	mt := t.newBuiltinMetricsTracer(ctx, false)

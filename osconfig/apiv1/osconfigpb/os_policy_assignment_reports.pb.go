@@ -864,12 +864,12 @@ var File_google_cloud_osconfig_v1_os_policy_assignment_reports_proto protoreflec
 
 const file_google_cloud_osconfig_v1_os_policy_assignment_reports_proto_rawDesc = "" +
 	"\n" +
-	";google/cloud/osconfig/v1/os_policy_assignment_reports.proto\x12\x18google.cloud.osconfig.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"r\n" +
-	"\"GetOSPolicyAssignmentReportRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0osconfig.googleapis.com/OSPolicyAssignmentReportR\x04name\"\xce\x01\n" +
-	"$ListOSPolicyAssignmentReportsRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
+	";google/cloud/osconfig/v1/os_policy_assignment_reports.proto\x12\x18google.cloud.osconfig.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"s\n" +
+	"\"GetOSPolicyAssignmentReportRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0osconfig.googleapis.com/OSPolicyAssignmentReportR\x04name\"\xcf\x01\n" +
+	"$ListOSPolicyAssignmentReportsRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
 	"2osconfig.googleapis.com/InstanceOSPolicyAssignmentR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x1d\n" +

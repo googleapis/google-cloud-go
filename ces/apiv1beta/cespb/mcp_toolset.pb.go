@@ -295,28 +295,28 @@ var File_google_cloud_ces_v1beta_mcp_toolset_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_mcp_toolset_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/ces/v1beta/mcp_toolset.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\"google/cloud/ces/v1beta/auth.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a$google/cloud/ces/v1beta/schema.proto\"\xcc\x04\n" +
+	")google/cloud/ces/v1beta/mcp_toolset.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\"google/cloud/ces/v1beta/auth.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a$google/cloud/ces/v1beta/schema.proto\"\xd2\x04\n" +
 	"\n" +
-	"McpToolset\x12*\n" +
-	"\x0eserver_address\x18\x01 \x01(\tB\x03\xe0A\x02R\rserverAddress\x12^\n" +
-	"\x12api_authentication\x18\x02 \x01(\v2*.google.cloud.ces.v1beta.ApiAuthenticationB\x03\xe0A\x01R\x11apiAuthentication\x12n\n" +
-	"\x18service_directory_config\x18\x03 \x01(\v2/.google.cloud.ces.v1beta.ServiceDirectoryConfigB\x03\xe0A\x01R\x16serviceDirectoryConfig\x12F\n" +
+	"McpToolset\x12+\n" +
+	"\x0eserver_address\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\rserverAddress\x12_\n" +
+	"\x12api_authentication\x18\x02 \x01(\v2*.google.cloud.ces.v1beta.ApiAuthenticationB\x04\xe2A\x01\x01R\x11apiAuthentication\x12o\n" +
+	"\x18service_directory_config\x18\x03 \x01(\v2/.google.cloud.ces.v1beta.ServiceDirectoryConfigB\x04\xe2A\x01\x01R\x16serviceDirectoryConfig\x12G\n" +
 	"\n" +
-	"tls_config\x18\x04 \x01(\v2\".google.cloud.ces.v1beta.TlsConfigB\x03\xe0A\x01R\ttlsConfig\x12b\n" +
-	"\x0ecustom_headers\x18\x05 \x03(\v26.google.cloud.ces.v1beta.McpToolset.CustomHeadersEntryB\x03\xe0A\x01R\rcustomHeaders\x12T\n" +
-	"\x0etool_overrides\x18\x06 \x03(\v2(.google.cloud.ces.v1beta.McpToolOverrideB\x03\xe0A\x01R\rtoolOverrides\x1a@\n" +
+	"tls_config\x18\x04 \x01(\v2\".google.cloud.ces.v1beta.TlsConfigB\x04\xe2A\x01\x01R\ttlsConfig\x12c\n" +
+	"\x0ecustom_headers\x18\x05 \x03(\v26.google.cloud.ces.v1beta.McpToolset.CustomHeadersEntryB\x04\xe2A\x01\x01R\rcustomHeaders\x12U\n" +
+	"\x0etool_overrides\x18\x06 \x03(\v2(.google.cloud.ces.v1beta.McpToolOverrideB\x04\xe2A\x01\x01R\rtoolOverrides\x1a@\n" +
 	"\x12CustomHeadersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xd9\x01\n" +
-	"\x0fMcpToolOverride\x12\x17\n" +
-	"\x04tool\x18\x01 \x01(\tB\x03\xe0A\x02R\x04tool\x12(\n" +
-	"\rname_override\x18\x02 \x01(\tB\x03\xe0A\x01R\fnameOverride\x126\n" +
-	"\x14description_override\x18\x03 \x01(\tB\x03\xe0A\x01R\x13descriptionOverride\x12K\n" +
-	"\bsnapshot\x18\x04 \x01(\v2*.google.cloud.ces.v1beta.McpToolDefinitionB\x03\xe0A\x03R\bsnapshot\"\xce\x01\n" +
-	"\x11McpToolDefinition\x12%\n" +
-	"\vdescription\x18\x01 \x01(\tB\x03\xe0A\x03R\vdescription\x12G\n" +
-	"\finput_schema\x18\x02 \x01(\v2\x1f.google.cloud.ces.v1beta.SchemaB\x03\xe0A\x03R\vinputSchema\x12I\n" +
-	"\routput_schema\x18\x03 \x01(\v2\x1f.google.cloud.ces.v1beta.SchemaB\x03\xe0A\x03R\foutputSchemaB_\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xdd\x01\n" +
+	"\x0fMcpToolOverride\x12\x18\n" +
+	"\x04tool\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04tool\x12)\n" +
+	"\rname_override\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\fnameOverride\x127\n" +
+	"\x14description_override\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x13descriptionOverride\x12L\n" +
+	"\bsnapshot\x18\x04 \x01(\v2*.google.cloud.ces.v1beta.McpToolDefinitionB\x04\xe2A\x01\x03R\bsnapshot\"\xd1\x01\n" +
+	"\x11McpToolDefinition\x12&\n" +
+	"\vdescription\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12H\n" +
+	"\finput_schema\x18\x02 \x01(\v2\x1f.google.cloud.ces.v1beta.SchemaB\x04\xe2A\x01\x03R\vinputSchema\x12J\n" +
+	"\routput_schema\x18\x03 \x01(\v2\x1f.google.cloud.ces.v1beta.SchemaB\x04\xe2A\x01\x03R\foutputSchemaB_\n" +
 	"\x1bcom.google.cloud.ces.v1betaB\x0fMcpToolsetProtoP\x01Z-cloud.google.com/go/ces/apiv1beta/cespb;cespbb\x06proto3"
 
 var (

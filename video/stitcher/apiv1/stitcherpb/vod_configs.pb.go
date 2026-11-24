@@ -236,24 +236,24 @@ var File_google_cloud_video_stitcher_v1_vod_configs_proto protoreflect.FileDescr
 
 const file_google_cloud_video_stitcher_v1_vod_configs_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/video/stitcher/v1/vod_configs.proto\x12\x1egoogle.cloud.video.stitcher.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/video/stitcher/v1/fetch_options.proto\"\xa5\x04\n" +
-	"\tVodConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\"\n" +
+	"0google/cloud/video/stitcher/v1/vod_configs.proto\x12\x1egoogle.cloud.video.stitcher.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/video/stitcher/v1/fetch_options.proto\"\xaa\x04\n" +
+	"\tVodConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12#\n" +
 	"\n" +
-	"source_uri\x18\x02 \x01(\tB\x03\xe0A\x02R\tsourceUri\x12!\n" +
+	"source_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tsourceUri\x12\"\n" +
 	"\n" +
-	"ad_tag_uri\x18\x03 \x01(\tB\x03\xe0A\x02R\badTagUri\x12W\n" +
-	"\x0egam_vod_config\x18\x04 \x01(\v2,.google.cloud.video.stitcher.v1.GamVodConfigB\x03\xe0A\x01R\fgamVodConfig\x12J\n" +
-	"\x05state\x18\x05 \x01(\x0e2/.google.cloud.video.stitcher.v1.VodConfig.StateB\x03\xe0A\x03R\x05state\x12^\n" +
+	"ad_tag_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\badTagUri\x12X\n" +
+	"\x0egam_vod_config\x18\x04 \x01(\v2,.google.cloud.video.stitcher.v1.GamVodConfigB\x04\xe2A\x01\x01R\fgamVodConfig\x12K\n" +
+	"\x05state\x18\x05 \x01(\x0e2/.google.cloud.video.stitcher.v1.VodConfig.StateB\x04\xe2A\x01\x03R\x05state\x12^\n" +
 	"\x14source_fetch_options\x18\b \x01(\v2,.google.cloud.video.stitcher.v1.FetchOptionsR\x12sourceFetchOptions\"E\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\t\n" +
 	"\x05READY\x10\x02\x12\f\n" +
 	"\bDELETING\x10\x03:l\xeaAi\n" +
-	"&videostitcher.googleapis.com/VodConfig\x12?projects/{project}/locations/{location}/vodConfigs/{vod_config}\"6\n" +
-	"\fGamVodConfig\x12&\n" +
-	"\fnetwork_code\x18\x01 \x01(\tB\x03\xe0A\x02R\vnetworkCodeBw\n" +
+	"&videostitcher.googleapis.com/VodConfig\x12?projects/{project}/locations/{location}/vodConfigs/{vod_config}\"7\n" +
+	"\fGamVodConfig\x12'\n" +
+	"\fnetwork_code\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vnetworkCodeBw\n" +
 	"\"com.google.cloud.video.stitcher.v1B\x0fVodConfigsProtoP\x01Z>cloud.google.com/go/video/stitcher/apiv1/stitcherpb;stitcherpbb\x06proto3"
 
 var (

@@ -1650,11 +1650,11 @@ var File_google_cloud_dialogflow_cx_v3beta1_experiment_proto protoreflect.FileDe
 
 const file_google_cloud_dialogflow_cx_v3beta1_experiment_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/dialogflow/cx/v3beta1/experiment.proto\x12\"google.cloud.dialogflow.cx.v3beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb9\x14\n" +
+	"3google/cloud/dialogflow/cx/v3beta1/experiment.proto\x12\"google.cloud.dialogflow.cx.v3beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xba\x14\n" +
 	"\n" +
 	"Experiment\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12 \n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12J\n" +
 	"\x05state\x18\x04 \x01(\x0e24.google.cloud.dialogflow.cx.v3beta1.Experiment.StateR\x05state\x12Y\n" +
 	"\n" +
@@ -1747,37 +1747,37 @@ const file_google_cloud_dialogflow_cx_v3beta1_experiment_proto_rawDesc = "" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"updateTimeB\n" +
 	"\n" +
-	"\bvariants\"\x9a\x01\n" +
-	"\x16ListExperimentsRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$dialogflow.googleapis.com/ExperimentR\x06parent\x12\x1b\n" +
+	"\bvariants\"\x9b\x01\n" +
+	"\x16ListExperimentsRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$dialogflow.googleapis.com/ExperimentR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x93\x01\n" +
 	"\x17ListExperimentsResponse\x12P\n" +
 	"\vexperiments\x18\x01 \x03(\v2..google.cloud.dialogflow.cx.v3beta1.ExperimentR\vexperiments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"X\n" +
-	"\x14GetExperimentRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$dialogflow.googleapis.com/ExperimentR\x04name\"\xb4\x01\n" +
-	"\x17CreateExperimentRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$dialogflow.googleapis.com/ExperimentR\x06parent\x12S\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Y\n" +
+	"\x14GetExperimentRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$dialogflow.googleapis.com/ExperimentR\x04name\"\xb6\x01\n" +
+	"\x17CreateExperimentRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$dialogflow.googleapis.com/ExperimentR\x06parent\x12T\n" +
 	"\n" +
-	"experiment\x18\x02 \x01(\v2..google.cloud.dialogflow.cx.v3beta1.ExperimentB\x03\xe0A\x02R\n" +
-	"experiment\"\xb0\x01\n" +
-	"\x17UpdateExperimentRequest\x12S\n" +
+	"experiment\x18\x02 \x01(\v2..google.cloud.dialogflow.cx.v3beta1.ExperimentB\x04\xe2A\x01\x02R\n" +
+	"experiment\"\xb2\x01\n" +
+	"\x17UpdateExperimentRequest\x12T\n" +
 	"\n" +
-	"experiment\x18\x01 \x01(\v2..google.cloud.dialogflow.cx.v3beta1.ExperimentB\x03\xe0A\x02R\n" +
-	"experiment\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"[\n" +
-	"\x17DeleteExperimentRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"experiment\x18\x01 \x01(\v2..google.cloud.dialogflow.cx.v3beta1.ExperimentB\x04\xe2A\x01\x02R\n" +
+	"experiment\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\\\n" +
+	"\x17DeleteExperimentRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$dialogflow.googleapis.com/ExperimentR\x04name\"[\n" +
+	"\x16StartExperimentRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$dialogflow.googleapis.com/ExperimentR\x04name\"Z\n" +
-	"\x16StartExperimentRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$dialogflow.googleapis.com/ExperimentR\x04name\"Y\n" +
-	"\x15StopExperimentRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"\x15StopExperimentRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$dialogflow.googleapis.com/ExperimentR\x04name2\xdd\r\n" +
 	"\vExperiments\x12\xe9\x01\n" +
 	"\x0fListExperiments\x12:.google.cloud.dialogflow.cx.v3beta1.ListExperimentsRequest\x1a;.google.cloud.dialogflow.cx.v3beta1.ListExperimentsResponse\"]\xdaA\x06parent\x82\xd3\xe4\x93\x02N\x12L/v3beta1/{parent=projects/*/locations/*/agents/*/environments/*}/experiments\x12\xd6\x01\n" +

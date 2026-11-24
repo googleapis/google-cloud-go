@@ -399,37 +399,37 @@ var File_google_cloud_bigquery_v2_query_parameter_proto protoreflect.FileDescrip
 
 const file_google_cloud_bigquery_v2_query_parameter_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/bigquery/v2/query_parameter.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xa1\x01\n" +
-	"\x18QueryParameterStructType\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12E\n" +
-	"\x04type\x18\x02 \x01(\v2,.google.cloud.bigquery.v2.QueryParameterTypeB\x03\xe0A\x02R\x04type\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\"\x8f\x03\n" +
-	"\x12QueryParameterType\x12\x17\n" +
-	"\x04type\x18\x01 \x01(\tB\x03\xe0A\x02R\x04type\x129\n" +
-	"\x13timestamp_precision\x18\x05 \x01(\x03B\x03\xe0A\x01H\x00R\x12timestampPrecision\x88\x01\x01\x12P\n" +
+	".google/cloud/bigquery/v2/query_parameter.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xa4\x01\n" +
+	"\x18QueryParameterStructType\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12F\n" +
+	"\x04type\x18\x02 \x01(\v2,.google.cloud.bigquery.v2.QueryParameterTypeB\x04\xe2A\x01\x02R\x04type\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\"\x94\x03\n" +
+	"\x12QueryParameterType\x12\x18\n" +
+	"\x04type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04type\x12:\n" +
+	"\x13timestamp_precision\x18\x05 \x01(\x03B\x04\xe2A\x01\x01H\x00R\x12timestampPrecision\x88\x01\x01\x12Q\n" +
 	"\n" +
-	"array_type\x18\x02 \x01(\v2,.google.cloud.bigquery.v2.QueryParameterTypeB\x03\xe0A\x01R\tarrayType\x12Z\n" +
-	"\fstruct_types\x18\x03 \x03(\v22.google.cloud.bigquery.v2.QueryParameterStructTypeB\x03\xe0A\x01R\vstructTypes\x12_\n" +
-	"\x12range_element_type\x18\x04 \x01(\v2,.google.cloud.bigquery.v2.QueryParameterTypeB\x03\xe0A\x01R\x10rangeElementTypeB\x16\n" +
-	"\x14_timestamp_precision\"\x9c\x01\n" +
+	"array_type\x18\x02 \x01(\v2,.google.cloud.bigquery.v2.QueryParameterTypeB\x04\xe2A\x01\x01R\tarrayType\x12[\n" +
+	"\fstruct_types\x18\x03 \x03(\v22.google.cloud.bigquery.v2.QueryParameterStructTypeB\x04\xe2A\x01\x01R\vstructTypes\x12`\n" +
+	"\x12range_element_type\x18\x04 \x01(\v2,.google.cloud.bigquery.v2.QueryParameterTypeB\x04\xe2A\x01\x01R\x10rangeElementTypeB\x16\n" +
+	"\x14_timestamp_precision\"\x9e\x01\n" +
 	"\n" +
-	"RangeValue\x12H\n" +
-	"\x05start\x18\x01 \x01(\v2-.google.cloud.bigquery.v2.QueryParameterValueB\x03\xe0A\x01R\x05start\x12D\n" +
-	"\x03end\x18\x02 \x01(\v2-.google.cloud.bigquery.v2.QueryParameterValueB\x03\xe0A\x01R\x03end\"\x8b\x04\n" +
-	"\x13QueryParameterValue\x127\n" +
-	"\x05value\x18\x01 \x01(\v2\x1c.google.protobuf.StringValueB\x03\xe0A\x01R\x05value\x12U\n" +
-	"\farray_values\x18\x02 \x03(\v2-.google.cloud.bigquery.v2.QueryParameterValueB\x03\xe0A\x01R\varrayValues\x12d\n" +
-	"\rstruct_values\x18\x03 \x03(\v2?.google.cloud.bigquery.v2.QueryParameterValue.StructValuesEntryR\fstructValues\x12J\n" +
-	"\vrange_value\x18\x06 \x01(\v2$.google.cloud.bigquery.v2.RangeValueB\x03\xe0A\x01R\n" +
+	"RangeValue\x12I\n" +
+	"\x05start\x18\x01 \x01(\v2-.google.cloud.bigquery.v2.QueryParameterValueB\x04\xe2A\x01\x01R\x05start\x12E\n" +
+	"\x03end\x18\x02 \x01(\v2-.google.cloud.bigquery.v2.QueryParameterValueB\x04\xe2A\x01\x01R\x03end\"\x8e\x04\n" +
+	"\x13QueryParameterValue\x128\n" +
+	"\x05value\x18\x01 \x01(\v2\x1c.google.protobuf.StringValueB\x04\xe2A\x01\x01R\x05value\x12V\n" +
+	"\farray_values\x18\x02 \x03(\v2-.google.cloud.bigquery.v2.QueryParameterValueB\x04\xe2A\x01\x01R\varrayValues\x12d\n" +
+	"\rstruct_values\x18\x03 \x03(\v2?.google.cloud.bigquery.v2.QueryParameterValue.StructValuesEntryR\fstructValues\x12K\n" +
+	"\vrange_value\x18\x06 \x01(\v2$.google.cloud.bigquery.v2.RangeValueB\x04\xe2A\x01\x01R\n" +
 	"rangeValue\x12B\n" +
 	"\x11alt_struct_values\x18\x05 \x03(\v2\x16.google.protobuf.ValueR\x0faltStructValues\x1an\n" +
 	"\x11StructValuesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12C\n" +
-	"\x05value\x18\x02 \x01(\v2-.google.cloud.bigquery.v2.QueryParameterValueR\x05value:\x028\x01\"\xe0\x01\n" +
-	"\x0eQueryParameter\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12X\n" +
-	"\x0eparameter_type\x18\x02 \x01(\v2,.google.cloud.bigquery.v2.QueryParameterTypeB\x03\xe0A\x02R\rparameterType\x12[\n" +
-	"\x0fparameter_value\x18\x03 \x01(\v2-.google.cloud.bigquery.v2.QueryParameterValueB\x03\xe0A\x02R\x0eparameterValueBp\n" +
+	"\x05value\x18\x02 \x01(\v2-.google.cloud.bigquery.v2.QueryParameterValueR\x05value:\x028\x01\"\xe3\x01\n" +
+	"\x0eQueryParameter\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12Y\n" +
+	"\x0eparameter_type\x18\x02 \x01(\v2,.google.cloud.bigquery.v2.QueryParameterTypeB\x04\xe2A\x01\x02R\rparameterType\x12\\\n" +
+	"\x0fparameter_value\x18\x03 \x01(\v2-.google.cloud.bigquery.v2.QueryParameterValueB\x04\xe2A\x01\x02R\x0eparameterValueBp\n" +
 	"\x1ccom.google.cloud.bigquery.v2B\x13QueryParameterProtoZ;cloud.google.com/go/bigquery/v2/apiv2/bigquerypb;bigquerypbb\x06proto3"
 
 var (

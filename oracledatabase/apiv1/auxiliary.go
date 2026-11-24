@@ -18,12 +18,14 @@ package oracledatabase
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	oracledatabasepb "cloud.google.com/go/oracledatabase/apiv1/oracledatabasepb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -668,6 +670,70 @@ func (op *CreateGoldengateDeploymentOperation) Name() string {
 	return op.lro.Name()
 }
 
+// CreateOdbDnsZoneOperation manages a long-running operation from CreateOdbDnsZone.
+type CreateOdbDnsZoneOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateOdbDnsZoneOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*oracledatabasepb.OdbDnsZone, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp oracledatabasepb.OdbDnsZone
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateOdbDnsZoneOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*oracledatabasepb.OdbDnsZone, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp oracledatabasepb.OdbDnsZone
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateOdbDnsZoneOperation) Metadata() (*oracledatabasepb.OperationMetadata, error) {
+	var meta oracledatabasepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateOdbDnsZoneOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateOdbDnsZoneOperation) Name() string {
+	return op.lro.Name()
+}
+
 // CreateOdbNetworkOperation manages a long-running operation from CreateOdbNetwork.
 type CreateOdbNetworkOperation struct {
 	lro      *longrunning.Operation
@@ -1273,6 +1339,59 @@ func (op *DeleteGoldengateDeploymentOperation) Name() string {
 	return op.lro.Name()
 }
 
+// DeleteOdbDnsZoneOperation manages a long-running operation from DeleteOdbDnsZone.
+type DeleteOdbDnsZoneOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteOdbDnsZoneOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteOdbDnsZoneOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteOdbDnsZoneOperation) Metadata() (*oracledatabasepb.OperationMetadata, error) {
+	var meta oracledatabasepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteOdbDnsZoneOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteOdbDnsZoneOperation) Name() string {
+	return op.lro.Name()
+}
+
 // DeleteOdbNetworkOperation manages a long-running operation from DeleteOdbNetwork.
 type DeleteOdbNetworkOperation struct {
 	lro      *longrunning.Operation
@@ -1440,6 +1559,70 @@ func (op *FailoverAutonomousDatabaseOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *FailoverAutonomousDatabaseOperation) Name() string {
+	return op.lro.Name()
+}
+
+// RefreshAutonomousDatabaseOperation manages a long-running operation from RefreshAutonomousDatabase.
+type RefreshAutonomousDatabaseOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *RefreshAutonomousDatabaseOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*oracledatabasepb.AutonomousDatabase, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp oracledatabasepb.AutonomousDatabase
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *RefreshAutonomousDatabaseOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*oracledatabasepb.AutonomousDatabase, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp oracledatabasepb.AutonomousDatabase
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *RefreshAutonomousDatabaseOperation) Metadata() (*oracledatabasepb.OperationMetadata, error) {
+	var meta oracledatabasepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *RefreshAutonomousDatabaseOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *RefreshAutonomousDatabaseOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -2083,6 +2266,12 @@ func (op *UpdateExadbVmClusterOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AutonomousDatabaseBackupIterator) All() iter.Seq2[*oracledatabasepb.AutonomousDatabaseBackup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AutonomousDatabaseBackupIterator manages a stream of *oracledatabasepb.AutonomousDatabaseBackup.
 type AutonomousDatabaseBackupIterator struct {
 	items    []*oracledatabasepb.AutonomousDatabaseBackup
@@ -2128,6 +2317,12 @@ func (it *AutonomousDatabaseBackupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AutonomousDatabaseCharacterSetIterator) All() iter.Seq2[*oracledatabasepb.AutonomousDatabaseCharacterSet, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AutonomousDatabaseCharacterSetIterator manages a stream of *oracledatabasepb.AutonomousDatabaseCharacterSet.
@@ -2177,6 +2372,12 @@ func (it *AutonomousDatabaseCharacterSetIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AutonomousDatabaseIterator) All() iter.Seq2[*oracledatabasepb.AutonomousDatabase, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AutonomousDatabaseIterator manages a stream of *oracledatabasepb.AutonomousDatabase.
 type AutonomousDatabaseIterator struct {
 	items    []*oracledatabasepb.AutonomousDatabase
@@ -2222,6 +2423,12 @@ func (it *AutonomousDatabaseIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AutonomousDbVersionIterator) All() iter.Seq2[*oracledatabasepb.AutonomousDbVersion, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AutonomousDbVersionIterator manages a stream of *oracledatabasepb.AutonomousDbVersion.
@@ -2271,6 +2478,12 @@ func (it *AutonomousDbVersionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CloudExadataInfrastructureIterator) All() iter.Seq2[*oracledatabasepb.CloudExadataInfrastructure, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CloudExadataInfrastructureIterator manages a stream of *oracledatabasepb.CloudExadataInfrastructure.
 type CloudExadataInfrastructureIterator struct {
 	items    []*oracledatabasepb.CloudExadataInfrastructure
@@ -2316,6 +2529,12 @@ func (it *CloudExadataInfrastructureIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CloudVmClusterIterator) All() iter.Seq2[*oracledatabasepb.CloudVmCluster, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // CloudVmClusterIterator manages a stream of *oracledatabasepb.CloudVmCluster.
@@ -2365,6 +2584,12 @@ func (it *CloudVmClusterIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DatabaseCharacterSetIterator) All() iter.Seq2[*oracledatabasepb.DatabaseCharacterSet, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DatabaseCharacterSetIterator manages a stream of *oracledatabasepb.DatabaseCharacterSet.
 type DatabaseCharacterSetIterator struct {
 	items    []*oracledatabasepb.DatabaseCharacterSet
@@ -2410,6 +2635,12 @@ func (it *DatabaseCharacterSetIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DatabaseIterator) All() iter.Seq2[*oracledatabasepb.Database, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DatabaseIterator manages a stream of *oracledatabasepb.Database.
@@ -2459,6 +2690,12 @@ func (it *DatabaseIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DbNodeIterator) All() iter.Seq2[*oracledatabasepb.DbNode, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DbNodeIterator manages a stream of *oracledatabasepb.DbNode.
 type DbNodeIterator struct {
 	items    []*oracledatabasepb.DbNode
@@ -2504,6 +2741,12 @@ func (it *DbNodeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DbServerIterator) All() iter.Seq2[*oracledatabasepb.DbServer, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DbServerIterator manages a stream of *oracledatabasepb.DbServer.
@@ -2553,6 +2796,12 @@ func (it *DbServerIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DbSystemInitialStorageSizeIterator) All() iter.Seq2[*oracledatabasepb.DbSystemInitialStorageSize, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DbSystemInitialStorageSizeIterator manages a stream of *oracledatabasepb.DbSystemInitialStorageSize.
 type DbSystemInitialStorageSizeIterator struct {
 	items    []*oracledatabasepb.DbSystemInitialStorageSize
@@ -2598,6 +2847,12 @@ func (it *DbSystemInitialStorageSizeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DbSystemIterator) All() iter.Seq2[*oracledatabasepb.DbSystem, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DbSystemIterator manages a stream of *oracledatabasepb.DbSystem.
@@ -2647,6 +2902,12 @@ func (it *DbSystemIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DbSystemShapeIterator) All() iter.Seq2[*oracledatabasepb.DbSystemShape, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DbSystemShapeIterator manages a stream of *oracledatabasepb.DbSystemShape.
 type DbSystemShapeIterator struct {
 	items    []*oracledatabasepb.DbSystemShape
@@ -2692,6 +2953,12 @@ func (it *DbSystemShapeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DbVersionIterator) All() iter.Seq2[*oracledatabasepb.DbVersion, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DbVersionIterator manages a stream of *oracledatabasepb.DbVersion.
@@ -2741,6 +3008,12 @@ func (it *DbVersionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EntitlementIterator) All() iter.Seq2[*oracledatabasepb.Entitlement, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EntitlementIterator manages a stream of *oracledatabasepb.Entitlement.
 type EntitlementIterator struct {
 	items    []*oracledatabasepb.Entitlement
@@ -2786,6 +3059,12 @@ func (it *EntitlementIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ExadbVmClusterIterator) All() iter.Seq2[*oracledatabasepb.ExadbVmCluster, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ExadbVmClusterIterator manages a stream of *oracledatabasepb.ExadbVmCluster.
@@ -2835,6 +3114,12 @@ func (it *ExadbVmClusterIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ExascaleDbStorageVaultIterator) All() iter.Seq2[*oracledatabasepb.ExascaleDbStorageVault, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ExascaleDbStorageVaultIterator manages a stream of *oracledatabasepb.ExascaleDbStorageVault.
 type ExascaleDbStorageVaultIterator struct {
 	items    []*oracledatabasepb.ExascaleDbStorageVault
@@ -2880,6 +3165,12 @@ func (it *ExascaleDbStorageVaultIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GiVersionIterator) All() iter.Seq2[*oracledatabasepb.GiVersion, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // GiVersionIterator manages a stream of *oracledatabasepb.GiVersion.
@@ -2929,6 +3220,12 @@ func (it *GiVersionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GoldengateConnectionAssignmentIterator) All() iter.Seq2[*oracledatabasepb.GoldengateConnectionAssignment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // GoldengateConnectionAssignmentIterator manages a stream of *oracledatabasepb.GoldengateConnectionAssignment.
 type GoldengateConnectionAssignmentIterator struct {
 	items    []*oracledatabasepb.GoldengateConnectionAssignment
@@ -2974,6 +3271,12 @@ func (it *GoldengateConnectionAssignmentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GoldengateConnectionIterator) All() iter.Seq2[*oracledatabasepb.GoldengateConnection, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // GoldengateConnectionIterator manages a stream of *oracledatabasepb.GoldengateConnection.
@@ -3023,6 +3326,12 @@ func (it *GoldengateConnectionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GoldengateConnectionTypeIterator) All() iter.Seq2[*oracledatabasepb.GoldengateConnectionType, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // GoldengateConnectionTypeIterator manages a stream of *oracledatabasepb.GoldengateConnectionType.
 type GoldengateConnectionTypeIterator struct {
 	items    []*oracledatabasepb.GoldengateConnectionType
@@ -3068,6 +3377,12 @@ func (it *GoldengateConnectionTypeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GoldengateDeploymentEnvironmentIterator) All() iter.Seq2[*oracledatabasepb.GoldengateDeploymentEnvironment, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // GoldengateDeploymentEnvironmentIterator manages a stream of *oracledatabasepb.GoldengateDeploymentEnvironment.
@@ -3117,6 +3432,12 @@ func (it *GoldengateDeploymentEnvironmentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GoldengateDeploymentIterator) All() iter.Seq2[*oracledatabasepb.GoldengateDeployment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // GoldengateDeploymentIterator manages a stream of *oracledatabasepb.GoldengateDeployment.
 type GoldengateDeploymentIterator struct {
 	items    []*oracledatabasepb.GoldengateDeployment
@@ -3162,6 +3483,12 @@ func (it *GoldengateDeploymentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GoldengateDeploymentTypeIterator) All() iter.Seq2[*oracledatabasepb.GoldengateDeploymentType, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // GoldengateDeploymentTypeIterator manages a stream of *oracledatabasepb.GoldengateDeploymentType.
@@ -3211,6 +3538,12 @@ func (it *GoldengateDeploymentTypeIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GoldengateDeploymentVersionIterator) All() iter.Seq2[*oracledatabasepb.GoldengateDeploymentVersion, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // GoldengateDeploymentVersionIterator manages a stream of *oracledatabasepb.GoldengateDeploymentVersion.
 type GoldengateDeploymentVersionIterator struct {
 	items    []*oracledatabasepb.GoldengateDeploymentVersion
@@ -3256,6 +3589,12 @@ func (it *GoldengateDeploymentVersionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -3305,6 +3644,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MinorVersionIterator) All() iter.Seq2[*oracledatabasepb.MinorVersion, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // MinorVersionIterator manages a stream of *oracledatabasepb.MinorVersion.
 type MinorVersionIterator struct {
 	items    []*oracledatabasepb.MinorVersion
@@ -3350,6 +3695,65 @@ func (it *MinorVersionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OdbDnsZoneIterator) All() iter.Seq2[*oracledatabasepb.OdbDnsZone, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// OdbDnsZoneIterator manages a stream of *oracledatabasepb.OdbDnsZone.
+type OdbDnsZoneIterator struct {
+	items    []*oracledatabasepb.OdbDnsZone
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*oracledatabasepb.OdbDnsZone, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *OdbDnsZoneIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *OdbDnsZoneIterator) Next() (*oracledatabasepb.OdbDnsZone, error) {
+	var item *oracledatabasepb.OdbDnsZone
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *OdbDnsZoneIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *OdbDnsZoneIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OdbNetworkIterator) All() iter.Seq2[*oracledatabasepb.OdbNetwork, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OdbNetworkIterator manages a stream of *oracledatabasepb.OdbNetwork.
@@ -3399,6 +3803,12 @@ func (it *OdbNetworkIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OdbSubnetIterator) All() iter.Seq2[*oracledatabasepb.OdbSubnet, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OdbSubnetIterator manages a stream of *oracledatabasepb.OdbSubnet.
 type OdbSubnetIterator struct {
 	items    []*oracledatabasepb.OdbSubnet
@@ -3446,6 +3856,12 @@ func (it *OdbSubnetIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -3491,6 +3907,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PluggableDatabaseIterator) All() iter.Seq2[*oracledatabasepb.PluggableDatabase, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PluggableDatabaseIterator manages a stream of *oracledatabasepb.PluggableDatabase.

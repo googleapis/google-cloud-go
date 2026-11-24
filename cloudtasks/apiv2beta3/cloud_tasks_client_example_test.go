@@ -22,6 +22,7 @@ import (
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2beta3"
 	cloudtaskspb "cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -58,6 +59,64 @@ func ExampleNewRESTClient() {
 
 	// TODO: Use client.
 	_ = c
+}
+
+func ExampleClient_BatchCreateTasks() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudtasks.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudtaskspb.BatchCreateTasksRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#BatchCreateTasksRequest.
+	}
+	op, err := c.BatchCreateTasks(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_BatchDeleteTasks() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudtasks.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudtaskspb.BatchDeleteTasksRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#BatchDeleteTasksRequest.
+	}
+	op, err := c.BatchDeleteTasks(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleClient_CreateQueue() {
@@ -154,6 +213,31 @@ func ExampleClient_DeleteTask() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+}
+
+func ExampleClient_GetCmekConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudtasks.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudtaskspb.GetCmekConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#GetCmekConfigRequest.
+	}
+	resp, err := c.GetCmekConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleClient_GetIamPolicy() {
@@ -455,6 +539,31 @@ func ExampleClient_TestIamPermissions() {
 	_ = resp
 }
 
+func ExampleClient_UpdateCmekConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudtasks.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudtaskspb.UpdateCmekConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#UpdateCmekConfigRequest.
+	}
+	resp, err := c.UpdateCmekConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_UpdateQueue() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -540,4 +649,29 @@ func ExampleClient_ListLocations() {
 		// first call to Next(). Not safe for concurrent access.
 		_ = it.Response.(*locationpb.ListLocationsResponse)
 	}
+}
+
+func ExampleClient_GetOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudtasks.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.GetOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
+	}
+	resp, err := c.GetOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }

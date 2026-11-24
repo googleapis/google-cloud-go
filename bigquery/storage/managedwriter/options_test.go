@@ -24,7 +24,6 @@ import (
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/descriptorpb"
 )
@@ -237,7 +236,7 @@ func TestWriterOptions(t *testing.T) {
 		},
 		{
 			desc:    "WithSchemaDescriptor",
-			options: []WriterOption{WithSchemaDescriptor(&descriptorpb.DescriptorProto{Name: proto.String("name")})},
+			options: []WriterOption{WithSchemaDescriptor(&descriptorpb.DescriptorProto{Name: new("name")})},
 			want: func() *ManagedStream {
 				ms := &ManagedStream{
 					streamSettings: defaultStreamSettings(),
@@ -247,7 +246,7 @@ func TestWriterOptions(t *testing.T) {
 					Rows: &storagepb.AppendRowsRequest_ProtoRows{
 						ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
 							WriterSchema: &storagepb.ProtoSchema{
-								ProtoDescriptor: &descriptorpb.DescriptorProto{Name: proto.String("name")},
+								ProtoDescriptor: &descriptorpb.DescriptorProto{Name: new("name")},
 							},
 						},
 					},
@@ -296,7 +295,7 @@ func TestWriterOptions(t *testing.T) {
 				WithMaxInflightBytes(5),
 				WithTraceID("traceid"),
 				EnableWriteRetries(true),
-				WithSchemaDescriptor(&descriptorpb.DescriptorProto{Name: proto.String("name")}),
+				WithSchemaDescriptor(&descriptorpb.DescriptorProto{Name: new("name")}),
 				WithDefaultMissingValueInterpretation(storagepb.AppendRowsRequest_DEFAULT_VALUE),
 				WithMissingValueInterpretations(map[string]storagepb.AppendRowsRequest_MissingValueInterpretation{
 					"foo": storagepb.AppendRowsRequest_DEFAULT_VALUE,
@@ -312,7 +311,7 @@ func TestWriterOptions(t *testing.T) {
 					Rows: &storagepb.AppendRowsRequest_ProtoRows{
 						ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
 							WriterSchema: &storagepb.ProtoSchema{
-								ProtoDescriptor: &descriptorpb.DescriptorProto{Name: proto.String("name")},
+								ProtoDescriptor: &descriptorpb.DescriptorProto{Name: new("name")},
 							},
 						},
 					},

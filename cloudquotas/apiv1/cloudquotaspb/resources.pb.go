@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -272,26 +272,26 @@ type QuotaInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Resource name of this QuotaInfo.
 	// The ID component following "locations/" must be "global".
-	// Example:
+	// For example,
 	// `projects/123/locations/global/services/compute.googleapis.com/quotaInfos/CpusPerProjectPerRegion`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The id of the quota, which is unique within the service.
-	// Example: `CpusPerProjectPerRegion`
+	// For example, `CpusPerProjectPerRegion`
 	QuotaId string `protobuf:"bytes,2,opt,name=quota_id,json=quotaId,proto3" json:"quota_id,omitempty"`
 	// The metric of the quota. It specifies the resources consumption the quota
 	// is defined for.
-	// Example: `compute.googleapis.com/cpus`
+	// For example, `compute.googleapis.com/cpus`
 	Metric string `protobuf:"bytes,3,opt,name=metric,proto3" json:"metric,omitempty"`
 	// The name of the service in which the quota is defined.
-	// Example: `compute.googleapis.com`
+	// For example, `compute.googleapis.com`
 	Service string `protobuf:"bytes,4,opt,name=service,proto3" json:"service,omitempty"`
 	// Whether this is a precise quota. A precise quota is tracked with absolute
 	// precision. In contrast, an imprecise quota is not tracked with precision.
 	IsPrecise bool `protobuf:"varint,5,opt,name=is_precise,json=isPrecise,proto3" json:"is_precise,omitempty"`
 	// The reset time interval for the quota. Refresh interval applies to rate
 	// quota only.
-	// Example: "minute" for per minute, "day" for per day, or "10 seconds" for
-	// every 10 seconds.
+	// For example, "minute" for per minute, "day" for per day, or "10 seconds"
+	// for every 10 seconds.
 	RefreshInterval string `protobuf:"bytes,6,opt,name=refresh_interval,json=refreshInterval,proto3" json:"refresh_interval,omitempty"`
 	// The container type of the QuotaInfo.
 	ContainerType QuotaInfo_ContainerType `protobuf:"varint,7,opt,name=container_type,json=containerType,proto3,enum=google.api.cloudquotas.v1.QuotaInfo_ContainerType" json:"container_type,omitempty"`
@@ -527,24 +527,25 @@ type QuotaPreference struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required except in the CREATE requests.
 	// The resource name of the quota preference.
-	// The ID component following "locations/" must be "global".
-	// Example:
+	// The path that follows `/locations` must be `/global`.
+	// For example:
 	// `projects/123/locations/global/quotaPreferences/my-config-for-us-east1`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Immutable. The dimensions that this quota preference applies to. The key of
-	// the map entry is the name of a dimension, such as "region", "zone",
-	// "network_id", and the value of the map entry is the dimension value.
+	// the map entry is the name of a dimension, such as `region`, `zone`,
+	// `network_id`, and the value of the map entry is the dimension value.
 	//
 	// If a dimension is missing from the map of dimensions, the quota preference
 	// applies to all the dimension values except for those that have other quota
 	// preferences configured for the specific value.
 	//
-	// NOTE: QuotaPreferences can only be applied across all values of "user" and
-	// "resource" dimension. Do not set values for "user" or "resource" in the
+	// Note: QuotaPreferences can only be applied across all values of `user` and
+	// `resource` dimension. Do not set values for `user` or `resource` in the
 	// dimension map.
 	//
-	// Example: {"provider", "Foo Inc"} where "provider" is a service specific
-	// dimension.
+	// For example: `{"provider" : "Example Organization"}` where `provider` is a
+	// service-specific quota dimension and `Example Organization` is the provider
+	// name.
 	Dimensions map[string]string `protobuf:"bytes,2,rep,name=dimensions,proto3" json:"dimensions,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// Required. Preferred quota configuration.
 	QuotaConfig *QuotaConfig `protobuf:"bytes,3,opt,name=quota_config,json=quotaConfig,proto3" json:"quota_config,omitempty"`
@@ -560,16 +561,16 @@ type QuotaPreference struct {
 	// Required. The name of the service to which the quota preference is applied.
 	Service string `protobuf:"bytes,7,opt,name=service,proto3" json:"service,omitempty"`
 	// Required. The id of the quota to which the quota preference is applied. A
-	// quota name is unique in the service. Example: `CpusPerProjectPerRegion`
+	// quota name is unique in the service. For example, `CpusPerProjectPerRegion`
 	QuotaId string `protobuf:"bytes,8,opt,name=quota_id,json=quotaId,proto3" json:"quota_id,omitempty"`
 	// Output only. Is the quota preference pending Google Cloud approval and
 	// fulfillment.
 	Reconciling bool `protobuf:"varint,10,opt,name=reconciling,proto3" json:"reconciling,omitempty"`
 	// The reason / justification for this quota preference.
 	Justification string `protobuf:"bytes,11,opt,name=justification,proto3" json:"justification,omitempty"`
-	// Input only. An email address that can be used to contact the the user, in
-	// case Google Cloud needs more information to make a decision before
-	// additional quota can be granted.
+	// Input only. An email address that can be used to contact the user, in case
+	// Google Cloud needs more information to make a decision before additional
+	// quota can be granted.
 	//
 	// When requesting a quota increase, the email address is required.
 	// When requesting a quota decrease, the email address is optional.
@@ -790,18 +791,19 @@ func (x *QuotaConfig) GetRequestOrigin() QuotaConfig_Origin {
 // combination of dimensions.
 type DimensionsInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The map of dimensions for this dimensions info. The key of a map entry
-	// is "region", "zone" or the name of a service specific dimension, and the
-	// value of a map entry is the value of the dimension.  If a dimension does
+	// The map of dimensions in key-value pairs. The key of a map entry
+	// is "region", "zone", or the name of a service-specific dimension, and the
+	// value of a map entry is the value of the dimension. If a dimension does
 	// not appear in the map of dimensions, the dimensions info applies to all
-	// the dimension values except for those that have another DimenisonInfo
+	// the dimension values except for those that have another DimensionInfo
 	// instance configured for the specific value.
-	// Example: {"provider" : "Foo Inc"} where "provider" is a service specific
-	// dimension of a quota.
+	// For example: `{"provider" : "Example Organization"}` where `provider` is a
+	// service-specific quota dimension and `Example Organization` is the provider
+	// name.
 	Dimensions map[string]string `protobuf:"bytes,1,rep,name=dimensions,proto3" json:"dimensions,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// Quota details for the specified dimensions.
 	Details *QuotaDetails `protobuf:"bytes,2,opt,name=details,proto3" json:"details,omitempty"`
-	// The applicable regions or zones of this dimensions info. The field will be
+	// The applicable regions or zones of this dimension. The field is
 	// set to ['global'] for quotas that are not per region or per zone.
 	// Otherwise, it will be set to the list of locations this dimension info is
 	// applicable to.
@@ -1007,35 +1009,35 @@ const file_google_api_cloudquotas_v1_resources_proto_rawDesc = "" +
 	"\x18NO_VALID_BILLING_ACCOUNT\x10\x01\x12\x11\n" +
 	"\rNOT_SUPPORTED\x10\x03\x12\x1c\n" +
 	"\x18NOT_ENOUGH_USAGE_HISTORY\x10\x04\x12\t\n" +
-	"\x05OTHER\x10\x02\"\x8a\a\n" +
+	"\x05OTHER\x10\x02\"\x93\a\n" +
 	"\x0fQuotaPreference\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12_\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12`\n" +
 	"\n" +
-	"dimensions\x18\x02 \x03(\v2:.google.api.cloudquotas.v1.QuotaPreference.DimensionsEntryB\x03\xe0A\x05R\n" +
-	"dimensions\x12N\n" +
-	"\fquota_config\x18\x03 \x01(\v2&.google.api.cloudquotas.v1.QuotaConfigB\x03\xe0A\x02R\vquotaConfig\x12\x17\n" +
-	"\x04etag\x18\x04 \x01(\tB\x03\xe0A\x01R\x04etag\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x1d\n" +
-	"\aservice\x18\a \x01(\tB\x03\xe0A\x02R\aservice\x12\x1e\n" +
-	"\bquota_id\x18\b \x01(\tB\x03\xe0A\x02R\aquotaId\x12%\n" +
+	"dimensions\x18\x02 \x03(\v2:.google.api.cloudquotas.v1.QuotaPreference.DimensionsEntryB\x04\xe2A\x01\x05R\n" +
+	"dimensions\x12O\n" +
+	"\fquota_config\x18\x03 \x01(\v2&.google.api.cloudquotas.v1.QuotaConfigB\x04\xe2A\x01\x02R\vquotaConfig\x12\x18\n" +
+	"\x04etag\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x1e\n" +
+	"\aservice\x18\a \x01(\tB\x04\xe2A\x01\x02R\aservice\x12\x1f\n" +
+	"\bquota_id\x18\b \x01(\tB\x04\xe2A\x01\x02R\aquotaId\x12&\n" +
 	"\vreconciling\x18\n" +
-	" \x01(\bB\x03\xe0A\x03R\vreconciling\x12$\n" +
-	"\rjustification\x18\v \x01(\tR\rjustification\x12(\n" +
-	"\rcontact_email\x18\f \x01(\tB\x03\xe0A\x04R\fcontactEmail\x1a=\n" +
+	" \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12$\n" +
+	"\rjustification\x18\v \x01(\tR\rjustification\x12)\n" +
+	"\rcontact_email\x18\f \x01(\tB\x04\xe2A\x01\x04R\fcontactEmail\x1a=\n" +
 	"\x0fDimensionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x9f\x02\xeaA\x9b\x02\n" +
-	"*cloudquotas.googleapis.com/QuotaPreference\x12Kprojects/{project}/locations/{location}/quotaPreferences/{quota_preference}\x12Ifolders/{folder}/locations/{location}/quotaPreferences/{quota_preference}\x12Uorganizations/{organization}/locations/{location}/quotaPreferences/{quota_preference}\"\x8d\x04\n" +
-	"\vQuotaConfig\x12,\n" +
-	"\x0fpreferred_value\x18\x01 \x01(\x03B\x03\xe0A\x02R\x0epreferredValue\x12&\n" +
-	"\fstate_detail\x18\x02 \x01(\tB\x03\xe0A\x03R\vstateDetail\x12E\n" +
-	"\rgranted_value\x18\x03 \x01(\v2\x1b.google.protobuf.Int64ValueB\x03\xe0A\x03R\fgrantedValue\x12\x1e\n" +
-	"\btrace_id\x18\x04 \x01(\tB\x03\xe0A\x03R\atraceId\x12^\n" +
-	"\vannotations\x18\x05 \x03(\v27.google.api.cloudquotas.v1.QuotaConfig.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12Y\n" +
-	"\x0erequest_origin\x18\x06 \x01(\x0e2-.google.api.cloudquotas.v1.QuotaConfig.OriginB\x03\xe0A\x03R\rrequestOrigin\x1a>\n" +
+	"*cloudquotas.googleapis.com/QuotaPreference\x12Kprojects/{project}/locations/{location}/quotaPreferences/{quota_preference}\x12Ifolders/{folder}/locations/{location}/quotaPreferences/{quota_preference}\x12Uorganizations/{organization}/locations/{location}/quotaPreferences/{quota_preference}\"\x93\x04\n" +
+	"\vQuotaConfig\x12-\n" +
+	"\x0fpreferred_value\x18\x01 \x01(\x03B\x04\xe2A\x01\x02R\x0epreferredValue\x12'\n" +
+	"\fstate_detail\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vstateDetail\x12F\n" +
+	"\rgranted_value\x18\x03 \x01(\v2\x1b.google.protobuf.Int64ValueB\x04\xe2A\x01\x03R\fgrantedValue\x12\x1f\n" +
+	"\btrace_id\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\atraceId\x12_\n" +
+	"\vannotations\x18\x05 \x03(\v27.google.api.cloudquotas.v1.QuotaConfig.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12Z\n" +
+	"\x0erequest_origin\x18\x06 \x01(\x0e2-.google.api.cloudquotas.v1.QuotaConfig.OriginB\x04\xe2A\x01\x03R\rrequestOrigin\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"F\n" +

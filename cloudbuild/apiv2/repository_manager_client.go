@@ -614,6 +614,69 @@ func NewRepositoryManagerClient(ctx context.Context, opts ...option.ClientOption
 		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudbuild",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudbuild/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudbuild.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateConnection = append(client.CallOptions.CreateConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.GetConnection = append(client.CallOptions.GetConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.ListConnections = append(client.CallOptions.ListConnections, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateConnection = append(client.CallOptions.UpdateConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteConnection = append(client.CallOptions.DeleteConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateRepository = append(client.CallOptions.CreateRepository, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchCreateRepositories = append(client.CallOptions.BatchCreateRepositories, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRepository = append(client.CallOptions.GetRepository, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRepositories = append(client.CallOptions.ListRepositories, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteRepository = append(client.CallOptions.DeleteRepository, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchReadWriteToken = append(client.CallOptions.FetchReadWriteToken, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchReadToken = append(client.CallOptions.FetchReadToken, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchLinkableRepositories = append(client.CallOptions.FetchLinkableRepositories, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchGitRefs = append(client.CallOptions.FetchGitRefs, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudbuild",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudbuild/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudbuild.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateConnection = append(client.CallOptions.CreateConnection, gax.WithClientLogging(logging))
+		client.CallOptions.GetConnection = append(client.CallOptions.GetConnection, gax.WithClientLogging(logging))
+		client.CallOptions.ListConnections = append(client.CallOptions.ListConnections, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateConnection = append(client.CallOptions.UpdateConnection, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteConnection = append(client.CallOptions.DeleteConnection, gax.WithClientLogging(logging))
+		client.CallOptions.CreateRepository = append(client.CallOptions.CreateRepository, gax.WithClientLogging(logging))
+		client.CallOptions.BatchCreateRepositories = append(client.CallOptions.BatchCreateRepositories, gax.WithClientLogging(logging))
+		client.CallOptions.GetRepository = append(client.CallOptions.GetRepository, gax.WithClientLogging(logging))
+		client.CallOptions.ListRepositories = append(client.CallOptions.ListRepositories, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteRepository = append(client.CallOptions.DeleteRepository, gax.WithClientLogging(logging))
+		client.CallOptions.FetchReadWriteToken = append(client.CallOptions.FetchReadWriteToken, gax.WithClientLogging(logging))
+		client.CallOptions.FetchReadToken = append(client.CallOptions.FetchReadToken, gax.WithClientLogging(logging))
+		client.CallOptions.FetchLinkableRepositories = append(client.CallOptions.FetchLinkableRepositories, gax.WithClientLogging(logging))
+		client.CallOptions.FetchGitRefs = append(client.CallOptions.FetchGitRefs, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -739,6 +802,69 @@ func NewRepositoryManagerRESTClient(ctx context.Context, opts ...option.ClientOp
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudbuild",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudbuild/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudbuild.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateConnection = append(callOpts.CreateConnection, gax.WithClientTracing(tracing))
+		callOpts.GetConnection = append(callOpts.GetConnection, gax.WithClientTracing(tracing))
+		callOpts.ListConnections = append(callOpts.ListConnections, gax.WithClientTracing(tracing))
+		callOpts.UpdateConnection = append(callOpts.UpdateConnection, gax.WithClientTracing(tracing))
+		callOpts.DeleteConnection = append(callOpts.DeleteConnection, gax.WithClientTracing(tracing))
+		callOpts.CreateRepository = append(callOpts.CreateRepository, gax.WithClientTracing(tracing))
+		callOpts.BatchCreateRepositories = append(callOpts.BatchCreateRepositories, gax.WithClientTracing(tracing))
+		callOpts.GetRepository = append(callOpts.GetRepository, gax.WithClientTracing(tracing))
+		callOpts.ListRepositories = append(callOpts.ListRepositories, gax.WithClientTracing(tracing))
+		callOpts.DeleteRepository = append(callOpts.DeleteRepository, gax.WithClientTracing(tracing))
+		callOpts.FetchReadWriteToken = append(callOpts.FetchReadWriteToken, gax.WithClientTracing(tracing))
+		callOpts.FetchReadToken = append(callOpts.FetchReadToken, gax.WithClientTracing(tracing))
+		callOpts.FetchLinkableRepositories = append(callOpts.FetchLinkableRepositories, gax.WithClientTracing(tracing))
+		callOpts.FetchGitRefs = append(callOpts.FetchGitRefs, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudbuild",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudbuild/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudbuild.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateConnection = append(callOpts.CreateConnection, gax.WithClientLogging(logging))
+		callOpts.GetConnection = append(callOpts.GetConnection, gax.WithClientLogging(logging))
+		callOpts.ListConnections = append(callOpts.ListConnections, gax.WithClientLogging(logging))
+		callOpts.UpdateConnection = append(callOpts.UpdateConnection, gax.WithClientLogging(logging))
+		callOpts.DeleteConnection = append(callOpts.DeleteConnection, gax.WithClientLogging(logging))
+		callOpts.CreateRepository = append(callOpts.CreateRepository, gax.WithClientLogging(logging))
+		callOpts.BatchCreateRepositories = append(callOpts.BatchCreateRepositories, gax.WithClientLogging(logging))
+		callOpts.GetRepository = append(callOpts.GetRepository, gax.WithClientLogging(logging))
+		callOpts.ListRepositories = append(callOpts.ListRepositories, gax.WithClientLogging(logging))
+		callOpts.DeleteRepository = append(callOpts.DeleteRepository, gax.WithClientLogging(logging))
+		callOpts.FetchReadWriteToken = append(callOpts.FetchReadWriteToken, gax.WithClientLogging(logging))
+		callOpts.FetchReadToken = append(callOpts.FetchReadToken, gax.WithClientLogging(logging))
+		callOpts.FetchLinkableRepositories = append(callOpts.FetchLinkableRepositories, gax.WithClientLogging(logging))
+		callOpts.FetchGitRefs = append(callOpts.FetchGitRefs, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -795,9 +921,6 @@ func (c *repositoryManagerGRPCClient) CreateConnection(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v2.RepositoryManager/CreateConnection")
 	}
@@ -825,9 +948,6 @@ func (c *repositoryManagerGRPCClient) GetConnection(ctx context.Context, req *cl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v2.RepositoryManager/GetConnection")
 	}
@@ -849,9 +969,6 @@ func (c *repositoryManagerGRPCClient) ListConnections(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v2.RepositoryManager/ListConnections")
 	}
@@ -928,9 +1045,6 @@ func (c *repositoryManagerGRPCClient) DeleteConnection(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v2.RepositoryManager/DeleteConnection")
 	}
@@ -958,9 +1072,6 @@ func (c *repositoryManagerGRPCClient) CreateRepository(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v2.RepositoryManager/CreateRepository")
 	}
@@ -988,9 +1099,6 @@ func (c *repositoryManagerGRPCClient) BatchCreateRepositories(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v2.RepositoryManager/BatchCreateRepositories")
 	}
@@ -1018,9 +1126,6 @@ func (c *repositoryManagerGRPCClient) GetRepository(ctx context.Context, req *cl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v2.RepositoryManager/GetRepository")
 	}
@@ -1042,9 +1147,6 @@ func (c *repositoryManagerGRPCClient) ListRepositories(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v2.RepositoryManager/ListRepositories")
 	}
@@ -1094,9 +1196,6 @@ func (c *repositoryManagerGRPCClient) DeleteRepository(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v2.RepositoryManager/DeleteRepository")
 	}
@@ -1124,9 +1223,6 @@ func (c *repositoryManagerGRPCClient) FetchReadWriteToken(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetRepository()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v2.RepositoryManager/FetchReadWriteToken")
 	}
@@ -1148,9 +1244,6 @@ func (c *repositoryManagerGRPCClient) FetchReadToken(ctx context.Context, req *c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetRepository()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v2.RepositoryManager/FetchReadToken")
 	}
@@ -1172,9 +1265,6 @@ func (c *repositoryManagerGRPCClient) FetchLinkableRepositories(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetConnection()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v2.RepositoryManager/FetchLinkableRepositories")
 	}
@@ -1224,9 +1314,6 @@ func (c *repositoryManagerGRPCClient) FetchGitRefs(ctx context.Context, req *clo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetRepository()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v2.RepositoryManager/FetchGitRefs")
 	}
@@ -1248,9 +1335,6 @@ func (c *repositoryManagerGRPCClient) GetIamPolicy(ctx context.Context, req *iam
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 	}
@@ -1272,9 +1356,6 @@ func (c *repositoryManagerGRPCClient) SetIamPolicy(ctx context.Context, req *iam
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 	}
@@ -1296,9 +1377,6 @@ func (c *repositoryManagerGRPCClient) TestIamPermissions(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 	}
@@ -1366,6 +1444,11 @@ func (c *repositoryManagerRESTClient) CreateConnection(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/connections", req.GetParent())
 
 	params := url.Values{}
@@ -1380,9 +1463,6 @@ func (c *repositoryManagerRESTClient) CreateConnection(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v2.RepositoryManager/CreateConnection")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/locations/*}/connections")
@@ -1431,6 +1511,11 @@ func (c *repositoryManagerRESTClient) GetConnection(ctx context.Context, req *cl
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -1444,9 +1529,6 @@ func (c *repositoryManagerRESTClient) GetConnection(ctx context.Context, req *cl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v2.RepositoryManager/GetConnection")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/connections/*}")
@@ -1499,6 +1581,11 @@ func (c *repositoryManagerRESTClient) ListConnections(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/connections", req.GetParent())
@@ -1571,6 +1658,11 @@ func (c *repositoryManagerRESTClient) UpdateConnection(ctx context.Context, req 
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetConnection().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetConnection().GetName())
@@ -1647,6 +1739,11 @@ func (c *repositoryManagerRESTClient) DeleteConnection(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -1666,9 +1763,6 @@ func (c *repositoryManagerRESTClient) DeleteConnection(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v2.RepositoryManager/DeleteConnection")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/connections/*}")
@@ -1724,6 +1818,11 @@ func (c *repositoryManagerRESTClient) CreateRepository(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/repositories", req.GetParent())
 
 	params := url.Values{}
@@ -1738,9 +1837,6 @@ func (c *repositoryManagerRESTClient) CreateRepository(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v2.RepositoryManager/CreateRepository")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/locations/*/connections/*}/repositories")
@@ -1795,6 +1891,11 @@ func (c *repositoryManagerRESTClient) BatchCreateRepositories(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/repositories:batchCreate", req.GetParent())
 
 	params := url.Values{}
@@ -1808,9 +1909,6 @@ func (c *repositoryManagerRESTClient) BatchCreateRepositories(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v2.RepositoryManager/BatchCreateRepositories")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/locations/*/connections/*}/repositories:batchCreate")
@@ -1859,6 +1957,11 @@ func (c *repositoryManagerRESTClient) GetRepository(ctx context.Context, req *cl
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -1872,9 +1975,6 @@ func (c *repositoryManagerRESTClient) GetRepository(ctx context.Context, req *cl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v2.RepositoryManager/GetRepository")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/connections/*/repositories/*}")
@@ -1927,6 +2027,11 @@ func (c *repositoryManagerRESTClient) ListRepositories(ctx context.Context, req 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/repositories", req.GetParent())
@@ -1997,6 +2102,11 @@ func (c *repositoryManagerRESTClient) DeleteRepository(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -2016,9 +2126,6 @@ func (c *repositoryManagerRESTClient) DeleteRepository(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v2.RepositoryManager/DeleteRepository")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/connections/*/repositories/*}")
@@ -2073,6 +2180,11 @@ func (c *repositoryManagerRESTClient) FetchReadWriteToken(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRepository(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:accessReadWriteToken", req.GetRepository())
 
 	params := url.Values{}
@@ -2086,9 +2198,6 @@ func (c *repositoryManagerRESTClient) FetchReadWriteToken(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetRepository()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v2.RepositoryManager/FetchReadWriteToken")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{repository=projects/*/locations/*/connections/*/repositories/*}:accessReadWriteToken")
@@ -2136,6 +2245,11 @@ func (c *repositoryManagerRESTClient) FetchReadToken(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRepository(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:accessReadToken", req.GetRepository())
 
 	params := url.Values{}
@@ -2149,9 +2263,6 @@ func (c *repositoryManagerRESTClient) FetchReadToken(ctx context.Context, req *c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetRepository()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v2.RepositoryManager/FetchReadToken")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{repository=projects/*/locations/*/connections/*/repositories/*}:accessReadToken")
@@ -2205,6 +2316,11 @@ func (c *repositoryManagerRESTClient) FetchLinkableRepositories(ctx context.Cont
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetConnection(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v:fetchLinkableRepositories", req.GetConnection())
@@ -2272,6 +2388,11 @@ func (c *repositoryManagerRESTClient) FetchGitRefs(ctx context.Context, req *clo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRepository(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:fetchGitRefs", req.GetRepository())
 
 	params := url.Values{}
@@ -2288,9 +2409,6 @@ func (c *repositoryManagerRESTClient) FetchGitRefs(ctx context.Context, req *clo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetRepository()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v2.RepositoryManager/FetchGitRefs")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{repository=projects/*/locations/*/connections/*/repositories/*}:fetchGitRefs")
@@ -2333,6 +2451,11 @@ func (c *repositoryManagerRESTClient) GetIamPolicy(ctx context.Context, req *iam
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -2349,9 +2472,6 @@ func (c *repositoryManagerRESTClient) GetIamPolicy(ctx context.Context, req *iam
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{resource=projects/*/locations/*/connections/*}:getIamPolicy")
@@ -2403,6 +2523,11 @@ func (c *repositoryManagerRESTClient) SetIamPolicy(ctx context.Context, req *iam
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:setIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -2416,9 +2541,6 @@ func (c *repositoryManagerRESTClient) SetIamPolicy(ctx context.Context, req *iam
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{resource=projects/*/locations/*/connections/*}:setIamPolicy")
@@ -2472,6 +2594,11 @@ func (c *repositoryManagerRESTClient) TestIamPermissions(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -2485,9 +2612,6 @@ func (c *repositoryManagerRESTClient) TestIamPermissions(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{resource=projects/*/locations/*/connections/*}:testIamPermissions")
@@ -2535,6 +2659,11 @@ func (c *repositoryManagerRESTClient) CancelOperation(ctx context.Context, req *
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2572,6 +2701,11 @@ func (c *repositoryManagerRESTClient) CancelOperation(ctx context.Context, req *
 func (c *repositoryManagerRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())

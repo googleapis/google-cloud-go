@@ -873,6 +873,75 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "datalineage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datacatalog/lineage/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datalineage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ProcessOpenLineageRunEvent = append(client.CallOptions.ProcessOpenLineageRunEvent, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateProcess = append(client.CallOptions.CreateProcess, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateProcess = append(client.CallOptions.UpdateProcess, gax.WithClientTracing(tracing))
+		client.CallOptions.GetProcess = append(client.CallOptions.GetProcess, gax.WithClientTracing(tracing))
+		client.CallOptions.ListProcesses = append(client.CallOptions.ListProcesses, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteProcess = append(client.CallOptions.DeleteProcess, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateRun = append(client.CallOptions.CreateRun, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateRun = append(client.CallOptions.UpdateRun, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRun = append(client.CallOptions.GetRun, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRuns = append(client.CallOptions.ListRuns, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteRun = append(client.CallOptions.DeleteRun, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateLineageEvent = append(client.CallOptions.CreateLineageEvent, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLineageEvent = append(client.CallOptions.GetLineageEvent, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLineageEvents = append(client.CallOptions.ListLineageEvents, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteLineageEvent = append(client.CallOptions.DeleteLineageEvent, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchLinks = append(client.CallOptions.SearchLinks, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchSearchLinkProcesses = append(client.CallOptions.BatchSearchLinkProcesses, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchLineageStreaming = append(client.CallOptions.SearchLineageStreaming, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "datalineage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datacatalog/lineage/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datalineage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ProcessOpenLineageRunEvent = append(client.CallOptions.ProcessOpenLineageRunEvent, gax.WithClientLogging(logging))
+		client.CallOptions.CreateProcess = append(client.CallOptions.CreateProcess, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateProcess = append(client.CallOptions.UpdateProcess, gax.WithClientLogging(logging))
+		client.CallOptions.GetProcess = append(client.CallOptions.GetProcess, gax.WithClientLogging(logging))
+		client.CallOptions.ListProcesses = append(client.CallOptions.ListProcesses, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteProcess = append(client.CallOptions.DeleteProcess, gax.WithClientLogging(logging))
+		client.CallOptions.CreateRun = append(client.CallOptions.CreateRun, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateRun = append(client.CallOptions.UpdateRun, gax.WithClientLogging(logging))
+		client.CallOptions.GetRun = append(client.CallOptions.GetRun, gax.WithClientLogging(logging))
+		client.CallOptions.ListRuns = append(client.CallOptions.ListRuns, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteRun = append(client.CallOptions.DeleteRun, gax.WithClientLogging(logging))
+		client.CallOptions.CreateLineageEvent = append(client.CallOptions.CreateLineageEvent, gax.WithClientLogging(logging))
+		client.CallOptions.GetLineageEvent = append(client.CallOptions.GetLineageEvent, gax.WithClientLogging(logging))
+		client.CallOptions.ListLineageEvents = append(client.CallOptions.ListLineageEvents, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteLineageEvent = append(client.CallOptions.DeleteLineageEvent, gax.WithClientLogging(logging))
+		client.CallOptions.SearchLinks = append(client.CallOptions.SearchLinks, gax.WithClientLogging(logging))
+		client.CallOptions.BatchSearchLinkProcesses = append(client.CallOptions.BatchSearchLinkProcesses, gax.WithClientLogging(logging))
+		client.CallOptions.SearchLineageStreaming = append(client.CallOptions.SearchLineageStreaming, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1004,6 +1073,75 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "datalineage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datacatalog/lineage/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datalineage.googleapis.com",
+			}),
+		)
+
+		callOpts.ProcessOpenLineageRunEvent = append(callOpts.ProcessOpenLineageRunEvent, gax.WithClientTracing(tracing))
+		callOpts.CreateProcess = append(callOpts.CreateProcess, gax.WithClientTracing(tracing))
+		callOpts.UpdateProcess = append(callOpts.UpdateProcess, gax.WithClientTracing(tracing))
+		callOpts.GetProcess = append(callOpts.GetProcess, gax.WithClientTracing(tracing))
+		callOpts.ListProcesses = append(callOpts.ListProcesses, gax.WithClientTracing(tracing))
+		callOpts.DeleteProcess = append(callOpts.DeleteProcess, gax.WithClientTracing(tracing))
+		callOpts.CreateRun = append(callOpts.CreateRun, gax.WithClientTracing(tracing))
+		callOpts.UpdateRun = append(callOpts.UpdateRun, gax.WithClientTracing(tracing))
+		callOpts.GetRun = append(callOpts.GetRun, gax.WithClientTracing(tracing))
+		callOpts.ListRuns = append(callOpts.ListRuns, gax.WithClientTracing(tracing))
+		callOpts.DeleteRun = append(callOpts.DeleteRun, gax.WithClientTracing(tracing))
+		callOpts.CreateLineageEvent = append(callOpts.CreateLineageEvent, gax.WithClientTracing(tracing))
+		callOpts.GetLineageEvent = append(callOpts.GetLineageEvent, gax.WithClientTracing(tracing))
+		callOpts.ListLineageEvents = append(callOpts.ListLineageEvents, gax.WithClientTracing(tracing))
+		callOpts.DeleteLineageEvent = append(callOpts.DeleteLineageEvent, gax.WithClientTracing(tracing))
+		callOpts.SearchLinks = append(callOpts.SearchLinks, gax.WithClientTracing(tracing))
+		callOpts.BatchSearchLinkProcesses = append(callOpts.BatchSearchLinkProcesses, gax.WithClientTracing(tracing))
+		callOpts.SearchLineageStreaming = append(callOpts.SearchLineageStreaming, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "datalineage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datacatalog/lineage/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datalineage.googleapis.com",
+			}),
+		)
+
+		callOpts.ProcessOpenLineageRunEvent = append(callOpts.ProcessOpenLineageRunEvent, gax.WithClientLogging(logging))
+		callOpts.CreateProcess = append(callOpts.CreateProcess, gax.WithClientLogging(logging))
+		callOpts.UpdateProcess = append(callOpts.UpdateProcess, gax.WithClientLogging(logging))
+		callOpts.GetProcess = append(callOpts.GetProcess, gax.WithClientLogging(logging))
+		callOpts.ListProcesses = append(callOpts.ListProcesses, gax.WithClientLogging(logging))
+		callOpts.DeleteProcess = append(callOpts.DeleteProcess, gax.WithClientLogging(logging))
+		callOpts.CreateRun = append(callOpts.CreateRun, gax.WithClientLogging(logging))
+		callOpts.UpdateRun = append(callOpts.UpdateRun, gax.WithClientLogging(logging))
+		callOpts.GetRun = append(callOpts.GetRun, gax.WithClientLogging(logging))
+		callOpts.ListRuns = append(callOpts.ListRuns, gax.WithClientLogging(logging))
+		callOpts.DeleteRun = append(callOpts.DeleteRun, gax.WithClientLogging(logging))
+		callOpts.CreateLineageEvent = append(callOpts.CreateLineageEvent, gax.WithClientLogging(logging))
+		callOpts.GetLineageEvent = append(callOpts.GetLineageEvent, gax.WithClientLogging(logging))
+		callOpts.ListLineageEvents = append(callOpts.ListLineageEvents, gax.WithClientLogging(logging))
+		callOpts.DeleteLineageEvent = append(callOpts.DeleteLineageEvent, gax.WithClientLogging(logging))
+		callOpts.SearchLinks = append(callOpts.SearchLinks, gax.WithClientLogging(logging))
+		callOpts.BatchSearchLinkProcesses = append(callOpts.BatchSearchLinkProcesses, gax.WithClientLogging(logging))
+		callOpts.SearchLineageStreaming = append(callOpts.SearchLineageStreaming, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1084,9 +1222,6 @@ func (c *gRPCClient) CreateProcess(ctx context.Context, req *lineagepb.CreatePro
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/CreateProcess")
 	}
@@ -1135,9 +1270,6 @@ func (c *gRPCClient) GetProcess(ctx context.Context, req *lineagepb.GetProcessRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/GetProcess")
 	}
@@ -1159,9 +1291,6 @@ func (c *gRPCClient) ListProcesses(ctx context.Context, req *lineagepb.ListProce
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/ListProcesses")
 	}
@@ -1211,9 +1340,6 @@ func (c *gRPCClient) DeleteProcess(ctx context.Context, req *lineagepb.DeletePro
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/DeleteProcess")
 	}
@@ -1241,9 +1367,6 @@ func (c *gRPCClient) CreateRun(ctx context.Context, req *lineagepb.CreateRunRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/CreateRun")
 	}
@@ -1289,9 +1412,6 @@ func (c *gRPCClient) GetRun(ctx context.Context, req *lineagepb.GetRunRequest, o
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/GetRun")
 	}
@@ -1313,9 +1433,6 @@ func (c *gRPCClient) ListRuns(ctx context.Context, req *lineagepb.ListRunsReques
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/ListRuns")
 	}
@@ -1365,9 +1482,6 @@ func (c *gRPCClient) DeleteRun(ctx context.Context, req *lineagepb.DeleteRunRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/DeleteRun")
 	}
@@ -1395,9 +1509,6 @@ func (c *gRPCClient) CreateLineageEvent(ctx context.Context, req *lineagepb.Crea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/CreateLineageEvent")
 	}
@@ -1422,9 +1533,6 @@ func (c *gRPCClient) GetLineageEvent(ctx context.Context, req *lineagepb.GetLine
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/GetLineageEvent")
 	}
@@ -1446,9 +1554,6 @@ func (c *gRPCClient) ListLineageEvents(ctx context.Context, req *lineagepb.ListL
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/ListLineageEvents")
 	}
@@ -1498,9 +1603,6 @@ func (c *gRPCClient) DeleteLineageEvent(ctx context.Context, req *lineagepb.Dele
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/DeleteLineageEvent")
 	}
@@ -1518,9 +1620,6 @@ func (c *gRPCClient) SearchLinks(ctx context.Context, req *lineagepb.SearchLinks
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/SearchLinks")
 	}
@@ -1570,9 +1669,6 @@ func (c *gRPCClient) BatchSearchLinkProcesses(ctx context.Context, req *lineagep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/BatchSearchLinkProcesses")
 	}
@@ -1622,9 +1718,6 @@ func (c *gRPCClient) SearchLineageStreaming(ctx context.Context, req *lineagepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/SearchLineageStreaming")
 	}
@@ -1766,6 +1859,11 @@ func (c *restClient) ProcessOpenLineageRunEvent(ctx context.Context, req *lineag
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:processOpenLineageRunEvent", req.GetParent())
 
 	params := url.Values{}
@@ -1833,6 +1931,11 @@ func (c *restClient) CreateProcess(ctx context.Context, req *lineagepb.CreatePro
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/processes", req.GetParent())
 
 	params := url.Values{}
@@ -1849,9 +1952,6 @@ func (c *restClient) CreateProcess(ctx context.Context, req *lineagepb.CreatePro
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/CreateProcess")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/processes")
@@ -1901,6 +2001,11 @@ func (c *restClient) UpdateProcess(ctx context.Context, req *lineagepb.UpdatePro
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProcess().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetProcess().GetName())
@@ -1970,6 +2075,11 @@ func (c *restClient) GetProcess(ctx context.Context, req *lineagepb.GetProcessRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1983,9 +2093,6 @@ func (c *restClient) GetProcess(ctx context.Context, req *lineagepb.GetProcessRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/GetProcess")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/processes/*}")
@@ -2039,6 +2146,11 @@ func (c *restClient) ListProcesses(ctx context.Context, req *lineagepb.ListProce
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/processes", req.GetParent())
@@ -2106,6 +2218,11 @@ func (c *restClient) DeleteProcess(ctx context.Context, req *lineagepb.DeletePro
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2122,9 +2239,6 @@ func (c *restClient) DeleteProcess(ctx context.Context, req *lineagepb.DeletePro
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/DeleteProcess")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/processes/*}")
@@ -2183,6 +2297,11 @@ func (c *restClient) CreateRun(ctx context.Context, req *lineagepb.CreateRunRequ
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/runs", req.GetParent())
 
 	params := url.Values{}
@@ -2199,9 +2318,6 @@ func (c *restClient) CreateRun(ctx context.Context, req *lineagepb.CreateRunRequ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/CreateRun")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/processes/*}/runs")
@@ -2248,6 +2364,11 @@ func (c *restClient) UpdateRun(ctx context.Context, req *lineagepb.UpdateRunRequ
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetRun().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetRun().GetName())
@@ -2314,6 +2435,11 @@ func (c *restClient) GetRun(ctx context.Context, req *lineagepb.GetRunRequest, o
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2327,9 +2453,6 @@ func (c *restClient) GetRun(ctx context.Context, req *lineagepb.GetRunRequest, o
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/GetRun")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/processes/*/runs/*}")
@@ -2383,6 +2506,11 @@ func (c *restClient) ListRuns(ctx context.Context, req *lineagepb.ListRunsReques
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/runs", req.GetParent())
@@ -2450,6 +2578,11 @@ func (c *restClient) DeleteRun(ctx context.Context, req *lineagepb.DeleteRunRequ
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2466,9 +2599,6 @@ func (c *restClient) DeleteRun(ctx context.Context, req *lineagepb.DeleteRunRequ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/DeleteRun")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/processes/*/runs/*}")
@@ -2527,6 +2657,11 @@ func (c *restClient) CreateLineageEvent(ctx context.Context, req *lineagepb.Crea
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/lineageEvents", req.GetParent())
 
 	params := url.Values{}
@@ -2543,9 +2678,6 @@ func (c *restClient) CreateLineageEvent(ctx context.Context, req *lineagepb.Crea
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/CreateLineageEvent")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/processes/*/runs/*}/lineageEvents")
@@ -2587,6 +2719,11 @@ func (c *restClient) GetLineageEvent(ctx context.Context, req *lineagepb.GetLine
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2600,9 +2737,6 @@ func (c *restClient) GetLineageEvent(ctx context.Context, req *lineagepb.GetLine
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/GetLineageEvent")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/processes/*/runs/*/lineageEvents/*}")
@@ -2656,6 +2790,11 @@ func (c *restClient) ListLineageEvents(ctx context.Context, req *lineagepb.ListL
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/lineageEvents", req.GetParent())
@@ -2723,6 +2862,11 @@ func (c *restClient) DeleteLineageEvent(ctx context.Context, req *lineagepb.Dele
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2739,9 +2883,6 @@ func (c *restClient) DeleteLineageEvent(ctx context.Context, req *lineagepb.Dele
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/DeleteLineageEvent")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/processes/*/runs/*/lineageEvents/*}")
@@ -2793,6 +2934,11 @@ func (c *restClient) SearchLinks(ctx context.Context, req *lineagepb.SearchLinks
 
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:searchLinks", req.GetParent())
@@ -2884,6 +3030,11 @@ func (c *restClient) BatchSearchLinkProcesses(ctx context.Context, req *lineagep
 
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:batchSearchLinkProcesses", req.GetParent())
@@ -2978,6 +3129,11 @@ func (c *restClient) SearchLineageStreaming(ctx context.Context, req *lineagepb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:searchLineageStreaming", req.GetParent())
 
 	params := url.Values{}
@@ -2991,9 +3147,6 @@ func (c *restClient) SearchLineageStreaming(ctx context.Context, req *lineagepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/SearchLineageStreaming")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}:searchLineageStreaming")
@@ -3087,6 +3240,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -3126,6 +3284,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3163,6 +3326,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -3230,6 +3398,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

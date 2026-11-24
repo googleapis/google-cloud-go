@@ -17,6 +17,7 @@ package bigquery
 import (
 	"context"
 	"fmt"
+	"maps"
 	"strings"
 	"time"
 
@@ -251,9 +252,7 @@ func bqToRemoteFunctionOptions(in *bq.RemoteFunctionOptions) *RemoteFunctionOpti
 	}
 	if in.UserDefinedContext != nil {
 		rfo.UserDefinedContext = make(map[string]string)
-		for k, v := range in.UserDefinedContext {
-			rfo.UserDefinedContext[k] = v
-		}
+		maps.Copy(rfo.UserDefinedContext, in.UserDefinedContext)
 	}
 	return rfo
 }
@@ -269,9 +268,7 @@ func (rfo *RemoteFunctionOptions) toBQ() *bq.RemoteFunctionOptions {
 	}
 	if rfo.UserDefinedContext != nil {
 		r.UserDefinedContext = make(map[string]string)
-		for k, v := range rfo.UserDefinedContext {
-			r.UserDefinedContext[k] = v
-		}
+		maps.Copy(r.UserDefinedContext, rfo.UserDefinedContext)
 	}
 	return r
 }

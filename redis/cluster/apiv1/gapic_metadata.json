@@ -10,6 +10,16 @@
         "grpc": {
           "libraryClient": "CloudRedisClusterClient",
           "rpcs": {
+            "AddAuthToken": {
+              "methods": [
+                "AddAuthToken"
+              ]
+            },
+            "AddTokenAuthUser": {
+              "methods": [
+                "AddTokenAuthUser"
+              ]
+            },
             "BackupCluster": {
               "methods": [
                 "BackupCluster"
@@ -20,9 +30,24 @@
                 "CancelOperation"
               ]
             },
+            "CreateAclPolicy": {
+              "methods": [
+                "CreateAclPolicy"
+              ]
+            },
             "CreateCluster": {
               "methods": [
                 "CreateCluster"
+              ]
+            },
+            "DeleteAclPolicy": {
+              "methods": [
+                "DeleteAclPolicy"
+              ]
+            },
+            "DeleteAuthToken": {
+              "methods": [
+                "DeleteAuthToken"
               ]
             },
             "DeleteBackup": {
@@ -40,9 +65,29 @@
                 "DeleteOperation"
               ]
             },
+            "DeleteTokenAuthUser": {
+              "methods": [
+                "DeleteTokenAuthUser"
+              ]
+            },
             "ExportBackup": {
               "methods": [
                 "ExportBackup"
+              ]
+            },
+            "GetAclPolicy": {
+              "methods": [
+                "GetAclPolicy"
+              ]
+            },
+            "GetAclPolicyRevision": {
+              "methods": [
+                "GetAclPolicyRevision"
+              ]
+            },
+            "GetAuthToken": {
+              "methods": [
+                "GetAuthToken"
               ]
             },
             "GetBackup": {
@@ -80,6 +125,26 @@
                 "GetSharedRegionalCertificateAuthority"
               ]
             },
+            "GetTokenAuthUser": {
+              "methods": [
+                "GetTokenAuthUser"
+              ]
+            },
+            "ListAclPolicies": {
+              "methods": [
+                "ListAclPolicies"
+              ]
+            },
+            "ListAclPolicyRevisions": {
+              "methods": [
+                "ListAclPolicyRevisions"
+              ]
+            },
+            "ListAuthTokens": {
+              "methods": [
+                "ListAuthTokens"
+              ]
+            },
             "ListBackupCollections": {
               "methods": [
                 "ListBackupCollections"
@@ -105,9 +170,19 @@
                 "ListOperations"
               ]
             },
+            "ListTokenAuthUsers": {
+              "methods": [
+                "ListTokenAuthUsers"
+              ]
+            },
             "RescheduleClusterMaintenance": {
               "methods": [
                 "RescheduleClusterMaintenance"
+              ]
+            },
+            "UpdateAclPolicy": {
+              "methods": [
+                "UpdateAclPolicy"
               ]
             },
             "UpdateCluster": {
@@ -120,6 +195,16 @@
         "rest": {
           "libraryClient": "CloudRedisClusterClient",
           "rpcs": {
+            "AddAuthToken": {
+              "methods": [
+                "AddAuthToken"
+              ]
+            },
+            "AddTokenAuthUser": {
+              "methods": [
+                "AddTokenAuthUser"
+              ]
+            },
             "BackupCluster": {
               "methods": [
                 "BackupCluster"
@@ -130,9 +215,24 @@
                 "CancelOperation"
               ]
             },
+            "CreateAclPolicy": {
+              "methods": [
+                "CreateAclPolicy"
+              ]
+            },
             "CreateCluster": {
               "methods": [
                 "CreateCluster"
+              ]
+            },
+            "DeleteAclPolicy": {
+              "methods": [
+                "DeleteAclPolicy"
+              ]
+            },
+            "DeleteAuthToken": {
+              "methods": [
+                "DeleteAuthToken"
               ]
             },
             "DeleteBackup": {
@@ -150,9 +250,29 @@
                 "DeleteOperation"
               ]
             },
+            "DeleteTokenAuthUser": {
+              "methods": [
+                "DeleteTokenAuthUser"
+              ]
+            },
             "ExportBackup": {
               "methods": [
                 "ExportBackup"
+              ]
+            },
+            "GetAclPolicy": {
+              "methods": [
+                "GetAclPolicy"
+              ]
+            },
+            "GetAclPolicyRevision": {
+              "methods": [
+                "GetAclPolicyRevision"
+              ]
+            },
+            "GetAuthToken": {
+              "methods": [
+                "GetAuthToken"
               ]
             },
             "GetBackup": {
@@ -190,6 +310,26 @@
                 "GetSharedRegionalCertificateAuthority"
               ]
             },
+            "GetTokenAuthUser": {
+              "methods": [
+                "GetTokenAuthUser"
+              ]
+            },
+            "ListAclPolicies": {
+              "methods": [
+                "ListAclPolicies"
+              ]
+            },
+            "ListAclPolicyRevisions": {
+              "methods": [
+                "ListAclPolicyRevisions"
+              ]
+            },
+            "ListAuthTokens": {
+              "methods": [
+                "ListAuthTokens"
+              ]
+            },
             "ListBackupCollections": {
               "methods": [
                 "ListBackupCollections"
@@ -215,9 +355,19 @@
                 "ListOperations"
               ]
             },
+            "ListTokenAuthUsers": {
+              "methods": [
+                "ListTokenAuthUsers"
+              ]
+            },
             "RescheduleClusterMaintenance": {
               "methods": [
                 "RescheduleClusterMaintenance"
+              ]
+            },
+            "UpdateAclPolicy": {
+              "methods": [
+                "UpdateAclPolicy"
               ]
             },
             "UpdateCluster": {

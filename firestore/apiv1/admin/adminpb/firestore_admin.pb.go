@@ -2510,82 +2510,82 @@ var File_google_firestore_admin_v1_firestore_admin_proto protoreflect.FileDescri
 
 const file_google_firestore_admin_v1_firestore_admin_proto_rawDesc = "" +
 	"\n" +
-	"/google/firestore/admin/v1/firestore_admin.proto\x12\x19google.firestore.admin.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a&google/firestore/admin/v1/backup.proto\x1a(google/firestore/admin/v1/database.proto\x1a%google/firestore/admin/v1/field.proto\x1a%google/firestore/admin/v1/index.proto\x1a)google/firestore/admin/v1/operation.proto\x1a(google/firestore/admin/v1/schedule.proto\x1a(google/firestore/admin/v1/snapshot.proto\x1a*google/firestore/admin/v1/user_creds.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"|\n" +
-	"\x14ListDatabasesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!firestore.googleapis.com/DatabaseR\x06parent\x12!\n" +
-	"\fshow_deleted\x18\x04 \x01(\bR\vshowDeleted\"\xc6\x01\n" +
-	"\x15CreateDatabaseRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!firestore.googleapis.com/DatabaseR\x06parent\x12D\n" +
-	"\bdatabase\x18\x02 \x01(\v2#.google.firestore.admin.v1.DatabaseB\x03\xe0A\x02R\bdatabase\x12$\n" +
-	"\vdatabase_id\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
+	"/google/firestore/admin/v1/firestore_admin.proto\x12\x19google.firestore.admin.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a&google/firestore/admin/v1/backup.proto\x1a(google/firestore/admin/v1/database.proto\x1a%google/firestore/admin/v1/field.proto\x1a%google/firestore/admin/v1/index.proto\x1a)google/firestore/admin/v1/operation.proto\x1a(google/firestore/admin/v1/schedule.proto\x1a(google/firestore/admin/v1/snapshot.proto\x1a*google/firestore/admin/v1/user_creds.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"}\n" +
+	"\x14ListDatabasesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!firestore.googleapis.com/DatabaseR\x06parent\x12!\n" +
+	"\fshow_deleted\x18\x04 \x01(\bR\vshowDeleted\"\xc9\x01\n" +
+	"\x15CreateDatabaseRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!firestore.googleapis.com/DatabaseR\x06parent\x12E\n" +
+	"\bdatabase\x18\x02 \x01(\v2#.google.firestore.admin.v1.DatabaseB\x04\xe2A\x01\x02R\bdatabase\x12%\n" +
+	"\vdatabase_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"databaseId\"\x18\n" +
 	"\x16CreateDatabaseMetadata\"|\n" +
 	"\x15ListDatabasesResponse\x12A\n" +
 	"\tdatabases\x18\x01 \x03(\v2#.google.firestore.admin.v1.DatabaseR\tdatabases\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"S\n" +
-	"\x12GetDatabaseRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!firestore.googleapis.com/DatabaseR\x04name\"\x9a\x01\n" +
-	"\x15UpdateDatabaseRequest\x12D\n" +
-	"\bdatabase\x18\x01 \x01(\v2#.google.firestore.admin.v1.DatabaseB\x03\xe0A\x02R\bdatabase\x12;\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"T\n" +
+	"\x12GetDatabaseRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!firestore.googleapis.com/DatabaseR\x04name\"\x9b\x01\n" +
+	"\x15UpdateDatabaseRequest\x12E\n" +
+	"\bdatabase\x18\x01 \x01(\v2#.google.firestore.admin.v1.DatabaseB\x04\xe2A\x01\x02R\bdatabase\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\"\x18\n" +
-	"\x16UpdateDatabaseMetadata\"j\n" +
-	"\x15DeleteDatabaseRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x16UpdateDatabaseMetadata\"k\n" +
+	"\x15DeleteDatabaseRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!firestore.googleapis.com/DatabaseR\x04name\x12\x12\n" +
 	"\x04etag\x18\x03 \x01(\tR\x04etag\"\x18\n" +
-	"\x16DeleteDatabaseMetadata\"\xcf\x01\n" +
-	"\x16CreateUserCredsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"firestore.googleapis.com/UserCredsR\x06parent\x12H\n" +
+	"\x16DeleteDatabaseMetadata\"\xd2\x01\n" +
+	"\x16CreateUserCredsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"firestore.googleapis.com/UserCredsR\x06parent\x12I\n" +
 	"\n" +
-	"user_creds\x18\x02 \x01(\v2$.google.firestore.admin.v1.UserCredsB\x03\xe0A\x02R\tuserCreds\x12'\n" +
-	"\ruser_creds_id\x18\x03 \x01(\tB\x03\xe0A\x02R\vuserCredsId\"U\n" +
-	"\x13GetUserCredsRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"firestore.googleapis.com/UserCredsR\x04name\"Z\n" +
-	"\x14ListUserCredsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"firestore.googleapis.com/UserCredsR\x06parent\"\\\n" +
+	"user_creds\x18\x02 \x01(\v2$.google.firestore.admin.v1.UserCredsB\x04\xe2A\x01\x02R\tuserCreds\x12(\n" +
+	"\ruser_creds_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vuserCredsId\"V\n" +
+	"\x13GetUserCredsRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"firestore.googleapis.com/UserCredsR\x04name\"[\n" +
+	"\x14ListUserCredsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"firestore.googleapis.com/UserCredsR\x06parent\"\\\n" +
 	"\x15ListUserCredsResponse\x12C\n" +
 	"\n" +
-	"user_creds\x18\x01 \x03(\v2$.google.firestore.admin.v1.UserCredsR\tuserCreds\"X\n" +
-	"\x16EnableUserCredsRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"firestore.googleapis.com/UserCredsR\x04name\"Y\n" +
-	"\x17DisableUserCredsRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"user_creds\x18\x01 \x03(\v2$.google.firestore.admin.v1.UserCredsR\tuserCreds\"Y\n" +
+	"\x16EnableUserCredsRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"firestore.googleapis.com/UserCredsR\x04name\"Z\n" +
-	"\x18ResetUserPasswordRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"firestore.googleapis.com/UserCredsR\x04name\"X\n" +
-	"\x16DeleteUserCredsRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"firestore.googleapis.com/UserCredsR\x04name\"\xb9\x01\n" +
-	"\x1bCreateBackupScheduleRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!firestore.googleapis.com/DatabaseR\x06parent\x12W\n" +
-	"\x0fbackup_schedule\x18\x02 \x01(\v2).google.firestore.admin.v1.BackupScheduleB\x03\xe0A\x02R\x0ebackupSchedule\"_\n" +
-	"\x18GetBackupScheduleRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'firestore.googleapis.com/BackupScheduleR\x04name\"\xb3\x01\n" +
-	"\x1bUpdateBackupScheduleRequest\x12W\n" +
-	"\x0fbackup_schedule\x18\x01 \x01(\v2).google.firestore.admin.v1.BackupScheduleB\x03\xe0A\x02R\x0ebackupSchedule\x12;\n" +
+	"\x17DisableUserCredsRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"firestore.googleapis.com/UserCredsR\x04name\"[\n" +
+	"\x18ResetUserPasswordRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"firestore.googleapis.com/UserCredsR\x04name\"Y\n" +
+	"\x16DeleteUserCredsRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"firestore.googleapis.com/UserCredsR\x04name\"\xbb\x01\n" +
+	"\x1bCreateBackupScheduleRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!firestore.googleapis.com/DatabaseR\x06parent\x12X\n" +
+	"\x0fbackup_schedule\x18\x02 \x01(\v2).google.firestore.admin.v1.BackupScheduleB\x04\xe2A\x01\x02R\x0ebackupSchedule\"`\n" +
+	"\x18GetBackupScheduleRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'firestore.googleapis.com/BackupScheduleR\x04name\"\xb4\x01\n" +
+	"\x1bUpdateBackupScheduleRequest\x12X\n" +
+	"\x0fbackup_schedule\x18\x01 \x01(\v2).google.firestore.admin.v1.BackupScheduleB\x04\xe2A\x01\x02R\x0ebackupSchedule\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"_\n" +
-	"\x1aListBackupSchedulesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"updateMask\"`\n" +
+	"\x1aListBackupSchedulesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!firestore.googleapis.com/DatabaseR\x06parent\"s\n" +
 	"\x1bListBackupSchedulesResponse\x12T\n" +
-	"\x10backup_schedules\x18\x01 \x03(\v2).google.firestore.admin.v1.BackupScheduleR\x0fbackupSchedules\"b\n" +
-	"\x1bDeleteBackupScheduleRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'firestore.googleapis.com/BackupScheduleR\x04name\"\x9b\x01\n" +
-	"\x12CreateIndexRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(firestore.googleapis.com/CollectionGroupR\x06parent\x12;\n" +
-	"\x05index\x18\x02 \x01(\v2 .google.firestore.admin.v1.IndexB\x03\xe0A\x02R\x05index\"\xb2\x01\n" +
-	"\x12ListIndexesRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"\x10backup_schedules\x18\x01 \x03(\v2).google.firestore.admin.v1.BackupScheduleR\x0fbackupSchedules\"c\n" +
+	"\x1bDeleteBackupScheduleRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'firestore.googleapis.com/BackupScheduleR\x04name\"\x9d\x01\n" +
+	"\x12CreateIndexRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(firestore.googleapis.com/CollectionGroupR\x06parent\x12<\n" +
+	"\x05index\x18\x02 \x01(\v2 .google.firestore.admin.v1.IndexB\x04\xe2A\x01\x02R\x05index\"\xb3\x01\n" +
+	"\x12ListIndexesRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(firestore.googleapis.com/CollectionGroupR\x06parent\x12\x16\n" +
 	"\x06filter\x18\x02 \x01(\tR\x06filter\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
@@ -2593,22 +2593,22 @@ const file_google_firestore_admin_v1_firestore_admin_proto_rawDesc = "" +
 	"page_token\x18\x04 \x01(\tR\tpageToken\"y\n" +
 	"\x13ListIndexesResponse\x12:\n" +
 	"\aindexes\x18\x01 \x03(\v2 .google.firestore.admin.v1.IndexR\aindexes\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"M\n" +
-	"\x0fGetIndexRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1efirestore.googleapis.com/IndexR\x04name\"P\n" +
-	"\x12DeleteIndexRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1efirestore.googleapis.com/IndexR\x04name\"\x8e\x01\n" +
-	"\x12UpdateFieldRequest\x12;\n" +
-	"\x05field\x18\x01 \x01(\v2 .google.firestore.admin.v1.FieldB\x03\xe0A\x02R\x05field\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"N\n" +
+	"\x0fGetIndexRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1efirestore.googleapis.com/IndexR\x04name\"Q\n" +
+	"\x12DeleteIndexRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1efirestore.googleapis.com/IndexR\x04name\"\x8f\x01\n" +
+	"\x12UpdateFieldRequest\x12<\n" +
+	"\x05field\x18\x01 \x01(\v2 .google.firestore.admin.v1.FieldB\x04\xe2A\x01\x02R\x05field\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"M\n" +
-	"\x0fGetFieldRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1efirestore.googleapis.com/FieldR\x04name\"\xb1\x01\n" +
-	"\x11ListFieldsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"updateMask\"N\n" +
+	"\x0fGetFieldRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1efirestore.googleapis.com/FieldR\x04name\"\xb2\x01\n" +
+	"\x11ListFieldsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(firestore.googleapis.com/CollectionGroupR\x06parent\x12\x16\n" +
 	"\x06filter\x18\x02 \x01(\tR\x06filter\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
@@ -2616,58 +2616,58 @@ const file_google_firestore_admin_v1_firestore_admin_proto_rawDesc = "" +
 	"page_token\x18\x04 \x01(\tR\tpageToken\"v\n" +
 	"\x12ListFieldsResponse\x128\n" +
 	"\x06fields\x18\x01 \x03(\v2 .google.firestore.admin.v1.FieldR\x06fields\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x90\x02\n" +
-	"\x16ExportDocumentsRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x91\x02\n" +
+	"\x16ExportDocumentsRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!firestore.googleapis.com/DatabaseR\x04name\x12%\n" +
 	"\x0ecollection_ids\x18\x02 \x03(\tR\rcollectionIds\x12*\n" +
 	"\x11output_uri_prefix\x18\x03 \x01(\tR\x0foutputUriPrefix\x12#\n" +
 	"\rnamespace_ids\x18\x04 \x03(\tR\fnamespaceIds\x12?\n" +
-	"\rsnapshot_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\fsnapshotTime\"\xcd\x01\n" +
-	"\x16ImportDocumentsRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\rsnapshot_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\fsnapshotTime\"\xce\x01\n" +
+	"\x16ImportDocumentsRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!firestore.googleapis.com/DatabaseR\x04name\x12%\n" +
 	"\x0ecollection_ids\x18\x02 \x03(\tR\rcollectionIds\x12(\n" +
 	"\x10input_uri_prefix\x18\x03 \x01(\tR\x0einputUriPrefix\x12#\n" +
-	"\rnamespace_ids\x18\x04 \x03(\tR\fnamespaceIds\"\xb1\x01\n" +
-	"\x1aBulkDeleteDocumentsRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!firestore.googleapis.com/DatabaseR\x04name\x12*\n" +
-	"\x0ecollection_ids\x18\x02 \x03(\tB\x03\xe0A\x01R\rcollectionIds\x12(\n" +
-	"\rnamespace_ids\x18\x03 \x03(\tB\x03\xe0A\x01R\fnamespaceIds\"\x1d\n" +
-	"\x1bBulkDeleteDocumentsResponse\"O\n" +
-	"\x10GetBackupRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1ffirestore.googleapis.com/BackupR\x04name\"o\n" +
-	"\x12ListBackupsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\rnamespace_ids\x18\x04 \x03(\tR\fnamespaceIds\"\xb4\x01\n" +
+	"\x1aBulkDeleteDocumentsRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!firestore.googleapis.com/DatabaseR\x04name\x12+\n" +
+	"\x0ecollection_ids\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\rcollectionIds\x12)\n" +
+	"\rnamespace_ids\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\fnamespaceIds\"\x1d\n" +
+	"\x1bBulkDeleteDocumentsResponse\"P\n" +
+	"\x10GetBackupRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1ffirestore.googleapis.com/BackupR\x04name\"p\n" +
+	"\x12ListBackupsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!firestore.googleapis.com/LocationR\x06parent\x12\x16\n" +
 	"\x06filter\x18\x02 \x01(\tR\x06filter\"t\n" +
 	"\x13ListBackupsResponse\x12;\n" +
 	"\abackups\x18\x01 \x03(\v2!.google.firestore.admin.v1.BackupR\abackups\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"R\n" +
-	"\x13DeleteBackupRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1ffirestore.googleapis.com/BackupR\x04name\"\xbc\x03\n" +
-	"\x16RestoreDatabaseRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!firestore.googleapis.com/DatabaseR\x06parent\x12$\n" +
-	"\vdatabase_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"databaseId\x12?\n" +
-	"\x06backup\x18\x03 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1ffirestore.googleapis.com/BackupR\x06backup\x12f\n" +
-	"\x11encryption_config\x18\t \x01(\v24.google.firestore.admin.v1.Database.EncryptionConfigB\x03\xe0A\x01R\x10encryptionConfig\x12W\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"S\n" +
+	"\x13DeleteBackupRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1ffirestore.googleapis.com/BackupR\x04name\"\xbf\x03\n" +
+	"\x16RestoreDatabaseRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!firestore.googleapis.com/DatabaseR\x06parent\x12%\n" +
+	"\vdatabase_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"databaseId\x12@\n" +
+	"\x06backup\x18\x03 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1ffirestore.googleapis.com/BackupR\x06backup\x12g\n" +
+	"\x11encryption_config\x18\t \x01(\v24.google.firestore.admin.v1.Database.EncryptionConfigB\x04\xe2A\x01\x01R\x10encryptionConfig\x12V\n" +
 	"\x04tags\x18\n" +
-	" \x03(\v2;.google.firestore.admin.v1.RestoreDatabaseRequest.TagsEntryB\x06\xe0A\x05\xe0A\x01R\x04tags\x1a7\n" +
+	" \x03(\v2;.google.firestore.admin.v1.RestoreDatabaseRequest.TagsEntryB\x05\xe2A\x02\x05\x01R\x04tags\x1a7\n" +
 	"\tTagsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xca\x03\n" +
-	"\x14CloneDatabaseRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!firestore.googleapis.com/DatabaseR\x06parent\x12$\n" +
-	"\vdatabase_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"databaseId\x12Q\n" +
-	"\rpitr_snapshot\x18\x06 \x01(\v2'.google.firestore.admin.v1.PitrSnapshotB\x03\xe0A\x02R\fpitrSnapshot\x12f\n" +
-	"\x11encryption_config\x18\x04 \x01(\v24.google.firestore.admin.v1.Database.EncryptionConfigB\x03\xe0A\x01R\x10encryptionConfig\x12U\n" +
-	"\x04tags\x18\x05 \x03(\v29.google.firestore.admin.v1.CloneDatabaseRequest.TagsEntryB\x06\xe0A\x05\xe0A\x01R\x04tags\x1a7\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xcd\x03\n" +
+	"\x14CloneDatabaseRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!firestore.googleapis.com/DatabaseR\x06parent\x12%\n" +
+	"\vdatabase_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"databaseId\x12R\n" +
+	"\rpitr_snapshot\x18\x06 \x01(\v2'.google.firestore.admin.v1.PitrSnapshotB\x04\xe2A\x01\x02R\fpitrSnapshot\x12g\n" +
+	"\x11encryption_config\x18\x04 \x01(\v24.google.firestore.admin.v1.Database.EncryptionConfigB\x04\xe2A\x01\x01R\x10encryptionConfig\x12T\n" +
+	"\x04tags\x18\x05 \x03(\v29.google.firestore.admin.v1.CloneDatabaseRequest.TagsEntryB\x05\xe2A\x02\x05\x01R\x04tags\x1a7\n" +
 	"\tTagsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x012\xfb1\n" +

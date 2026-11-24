@@ -1628,11 +1628,11 @@ const file_google_cloud_dialogflow_cx_v3_flow_proto_rawDesc = "" +
 	"\x11ModelTrainingMode\x12#\n" +
 	"\x1fMODEL_TRAINING_MODE_UNSPECIFIED\x10\x00\x12!\n" +
 	"\x1dMODEL_TRAINING_MODE_AUTOMATIC\x10\x01\x12\x1e\n" +
-	"\x1aMODEL_TRAINING_MODE_MANUAL\x10\x02\"\xd6\n" +
+	"\x1aMODEL_TRAINING_MODE_MANUAL\x10\x02\"\xdd\n" +
 	"\n" +
 	"\x04Flow\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12 \n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12[\n" +
 	"\x11transition_routes\x18\x04 \x03(\v2..google.cloud.dialogflow.cx.v3.TransitionRouteR\x10transitionRoutes\x12R\n" +
 	"\x0eevent_handlers\x18\n" +
@@ -1640,51 +1640,51 @@ const file_google_cloud_dialogflow_cx_v3_flow_proto_rawDesc = "" +
 	"\x17transition_route_groups\x18\x0f \x03(\tB3\xfaA0\n" +
 	".dialogflow.googleapis.com/TransitionRouteGroupR\x15transitionRouteGroups\x12M\n" +
 	"\fnlu_settings\x18\v \x01(\v2*.google.cloud.dialogflow.cx.v3.NluSettingsR\vnluSettings\x12\\\n" +
-	"\x11advanced_settings\x18\x0e \x01(\v2/.google.cloud.dialogflow.cx.v3.AdvancedSettingsR\x10advancedSettings\x12\x80\x01\n" +
-	"\x1cknowledge_connector_settings\x18\x12 \x01(\v29.google.cloud.dialogflow.cx.v3.KnowledgeConnectorSettingsB\x03\xe0A\x01R\x1aknowledgeConnectorSettings\x12w\n" +
-	"\x1binput_parameter_definitions\x18\x1a \x03(\v22.google.cloud.dialogflow.cx.v3.ParameterDefinitionB\x03\xe0A\x01R\x19inputParameterDefinitions\x12y\n" +
-	"\x1coutput_parameter_definitions\x18\x1b \x03(\v22.google.cloud.dialogflow.cx.v3.ParameterDefinitionB\x03\xe0A\x01R\x1aoutputParameterDefinitions\x12v\n" +
-	"\x17multi_language_settings\x18\x1c \x01(\v29.google.cloud.dialogflow.cx.v3.Flow.MultiLanguageSettingsB\x03\xe0A\x01R\x15multiLanguageSettings\x12\x16\n" +
-	"\x06locked\x18\x1e \x01(\bR\x06locked\x1a\xb3\x01\n" +
-	"\x15MultiLanguageSettings\x12J\n" +
-	"\x1fenable_multi_language_detection\x18\x01 \x01(\bB\x03\xe0A\x01R\x1cenableMultiLanguageDetection\x12N\n" +
-	"!supported_response_language_codes\x18\x02 \x03(\tB\x03\xe0A\x01R\x1esupportedResponseLanguageCodes:h\xeaAe\n" +
-	"\x1edialogflow.googleapis.com/Flow\x12Cprojects/{project}/locations/{location}/agents/{agent}/flows/{flow}\"\xb6\x01\n" +
-	"\x11CreateFlowRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1edialogflow.googleapis.com/FlowR\x06parent\x12<\n" +
-	"\x04flow\x18\x02 \x01(\v2#.google.cloud.dialogflow.cx.v3.FlowB\x03\xe0A\x02R\x04flow\x12#\n" +
-	"\rlanguage_code\x18\x03 \x01(\tR\flanguageCode\"e\n" +
-	"\x11DeleteFlowRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x11advanced_settings\x18\x0e \x01(\v2/.google.cloud.dialogflow.cx.v3.AdvancedSettingsR\x10advancedSettings\x12\x81\x01\n" +
+	"\x1cknowledge_connector_settings\x18\x12 \x01(\v29.google.cloud.dialogflow.cx.v3.KnowledgeConnectorSettingsB\x04\xe2A\x01\x01R\x1aknowledgeConnectorSettings\x12x\n" +
+	"\x1binput_parameter_definitions\x18\x1a \x03(\v22.google.cloud.dialogflow.cx.v3.ParameterDefinitionB\x04\xe2A\x01\x01R\x19inputParameterDefinitions\x12z\n" +
+	"\x1coutput_parameter_definitions\x18\x1b \x03(\v22.google.cloud.dialogflow.cx.v3.ParameterDefinitionB\x04\xe2A\x01\x01R\x1aoutputParameterDefinitions\x12w\n" +
+	"\x17multi_language_settings\x18\x1c \x01(\v29.google.cloud.dialogflow.cx.v3.Flow.MultiLanguageSettingsB\x04\xe2A\x01\x01R\x15multiLanguageSettings\x12\x16\n" +
+	"\x06locked\x18\x1e \x01(\bR\x06locked\x1a\xb5\x01\n" +
+	"\x15MultiLanguageSettings\x12K\n" +
+	"\x1fenable_multi_language_detection\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x1cenableMultiLanguageDetection\x12O\n" +
+	"!supported_response_language_codes\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x1esupportedResponseLanguageCodes:h\xeaAe\n" +
+	"\x1edialogflow.googleapis.com/Flow\x12Cprojects/{project}/locations/{location}/agents/{agent}/flows/{flow}\"\xb8\x01\n" +
+	"\x11CreateFlowRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1edialogflow.googleapis.com/FlowR\x06parent\x12=\n" +
+	"\x04flow\x18\x02 \x01(\v2#.google.cloud.dialogflow.cx.v3.FlowB\x04\xe2A\x01\x02R\x04flow\x12#\n" +
+	"\rlanguage_code\x18\x03 \x01(\tR\flanguageCode\"f\n" +
+	"\x11DeleteFlowRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1edialogflow.googleapis.com/FlowR\x04name\x12\x14\n" +
-	"\x05force\x18\x02 \x01(\bR\x05force\"\xb3\x01\n" +
-	"\x10ListFlowsRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1edialogflow.googleapis.com/FlowR\x06parent\x12\x1b\n" +
+	"\x05force\x18\x02 \x01(\bR\x05force\"\xb4\x01\n" +
+	"\x10ListFlowsRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1edialogflow.googleapis.com/FlowR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12#\n" +
 	"\rlanguage_code\x18\x04 \x01(\tR\flanguageCode\"v\n" +
 	"\x11ListFlowsResponse\x129\n" +
 	"\x05flows\x18\x01 \x03(\v2#.google.cloud.dialogflow.cx.v3.FlowR\x05flows\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"q\n" +
-	"\x0eGetFlowRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"r\n" +
+	"\x0eGetFlowRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1edialogflow.googleapis.com/FlowR\x04name\x12#\n" +
-	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\"\xb3\x01\n" +
-	"\x11UpdateFlowRequest\x12<\n" +
-	"\x04flow\x18\x01 \x01(\v2#.google.cloud.dialogflow.cx.v3.FlowB\x03\xe0A\x02R\x04flow\x12;\n" +
+	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\"\xb4\x01\n" +
+	"\x11UpdateFlowRequest\x12=\n" +
+	"\x04flow\x18\x01 \x01(\v2#.google.cloud.dialogflow.cx.v3.FlowB\x04\xe2A\x01\x02R\x04flow\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\x12#\n" +
-	"\rlanguage_code\x18\x03 \x01(\tR\flanguageCode\"N\n" +
-	"\x10TrainFlowRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edialogflow.googleapis.com/FlowR\x04name\"v\n" +
-	"\x13ValidateFlowRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\rlanguage_code\x18\x03 \x01(\tR\flanguageCode\"O\n" +
+	"\x10TrainFlowRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edialogflow.googleapis.com/FlowR\x04name\"w\n" +
+	"\x13ValidateFlowRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
 	"\x1edialogflow.googleapis.com/FlowR\x04name\x12#\n" +
-	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\"\x91\x01\n" +
-	"\x1eGetFlowValidationResultRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
+	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\"\x92\x01\n" +
+	"\x1eGetFlowValidationResultRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
 	".dialogflow.googleapis.com/FlowValidationResultR\x04name\x12#\n" +
 	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\"\xd7\x02\n" +
 	"\x14FlowValidationResult\x12\x12\n" +
@@ -1692,28 +1692,28 @@ const file_google_cloud_dialogflow_cx_v3_flow_proto_rawDesc = "" +
 	"\x13validation_messages\x18\x02 \x03(\v20.google.cloud.dialogflow.cx.v3.ValidationMessageR\x12validationMessages\x12;\n" +
 	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"updateTime:\x8a\x01\xeaA\x86\x01\n" +
-	".dialogflow.googleapis.com/FlowValidationResult\x12Tprojects/{project}/locations/{location}/agents/{agent}/flows/{flow}/validationResult\"\xb2\x03\n" +
-	"\x11ImportFlowRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1edialogflow.googleapis.com/FlowR\x06parent\x12\x1b\n" +
+	".dialogflow.googleapis.com/FlowValidationResult\x12Tprojects/{project}/locations/{location}/agents/{agent}/flows/{flow}/validationResult\"\xb4\x03\n" +
+	"\x11ImportFlowRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1edialogflow.googleapis.com/FlowR\x06parent\x12\x1b\n" +
 	"\bflow_uri\x18\x02 \x01(\tH\x00R\aflowUri\x12#\n" +
 	"\fflow_content\x18\x03 \x01(\fH\x00R\vflowContent\x12b\n" +
-	"\rimport_option\x18\x04 \x01(\x0e2=.google.cloud.dialogflow.cx.v3.ImportFlowRequest.ImportOptionR\fimportOption\x12h\n" +
-	"\x14flow_import_strategy\x18\x05 \x01(\v21.google.cloud.dialogflow.cx.v3.FlowImportStrategyB\x03\xe0A\x01R\x12flowImportStrategy\"E\n" +
+	"\rimport_option\x18\x04 \x01(\x0e2=.google.cloud.dialogflow.cx.v3.ImportFlowRequest.ImportOptionR\fimportOption\x12i\n" +
+	"\x14flow_import_strategy\x18\x05 \x01(\v21.google.cloud.dialogflow.cx.v3.FlowImportStrategyB\x04\xe2A\x01\x01R\x12flowImportStrategy\"E\n" +
 	"\fImportOption\x12\x1d\n" +
 	"\x19IMPORT_OPTION_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04KEEP\x10\x01\x12\f\n" +
 	"\bFALLBACK\x10\x02B\x06\n" +
-	"\x04flow\"~\n" +
-	"\x12FlowImportStrategy\x12h\n" +
-	"\x16global_import_strategy\x18\x01 \x01(\x0e2-.google.cloud.dialogflow.cx.v3.ImportStrategyB\x03\xe0A\x01R\x14globalImportStrategy\"M\n" +
+	"\x04flow\"\x7f\n" +
+	"\x12FlowImportStrategy\x12i\n" +
+	"\x16global_import_strategy\x18\x01 \x01(\x0e2-.google.cloud.dialogflow.cx.v3.ImportStrategyB\x04\xe2A\x01\x01R\x14globalImportStrategy\"M\n" +
 	"\x12ImportFlowResponse\x127\n" +
 	"\x04flow\x18\x01 \x01(\tB#\xfaA \n" +
-	"\x1edialogflow.googleapis.com/FlowR\x04flow\"\xae\x01\n" +
-	"\x11ExportFlowRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edialogflow.googleapis.com/FlowR\x04name\x12\x1e\n" +
-	"\bflow_uri\x18\x02 \x01(\tB\x03\xe0A\x01R\aflowUri\x12=\n" +
-	"\x18include_referenced_flows\x18\x04 \x01(\bB\x03\xe0A\x01R\x16includeReferencedFlows\"^\n" +
+	"\x1edialogflow.googleapis.com/FlowR\x04flow\"\xb1\x01\n" +
+	"\x11ExportFlowRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edialogflow.googleapis.com/FlowR\x04name\x12\x1f\n" +
+	"\bflow_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\aflowUri\x12>\n" +
+	"\x18include_referenced_flows\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x16includeReferencedFlows\"^\n" +
 	"\x12ExportFlowResponse\x12\x1b\n" +
 	"\bflow_uri\x18\x01 \x01(\tH\x00R\aflowUri\x12#\n" +
 	"\fflow_content\x18\x02 \x01(\fH\x00R\vflowContentB\x06\n" +

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,9 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
@@ -38,6 +40,74 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
+
+// This defines the various values of the type of secret can be.
+type Secret_SecretType int32
+
+const (
+	// Applicable to all secrets which do not have any restriction on the
+	// SecretVersions.
+	Secret_SECRET_TYPE_UNSPECIFIED Secret_SecretType = 0
+	// Applicable to secrets which are used for the managed rotation feature
+	// for Cloud SQL Single User.
+	Secret_CLOUD_SQL_DB_CREDENTIALS Secret_SecretType = 1
+	// Applicable to secrets where the payload contains an access key.
+	Secret_ACCESS_KEY Secret_SecretType = 2
+	// Applicable to secrets where the payload contains a certificate.
+	Secret_CERTIFICATE Secret_SecretType = 3
+	// Applicable to secrets where the payload contains database credentials.
+	Secret_OTHER_DB_CREDENTIALS Secret_SecretType = 4
+	// Applicable to secrets whose type doesn't belong to any of the above
+	// defined types.
+	Secret_OTHER Secret_SecretType = 50
+)
+
+// Enum value maps for Secret_SecretType.
+var (
+	Secret_SecretType_name = map[int32]string{
+		0:  "SECRET_TYPE_UNSPECIFIED",
+		1:  "CLOUD_SQL_DB_CREDENTIALS",
+		2:  "ACCESS_KEY",
+		3:  "CERTIFICATE",
+		4:  "OTHER_DB_CREDENTIALS",
+		50: "OTHER",
+	}
+	Secret_SecretType_value = map[string]int32{
+		"SECRET_TYPE_UNSPECIFIED":  0,
+		"CLOUD_SQL_DB_CREDENTIALS": 1,
+		"ACCESS_KEY":               2,
+		"CERTIFICATE":              3,
+		"OTHER_DB_CREDENTIALS":     4,
+		"OTHER":                    50,
+	}
+)
+
+func (x Secret_SecretType) Enum() *Secret_SecretType {
+	p := new(Secret_SecretType)
+	*p = x
+	return p
+}
+
+func (x Secret_SecretType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Secret_SecretType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_secretmanager_v1_resources_proto_enumTypes[0].Descriptor()
+}
+
+func (Secret_SecretType) Type() protoreflect.EnumType {
+	return &file_google_cloud_secretmanager_v1_resources_proto_enumTypes[0]
+}
+
+func (x Secret_SecretType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Secret_SecretType.Descriptor instead.
+func (Secret_SecretType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_secretmanager_v1_resources_proto_rawDescGZIP(), []int{0, 0}
+}
 
 // The state of a
 // [SecretVersion][google.cloud.secretmanager.v1.SecretVersion], indicating if
@@ -89,11 +159,11 @@ func (x SecretVersion_State) String() string {
 }
 
 func (SecretVersion_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_secretmanager_v1_resources_proto_enumTypes[0].Descriptor()
+	return file_google_cloud_secretmanager_v1_resources_proto_enumTypes[1].Descriptor()
 }
 
 func (SecretVersion_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_secretmanager_v1_resources_proto_enumTypes[0]
+	return &file_google_cloud_secretmanager_v1_resources_proto_enumTypes[1]
 }
 
 func (x SecretVersion_State) Number() protoreflect.EnumNumber {
@@ -103,6 +173,59 @@ func (x SecretVersion_State) Number() protoreflect.EnumNumber {
 // Deprecated: Use SecretVersion_State.Descriptor instead.
 func (SecretVersion_State) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_secretmanager_v1_resources_proto_rawDescGZIP(), []int{1, 0}
+}
+
+// This defines the various states in which the managed rotation can be.
+type Rotation_ManagedRotationStatus_State int32
+
+const (
+	// Not specified. This value is unused and invalid.
+	Rotation_ManagedRotationStatus_STATE_UNSPECIFIED Rotation_ManagedRotationStatus_State = 0
+	// Indicates that the Managed rotation is ACTIVE.
+	Rotation_ManagedRotationStatus_ACTIVE Rotation_ManagedRotationStatus_State = 1
+	// Indicates that the Managed rotation is INACTIVE.
+	Rotation_ManagedRotationStatus_INACTIVE Rotation_ManagedRotationStatus_State = 2
+)
+
+// Enum value maps for Rotation_ManagedRotationStatus_State.
+var (
+	Rotation_ManagedRotationStatus_State_name = map[int32]string{
+		0: "STATE_UNSPECIFIED",
+		1: "ACTIVE",
+		2: "INACTIVE",
+	}
+	Rotation_ManagedRotationStatus_State_value = map[string]int32{
+		"STATE_UNSPECIFIED": 0,
+		"ACTIVE":            1,
+		"INACTIVE":          2,
+	}
+)
+
+func (x Rotation_ManagedRotationStatus_State) Enum() *Rotation_ManagedRotationStatus_State {
+	p := new(Rotation_ManagedRotationStatus_State)
+	*p = x
+	return p
+}
+
+func (x Rotation_ManagedRotationStatus_State) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Rotation_ManagedRotationStatus_State) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_secretmanager_v1_resources_proto_enumTypes[2].Descriptor()
+}
+
+func (Rotation_ManagedRotationStatus_State) Type() protoreflect.EnumType {
+	return &file_google_cloud_secretmanager_v1_resources_proto_enumTypes[2]
+}
+
+func (x Rotation_ManagedRotationStatus_State) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Rotation_ManagedRotationStatus_State.Descriptor instead.
+func (Rotation_ManagedRotationStatus_State) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_secretmanager_v1_resources_proto_rawDescGZIP(), []int{7, 0, 0}
 }
 
 // A [Secret][google.cloud.secretmanager.v1.Secret] is a logical secret whose
@@ -215,7 +338,16 @@ type Secret struct {
 	// Tags are used to organize and group resources.
 	//
 	// Tags can be used to control policy evaluation for the resource.
-	Tags          map[string]string `protobuf:"bytes,16,rep,name=tags,proto3" json:"tags,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Tags map[string]string `protobuf:"bytes,16,rep,name=tags,proto3" json:"tags,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Optional. Immutable. This defines the type of the secret.
+	// Enforces certain structural requirements on the
+	// [SecretVersions][google.cloud.secretmanager.v1.SecretVersion].
+	// For secret of type UNSPECIFIED, the SecretVersions can be of any type.
+	SecretType Secret_SecretType `protobuf:"varint,17,opt,name=secret_type,json=secretType,proto3,enum=google.cloud.secretmanager.v1.Secret_SecretType" json:"secret_type,omitempty"`
+	// Output only. Defines the policy member for the secret.
+	// This will be used to check if the caller has the permission to perform
+	// certain operations on the typed secret.
+	PolicyMember  *iampb.ResourcePolicyMember `protobuf:"bytes,18,opt,name=policy_member,json=policyMember,proto3" json:"policy_member,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -355,6 +487,20 @@ func (x *Secret) GetCustomerManagedEncryption() *CustomerManagedEncryption {
 func (x *Secret) GetTags() map[string]string {
 	if x != nil {
 		return x.Tags
+	}
+	return nil
+}
+
+func (x *Secret) GetSecretType() Secret_SecretType {
+	if x != nil {
+		return x.SecretType
+	}
+	return Secret_SECRET_TYPE_UNSPECIFIED
+}
+
+func (x *Secret) GetPolicyMember() *iampb.ResourcePolicyMember {
+	if x != nil {
+		return x.PolicyMember
 	}
 	return nil
 }
@@ -901,8 +1047,12 @@ type Rotation struct {
 	// will be advanced by this period when the service automatically sends
 	// rotation notifications.
 	RotationPeriod *durationpb.Duration `protobuf:"bytes,2,opt,name=rotation_period,json=rotationPeriod,proto3" json:"rotation_period,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Output only. The current status of the managed rotation.
+	// This field is only applicable to Typed Secrets.
+	// This field is set by the service and cannot be set by the user.
+	ManagedRotationStatus *Rotation_ManagedRotationStatus `protobuf:"bytes,3,opt,name=managed_rotation_status,json=managedRotationStatus,proto3" json:"managed_rotation_status,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *Rotation) Reset() {
@@ -945,6 +1095,13 @@ func (x *Rotation) GetNextRotationTime() *timestamppb.Timestamp {
 func (x *Rotation) GetRotationPeriod() *durationpb.Duration {
 	if x != nil {
 		return x.RotationPeriod
+	}
+	return nil
+}
+
+func (x *Rotation) GetManagedRotationStatus() *Rotation_ManagedRotationStatus {
+	if x != nil {
+		return x.ManagedRotationStatus
 	}
 	return nil
 }
@@ -1021,6 +1178,72 @@ func (x *SecretPayload) GetDataCrc32C() int64 {
 	return 0
 }
 
+// These are the credentials required for Cloud SQL DB for Single user
+// Managed Rotation.
+type CloudSqlSingleUserCredentials struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Instance ID of the Cloud SQL instance.
+	InstanceId string `protobuf:"bytes,1,opt,name=instance_id,json=instanceId,proto3" json:"instance_id,omitempty"`
+	// Required. Username of the Cloud SQL instance.
+	Username string `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
+	// Optional. Password of the Cloud SQL instance. If this is not provided,
+	// a random password will be generated.
+	Password      string `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CloudSqlSingleUserCredentials) Reset() {
+	*x = CloudSqlSingleUserCredentials{}
+	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CloudSqlSingleUserCredentials) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CloudSqlSingleUserCredentials) ProtoMessage() {}
+
+func (x *CloudSqlSingleUserCredentials) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CloudSqlSingleUserCredentials.ProtoReflect.Descriptor instead.
+func (*CloudSqlSingleUserCredentials) Descriptor() ([]byte, []int) {
+	return file_google_cloud_secretmanager_v1_resources_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *CloudSqlSingleUserCredentials) GetInstanceId() string {
+	if x != nil {
+		return x.InstanceId
+	}
+	return ""
+}
+
+func (x *CloudSqlSingleUserCredentials) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *CloudSqlSingleUserCredentials) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
 // A replication policy that replicates the
 // [Secret][google.cloud.secretmanager.v1.Secret] payload without any
 // restrictions.
@@ -1042,7 +1265,7 @@ type Replication_Automatic struct {
 
 func (x *Replication_Automatic) Reset() {
 	*x = Replication_Automatic{}
-	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[13]
+	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1054,7 +1277,7 @@ func (x *Replication_Automatic) String() string {
 func (*Replication_Automatic) ProtoMessage() {}
 
 func (x *Replication_Automatic) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[13]
+	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1094,7 +1317,7 @@ type Replication_UserManaged struct {
 
 func (x *Replication_UserManaged) Reset() {
 	*x = Replication_UserManaged{}
-	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[14]
+	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1106,7 +1329,7 @@ func (x *Replication_UserManaged) String() string {
 func (*Replication_UserManaged) ProtoMessage() {}
 
 func (x *Replication_UserManaged) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[14]
+	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1152,7 +1375,7 @@ type Replication_UserManaged_Replica struct {
 
 func (x *Replication_UserManaged_Replica) Reset() {
 	*x = Replication_UserManaged_Replica{}
-	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[15]
+	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1164,7 +1387,7 @@ func (x *Replication_UserManaged_Replica) String() string {
 func (*Replication_UserManaged_Replica) ProtoMessage() {}
 
 func (x *Replication_UserManaged_Replica) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[15]
+	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1212,7 +1435,7 @@ type ReplicationStatus_AutomaticStatus struct {
 
 func (x *ReplicationStatus_AutomaticStatus) Reset() {
 	*x = ReplicationStatus_AutomaticStatus{}
-	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[16]
+	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1224,7 +1447,7 @@ func (x *ReplicationStatus_AutomaticStatus) String() string {
 func (*ReplicationStatus_AutomaticStatus) ProtoMessage() {}
 
 func (x *ReplicationStatus_AutomaticStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[16]
+	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1264,7 +1487,7 @@ type ReplicationStatus_UserManagedStatus struct {
 
 func (x *ReplicationStatus_UserManagedStatus) Reset() {
 	*x = ReplicationStatus_UserManagedStatus{}
-	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[17]
+	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1276,7 +1499,7 @@ func (x *ReplicationStatus_UserManagedStatus) String() string {
 func (*ReplicationStatus_UserManagedStatus) ProtoMessage() {}
 
 func (x *ReplicationStatus_UserManagedStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[17]
+	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1316,7 +1539,7 @@ type ReplicationStatus_UserManagedStatus_ReplicaStatus struct {
 
 func (x *ReplicationStatus_UserManagedStatus_ReplicaStatus) Reset() {
 	*x = ReplicationStatus_UserManagedStatus_ReplicaStatus{}
-	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[18]
+	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1328,7 +1551,7 @@ func (x *ReplicationStatus_UserManagedStatus_ReplicaStatus) String() string {
 func (*ReplicationStatus_UserManagedStatus_ReplicaStatus) ProtoMessage() {}
 
 func (x *ReplicationStatus_UserManagedStatus_ReplicaStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[18]
+	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1358,28 +1581,92 @@ func (x *ReplicationStatus_UserManagedStatus_ReplicaStatus) GetCustomerManagedEn
 	return nil
 }
 
+// Represents the status of a managed rotation.
+//
+// This is applicable only to Typed Secrets. It indicates whether the
+// rotation is active and any errors that may have occurred during the
+// asynchronous managed rotation.
+type Rotation_ManagedRotationStatus struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. Indicates whether the Managed Rotation is active or not.
+	State Rotation_ManagedRotationStatus_State `protobuf:"varint,1,opt,name=state,proto3,enum=google.cloud.secretmanager.v1.Rotation_ManagedRotationStatus_State" json:"state,omitempty"`
+	// Output only. Displays customer-facing issues that occurred during an
+	// asynchronous managed rotation. For example, if there are some permission
+	// errors.
+	Error         *status.Status `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Rotation_ManagedRotationStatus) Reset() {
+	*x = Rotation_ManagedRotationStatus{}
+	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Rotation_ManagedRotationStatus) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Rotation_ManagedRotationStatus) ProtoMessage() {}
+
+func (x *Rotation_ManagedRotationStatus) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_secretmanager_v1_resources_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Rotation_ManagedRotationStatus.ProtoReflect.Descriptor instead.
+func (*Rotation_ManagedRotationStatus) Descriptor() ([]byte, []int) {
+	return file_google_cloud_secretmanager_v1_resources_proto_rawDescGZIP(), []int{7, 0}
+}
+
+func (x *Rotation_ManagedRotationStatus) GetState() Rotation_ManagedRotationStatus_State {
+	if x != nil {
+		return x.State
+	}
+	return Rotation_ManagedRotationStatus_STATE_UNSPECIFIED
+}
+
+func (x *Rotation_ManagedRotationStatus) GetError() *status.Status {
+	if x != nil {
+		return x.Error
+	}
+	return nil
+}
+
 var File_google_cloud_secretmanager_v1_resources_proto protoreflect.FileDescriptor
 
 const file_google_cloud_secretmanager_v1_resources_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/secretmanager/v1/resources.proto\x12\x1dgoogle.cloud.secretmanager.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xaa\v\n" +
-	"\x06Secret\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12T\n" +
-	"\vreplication\x18\x02 \x01(\v2*.google.cloud.secretmanager.v1.ReplicationB\x06\xe0A\x05\xe0A\x01R\vreplication\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"-google/cloud/secretmanager/v1/resources.proto\x12\x1dgoogle.cloud.secretmanager.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/iam/v1/resource_policy_member.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xeb\r\n" +
+	"\x06Secret\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12S\n" +
+	"\vreplication\x18\x02 \x01(\v2*.google.cloud.secretmanager.v1.ReplicationB\x05\xe2A\x02\x05\x01R\vreplication\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\x12I\n" +
-	"\x06labels\x18\x04 \x03(\v21.google.cloud.secretmanager.v1.Secret.LabelsEntryR\x06labels\x12A\n" +
-	"\x06topics\x18\x05 \x03(\v2$.google.cloud.secretmanager.v1.TopicB\x03\xe0A\x01R\x06topics\x12B\n" +
-	"\vexpire_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01H\x00R\n" +
-	"expireTime\x122\n" +
-	"\x03ttl\x18\a \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x04H\x00R\x03ttl\x12\x17\n" +
-	"\x04etag\x18\b \x01(\tB\x03\xe0A\x01R\x04etag\x12H\n" +
-	"\brotation\x18\t \x01(\v2'.google.cloud.secretmanager.v1.RotationB\x03\xe0A\x01R\brotation\x12g\n" +
-	"\x0fversion_aliases\x18\v \x03(\v29.google.cloud.secretmanager.v1.Secret.VersionAliasesEntryB\x03\xe0A\x01R\x0eversionAliases\x12]\n" +
-	"\vannotations\x18\r \x03(\v26.google.cloud.secretmanager.v1.Secret.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12N\n" +
-	"\x13version_destroy_ttl\x18\x0e \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x11versionDestroyTtl\x12}\n" +
-	"\x1bcustomer_managed_encryption\x18\x0f \x01(\v28.google.cloud.secretmanager.v1.CustomerManagedEncryptionB\x03\xe0A\x01R\x19customerManagedEncryption\x12N\n" +
-	"\x04tags\x18\x10 \x03(\v2/.google.cloud.secretmanager.v1.Secret.TagsEntryB\t\xe0A\x04\xe0A\x05\xe0A\x01R\x04tags\x1a9\n" +
+	"\x06labels\x18\x04 \x03(\v21.google.cloud.secretmanager.v1.Secret.LabelsEntryR\x06labels\x12B\n" +
+	"\x06topics\x18\x05 \x03(\v2$.google.cloud.secretmanager.v1.TopicB\x04\xe2A\x01\x01R\x06topics\x12C\n" +
+	"\vexpire_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01H\x00R\n" +
+	"expireTime\x123\n" +
+	"\x03ttl\x18\a \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x04H\x00R\x03ttl\x12\x18\n" +
+	"\x04etag\x18\b \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12I\n" +
+	"\brotation\x18\t \x01(\v2'.google.cloud.secretmanager.v1.RotationB\x04\xe2A\x01\x01R\brotation\x12h\n" +
+	"\x0fversion_aliases\x18\v \x03(\v29.google.cloud.secretmanager.v1.Secret.VersionAliasesEntryB\x04\xe2A\x01\x01R\x0eversionAliases\x12^\n" +
+	"\vannotations\x18\r \x03(\v26.google.cloud.secretmanager.v1.Secret.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12O\n" +
+	"\x13version_destroy_ttl\x18\x0e \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x11versionDestroyTtl\x12~\n" +
+	"\x1bcustomer_managed_encryption\x18\x0f \x01(\v28.google.cloud.secretmanager.v1.CustomerManagedEncryptionB\x04\xe2A\x01\x01R\x19customerManagedEncryption\x12K\n" +
+	"\x04tags\x18\x10 \x03(\v2/.google.cloud.secretmanager.v1.Secret.TagsEntryB\x06\xe2A\x03\x04\x05\x01R\x04tags\x12X\n" +
+	"\vsecret_type\x18\x11 \x01(\x0e20.google.cloud.secretmanager.v1.Secret.SecretTypeB\x05\xe2A\x02\x05\x01R\n" +
+	"secretType\x12N\n" +
+	"\rpolicy_member\x18\x12 \x01(\v2#.google.iam.v1.ResourcePolicyMemberB\x04\xe2A\x01\x03R\fpolicyMember\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aA\n" +
@@ -1391,65 +1678,88 @@ const file_google_cloud_secretmanager_v1_resources_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a7\n" +
 	"\tTagsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x99\x01\xeaA\x95\x01\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x8d\x01\n" +
+	"\n" +
+	"SecretType\x12\x1b\n" +
+	"\x17SECRET_TYPE_UNSPECIFIED\x10\x00\x12\x1c\n" +
+	"\x18CLOUD_SQL_DB_CREDENTIALS\x10\x01\x12\x0e\n" +
+	"\n" +
+	"ACCESS_KEY\x10\x02\x12\x0f\n" +
+	"\vCERTIFICATE\x10\x03\x12\x18\n" +
+	"\x14OTHER_DB_CREDENTIALS\x10\x04\x12\t\n" +
+	"\x05OTHER\x102:\x99\x01\xeaA\x95\x01\n" +
 	"#secretmanager.googleapis.com/Secret\x12#projects/{project}/secrets/{secret}\x128projects/{project}/locations/{location}/secrets/{secret}*\asecrets2\x06secretB\f\n" +
 	"\n" +
-	"expiration\"\xd3\a\n" +
-	"\rSecretVersion\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12B\n" +
-	"\fdestroy_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vdestroyTime\x12M\n" +
-	"\x05state\x18\x04 \x01(\x0e22.google.cloud.secretmanager.v1.SecretVersion.StateB\x03\xe0A\x03R\x05state\x12_\n" +
-	"\x12replication_status\x18\x05 \x01(\v20.google.cloud.secretmanager.v1.ReplicationStatusR\x11replicationStatus\x12\x17\n" +
-	"\x04etag\x18\x06 \x01(\tB\x03\xe0A\x03R\x04etag\x12N\n" +
-	"!client_specified_payload_checksum\x18\a \x01(\bB\x03\xe0A\x03R\x1eclientSpecifiedPayloadChecksum\x12U\n" +
-	"\x16scheduled_destroy_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x14scheduledDestroyTime\x12\x83\x01\n" +
-	"\x1bcustomer_managed_encryption\x18\t \x01(\v2>.google.cloud.secretmanager.v1.CustomerManagedEncryptionStatusB\x03\xe0A\x03R\x19customerManagedEncryption\"H\n" +
+	"expiration\"\xdb\a\n" +
+	"\rSecretVersion\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12C\n" +
+	"\fdestroy_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\vdestroyTime\x12N\n" +
+	"\x05state\x18\x04 \x01(\x0e22.google.cloud.secretmanager.v1.SecretVersion.StateB\x04\xe2A\x01\x03R\x05state\x12_\n" +
+	"\x12replication_status\x18\x05 \x01(\v20.google.cloud.secretmanager.v1.ReplicationStatusR\x11replicationStatus\x12\x18\n" +
+	"\x04etag\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12O\n" +
+	"!client_specified_payload_checksum\x18\a \x01(\bB\x04\xe2A\x01\x03R\x1eclientSpecifiedPayloadChecksum\x12V\n" +
+	"\x16scheduled_destroy_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x14scheduledDestroyTime\x12\x84\x01\n" +
+	"\x1bcustomer_managed_encryption\x18\t \x01(\v2>.google.cloud.secretmanager.v1.CustomerManagedEncryptionStatusB\x04\xe2A\x01\x03R\x19customerManagedEncryption\"H\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aENABLED\x10\x01\x12\f\n" +
 	"\bDISABLED\x10\x02\x12\r\n" +
 	"\tDESTROYED\x10\x03:\xe2\x01\xeaA\xde\x01\n" +
-	"*secretmanager.googleapis.com/SecretVersion\x12=projects/{project}/secrets/{secret}/versions/{secret_version}\x12Rprojects/{project}/locations/{location}/secrets/{secret}/versions/{secret_version}*\x0esecretVersions2\rsecretVersion\"\xf4\x04\n" +
+	"*secretmanager.googleapis.com/SecretVersion\x12=projects/{project}/secrets/{secret}/versions/{secret_version}\x12Rprojects/{project}/locations/{location}/secrets/{secret}/versions/{secret_version}*\x0esecretVersions2\rsecretVersion\"\xf7\x04\n" +
 	"\vReplication\x12T\n" +
 	"\tautomatic\x18\x01 \x01(\v24.google.cloud.secretmanager.v1.Replication.AutomaticH\x00R\tautomatic\x12[\n" +
-	"\fuser_managed\x18\x02 \x01(\v26.google.cloud.secretmanager.v1.Replication.UserManagedH\x00R\vuserManaged\x1a\x8a\x01\n" +
-	"\tAutomatic\x12}\n" +
-	"\x1bcustomer_managed_encryption\x18\x01 \x01(\v28.google.cloud.secretmanager.v1.CustomerManagedEncryptionB\x03\xe0A\x01R\x19customerManagedEncryption\x1a\x95\x02\n" +
-	"\vUserManaged\x12_\n" +
-	"\breplicas\x18\x01 \x03(\v2>.google.cloud.secretmanager.v1.Replication.UserManaged.ReplicaB\x03\xe0A\x02R\breplicas\x1a\xa4\x01\n" +
+	"\fuser_managed\x18\x02 \x01(\v26.google.cloud.secretmanager.v1.Replication.UserManagedH\x00R\vuserManaged\x1a\x8b\x01\n" +
+	"\tAutomatic\x12~\n" +
+	"\x1bcustomer_managed_encryption\x18\x01 \x01(\v28.google.cloud.secretmanager.v1.CustomerManagedEncryptionB\x04\xe2A\x01\x01R\x19customerManagedEncryption\x1a\x97\x02\n" +
+	"\vUserManaged\x12`\n" +
+	"\breplicas\x18\x01 \x03(\v2>.google.cloud.secretmanager.v1.Replication.UserManaged.ReplicaB\x04\xe2A\x01\x02R\breplicas\x1a\xa5\x01\n" +
 	"\aReplica\x12\x1a\n" +
-	"\blocation\x18\x01 \x01(\tR\blocation\x12}\n" +
-	"\x1bcustomer_managed_encryption\x18\x02 \x01(\v28.google.cloud.secretmanager.v1.CustomerManagedEncryptionB\x03\xe0A\x01R\x19customerManagedEncryptionB\r\n" +
-	"\vreplication\"B\n" +
-	"\x19CustomerManagedEncryption\x12%\n" +
-	"\fkms_key_name\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"kmsKeyName\"\xd0\x05\n" +
+	"\blocation\x18\x01 \x01(\tR\blocation\x12~\n" +
+	"\x1bcustomer_managed_encryption\x18\x02 \x01(\v28.google.cloud.secretmanager.v1.CustomerManagedEncryptionB\x04\xe2A\x01\x01R\x19customerManagedEncryptionB\r\n" +
+	"\vreplication\"C\n" +
+	"\x19CustomerManagedEncryption\x12&\n" +
+	"\fkms_key_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"kmsKeyName\"\xd4\x05\n" +
 	"\x11ReplicationStatus\x12`\n" +
 	"\tautomatic\x18\x01 \x01(\v2@.google.cloud.secretmanager.v1.ReplicationStatus.AutomaticStatusH\x00R\tautomatic\x12g\n" +
-	"\fuser_managed\x18\x02 \x01(\v2B.google.cloud.secretmanager.v1.ReplicationStatus.UserManagedStatusH\x00R\vuserManaged\x1a\x97\x01\n" +
-	"\x0fAutomaticStatus\x12\x83\x01\n" +
-	"\x1bcustomer_managed_encryption\x18\x01 \x01(\v2>.google.cloud.secretmanager.v1.CustomerManagedEncryptionStatusB\x03\xe0A\x03R\x19customerManagedEncryption\x1a\xbf\x02\n" +
-	"\x11UserManagedStatus\x12q\n" +
-	"\breplicas\x18\x01 \x03(\v2P.google.cloud.secretmanager.v1.ReplicationStatus.UserManagedStatus.ReplicaStatusB\x03\xe0A\x03R\breplicas\x1a\xb6\x01\n" +
-	"\rReplicaStatus\x12\x1f\n" +
-	"\blocation\x18\x01 \x01(\tB\x03\xe0A\x03R\blocation\x12\x83\x01\n" +
-	"\x1bcustomer_managed_encryption\x18\x02 \x01(\v2>.google.cloud.secretmanager.v1.CustomerManagedEncryptionStatusB\x03\xe0A\x03R\x19customerManagedEncryptionB\x14\n" +
-	"\x12replication_status\"W\n" +
-	"\x1fCustomerManagedEncryptionStatus\x124\n" +
-	"\x14kms_key_version_name\x18\x01 \x01(\tB\x03\xe0A\x02R\x11kmsKeyVersionName\"e\n" +
-	"\x05Topic\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name:C\xeaA@\n" +
-	"\x1bpubsub.googleapis.com/Topic\x12!projects/{project}/topics/{topic}\"\xa2\x01\n" +
-	"\bRotation\x12M\n" +
-	"\x12next_rotation_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x10nextRotationTime\x12G\n" +
-	"\x0frotation_period\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x04R\x0erotationPeriod\"^\n" +
+	"\fuser_managed\x18\x02 \x01(\v2B.google.cloud.secretmanager.v1.ReplicationStatus.UserManagedStatusH\x00R\vuserManaged\x1a\x98\x01\n" +
+	"\x0fAutomaticStatus\x12\x84\x01\n" +
+	"\x1bcustomer_managed_encryption\x18\x01 \x01(\v2>.google.cloud.secretmanager.v1.CustomerManagedEncryptionStatusB\x04\xe2A\x01\x03R\x19customerManagedEncryption\x1a\xc2\x02\n" +
+	"\x11UserManagedStatus\x12r\n" +
+	"\breplicas\x18\x01 \x03(\v2P.google.cloud.secretmanager.v1.ReplicationStatus.UserManagedStatus.ReplicaStatusB\x04\xe2A\x01\x03R\breplicas\x1a\xb8\x01\n" +
+	"\rReplicaStatus\x12 \n" +
+	"\blocation\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\blocation\x12\x84\x01\n" +
+	"\x1bcustomer_managed_encryption\x18\x02 \x01(\v2>.google.cloud.secretmanager.v1.CustomerManagedEncryptionStatusB\x04\xe2A\x01\x03R\x19customerManagedEncryptionB\x14\n" +
+	"\x12replication_status\"X\n" +
+	"\x1fCustomerManagedEncryptionStatus\x125\n" +
+	"\x14kms_key_version_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x11kmsKeyVersionName\"f\n" +
+	"\x05Topic\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name:C\xeaA@\n" +
+	"\x1bpubsub.googleapis.com/Topic\x12!projects/{project}/topics/{topic}\"\x86\x04\n" +
+	"\bRotation\x12N\n" +
+	"\x12next_rotation_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x10nextRotationTime\x12H\n" +
+	"\x0frotation_period\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x04R\x0erotationPeriod\x12{\n" +
+	"\x17managed_rotation_status\x18\x03 \x01(\v2=.google.cloud.secretmanager.v1.Rotation.ManagedRotationStatusB\x04\xe2A\x01\x03R\x15managedRotationStatus\x1a\xe2\x01\n" +
+	"\x15ManagedRotationStatus\x12_\n" +
+	"\x05state\x18\x01 \x01(\x0e2C.google.cloud.secretmanager.v1.Rotation.ManagedRotationStatus.StateB\x04\xe2A\x01\x03R\x05state\x12.\n" +
+	"\x05error\x18\x02 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\"8\n" +
+	"\x05State\x12\x15\n" +
+	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06ACTIVE\x10\x01\x12\f\n" +
+	"\bINACTIVE\x10\x02\"_\n" +
 	"\rSecretPayload\x12\x12\n" +
-	"\x04data\x18\x01 \x01(\fR\x04data\x12)\n" +
-	"\vdata_crc32c\x18\x02 \x01(\x03B\x03\xe0A\x01H\x00R\n" +
+	"\x04data\x18\x01 \x01(\fR\x04data\x12*\n" +
+	"\vdata_crc32c\x18\x02 \x01(\x03B\x04\xe2A\x01\x01H\x00R\n" +
 	"dataCrc32c\x88\x01\x01B\x0e\n" +
-	"\f_data_crc32cB\xe7\x01\n" +
+	"\f_data_crc32c\"\x8a\x01\n" +
+	"\x1dCloudSqlSingleUserCredentials\x12%\n" +
+	"\vinstance_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"instanceId\x12 \n" +
+	"\busername\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\busername\x12 \n" +
+	"\bpassword\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bpasswordB\xe7\x01\n" +
 	"!com.google.cloud.secretmanager.v1B\x0eResourcesProtoP\x01ZGcloud.google.com/go/secretmanager/apiv1/secretmanagerpb;secretmanagerpb\xa2\x02\x03GSM\xaa\x02\x1dGoogle.Cloud.SecretManager.V1\xca\x02\x1dGoogle\\Cloud\\SecretManager\\V1\xea\x02 Google::Cloud::SecretManager::V1b\x06proto3"
 
 var (
@@ -1464,68 +1774,79 @@ func file_google_cloud_secretmanager_v1_resources_proto_rawDescGZIP() []byte {
 	return file_google_cloud_secretmanager_v1_resources_proto_rawDescData
 }
 
-var file_google_cloud_secretmanager_v1_resources_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_secretmanager_v1_resources_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_google_cloud_secretmanager_v1_resources_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_google_cloud_secretmanager_v1_resources_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
 var file_google_cloud_secretmanager_v1_resources_proto_goTypes = []any{
-	(SecretVersion_State)(0),                // 0: google.cloud.secretmanager.v1.SecretVersion.State
-	(*Secret)(nil),                          // 1: google.cloud.secretmanager.v1.Secret
-	(*SecretVersion)(nil),                   // 2: google.cloud.secretmanager.v1.SecretVersion
-	(*Replication)(nil),                     // 3: google.cloud.secretmanager.v1.Replication
-	(*CustomerManagedEncryption)(nil),       // 4: google.cloud.secretmanager.v1.CustomerManagedEncryption
-	(*ReplicationStatus)(nil),               // 5: google.cloud.secretmanager.v1.ReplicationStatus
-	(*CustomerManagedEncryptionStatus)(nil), // 6: google.cloud.secretmanager.v1.CustomerManagedEncryptionStatus
-	(*Topic)(nil),                           // 7: google.cloud.secretmanager.v1.Topic
-	(*Rotation)(nil),                        // 8: google.cloud.secretmanager.v1.Rotation
-	(*SecretPayload)(nil),                   // 9: google.cloud.secretmanager.v1.SecretPayload
-	nil,                                     // 10: google.cloud.secretmanager.v1.Secret.LabelsEntry
-	nil,                                     // 11: google.cloud.secretmanager.v1.Secret.VersionAliasesEntry
-	nil,                                     // 12: google.cloud.secretmanager.v1.Secret.AnnotationsEntry
-	nil,                                     // 13: google.cloud.secretmanager.v1.Secret.TagsEntry
-	(*Replication_Automatic)(nil),           // 14: google.cloud.secretmanager.v1.Replication.Automatic
-	(*Replication_UserManaged)(nil),         // 15: google.cloud.secretmanager.v1.Replication.UserManaged
-	(*Replication_UserManaged_Replica)(nil), // 16: google.cloud.secretmanager.v1.Replication.UserManaged.Replica
-	(*ReplicationStatus_AutomaticStatus)(nil),                 // 17: google.cloud.secretmanager.v1.ReplicationStatus.AutomaticStatus
-	(*ReplicationStatus_UserManagedStatus)(nil),               // 18: google.cloud.secretmanager.v1.ReplicationStatus.UserManagedStatus
-	(*ReplicationStatus_UserManagedStatus_ReplicaStatus)(nil), // 19: google.cloud.secretmanager.v1.ReplicationStatus.UserManagedStatus.ReplicaStatus
-	(*timestamppb.Timestamp)(nil),                             // 20: google.protobuf.Timestamp
-	(*durationpb.Duration)(nil),                               // 21: google.protobuf.Duration
+	(Secret_SecretType)(0),                    // 0: google.cloud.secretmanager.v1.Secret.SecretType
+	(SecretVersion_State)(0),                  // 1: google.cloud.secretmanager.v1.SecretVersion.State
+	(Rotation_ManagedRotationStatus_State)(0), // 2: google.cloud.secretmanager.v1.Rotation.ManagedRotationStatus.State
+	(*Secret)(nil),                            // 3: google.cloud.secretmanager.v1.Secret
+	(*SecretVersion)(nil),                     // 4: google.cloud.secretmanager.v1.SecretVersion
+	(*Replication)(nil),                       // 5: google.cloud.secretmanager.v1.Replication
+	(*CustomerManagedEncryption)(nil),         // 6: google.cloud.secretmanager.v1.CustomerManagedEncryption
+	(*ReplicationStatus)(nil),                 // 7: google.cloud.secretmanager.v1.ReplicationStatus
+	(*CustomerManagedEncryptionStatus)(nil),   // 8: google.cloud.secretmanager.v1.CustomerManagedEncryptionStatus
+	(*Topic)(nil),                             // 9: google.cloud.secretmanager.v1.Topic
+	(*Rotation)(nil),                          // 10: google.cloud.secretmanager.v1.Rotation
+	(*SecretPayload)(nil),                     // 11: google.cloud.secretmanager.v1.SecretPayload
+	(*CloudSqlSingleUserCredentials)(nil),     // 12: google.cloud.secretmanager.v1.CloudSqlSingleUserCredentials
+	nil,                                       // 13: google.cloud.secretmanager.v1.Secret.LabelsEntry
+	nil,                                       // 14: google.cloud.secretmanager.v1.Secret.VersionAliasesEntry
+	nil,                                       // 15: google.cloud.secretmanager.v1.Secret.AnnotationsEntry
+	nil,                                       // 16: google.cloud.secretmanager.v1.Secret.TagsEntry
+	(*Replication_Automatic)(nil),             // 17: google.cloud.secretmanager.v1.Replication.Automatic
+	(*Replication_UserManaged)(nil),           // 18: google.cloud.secretmanager.v1.Replication.UserManaged
+	(*Replication_UserManaged_Replica)(nil),   // 19: google.cloud.secretmanager.v1.Replication.UserManaged.Replica
+	(*ReplicationStatus_AutomaticStatus)(nil),                 // 20: google.cloud.secretmanager.v1.ReplicationStatus.AutomaticStatus
+	(*ReplicationStatus_UserManagedStatus)(nil),               // 21: google.cloud.secretmanager.v1.ReplicationStatus.UserManagedStatus
+	(*ReplicationStatus_UserManagedStatus_ReplicaStatus)(nil), // 22: google.cloud.secretmanager.v1.ReplicationStatus.UserManagedStatus.ReplicaStatus
+	(*Rotation_ManagedRotationStatus)(nil),                    // 23: google.cloud.secretmanager.v1.Rotation.ManagedRotationStatus
+	(*timestamppb.Timestamp)(nil),                             // 24: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),                               // 25: google.protobuf.Duration
+	(*iampb.ResourcePolicyMember)(nil),                        // 26: google.iam.v1.ResourcePolicyMember
+	(*status.Status)(nil),                                     // 27: google.rpc.Status
 }
 var file_google_cloud_secretmanager_v1_resources_proto_depIdxs = []int32{
-	3,  // 0: google.cloud.secretmanager.v1.Secret.replication:type_name -> google.cloud.secretmanager.v1.Replication
-	20, // 1: google.cloud.secretmanager.v1.Secret.create_time:type_name -> google.protobuf.Timestamp
-	10, // 2: google.cloud.secretmanager.v1.Secret.labels:type_name -> google.cloud.secretmanager.v1.Secret.LabelsEntry
-	7,  // 3: google.cloud.secretmanager.v1.Secret.topics:type_name -> google.cloud.secretmanager.v1.Topic
-	20, // 4: google.cloud.secretmanager.v1.Secret.expire_time:type_name -> google.protobuf.Timestamp
-	21, // 5: google.cloud.secretmanager.v1.Secret.ttl:type_name -> google.protobuf.Duration
-	8,  // 6: google.cloud.secretmanager.v1.Secret.rotation:type_name -> google.cloud.secretmanager.v1.Rotation
-	11, // 7: google.cloud.secretmanager.v1.Secret.version_aliases:type_name -> google.cloud.secretmanager.v1.Secret.VersionAliasesEntry
-	12, // 8: google.cloud.secretmanager.v1.Secret.annotations:type_name -> google.cloud.secretmanager.v1.Secret.AnnotationsEntry
-	21, // 9: google.cloud.secretmanager.v1.Secret.version_destroy_ttl:type_name -> google.protobuf.Duration
-	4,  // 10: google.cloud.secretmanager.v1.Secret.customer_managed_encryption:type_name -> google.cloud.secretmanager.v1.CustomerManagedEncryption
-	13, // 11: google.cloud.secretmanager.v1.Secret.tags:type_name -> google.cloud.secretmanager.v1.Secret.TagsEntry
-	20, // 12: google.cloud.secretmanager.v1.SecretVersion.create_time:type_name -> google.protobuf.Timestamp
-	20, // 13: google.cloud.secretmanager.v1.SecretVersion.destroy_time:type_name -> google.protobuf.Timestamp
-	0,  // 14: google.cloud.secretmanager.v1.SecretVersion.state:type_name -> google.cloud.secretmanager.v1.SecretVersion.State
-	5,  // 15: google.cloud.secretmanager.v1.SecretVersion.replication_status:type_name -> google.cloud.secretmanager.v1.ReplicationStatus
-	20, // 16: google.cloud.secretmanager.v1.SecretVersion.scheduled_destroy_time:type_name -> google.protobuf.Timestamp
-	6,  // 17: google.cloud.secretmanager.v1.SecretVersion.customer_managed_encryption:type_name -> google.cloud.secretmanager.v1.CustomerManagedEncryptionStatus
-	14, // 18: google.cloud.secretmanager.v1.Replication.automatic:type_name -> google.cloud.secretmanager.v1.Replication.Automatic
-	15, // 19: google.cloud.secretmanager.v1.Replication.user_managed:type_name -> google.cloud.secretmanager.v1.Replication.UserManaged
-	17, // 20: google.cloud.secretmanager.v1.ReplicationStatus.automatic:type_name -> google.cloud.secretmanager.v1.ReplicationStatus.AutomaticStatus
-	18, // 21: google.cloud.secretmanager.v1.ReplicationStatus.user_managed:type_name -> google.cloud.secretmanager.v1.ReplicationStatus.UserManagedStatus
-	20, // 22: google.cloud.secretmanager.v1.Rotation.next_rotation_time:type_name -> google.protobuf.Timestamp
-	21, // 23: google.cloud.secretmanager.v1.Rotation.rotation_period:type_name -> google.protobuf.Duration
-	4,  // 24: google.cloud.secretmanager.v1.Replication.Automatic.customer_managed_encryption:type_name -> google.cloud.secretmanager.v1.CustomerManagedEncryption
-	16, // 25: google.cloud.secretmanager.v1.Replication.UserManaged.replicas:type_name -> google.cloud.secretmanager.v1.Replication.UserManaged.Replica
-	4,  // 26: google.cloud.secretmanager.v1.Replication.UserManaged.Replica.customer_managed_encryption:type_name -> google.cloud.secretmanager.v1.CustomerManagedEncryption
-	6,  // 27: google.cloud.secretmanager.v1.ReplicationStatus.AutomaticStatus.customer_managed_encryption:type_name -> google.cloud.secretmanager.v1.CustomerManagedEncryptionStatus
-	19, // 28: google.cloud.secretmanager.v1.ReplicationStatus.UserManagedStatus.replicas:type_name -> google.cloud.secretmanager.v1.ReplicationStatus.UserManagedStatus.ReplicaStatus
-	6,  // 29: google.cloud.secretmanager.v1.ReplicationStatus.UserManagedStatus.ReplicaStatus.customer_managed_encryption:type_name -> google.cloud.secretmanager.v1.CustomerManagedEncryptionStatus
-	30, // [30:30] is the sub-list for method output_type
-	30, // [30:30] is the sub-list for method input_type
-	30, // [30:30] is the sub-list for extension type_name
-	30, // [30:30] is the sub-list for extension extendee
-	0,  // [0:30] is the sub-list for field type_name
+	5,  // 0: google.cloud.secretmanager.v1.Secret.replication:type_name -> google.cloud.secretmanager.v1.Replication
+	24, // 1: google.cloud.secretmanager.v1.Secret.create_time:type_name -> google.protobuf.Timestamp
+	13, // 2: google.cloud.secretmanager.v1.Secret.labels:type_name -> google.cloud.secretmanager.v1.Secret.LabelsEntry
+	9,  // 3: google.cloud.secretmanager.v1.Secret.topics:type_name -> google.cloud.secretmanager.v1.Topic
+	24, // 4: google.cloud.secretmanager.v1.Secret.expire_time:type_name -> google.protobuf.Timestamp
+	25, // 5: google.cloud.secretmanager.v1.Secret.ttl:type_name -> google.protobuf.Duration
+	10, // 6: google.cloud.secretmanager.v1.Secret.rotation:type_name -> google.cloud.secretmanager.v1.Rotation
+	14, // 7: google.cloud.secretmanager.v1.Secret.version_aliases:type_name -> google.cloud.secretmanager.v1.Secret.VersionAliasesEntry
+	15, // 8: google.cloud.secretmanager.v1.Secret.annotations:type_name -> google.cloud.secretmanager.v1.Secret.AnnotationsEntry
+	25, // 9: google.cloud.secretmanager.v1.Secret.version_destroy_ttl:type_name -> google.protobuf.Duration
+	6,  // 10: google.cloud.secretmanager.v1.Secret.customer_managed_encryption:type_name -> google.cloud.secretmanager.v1.CustomerManagedEncryption
+	16, // 11: google.cloud.secretmanager.v1.Secret.tags:type_name -> google.cloud.secretmanager.v1.Secret.TagsEntry
+	0,  // 12: google.cloud.secretmanager.v1.Secret.secret_type:type_name -> google.cloud.secretmanager.v1.Secret.SecretType
+	26, // 13: google.cloud.secretmanager.v1.Secret.policy_member:type_name -> google.iam.v1.ResourcePolicyMember
+	24, // 14: google.cloud.secretmanager.v1.SecretVersion.create_time:type_name -> google.protobuf.Timestamp
+	24, // 15: google.cloud.secretmanager.v1.SecretVersion.destroy_time:type_name -> google.protobuf.Timestamp
+	1,  // 16: google.cloud.secretmanager.v1.SecretVersion.state:type_name -> google.cloud.secretmanager.v1.SecretVersion.State
+	7,  // 17: google.cloud.secretmanager.v1.SecretVersion.replication_status:type_name -> google.cloud.secretmanager.v1.ReplicationStatus
+	24, // 18: google.cloud.secretmanager.v1.SecretVersion.scheduled_destroy_time:type_name -> google.protobuf.Timestamp
+	8,  // 19: google.cloud.secretmanager.v1.SecretVersion.customer_managed_encryption:type_name -> google.cloud.secretmanager.v1.CustomerManagedEncryptionStatus
+	17, // 20: google.cloud.secretmanager.v1.Replication.automatic:type_name -> google.cloud.secretmanager.v1.Replication.Automatic
+	18, // 21: google.cloud.secretmanager.v1.Replication.user_managed:type_name -> google.cloud.secretmanager.v1.Replication.UserManaged
+	20, // 22: google.cloud.secretmanager.v1.ReplicationStatus.automatic:type_name -> google.cloud.secretmanager.v1.ReplicationStatus.AutomaticStatus
+	21, // 23: google.cloud.secretmanager.v1.ReplicationStatus.user_managed:type_name -> google.cloud.secretmanager.v1.ReplicationStatus.UserManagedStatus
+	24, // 24: google.cloud.secretmanager.v1.Rotation.next_rotation_time:type_name -> google.protobuf.Timestamp
+	25, // 25: google.cloud.secretmanager.v1.Rotation.rotation_period:type_name -> google.protobuf.Duration
+	23, // 26: google.cloud.secretmanager.v1.Rotation.managed_rotation_status:type_name -> google.cloud.secretmanager.v1.Rotation.ManagedRotationStatus
+	6,  // 27: google.cloud.secretmanager.v1.Replication.Automatic.customer_managed_encryption:type_name -> google.cloud.secretmanager.v1.CustomerManagedEncryption
+	19, // 28: google.cloud.secretmanager.v1.Replication.UserManaged.replicas:type_name -> google.cloud.secretmanager.v1.Replication.UserManaged.Replica
+	6,  // 29: google.cloud.secretmanager.v1.Replication.UserManaged.Replica.customer_managed_encryption:type_name -> google.cloud.secretmanager.v1.CustomerManagedEncryption
+	8,  // 30: google.cloud.secretmanager.v1.ReplicationStatus.AutomaticStatus.customer_managed_encryption:type_name -> google.cloud.secretmanager.v1.CustomerManagedEncryptionStatus
+	22, // 31: google.cloud.secretmanager.v1.ReplicationStatus.UserManagedStatus.replicas:type_name -> google.cloud.secretmanager.v1.ReplicationStatus.UserManagedStatus.ReplicaStatus
+	8,  // 32: google.cloud.secretmanager.v1.ReplicationStatus.UserManagedStatus.ReplicaStatus.customer_managed_encryption:type_name -> google.cloud.secretmanager.v1.CustomerManagedEncryptionStatus
+	2,  // 33: google.cloud.secretmanager.v1.Rotation.ManagedRotationStatus.state:type_name -> google.cloud.secretmanager.v1.Rotation.ManagedRotationStatus.State
+	27, // 34: google.cloud.secretmanager.v1.Rotation.ManagedRotationStatus.error:type_name -> google.rpc.Status
+	35, // [35:35] is the sub-list for method output_type
+	35, // [35:35] is the sub-list for method input_type
+	35, // [35:35] is the sub-list for extension type_name
+	35, // [35:35] is the sub-list for extension extendee
+	0,  // [0:35] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_secretmanager_v1_resources_proto_init() }
@@ -1551,8 +1872,8 @@ func file_google_cloud_secretmanager_v1_resources_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_secretmanager_v1_resources_proto_rawDesc), len(file_google_cloud_secretmanager_v1_resources_proto_rawDesc)),
-			NumEnums:      1,
-			NumMessages:   19,
+			NumEnums:      3,
+			NumMessages:   21,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

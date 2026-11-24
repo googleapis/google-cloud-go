@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -397,12 +397,12 @@ var File_google_cloud_discoveryengine_v1_recommendation_service_proto protorefle
 
 const file_google_cloud_discoveryengine_v1_recommendation_service_proto_rawDesc = "" +
 	"\n" +
-	"<google/cloud/discoveryengine/v1/recommendation_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/discoveryengine/v1/document.proto\x1a0google/cloud/discoveryengine/v1/user_event.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xe6\x04\n" +
-	"\x10RecommendRequest\x12[\n" +
-	"\x0eserving_config\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",discoveryengine.googleapis.com/ServingConfigR\rservingConfig\x12N\n" +
+	"<google/cloud/discoveryengine/v1/recommendation_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/discoveryengine/v1/document.proto\x1a0google/cloud/discoveryengine/v1/user_event.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xe8\x04\n" +
+	"\x10RecommendRequest\x12\\\n" +
+	"\x0eserving_config\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",discoveryengine.googleapis.com/ServingConfigR\rservingConfig\x12O\n" +
 	"\n" +
-	"user_event\x18\x02 \x01(\v2*.google.cloud.discoveryengine.v1.UserEventB\x03\xe0A\x02R\tuserEvent\x12\x1b\n" +
+	"user_event\x18\x02 \x01(\v2*.google.cloud.discoveryengine.v1.UserEventB\x04\xe2A\x01\x02R\tuserEvent\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x16\n" +
 	"\x06filter\x18\x04 \x01(\tR\x06filter\x12#\n" +
 	"\rvalidate_only\x18\x05 \x01(\bR\fvalidateOnly\x12U\n" +
@@ -427,9 +427,9 @@ const file_google_cloud_discoveryengine_v1_recommendation_service_proto_rawDesc 
 	"\bmetadata\x18\x03 \x03(\v2U.google.cloud.discoveryengine.v1.RecommendResponse.RecommendationResult.MetadataEntryR\bmetadata\x1aS\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12,\n" +
-	"\x05value\x18\x02 \x01(\v2\x16.google.protobuf.ValueR\x05value:\x028\x012\x8f\x04\n" +
+	"\x05value\x18\x02 \x01(\v2\x16.google.protobuf.ValueR\x05value:\x028\x012\x8d\x05\n" +
 	"\x15RecommendationService\x12\xa1\x03\n" +
-	"\tRecommend\x121.google.cloud.discoveryengine.v1.RecommendRequest\x1a2.google.cloud.discoveryengine.v1.RecommendResponse\"\xac\x02\x82\xd3\xe4\x93\x02\xa5\x02:\x01*Zf:\x01*\"a/v1/{serving_config=projects/*/locations/*/collections/*/dataStores/*/servingConfigs/*}:recommendZc:\x01*\"^/v1/{serving_config=projects/*/locations/*/collections/*/engines/*/servingConfigs/*}:recommend\"S/v1/{serving_config=projects/*/locations/*/dataStores/*/servingConfigs/*}:recommend\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x8d\x02\n" +
+	"\tRecommend\x121.google.cloud.discoveryengine.v1.RecommendRequest\x1a2.google.cloud.discoveryengine.v1.RecommendResponse\"\xac\x02\x82\xd3\xe4\x93\x02\xa5\x02:\x01*Zf:\x01*\"a/v1/{serving_config=projects/*/locations/*/collections/*/dataStores/*/servingConfigs/*}:recommendZc:\x01*\"^/v1/{serving_config=projects/*/locations/*/collections/*/engines/*/servingConfigs/*}:recommend\"S/v1/{serving_config=projects/*/locations/*/dataStores/*/servingConfigs/*}:recommend\x1a\xcf\x01\xcaA\x1ediscoveryengine.googleapis.com\xd2A\xaa\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\x8d\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B\x1aRecommendationServiceProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 
 var (

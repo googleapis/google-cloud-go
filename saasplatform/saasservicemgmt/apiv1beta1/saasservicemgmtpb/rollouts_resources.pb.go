@@ -973,39 +973,39 @@ var File_google_cloud_saasplatform_saasservicemgmt_v1beta1_rollouts_resources_pr
 
 const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_rollouts_resources_proto_rawDesc = "" +
 	"\n" +
-	"Jgoogle/cloud/saasplatform/saasservicemgmt/v1beta1/rollouts_resources.proto\x121google.cloud.saasplatform.saasservicemgmt.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a>google/cloud/saasplatform/saasservicemgmt/v1beta1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd0\x10\n" +
-	"\aRollout\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12K\n" +
-	"\arelease\x18\x03 \x01(\tB1\xe0A\x01\xe0A\x05\xfaA(\n" +
-	"&saasservicemgmt.googleapis.com/ReleaseR\arelease\x12A\n" +
+	"Jgoogle/cloud/saasplatform/saasservicemgmt/v1beta1/rollouts_resources.proto\x121google.cloud.saasplatform.saasservicemgmt.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a>google/cloud/saasplatform/saasservicemgmt/v1beta1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd4\x10\n" +
+	"\aRollout\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12J\n" +
+	"\arelease\x18\x03 \x01(\tB0\xe2A\x02\x01\x05\xfaA(\n" +
+	"&saasservicemgmt.googleapis.com/ReleaseR\arelease\x12@\n" +
 	"\n" +
-	"start_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x06\xe0A\x01\xe0A\x03R\tstartTime\x12=\n" +
-	"\bend_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x06\xe0A\x01\xe0A\x03R\aendTime\x12b\n" +
+	"start_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x05\xe2A\x02\x01\x03R\tstartTime\x12<\n" +
+	"\bend_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x05\xe2A\x02\x01\x03R\aendTime\x12c\n" +
 	"\x05state\x18\n" +
-	" \x01(\x0e2G.google.cloud.saasplatform.saasservicemgmt.v1beta1.Rollout.RolloutStateB\x03\xe0A\x03R\x05state\x12(\n" +
-	"\rstate_message\x18\v \x01(\tB\x03\xe0A\x03R\fstateMessage\x12V\n" +
-	"\x15state_transition_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x06\xe0A\x01\xe0A\x03R\x13stateTransitionTime\x12T\n" +
-	"\froot_rollout\x18\x10 \x01(\tB1\xe0A\x03\xe0A\x01\xfaA(\n" +
-	"&saasservicemgmt.googleapis.com/RolloutR\vrootRollout\x12X\n" +
-	"\x0eparent_rollout\x18\x11 \x01(\tB1\xe0A\x03\xe0A\x01\xfaA(\n" +
-	"&saasservicemgmt.googleapis.com/RolloutR\rparentRollout\x12I\n" +
-	"\x1erollout_orchestration_strategy\x18\x13 \x01(\tB\x03\xe0A\x01R\x1crolloutOrchestrationStrategy\x12$\n" +
-	"\vunit_filter\x18\x15 \x01(\tB\x03\xe0A\x01R\n" +
-	"unitFilter\x12X\n" +
-	"\frollout_kind\x18\x16 \x01(\tB5\xe0A\x02\xe0A\x05\xfaA,\n" +
-	"*saasservicemgmt.googleapis.com/RolloutKindR\vrolloutKind\x12]\n" +
-	"\x05stats\x18\x18 \x01(\v2?.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutStatsB\x06\xe0A\x03\xe0A\x01R\x05stats\x12`\n" +
-	"\acontrol\x18\x19 \x01(\v2A.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutControlB\x03\xe0A\x01R\acontrol\x12:\n" +
-	"\x15effective_unit_filter\x18\x1a \x01(\tB\x06\xe0A\x01\xe0A\x03R\x13effectiveUnitFilter\x12d\n" +
-	"\x06labels\x18\xa1Q \x03(\v2F.google.cloud.saasplatform.saasservicemgmt.v1beta1.Rollout.LabelsEntryB\x03\xe0A\x01R\x06labels\x12s\n" +
-	"\vannotations\x18\xa2Q \x03(\v2K.google.cloud.saasplatform.saasservicemgmt.v1beta1.Rollout.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12\x1e\n" +
-	"\x03uid\x18\xd9O \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x18\n" +
-	"\x04etag\x18\xdaO \x01(\tB\x03\xe0A\x03R\x04etag\x12A\n" +
-	"\vcreate_time\x18\xbfP \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12A\n" +
-	"\vupdate_time\x18\xc0P \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12A\n" +
-	"\vdelete_time\x18\xc1P \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" \x01(\x0e2G.google.cloud.saasplatform.saasservicemgmt.v1beta1.Rollout.RolloutStateB\x04\xe2A\x01\x03R\x05state\x12)\n" +
+	"\rstate_message\x18\v \x01(\tB\x04\xe2A\x01\x03R\fstateMessage\x12U\n" +
+	"\x15state_transition_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x05\xe2A\x02\x01\x03R\x13stateTransitionTime\x12S\n" +
+	"\froot_rollout\x18\x10 \x01(\tB0\xe2A\x02\x03\x01\xfaA(\n" +
+	"&saasservicemgmt.googleapis.com/RolloutR\vrootRollout\x12W\n" +
+	"\x0eparent_rollout\x18\x11 \x01(\tB0\xe2A\x02\x03\x01\xfaA(\n" +
+	"&saasservicemgmt.googleapis.com/RolloutR\rparentRollout\x12J\n" +
+	"\x1erollout_orchestration_strategy\x18\x13 \x01(\tB\x04\xe2A\x01\x01R\x1crolloutOrchestrationStrategy\x12%\n" +
+	"\vunit_filter\x18\x15 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"unitFilter\x12W\n" +
+	"\frollout_kind\x18\x16 \x01(\tB4\xe2A\x02\x02\x05\xfaA,\n" +
+	"*saasservicemgmt.googleapis.com/RolloutKindR\vrolloutKind\x12\\\n" +
+	"\x05stats\x18\x18 \x01(\v2?.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutStatsB\x05\xe2A\x02\x03\x01R\x05stats\x12a\n" +
+	"\acontrol\x18\x19 \x01(\v2A.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutControlB\x04\xe2A\x01\x01R\acontrol\x129\n" +
+	"\x15effective_unit_filter\x18\x1a \x01(\tB\x05\xe2A\x02\x01\x03R\x13effectiveUnitFilter\x12e\n" +
+	"\x06labels\x18\xa1Q \x03(\v2F.google.cloud.saasplatform.saasservicemgmt.v1beta1.Rollout.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12t\n" +
+	"\vannotations\x18\xa2Q \x03(\v2K.google.cloud.saasplatform.saasservicemgmt.v1beta1.Rollout.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12\x1f\n" +
+	"\x03uid\x18\xd9O \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x19\n" +
+	"\x04etag\x18\xdaO \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12B\n" +
+	"\vcreate_time\x18\xbfP \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12B\n" +
+	"\vupdate_time\x18\xc0P \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12B\n" +
+	"\vdelete_time\x18\xc1P \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"deleteTime\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -1024,24 +1024,24 @@ const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_rollouts_resources_
 	"\x18ROLLOUT_STATE_CANCELLING\x10\a\x12\x1a\n" +
 	"\x16ROLLOUT_STATE_RESUMING\x10\b\x12\x19\n" +
 	"\x15ROLLOUT_STATE_PAUSING\x10\t:}\xeaAz\n" +
-	"&saasservicemgmt.googleapis.com/Rollout\x12=projects/{project}/locations/{location}/rollouts/{rollout_id}*\brollouts2\arollout\"\xc5\n" +
+	"&saasservicemgmt.googleapis.com/Rollout\x12=projects/{project}/locations/{location}/rollouts/{rollout_id}*\brollouts2\arollout\"\xcf\n" +
 	"\n" +
-	"\vRolloutKind\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12O\n" +
-	"\tunit_kind\x18\x02 \x01(\tB2\xe0A\x02\xe0A\x05\xfaA)\n" +
-	"'saasservicemgmt.googleapis.com/UnitKindR\bunitKind\x12I\n" +
-	"\x1erollout_orchestration_strategy\x18\x03 \x01(\tB\x03\xe0A\x01R\x1crolloutOrchestrationStrategy\x12$\n" +
-	"\vunit_filter\x18\x05 \x01(\tB\x03\xe0A\x01R\n" +
-	"unitFilter\x12\x95\x01\n" +
-	"\x19update_unit_kind_strategy\x18\x06 \x01(\x0e2U.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutKind.UpdateUnitKindStrategyB\x03\xe0A\x01R\x16updateUnitKindStrategy\x12k\n" +
-	"\ferror_budget\x18\a \x01(\v2>.google.cloud.saasplatform.saasservicemgmt.v1beta1.ErrorBudgetB\x03\xe0A\x01H\x00R\verrorBudget\x88\x01\x01\x12h\n" +
-	"\x06labels\x18\xa1Q \x03(\v2J.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutKind.LabelsEntryB\x03\xe0A\x01R\x06labels\x12w\n" +
-	"\vannotations\x18\xa2Q \x03(\v2O.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutKind.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12\x1e\n" +
-	"\x03uid\x18\xd9O \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x18\n" +
-	"\x04etag\x18\xdaO \x01(\tB\x03\xe0A\x03R\x04etag\x12A\n" +
-	"\vcreate_time\x18\xbfP \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12A\n" +
-	"\vupdate_time\x18\xc0P \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\vRolloutKind\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12N\n" +
+	"\tunit_kind\x18\x02 \x01(\tB1\xe2A\x02\x02\x05\xfaA)\n" +
+	"'saasservicemgmt.googleapis.com/UnitKindR\bunitKind\x12J\n" +
+	"\x1erollout_orchestration_strategy\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x1crolloutOrchestrationStrategy\x12%\n" +
+	"\vunit_filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"unitFilter\x12\x96\x01\n" +
+	"\x19update_unit_kind_strategy\x18\x06 \x01(\x0e2U.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutKind.UpdateUnitKindStrategyB\x04\xe2A\x01\x01R\x16updateUnitKindStrategy\x12l\n" +
+	"\ferror_budget\x18\a \x01(\v2>.google.cloud.saasplatform.saasservicemgmt.v1beta1.ErrorBudgetB\x04\xe2A\x01\x01H\x00R\verrorBudget\x88\x01\x01\x12i\n" +
+	"\x06labels\x18\xa1Q \x03(\v2J.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutKind.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12x\n" +
+	"\vannotations\x18\xa2Q \x03(\v2O.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutKind.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12\x1f\n" +
+	"\x03uid\x18\xd9O \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x19\n" +
+	"\x04etag\x18\xdaO \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12B\n" +
+	"\vcreate_time\x18\xbfP \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12B\n" +
+	"\vupdate_time\x18\xc0P \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -1054,22 +1054,22 @@ const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_rollouts_resources_
 	"\"UPDATE_UNIT_KIND_STRATEGY_ON_START\x10\x01\x12#\n" +
 	"\x1fUPDATE_UNIT_KIND_STRATEGY_NEVER\x10\x02:\x93\x01\xeaA\x8f\x01\n" +
 	"*saasservicemgmt.googleapis.com/RolloutKind\x12Fprojects/{project}/locations/{location}/rolloutKinds/{rollout_kind_id}*\frolloutKinds2\vrolloutKindB\x0f\n" +
-	"\r_error_budget\"\x9e\x01\n" +
-	"\vErrorBudget\x12-\n" +
-	"\rallowed_count\x18\x01 \x01(\x05B\x03\xe0A\x01H\x00R\fallowedCount\x88\x01\x01\x127\n" +
-	"\x12allowed_percentage\x18\x02 \x01(\x05B\x03\xe0A\x01H\x01R\x11allowedPercentage\x88\x01\x01B\x10\n" +
+	"\r_error_budget\"\xa0\x01\n" +
+	"\vErrorBudget\x12.\n" +
+	"\rallowed_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x01H\x00R\fallowedCount\x88\x01\x01\x128\n" +
+	"\x12allowed_percentage\x18\x02 \x01(\x05B\x04\xe2A\x01\x01H\x01R\x11allowedPercentage\x88\x01\x01B\x10\n" +
 	"\x0e_allowed_countB\x15\n" +
-	"\x13_allowed_percentage\"\xf0\x01\n" +
-	"\fRolloutStats\x12w\n" +
-	"\x13operations_by_state\x18\x02 \x03(\v2<.google.cloud.saasplatform.saasservicemgmt.v1beta1.AggregateB\t\xe0A\x03\xe0A\x01\xe0A\x06R\x11operationsByState\x12H\n" +
-	"\x1aestimated_total_unit_count\x18\x03 \x01(\x03B\x06\xe0A\x03\xe0A\x01H\x00R\x17estimatedTotalUnitCount\x88\x01\x01B\x1d\n" +
-	"\x1b_estimated_total_unit_count\"\xd7\x02\n" +
-	"\x0eRolloutControl\x12~\n" +
+	"\x13_allowed_percentage\"\xec\x01\n" +
+	"\fRolloutStats\x12t\n" +
+	"\x13operations_by_state\x18\x02 \x03(\v2<.google.cloud.saasplatform.saasservicemgmt.v1beta1.AggregateB\x06\xe2A\x03\x03\x01\x06R\x11operationsByState\x12G\n" +
+	"\x1aestimated_total_unit_count\x18\x03 \x01(\x03B\x05\xe2A\x02\x03\x01H\x00R\x17estimatedTotalUnitCount\x88\x01\x01B\x1d\n" +
+	"\x1b_estimated_total_unit_count\"\xda\x02\n" +
+	"\x0eRolloutControl\x12\x7f\n" +
 	"\n" +
-	"run_params\x18\x02 \x01(\v2X.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutControl.RunRolloutActionParamsB\x03\xe0A\x01H\x00R\trunParams\x12]\n" +
-	"\x06action\x18\x01 \x01(\x0e2@.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutActionB\x03\xe0A\x02R\x06action\x1aU\n" +
-	"\x16RunRolloutActionParams\x12;\n" +
-	"\x17retry_failed_operations\x18\x01 \x01(\bB\x03\xe0A\x02R\x15retryFailedOperationsB\x0f\n" +
+	"run_params\x18\x02 \x01(\v2X.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutControl.RunRolloutActionParamsB\x04\xe2A\x01\x01H\x00R\trunParams\x12^\n" +
+	"\x06action\x18\x01 \x01(\x0e2@.google.cloud.saasplatform.saasservicemgmt.v1beta1.RolloutActionB\x04\xe2A\x01\x02R\x06action\x1aV\n" +
+	"\x16RunRolloutActionParams\x12<\n" +
+	"\x17retry_failed_operations\x18\x01 \x01(\bB\x04\xe2A\x01\x02R\x15retryFailedOperationsB\x0f\n" +
 	"\raction_params*|\n" +
 	"\rRolloutAction\x12\x1e\n" +
 	"\x1aROLLOUT_ACTION_UNSPECIFIED\x10\x00\x12\x16\n" +

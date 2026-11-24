@@ -2076,20 +2076,20 @@ var File_google_cloud_recaptchaenterprise_v1beta1_recaptchaenterprise_proto prot
 
 const file_google_cloud_recaptchaenterprise_v1beta1_recaptchaenterprise_proto_rawDesc = "" +
 	"\n" +
-	"Bgoogle/cloud/recaptchaenterprise/v1beta1/recaptchaenterprise.proto\x12(google.cloud.recaptchaenterprise.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc1\x01\n" +
-	"\x17CreateAssessmentRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12Y\n" +
+	"Bgoogle/cloud/recaptchaenterprise/v1beta1/recaptchaenterprise.proto\x12(google.cloud.recaptchaenterprise.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc3\x01\n" +
+	"\x17CreateAssessmentRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12Z\n" +
 	"\n" +
-	"assessment\x18\x02 \x01(\v24.google.cloud.recaptchaenterprise.v1beta1.AssessmentB\x03\xe0A\x02R\n" +
-	"assessment\"\xbc\x05\n" +
-	"\x10TransactionEvent\x12s\n" +
+	"assessment\x18\x02 \x01(\v24.google.cloud.recaptchaenterprise.v1beta1.AssessmentB\x04\xe2A\x01\x02R\n" +
+	"assessment\"\xc0\x05\n" +
+	"\x10TransactionEvent\x12t\n" +
 	"\n" +
-	"event_type\x18\x01 \x01(\x0e2O.google.cloud.recaptchaenterprise.v1beta1.TransactionEvent.TransactionEventTypeB\x03\xe0A\x01R\teventType\x12\x1b\n" +
-	"\x06reason\x18\x02 \x01(\tB\x03\xe0A\x01R\x06reason\x12\x19\n" +
-	"\x05value\x18\x03 \x01(\x01B\x03\xe0A\x01R\x05value\x12>\n" +
+	"event_type\x18\x01 \x01(\x0e2O.google.cloud.recaptchaenterprise.v1beta1.TransactionEvent.TransactionEventTypeB\x04\xe2A\x01\x01R\teventType\x12\x1c\n" +
+	"\x06reason\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06reason\x12\x1a\n" +
+	"\x05value\x18\x03 \x01(\x01B\x04\xe2A\x01\x01R\x05value\x12?\n" +
 	"\n" +
-	"event_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\teventTime\"\xba\x03\n" +
+	"event_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\teventTime\"\xba\x03\n" +
 	"\x14TransactionEventType\x12&\n" +
 	"\"TRANSACTION_EVENT_TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10MERCHANT_APPROVE\x10\x01\x12\x11\n" +
@@ -2113,16 +2113,16 @@ const file_google_cloud_recaptchaenterprise_v1beta1_recaptchaenterprise_proto_ra
 	"\x0eREFUND_DECLINE\x10\x10\x12\n" +
 	"\n" +
 	"\x06REFUND\x10\x11\x12\x12\n" +
-	"\x0eREFUND_REVERSE\x10\x12\"\xb7\a\n" +
-	"\x19AnnotateAssessmentRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-recaptchaenterprise.googleapis.com/AssessmentR\x04name\x12s\n" +
+	"\x0eREFUND_REVERSE\x10\x12\"\xbc\a\n" +
+	"\x19AnnotateAssessmentRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-recaptchaenterprise.googleapis.com/AssessmentR\x04name\x12t\n" +
 	"\n" +
-	"annotation\x18\x02 \x01(\x0e2N.google.cloud.recaptchaenterprise.v1beta1.AnnotateAssessmentRequest.AnnotationB\x03\xe0A\x01R\n" +
-	"annotation\x12i\n" +
-	"\areasons\x18\x03 \x03(\x0e2J.google.cloud.recaptchaenterprise.v1beta1.AnnotateAssessmentRequest.ReasonB\x03\xe0A\x01R\areasons\x12/\n" +
-	"\x11hashed_account_id\x18\x04 \x01(\fB\x03\xe0A\x01R\x0fhashedAccountId\x12l\n" +
-	"\x11transaction_event\x18\x05 \x01(\v2:.google.cloud.recaptchaenterprise.v1beta1.TransactionEventB\x03\xe0A\x01R\x10transactionEvent\"~\n" +
+	"annotation\x18\x02 \x01(\x0e2N.google.cloud.recaptchaenterprise.v1beta1.AnnotateAssessmentRequest.AnnotationB\x04\xe2A\x01\x01R\n" +
+	"annotation\x12j\n" +
+	"\areasons\x18\x03 \x03(\x0e2J.google.cloud.recaptchaenterprise.v1beta1.AnnotateAssessmentRequest.ReasonB\x04\xe2A\x01\x01R\areasons\x120\n" +
+	"\x11hashed_account_id\x18\x04 \x01(\fB\x04\xe2A\x01\x01R\x0fhashedAccountId\x12m\n" +
+	"\x11transaction_event\x18\x05 \x01(\v2:.google.cloud.recaptchaenterprise.v1beta1.TransactionEventB\x04\xe2A\x01\x01R\x10transactionEvent\"~\n" +
 	"\n" +
 	"Annotation\x12\x1a\n" +
 	"\x16ANNOTATION_UNSPECIFIED\x10\x00\x12\x0e\n" +
@@ -2151,18 +2151,18 @@ const file_google_cloud_recaptchaenterprise_v1beta1_recaptchaenterprise_proto_ra
 	"\x10CORRECT_PASSWORD\x10\x05\x12\x16\n" +
 	"\x12INCORRECT_PASSWORD\x10\x06\x12\x0f\n" +
 	"\vSOCIAL_SPAM\x10\x0e\"\x1c\n" +
-	"\x1aAnnotateAssessmentResponse\"\xc7\x01\n" +
-	"\x18PasswordLeakVerification\x12;\n" +
-	"\x17hashed_user_credentials\x18\x01 \x01(\fB\x03\xe0A\x01R\x15hashedUserCredentials\x122\n" +
-	"\x12credentials_leaked\x18\x02 \x01(\bB\x03\xe0A\x03R\x11credentialsLeaked\x12:\n" +
-	"\x16canonicalized_username\x18\x03 \x01(\tB\x03\xe0A\x01R\x15canonicalizedUsername\"\xb8\b\n" +
+	"\x1aAnnotateAssessmentResponse\"\xca\x01\n" +
+	"\x18PasswordLeakVerification\x12<\n" +
+	"\x17hashed_user_credentials\x18\x01 \x01(\fB\x04\xe2A\x01\x01R\x15hashedUserCredentials\x123\n" +
+	"\x12credentials_leaked\x18\x02 \x01(\bB\x04\xe2A\x01\x03R\x11credentialsLeaked\x12;\n" +
+	"\x16canonicalized_username\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x15canonicalizedUsername\"\xbc\b\n" +
 	"\n" +
-	"Assessment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12E\n" +
-	"\x05event\x18\x02 \x01(\v2/.google.cloud.recaptchaenterprise.v1beta1.EventR\x05event\x12\x19\n" +
-	"\x05score\x18\x03 \x01(\x02B\x03\xe0A\x03R\x05score\x12i\n" +
-	"\x10token_properties\x18\x04 \x01(\v29.google.cloud.recaptchaenterprise.v1beta1.TokenPropertiesB\x03\xe0A\x03R\x0ftokenProperties\x12h\n" +
-	"\areasons\x18\x05 \x03(\x0e2I.google.cloud.recaptchaenterprise.v1beta1.Assessment.ClassificationReasonB\x03\xe0A\x03R\areasons\x12\x80\x01\n" +
+	"Assessment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12E\n" +
+	"\x05event\x18\x02 \x01(\v2/.google.cloud.recaptchaenterprise.v1beta1.EventR\x05event\x12\x1a\n" +
+	"\x05score\x18\x03 \x01(\x02B\x04\xe2A\x01\x03R\x05score\x12j\n" +
+	"\x10token_properties\x18\x04 \x01(\v29.google.cloud.recaptchaenterprise.v1beta1.TokenPropertiesB\x04\xe2A\x01\x03R\x0ftokenProperties\x12i\n" +
+	"\areasons\x18\x05 \x03(\x0e2I.google.cloud.recaptchaenterprise.v1beta1.Assessment.ClassificationReasonB\x04\xe2A\x01\x03R\areasons\x12\x80\x01\n" +
 	"\x1apassword_leak_verification\x18\a \x01(\v2B.google.cloud.recaptchaenterprise.v1beta1.PasswordLeakVerificationR\x18passwordLeakVerification\x12\x83\x01\n" +
 	"\x1baccount_defender_assessment\x18\b \x01(\v2C.google.cloud.recaptchaenterprise.v1beta1.AccountDefenderAssessmentR\x19accountDefenderAssessment\x12\x83\x01\n" +
 	"\x1bfraud_prevention_assessment\x18\v \x01(\v2C.google.cloud.recaptchaenterprise.v1beta1.FraudPreventionAssessmentR\x19fraudPreventionAssessment\"\xe9\x01\n" +
@@ -2176,17 +2176,17 @@ const file_google_cloud_recaptchaenterprise_v1beta1_recaptchaenterprise_proto_ra
 	"\x14LOW_CONFIDENCE_SCORE\x10\x05\x12\x15\n" +
 	"\x11SUSPECTED_CARDING\x10\x06\x12\x18\n" +
 	"\x14SUSPECTED_CHARGEBACK\x10\a:_\xeaA\\\n" +
-	"-recaptchaenterprise.googleapis.com/Assessment\x12+projects/{project}/assessments/{assessment}\"\x9e\x04\n" +
-	"\x05Event\x12\x19\n" +
-	"\x05token\x18\x01 \x01(\tB\x03\xe0A\x01R\x05token\x12\x1e\n" +
-	"\bsite_key\x18\x02 \x01(\tB\x03\xe0A\x01R\asiteKey\x12\"\n" +
+	"-recaptchaenterprise.googleapis.com/Assessment\x12+projects/{project}/assessments/{assessment}\"\xa6\x04\n" +
+	"\x05Event\x12\x1a\n" +
+	"\x05token\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05token\x12\x1f\n" +
+	"\bsite_key\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\asiteKey\x12#\n" +
 	"\n" +
-	"user_agent\x18\x03 \x01(\tB\x03\xe0A\x01R\tuserAgent\x12+\n" +
-	"\x0fuser_ip_address\x18\x04 \x01(\tB\x03\xe0A\x01R\ruserIpAddress\x12,\n" +
-	"\x0fexpected_action\x18\x05 \x01(\tB\x03\xe0A\x01R\x0eexpectedAction\x12/\n" +
-	"\x11hashed_account_id\x18\x06 \x01(\fB\x03\xe0A\x01R\x0fhashedAccountId\x12i\n" +
-	"\x10transaction_data\x18\r \x01(\v29.google.cloud.recaptchaenterprise.v1beta1.TransactionDataB\x03\xe0A\x01R\x0ftransactionData\x12o\n" +
-	"\x10fraud_prevention\x18\x11 \x01(\x0e2?.google.cloud.recaptchaenterprise.v1beta1.Event.FraudPreventionB\x03\xe0A\x01R\x0ffraudPrevention\"N\n" +
+	"user_agent\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tuserAgent\x12,\n" +
+	"\x0fuser_ip_address\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\ruserIpAddress\x12-\n" +
+	"\x0fexpected_action\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x0eexpectedAction\x120\n" +
+	"\x11hashed_account_id\x18\x06 \x01(\fB\x04\xe2A\x01\x01R\x0fhashedAccountId\x12j\n" +
+	"\x10transaction_data\x18\r \x01(\v29.google.cloud.recaptchaenterprise.v1beta1.TransactionDataB\x04\xe2A\x01\x01R\x0ftransactionData\x12p\n" +
+	"\x10fraud_prevention\x18\x11 \x01(\x0e2?.google.cloud.recaptchaenterprise.v1beta1.Event.FraudPreventionB\x04\xe2A\x01\x01R\x0ffraudPrevention\"N\n" +
 	"\x0fFraudPrevention\x12 \n" +
 	"\x1cFRAUD_PREVENTION_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aENABLED\x10\x01\x12\f\n" +
@@ -2250,18 +2250,18 @@ const file_google_cloud_recaptchaenterprise_v1beta1_recaptchaenterprise_proto_ra
 	"\x04DUPE\x10\x04\x12\x15\n" +
 	"\rSITE_MISMATCH\x10\x05\x1a\x02\b\x01\x12\v\n" +
 	"\aMISSING\x10\x06\x12\x11\n" +
-	"\rBROWSER_ERROR\x10\a\"\xae\x05\n" +
-	"\x19FraudPreventionAssessment\x12.\n" +
-	"\x10transaction_risk\x18\x01 \x01(\x02B\x03\xe0A\x03R\x0ftransactionRisk\x12\x9c\x01\n" +
-	"\x19stolen_instrument_verdict\x18\x02 \x01(\v2[.google.cloud.recaptchaenterprise.v1beta1.FraudPreventionAssessment.StolenInstrumentVerdictB\x03\xe0A\x03R\x17stolenInstrumentVerdict\x12\x8d\x01\n" +
-	"\x14card_testing_verdict\x18\x03 \x01(\v2V.google.cloud.recaptchaenterprise.v1beta1.FraudPreventionAssessment.CardTestingVerdictB\x03\xe0A\x03R\x12cardTestingVerdict\x12\x99\x01\n" +
-	"\x18behavioral_trust_verdict\x18\x04 \x01(\v2Z.google.cloud.recaptchaenterprise.v1beta1.FraudPreventionAssessment.BehavioralTrustVerdictB\x03\xe0A\x03R\x16behavioralTrustVerdict\x1a2\n" +
-	"\x17StolenInstrumentVerdict\x12\x17\n" +
-	"\x04risk\x18\x01 \x01(\x02B\x03\xe0A\x03R\x04risk\x1a-\n" +
-	"\x12CardTestingVerdict\x12\x17\n" +
-	"\x04risk\x18\x01 \x01(\x02B\x03\xe0A\x03R\x04risk\x1a3\n" +
-	"\x16BehavioralTrustVerdict\x12\x19\n" +
-	"\x05trust\x18\x01 \x01(\x02B\x03\xe0A\x03R\x05trust\"\xc3\x02\n" +
+	"\rBROWSER_ERROR\x10\a\"\xb5\x05\n" +
+	"\x19FraudPreventionAssessment\x12/\n" +
+	"\x10transaction_risk\x18\x01 \x01(\x02B\x04\xe2A\x01\x03R\x0ftransactionRisk\x12\x9d\x01\n" +
+	"\x19stolen_instrument_verdict\x18\x02 \x01(\v2[.google.cloud.recaptchaenterprise.v1beta1.FraudPreventionAssessment.StolenInstrumentVerdictB\x04\xe2A\x01\x03R\x17stolenInstrumentVerdict\x12\x8e\x01\n" +
+	"\x14card_testing_verdict\x18\x03 \x01(\v2V.google.cloud.recaptchaenterprise.v1beta1.FraudPreventionAssessment.CardTestingVerdictB\x04\xe2A\x01\x03R\x12cardTestingVerdict\x12\x9a\x01\n" +
+	"\x18behavioral_trust_verdict\x18\x04 \x01(\v2Z.google.cloud.recaptchaenterprise.v1beta1.FraudPreventionAssessment.BehavioralTrustVerdictB\x04\xe2A\x01\x03R\x16behavioralTrustVerdict\x1a3\n" +
+	"\x17StolenInstrumentVerdict\x12\x18\n" +
+	"\x04risk\x18\x01 \x01(\x02B\x04\xe2A\x01\x03R\x04risk\x1a.\n" +
+	"\x12CardTestingVerdict\x12\x18\n" +
+	"\x04risk\x18\x01 \x01(\x02B\x04\xe2A\x01\x03R\x04risk\x1a4\n" +
+	"\x16BehavioralTrustVerdict\x12\x1a\n" +
+	"\x05trust\x18\x01 \x01(\x02B\x04\xe2A\x01\x03R\x05trust\"\xc3\x02\n" +
 	"\x19AccountDefenderAssessment\x12p\n" +
 	"\x06labels\x18\x01 \x03(\x0e2X.google.cloud.recaptchaenterprise.v1beta1.AccountDefenderAssessment.AccountDefenderLabelR\x06labels\"\xb3\x01\n" +
 	"\x14AccountDefenderLabel\x12&\n" +

@@ -2150,26 +2150,26 @@ var File_google_cloud_servicehealth_v1_event_resources_proto protoreflect.FileDe
 
 const file_google_cloud_servicehealth_v1_event_resources_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/servicehealth/v1/event_resources.proto\x12\x1dgoogle.cloud.servicehealth.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbe\f\n" +
-	"\x05Event\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12\x19\n" +
-	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x03R\x05title\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x03R\vdescription\x12S\n" +
-	"\bcategory\x18\x04 \x01(\x0e22.google.cloud.servicehealth.v1.Event.EventCategoryB\x03\xe0A\x03R\bcategory\x12g\n" +
-	"\x11detailed_category\x18\x15 \x01(\x0e25.google.cloud.servicehealth.v1.Event.DetailedCategoryB\x03\xe0A\x03R\x10detailedCategory\x12E\n" +
-	"\x05state\x18\x05 \x01(\x0e2*.google.cloud.servicehealth.v1.Event.StateB\x03\xe0A\x03R\x05state\x12^\n" +
-	"\x0edetailed_state\x18\x13 \x01(\x0e22.google.cloud.servicehealth.v1.Event.DetailedStateB\x03\xe0A\x03R\rdetailedState\x12O\n" +
-	"\revent_impacts\x18\x14 \x03(\v2*.google.cloud.servicehealth.v1.EventImpactR\feventImpacts\x12Q\n" +
-	"\trelevance\x18\b \x01(\x0e2..google.cloud.servicehealth.v1.Event.RelevanceB\x03\xe0A\x03R\trelevance\x12I\n" +
-	"\aupdates\x18\t \x03(\v2*.google.cloud.servicehealth.v1.EventUpdateB\x03\xe0A\x03R\aupdates\x12&\n" +
+	"3google/cloud/servicehealth/v1/event_resources.proto\x12\x1dgoogle.cloud.servicehealth.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xca\f\n" +
+	"\x05Event\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12\x1a\n" +
+	"\x05title\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05title\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12T\n" +
+	"\bcategory\x18\x04 \x01(\x0e22.google.cloud.servicehealth.v1.Event.EventCategoryB\x04\xe2A\x01\x03R\bcategory\x12h\n" +
+	"\x11detailed_category\x18\x15 \x01(\x0e25.google.cloud.servicehealth.v1.Event.DetailedCategoryB\x04\xe2A\x01\x03R\x10detailedCategory\x12F\n" +
+	"\x05state\x18\x05 \x01(\x0e2*.google.cloud.servicehealth.v1.Event.StateB\x04\xe2A\x01\x03R\x05state\x12_\n" +
+	"\x0edetailed_state\x18\x13 \x01(\x0e22.google.cloud.servicehealth.v1.Event.DetailedStateB\x04\xe2A\x01\x03R\rdetailedState\x12O\n" +
+	"\revent_impacts\x18\x14 \x03(\v2*.google.cloud.servicehealth.v1.EventImpactR\feventImpacts\x12R\n" +
+	"\trelevance\x18\b \x01(\x0e2..google.cloud.servicehealth.v1.Event.RelevanceB\x04\xe2A\x01\x03R\trelevance\x12J\n" +
+	"\aupdates\x18\t \x03(\v2*.google.cloud.servicehealth.v1.EventUpdateB\x04\xe2A\x01\x03R\aupdates\x12'\n" +
 	"\fparent_event\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\vparentEvent\x12@\n" +
-	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12>\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\vparentEvent\x12A\n" +
+	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12?\n" +
 	"\n" +
-	"start_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12I\n" +
-	"\x10next_update_time\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0enextUpdateTime\"=\n" +
+	"start_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12J\n" +
+	"\x10next_update_time\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0enextUpdateTime\"=\n" +
 	"\rEventCategory\x12\x1e\n" +
 	"\x1aEVENT_CATEGORY_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bINCIDENT\x10\x02\"d\n" +
@@ -2200,24 +2200,24 @@ const file_google_cloud_servicehealth_v1_event_resources_proto_rawDesc = "" +
 	"\x11PARTIALLY_RELATED\x10\a\x12\v\n" +
 	"\aRELATED\x10\b\x12\f\n" +
 	"\bIMPACTED\x10\t:n\xeaAk\n" +
-	"\"servicehealth.googleapis.com/Event\x126projects/{project}/locations/{location}/events/{event}*\x06events2\x05event\"\xef\v\n" +
-	"\x11OrganizationEvent\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12\x19\n" +
-	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x03R\x05title\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x03R\vdescription\x12_\n" +
-	"\bcategory\x18\x04 \x01(\x0e2>.google.cloud.servicehealth.v1.OrganizationEvent.EventCategoryB\x03\xe0A\x03R\bcategory\x12s\n" +
-	"\x11detailed_category\x18\x11 \x01(\x0e2A.google.cloud.servicehealth.v1.OrganizationEvent.DetailedCategoryB\x03\xe0A\x03R\x10detailedCategory\x12Q\n" +
-	"\x05state\x18\x05 \x01(\x0e26.google.cloud.servicehealth.v1.OrganizationEvent.StateB\x03\xe0A\x03R\x05state\x12j\n" +
-	"\x0edetailed_state\x18\x10 \x01(\x0e2>.google.cloud.servicehealth.v1.OrganizationEvent.DetailedStateB\x03\xe0A\x03R\rdetailedState\x12T\n" +
-	"\revent_impacts\x18\x0f \x03(\v2*.google.cloud.servicehealth.v1.EventImpactB\x03\xe0A\x03R\feventImpacts\x12I\n" +
-	"\aupdates\x18\b \x03(\v2*.google.cloud.servicehealth.v1.EventUpdateB\x03\xe0A\x03R\aupdates\x12&\n" +
-	"\fparent_event\x18\t \x01(\tB\x03\xe0A\x03R\vparentEvent\x12@\n" +
-	"\vupdate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12>\n" +
+	"\"servicehealth.googleapis.com/Event\x126projects/{project}/locations/{location}/events/{event}*\x06events2\x05event\"\xfb\v\n" +
+	"\x11OrganizationEvent\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12\x1a\n" +
+	"\x05title\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05title\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12`\n" +
+	"\bcategory\x18\x04 \x01(\x0e2>.google.cloud.servicehealth.v1.OrganizationEvent.EventCategoryB\x04\xe2A\x01\x03R\bcategory\x12t\n" +
+	"\x11detailed_category\x18\x11 \x01(\x0e2A.google.cloud.servicehealth.v1.OrganizationEvent.DetailedCategoryB\x04\xe2A\x01\x03R\x10detailedCategory\x12R\n" +
+	"\x05state\x18\x05 \x01(\x0e26.google.cloud.servicehealth.v1.OrganizationEvent.StateB\x04\xe2A\x01\x03R\x05state\x12k\n" +
+	"\x0edetailed_state\x18\x10 \x01(\x0e2>.google.cloud.servicehealth.v1.OrganizationEvent.DetailedStateB\x04\xe2A\x01\x03R\rdetailedState\x12U\n" +
+	"\revent_impacts\x18\x0f \x03(\v2*.google.cloud.servicehealth.v1.EventImpactB\x04\xe2A\x01\x03R\feventImpacts\x12J\n" +
+	"\aupdates\x18\b \x03(\v2*.google.cloud.servicehealth.v1.EventUpdateB\x04\xe2A\x01\x03R\aupdates\x12'\n" +
+	"\fparent_event\x18\t \x01(\tB\x04\xe2A\x01\x03R\vparentEvent\x12A\n" +
+	"\vupdate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12?\n" +
 	"\n" +
-	"start_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12I\n" +
-	"\x10next_update_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0enextUpdateTime\"=\n" +
+	"start_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12J\n" +
+	"\x10next_update_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0enextUpdateTime\"=\n" +
 	"\rEventCategory\x12\x1e\n" +
 	"\x1aEVENT_CATEGORY_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bINCIDENT\x10\x02\"d\n" +
@@ -2241,15 +2241,15 @@ const file_google_cloud_servicehealth_v1_event_resources_proto_rawDesc = "" +
 	"\vAUTO_CLOSED\x10\t\x12\x12\n" +
 	"\x0eFALSE_POSITIVE\x10\n" +
 	":\xa9\x01\xeaA\xa5\x01\n" +
-	".servicehealth.googleapis.com/OrganizationEvent\x12Lorganizations/{organization}/locations/{location}/organizationEvents/{event}*\x12organizationEvents2\x11organizationEvent\"\xd5\x01\n" +
-	"\vEventUpdate\x12@\n" +
-	"\vupdate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x19\n" +
-	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x03R\x05title\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x03R\vdescription\x12\x1d\n" +
-	"\asymptom\x18\x04 \x01(\tB\x03\xe0A\x03R\asymptom\x12#\n" +
+	".servicehealth.googleapis.com/OrganizationEvent\x12Lorganizations/{organization}/locations/{location}/organizationEvents/{event}*\x12organizationEvents2\x11organizationEvent\"\xda\x01\n" +
+	"\vEventUpdate\x12A\n" +
+	"\vupdate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x1a\n" +
+	"\x05title\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05title\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12\x1e\n" +
+	"\asymptom\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\asymptom\x12$\n" +
 	"\n" +
-	"workaround\x18\x05 \x01(\tB\x03\xe0A\x03R\n" +
+	"workaround\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"workaround\"/\n" +
 	"\bLocation\x12#\n" +
 	"\rlocation_name\x18\x01 \x01(\tR\flocationName\"<\n" +
@@ -2258,60 +2258,60 @@ const file_google_cloud_servicehealth_v1_event_resources_proto_rawDesc = "" +
 	"\x02id\x18\x02 \x01(\tR\x02id\"\x94\x01\n" +
 	"\vEventImpact\x12@\n" +
 	"\aproduct\x18\x01 \x01(\v2&.google.cloud.servicehealth.v1.ProductR\aproduct\x12C\n" +
-	"\blocation\x18\x02 \x01(\v2'.google.cloud.servicehealth.v1.LocationR\blocation\"\xb5\x03\n" +
-	"\x12OrganizationImpact\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12B\n" +
-	"\x06events\x18\x02 \x03(\tB*\xe0A\x03\xfaA$\n" +
-	"\"servicehealth.googleapis.com/EventR\x06events\x12?\n" +
-	"\x05asset\x18\x03 \x01(\v2$.google.cloud.servicehealth.v1.AssetB\x03\xe0A\x03R\x05asset\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\blocation\x18\x02 \x01(\v2'.google.cloud.servicehealth.v1.LocationR\blocation\"\xb7\x03\n" +
+	"\x12OrganizationImpact\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12C\n" +
+	"\x06events\x18\x02 \x03(\tB+\xe2A\x01\x03\xfaA$\n" +
+	"\"servicehealth.googleapis.com/EventR\x06events\x12@\n" +
+	"\x05asset\x18\x03 \x01(\v2$.google.cloud.servicehealth.v1.AssetB\x04\xe2A\x01\x03R\x05asset\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:\xbb\x01\xeaA\xb7\x01\n" +
-	"/servicehealth.googleapis.com/OrganizationImpact\x12[organizations/{organization}/locations/{location}/organizationImpacts/{organization_impact}*\x13organizationImpacts2\x12organizationImpact\"O\n" +
-	"\x05Asset\x12\"\n" +
+	"/servicehealth.googleapis.com/OrganizationImpact\x12[organizations/{organization}/locations/{location}/organizationImpacts/{organization_impact}*\x13organizationImpacts2\x12organizationImpact\"Q\n" +
+	"\x05Asset\x12#\n" +
 	"\n" +
-	"asset_name\x18\x01 \x01(\tB\x03\xe0A\x03R\tassetName\x12\"\n" +
+	"asset_name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\tassetName\x12#\n" +
 	"\n" +
-	"asset_type\x18\x02 \x01(\tB\x03\xe0A\x03R\tassetType\"\xfd\x01\n" +
-	"\x11ListEventsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"servicehealth.googleapis.com/EventR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"asset_type\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\tassetType\"\x82\x02\n" +
+	"\x11ListEventsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"servicehealth.googleapis.com/EventR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12A\n" +
-	"\x04view\x18\x06 \x01(\x0e2(.google.cloud.servicehealth.v1.EventViewB\x03\xe0A\x01R\x04view\"\xab\x01\n" +
-	"\x12ListEventsResponse\x12A\n" +
-	"\x06events\x18\x01 \x03(\v2$.google.cloud.servicehealth.v1.EventB\x03\xe0A\x03R\x06events\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x03R\vunreachable\"Q\n" +
-	"\x0fGetEventRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"servicehealth.googleapis.com/EventR\x04name\"\xa1\x02\n" +
-	"\x1dListOrganizationEventsRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.servicehealth.googleapis.com/OrganizationEventR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12B\n" +
+	"\x04view\x18\x06 \x01(\x0e2(.google.cloud.servicehealth.v1.EventViewB\x04\xe2A\x01\x01R\x04view\"\xae\x01\n" +
+	"\x12ListEventsResponse\x12B\n" +
+	"\x06events\x18\x01 \x03(\v2$.google.cloud.servicehealth.v1.EventB\x04\xe2A\x01\x03R\x06events\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\vunreachable\"R\n" +
+	"\x0fGetEventRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"servicehealth.googleapis.com/EventR\x04name\"\xa6\x02\n" +
+	"\x1dListOrganizationEventsRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.servicehealth.googleapis.com/OrganizationEventR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12M\n" +
-	"\x04view\x18\x06 \x01(\x0e24.google.cloud.servicehealth.v1.OrganizationEventViewB\x03\xe0A\x01R\x04view\"\xdc\x01\n" +
-	"\x1eListOrganizationEventsResponse\x12f\n" +
-	"\x13organization_events\x18\x01 \x03(\v20.google.cloud.servicehealth.v1.OrganizationEventB\x03\xe0A\x03R\x12organizationEvents\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x03R\vunreachable\"i\n" +
-	"\x1bGetOrganizationEventRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".servicehealth.googleapis.com/OrganizationEventR\x04name\"\xd4\x01\n" +
-	"\x1eListOrganizationImpactsRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\x12/servicehealth.googleapis.com/OrganizationImpactR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12N\n" +
+	"\x04view\x18\x06 \x01(\x0e24.google.cloud.servicehealth.v1.OrganizationEventViewB\x04\xe2A\x01\x01R\x04view\"\xdf\x01\n" +
+	"\x1eListOrganizationEventsResponse\x12g\n" +
+	"\x13organization_events\x18\x01 \x03(\v20.google.cloud.servicehealth.v1.OrganizationEventB\x04\xe2A\x01\x03R\x12organizationEvents\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\vunreachable\"j\n" +
+	"\x1bGetOrganizationEventRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".servicehealth.googleapis.com/OrganizationEventR\x04name\"\xd8\x01\n" +
+	"\x1eListOrganizationImpactsRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\x12/servicehealth.googleapis.com/OrganizationImpactR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xe0\x01\n" +
-	"\x1fListOrganizationImpactsResponse\x12i\n" +
-	"\x14organization_impacts\x18\x01 \x03(\v21.google.cloud.servicehealth.v1.OrganizationImpactB\x03\xe0A\x03R\x13organizationImpacts\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x03R\vunreachable\"k\n" +
-	"\x1cGetOrganizationImpactRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xe3\x01\n" +
+	"\x1fListOrganizationImpactsResponse\x12j\n" +
+	"\x14organization_impacts\x18\x01 \x03(\v21.google.cloud.servicehealth.v1.OrganizationImpactB\x04\xe2A\x01\x03R\x13organizationImpacts\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\vunreachable\"l\n" +
+	"\x1cGetOrganizationImpactRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
 	"/servicehealth.googleapis.com/OrganizationImpactR\x04name*R\n" +
 	"\tEventView\x12\x1a\n" +
 	"\x16EVENT_VIEW_UNSPECIFIED\x10\x00\x12\x14\n" +

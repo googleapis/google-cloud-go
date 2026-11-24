@@ -218,10 +218,10 @@ var File_google_monitoring_dashboard_v1_dashboard_proto protoreflect.FileDescrip
 
 const file_google_monitoring_dashboard_v1_dashboard_proto_rawDesc = "" +
 	"\n" +
-	".google/monitoring/dashboard/v1/dashboard.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/monitoring/dashboard/v1/dashboard_filter.proto\x1a,google/monitoring/dashboard/v1/layouts.proto\"\xec\x05\n" +
-	"\tDashboard\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12\x12\n" +
+	".google/monitoring/dashboard/v1/dashboard.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/monitoring/dashboard/v1/dashboard_filter.proto\x1a,google/monitoring/dashboard/v1/layouts.proto\"\xee\x05\n" +
+	"\tDashboard\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12\x12\n" +
 	"\x04etag\x18\x04 \x01(\tR\x04etag\x12M\n" +
 	"\vgrid_layout\x18\x05 \x01(\v2*.google.monitoring.dashboard.v1.GridLayoutH\x00R\n" +
 	"gridLayout\x12S\n" +

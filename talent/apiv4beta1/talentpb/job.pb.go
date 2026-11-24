@@ -744,14 +744,14 @@ var File_google_cloud_talent_v4beta1_job_proto protoreflect.FileDescriptor
 
 const file_google_cloud_talent_v4beta1_job_proto_rawDesc = "" +
 	"\n" +
-	"%google/cloud/talent/v4beta1/job.proto\x12\x1bgoogle.cloud.talent.v4beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/talent/v4beta1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x88\x14\n" +
+	"%google/cloud/talent/v4beta1/job.proto\x12\x1bgoogle.cloud.talent.v4beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/talent/v4beta1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x90\x14\n" +
 	"\x03Job\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12=\n" +
-	"\acompany\x18\x02 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
-	"\x1bjobs.googleapis.com/CompanyR\acompany\x12*\n" +
-	"\x0erequisition_id\x18\x03 \x01(\tB\x03\xe0A\x02R\rrequisitionId\x12\x19\n" +
-	"\x05title\x18\x04 \x01(\tB\x03\xe0A\x02R\x05title\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x02R\vdescription\x12\x1c\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12>\n" +
+	"\acompany\x18\x02 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
+	"\x1bjobs.googleapis.com/CompanyR\acompany\x12+\n" +
+	"\x0erequisition_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\rrequisitionId\x12\x1a\n" +
+	"\x05title\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x05title\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\vdescription\x12\x1c\n" +
 	"\taddresses\x18\x06 \x03(\tR\taddresses\x12[\n" +
 	"\x10application_info\x18\a \x01(\v20.google.cloud.talent.v4beta1.Job.ApplicationInfoR\x0fapplicationInfo\x12J\n" +
 	"\fjob_benefits\x18\b \x03(\x0e2'.google.cloud.talent.v4beta1.JobBenefitR\vjobBenefits\x12Z\n" +
@@ -779,11 +779,11 @@ const file_google_cloud_talent_v4beta1_job_proto_rawDesc = "" +
 	"\fjob_end_time\x18\x17 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"jobEndTime\x12L\n" +
 	"\x14posting_publish_time\x18\x18 \x01(\v2\x1a.google.protobuf.TimestampR\x12postingPublishTime\x12J\n" +
-	"\x13posting_expire_time\x18\x19 \x01(\v2\x1a.google.protobuf.TimestampR\x11postingExpireTime\x12O\n" +
-	"\x13posting_create_time\x18\x1a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x11postingCreateTime\x12O\n" +
-	"\x13posting_update_time\x18\x1b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x11postingUpdateTime\x125\n" +
-	"\x14company_display_name\x18\x1c \x01(\tB\x03\xe0A\x03R\x12companyDisplayName\x12T\n" +
-	"\fderived_info\x18\x1d \x01(\v2,.google.cloud.talent.v4beta1.Job.DerivedInfoB\x03\xe0A\x03R\vderivedInfo\x12a\n" +
+	"\x13posting_expire_time\x18\x19 \x01(\v2\x1a.google.protobuf.TimestampR\x11postingExpireTime\x12P\n" +
+	"\x13posting_create_time\x18\x1a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x11postingCreateTime\x12P\n" +
+	"\x13posting_update_time\x18\x1b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x11postingUpdateTime\x126\n" +
+	"\x14company_display_name\x18\x1c \x01(\tB\x04\xe2A\x01\x03R\x12companyDisplayName\x12U\n" +
+	"\fderived_info\x18\x1d \x01(\v2,.google.cloud.talent.v4beta1.Job.DerivedInfoB\x04\xe2A\x01\x03R\vderivedInfo\x12a\n" +
 	"\x12processing_options\x18\x1e \x01(\v22.google.cloud.talent.v4beta1.Job.ProcessingOptionsR\x11processingOptions\x1a_\n" +
 	"\x0fApplicationInfo\x12\x16\n" +
 	"\x06emails\x18\x01 \x03(\tR\x06emails\x12 \n" +

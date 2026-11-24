@@ -638,16 +638,16 @@ var File_google_analytics_admin_v1alpha_channel_group_proto protoreflect.FileDes
 
 const file_google_analytics_admin_v1alpha_channel_group_proto_rawDesc = "" +
 	"\n" +
-	"2google/analytics/admin/v1alpha/channel_group.proto\x12\x1egoogle.analytics.admin.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xec\x04\n" +
+	"2google/analytics/admin/v1alpha/channel_group.proto\x12\x1egoogle.analytics.admin.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xee\x04\n" +
 	"\x12ChannelGroupFilter\x12f\n" +
 	"\rstring_filter\x18\x02 \x01(\v2?.google.analytics.admin.v1alpha.ChannelGroupFilter.StringFilterH\x00R\fstringFilter\x12g\n" +
-	"\x0ein_list_filter\x18\x03 \x01(\v2?.google.analytics.admin.v1alpha.ChannelGroupFilter.InListFilterH\x00R\finListFilter\x12%\n" +
+	"\x0ein_list_filter\x18\x03 \x01(\v2?.google.analytics.admin.v1alpha.ChannelGroupFilter.InListFilterH\x00R\finListFilter\x12$\n" +
 	"\n" +
-	"field_name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\tfieldName\x1a\xa0\x02\n" +
-	"\fStringFilter\x12m\n" +
+	"field_name\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x05R\tfieldName\x1a\xa2\x02\n" +
+	"\fStringFilter\x12n\n" +
 	"\n" +
-	"match_type\x18\x01 \x01(\x0e2I.google.analytics.admin.v1alpha.ChannelGroupFilter.StringFilter.MatchTypeB\x03\xe0A\x02R\tmatchType\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x02R\x05value\"\x85\x01\n" +
+	"match_type\x18\x01 \x01(\x0e2I.google.analytics.admin.v1alpha.ChannelGroupFilter.StringFilter.MatchTypeB\x04\xe2A\x01\x02R\tmatchType\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05value\"\x85\x01\n" +
 	"\tMatchType\x12\x1a\n" +
 	"\x16MATCH_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05EXACT\x10\x01\x12\x0f\n" +
@@ -655,9 +655,9 @@ const file_google_analytics_admin_v1alpha_channel_group_proto_rawDesc = "" +
 	"\tENDS_WITH\x10\x03\x12\f\n" +
 	"\bCONTAINS\x10\x04\x12\x0f\n" +
 	"\vFULL_REGEXP\x10\x05\x12\x12\n" +
-	"\x0ePARTIAL_REGEXP\x10\x06\x1a+\n" +
-	"\fInListFilter\x12\x1b\n" +
-	"\x06values\x18\x01 \x03(\tB\x03\xe0A\x02R\x06valuesB\x0e\n" +
+	"\x0ePARTIAL_REGEXP\x10\x06\x1a,\n" +
+	"\fInListFilter\x12\x1c\n" +
+	"\x06values\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x06valuesB\x0e\n" +
 	"\fvalue_filter\"\x9b\x03\n" +
 	"\x1cChannelGroupFilterExpression\x12_\n" +
 	"\tand_group\x18\x01 \x01(\v2@.google.analytics.admin.v1alpha.ChannelGroupFilterExpressionListH\x00R\bandGroup\x12]\n" +
@@ -666,19 +666,19 @@ const file_google_analytics_admin_v1alpha_channel_group_proto_rawDesc = "" +
 	"\x06filter\x18\x04 \x01(\v22.google.analytics.admin.v1alpha.ChannelGroupFilterH\x00R\x06filterB\x06\n" +
 	"\x04expr\"\x8f\x01\n" +
 	" ChannelGroupFilterExpressionList\x12k\n" +
-	"\x12filter_expressions\x18\x01 \x03(\v2<.google.analytics.admin.v1alpha.ChannelGroupFilterExpressionR\x11filterExpressions\"\x99\x01\n" +
-	"\fGroupingRule\x12&\n" +
-	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12a\n" +
+	"\x12filter_expressions\x18\x01 \x03(\v2<.google.analytics.admin.v1alpha.ChannelGroupFilterExpressionR\x11filterExpressions\"\x9b\x01\n" +
+	"\fGroupingRule\x12'\n" +
+	"\fdisplay_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12b\n" +
 	"\n" +
-	"expression\x18\x02 \x01(\v2<.google.analytics.admin.v1alpha.ChannelGroupFilterExpressionB\x03\xe0A\x02R\n" +
-	"expression\"\xfa\x02\n" +
-	"\fChannelGroup\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12 \n" +
-	"\vdescription\x18\x03 \x01(\tR\vdescription\x12V\n" +
-	"\rgrouping_rule\x18\x04 \x03(\v2,.google.analytics.admin.v1alpha.GroupingRuleB\x03\xe0A\x02R\fgroupingRule\x12*\n" +
-	"\x0esystem_defined\x18\x05 \x01(\bB\x03\xe0A\x03R\rsystemDefined\x12\x1d\n" +
-	"\aprimary\x18\x06 \x01(\bB\x03\xe0A\x01R\aprimary:d\xeaAa\n" +
+	"expression\x18\x02 \x01(\v2<.google.analytics.admin.v1alpha.ChannelGroupFilterExpressionB\x04\xe2A\x01\x02R\n" +
+	"expression\"\xff\x02\n" +
+	"\fChannelGroup\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12 \n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x12W\n" +
+	"\rgrouping_rule\x18\x04 \x03(\v2,.google.analytics.admin.v1alpha.GroupingRuleB\x04\xe2A\x01\x02R\fgroupingRule\x12+\n" +
+	"\x0esystem_defined\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\rsystemDefined\x12\x1e\n" +
+	"\aprimary\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\aprimary:d\xeaAa\n" +
 	"*analyticsadmin.googleapis.com/ChannelGroup\x123properties/{property}/channelGroups/{channel_group}By\n" +
 	"\"com.google.analytics.admin.v1alphaB\x11ChannelGroupProtoP\x01Z>cloud.google.com/go/analytics/admin/apiv1alpha/adminpb;adminpbb\x06proto3"
 

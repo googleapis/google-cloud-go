@@ -556,16 +556,16 @@ var File_google_cloud_ces_v1_deployment_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1_deployment_proto_rawDesc = "" +
 	"\n" +
-	"$google/cloud/ces/v1/deployment.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/cloud/ces/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc7\x04\n" +
-	"\x10ExperimentConfig\x12b\n" +
-	"\x0fversion_release\x18\x01 \x01(\v24.google.cloud.ces.v1.ExperimentConfig.VersionReleaseB\x03\xe0A\x01R\x0eversionRelease\x1a\xfd\x02\n" +
-	"\x0eVersionRelease\x12F\n" +
-	"\x05state\x18\x01 \x01(\x0e2+.google.cloud.ces.v1.ExperimentConfig.StateB\x03\xe0A\x01R\x05state\x12|\n" +
-	"\x13traffic_allocations\x18\x02 \x03(\v2F.google.cloud.ces.v1.ExperimentConfig.VersionRelease.TrafficAllocationB\x03\xe0A\x01R\x12trafficAllocations\x1a\xa4\x01\n" +
-	"\x11TrafficAllocation\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x01R\x02id\x122\n" +
-	"\x12traffic_percentage\x18\x02 \x01(\x05B\x03\xe0A\x01R\x11trafficPercentage\x12F\n" +
-	"\vapp_version\x18\x03 \x01(\tB%\xe0A\x01\xfaA\x1f\n" +
+	"$google/cloud/ces/v1/deployment.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/cloud/ces/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcd\x04\n" +
+	"\x10ExperimentConfig\x12c\n" +
+	"\x0fversion_release\x18\x01 \x01(\v24.google.cloud.ces.v1.ExperimentConfig.VersionReleaseB\x04\xe2A\x01\x01R\x0eversionRelease\x1a\x82\x03\n" +
+	"\x0eVersionRelease\x12G\n" +
+	"\x05state\x18\x01 \x01(\x0e2+.google.cloud.ces.v1.ExperimentConfig.StateB\x04\xe2A\x01\x01R\x05state\x12}\n" +
+	"\x13traffic_allocations\x18\x02 \x03(\v2F.google.cloud.ces.v1.ExperimentConfig.VersionRelease.TrafficAllocationB\x04\xe2A\x01\x01R\x12trafficAllocations\x1a\xa7\x01\n" +
+	"\x11TrafficAllocation\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x02id\x123\n" +
+	"\x12traffic_percentage\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x11trafficPercentage\x12G\n" +
+	"\vapp_version\x18\x03 \x01(\tB&\xe2A\x01\x01\xfaA\x1f\n" +
 	"\x1dces.googleapis.com/AppVersionR\n" +
 	"appVersion\"O\n" +
 	"\x05State\x12\x15\n" +
@@ -573,36 +573,36 @@ const file_google_cloud_ces_v1_deployment_proto_rawDesc = "" +
 	"\aPENDING\x10\x01\x12\v\n" +
 	"\aRUNNING\x10\x02\x12\b\n" +
 	"\x04DONE\x10\x03\x12\v\n" +
-	"\aEXPIRED\x10\x04\"\xb7\x06\n" +
+	"\aEXPIRED\x10\x04\"\xbd\x06\n" +
 	"\n" +
-	"Deployment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\b \x01(\tB\x03\xe0A\x02R\vdisplayName\x12F\n" +
-	"\vapp_version\x18\x02 \x01(\tB%\xe0A\x01\xfaA\x1f\n" +
+	"Deployment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\b \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12G\n" +
+	"\vapp_version\x18\x02 \x01(\tB&\xe2A\x01\x01\xfaA\x1f\n" +
 	"\x1dces.googleapis.com/AppVersionR\n" +
-	"appVersion\x12Q\n" +
-	"\x0fchannel_profile\x18\x03 \x01(\v2#.google.cloud.ces.v1.ChannelProfileB\x03\xe0A\x02R\x0echannelProfile\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04etag\x18\a \x01(\tB\x03\xe0A\x03R\x04etag\x12W\n" +
-	"\x11experiment_config\x18\t \x01(\v2%.google.cloud.ces.v1.ExperimentConfigB\x03\xe0A\x01R\x10experimentConfig\x12c\n" +
+	"appVersion\x12R\n" +
+	"\x0fchannel_profile\x18\x03 \x01(\v2#.google.cloud.ces.v1.ChannelProfileB\x04\xe2A\x01\x02R\x0echannelProfile\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04etag\x18\a \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12X\n" +
+	"\x11experiment_config\x18\t \x01(\v2%.google.cloud.ces.v1.ExperimentConfigB\x04\xe2A\x01\x01R\x10experimentConfig\x12b\n" +
 	"\x14whatsapp_credentials\x18\n" +
-	" \x01(\v2(.google.cloud.ces.v1.WhatsAppCredentialsB\x06\xe0A\x01\xe0A\x04R\x13whatsappCredentials\x12f\n" +
-	"\x15instagram_credentials\x18\v \x01(\v2).google.cloud.ces.v1.InstagramCredentialsB\x06\xe0A\x01\xe0A\x04R\x14instagramCredentials:\x89\x01\xeaA\x85\x01\n" +
+	" \x01(\v2(.google.cloud.ces.v1.WhatsAppCredentialsB\x05\xe2A\x02\x01\x04R\x13whatsappCredentials\x12e\n" +
+	"\x15instagram_credentials\x18\v \x01(\v2).google.cloud.ces.v1.InstagramCredentialsB\x05\xe2A\x02\x01\x04R\x14instagramCredentials:\x89\x01\xeaA\x85\x01\n" +
 	"\x1dces.googleapis.com/Deployment\x12Kprojects/{project}/locations/{location}/apps/{app}/deployments/{deployment}*\vdeployments2\n" +
-	"deployment\"\x86\x02\n" +
-	"\x13WhatsAppCredentials\x12 \n" +
-	"\tauth_code\x18\x01 \x01(\tB\x03\xe0A\x02R\bauthCode\x12\x15\n" +
-	"\x03pin\x18\x02 \x01(\tB\x03\xe0A\x02R\x03pin\x12&\n" +
-	"\fphone_number\x18\x03 \x01(\tB\x03\xe0A\x02R\vphoneNumber\x123\n" +
-	"\x13business_account_id\x18\x04 \x01(\tB\x03\xe0A\x02R\x11businessAccountId\x12\x1c\n" +
-	"\awaba_id\x18\x05 \x01(\tB\x03\xe0A\x02R\x06wabaId\x12;\n" +
-	"\x17conversation_profile_id\x18\x06 \x01(\tB\x03\xe0A\x02R\x15conversationProfileId\"u\n" +
-	"\x14InstagramCredentials\x12 \n" +
-	"\tauth_code\x18\x01 \x01(\tB\x03\xe0A\x02R\bauthCode\x12;\n" +
-	"\x17conversation_profile_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x15conversationProfileIdB[\n" +
+	"deployment\"\x8c\x02\n" +
+	"\x13WhatsAppCredentials\x12!\n" +
+	"\tauth_code\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bauthCode\x12\x16\n" +
+	"\x03pin\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x03pin\x12'\n" +
+	"\fphone_number\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vphoneNumber\x124\n" +
+	"\x13business_account_id\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x11businessAccountId\x12\x1d\n" +
+	"\awaba_id\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\x06wabaId\x12<\n" +
+	"\x17conversation_profile_id\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\x15conversationProfileId\"w\n" +
+	"\x14InstagramCredentials\x12!\n" +
+	"\tauth_code\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bauthCode\x12<\n" +
+	"\x17conversation_profile_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x15conversationProfileIdB[\n" +
 	"\x17com.google.cloud.ces.v1B\x13ChannelProfileProtoP\x01Z)cloud.google.com/go/ces/apiv1/cespb;cespbb\x06proto3"
 
 var (

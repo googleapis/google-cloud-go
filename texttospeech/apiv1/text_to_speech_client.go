@@ -309,6 +309,41 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "texttospeech",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/texttospeech/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "texttospeech.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListVoices = append(client.CallOptions.ListVoices, gax.WithClientTracing(tracing))
+		client.CallOptions.SynthesizeSpeech = append(client.CallOptions.SynthesizeSpeech, gax.WithClientTracing(tracing))
+		client.CallOptions.StreamingSynthesize = append(client.CallOptions.StreamingSynthesize, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "texttospeech",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/texttospeech/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "texttospeech.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListVoices = append(client.CallOptions.ListVoices, gax.WithClientLogging(logging))
+		client.CallOptions.SynthesizeSpeech = append(client.CallOptions.SynthesizeSpeech, gax.WithClientLogging(logging))
+		client.CallOptions.StreamingSynthesize = append(client.CallOptions.StreamingSynthesize, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -403,6 +438,41 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.StreamingSynthesize = append(callOpts.StreamingSynthesize, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "texttospeech",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/texttospeech/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "texttospeech.googleapis.com",
+			}),
+		)
+
+		callOpts.ListVoices = append(callOpts.ListVoices, gax.WithClientTracing(tracing))
+		callOpts.SynthesizeSpeech = append(callOpts.SynthesizeSpeech, gax.WithClientTracing(tracing))
+		callOpts.StreamingSynthesize = append(callOpts.StreamingSynthesize, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "texttospeech",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/texttospeech/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "texttospeech.googleapis.com",
+			}),
+		)
+
+		callOpts.ListVoices = append(callOpts.ListVoices, gax.WithClientLogging(logging))
+		callOpts.SynthesizeSpeech = append(callOpts.SynthesizeSpeech, gax.WithClientLogging(logging))
+		callOpts.StreamingSynthesize = append(callOpts.StreamingSynthesize, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
 	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
@@ -697,6 +767,11 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -762,6 +837,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

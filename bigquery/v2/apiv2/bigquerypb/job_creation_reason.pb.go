@@ -158,9 +158,9 @@ var File_google_cloud_bigquery_v2_job_creation_reason_proto protoreflect.FileDes
 
 const file_google_cloud_bigquery_v2_job_creation_reason_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/bigquery/v2/job_creation_reason.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xbb\x01\n" +
-	"\x11JobCreationReason\x12I\n" +
-	"\x04code\x18\x01 \x01(\x0e20.google.cloud.bigquery.v2.JobCreationReason.CodeB\x03\xe0A\x03R\x04code\"[\n" +
+	"2google/cloud/bigquery/v2/job_creation_reason.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xbc\x01\n" +
+	"\x11JobCreationReason\x12J\n" +
+	"\x04code\x18\x01 \x01(\x0e20.google.cloud.bigquery.v2.JobCreationReason.CodeB\x04\xe2A\x01\x03R\x04code\"[\n" +
 	"\x04Code\x12\x14\n" +
 	"\x10CODE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tREQUESTED\x10\x01\x12\x10\n" +

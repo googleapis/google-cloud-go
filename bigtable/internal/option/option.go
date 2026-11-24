@@ -48,6 +48,10 @@ const (
 	PowerOfTwoLeastInFlightLBPolicy = "power_of_two_least_in_flight"
 	// BigtableConnectionPoolEnvVar is the env var for enabling Bigtable Connection Pool.
 	BigtableConnectionPoolEnvVar = "CBT_BIGTABLE_CONN_POOL"
+	// DisableSessionAwareChannelPoolEnvVar is the env var escape hatch to revert
+	// the session client's channel pool sizer from SessionAwareScaleMonitor back
+	// to the classic RPC-load-driven DynamicScaleMonitor.
+	DisableSessionAwareChannelPoolEnvVar = "CBT_DISABLE_SESSION_AWARE_CHANNEL_POOL"
 )
 
 var schemeRegexp = regexp.MustCompile("^(http://|https://|passthrough:///)")
@@ -127,6 +131,52 @@ func DefaultClientOptions(endpoint, mtlsEndpoint, scope, userAgent string) ([]op
 		}
 	}
 	return o, nil
+}
+
+// DirectAccessOptions returns the option set that opts a gRPC dial in to
+// Bigtable DirectAccess (DirectPath + DirectPathXds + ALTS-bound tokens).
+//
+// All four options must be applied together. Omitting
+// AllowNonDefaultServiceAccount causes api/transport's DirectPath
+// compatibility check (isTokenSourceDirectPathCompatible in
+// google.golang.org/api/transport/grpc/dial.go) to require the ADC
+// token's legacy oauth2.google.tokenSource / oauth2.google.serviceAccount
+// extras. The newer cloud.google.com/go/auth library — now the default
+// ADC path — does not populate those extras, so the check fails and the
+// dial silently falls back to CFE+TLS instead of DirectPath. This helper
+// keeps the classic client, the DirectAccess probe, and the session
+// client on one option set so they cannot drift.
+func DirectAccessOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.EnableDirectPath(true),
+		internaloption.EnableDirectPathXds(),
+		internaloption.AllowHardBoundTokens("ALTS"),
+		internaloption.AllowNonDefaultServiceAccount(true),
+	}
+}
+
+// MaxMessageSize is the largest gRPC message a Bigtable data-plane dial will
+// send or accept, chosen to correspond to server-side limits. gRPC's own
+// default receive limit is 4 MiB, which is well under what the service can
+// return for a single ReadRows response, so every data-plane dial has to raise
+// it explicitly or large rows fail with RESOURCE_EXHAUSTED on the client side.
+const MaxMessageSize = 1 << 28 // 256 MiB
+
+// MessageSizeOptions returns the dial options that lift gRPC's default message
+// size limits to MaxMessageSize.
+//
+// Centralized here for the same reason as DirectAccessOptions: the classic
+// client and the accelerator daemon build their dial options independently
+// (the daemon goes through session.NewClient rather than bigtable.NewClient),
+// and a dial that silently keeps the 4 MiB default is strictly more
+// restrictive than the client it stands in for.
+func MessageSizeOptions() []option.ClientOption {
+	return []option.ClientOption{
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallSendMsgSize(MaxMessageSize),
+			grpc.MaxCallRecvMsgSize(MaxMessageSize),
+		)),
+	}
 }
 
 // ClientInterceptorOptions returns client options to use for the client's gRPC
@@ -209,6 +259,22 @@ func EnableBigtableConnectionPool() bool {
 	return enableBigtableConnPool
 }
 
+// DisableSessionAwareChannelPool reports whether the session client's
+// SessionAwareScaleMonitor has been disabled via
+// CBT_DISABLE_SESSION_AWARE_CHANNEL_POOL, reverting channel-pool sizing to
+// DynamicScaleMonitor.
+func DisableSessionAwareChannelPool() bool {
+	val := os.Getenv(DisableSessionAwareChannelPoolEnvVar)
+	if val == "" {
+		return false
+	}
+	disabled, err := strconv.ParseBool(val)
+	if err != nil {
+		return false
+	}
+	return disabled
+}
+
 // Logf logs the given message to the given logger, or the standard logger if
 // the given logger is nil.
 func logf(logger *log.Logger, format string, v ...interface{}) {
@@ -260,7 +326,7 @@ type DynamicChannelPoolConfig struct {
 func DefaultDynamicChannelPoolConfig() DynamicChannelPoolConfig {
 	return DynamicChannelPoolConfig{
 		Enabled:                          false,
-		MinConns:                         10,
+		MinConns:                         4,
 		MaxConns:                         200,
 		AvgLoadHighThreshold:             50,
 		AvgLoadLowThreshold:              5,

@@ -536,18 +536,18 @@ var File_google_maps_isochrones_v1_isochrones_service_proto protoreflect.FileDes
 
 const file_google_maps_isochrones_v1_isochrones_service_proto_rawDesc = "" +
 	"\n" +
-	"2google/maps/isochrones/v1/isochrones_service.proto\x12\x19google.maps.isochrones.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x18google/type/latlng.proto\"\x9e\b\n" +
+	"2google/maps/isochrones/v1/isochrones_service.proto\x12\x19google.maps.isochrones.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x18google/type/latlng.proto\"\xa4\b\n" +
 	"\x18GenerateIsochroneRequest\x121\n" +
 	"\blocation\x18\x01 \x01(\v2\x13.google.type.LatLngH\x00R\blocation\x128\n" +
 	"\x05place\x18\x02 \x01(\tB \xfaA\x1d\n" +
-	"\x1bplaces.googleapis.com/PlaceH\x00R\x05place\x12G\n" +
-	"\x0ftravel_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x0etravelDuration\x12d\n" +
-	"\vtravel_mode\x18\x04 \x01(\x0e2>.google.maps.isochrones.v1.GenerateIsochroneRequest.TravelModeB\x03\xe0A\x02R\n" +
-	"travelMode\x12s\n" +
-	"\x10travel_direction\x18\x05 \x01(\x0e2C.google.maps.isochrones.v1.GenerateIsochroneRequest.TravelDirectionB\x03\xe0A\x02R\x0ftravelDirection\x12y\n" +
-	"\x12routing_preference\x18\x06 \x01(\x0e2E.google.maps.isochrones.v1.GenerateIsochroneRequest.RoutingPreferenceB\x03\xe0A\x01R\x11routingPreference\x12.\n" +
-	"\x10enable_smoothing\x18\a \x01(\bB\x03\xe0A\x01R\x0fenableSmoothing\x12s\n" +
-	"\x10polygon_fidelity\x18\b \x01(\x0e2C.google.maps.isochrones.v1.GenerateIsochroneRequest.PolygonFidelityB\x03\xe0A\x01R\x0fpolygonFidelity\"K\n" +
+	"\x1bplaces.googleapis.com/PlaceH\x00R\x05place\x12H\n" +
+	"\x0ftravel_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\x0etravelDuration\x12e\n" +
+	"\vtravel_mode\x18\x04 \x01(\x0e2>.google.maps.isochrones.v1.GenerateIsochroneRequest.TravelModeB\x04\xe2A\x01\x02R\n" +
+	"travelMode\x12t\n" +
+	"\x10travel_direction\x18\x05 \x01(\x0e2C.google.maps.isochrones.v1.GenerateIsochroneRequest.TravelDirectionB\x04\xe2A\x01\x02R\x0ftravelDirection\x12z\n" +
+	"\x12routing_preference\x18\x06 \x01(\x0e2E.google.maps.isochrones.v1.GenerateIsochroneRequest.RoutingPreferenceB\x04\xe2A\x01\x01R\x11routingPreference\x12/\n" +
+	"\x10enable_smoothing\x18\a \x01(\bB\x04\xe2A\x01\x01R\x0fenableSmoothing\x12t\n" +
+	"\x10polygon_fidelity\x18\b \x01(\x0e2C.google.maps.isochrones.v1.GenerateIsochroneRequest.PolygonFidelityB\x04\xe2A\x01\x01R\x0fpolygonFidelity\"K\n" +
 	"\n" +
 	"TravelMode\x12\x1b\n" +
 	"\x17TRAVEL_MODE_UNSPECIFIED\x10\x00\x12\t\n" +
@@ -568,11 +568,11 @@ const file_google_maps_isochrones_v1_isochrones_service_proto_rawDesc = "" +
 	"\n" +
 	"\x06MEDIUM\x10\x02\x12\b\n" +
 	"\x04HIGH\x10\x03B\b\n" +
-	"\x06origin\"d\n" +
-	"\x19GenerateIsochroneResponse\x12G\n" +
-	"\tisochrone\x18\x01 \x01(\v2$.google.maps.isochrones.v1.IsochroneB\x03\xe0A\x03R\tisochrone\"R\n" +
-	"\tIsochrone\x129\n" +
-	"\bgeo_json\x18\x01 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x03H\x00R\ageoJsonB\n" +
+	"\x06origin\"e\n" +
+	"\x19GenerateIsochroneResponse\x12H\n" +
+	"\tisochrone\x18\x01 \x01(\v2$.google.maps.isochrones.v1.IsochroneB\x04\xe2A\x01\x03R\tisochrone\"S\n" +
+	"\tIsochrone\x12:\n" +
+	"\bgeo_json\x18\x01 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x03H\x00R\ageoJsonB\n" +
 	"\n" +
 	"\bgeometry2\xc0\x02\n" +
 	"\x10IsochroneService\x12\xa2\x01\n" +

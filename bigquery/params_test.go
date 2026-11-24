@@ -32,11 +32,11 @@ import (
 
 var scalarTests = []struct {
 	name     string
-	val      interface{}            // input value sent as query param
+	val      any                    // input value sent as query param
 	wantNil  bool                   // whether the value returned in a query field should be nil.
 	wantVal  string                 // the string form of the scalar value in QueryParameterValue.
 	wantType *bq.QueryParameterType // paramType's desired output
-	wantStat interface{}            // val when roundtripped and represented as part of job statistics.
+	wantStat any                    // val when roundtripped and represented as part of job statistics.
 }{
 	{"Int64Default", int64(0), false, "0", int64ParamType, int64(0)},
 	{"NullInt64Valued", NullInt64{Int64: 3, Valid: true}, false, "3", int64ParamType, int64(3)},
@@ -175,9 +175,9 @@ var (
 		},
 	}
 
-	s1ParamReturnValue = map[string]interface{}{
+	s1ParamReturnValue = map[string]any{
 		"A": int64(1),
-		"B": map[string]interface{}{"D": "s"},
+		"B": map[string]any{"D": "s"},
 		"C": true,
 	}
 )
@@ -225,7 +225,7 @@ func TestParamValueRange(t *testing.T) {
 
 	var testCases = []struct {
 		desc string
-		in   interface{}
+		in   any
 		want *bq.QueryParameterValue
 	}{
 		{
@@ -388,7 +388,7 @@ func TestParamValueArray(t *testing.T) {
 	}
 	for _, tc := range []struct {
 		name string
-		val  interface{}
+		val  any
 		want *bq.QueryParameterValue
 	}{
 		{"nilIntSlice", []int(nil), &bq.QueryParameterValue{}},
@@ -419,7 +419,7 @@ func TestParamValueStruct(t *testing.T) {
 func TestParamValueErrors(t *testing.T) {
 	// paramValue lets a few invalid types through, but paramType catches them.
 	// Since we never call one without the other that's fine.
-	for _, val := range []interface{}{nil, new([]int)} {
+	for _, val := range []any{nil, new([]int)} {
 		_, err := paramValue(reflect.ValueOf(val))
 		if err == nil {
 			t.Errorf("%v (%T): got nil, want error", val, val)
@@ -441,7 +441,7 @@ func TestParamType(t *testing.T) {
 	}
 	for _, tc := range []struct {
 		name string
-		val  interface{}
+		val  any
 		want *bq.QueryParameterType
 	}{
 		{"uint32", uint32(32767), int64ParamType},
@@ -485,8 +485,8 @@ func TestParamType(t *testing.T) {
 	}
 }
 func TestParamTypeErrors(t *testing.T) {
-	for _, val := range []interface{}{
-		nil, uint(0), new([]int), make(chan int), map[int]interface{}{}, &RangeValue{},
+	for _, val := range []any{
+		nil, uint(0), new([]int), make(chan int), map[int]any{}, &RangeValue{},
 	} {
 		_, err := paramType(reflect.TypeOf(val), reflect.ValueOf(val))
 		if err == nil {
@@ -522,7 +522,7 @@ func TestParamTypeErrors(t *testing.T) {
 		RecMap: map[string]recMap{},
 	}
 	// Recursive structs
-	for _, val := range []interface{}{
+	for _, val := range []any{
 		queryParam, standardSQL, recursiveArr, recursiveMap,
 	} {
 		_, err := paramType(reflect.TypeOf(val), reflect.ValueOf(val))
@@ -557,7 +557,7 @@ func TestConvertParamValue(t *testing.T) {
 	for _, tc := range []struct {
 		name string
 		pval *bq.QueryParameterValue
-		want []interface{}
+		want []any
 	}{
 		{
 			"empty",
@@ -569,7 +569,7 @@ func TestConvertParamValue(t *testing.T) {
 			&bq.QueryParameterValue{
 				ArrayValues: []*bq.QueryParameterValue{{Value: "1"}, {Value: "2"}},
 			},
-			[]interface{}{int64(1), int64(2)},
+			[]any{int64(1), int64(2)},
 		},
 	} {
 		t.Run(fmt.Sprintf("array-%s", tc.name), func(t *testing.T) {
@@ -627,29 +627,29 @@ func TestIntegration_OtherParam(t *testing.T) {
 	c := getClient(t)
 	for _, tc := range []struct {
 		name      string
-		val       interface{}
-		wantData  interface{}
-		wantParam interface{}
+		val       any
+		wantData  any
+		wantParam any
 	}{
-		{"nil", []int(nil), []Value(nil), []interface{}(nil)},
-		{"emptyIntSlice", []int{}, []Value(nil), []interface{}(nil)},
+		{"nil", []int(nil), []Value(nil), []any(nil)},
+		{"emptyIntSlice", []int{}, []Value(nil), []any(nil)},
 		{
 			"intSlice",
 			[]int{1, 2},
 			[]Value{int64(1), int64(2)},
-			[]interface{}{int64(1), int64(2)},
+			[]any{int64(1), int64(2)},
 		},
 		{
 			"intArray",
 			[3]int{1, 2, 3},
 			[]Value{int64(1), int64(2), int64(3)},
-			[]interface{}{int64(1), int64(2), int64(3)},
+			[]any{int64(1), int64(2), int64(3)},
 		},
 		{
 			"emptyStruct",
 			S1{},
 			[]Value{int64(0), nil, false},
-			map[string]interface{}{
+			map[string]any{
 				"A": int64(0),
 				"B": nil,
 				"C": false,
@@ -697,7 +697,7 @@ func TestIntegration_OtherParam(t *testing.T) {
 // paramRoundTrip passes x as a query parameter to BigQuery. It returns
 // the resulting data value from running the query and the parameter value from
 // the returned job configuration.
-func paramRoundTrip(c *Client, x interface{}) (data Value, param interface{}, err error) {
+func paramRoundTrip(c *Client, x any) (data Value, param any, err error) {
 	ctx := context.Background()
 	q := c.Query("select ?")
 	q.Parameters = []QueryParameter{{Value: x}}

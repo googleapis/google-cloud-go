@@ -376,6 +376,57 @@ func NewInsightsConfigClient(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "developerconnect",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/developerconnect/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "developerconnect.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInsightsConfigs = append(client.CallOptions.ListInsightsConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateInsightsConfig = append(client.CallOptions.CreateInsightsConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetInsightsConfig = append(client.CallOptions.GetInsightsConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateInsightsConfig = append(client.CallOptions.UpdateInsightsConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteInsightsConfig = append(client.CallOptions.DeleteInsightsConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDeploymentEvent = append(client.CallOptions.GetDeploymentEvent, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDeploymentEvents = append(client.CallOptions.ListDeploymentEvents, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "developerconnect",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/developerconnect/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "developerconnect.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInsightsConfigs = append(client.CallOptions.ListInsightsConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.CreateInsightsConfig = append(client.CallOptions.CreateInsightsConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetInsightsConfig = append(client.CallOptions.GetInsightsConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateInsightsConfig = append(client.CallOptions.UpdateInsightsConfig, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteInsightsConfig = append(client.CallOptions.DeleteInsightsConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetDeploymentEvent = append(client.CallOptions.GetDeploymentEvent, gax.WithClientLogging(logging))
+		client.CallOptions.ListDeploymentEvents = append(client.CallOptions.ListDeploymentEvents, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -503,6 +554,57 @@ func NewInsightsConfigRESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "developerconnect",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/developerconnect/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "developerconnect.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInsightsConfigs = append(callOpts.ListInsightsConfigs, gax.WithClientTracing(tracing))
+		callOpts.CreateInsightsConfig = append(callOpts.CreateInsightsConfig, gax.WithClientTracing(tracing))
+		callOpts.GetInsightsConfig = append(callOpts.GetInsightsConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateInsightsConfig = append(callOpts.UpdateInsightsConfig, gax.WithClientTracing(tracing))
+		callOpts.DeleteInsightsConfig = append(callOpts.DeleteInsightsConfig, gax.WithClientTracing(tracing))
+		callOpts.GetDeploymentEvent = append(callOpts.GetDeploymentEvent, gax.WithClientTracing(tracing))
+		callOpts.ListDeploymentEvents = append(callOpts.ListDeploymentEvents, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "developerconnect",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/developerconnect/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "developerconnect.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInsightsConfigs = append(callOpts.ListInsightsConfigs, gax.WithClientLogging(logging))
+		callOpts.CreateInsightsConfig = append(callOpts.CreateInsightsConfig, gax.WithClientLogging(logging))
+		callOpts.GetInsightsConfig = append(callOpts.GetInsightsConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateInsightsConfig = append(callOpts.UpdateInsightsConfig, gax.WithClientLogging(logging))
+		callOpts.DeleteInsightsConfig = append(callOpts.DeleteInsightsConfig, gax.WithClientLogging(logging))
+		callOpts.GetDeploymentEvent = append(callOpts.GetDeploymentEvent, gax.WithClientLogging(logging))
+		callOpts.ListDeploymentEvents = append(callOpts.ListDeploymentEvents, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -559,9 +661,6 @@ func (c *insightsConfigGRPCClient) ListInsightsConfigs(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.InsightsConfigService/ListInsightsConfigs")
 	}
@@ -611,9 +710,6 @@ func (c *insightsConfigGRPCClient) CreateInsightsConfig(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.InsightsConfigService/CreateInsightsConfig")
 	}
@@ -641,9 +737,6 @@ func (c *insightsConfigGRPCClient) GetInsightsConfig(ctx context.Context, req *d
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.InsightsConfigService/GetInsightsConfig")
 	}
@@ -692,9 +785,6 @@ func (c *insightsConfigGRPCClient) DeleteInsightsConfig(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.InsightsConfigService/DeleteInsightsConfig")
 	}
@@ -722,9 +812,6 @@ func (c *insightsConfigGRPCClient) GetDeploymentEvent(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.InsightsConfigService/GetDeploymentEvent")
 	}
@@ -746,9 +833,6 @@ func (c *insightsConfigGRPCClient) ListDeploymentEvents(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.InsightsConfigService/ListDeploymentEvents")
 	}
@@ -986,6 +1070,11 @@ func (c *insightsConfigRESTClient) ListInsightsConfigs(ctx context.Context, req 
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/insightsConfigs", req.GetParent())
 
 		params := url.Values{}
@@ -1064,6 +1153,11 @@ func (c *insightsConfigRESTClient) CreateInsightsConfig(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/insightsConfigs", req.GetParent())
 
 	params := url.Values{}
@@ -1081,9 +1175,6 @@ func (c *insightsConfigRESTClient) CreateInsightsConfig(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.InsightsConfigService/CreateInsightsConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/insightsConfigs")
@@ -1132,6 +1223,11 @@ func (c *insightsConfigRESTClient) GetInsightsConfig(ctx context.Context, req *d
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1145,9 +1241,6 @@ func (c *insightsConfigRESTClient) GetInsightsConfig(ctx context.Context, req *d
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.InsightsConfigService/GetInsightsConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/insightsConfigs/*}")
@@ -1194,6 +1287,11 @@ func (c *insightsConfigRESTClient) UpdateInsightsConfig(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInsightsConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetInsightsConfig().GetName())
@@ -1266,6 +1364,11 @@ func (c *insightsConfigRESTClient) DeleteInsightsConfig(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1288,9 +1391,6 @@ func (c *insightsConfigRESTClient) DeleteInsightsConfig(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.InsightsConfigService/DeleteInsightsConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/insightsConfigs/*}")
@@ -1339,6 +1439,11 @@ func (c *insightsConfigRESTClient) GetDeploymentEvent(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1352,9 +1457,6 @@ func (c *insightsConfigRESTClient) GetDeploymentEvent(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.InsightsConfigService/GetDeploymentEvent")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/insightsConfigs/*/deploymentEvents/*}")
@@ -1407,6 +1509,11 @@ func (c *insightsConfigRESTClient) ListDeploymentEvents(ctx context.Context, req
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/deploymentEvents", req.GetParent())
@@ -1475,6 +1582,11 @@ func (c *insightsConfigRESTClient) ListDeploymentEvents(ctx context.Context, req
 func (c *insightsConfigRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1552,6 +1664,11 @@ func (c *insightsConfigRESTClient) ListLocations(ctx context.Context, req *locat
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1626,6 +1743,11 @@ func (c *insightsConfigRESTClient) CancelOperation(ctx context.Context, req *lon
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1665,6 +1787,11 @@ func (c *insightsConfigRESTClient) DeleteOperation(ctx context.Context, req *lon
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1702,6 +1829,11 @@ func (c *insightsConfigRESTClient) DeleteOperation(ctx context.Context, req *lon
 func (c *insightsConfigRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1769,6 +1901,11 @@ func (c *insightsConfigRESTClient) ListOperations(ctx context.Context, req *long
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

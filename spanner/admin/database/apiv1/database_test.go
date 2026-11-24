@@ -25,8 +25,8 @@ import (
 
 	longrunning "cloud.google.com/go/longrunning/autogen"
 	"cloud.google.com/go/longrunning/autogen/longrunningpb"
+	database "cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
 	"google.golang.org/api/option"
-	"google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"

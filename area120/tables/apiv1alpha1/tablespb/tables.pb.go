@@ -1528,9 +1528,9 @@ var File_google_area120_tables_v1alpha1_tables_proto protoreflect.FileDescriptor
 
 const file_google_area120_tables_v1alpha1_tables_proto_rawDesc = "" +
 	"\n" +
-	"+google/area120/tables/v1alpha1/tables.proto\x12\x1egoogle.area120.tables.v1alpha1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\"Q\n" +
-	"\x0fGetTableRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"+google/area120/tables/v1alpha1/tables.proto\x12\x1egoogle.area120.tables.v1alpha1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\"R\n" +
+	"\x0fGetTableRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"area120tables.googleapis.com/TableR\x04name\"O\n" +
 	"\x11ListTablesRequest\x12\x1b\n" +
 	"\tpage_size\x18\x01 \x01(\x05R\bpageSize\x12\x1d\n" +
@@ -1538,9 +1538,9 @@ const file_google_area120_tables_v1alpha1_tables_proto_rawDesc = "" +
 	"page_token\x18\x02 \x01(\tR\tpageToken\"{\n" +
 	"\x12ListTablesResponse\x12=\n" +
 	"\x06tables\x18\x01 \x03(\v2%.google.area120.tables.v1alpha1.TableR\x06tables\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Y\n" +
-	"\x13GetWorkspaceRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Z\n" +
+	"\x13GetWorkspaceRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&area120tables.googleapis.com/WorkspaceR\x04name\"S\n" +
 	"\x15ListWorkspacesRequest\x12\x1b\n" +
 	"\tpage_size\x18\x01 \x01(\x05R\bpageSize\x12\x1d\n" +
@@ -1550,60 +1550,60 @@ const file_google_area120_tables_v1alpha1_tables_proto_rawDesc = "" +
 	"\n" +
 	"workspaces\x18\x01 \x03(\v2).google.area120.tables.v1alpha1.WorkspaceR\n" +
 	"workspaces\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8c\x01\n" +
-	"\rGetRowRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" area120tables.googleapis.com/RowR\x04name\x12=\n" +
-	"\x04view\x18\x02 \x01(\x0e2$.google.area120.tables.v1alpha1.ViewB\x03\xe0A\x01R\x04view\"\xc6\x01\n" +
-	"\x0fListRowsRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8e\x01\n" +
+	"\rGetRowRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" area120tables.googleapis.com/RowR\x04name\x12>\n" +
+	"\x04view\x18\x02 \x01(\x0e2$.google.area120.tables.v1alpha1.ViewB\x04\xe2A\x01\x01R\x04view\"\xc9\x01\n" +
+	"\x0fListRowsRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12=\n" +
-	"\x04view\x18\x04 \x01(\x0e2$.google.area120.tables.v1alpha1.ViewB\x03\xe0A\x01R\x04view\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\"s\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12>\n" +
+	"\x04view\x18\x04 \x01(\x0e2$.google.area120.tables.v1alpha1.ViewB\x04\xe2A\x01\x01R\x04view\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"s\n" +
 	"\x10ListRowsResponse\x127\n" +
 	"\x04rows\x18\x01 \x03(\v2#.google.area120.tables.v1alpha1.RowR\x04rows\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xaa\x01\n" +
-	"\x10CreateRowRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12:\n" +
-	"\x03row\x18\x02 \x01(\v2#.google.area120.tables.v1alpha1.RowB\x03\xe0A\x02R\x03row\x12=\n" +
-	"\x04view\x18\x03 \x01(\x0e2$.google.area120.tables.v1alpha1.ViewB\x03\xe0A\x01R\x04view\"\x88\x01\n" +
-	"\x16BatchCreateRowsRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12Q\n" +
-	"\brequests\x18\x02 \x03(\v20.google.area120.tables.v1alpha1.CreateRowRequestB\x03\xe0A\x02R\brequests\"R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xad\x01\n" +
+	"\x10CreateRowRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12;\n" +
+	"\x03row\x18\x02 \x01(\v2#.google.area120.tables.v1alpha1.RowB\x04\xe2A\x01\x02R\x03row\x12>\n" +
+	"\x04view\x18\x03 \x01(\x0e2$.google.area120.tables.v1alpha1.ViewB\x04\xe2A\x01\x01R\x04view\"\x8a\x01\n" +
+	"\x16BatchCreateRowsRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12R\n" +
+	"\brequests\x18\x02 \x03(\v20.google.area120.tables.v1alpha1.CreateRowRequestB\x04\xe2A\x01\x02R\brequests\"R\n" +
 	"\x17BatchCreateRowsResponse\x127\n" +
-	"\x04rows\x18\x01 \x03(\v2#.google.area120.tables.v1alpha1.RowR\x04rows\"\xca\x01\n" +
-	"\x10UpdateRowRequest\x12:\n" +
-	"\x03row\x18\x01 \x01(\v2#.google.area120.tables.v1alpha1.RowB\x03\xe0A\x02R\x03row\x12;\n" +
+	"\x04rows\x18\x01 \x03(\v2#.google.area120.tables.v1alpha1.RowR\x04rows\"\xcc\x01\n" +
+	"\x10UpdateRowRequest\x12;\n" +
+	"\x03row\x18\x01 \x01(\v2#.google.area120.tables.v1alpha1.RowB\x04\xe2A\x01\x02R\x03row\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\x12=\n" +
-	"\x04view\x18\x03 \x01(\x0e2$.google.area120.tables.v1alpha1.ViewB\x03\xe0A\x01R\x04view\"\x88\x01\n" +
-	"\x16BatchUpdateRowsRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12Q\n" +
-	"\brequests\x18\x02 \x03(\v20.google.area120.tables.v1alpha1.UpdateRowRequestB\x03\xe0A\x02R\brequests\"R\n" +
+	"updateMask\x12>\n" +
+	"\x04view\x18\x03 \x01(\x0e2$.google.area120.tables.v1alpha1.ViewB\x04\xe2A\x01\x01R\x04view\"\x8a\x01\n" +
+	"\x16BatchUpdateRowsRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12R\n" +
+	"\brequests\x18\x02 \x03(\v20.google.area120.tables.v1alpha1.UpdateRowRequestB\x04\xe2A\x01\x02R\brequests\"R\n" +
 	"\x17BatchUpdateRowsResponse\x127\n" +
-	"\x04rows\x18\x01 \x03(\v2#.google.area120.tables.v1alpha1.RowR\x04rows\"P\n" +
-	"\x10DeleteRowRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" area120tables.googleapis.com/RowR\x04name\"\x9c\x01\n" +
-	"\x16BatchDeleteRowsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"area120tables.googleapis.com/TableR\x06parent\x12>\n" +
-	"\x05names\x18\x02 \x03(\tB(\xe0A\x02\xfaA\"\n" +
+	"\x04rows\x18\x01 \x03(\v2#.google.area120.tables.v1alpha1.RowR\x04rows\"Q\n" +
+	"\x10DeleteRowRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" area120tables.googleapis.com/RowR\x04name\"\x9e\x01\n" +
+	"\x16BatchDeleteRowsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"area120tables.googleapis.com/TableR\x06parent\x12?\n" +
+	"\x05names\x18\x02 \x03(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" area120tables.googleapis.com/RowR\x05names\"\xc4\x01\n" +
 	"\x05Table\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12K\n" +
 	"\acolumns\x18\x03 \x03(\v21.google.area120.tables.v1alpha1.ColumnDescriptionR\acolumns:7\xeaA4\n" +
-	"\"area120tables.googleapis.com/Table\x12\x0etables/{table}\"\xe6\x02\n" +
+	"\"area120tables.googleapis.com/Table\x12\x0etables/{table}\"\xe9\x02\n" +
 	"\x11ColumnDescription\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1b\n" +
 	"\tdata_type\x18\x02 \x01(\tR\bdataType\x12\x0e\n" +
-	"\x02id\x18\x03 \x01(\tR\x02id\x12H\n" +
-	"\x06labels\x18\x04 \x03(\v2+.google.area120.tables.v1alpha1.LabeledItemB\x03\xe0A\x01R\x06labels\x12k\n" +
-	"\x14relationship_details\x18\x05 \x01(\v23.google.area120.tables.v1alpha1.RelationshipDetailsB\x03\xe0A\x01R\x13relationshipDetails\x12Y\n" +
-	"\x0elookup_details\x18\x06 \x01(\v2-.google.area120.tables.v1alpha1.LookupDetailsB\x03\xe0A\x01R\rlookupDetails\"1\n" +
+	"\x02id\x18\x03 \x01(\tR\x02id\x12I\n" +
+	"\x06labels\x18\x04 \x03(\v2+.google.area120.tables.v1alpha1.LabeledItemB\x04\xe2A\x01\x01R\x06labels\x12l\n" +
+	"\x14relationship_details\x18\x05 \x01(\v23.google.area120.tables.v1alpha1.RelationshipDetailsB\x04\xe2A\x01\x01R\x13relationshipDetails\x12Z\n" +
+	"\x0elookup_details\x18\x06 \x01(\v2-.google.area120.tables.v1alpha1.LookupDetailsB\x04\xe2A\x01\x01R\rlookupDetails\"1\n" +
 	"\vLabeledItem\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\"8\n" +

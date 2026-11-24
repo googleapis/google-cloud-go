@@ -101,12 +101,12 @@ var File_google_cloud_bigquery_v2_external_catalog_dataset_options_proto protore
 
 const file_google_cloud_bigquery_v2_external_catalog_dataset_options_proto_rawDesc = "" +
 	"\n" +
-	"?google/cloud/bigquery/v2/external_catalog_dataset_options.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"\x92\x02\n" +
-	"\x1dExternalCatalogDatasetOptions\x12l\n" +
+	"?google/cloud/bigquery/v2/external_catalog_dataset_options.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"\x94\x02\n" +
+	"\x1dExternalCatalogDatasetOptions\x12m\n" +
 	"\n" +
-	"parameters\x18\x01 \x03(\v2G.google.cloud.bigquery.v2.ExternalCatalogDatasetOptions.ParametersEntryB\x03\xe0A\x01R\n" +
-	"parameters\x12D\n" +
-	"\x1cdefault_storage_location_uri\x18\x02 \x01(\tB\x03\xe0A\x01R\x19defaultStorageLocationUri\x1a=\n" +
+	"parameters\x18\x01 \x03(\v2G.google.cloud.bigquery.v2.ExternalCatalogDatasetOptions.ParametersEntryB\x04\xe2A\x01\x01R\n" +
+	"parameters\x12E\n" +
+	"\x1cdefault_storage_location_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x19defaultStorageLocationUri\x1a=\n" +
 	"\x0fParametersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x81\x01\n" +

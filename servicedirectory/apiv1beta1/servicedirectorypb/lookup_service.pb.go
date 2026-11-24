@@ -194,12 +194,12 @@ var File_google_cloud_servicedirectory_v1beta1_lookup_service_proto protoreflect
 
 const file_google_cloud_servicedirectory_v1beta1_lookup_service_proto_rawDesc = "" +
 	"\n" +
-	":google/cloud/servicedirectory/v1beta1/lookup_service.proto\x12%google.cloud.servicedirectory.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a3google/cloud/servicedirectory/v1beta1/service.proto\"\xb4\x01\n" +
-	"\x15ResolveServiceRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'servicedirectory.googleapis.com/ServiceR\x04name\x12(\n" +
-	"\rmax_endpoints\x18\x02 \x01(\x05B\x03\xe0A\x01R\fmaxEndpoints\x12,\n" +
-	"\x0fendpoint_filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x0eendpointFilter\"b\n" +
+	":google/cloud/servicedirectory/v1beta1/lookup_service.proto\x12%google.cloud.servicedirectory.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a3google/cloud/servicedirectory/v1beta1/service.proto\"\xb7\x01\n" +
+	"\x15ResolveServiceRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'servicedirectory.googleapis.com/ServiceR\x04name\x12)\n" +
+	"\rmax_endpoints\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\fmaxEndpoints\x12-\n" +
+	"\x0fendpoint_filter\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x0eendpointFilter\"b\n" +
 	"\x16ResolveServiceResponse\x12H\n" +
 	"\aservice\x18\x01 \x01(\v2..google.cloud.servicedirectory.v1beta1.ServiceR\aservice2\xc7\x02\n" +
 	"\rLookupService\x12\xe0\x01\n" +

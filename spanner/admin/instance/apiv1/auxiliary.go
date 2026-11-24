@@ -18,12 +18,14 @@ package instance
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	instancepb "cloud.google.com/go/spanner/admin/instance/apiv1/instancepb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -475,6 +477,12 @@ func (op *UpdateInstancePartitionOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceConfigIterator) All() iter.Seq2[*instancepb.InstanceConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InstanceConfigIterator manages a stream of *instancepb.InstanceConfig.
 type InstanceConfigIterator struct {
 	items    []*instancepb.InstanceConfig
@@ -520,6 +528,12 @@ func (it *InstanceConfigIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceIterator) All() iter.Seq2[*instancepb.Instance, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // InstanceIterator manages a stream of *instancepb.Instance.
@@ -569,6 +583,12 @@ func (it *InstanceIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstancePartitionIterator) All() iter.Seq2[*instancepb.InstancePartition, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InstancePartitionIterator manages a stream of *instancepb.InstancePartition.
 type InstancePartitionIterator struct {
 	items    []*instancepb.InstancePartition
@@ -614,6 +634,12 @@ func (it *InstancePartitionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.

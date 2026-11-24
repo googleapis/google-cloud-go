@@ -261,18 +261,18 @@ var File_google_firestore_admin_v1_user_creds_proto protoreflect.FileDescriptor
 
 const file_google_firestore_admin_v1_user_creds_proto_rawDesc = "" +
 	"\n" +
-	"*google/firestore/admin/v1/user_creds.proto\x12\x19google.firestore.admin.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x89\x05\n" +
-	"\tUserCreds\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12E\n" +
-	"\x05state\x18\x04 \x01(\x0e2*.google.firestore.admin.v1.UserCreds.StateB\x03\xe0A\x03R\x05state\x12,\n" +
-	"\x0fsecure_password\x18\x05 \x01(\tB\x03\xe0A\x03R\x0esecurePassword\x12d\n" +
-	"\x11resource_identity\x18\x06 \x01(\v25.google.firestore.admin.v1.UserCreds.ResourceIdentityH\x00R\x10resourceIdentity\x1a5\n" +
-	"\x10ResourceIdentity\x12!\n" +
-	"\tprincipal\x18\x01 \x01(\tB\x03\xe0A\x03R\tprincipal\"9\n" +
+	"*google/firestore/admin/v1/user_creds.proto\x12\x19google.firestore.admin.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8f\x05\n" +
+	"\tUserCreds\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12F\n" +
+	"\x05state\x18\x04 \x01(\x0e2*.google.firestore.admin.v1.UserCreds.StateB\x04\xe2A\x01\x03R\x05state\x12-\n" +
+	"\x0fsecure_password\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x0esecurePassword\x12d\n" +
+	"\x11resource_identity\x18\x06 \x01(\v25.google.firestore.admin.v1.UserCreds.ResourceIdentityH\x00R\x10resourceIdentity\x1a6\n" +
+	"\x10ResourceIdentity\x12\"\n" +
+	"\tprincipal\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\tprincipal\"9\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aENABLED\x10\x01\x12\f\n" +

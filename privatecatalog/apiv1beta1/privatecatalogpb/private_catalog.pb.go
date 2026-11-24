@@ -1384,72 +1384,72 @@ var File_google_cloud_privatecatalog_v1beta1_private_catalog_proto protoreflect.
 
 const file_google_cloud_privatecatalog_v1beta1_private_catalog_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/privatecatalog/v1beta1/private_catalog.proto\x12#google.cloud.privatecatalog.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8a\x01\n" +
-	"\x15SearchCatalogsRequest\x12\x1f\n" +
-	"\bresource\x18\x01 \x01(\tB\x03\xe0A\x02R\bresource\x12\x14\n" +
+	"9google/cloud/privatecatalog/v1beta1/private_catalog.proto\x12#google.cloud.privatecatalog.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8b\x01\n" +
+	"\x15SearchCatalogsRequest\x12 \n" +
+	"\bresource\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x14\n" +
 	"\x05query\x18\x02 \x01(\tR\x05query\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x04 \x01(\tR\tpageToken\"\x8a\x01\n" +
 	"\x16SearchCatalogsResponse\x12H\n" +
 	"\bcatalogs\x18\x01 \x03(\v2,.google.cloud.privatecatalog.v1beta1.CatalogR\bcatalogs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8a\x01\n" +
-	"\x15SearchProductsRequest\x12\x1f\n" +
-	"\bresource\x18\x01 \x01(\tB\x03\xe0A\x02R\bresource\x12\x14\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8b\x01\n" +
+	"\x15SearchProductsRequest\x12 \n" +
+	"\bresource\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x14\n" +
 	"\x05query\x18\x02 \x01(\tR\x05query\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x04 \x01(\tR\tpageToken\"\x8a\x01\n" +
 	"\x16SearchProductsResponse\x12H\n" +
 	"\bproducts\x18\x01 \x03(\v2,.google.cloud.privatecatalog.v1beta1.ProductR\bproducts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8f\x01\n" +
-	"\x15SearchVersionsRequest\x12\x1f\n" +
-	"\bresource\x18\x01 \x01(\tB\x03\xe0A\x02R\bresource\x12\x19\n" +
-	"\x05query\x18\x02 \x01(\tB\x03\xe0A\x02R\x05query\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x91\x01\n" +
+	"\x15SearchVersionsRequest\x12 \n" +
+	"\bresource\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bresource\x12\x1a\n" +
+	"\x05query\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x04 \x01(\tR\tpageToken\"\x8a\x01\n" +
 	"\x16SearchVersionsResponse\x12H\n" +
 	"\bversions\x18\x01 \x03(\v2,.google.cloud.privatecatalog.v1beta1.VersionR\bversions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xba\x02\n" +
-	"\aCatalog\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x03R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbf\x02\n" +
+	"\aCatalog\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:C\xeaA@\n" +
-	"*cloudprivatecatalog.googleapis.com/Catalog\x12\x12catalogs/{catalog}\"\xe0\x03\n" +
-	"\aProduct\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\"\n" +
+	"*cloudprivatecatalog.googleapis.com/Catalog\x12\x12catalogs/{catalog}\"\xe5\x03\n" +
+	"\aProduct\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12#\n" +
 	"\n" +
-	"asset_type\x18\x02 \x01(\tB\x03\xe0A\x03R\tassetType\x12J\n" +
-	"\x10display_metadata\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x06\xe0A\x02\xe0A\x03R\x0fdisplayMetadata\x12\x1e\n" +
-	"\bicon_uri\x18\x04 \x01(\tB\x03\xe0A\x03R\aiconUri\x12c\n" +
+	"asset_type\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\tassetType\x12I\n" +
+	"\x10display_metadata\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x05\xe2A\x02\x02\x03R\x0fdisplayMetadata\x12\x1f\n" +
+	"\bicon_uri\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\aiconUri\x12d\n" +
 	"\x10asset_references\x18\n" +
-	" \x03(\v23.google.cloud.privatecatalog.v1beta1.AssetReferenceB\x03\xe0A\x03R\x0fassetReferences\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" \x03(\v23.google.cloud.privatecatalog.v1beta1.AssetReferenceB\x04\xe2A\x01\x03R\x0fassetReferences\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:C\xeaA@\n" +
-	"*cloudprivatecatalog.googleapis.com/Product\x12\x12products/{product}\"\xe5\x06\n" +
-	"\x0eAssetReference\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x03R\x02id\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x03R\vdescription\x12H\n" +
-	"\x06inputs\x18\x06 \x01(\v2+.google.cloud.privatecatalog.v1beta1.InputsB\x03\xe0A\x03R\x06inputs\x12z\n" +
-	"\x11validation_status\x18\a \x01(\x0e2H.google.cloud.privatecatalog.v1beta1.AssetReference.AssetValidationStateB\x03\xe0A\x03R\x10validationStatus\x12U\n" +
-	"\x14validation_operation\x18\b \x01(\v2\x1d.google.longrunning.OperationB\x03\xe0A\x03R\x13validationOperation\x12\x1b\n" +
+	"*cloudprivatecatalog.googleapis.com/Product\x12\x12products/{product}\"\xf0\x06\n" +
+	"\x0eAssetReference\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x02id\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12I\n" +
+	"\x06inputs\x18\x06 \x01(\v2+.google.cloud.privatecatalog.v1beta1.InputsB\x04\xe2A\x01\x03R\x06inputs\x12{\n" +
+	"\x11validation_status\x18\a \x01(\x0e2H.google.cloud.privatecatalog.v1beta1.AssetReference.AssetValidationStateB\x04\xe2A\x01\x03R\x10validationStatus\x12V\n" +
+	"\x14validation_operation\x18\b \x01(\v2\x1d.google.longrunning.OperationB\x04\xe2A\x01\x03R\x13validationOperation\x12\x1c\n" +
 	"\x05asset\x18\n" +
-	" \x01(\tB\x03\xe0A\x03H\x00R\x05asset\x12\"\n" +
-	"\bgcs_path\x18\v \x01(\tB\x05\xe0A\x03\x18\x01H\x00R\agcsPath\x12T\n" +
+	" \x01(\tB\x04\xe2A\x01\x03H\x00R\x05asset\x12#\n" +
+	"\bgcs_path\x18\v \x01(\tB\x06\xe2A\x01\x03\x18\x01H\x00R\agcsPath\x12U\n" +
 	"\n" +
-	"git_source\x18\x0f \x01(\v2..google.cloud.privatecatalog.v1beta1.GitSourceB\x03\xe0A\x03H\x00R\tgitSource\x12R\n" +
+	"git_source\x18\x0f \x01(\v2..google.cloud.privatecatalog.v1beta1.GitSourceB\x04\xe2A\x01\x03H\x00R\tgitSource\x12S\n" +
 	"\n" +
-	"gcs_source\x18\x10 \x01(\v2..google.cloud.privatecatalog.v1beta1.GcsSourceB\x03\xe0A\x03R\tgcsSource\x12@\n" +
-	"\vcreate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"gcs_source\x18\x10 \x01(\v2..google.cloud.privatecatalog.v1beta1.GcsSourceB\x04\xe2A\x01\x03R\tgcsSource\x12A\n" +
+	"\vcreate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12\x1c\n" +
 	"\aversion\x18\x0e \x01(\tB\x02\x18\x01R\aversion\"c\n" +
 	"\x14AssetValidationState\x12&\n" +
@@ -1457,17 +1457,17 @@ const file_google_cloud_privatecatalog_v1beta1_private_catalog_proto_rawDesc = "
 	"\aPENDING\x10\x01\x12\t\n" +
 	"\x05VALID\x10\x02\x12\v\n" +
 	"\aINVALID\x10\x03B\b\n" +
-	"\x06source\"F\n" +
-	"\x06Inputs\x12<\n" +
+	"\x06source\"G\n" +
+	"\x06Inputs\x12=\n" +
 	"\n" +
-	"parameters\x18\x01 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x03R\n" +
-	"parameters\"\x92\x01\n" +
-	"\tGcsSource\x12\x1e\n" +
-	"\bgcs_path\x18\x01 \x01(\tB\x03\xe0A\x03R\agcsPath\x12#\n" +
+	"parameters\x18\x01 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x03R\n" +
+	"parameters\"\x95\x01\n" +
+	"\tGcsSource\x12\x1f\n" +
+	"\bgcs_path\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\agcsPath\x12$\n" +
 	"\n" +
-	"generation\x18\x02 \x01(\x03B\x03\xe0A\x03R\n" +
-	"generation\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"generation\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\n" +
+	"generation\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\"\x80\x01\n" +
 	"\tGitSource\x12\x12\n" +
 	"\x04repo\x18\x01 \x01(\tR\x04repo\x12\x10\n" +
@@ -1475,14 +1475,14 @@ const file_google_cloud_privatecatalog_v1beta1_private_catalog_proto_rawDesc = "
 	"\x06commit\x18\x03 \x01(\tH\x00R\x06commit\x12\x18\n" +
 	"\x06branch\x18\x04 \x01(\tH\x00R\x06branch\x12\x12\n" +
 	"\x03tag\x18\x05 \x01(\tH\x00R\x03tagB\x05\n" +
-	"\x03ref\"\xec\x02\n" +
-	"\aVersion\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x03R\vdescription\x122\n" +
-	"\x05asset\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x03R\x05asset\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x03ref\"\xf1\x02\n" +
+	"\aVersion\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x123\n" +
+	"\x05asset\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x03R\x05asset\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:i\xeaAf\n" +
 	"*cloudprivatecatalog.googleapis.com/Version\x128catalogs/{catalog}/products/{product}/versions/{version}2\xf2\a\n" +
 	"\x0ePrivateCatalog\x12\xab\x02\n" +

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -96,7 +96,7 @@ func (x NewFilestoreConfig_Tier) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use NewFilestoreConfig_Tier.Descriptor instead.
 func (NewFilestoreConfig_Tier) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{17, 0}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{19, 0}
 }
 
 // File access protocol for Filestore instances.
@@ -149,7 +149,7 @@ func (x NewFilestoreConfig_Protocol) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use NewFilestoreConfig_Protocol.Descriptor instead.
 func (NewFilestoreConfig_Protocol) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{17, 1}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{19, 1}
 }
 
 // [Storage class](https://cloud.google.com/storage/docs/storage-classes) for
@@ -168,6 +168,8 @@ const (
 	// Lowest-cost storage for data archiving, online backup, and disaster
 	// recovery.
 	NewBucketConfig_ARCHIVE NewBucketConfig_StorageClass = 4
+	// Storage class optimized for I/O intensive workloads.
+	NewBucketConfig_RAPID NewBucketConfig_StorageClass = 5
 )
 
 // Enum value maps for NewBucketConfig_StorageClass.
@@ -178,6 +180,7 @@ var (
 		2: "NEARLINE",
 		3: "COLDLINE",
 		4: "ARCHIVE",
+		5: "RAPID",
 	}
 	NewBucketConfig_StorageClass_value = map[string]int32{
 		"STORAGE_CLASS_UNSPECIFIED": 0,
@@ -185,6 +188,7 @@ var (
 		"NEARLINE":                  2,
 		"COLDLINE":                  3,
 		"ARCHIVE":                   4,
+		"RAPID":                     5,
 	}
 )
 
@@ -212,7 +216,7 @@ func (x NewBucketConfig_StorageClass) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use NewBucketConfig_StorageClass.Descriptor instead.
 func (NewBucketConfig_StorageClass) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{20, 0}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{22, 0}
 }
 
 // Terminal storage class types of the autoclass bucket
@@ -221,15 +225,23 @@ type GcsAutoclassConfig_TerminalStorageClass int32
 const (
 	// Unspecified terminal storage class
 	GcsAutoclassConfig_TERMINAL_STORAGE_CLASS_UNSPECIFIED GcsAutoclassConfig_TerminalStorageClass = 0
+	// Nearline terminal storage class
+	GcsAutoclassConfig_NEARLINE GcsAutoclassConfig_TerminalStorageClass = 1
+	// Archive terminal storage class
+	GcsAutoclassConfig_ARCHIVE GcsAutoclassConfig_TerminalStorageClass = 2
 )
 
 // Enum value maps for GcsAutoclassConfig_TerminalStorageClass.
 var (
 	GcsAutoclassConfig_TerminalStorageClass_name = map[int32]string{
 		0: "TERMINAL_STORAGE_CLASS_UNSPECIFIED",
+		1: "NEARLINE",
+		2: "ARCHIVE",
 	}
 	GcsAutoclassConfig_TerminalStorageClass_value = map[string]int32{
 		"TERMINAL_STORAGE_CLASS_UNSPECIFIED": 0,
+		"NEARLINE":                           1,
+		"ARCHIVE":                            2,
 	}
 )
 
@@ -257,7 +269,201 @@ func (x GcsAutoclassConfig_TerminalStorageClass) Number() protoreflect.EnumNumbe
 
 // Deprecated: Use GcsAutoclassConfig_TerminalStorageClass.Descriptor instead.
 func (GcsAutoclassConfig_TerminalStorageClass) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{21, 0}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{23, 0}
+}
+
+// Specifies the termination action of the instance.
+type NewSpotInstancesConfig_TerminationAction int32
+
+const (
+	// Not set.
+	NewSpotInstancesConfig_TERMINATION_ACTION_UNSPECIFIED NewSpotInstancesConfig_TerminationAction = 0
+	// Compute Engine stops the Spot VM on preemption.
+	NewSpotInstancesConfig_STOP NewSpotInstancesConfig_TerminationAction = 1
+	// Compute Engine deletes the Spot VM on preemption.
+	NewSpotInstancesConfig_DELETE NewSpotInstancesConfig_TerminationAction = 2
+)
+
+// Enum value maps for NewSpotInstancesConfig_TerminationAction.
+var (
+	NewSpotInstancesConfig_TerminationAction_name = map[int32]string{
+		0: "TERMINATION_ACTION_UNSPECIFIED",
+		1: "STOP",
+		2: "DELETE",
+	}
+	NewSpotInstancesConfig_TerminationAction_value = map[string]int32{
+		"TERMINATION_ACTION_UNSPECIFIED": 0,
+		"STOP":                           1,
+		"DELETE":                         2,
+	}
+)
+
+func (x NewSpotInstancesConfig_TerminationAction) Enum() *NewSpotInstancesConfig_TerminationAction {
+	p := new(NewSpotInstancesConfig_TerminationAction)
+	*p = x
+	return p
+}
+
+func (x NewSpotInstancesConfig_TerminationAction) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (NewSpotInstancesConfig_TerminationAction) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_enumTypes[4].Descriptor()
+}
+
+func (NewSpotInstancesConfig_TerminationAction) Type() protoreflect.EnumType {
+	return &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_enumTypes[4]
+}
+
+func (x NewSpotInstancesConfig_TerminationAction) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use NewSpotInstancesConfig_TerminationAction.Descriptor instead.
+func (NewSpotInstancesConfig_TerminationAction) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{32, 0}
+}
+
+// High-level lifecycle state of the node.
+type Node_State int32
+
+const (
+	// Not set.
+	Node_STATE_UNSPECIFIED Node_State = 0
+	// The node is being provisioned at the infrastructure layer or
+	// initialized by the orchestrator.
+	Node_CREATING Node_State = 1
+	// The node is healthy and operational.
+	Node_ACTIVE Node_State = 2
+	// The node is transitioning to a stopped or suspended state.
+	Node_SUSPENDING Node_State = 3
+	// The node is suspended or stopped and not consuming compute resources.
+	Node_SUSPENDED Node_State = 4
+	// The node is undergoing maintenance or automatic recovery.
+	Node_REPAIRING Node_State = 5
+	// The node is in an unhealthy or terminal error state.
+	Node_FAILED Node_State = 6
+	// The node is being deleted.
+	Node_DELETING Node_State = 7
+	// The node has no VM assigned to it.
+	Node_UNPROVISIONED Node_State = 8
+)
+
+// Enum value maps for Node_State.
+var (
+	Node_State_name = map[int32]string{
+		0: "STATE_UNSPECIFIED",
+		1: "CREATING",
+		2: "ACTIVE",
+		3: "SUSPENDING",
+		4: "SUSPENDED",
+		5: "REPAIRING",
+		6: "FAILED",
+		7: "DELETING",
+		8: "UNPROVISIONED",
+	}
+	Node_State_value = map[string]int32{
+		"STATE_UNSPECIFIED": 0,
+		"CREATING":          1,
+		"ACTIVE":            2,
+		"SUSPENDING":        3,
+		"SUSPENDED":         4,
+		"REPAIRING":         5,
+		"FAILED":            6,
+		"DELETING":          7,
+		"UNPROVISIONED":     8,
+	}
+)
+
+func (x Node_State) Enum() *Node_State {
+	p := new(Node_State)
+	*p = x
+	return p
+}
+
+func (x Node_State) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Node_State) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_enumTypes[5].Descriptor()
+}
+
+func (Node_State) Type() protoreflect.EnumType {
+	return &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_enumTypes[5]
+}
+
+func (x Node_State) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Node_State.Descriptor instead.
+func (Node_State) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{46, 0}
+}
+
+// Provisioning model of the node.
+type Node_ProvisioningModel int32
+
+const (
+	// Not set.
+	Node_PROVISIONING_MODEL_UNSPECIFIED Node_ProvisioningModel = 0
+	// The node is provisioned on demand. User controlled runtime, no discounts.
+	Node_ON_DEMAND Node_ProvisioningModel = 1
+	// The node is provisioned as a spot VM. Heavily discounted, no guaranteed
+	// runtime.
+	Node_SPOT Node_ProvisioningModel = 2
+	// The node is provisioned as a reservation-bound VM. Bound to the lifecycle
+	// of the reservation in which it is provisioned.
+	Node_RESERVATION_BOUND Node_ProvisioningModel = 3
+	// The node is provisioned as a flex-start VM. Has a limited runtime.
+	Node_FLEX_START Node_ProvisioningModel = 4
+)
+
+// Enum value maps for Node_ProvisioningModel.
+var (
+	Node_ProvisioningModel_name = map[int32]string{
+		0: "PROVISIONING_MODEL_UNSPECIFIED",
+		1: "ON_DEMAND",
+		2: "SPOT",
+		3: "RESERVATION_BOUND",
+		4: "FLEX_START",
+	}
+	Node_ProvisioningModel_value = map[string]int32{
+		"PROVISIONING_MODEL_UNSPECIFIED": 0,
+		"ON_DEMAND":                      1,
+		"SPOT":                           2,
+		"RESERVATION_BOUND":              3,
+		"FLEX_START":                     4,
+	}
+)
+
+func (x Node_ProvisioningModel) Enum() *Node_ProvisioningModel {
+	p := new(Node_ProvisioningModel)
+	*p = x
+	return p
+}
+
+func (x Node_ProvisioningModel) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Node_ProvisioningModel) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_enumTypes[6].Descriptor()
+}
+
+func (Node_ProvisioningModel) Type() protoreflect.EnumType {
+	return &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_enumTypes[6]
+}
+
+func (x Node_ProvisioningModel) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Node_ProvisioningModel.Descriptor instead.
+func (Node_ProvisioningModel) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{46, 1}
 }
 
 // A collection of virtual machines and connected resources forming a
@@ -272,7 +478,8 @@ type Cluster struct {
 	// cluster, in the format
 	// `projects/{project}/locations/{location}/clusters/{cluster}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. User-provided description of the cluster.
+	// Optional. A description for your cluster. You can use up to 2,048
+	// characters.
 	Description string `protobuf:"bytes,9,opt,name=description,proto3" json:"description,omitempty"`
 	// Optional.
 	// [Labels](https://cloud.google.com/compute/docs/labeling-resources) applied
@@ -287,7 +494,7 @@ type Cluster struct {
 	// flight. If this is `true`, then the current state might not match the
 	// cluster's intended state.
 	Reconciling bool `protobuf:"varint,10,opt,name=reconciling,proto3" json:"reconciling,omitempty"`
-	// Optional. Network resources available to the cluster. Must contain at most
+	// Optional. Network resources available to the cluster. Must contain exactly
 	// one value. Keys specify the ID of the network resource by which it can be
 	// referenced elsewhere, and must conform to
 	// [RFC-1034](https://datatracker.ietf.org/doc/html/rfc1034) (lower-case,
@@ -305,7 +512,9 @@ type Cluster struct {
 	ComputeResources map[string]*ComputeResource `protobuf:"bytes,13,rep,name=compute_resources,json=computeResources,proto3" json:"compute_resources,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// Optional. Orchestrator that is responsible for scheduling and running jobs
 	// on the cluster.
-	Orchestrator  *Orchestrator `protobuf:"bytes,8,opt,name=orchestrator,proto3" json:"orchestrator,omitempty"`
+	Orchestrator *Orchestrator `protobuf:"bytes,8,opt,name=orchestrator,proto3" json:"orchestrator,omitempty"`
+	// Output only. The globally unique identifier for this Cluster.
+	Uid           string `protobuf:"bytes,16,opt,name=uid,proto3" json:"uid,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -408,6 +617,13 @@ func (x *Cluster) GetOrchestrator() *Orchestrator {
 		return x.Orchestrator
 	}
 	return nil
+}
+
+func (x *Cluster) GetUid() string {
+	if x != nil {
+		return x.Uid
+	}
+	return ""
 }
 
 // Request message for
@@ -628,9 +844,10 @@ type CreateClusterRequest struct {
 	// Required. Parent location in which the cluster should be created, in the
 	// format `projects/{project}/locations/{location}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. ID of the cluster to create. Must conform to
-	// [RFC-1034](https://datatracker.ietf.org/doc/html/rfc1034) (lower-case,
-	// alphanumeric, and at most 63 characters).
+	// Required. The ID of the cluster to create.
+	// The cluster ID must start with a lowercase letter (`a`-`z`), use only
+	// lowercase letters or numbers, and contain up to 10 characters. For example,
+	// specify `cluster001`.
 	ClusterId string `protobuf:"bytes,2,opt,name=cluster_id,json=clusterId,proto3" json:"cluster_id,omitempty"`
 	// Required. Cluster to create.
 	Cluster *Cluster `protobuf:"bytes,3,opt,name=cluster,proto3" json:"cluster,omitempty"`
@@ -828,11 +1045,163 @@ func (x *DeleteClusterRequest) GetRequestId() string {
 	return ""
 }
 
+// Request message for
+// [ListNodes][google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.ListNodes].
+type ListNodesRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Parent cluster of the nodes to list, in the format
+	// `projects/{project}/locations/{location}/clusters/{cluster}`.
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Optional. Maximum number of nodes to return. The service may return fewer
+	// than this value.
+	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. A page token received from a previous `ListNodes` call. Provide
+	// this to retrieve the subsequent page. When paginating, all other parameters
+	// provided to `ListNodes` must match the call that provided the page
+	// token.
+	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	// Optional. [Filter](https://google.aip.dev/160) to apply to the returned
+	// results.
+	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
+	// Optional. How to order the resulting nodes. Must be one of the following
+	// strings:
+	//
+	// * `name`
+	// * `name desc`
+	//
+	// If not specified, nodes will be returned in an arbitrary order.
+	OrderBy       string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListNodesRequest) Reset() {
+	*x = ListNodesRequest{}
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListNodesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListNodesRequest) ProtoMessage() {}
+
+func (x *ListNodesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListNodesRequest.ProtoReflect.Descriptor instead.
+func (*ListNodesRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *ListNodesRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *ListNodesRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListNodesRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+func (x *ListNodesRequest) GetFilter() string {
+	if x != nil {
+		return x.Filter
+	}
+	return ""
+}
+
+func (x *ListNodesRequest) GetOrderBy() string {
+	if x != nil {
+		return x.OrderBy
+	}
+	return ""
+}
+
+// Response message for
+// [ListNodes][google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.ListNodes].
+type ListNodesResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Nodes in the specified cluster.
+	Nodes []*Node `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
+	// A token that can be sent as `page_token` to retrieve the next page. If this
+	// field is absent, there are no subsequent pages.
+	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListNodesResponse) Reset() {
+	*x = ListNodesResponse{}
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListNodesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListNodesResponse) ProtoMessage() {}
+
+func (x *ListNodesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListNodesResponse.ProtoReflect.Descriptor instead.
+func (*ListNodesResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ListNodesResponse) GetNodes() []*Node {
+	if x != nil {
+		return x.Nodes
+	}
+	return nil
+}
+
+func (x *ListNodesResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
 // A resource representing a network that connects the various components of a
 // cluster together.
 type NetworkResource struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Reference to the network resource in Google Cloud. Exactly one of these
+	// A reference to the network resource in Google Cloud. Exactly one of these
 	// fields will be populated based on the configured type of network resource.
 	//
 	// Types that are valid to be assigned to Reference:
@@ -851,7 +1220,7 @@ type NetworkResource struct {
 
 func (x *NetworkResource) Reset() {
 	*x = NetworkResource{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[7]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -863,7 +1232,7 @@ func (x *NetworkResource) String() string {
 func (*NetworkResource) ProtoMessage() {}
 
 func (x *NetworkResource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[7]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -876,7 +1245,7 @@ func (x *NetworkResource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NetworkResource.ProtoReflect.Descriptor instead.
 func (*NetworkResource) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{7}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *NetworkResource) GetReference() isNetworkResource_Reference {
@@ -907,7 +1276,7 @@ type isNetworkResource_Reference interface {
 }
 
 type NetworkResource_Network struct {
-	// Reference to a network in Google Compute Engine.
+	// Output only. A reference to a network in Google Compute Engine.
 	Network *NetworkReference `protobuf:"bytes,3,opt,name=network,proto3,oneof"`
 }
 
@@ -930,7 +1299,7 @@ type NetworkReference struct {
 
 func (x *NetworkReference) Reset() {
 	*x = NetworkReference{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[8]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -942,7 +1311,7 @@ func (x *NetworkReference) String() string {
 func (*NetworkReference) ProtoMessage() {}
 
 func (x *NetworkReference) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[8]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -955,7 +1324,7 @@ func (x *NetworkReference) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NetworkReference.ProtoReflect.Descriptor instead.
 func (*NetworkReference) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *NetworkReference) GetNetwork() string {
@@ -990,7 +1359,7 @@ type NetworkResourceConfig struct {
 
 func (x *NetworkResourceConfig) Reset() {
 	*x = NetworkResourceConfig{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[9]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1002,7 +1371,7 @@ func (x *NetworkResourceConfig) String() string {
 func (*NetworkResourceConfig) ProtoMessage() {}
 
 func (x *NetworkResourceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[9]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1015,7 +1384,7 @@ func (x *NetworkResourceConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NetworkResourceConfig.ProtoReflect.Descriptor instead.
 func (*NetworkResourceConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *NetworkResourceConfig) GetConfig() isNetworkResourceConfig_Config {
@@ -1080,7 +1449,7 @@ type NewNetworkConfig struct {
 
 func (x *NewNetworkConfig) Reset() {
 	*x = NewNetworkConfig{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[10]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1092,7 +1461,7 @@ func (x *NewNetworkConfig) String() string {
 func (*NewNetworkConfig) ProtoMessage() {}
 
 func (x *NewNetworkConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[10]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1105,7 +1474,7 @@ func (x *NewNetworkConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NewNetworkConfig.ProtoReflect.Descriptor instead.
 func (*NewNetworkConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{10}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *NewNetworkConfig) GetNetwork() string {
@@ -1139,7 +1508,7 @@ type ExistingNetworkConfig struct {
 
 func (x *ExistingNetworkConfig) Reset() {
 	*x = ExistingNetworkConfig{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[11]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1151,7 +1520,7 @@ func (x *ExistingNetworkConfig) String() string {
 func (*ExistingNetworkConfig) ProtoMessage() {}
 
 func (x *ExistingNetworkConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[11]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1164,7 +1533,7 @@ func (x *ExistingNetworkConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExistingNetworkConfig.ProtoReflect.Descriptor instead.
 func (*ExistingNetworkConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{11}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ExistingNetworkConfig) GetNetwork() string {
@@ -1181,11 +1550,11 @@ func (x *ExistingNetworkConfig) GetSubnetwork() string {
 	return ""
 }
 
-// A resource representing a form of persistent storage that is accessible to
-// compute resources in the cluster.
+// Represents a form of persistent storage that you can mount onto compute
+// resources in the cluster.
 type StorageResource struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Reference to the storage resource in Google Cloud. Exactly one of these
+	// A reference to the storage resource in Google Cloud. Exactly one of these
 	// fields will be populated based on the configured type of storage resource.
 	//
 	// Types that are valid to be assigned to Reference:
@@ -1206,7 +1575,7 @@ type StorageResource struct {
 
 func (x *StorageResource) Reset() {
 	*x = StorageResource{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[12]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1218,7 +1587,7 @@ func (x *StorageResource) String() string {
 func (*StorageResource) ProtoMessage() {}
 
 func (x *StorageResource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[12]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1231,7 +1600,7 @@ func (x *StorageResource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StorageResource.ProtoReflect.Descriptor instead.
 func (*StorageResource) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *StorageResource) GetReference() isStorageResource_Reference {
@@ -1280,20 +1649,21 @@ type isStorageResource_Reference interface {
 }
 
 type StorageResource_Filestore struct {
-	// Reference to a Filestore instance. Populated if and only if the storage
-	// resource was configured to use Filestore.
+	// Output only. A reference to a Filestore instance. Populated if and only
+	// if the storage resource was configured to use Filestore.
 	Filestore *FilestoreReference `protobuf:"bytes,1,opt,name=filestore,proto3,oneof"`
 }
 
 type StorageResource_Bucket struct {
-	// Reference to a Google Cloud Storage bucket. Populated if and only if the
-	// storage resource was configured to use Google Cloud Storage.
+	// Output only. A reference to a Google Cloud Storage bucket. Populated if
+	// and only if the storage resource was configured to use Google Cloud
+	// Storage.
 	Bucket *BucketReference `protobuf:"bytes,2,opt,name=bucket,proto3,oneof"`
 }
 
 type StorageResource_Lustre struct {
-	// Reference to a Managed Lustre instance. Populated if and only if the
-	// storage resource was configured to use Managed Lustre.
+	// Output only. A reference to a Managed Lustre instance. Populated if and
+	// only if the storage resource was configured to use Managed Lustre.
 	Lustre *LustreReference `protobuf:"bytes,3,opt,name=lustre,proto3,oneof"`
 }
 
@@ -1315,7 +1685,7 @@ type FilestoreReference struct {
 
 func (x *FilestoreReference) Reset() {
 	*x = FilestoreReference{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[13]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1327,7 +1697,7 @@ func (x *FilestoreReference) String() string {
 func (*FilestoreReference) ProtoMessage() {}
 
 func (x *FilestoreReference) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[13]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1340,7 +1710,7 @@ func (x *FilestoreReference) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FilestoreReference.ProtoReflect.Descriptor instead.
 func (*FilestoreReference) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{13}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *FilestoreReference) GetFilestore() string {
@@ -1362,7 +1732,7 @@ type BucketReference struct {
 
 func (x *BucketReference) Reset() {
 	*x = BucketReference{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[14]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1374,7 +1744,7 @@ func (x *BucketReference) String() string {
 func (*BucketReference) ProtoMessage() {}
 
 func (x *BucketReference) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[14]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1387,7 +1757,7 @@ func (x *BucketReference) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BucketReference.ProtoReflect.Descriptor instead.
 func (*BucketReference) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{14}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *BucketReference) GetBucket() string {
@@ -1410,7 +1780,7 @@ type LustreReference struct {
 
 func (x *LustreReference) Reset() {
 	*x = LustreReference{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[15]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1422,7 +1792,7 @@ func (x *LustreReference) String() string {
 func (*LustreReference) ProtoMessage() {}
 
 func (x *LustreReference) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[15]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1435,7 +1805,7 @@ func (x *LustreReference) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LustreReference.ProtoReflect.Descriptor instead.
 func (*LustreReference) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{15}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *LustreReference) GetLustre() string {
@@ -1460,6 +1830,7 @@ type StorageResourceConfig struct {
 	//	*StorageResourceConfig_ExistingBucket
 	//	*StorageResourceConfig_NewLustre
 	//	*StorageResourceConfig_ExistingLustre
+	//	*StorageResourceConfig_ExistingNfs
 	Config        isStorageResourceConfig_Config `protobuf_oneof:"config"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1467,7 +1838,7 @@ type StorageResourceConfig struct {
 
 func (x *StorageResourceConfig) Reset() {
 	*x = StorageResourceConfig{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[16]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1479,7 +1850,7 @@ func (x *StorageResourceConfig) String() string {
 func (*StorageResourceConfig) ProtoMessage() {}
 
 func (x *StorageResourceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[16]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1492,7 +1863,7 @@ func (x *StorageResourceConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StorageResourceConfig.ProtoReflect.Descriptor instead.
 func (*StorageResourceConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{16}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *StorageResourceConfig) GetConfig() isStorageResourceConfig_Config {
@@ -1556,6 +1927,15 @@ func (x *StorageResourceConfig) GetExistingLustre() *ExistingLustreConfig {
 	return nil
 }
 
+func (x *StorageResourceConfig) GetExistingNfs() *ExistingNfsConfig {
+	if x != nil {
+		if x, ok := x.Config.(*StorageResourceConfig_ExistingNfs); ok {
+			return x.ExistingNfs
+		}
+	}
+	return nil
+}
+
 type isStorageResourceConfig_Config interface {
 	isStorageResourceConfig_Config()
 }
@@ -1596,6 +1976,12 @@ type StorageResourceConfig_ExistingLustre struct {
 	ExistingLustre *ExistingLustreConfig `protobuf:"bytes,6,opt,name=existing_lustre,json=existingLustre,proto3,oneof"`
 }
 
+type StorageResourceConfig_ExistingNfs struct {
+	// Optional. Immutable. If set, indicates that an existing NFS share should
+	// be imported.
+	ExistingNfs *ExistingNfsConfig `protobuf:"bytes,7,opt,name=existing_nfs,json=existingNfs,proto3,oneof"`
+}
+
 func (*StorageResourceConfig_NewFilestore) isStorageResourceConfig_Config() {}
 
 func (*StorageResourceConfig_ExistingFilestore) isStorageResourceConfig_Config() {}
@@ -1608,6 +1994,8 @@ func (*StorageResourceConfig_NewLustre) isStorageResourceConfig_Config() {}
 
 func (*StorageResourceConfig_ExistingLustre) isStorageResourceConfig_Config() {}
 
+func (*StorageResourceConfig_ExistingNfs) isStorageResourceConfig_Config() {}
+
 // When set in a
 // [StorageResourceConfig][google.cloud.hypercomputecluster.v1beta.StorageResourceConfig],
 // indicates that a new [Filestore](https://cloud.google.com/filestore) instance
@@ -1615,7 +2003,7 @@ func (*StorageResourceConfig_ExistingLustre) isStorageResourceConfig_Config() {}
 type NewFilestoreConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Immutable. Name of the Filestore instance to create, in the
-	// format `projects/{project}/locations/{location}/instances/{instance}`
+	// format `projects/{project}/locations/{location}/instances/{instance}`.
 	Filestore string `protobuf:"bytes,1,opt,name=filestore,proto3" json:"filestore,omitempty"`
 	// Optional. Immutable. Description of the instance. Maximum of 2048
 	// characters.
@@ -1634,7 +2022,7 @@ type NewFilestoreConfig struct {
 
 func (x *NewFilestoreConfig) Reset() {
 	*x = NewFilestoreConfig{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[17]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1646,7 +2034,7 @@ func (x *NewFilestoreConfig) String() string {
 func (*NewFilestoreConfig) ProtoMessage() {}
 
 func (x *NewFilestoreConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[17]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1659,7 +2047,7 @@ func (x *NewFilestoreConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NewFilestoreConfig.ProtoReflect.Descriptor instead.
 func (*NewFilestoreConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{17}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *NewFilestoreConfig) GetFilestore() string {
@@ -1712,7 +2100,7 @@ type FileShareConfig struct {
 
 func (x *FileShareConfig) Reset() {
 	*x = FileShareConfig{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[18]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1724,7 +2112,7 @@ func (x *FileShareConfig) String() string {
 func (*FileShareConfig) ProtoMessage() {}
 
 func (x *FileShareConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[18]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1737,7 +2125,7 @@ func (x *FileShareConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileShareConfig.ProtoReflect.Descriptor instead.
 func (*FileShareConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{18}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *FileShareConfig) GetCapacityGb() int64 {
@@ -1769,7 +2157,7 @@ type ExistingFilestoreConfig struct {
 
 func (x *ExistingFilestoreConfig) Reset() {
 	*x = ExistingFilestoreConfig{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[19]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1781,7 +2169,7 @@ func (x *ExistingFilestoreConfig) String() string {
 func (*ExistingFilestoreConfig) ProtoMessage() {}
 
 func (x *ExistingFilestoreConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[19]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1794,7 +2182,7 @@ func (x *ExistingFilestoreConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExistingFilestoreConfig.ProtoReflect.Descriptor instead.
 func (*ExistingFilestoreConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{19}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *ExistingFilestoreConfig) GetFilestore() string {
@@ -1829,7 +2217,7 @@ type NewBucketConfig struct {
 
 func (x *NewBucketConfig) Reset() {
 	*x = NewBucketConfig{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[20]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1841,7 +2229,7 @@ func (x *NewBucketConfig) String() string {
 func (*NewBucketConfig) ProtoMessage() {}
 
 func (x *NewBucketConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[20]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1854,7 +2242,7 @@ func (x *NewBucketConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NewBucketConfig.ProtoReflect.Descriptor instead.
 func (*NewBucketConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{20}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *NewBucketConfig) GetOption() isNewBucketConfig_Option {
@@ -1929,7 +2317,7 @@ type GcsAutoclassConfig struct {
 
 func (x *GcsAutoclassConfig) Reset() {
 	*x = GcsAutoclassConfig{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[21]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1941,7 +2329,7 @@ func (x *GcsAutoclassConfig) String() string {
 func (*GcsAutoclassConfig) ProtoMessage() {}
 
 func (x *GcsAutoclassConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[21]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1954,7 +2342,7 @@ func (x *GcsAutoclassConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GcsAutoclassConfig.ProtoReflect.Descriptor instead.
 func (*GcsAutoclassConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{21}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *GcsAutoclassConfig) GetEnabled() bool {
@@ -1982,7 +2370,7 @@ type GcsHierarchicalNamespaceConfig struct {
 
 func (x *GcsHierarchicalNamespaceConfig) Reset() {
 	*x = GcsHierarchicalNamespaceConfig{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[22]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1994,7 +2382,7 @@ func (x *GcsHierarchicalNamespaceConfig) String() string {
 func (*GcsHierarchicalNamespaceConfig) ProtoMessage() {}
 
 func (x *GcsHierarchicalNamespaceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[22]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2007,7 +2395,7 @@ func (x *GcsHierarchicalNamespaceConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GcsHierarchicalNamespaceConfig.ProtoReflect.Descriptor instead.
 func (*GcsHierarchicalNamespaceConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{22}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *GcsHierarchicalNamespaceConfig) GetEnabled() bool {
@@ -2031,7 +2419,7 @@ type ExistingBucketConfig struct {
 
 func (x *ExistingBucketConfig) Reset() {
 	*x = ExistingBucketConfig{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[23]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2043,7 +2431,7 @@ func (x *ExistingBucketConfig) String() string {
 func (*ExistingBucketConfig) ProtoMessage() {}
 
 func (x *ExistingBucketConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[23]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2056,7 +2444,7 @@ func (x *ExistingBucketConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExistingBucketConfig.ProtoReflect.Descriptor instead.
 func (*ExistingBucketConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{23}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *ExistingBucketConfig) GetBucket() string {
@@ -2085,14 +2473,19 @@ type NewLustreConfig struct {
 	Filesystem string `protobuf:"bytes,3,opt,name=filesystem,proto3" json:"filesystem,omitempty"`
 	// Required. Immutable. Storage capacity of the instance in gibibytes (GiB).
 	// Allowed values are between 18000 and 7632000.
-	CapacityGb    int64 `protobuf:"varint,4,opt,name=capacity_gb,json=capacityGb,proto3" json:"capacity_gb,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	CapacityGb int64 `protobuf:"varint,4,opt,name=capacity_gb,json=capacityGb,proto3" json:"capacity_gb,omitempty"`
+	// Optional. Immutable. Throughput of the instance in MB/s/TiB. Valid values
+	// are 125, 250, 500, 1000. See [Performance tiers and maximum storage
+	// capacities](https://cloud.google.com/managed-lustre/docs/create-instance#performance-tiers)
+	// for more information.
+	PerUnitStorageThroughput int64 `protobuf:"varint,5,opt,name=per_unit_storage_throughput,json=perUnitStorageThroughput,proto3" json:"per_unit_storage_throughput,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *NewLustreConfig) Reset() {
 	*x = NewLustreConfig{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[24]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2104,7 +2497,7 @@ func (x *NewLustreConfig) String() string {
 func (*NewLustreConfig) ProtoMessage() {}
 
 func (x *NewLustreConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[24]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2117,7 +2510,7 @@ func (x *NewLustreConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NewLustreConfig.ProtoReflect.Descriptor instead.
 func (*NewLustreConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{24}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *NewLustreConfig) GetLustre() string {
@@ -2148,6 +2541,13 @@ func (x *NewLustreConfig) GetCapacityGb() int64 {
 	return 0
 }
 
+func (x *NewLustreConfig) GetPerUnitStorageThroughput() int64 {
+	if x != nil {
+		return x.PerUnitStorageThroughput
+	}
+	return 0
+}
+
 // When set in a
 // [StorageResourceConfig][google.cloud.hypercomputecluster.v1beta.StorageResourceConfig],
 // indicates that an existing [Managed
@@ -2164,7 +2564,7 @@ type ExistingLustreConfig struct {
 
 func (x *ExistingLustreConfig) Reset() {
 	*x = ExistingLustreConfig{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[25]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2176,7 +2576,7 @@ func (x *ExistingLustreConfig) String() string {
 func (*ExistingLustreConfig) ProtoMessage() {}
 
 func (x *ExistingLustreConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[25]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2189,12 +2589,79 @@ func (x *ExistingLustreConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExistingLustreConfig.ProtoReflect.Descriptor instead.
 func (*ExistingLustreConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{25}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *ExistingLustreConfig) GetLustre() string {
 	if x != nil {
 		return x.Lustre
+	}
+	return ""
+}
+
+// When set in a
+// [StorageResourceConfig][google.cloud.hypercomputecluster.v1beta.StorageResourceConfig],
+// indicates that an existing NFS share should be imported.
+type ExistingNfsConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Immutable. Server IP address of the NFS share.
+	ServerIpAddress string `protobuf:"bytes,1,opt,name=server_ip_address,json=serverIpAddress,proto3" json:"server_ip_address,omitempty"`
+	// Required. Immutable. Remote mount path of the NFS share.
+	RemoteMount string `protobuf:"bytes,2,opt,name=remote_mount,json=remoteMount,proto3" json:"remote_mount,omitempty"`
+	// Optional. Immutable. Options to mount the NFS share, as expected by
+	// fs_mntops field infstab(5), for example: "rw,vers=4.1,nconnect=2,noatime".
+	MountOptions  string `protobuf:"bytes,3,opt,name=mount_options,json=mountOptions,proto3" json:"mount_options,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExistingNfsConfig) Reset() {
+	*x = ExistingNfsConfig{}
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExistingNfsConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExistingNfsConfig) ProtoMessage() {}
+
+func (x *ExistingNfsConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExistingNfsConfig.ProtoReflect.Descriptor instead.
+func (*ExistingNfsConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *ExistingNfsConfig) GetServerIpAddress() string {
+	if x != nil {
+		return x.ServerIpAddress
+	}
+	return ""
+}
+
+func (x *ExistingNfsConfig) GetRemoteMount() string {
+	if x != nil {
+		return x.RemoteMount
+	}
+	return ""
+}
+
+func (x *ExistingNfsConfig) GetMountOptions() string {
+	if x != nil {
+		return x.MountOptions
 	}
 	return ""
 }
@@ -2212,7 +2679,7 @@ type ComputeResource struct {
 
 func (x *ComputeResource) Reset() {
 	*x = ComputeResource{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[26]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2224,7 +2691,7 @@ func (x *ComputeResource) String() string {
 func (*ComputeResource) ProtoMessage() {}
 
 func (x *ComputeResource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[26]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2237,7 +2704,7 @@ func (x *ComputeResource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ComputeResource.ProtoReflect.Descriptor instead.
 func (*ComputeResource) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{26}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *ComputeResource) GetConfig() *ComputeResourceConfig {
@@ -2265,7 +2732,7 @@ type ComputeResourceConfig struct {
 
 func (x *ComputeResourceConfig) Reset() {
 	*x = ComputeResourceConfig{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[27]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2277,7 +2744,7 @@ func (x *ComputeResourceConfig) String() string {
 func (*ComputeResourceConfig) ProtoMessage() {}
 
 func (x *ComputeResourceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[27]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2290,7 +2757,7 @@ func (x *ComputeResourceConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ComputeResourceConfig.ProtoReflect.Descriptor instead.
 func (*ComputeResourceConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{27}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *ComputeResourceConfig) GetConfig() isComputeResourceConfig_Config {
@@ -2385,14 +2852,17 @@ type NewOnDemandInstancesConfig struct {
 	// Required. Immutable. Name of the Compute Engine [machine
 	// type](https://cloud.google.com/compute/docs/machine-resource) to use, e.g.
 	// `n2-standard-2`.
-	MachineType   string `protobuf:"bytes,2,opt,name=machine_type,json=machineType,proto3" json:"machine_type,omitempty"`
+	MachineType string `protobuf:"bytes,2,opt,name=machine_type,json=machineType,proto3" json:"machine_type,omitempty"`
+	// Optional. Immutable. A list of network tags to attach to the VM instances.
+	// A maximum of 64 network tags are allowed.
+	NetworkTags   []string `protobuf:"bytes,4,rep,name=network_tags,json=networkTags,proto3" json:"network_tags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *NewOnDemandInstancesConfig) Reset() {
 	*x = NewOnDemandInstancesConfig{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[28]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2404,7 +2874,7 @@ func (x *NewOnDemandInstancesConfig) String() string {
 func (*NewOnDemandInstancesConfig) ProtoMessage() {}
 
 func (x *NewOnDemandInstancesConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[28]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2417,7 +2887,7 @@ func (x *NewOnDemandInstancesConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NewOnDemandInstancesConfig.ProtoReflect.Descriptor instead.
 func (*NewOnDemandInstancesConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{28}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *NewOnDemandInstancesConfig) GetZone() string {
@@ -2434,6 +2904,13 @@ func (x *NewOnDemandInstancesConfig) GetMachineType() string {
 	return ""
 }
 
+func (x *NewOnDemandInstancesConfig) GetNetworkTags() []string {
+	if x != nil {
+		return x.NetworkTags
+	}
+	return nil
+}
+
 // When set in a
 // [ComputeResourceConfig][google.cloud.hypercomputecluster.v1beta.ComputeResourceConfig],
 // indicates that [spot
@@ -2448,14 +2925,20 @@ type NewSpotInstancesConfig struct {
 	// Required. Immutable. Name of the Compute Engine [machine
 	// type](https://cloud.google.com/compute/docs/machine-resource) to use, e.g.
 	// `n2-standard-2`.
-	MachineType   string `protobuf:"bytes,2,opt,name=machine_type,json=machineType,proto3" json:"machine_type,omitempty"`
+	MachineType string `protobuf:"bytes,2,opt,name=machine_type,json=machineType,proto3" json:"machine_type,omitempty"`
+	// Optional. Termination action for the instance. If not specified, Compute
+	// Engine sets the termination action to DELETE.
+	TerminationAction NewSpotInstancesConfig_TerminationAction `protobuf:"varint,5,opt,name=termination_action,json=terminationAction,proto3,enum=google.cloud.hypercomputecluster.v1beta.NewSpotInstancesConfig_TerminationAction" json:"termination_action,omitempty"`
+	// Optional. Immutable. A list of network tags to attach to the VM instances.
+	// A maximum of 64 network tags are allowed.
+	NetworkTags   []string `protobuf:"bytes,6,rep,name=network_tags,json=networkTags,proto3" json:"network_tags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *NewSpotInstancesConfig) Reset() {
 	*x = NewSpotInstancesConfig{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[29]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2467,7 +2950,7 @@ func (x *NewSpotInstancesConfig) String() string {
 func (*NewSpotInstancesConfig) ProtoMessage() {}
 
 func (x *NewSpotInstancesConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[29]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2480,7 +2963,7 @@ func (x *NewSpotInstancesConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NewSpotInstancesConfig.ProtoReflect.Descriptor instead.
 func (*NewSpotInstancesConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{29}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *NewSpotInstancesConfig) GetZone() string {
@@ -2497,6 +2980,20 @@ func (x *NewSpotInstancesConfig) GetMachineType() string {
 	return ""
 }
 
+func (x *NewSpotInstancesConfig) GetTerminationAction() NewSpotInstancesConfig_TerminationAction {
+	if x != nil {
+		return x.TerminationAction
+	}
+	return NewSpotInstancesConfig_TERMINATION_ACTION_UNSPECIFIED
+}
+
+func (x *NewSpotInstancesConfig) GetNetworkTags() []string {
+	if x != nil {
+		return x.NetworkTags
+	}
+	return nil
+}
+
 // When set in a
 // [ComputeResourceConfig][google.cloud.hypercomputecluster.v1beta.ComputeResourceConfig],
 // indicates that VM instances should be created from a
@@ -2508,14 +3005,19 @@ type NewReservedInstancesConfig struct {
 	// Types that are valid to be assigned to Source:
 	//
 	//	*NewReservedInstancesConfig_Reservation
-	Source        isNewReservedInstancesConfig_Source `protobuf_oneof:"source"`
+	//	*NewReservedInstancesConfig_ReservationBlock
+	//	*NewReservedInstancesConfig_ReservationSubBlock
+	Source isNewReservedInstancesConfig_Source `protobuf_oneof:"source"`
+	// Optional. Immutable. A list of network tags to attach to the VM instances.
+	// A maximum of 64 network tags are allowed.
+	NetworkTags   []string `protobuf:"bytes,9,rep,name=network_tags,json=networkTags,proto3" json:"network_tags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *NewReservedInstancesConfig) Reset() {
 	*x = NewReservedInstancesConfig{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[30]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2527,7 +3029,7 @@ func (x *NewReservedInstancesConfig) String() string {
 func (*NewReservedInstancesConfig) ProtoMessage() {}
 
 func (x *NewReservedInstancesConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[30]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2540,7 +3042,7 @@ func (x *NewReservedInstancesConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NewReservedInstancesConfig.ProtoReflect.Descriptor instead.
 func (*NewReservedInstancesConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{30}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *NewReservedInstancesConfig) GetSource() isNewReservedInstancesConfig_Source {
@@ -2559,6 +3061,31 @@ func (x *NewReservedInstancesConfig) GetReservation() string {
 	return ""
 }
 
+func (x *NewReservedInstancesConfig) GetReservationBlock() string {
+	if x != nil {
+		if x, ok := x.Source.(*NewReservedInstancesConfig_ReservationBlock); ok {
+			return x.ReservationBlock
+		}
+	}
+	return ""
+}
+
+func (x *NewReservedInstancesConfig) GetReservationSubBlock() string {
+	if x != nil {
+		if x, ok := x.Source.(*NewReservedInstancesConfig_ReservationSubBlock); ok {
+			return x.ReservationSubBlock
+		}
+	}
+	return ""
+}
+
+func (x *NewReservedInstancesConfig) GetNetworkTags() []string {
+	if x != nil {
+		return x.NetworkTags
+	}
+	return nil
+}
+
 type isNewReservedInstancesConfig_Source interface {
 	isNewReservedInstancesConfig_Source()
 }
@@ -2570,7 +3097,25 @@ type NewReservedInstancesConfig_Reservation struct {
 	Reservation string `protobuf:"bytes,1,opt,name=reservation,proto3,oneof"`
 }
 
+type NewReservedInstancesConfig_ReservationBlock struct {
+	// Optional. Immutable. Name of the reservation block from which VM
+	// instances should be created, in the format
+	// `projects/{project}/zones/{zone}/reservations/{reservation}/reservationBlocks/{reservation_block}`.
+	ReservationBlock string `protobuf:"bytes,7,opt,name=reservation_block,json=reservationBlock,proto3,oneof"`
+}
+
+type NewReservedInstancesConfig_ReservationSubBlock struct {
+	// Optional. Immutable. Name of the reservation sub block from which VM
+	// instances should be created, in the format
+	// `projects/{project}/zones/{zone}/reservations/{reservation}/reservationBlocks/{reservation_block}/reservationSubBlocks/{reservation_sub_block}`.
+	ReservationSubBlock string `protobuf:"bytes,8,opt,name=reservation_sub_block,json=reservationSubBlock,proto3,oneof"`
+}
+
 func (*NewReservedInstancesConfig_Reservation) isNewReservedInstancesConfig_Source() {}
+
+func (*NewReservedInstancesConfig_ReservationBlock) isNewReservedInstancesConfig_Source() {}
+
+func (*NewReservedInstancesConfig_ReservationSubBlock) isNewReservedInstancesConfig_Source() {}
 
 // When set in a
 // [ComputeResourceConfig][google.cloud.hypercomputecluster.v1beta.ComputeResourceConfig],
@@ -2588,14 +3133,17 @@ type NewFlexStartInstancesConfig struct {
 	MachineType string `protobuf:"bytes,2,opt,name=machine_type,json=machineType,proto3" json:"machine_type,omitempty"`
 	// Required. Immutable. Specifies the time limit for created instances.
 	// Instances will be terminated at the end of this duration.
-	MaxDuration   *durationpb.Duration `protobuf:"bytes,3,opt,name=max_duration,json=maxDuration,proto3" json:"max_duration,omitempty"`
+	MaxDuration *durationpb.Duration `protobuf:"bytes,3,opt,name=max_duration,json=maxDuration,proto3" json:"max_duration,omitempty"`
+	// Optional. Immutable. A list of network tags to attach to the VM instances.
+	// A maximum of 64 network tags are allowed.
+	NetworkTags   []string `protobuf:"bytes,7,rep,name=network_tags,json=networkTags,proto3" json:"network_tags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *NewFlexStartInstancesConfig) Reset() {
 	*x = NewFlexStartInstancesConfig{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[31]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2607,7 +3155,7 @@ func (x *NewFlexStartInstancesConfig) String() string {
 func (*NewFlexStartInstancesConfig) ProtoMessage() {}
 
 func (x *NewFlexStartInstancesConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[31]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2620,7 +3168,7 @@ func (x *NewFlexStartInstancesConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NewFlexStartInstancesConfig.ProtoReflect.Descriptor instead.
 func (*NewFlexStartInstancesConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{31}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *NewFlexStartInstancesConfig) GetZone() string {
@@ -2644,23 +3192,39 @@ func (x *NewFlexStartInstancesConfig) GetMaxDuration() *durationpb.Duration {
 	return nil
 }
 
+func (x *NewFlexStartInstancesConfig) GetNetworkTags() []string {
+	if x != nil {
+		return x.NetworkTags
+	}
+	return nil
+}
+
 // A [Persistent disk](https://cloud.google.com/compute/docs/disks) used as the
 // boot disk for a Compute Engine VM instance.
 type BootDisk struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. Immutable. [Persistent disk
+	// Optional. [Persistent disk
 	// type](https://cloud.google.com/compute/docs/disks#disk-types), in the
 	// format `projects/{project}/zones/{zone}/diskTypes/{disk_type}`.
 	Type string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
-	// Required. Immutable. Size of the disk in gigabytes. Must be at least 10GB.
-	SizeGb        int64 `protobuf:"varint,2,opt,name=size_gb,json=sizeGb,proto3" json:"size_gb,omitempty"`
+	// Optional. The size of the disk in gigabytes (GB), which must be at least 40
+	// GB.
+	SizeGb int64 `protobuf:"varint,2,opt,name=size_gb,json=sizeGb,proto3" json:"size_gb,omitempty"`
+	// Optional. The [storage
+	// pools](https://docs.cloud.google.com/compute/docs/disks/storage-pools) used
+	// for creating the boot disk, in the format:
+	// `projects/{project}/zones/{zone}/storagePools/{storage_pool}`.
+	//
+	// Currently, only one Hyperdisk Balanced storage pool is supported.
+	// The storage pool must reside in the same zone as the compute instance.
+	StoragePools  []string `protobuf:"bytes,5,rep,name=storage_pools,json=storagePools,proto3" json:"storage_pools,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *BootDisk) Reset() {
 	*x = BootDisk{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[32]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2672,7 +3236,7 @@ func (x *BootDisk) String() string {
 func (*BootDisk) ProtoMessage() {}
 
 func (x *BootDisk) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[32]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2685,7 +3249,7 @@ func (x *BootDisk) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BootDisk.ProtoReflect.Descriptor instead.
 func (*BootDisk) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{32}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *BootDisk) GetType() string {
@@ -2702,6 +3266,13 @@ func (x *BootDisk) GetSizeGb() int64 {
 	return 0
 }
 
+func (x *BootDisk) GetStoragePools() []string {
+	if x != nil {
+		return x.StoragePools
+	}
+	return nil
+}
+
 // The component responsible for scheduling and running workloads on the
 // cluster as well as providing the user interface for interacting with the
 // cluster at runtime.
@@ -2712,6 +3283,7 @@ type Orchestrator struct {
 	// Types that are valid to be assigned to Option:
 	//
 	//	*Orchestrator_Slurm
+	//	*Orchestrator_ComputeEngine
 	Option        isOrchestrator_Option `protobuf_oneof:"option"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2719,7 +3291,7 @@ type Orchestrator struct {
 
 func (x *Orchestrator) Reset() {
 	*x = Orchestrator{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[33]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2731,7 +3303,7 @@ func (x *Orchestrator) String() string {
 func (*Orchestrator) ProtoMessage() {}
 
 func (x *Orchestrator) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[33]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2744,7 +3316,7 @@ func (x *Orchestrator) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Orchestrator.ProtoReflect.Descriptor instead.
 func (*Orchestrator) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{33}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *Orchestrator) GetOption() isOrchestrator_Option {
@@ -2763,6 +3335,15 @@ func (x *Orchestrator) GetSlurm() *SlurmOrchestrator {
 	return nil
 }
 
+func (x *Orchestrator) GetComputeEngine() *ComputeEngineOrchestrator {
+	if x != nil {
+		if x, ok := x.Option.(*Orchestrator_ComputeEngine); ok {
+			return x.ComputeEngine
+		}
+	}
+	return nil
+}
+
 type isOrchestrator_Option interface {
 	isOrchestrator_Option()
 }
@@ -2773,7 +3354,15 @@ type Orchestrator_Slurm struct {
 	Slurm *SlurmOrchestrator `protobuf:"bytes,1,opt,name=slurm,proto3,oneof"`
 }
 
+type Orchestrator_ComputeEngine struct {
+	// Optional. If set, indicates that the cluster should use Compute Engine as
+	// the orchestrator.
+	ComputeEngine *ComputeEngineOrchestrator `protobuf:"bytes,2,opt,name=compute_engine,json=computeEngine,proto3,oneof"`
+}
+
 func (*Orchestrator_Slurm) isOrchestrator_Option() {}
+
+func (*Orchestrator_ComputeEngine) isOrchestrator_Option() {}
 
 // When set in
 // [Orchestrator][google.cloud.hypercomputecluster.v1beta.Orchestrator],
@@ -2784,12 +3373,13 @@ type SlurmOrchestrator struct {
 	// Required. Configuration for login nodes, which allow users to access the
 	// cluster over SSH.
 	LoginNodes *SlurmLoginNodes `protobuf:"bytes,6,opt,name=login_nodes,json=loginNodes,proto3" json:"login_nodes,omitempty"`
-	// Required. Configuration of Slurm nodesets, which define groups of compute
-	// resources that can be used by Slurm. At least one compute node is required.
+	// Optional. Compute resource configuration for the Slurm nodesets in your
+	// cluster. If not specified, the cluster won't create any nodes.
 	NodeSets []*SlurmNodeSet `protobuf:"bytes,1,rep,name=node_sets,json=nodeSets,proto3" json:"node_sets,omitempty"`
-	// Required. Configuration of Slurm partitions, which group one or more
-	// nodesets. Acts as a queue against which jobs can be submitted. At least one
-	// partition is required.
+	// Optional. Configuration for the Slurm partitions in your cluster. Each
+	// partition can contain one or more nodesets, and you can submit separate
+	// jobs on each partition. If you don't specify at least one partition in your
+	// cluster, you can't submit jobs to the cluster.
 	Partitions []*SlurmPartition `protobuf:"bytes,2,rep,name=partitions,proto3" json:"partitions,omitempty"`
 	// Optional. Default partition to use for submitted jobs that do not
 	// explicitly specify a partition. Required if and only if there is more than
@@ -2811,7 +3401,7 @@ type SlurmOrchestrator struct {
 
 func (x *SlurmOrchestrator) Reset() {
 	*x = SlurmOrchestrator{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[34]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2823,7 +3413,7 @@ func (x *SlurmOrchestrator) String() string {
 func (*SlurmOrchestrator) ProtoMessage() {}
 
 func (x *SlurmOrchestrator) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[34]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2836,7 +3426,7 @@ func (x *SlurmOrchestrator) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SlurmOrchestrator.ProtoReflect.Descriptor instead.
 func (*SlurmOrchestrator) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{34}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *SlurmOrchestrator) GetLoginNodes() *SlurmLoginNodes {
@@ -2895,14 +3485,14 @@ type SlurmNodeSet struct {
 	//
 	//	*SlurmNodeSet_ComputeInstance
 	Type isSlurmNodeSet_Type `protobuf_oneof:"type"`
-	// Required. Identifier for the nodeset, which allows it to be referenced by
-	// partitions. Must conform to
-	// [RFC-1034](https://datatracker.ietf.org/doc/html/rfc1034) (lower-case,
-	// alphanumeric, and at most 63 characters).
+	// Required. The ID for the nodeset, which allows it to be referenced by
+	// cluster partitions. The nodeset ID must start with a lowercase letter
+	// (`a`-`z`), use only lowercase letters or numbers, and contain up to 15
+	// characters. For example, specify `nodeset001`.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	// Optional. ID of the compute resource on which this nodeset will run. Must
+	// Required. The ID of the compute resource on which this nodeset runs. Must
 	// match a key in the cluster's
-	// [compute_resources](Cluster.compute_resources).
+	// [compute_resources][google.cloud.hypercomputecluster.v1beta.Cluster.compute_resources].
 	ComputeId string `protobuf:"bytes,16,opt,name=compute_id,json=computeId,proto3" json:"compute_id,omitempty"`
 	// Optional. How [storage
 	// resources][google.cloud.hypercomputecluster.v1beta.StorageResource] should
@@ -2918,13 +3508,15 @@ type SlurmNodeSet struct {
 	// you do not want the cluster to create nodes dynamically, and instead rely
 	// only on static nodes.
 	MaxDynamicNodeCount int64 `protobuf:"varint,5,opt,name=max_dynamic_node_count,json=maxDynamicNodeCount,proto3" json:"max_dynamic_node_count,omitempty"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	// Optional. Resource policy configuration for the nodeset.
+	ResourcePolicyConfig *ResourcePolicyConfig `protobuf:"bytes,19,opt,name=resource_policy_config,json=resourcePolicyConfig,proto3" json:"resource_policy_config,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *SlurmNodeSet) Reset() {
 	*x = SlurmNodeSet{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[35]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2936,7 +3528,7 @@ func (x *SlurmNodeSet) String() string {
 func (*SlurmNodeSet) ProtoMessage() {}
 
 func (x *SlurmNodeSet) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[35]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2949,7 +3541,7 @@ func (x *SlurmNodeSet) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SlurmNodeSet.ProtoReflect.Descriptor instead.
 func (*SlurmNodeSet) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{35}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *SlurmNodeSet) GetType() isSlurmNodeSet_Type {
@@ -3003,6 +3595,13 @@ func (x *SlurmNodeSet) GetMaxDynamicNodeCount() int64 {
 	return 0
 }
 
+func (x *SlurmNodeSet) GetResourcePolicyConfig() *ResourcePolicyConfig {
+	if x != nil {
+		return x.ResourcePolicyConfig
+	}
+	return nil
+}
+
 type isSlurmNodeSet_Type interface {
 	isSlurmNodeSet_Type()
 }
@@ -3036,7 +3635,7 @@ type ComputeInstanceSlurmNodeSet struct {
 
 func (x *ComputeInstanceSlurmNodeSet) Reset() {
 	*x = ComputeInstanceSlurmNodeSet{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[36]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3048,7 +3647,7 @@ func (x *ComputeInstanceSlurmNodeSet) String() string {
 func (*ComputeInstanceSlurmNodeSet) ProtoMessage() {}
 
 func (x *ComputeInstanceSlurmNodeSet) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[36]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3061,7 +3660,7 @@ func (x *ComputeInstanceSlurmNodeSet) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ComputeInstanceSlurmNodeSet.ProtoReflect.Descriptor instead.
 func (*ComputeInstanceSlurmNodeSet) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{36}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *ComputeInstanceSlurmNodeSet) GetStartupScript() string {
@@ -3085,6 +3684,54 @@ func (x *ComputeInstanceSlurmNodeSet) GetBootDisk() *BootDisk {
 	return nil
 }
 
+// Policy describing how VM instances should be created.
+type ResourcePolicyConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Specifies the topology required to create a partition for VMs
+	// that have interconnected accelerators, in the format `AxB` or `AxBxC`,
+	// where `A`, `B`, and `C` are integers.
+	AcceleratorTopology string `protobuf:"bytes,2,opt,name=accelerator_topology,json=acceleratorTopology,proto3" json:"accelerator_topology,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *ResourcePolicyConfig) Reset() {
+	*x = ResourcePolicyConfig{}
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[40]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResourcePolicyConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResourcePolicyConfig) ProtoMessage() {}
+
+func (x *ResourcePolicyConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[40]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResourcePolicyConfig.ProtoReflect.Descriptor instead.
+func (*ResourcePolicyConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{40}
+}
+
+func (x *ResourcePolicyConfig) GetAcceleratorTopology() string {
+	if x != nil {
+		return x.AcceleratorTopology
+	}
+	return ""
+}
+
 // Configuration for Slurm partitions in the cluster. Partitions are groups of
 // nodesets, and are how clients specify where their workloads should be run.
 type SlurmPartition struct {
@@ -3103,7 +3750,7 @@ type SlurmPartition struct {
 
 func (x *SlurmPartition) Reset() {
 	*x = SlurmPartition{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[37]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3115,7 +3762,7 @@ func (x *SlurmPartition) String() string {
 func (*SlurmPartition) ProtoMessage() {}
 
 func (x *SlurmPartition) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[37]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3128,7 +3775,7 @@ func (x *SlurmPartition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SlurmPartition.ProtoReflect.Descriptor instead.
 func (*SlurmPartition) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{37}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *SlurmPartition) GetId() string {
@@ -3164,6 +3811,9 @@ type SlurmLoginNodes struct {
 	// Optional. [Startup
 	// script](https://cloud.google.com/compute/docs/instances/startup-scripts/linux)
 	// to be run on each login node instance. Max 256KB.
+	// The script must complete within the system-defined default timeout of 5
+	// minutes. For tasks that require more time, consider running them in the
+	// background using methods such as `&` or `nohup`.
 	StartupScript string `protobuf:"bytes,5,opt,name=startup_script,json=startupScript,proto3" json:"startup_script,omitempty"`
 	// Optional. Whether [OS Login](https://cloud.google.com/compute/docs/oslogin)
 	// should be enabled on login node instances.
@@ -3183,14 +3833,17 @@ type SlurmLoginNodes struct {
 	// in Compute Engine.
 	Instances []*ComputeInstance `protobuf:"bytes,10,rep,name=instances,proto3" json:"instances,omitempty"`
 	// Optional. Boot disk for the login node.
-	BootDisk      *BootDisk `protobuf:"bytes,13,opt,name=boot_disk,json=bootDisk,proto3" json:"boot_disk,omitempty"`
+	BootDisk *BootDisk `protobuf:"bytes,13,opt,name=boot_disk,json=bootDisk,proto3" json:"boot_disk,omitempty"`
+	// Optional. Network tags to be applied to each login node instance.
+	// A maximum of 64 network tags are allowed.
+	NetworkTags   []string `protobuf:"bytes,14,rep,name=network_tags,json=networkTags,proto3" json:"network_tags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SlurmLoginNodes) Reset() {
 	*x = SlurmLoginNodes{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[38]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3202,7 +3855,7 @@ func (x *SlurmLoginNodes) String() string {
 func (*SlurmLoginNodes) ProtoMessage() {}
 
 func (x *SlurmLoginNodes) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[38]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3215,7 +3868,7 @@ func (x *SlurmLoginNodes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SlurmLoginNodes.ProtoReflect.Descriptor instead.
 func (*SlurmLoginNodes) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{38}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *SlurmLoginNodes) GetCount() int64 {
@@ -3288,13 +3941,76 @@ func (x *SlurmLoginNodes) GetBootDisk() *BootDisk {
 	return nil
 }
 
+func (x *SlurmLoginNodes) GetNetworkTags() []string {
+	if x != nil {
+		return x.NetworkTags
+	}
+	return nil
+}
+
+// Service account email and scopes
+type ServiceAccount struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Service account email
+	Email string `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	// Optional. Service account scopes
+	Scopes        []string `protobuf:"bytes,2,rep,name=scopes,proto3" json:"scopes,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ServiceAccount) Reset() {
+	*x = ServiceAccount{}
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[43]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ServiceAccount) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServiceAccount) ProtoMessage() {}
+
+func (x *ServiceAccount) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[43]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ServiceAccount.ProtoReflect.Descriptor instead.
+func (*ServiceAccount) Descriptor() ([]byte, []int) {
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{43}
+}
+
+func (x *ServiceAccount) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *ServiceAccount) GetScopes() []string {
+	if x != nil {
+		return x.Scopes
+	}
+	return nil
+}
+
 // Description of how a [storage
 // resource][google.cloud.hypercomputecluster.v1beta.StorageResource] should be
 // mounted on a VM instance.
 type StorageConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. ID of the storage resource to mount, which must match a key in
-	// the cluster's [storage_resources](Cluster.storage_resources).
+	// the cluster's
+	// [storage_resources][google.cloud.hypercomputecluster.v1beta.Cluster.storage_resources].
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Required. A directory inside the VM instance's file system where the
 	// storage resource should be mounted (e.g., `/mnt/share`).
@@ -3305,7 +4021,7 @@ type StorageConfig struct {
 
 func (x *StorageConfig) Reset() {
 	*x = StorageConfig{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[39]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3317,7 +4033,7 @@ func (x *StorageConfig) String() string {
 func (*StorageConfig) ProtoMessage() {}
 
 func (x *StorageConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[39]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3330,7 +4046,7 @@ func (x *StorageConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StorageConfig.ProtoReflect.Descriptor instead.
 func (*StorageConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{39}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *StorageConfig) GetId() string {
@@ -3360,7 +4076,7 @@ type ComputeInstance struct {
 
 func (x *ComputeInstance) Reset() {
 	*x = ComputeInstance{}
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[40]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3372,7 +4088,7 @@ func (x *ComputeInstance) String() string {
 func (*ComputeInstance) ProtoMessage() {}
 
 func (x *ComputeInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[40]
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3385,7 +4101,7 @@ func (x *ComputeInstance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ComputeInstance.ProtoReflect.Descriptor instead.
 func (*ComputeInstance) Descriptor() ([]byte, []int) {
-	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{40}
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *ComputeInstance) GetInstance() string {
@@ -3395,26 +4111,909 @@ func (x *ComputeInstance) GetInstance() string {
 	return ""
 }
 
+// A resource representing a compute node managed by Cluster Director.
+type Node struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Identifier. [Relative resource name](https://google.aip.dev/122) of the
+	// node, in the format
+	// `projects/{project}/locations/{location}/clusters/{cluster}/nodes/{node}`.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Output only. Name of the zone in which the node is running, e.g.
+	// `us-central1-a`.
+	Zone string `protobuf:"bytes,2,opt,name=zone,proto3" json:"zone,omitempty"`
+	// Output only. High-level lifecycle state of the node.
+	State Node_State `protobuf:"varint,3,opt,name=state,proto3,enum=google.cloud.hypercomputecluster.v1beta.Node_State" json:"state,omitempty"`
+	// Output only. Human-readable message providing extra information about the
+	// current state.
+	StateMessage string `protobuf:"bytes,4,opt,name=state_message,json=stateMessage,proto3" json:"state_message,omitempty"`
+	// Output only. Indicates whether the node is currently executing workloads.
+	RunningJobs bool `protobuf:"varint,5,opt,name=running_jobs,json=runningJobs,proto3" json:"running_jobs,omitempty"`
+	// Output only. Indicates whether the node is available for new job
+	// allocations.
+	AcceptingJobs bool `protobuf:"varint,6,opt,name=accepting_jobs,json=acceptingJobs,proto3" json:"accepting_jobs,omitempty"`
+	// Output only. Provisioning model of the node.
+	ProvisioningModel Node_ProvisioningModel `protobuf:"varint,12,opt,name=provisioning_model,json=provisioningModel,proto3,enum=google.cloud.hypercomputecluster.v1beta.Node_ProvisioningModel" json:"provisioning_model,omitempty"`
+	// Output only. Slurm-specific details for the node.
+	SlurmDetails *SlurmNodeDetails `protobuf:"bytes,7,opt,name=slurm_details,json=slurmDetails,proto3" json:"slurm_details,omitempty"`
+	// Output only. Compute Engine-specific details for the node.
+	ComputeEngineDetails *ComputeEngineNodeDetails `protobuf:"bytes,8,opt,name=compute_engine_details,json=computeEngineDetails,proto3" json:"compute_engine_details,omitempty"`
+	// Output only. Time that the node was originally created.
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	// Output only. Time that the node was most recently updated.
+	UpdateTime    *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Node) Reset() {
+	*x = Node{}
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[46]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Node) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Node) ProtoMessage() {}
+
+func (x *Node) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[46]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Node.ProtoReflect.Descriptor instead.
+func (*Node) Descriptor() ([]byte, []int) {
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{46}
+}
+
+func (x *Node) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Node) GetZone() string {
+	if x != nil {
+		return x.Zone
+	}
+	return ""
+}
+
+func (x *Node) GetState() Node_State {
+	if x != nil {
+		return x.State
+	}
+	return Node_STATE_UNSPECIFIED
+}
+
+func (x *Node) GetStateMessage() string {
+	if x != nil {
+		return x.StateMessage
+	}
+	return ""
+}
+
+func (x *Node) GetRunningJobs() bool {
+	if x != nil {
+		return x.RunningJobs
+	}
+	return false
+}
+
+func (x *Node) GetAcceptingJobs() bool {
+	if x != nil {
+		return x.AcceptingJobs
+	}
+	return false
+}
+
+func (x *Node) GetProvisioningModel() Node_ProvisioningModel {
+	if x != nil {
+		return x.ProvisioningModel
+	}
+	return Node_PROVISIONING_MODEL_UNSPECIFIED
+}
+
+func (x *Node) GetSlurmDetails() *SlurmNodeDetails {
+	if x != nil {
+		return x.SlurmDetails
+	}
+	return nil
+}
+
+func (x *Node) GetComputeEngineDetails() *ComputeEngineNodeDetails {
+	if x != nil {
+		return x.ComputeEngineDetails
+	}
+	return nil
+}
+
+func (x *Node) GetCreateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreateTime
+	}
+	return nil
+}
+
+func (x *Node) GetUpdateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdateTime
+	}
+	return nil
+}
+
+// Slurm-specific details for a Node.
+type SlurmNodeDetails struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. Raw state flags directly from Slurm.
+	States []string `protobuf:"bytes,1,rep,name=states,proto3" json:"states,omitempty"`
+	// Output only. User-readable reason for the current state.
+	Reason string `protobuf:"bytes,2,opt,name=reason,proto3" json:"reason,omitempty"`
+	// Output only. Slurm partitions this node belongs to.
+	Partitions []string `protobuf:"bytes,3,rep,name=partitions,proto3" json:"partitions,omitempty"`
+	// Output only. The ID of the nodeset this node belongs to.
+	Nodeset string `protobuf:"bytes,4,opt,name=nodeset,proto3" json:"nodeset,omitempty"`
+	// Output only. System comments from Slurm.
+	Comment       string `protobuf:"bytes,5,opt,name=comment,proto3" json:"comment,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SlurmNodeDetails) Reset() {
+	*x = SlurmNodeDetails{}
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[47]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SlurmNodeDetails) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SlurmNodeDetails) ProtoMessage() {}
+
+func (x *SlurmNodeDetails) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[47]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SlurmNodeDetails.ProtoReflect.Descriptor instead.
+func (*SlurmNodeDetails) Descriptor() ([]byte, []int) {
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{47}
+}
+
+func (x *SlurmNodeDetails) GetStates() []string {
+	if x != nil {
+		return x.States
+	}
+	return nil
+}
+
+func (x *SlurmNodeDetails) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
+func (x *SlurmNodeDetails) GetPartitions() []string {
+	if x != nil {
+		return x.Partitions
+	}
+	return nil
+}
+
+func (x *SlurmNodeDetails) GetNodeset() string {
+	if x != nil {
+		return x.Nodeset
+	}
+	return ""
+}
+
+func (x *SlurmNodeDetails) GetComment() string {
+	if x != nil {
+		return x.Comment
+	}
+	return ""
+}
+
+// Compute Engine-specific details for a Node.
+type ComputeEngineNodeDetails struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. [Relative resource name](https://google.aip.dev/122) of the VM
+	// instance, in the format
+	// `projects/{project}/zones/{zone}/instances/{instance}`.
+	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
+	// Output only. Name of the Compute Engine [machine
+	// type](https://cloud.google.com/compute/docs/machine-resource) to use, e.g.
+	// `n2-standard-2`.
+	MachineType string `protobuf:"bytes,2,opt,name=machine_type,json=machineType,proto3" json:"machine_type,omitempty"`
+	// Output only. The Compute Engine VM [instance lifecycle
+	// state](https://cloud.google.com/compute/docs/instances/instance-lifecycle).
+	State string `protobuf:"bytes,3,opt,name=state,proto3" json:"state,omitempty"`
+	// Output only. [Relative resource name](https://google.aip.dev/122) of the
+	// managed instance group, in the format
+	// `projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}`.
+	// or
+	// `projects/{project}/regions/{region}/instanceGroupManagers/{instance_group_manager}`
+	InstanceGroupManager string `protobuf:"bytes,4,opt,name=instance_group_manager,json=instanceGroupManager,proto3" json:"instance_group_manager,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *ComputeEngineNodeDetails) Reset() {
+	*x = ComputeEngineNodeDetails{}
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[48]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ComputeEngineNodeDetails) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ComputeEngineNodeDetails) ProtoMessage() {}
+
+func (x *ComputeEngineNodeDetails) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[48]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ComputeEngineNodeDetails.ProtoReflect.Descriptor instead.
+func (*ComputeEngineNodeDetails) Descriptor() ([]byte, []int) {
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{48}
+}
+
+func (x *ComputeEngineNodeDetails) GetInstance() string {
+	if x != nil {
+		return x.Instance
+	}
+	return ""
+}
+
+func (x *ComputeEngineNodeDetails) GetMachineType() string {
+	if x != nil {
+		return x.MachineType
+	}
+	return ""
+}
+
+func (x *ComputeEngineNodeDetails) GetState() string {
+	if x != nil {
+		return x.State
+	}
+	return ""
+}
+
+func (x *ComputeEngineNodeDetails) GetInstanceGroupManager() string {
+	if x != nil {
+		return x.InstanceGroupManager
+	}
+	return ""
+}
+
+// When set in
+// [Orchestrator][google.cloud.hypercomputecluster.v1beta.Orchestrator],
+// indicates that the cluster should create nodes using Compute Engine.
+type ComputeEngineOrchestrator struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Managed instance groups that should be created by the
+	// orchestrator. Keys must conform to
+	// [RFC-1034](https://datatracker.ietf.org/doc/html/rfc1034) (lower-case,
+	// alphanumeric, and at most 63 characters).
+	ManagedInstanceGroups map[string]*ManagedInstanceGroup `protobuf:"bytes,1,rep,name=managed_instance_groups,json=managedInstanceGroups,proto3" json:"managed_instance_groups,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Optional. Existing instances that will be governed by the orchestrator.
+	// Keys must conform to
+	// [RFC-1034](https://datatracker.ietf.org/doc/html/rfc1034) (lower-case,
+	// alphanumeric, and at most 63 characters).
+	ExistingInstances map[string]*ExistingInstances `protobuf:"bytes,2,rep,name=existing_instances,json=existingInstances,proto3" json:"existing_instances,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *ComputeEngineOrchestrator) Reset() {
+	*x = ComputeEngineOrchestrator{}
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[49]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ComputeEngineOrchestrator) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ComputeEngineOrchestrator) ProtoMessage() {}
+
+func (x *ComputeEngineOrchestrator) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[49]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ComputeEngineOrchestrator.ProtoReflect.Descriptor instead.
+func (*ComputeEngineOrchestrator) Descriptor() ([]byte, []int) {
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{49}
+}
+
+func (x *ComputeEngineOrchestrator) GetManagedInstanceGroups() map[string]*ManagedInstanceGroup {
+	if x != nil {
+		return x.ManagedInstanceGroups
+	}
+	return nil
+}
+
+func (x *ComputeEngineOrchestrator) GetExistingInstances() map[string]*ExistingInstances {
+	if x != nil {
+		return x.ExistingInstances
+	}
+	return nil
+}
+
+// A managed instance group based on a compute resource.
+type ManagedInstanceGroup struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. Name of the managed instance group, in the format
+	// `projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}`.
+	// or
+	// `projects/{project}/regions/{region}/instanceGroupManagers/{instance_group_manager}`
+	InstanceGroupManager string `protobuf:"bytes,7,opt,name=instance_group_manager,json=instanceGroupManager,proto3" json:"instance_group_manager,omitempty"`
+	// Required. ID of the compute resource used to create this managed instance
+	// group.
+	ComputeId string `protobuf:"bytes,1,opt,name=compute_id,json=computeId,proto3" json:"compute_id,omitempty"`
+	// Optional. Target number of running instances for this managed instance
+	// group.
+	TargetSize int64 `protobuf:"varint,2,opt,name=target_size,json=targetSize,proto3" json:"target_size,omitempty"`
+	// Optional. How [storage
+	// resources][google.cloud.hypercomputecluster.v1beta.StorageResource] should
+	// be mounted on each instance in this managed instance group.
+	StorageConfigs []*StorageConfig `protobuf:"bytes,3,rep,name=storage_configs,json=storageConfigs,proto3" json:"storage_configs,omitempty"`
+	// Output only. Instance template used to create instances in this group.
+	InstanceTemplate string `protobuf:"bytes,4,opt,name=instance_template,json=instanceTemplate,proto3" json:"instance_template,omitempty"`
+	// Optional. Resource policy configuration for this managed instance group.
+	ResourcePolicyConfig *ResourcePolicyConfig `protobuf:"bytes,5,opt,name=resource_policy_config,json=resourcePolicyConfig,proto3" json:"resource_policy_config,omitempty"`
+	// Optional. Boot disk for the managed instance group.
+	BootDisk *BootDisk `protobuf:"bytes,6,opt,name=boot_disk,json=bootDisk,proto3" json:"boot_disk,omitempty"`
+	// Optional. Additional disks for the managed instance group. Each VM of the
+	// MIG will have its own clone of each disk described in the additional_disks
+	// map. The disks themselves live as long as the MIG and if a VM is replaced
+	// by a new VM of the same name then the replacement VM attaches to the same
+	// disks as the VM it replaced. Each disk has a custom device name matching
+	// the key in the map.
+	AdditionalDisks map[string]*Disk `protobuf:"bytes,15,rep,name=additional_disks,json=additionalDisks,proto3" json:"additional_disks,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Optional. Startup script to be run on each VM instance in the nodeset.
+	StartupScript string `protobuf:"bytes,8,opt,name=startup_script,json=startupScript,proto3" json:"startup_script,omitempty"`
+	// Optional. Whether to enable public IPs for the instances in the managed
+	// instance group.
+	EnablePublicIps bool `protobuf:"varint,9,opt,name=enable_public_ips,json=enablePublicIps,proto3" json:"enable_public_ips,omitempty"`
+	// Optional. Whether [OS Login](https://cloud.google.com/compute/docs/oslogin)
+	// should be enabled on instances in this managed instance group.
+	EnableOsLogin bool `protobuf:"varint,10,opt,name=enable_os_login,json=enableOsLogin,proto3" json:"enable_os_login,omitempty"`
+	// Optional. The maximum time to wait for the startup script to complete. If
+	// the script exceeds this duration, the instance setup will be considered
+	// failed. This value must be positive. If this value is unset, a default
+	// timeout of 5 minutes (300 seconds) will be used by the system.
+	StartupScriptTimeout *durationpb.Duration `protobuf:"bytes,11,opt,name=startup_script_timeout,json=startupScriptTimeout,proto3" json:"startup_script_timeout,omitempty"`
+	// Optional. Custom
+	// [metadata](https://cloud.google.com/compute/docs/metadata/overview)
+	// key-value pairs to be applied to each VM instance in the managed instance
+	// group.
+	Metadata map[string]string `protobuf:"bytes,12,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Required. Immutable. Service account to be used by the instances in the
+	// managed instance group.
+	ServiceAccount *ServiceAccount `protobuf:"bytes,13,opt,name=service_account,json=serviceAccount,proto3" json:"service_account,omitempty"`
+	// Optional.
+	// [Labels](https://cloud.google.com/compute/docs/labeling-resources) that
+	// should be applied to each VM instance in the managed instance group.
+	Labels        map[string]string `protobuf:"bytes,14,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ManagedInstanceGroup) Reset() {
+	*x = ManagedInstanceGroup{}
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[50]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ManagedInstanceGroup) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ManagedInstanceGroup) ProtoMessage() {}
+
+func (x *ManagedInstanceGroup) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[50]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ManagedInstanceGroup.ProtoReflect.Descriptor instead.
+func (*ManagedInstanceGroup) Descriptor() ([]byte, []int) {
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{50}
+}
+
+func (x *ManagedInstanceGroup) GetInstanceGroupManager() string {
+	if x != nil {
+		return x.InstanceGroupManager
+	}
+	return ""
+}
+
+func (x *ManagedInstanceGroup) GetComputeId() string {
+	if x != nil {
+		return x.ComputeId
+	}
+	return ""
+}
+
+func (x *ManagedInstanceGroup) GetTargetSize() int64 {
+	if x != nil {
+		return x.TargetSize
+	}
+	return 0
+}
+
+func (x *ManagedInstanceGroup) GetStorageConfigs() []*StorageConfig {
+	if x != nil {
+		return x.StorageConfigs
+	}
+	return nil
+}
+
+func (x *ManagedInstanceGroup) GetInstanceTemplate() string {
+	if x != nil {
+		return x.InstanceTemplate
+	}
+	return ""
+}
+
+func (x *ManagedInstanceGroup) GetResourcePolicyConfig() *ResourcePolicyConfig {
+	if x != nil {
+		return x.ResourcePolicyConfig
+	}
+	return nil
+}
+
+func (x *ManagedInstanceGroup) GetBootDisk() *BootDisk {
+	if x != nil {
+		return x.BootDisk
+	}
+	return nil
+}
+
+func (x *ManagedInstanceGroup) GetAdditionalDisks() map[string]*Disk {
+	if x != nil {
+		return x.AdditionalDisks
+	}
+	return nil
+}
+
+func (x *ManagedInstanceGroup) GetStartupScript() string {
+	if x != nil {
+		return x.StartupScript
+	}
+	return ""
+}
+
+func (x *ManagedInstanceGroup) GetEnablePublicIps() bool {
+	if x != nil {
+		return x.EnablePublicIps
+	}
+	return false
+}
+
+func (x *ManagedInstanceGroup) GetEnableOsLogin() bool {
+	if x != nil {
+		return x.EnableOsLogin
+	}
+	return false
+}
+
+func (x *ManagedInstanceGroup) GetStartupScriptTimeout() *durationpb.Duration {
+	if x != nil {
+		return x.StartupScriptTimeout
+	}
+	return nil
+}
+
+func (x *ManagedInstanceGroup) GetMetadata() map[string]string {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *ManagedInstanceGroup) GetServiceAccount() *ServiceAccount {
+	if x != nil {
+		return x.ServiceAccount
+	}
+	return nil
+}
+
+func (x *ManagedInstanceGroup) GetLabels() map[string]string {
+	if x != nil {
+		return x.Labels
+	}
+	return nil
+}
+
+// Additional disk for managed instance groups.
+type Disk struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Source from which the disk is created or attached. If no source is
+	// specified then the disk will be created blank.
+	//
+	// Types that are valid to be assigned to Source:
+	//
+	//	*Disk_Image
+	//	*Disk_Snapshot
+	//	*Disk_ExistingDisk
+	Source isDisk_Source `protobuf_oneof:"source"`
+	// Optional. [Persistent disk
+	// type](https://cloud.google.com/compute/docs/disks#disk-types), in the
+	// format `projects/{project}/zones/{zone}/diskTypes/{disk_type}`.
+	// This field is required when creating a new disk.
+	Type string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
+	// Optional. Size of the disk in GB.
+	// This field is required when creating a new disk.
+	SizeGb        int64 `protobuf:"varint,2,opt,name=size_gb,json=sizeGb,proto3" json:"size_gb,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Disk) Reset() {
+	*x = Disk{}
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[51]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Disk) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Disk) ProtoMessage() {}
+
+func (x *Disk) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[51]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Disk.ProtoReflect.Descriptor instead.
+func (*Disk) Descriptor() ([]byte, []int) {
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{51}
+}
+
+func (x *Disk) GetSource() isDisk_Source {
+	if x != nil {
+		return x.Source
+	}
+	return nil
+}
+
+func (x *Disk) GetImage() string {
+	if x != nil {
+		if x, ok := x.Source.(*Disk_Image); ok {
+			return x.Image
+		}
+	}
+	return ""
+}
+
+func (x *Disk) GetSnapshot() string {
+	if x != nil {
+		if x, ok := x.Source.(*Disk_Snapshot); ok {
+			return x.Snapshot
+		}
+	}
+	return ""
+}
+
+func (x *Disk) GetExistingDisk() string {
+	if x != nil {
+		if x, ok := x.Source.(*Disk_ExistingDisk); ok {
+			return x.ExistingDisk
+		}
+	}
+	return ""
+}
+
+func (x *Disk) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+func (x *Disk) GetSizeGb() int64 {
+	if x != nil {
+		return x.SizeGb
+	}
+	return 0
+}
+
+type isDisk_Source interface {
+	isDisk_Source()
+}
+
+type Disk_Image struct {
+	// Optional. Source image for the disk.
+	Image string `protobuf:"bytes,3,opt,name=image,proto3,oneof"`
+}
+
+type Disk_Snapshot struct {
+	// Optional. Source snapshot for the disk.
+	Snapshot string `protobuf:"bytes,4,opt,name=snapshot,proto3,oneof"`
+}
+
+type Disk_ExistingDisk struct {
+	// Optional. An existing persistent disk to attach read-only to all VMs in
+	// the managed instance group, in the format
+	// `projects/{project}/zones/{zone}/disks/{disk}`.
+	ExistingDisk string `protobuf:"bytes,5,opt,name=existing_disk,json=existingDisk,proto3,oneof"`
+}
+
+func (*Disk_Image) isDisk_Source() {}
+
+func (*Disk_Snapshot) isDisk_Source() {}
+
+func (*Disk_ExistingDisk) isDisk_Source() {}
+
+// ExistingInstances defines a list of existing VM instances to include in
+// the cluster.
+type ExistingInstances struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Source from which existing instances are read. All instances in the given
+	// source will be included, subject to the filtering fields defined below.
+	//
+	// Types that are valid to be assigned to Source:
+	//
+	//	*ExistingInstances_Project
+	//	*ExistingInstances_InstanceGroupManager
+	//	*ExistingInstances_RegionInstanceGroupManager
+	//	*ExistingInstances_Reservation
+	//	*ExistingInstances_ReservationBlock
+	//	*ExistingInstances_ReservationSubBlock
+	Source isExistingInstances_Source `protobuf_oneof:"source"`
+	// Optional. Immutable. Labels specifying the instances to include. Instances
+	// from the source will be included only if they contain each of these labels.
+	// If no labels are specified, all instances from the source will be included.
+	// Example: {"env": "prod", "app": "worker"}
+	Labels map[string]string `protobuf:"bytes,6,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Output only. Networks stores the list of [VPC
+	// networks](https://cloud.google.com/vpc/docs/vpc) attached to these existing
+	// instances, discovered during the cluster creation and update.
+	Networks      []*NetworkReference `protobuf:"bytes,8,rep,name=networks,proto3" json:"networks,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExistingInstances) Reset() {
+	*x = ExistingInstances{}
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[52]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExistingInstances) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExistingInstances) ProtoMessage() {}
+
+func (x *ExistingInstances) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[52]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExistingInstances.ProtoReflect.Descriptor instead.
+func (*ExistingInstances) Descriptor() ([]byte, []int) {
+	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescGZIP(), []int{52}
+}
+
+func (x *ExistingInstances) GetSource() isExistingInstances_Source {
+	if x != nil {
+		return x.Source
+	}
+	return nil
+}
+
+func (x *ExistingInstances) GetProject() string {
+	if x != nil {
+		if x, ok := x.Source.(*ExistingInstances_Project); ok {
+			return x.Project
+		}
+	}
+	return ""
+}
+
+func (x *ExistingInstances) GetInstanceGroupManager() string {
+	if x != nil {
+		if x, ok := x.Source.(*ExistingInstances_InstanceGroupManager); ok {
+			return x.InstanceGroupManager
+		}
+	}
+	return ""
+}
+
+func (x *ExistingInstances) GetRegionInstanceGroupManager() string {
+	if x != nil {
+		if x, ok := x.Source.(*ExistingInstances_RegionInstanceGroupManager); ok {
+			return x.RegionInstanceGroupManager
+		}
+	}
+	return ""
+}
+
+func (x *ExistingInstances) GetReservation() string {
+	if x != nil {
+		if x, ok := x.Source.(*ExistingInstances_Reservation); ok {
+			return x.Reservation
+		}
+	}
+	return ""
+}
+
+func (x *ExistingInstances) GetReservationBlock() string {
+	if x != nil {
+		if x, ok := x.Source.(*ExistingInstances_ReservationBlock); ok {
+			return x.ReservationBlock
+		}
+	}
+	return ""
+}
+
+func (x *ExistingInstances) GetReservationSubBlock() string {
+	if x != nil {
+		if x, ok := x.Source.(*ExistingInstances_ReservationSubBlock); ok {
+			return x.ReservationSubBlock
+		}
+	}
+	return ""
+}
+
+func (x *ExistingInstances) GetLabels() map[string]string {
+	if x != nil {
+		return x.Labels
+	}
+	return nil
+}
+
+func (x *ExistingInstances) GetNetworks() []*NetworkReference {
+	if x != nil {
+		return x.Networks
+	}
+	return nil
+}
+
+type isExistingInstances_Source interface {
+	isExistingInstances_Source()
+}
+
+type ExistingInstances_Project struct {
+	// Optional. Immutable. Project containing the instances, in the format
+	// `projects/{project}`.
+	Project string `protobuf:"bytes,7,opt,name=project,proto3,oneof"`
+}
+
+type ExistingInstances_InstanceGroupManager struct {
+	// Optional. Immutable. Managed instance group containing the instances, in
+	// the format
+	// `projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}`.
+	InstanceGroupManager string `protobuf:"bytes,1,opt,name=instance_group_manager,json=instanceGroupManager,proto3,oneof"`
+}
+
+type ExistingInstances_RegionInstanceGroupManager struct {
+	// Optional. Immutable. Regional managed instance group containing the
+	// instances, in the format
+	// `projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}`.
+	RegionInstanceGroupManager string `protobuf:"bytes,2,opt,name=region_instance_group_manager,json=regionInstanceGroupManager,proto3,oneof"`
+}
+
+type ExistingInstances_Reservation struct {
+	// Optional. Immutable. Reservation containing the instances, in the format
+	// `projects/{project}/zones/{zone}/reservations/{reservation}`.
+	Reservation string `protobuf:"bytes,3,opt,name=reservation,proto3,oneof"`
+}
+
+type ExistingInstances_ReservationBlock struct {
+	// Optional. Immutable. Reservation block containing the instances, in the
+	// format
+	// `projects/{project}/zones/{zone}/reservations/{reservation}/reservationBlocks/{reservationBlock}`.
+	ReservationBlock string `protobuf:"bytes,4,opt,name=reservation_block,json=reservationBlock,proto3,oneof"`
+}
+
+type ExistingInstances_ReservationSubBlock struct {
+	// Optional. Immutable. Reservation sub block containing the instances, in
+	// the format
+	// `projects/{project}/zones/{zone}/reservations/{reservation}/reservationBlocks/{reservationBlock}/reservationSubBlocks/{reservationSubBlock}`.
+	ReservationSubBlock string `protobuf:"bytes,5,opt,name=reservation_sub_block,json=reservationSubBlock,proto3,oneof"`
+}
+
+func (*ExistingInstances_Project) isExistingInstances_Source() {}
+
+func (*ExistingInstances_InstanceGroupManager) isExistingInstances_Source() {}
+
+func (*ExistingInstances_RegionInstanceGroupManager) isExistingInstances_Source() {}
+
+func (*ExistingInstances_Reservation) isExistingInstances_Source() {}
+
+func (*ExistingInstances_ReservationBlock) isExistingInstances_Source() {}
+
+func (*ExistingInstances_ReservationSubBlock) isExistingInstances_Source() {}
+
 var File_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto protoreflect.FileDescriptor
 
 const file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDesc = "" +
 	"\n" +
-	"Bgoogle/cloud/hypercomputecluster/v1beta/hypercompute_cluster.proto\x12'google.cloud.hypercomputecluster.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a@google/cloud/hypercomputecluster/v1beta/operation_metadata.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd5\n" +
+	"Bgoogle/cloud/hypercomputecluster/v1beta/hypercompute_cluster.proto\x12'google.cloud.hypercomputecluster.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a@google/cloud/hypercomputecluster/v1beta/operation_metadata.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xff\n" +
 	"\n" +
-	"\aCluster\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12%\n" +
-	"\vdescription\x18\t \x01(\tB\x03\xe0A\x01R\vdescription\x12Y\n" +
-	"\x06labels\x18\x04 \x03(\v2<.google.cloud.hypercomputecluster.v1beta.Cluster.LabelsEntryB\x03\xe0A\x01R\x06labels\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
+	"\aCluster\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12&\n" +
+	"\vdescription\x18\t \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12Z\n" +
+	"\x06labels\x18\x04 \x03(\v2<.google.cloud.hypercomputecluster.v1beta.Cluster.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
 	"\vreconciling\x18\n" +
-	" \x01(\bB\x03\xe0A\x03R\vreconciling\x12x\n" +
-	"\x11network_resources\x18\v \x03(\v2F.google.cloud.hypercomputecluster.v1beta.Cluster.NetworkResourcesEntryB\x03\xe0A\x01R\x10networkResources\x12x\n" +
-	"\x11storage_resources\x18\f \x03(\v2F.google.cloud.hypercomputecluster.v1beta.Cluster.StorageResourcesEntryB\x03\xe0A\x01R\x10storageResources\x12x\n" +
-	"\x11compute_resources\x18\r \x03(\v2F.google.cloud.hypercomputecluster.v1beta.Cluster.ComputeResourcesEntryB\x03\xe0A\x01R\x10computeResources\x12^\n" +
-	"\forchestrator\x18\b \x01(\v25.google.cloud.hypercomputecluster.v1beta.OrchestratorB\x03\xe0A\x01R\forchestrator\x1a9\n" +
+	" \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12y\n" +
+	"\x11network_resources\x18\v \x03(\v2F.google.cloud.hypercomputecluster.v1beta.Cluster.NetworkResourcesEntryB\x04\xe2A\x01\x01R\x10networkResources\x12y\n" +
+	"\x11storage_resources\x18\f \x03(\v2F.google.cloud.hypercomputecluster.v1beta.Cluster.StorageResourcesEntryB\x04\xe2A\x01\x01R\x10storageResources\x12y\n" +
+	"\x11compute_resources\x18\r \x03(\v2F.google.cloud.hypercomputecluster.v1beta.Cluster.ComputeResourcesEntryB\x04\xe2A\x01\x01R\x10computeResources\x12_\n" +
+	"\forchestrator\x18\b \x01(\v25.google.cloud.hypercomputecluster.v1beta.OrchestratorB\x04\xe2A\x01\x01R\forchestrator\x12\x1e\n" +
+	"\x03uid\x18\x10 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a}\n" +
@@ -3427,99 +5026,110 @@ const file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_ra
 	"\x15ComputeResourcesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12N\n" +
 	"\x05value\x18\x02 \x01(\v28.google.cloud.hypercomputecluster.v1beta.ComputeResourceR\x05value:\x028\x01:~\xeaA{\n" +
-	"*hypercomputecluster.googleapis.com/Cluster\x12:projects/{project}/locations/{location}/clusters/{cluster}*\bclusters2\acluster\"\xe4\x01\n" +
-	"\x13ListClustersRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*hypercomputecluster.googleapis.com/ClusterR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"*hypercomputecluster.googleapis.com/Cluster\x12:projects/{project}/locations/{location}/clusters/{cluster}*\bclusters2\acluster\"\xe9\x01\n" +
+	"\x13ListClustersRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*hypercomputecluster.googleapis.com/ClusterR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xae\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xae\x01\n" +
 	"\x14ListClustersResponse\x12L\n" +
 	"\bclusters\x18\x01 \x03(\v20.google.cloud.hypercomputecluster.v1beta.ClusterR\bclusters\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"[\n" +
-	"\x11GetClusterRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*hypercomputecluster.googleapis.com/ClusterR\x04name\"\x83\x02\n" +
-	"\x14CreateClusterRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*hypercomputecluster.googleapis.com/ClusterR\x06parent\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\\\n" +
+	"\x11GetClusterRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*hypercomputecluster.googleapis.com/ClusterR\x04name\"\x87\x02\n" +
+	"\x14CreateClusterRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*hypercomputecluster.googleapis.com/ClusterR\x06parent\x12#\n" +
 	"\n" +
-	"cluster_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tclusterId\x12O\n" +
-	"\acluster\x18\x03 \x01(\v20.google.cloud.hypercomputecluster.v1beta.ClusterB\x03\xe0A\x02R\acluster\x12*\n" +
+	"cluster_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tclusterId\x12P\n" +
+	"\acluster\x18\x03 \x01(\v20.google.cloud.hypercomputecluster.v1beta.ClusterB\x04\xe2A\x01\x02R\acluster\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd5\x01\n" +
-	"\x14UpdateClusterRequest\x12O\n" +
-	"\acluster\x18\x02 \x01(\v20.google.cloud.hypercomputecluster.v1beta.ClusterB\x03\xe0A\x02R\acluster\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd8\x01\n" +
+	"\x14UpdateClusterRequest\x12P\n" +
+	"\acluster\x18\x02 \x01(\v20.google.cloud.hypercomputecluster.v1beta.ClusterB\x04\xe2A\x01\x02R\acluster\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8a\x01\n" +
-	"\x14DeleteClusterRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*hypercomputecluster.googleapis.com/ClusterR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8c\x01\n" +
+	"\x14DeleteClusterRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*hypercomputecluster.googleapis.com/ClusterR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd2\x01\n" +
-	"\x0fNetworkResource\x12U\n" +
-	"\anetwork\x18\x03 \x01(\v29.google.cloud.hypercomputecluster.v1beta.NetworkReferenceH\x00R\anetwork\x12[\n" +
-	"\x06config\x18\x02 \x01(\v2>.google.cloud.hypercomputecluster.v1beta.NetworkResourceConfigB\x03\xe0A\x05R\x06configB\v\n" +
-	"\treference\"\x9f\x01\n" +
-	"\x10NetworkReference\x12@\n" +
-	"\anetwork\x18\x01 \x01(\tB&\xe0A\x03\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12I\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe3\x01\n" +
+	"\x10ListNodesRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'hypercomputecluster.googleapis.com/NodeR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"subnetwork\x18\x02 \x01(\tB)\xe0A\x03\xfaA#\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x80\x01\n" +
+	"\x11ListNodesResponse\x12C\n" +
+	"\x05nodes\x18\x01 \x03(\v2-.google.cloud.hypercomputecluster.v1beta.NodeR\x05nodes\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd9\x01\n" +
+	"\x0fNetworkResource\x12[\n" +
+	"\anetwork\x18\x03 \x01(\v29.google.cloud.hypercomputecluster.v1beta.NetworkReferenceB\x04\xe2A\x01\x03H\x00R\anetwork\x12\\\n" +
+	"\x06config\x18\x02 \x01(\v2>.google.cloud.hypercomputecluster.v1beta.NetworkResourceConfigB\x04\xe2A\x01\x05R\x06configB\v\n" +
+	"\treference\"\xa1\x01\n" +
+	"\x10NetworkReference\x12A\n" +
+	"\anetwork\x18\x01 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12J\n" +
+	"\n" +
+	"subnetwork\x18\x02 \x01(\tB*\xe2A\x01\x03\xfaA#\n" +
 	"!compute.googleapis.com/SubnetworkR\n" +
-	"subnetwork\"\xfc\x01\n" +
-	"\x15NetworkResourceConfig\x12d\n" +
-	"\vnew_network\x18\x03 \x01(\v29.google.cloud.hypercomputecluster.v1beta.NewNetworkConfigB\x06\xe0A\x01\xe0A\x05H\x00R\n" +
-	"newNetwork\x12s\n" +
-	"\x10existing_network\x18\x04 \x01(\v2>.google.cloud.hypercomputecluster.v1beta.ExistingNetworkConfigB\x06\xe0A\x01\xe0A\x05H\x00R\x0fexistingNetworkB\b\n" +
-	"\x06config\"\x81\x01\n" +
-	"\x10NewNetworkConfig\x12C\n" +
-	"\anetwork\x18\x01 \x01(\tB)\xe0A\x02\xe0A\x05\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12(\n" +
-	"\vdescription\x18\x02 \x01(\tB\x06\xe0A\x01\xe0A\x05R\vdescription\"\xaa\x01\n" +
-	"\x15ExistingNetworkConfig\x12C\n" +
-	"\anetwork\x18\x01 \x01(\tB)\xe0A\x02\xe0A\x05\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12L\n" +
+	"subnetwork\"\xfa\x01\n" +
+	"\x15NetworkResourceConfig\x12c\n" +
+	"\vnew_network\x18\x03 \x01(\v29.google.cloud.hypercomputecluster.v1beta.NewNetworkConfigB\x05\xe2A\x02\x01\x05H\x00R\n" +
+	"newNetwork\x12r\n" +
+	"\x10existing_network\x18\x04 \x01(\v2>.google.cloud.hypercomputecluster.v1beta.ExistingNetworkConfigB\x05\xe2A\x02\x01\x05H\x00R\x0fexistingNetworkB\b\n" +
+	"\x06config\"\x7f\n" +
+	"\x10NewNetworkConfig\x12B\n" +
+	"\anetwork\x18\x01 \x01(\tB(\xe2A\x02\x02\x05\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12'\n" +
+	"\vdescription\x18\x02 \x01(\tB\x05\xe2A\x02\x01\x05R\vdescription\"\xa8\x01\n" +
+	"\x15ExistingNetworkConfig\x12B\n" +
+	"\anetwork\x18\x01 \x01(\tB(\xe2A\x02\x02\x05\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12K\n" +
 	"\n" +
-	"subnetwork\x18\x02 \x01(\tB,\xe0A\x02\xe0A\x05\xfaA#\n" +
+	"subnetwork\x18\x02 \x01(\tB+\xe2A\x02\x02\x05\xfaA#\n" +
 	"!compute.googleapis.com/SubnetworkR\n" +
-	"subnetwork\"\x83\x03\n" +
-	"\x0fStorageResource\x12[\n" +
-	"\tfilestore\x18\x01 \x01(\v2;.google.cloud.hypercomputecluster.v1beta.FilestoreReferenceH\x00R\tfilestore\x12R\n" +
-	"\x06bucket\x18\x02 \x01(\v28.google.cloud.hypercomputecluster.v1beta.BucketReferenceH\x00R\x06bucket\x12R\n" +
-	"\x06lustre\x18\x03 \x01(\v28.google.cloud.hypercomputecluster.v1beta.LustreReferenceH\x00R\x06lustre\x12^\n" +
-	"\x06config\x18\x04 \x01(\v2>.google.cloud.hypercomputecluster.v1beta.StorageResourceConfigB\x06\xe0A\x02\xe0A\x05R\x06configB\v\n" +
-	"\treference\"\\\n" +
-	"\x12FilestoreReference\x12F\n" +
-	"\tfilestore\x18\x01 \x01(\tB(\xe0A\x03\xfaA\"\n" +
-	" file.googleapis.com/FileInstanceR\tfilestore\"P\n" +
-	"\x0fBucketReference\x12=\n" +
-	"\x06bucket\x18\x01 \x01(\tB%\xe0A\x03\xfaA\x1f\n" +
-	"\x1dstorage.googleapis.com/BucketR\x06bucket\"W\n" +
-	"\x0fLustreReference\x12D\n" +
-	"\x06lustre\x18\x01 \x01(\tB,\xe0A\x03\xfaA&\n" +
-	"$lustre.googleapis.com/LustreInstanceR\x06lustre\"\xb2\x05\n" +
-	"\x15StorageResourceConfig\x12j\n" +
-	"\rnew_filestore\x18\x01 \x01(\v2;.google.cloud.hypercomputecluster.v1beta.NewFilestoreConfigB\x06\xe0A\x01\xe0A\x05H\x00R\fnewFilestore\x12y\n" +
-	"\x12existing_filestore\x18\x02 \x01(\v2@.google.cloud.hypercomputecluster.v1beta.ExistingFilestoreConfigB\x06\xe0A\x01\xe0A\x05H\x00R\x11existingFilestore\x12a\n" +
+	"subnetwork\"\x94\x03\n" +
+	"\x0fStorageResource\x12a\n" +
+	"\tfilestore\x18\x01 \x01(\v2;.google.cloud.hypercomputecluster.v1beta.FilestoreReferenceB\x04\xe2A\x01\x03H\x00R\tfilestore\x12X\n" +
+	"\x06bucket\x18\x02 \x01(\v28.google.cloud.hypercomputecluster.v1beta.BucketReferenceB\x04\xe2A\x01\x03H\x00R\x06bucket\x12X\n" +
+	"\x06lustre\x18\x03 \x01(\v28.google.cloud.hypercomputecluster.v1beta.LustreReferenceB\x04\xe2A\x01\x03H\x00R\x06lustre\x12]\n" +
+	"\x06config\x18\x04 \x01(\v2>.google.cloud.hypercomputecluster.v1beta.StorageResourceConfigB\x05\xe2A\x02\x02\x05R\x06configB\v\n" +
+	"\treference\"]\n" +
+	"\x12FilestoreReference\x12G\n" +
+	"\tfilestore\x18\x01 \x01(\tB)\xe2A\x01\x03\xfaA\"\n" +
+	" file.googleapis.com/FileInstanceR\tfilestore\"Q\n" +
+	"\x0fBucketReference\x12>\n" +
+	"\x06bucket\x18\x01 \x01(\tB&\xe2A\x01\x03\xfaA\x1f\n" +
+	"\x1dstorage.googleapis.com/BucketR\x06bucket\"R\n" +
+	"\x0fLustreReference\x12?\n" +
+	"\x06lustre\x18\x01 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
+	"\x1elustre.googleapis.com/InstanceR\x06lustre\"\x94\x06\n" +
+	"\x15StorageResourceConfig\x12i\n" +
+	"\rnew_filestore\x18\x01 \x01(\v2;.google.cloud.hypercomputecluster.v1beta.NewFilestoreConfigB\x05\xe2A\x02\x01\x05H\x00R\fnewFilestore\x12x\n" +
+	"\x12existing_filestore\x18\x02 \x01(\v2@.google.cloud.hypercomputecluster.v1beta.ExistingFilestoreConfigB\x05\xe2A\x02\x01\x05H\x00R\x11existingFilestore\x12`\n" +
 	"\n" +
-	"new_bucket\x18\x03 \x01(\v28.google.cloud.hypercomputecluster.v1beta.NewBucketConfigB\x06\xe0A\x01\xe0A\x05H\x00R\tnewBucket\x12p\n" +
-	"\x0fexisting_bucket\x18\x04 \x01(\v2=.google.cloud.hypercomputecluster.v1beta.ExistingBucketConfigB\x06\xe0A\x01\xe0A\x05H\x00R\x0eexistingBucket\x12a\n" +
+	"new_bucket\x18\x03 \x01(\v28.google.cloud.hypercomputecluster.v1beta.NewBucketConfigB\x05\xe2A\x02\x01\x05H\x00R\tnewBucket\x12o\n" +
+	"\x0fexisting_bucket\x18\x04 \x01(\v2=.google.cloud.hypercomputecluster.v1beta.ExistingBucketConfigB\x05\xe2A\x02\x01\x05H\x00R\x0eexistingBucket\x12`\n" +
 	"\n" +
-	"new_lustre\x18\x05 \x01(\v28.google.cloud.hypercomputecluster.v1beta.NewLustreConfigB\x06\xe0A\x01\xe0A\x05H\x00R\tnewLustre\x12p\n" +
-	"\x0fexisting_lustre\x18\x06 \x01(\v2=.google.cloud.hypercomputecluster.v1beta.ExistingLustreConfigB\x06\xe0A\x01\xe0A\x05H\x00R\x0eexistingLustreB\b\n" +
-	"\x06config\"\xab\x04\n" +
-	"\x12NewFilestoreConfig\x12I\n" +
-	"\tfilestore\x18\x01 \x01(\tB+\xe0A\x02\xe0A\x05\xfaA\"\n" +
-	" file.googleapis.com/FileInstanceR\tfilestore\x12(\n" +
-	"\vdescription\x18\x04 \x01(\tB\x06\xe0A\x01\xe0A\x05R\vdescription\x12a\n" +
-	"\vfile_shares\x18\x02 \x03(\v28.google.cloud.hypercomputecluster.v1beta.FileShareConfigB\x06\xe0A\x02\xe0A\x05R\n" +
-	"fileShares\x12\\\n" +
-	"\x04tier\x18\x03 \x01(\x0e2@.google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig.TierB\x06\xe0A\x02\xe0A\x05R\x04tier\x12k\n" +
-	"\bprotocol\x18\x05 \x01(\x0e2D.google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig.ProtocolB\t\xe0A\x01\xe0A\x01\xe0A\x05R\bprotocol\"5\n" +
+	"new_lustre\x18\x05 \x01(\v28.google.cloud.hypercomputecluster.v1beta.NewLustreConfigB\x05\xe2A\x02\x01\x05H\x00R\tnewLustre\x12o\n" +
+	"\x0fexisting_lustre\x18\x06 \x01(\v2=.google.cloud.hypercomputecluster.v1beta.ExistingLustreConfigB\x05\xe2A\x02\x01\x05H\x00R\x0eexistingLustre\x12f\n" +
+	"\fexisting_nfs\x18\a \x01(\v2:.google.cloud.hypercomputecluster.v1beta.ExistingNfsConfigB\x05\xe2A\x02\x01\x05H\x00R\vexistingNfsB\b\n" +
+	"\x06config\"\xa4\x04\n" +
+	"\x12NewFilestoreConfig\x12H\n" +
+	"\tfilestore\x18\x01 \x01(\tB*\xe2A\x02\x02\x05\xfaA\"\n" +
+	" file.googleapis.com/FileInstanceR\tfilestore\x12'\n" +
+	"\vdescription\x18\x04 \x01(\tB\x05\xe2A\x02\x01\x05R\vdescription\x12`\n" +
+	"\vfile_shares\x18\x02 \x03(\v28.google.cloud.hypercomputecluster.v1beta.FileShareConfigB\x05\xe2A\x02\x02\x05R\n" +
+	"fileShares\x12[\n" +
+	"\x04tier\x18\x03 \x01(\x0e2@.google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig.TierB\x05\xe2A\x02\x02\x05R\x04tier\x12h\n" +
+	"\bprotocol\x18\x05 \x01(\x0e2D.google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig.ProtocolB\x06\xe2A\x03\x01\x01\x05R\bprotocol\"5\n" +
 	"\x04Tier\x12\x14\n" +
 	"\x10TIER_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05ZONAL\x10\x04\x12\f\n" +
@@ -3528,130 +5138,282 @@ const file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_ra
 	"\x14PROTOCOL_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05NFSV3\x10\x01\x12\n" +
 	"\n" +
-	"\x06NFSV41\x10\x02\"[\n" +
-	"\x0fFileShareConfig\x12$\n" +
-	"\vcapacity_gb\x18\x01 \x01(\x03B\x03\xe0A\x02R\n" +
-	"capacityGb\x12\"\n" +
+	"\x06NFSV41\x10\x02\"]\n" +
+	"\x0fFileShareConfig\x12%\n" +
+	"\vcapacity_gb\x18\x01 \x01(\x03B\x04\xe2A\x01\x02R\n" +
+	"capacityGb\x12#\n" +
 	"\n" +
-	"file_share\x18\x02 \x01(\tB\x03\xe0A\x02R\tfileShare\"d\n" +
-	"\x17ExistingFilestoreConfig\x12I\n" +
-	"\tfilestore\x18\x01 \x01(\tB+\xe0A\x02\xe0A\x05\xfaA\"\n" +
-	" file.googleapis.com/FileInstanceR\tfilestore\"\xa7\x04\n" +
-	"\x0fNewBucketConfig\x12c\n" +
-	"\tautoclass\x18\x02 \x01(\v2;.google.cloud.hypercomputecluster.v1beta.GcsAutoclassConfigB\x06\xe0A\x01\xe0A\x05H\x00R\tautoclass\x12t\n" +
-	"\rstorage_class\x18\x03 \x01(\x0e2E.google.cloud.hypercomputecluster.v1beta.NewBucketConfig.StorageClassB\x06\xe0A\x01\xe0A\x05H\x00R\fstorageClass\x12@\n" +
-	"\x06bucket\x18\x01 \x01(\tB(\xe0A\x02\xe0A\x05\xfaA\x1f\n" +
-	"\x1dstorage.googleapis.com/BucketR\x06bucket\x12\x86\x01\n" +
-	"\x16hierarchical_namespace\x18\x04 \x01(\v2G.google.cloud.hypercomputecluster.v1beta.GcsHierarchicalNamespaceConfigB\x06\xe0A\x01\xe0A\x05R\x15hierarchicalNamespace\"d\n" +
+	"file_share\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tfileShare\"c\n" +
+	"\x17ExistingFilestoreConfig\x12H\n" +
+	"\tfilestore\x18\x01 \x01(\tB*\xe2A\x02\x02\x05\xfaA\"\n" +
+	" file.googleapis.com/FileInstanceR\tfilestore\"\xae\x04\n" +
+	"\x0fNewBucketConfig\x12b\n" +
+	"\tautoclass\x18\x02 \x01(\v2;.google.cloud.hypercomputecluster.v1beta.GcsAutoclassConfigB\x05\xe2A\x02\x01\x05H\x00R\tautoclass\x12s\n" +
+	"\rstorage_class\x18\x03 \x01(\x0e2E.google.cloud.hypercomputecluster.v1beta.NewBucketConfig.StorageClassB\x05\xe2A\x02\x01\x05H\x00R\fstorageClass\x12?\n" +
+	"\x06bucket\x18\x01 \x01(\tB'\xe2A\x02\x02\x05\xfaA\x1f\n" +
+	"\x1dstorage.googleapis.com/BucketR\x06bucket\x12\x85\x01\n" +
+	"\x16hierarchical_namespace\x18\x04 \x01(\v2G.google.cloud.hypercomputecluster.v1beta.GcsHierarchicalNamespaceConfigB\x05\xe2A\x02\x01\x05R\x15hierarchicalNamespace\"o\n" +
 	"\fStorageClass\x12\x1d\n" +
 	"\x19STORAGE_CLASS_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bSTANDARD\x10\x01\x12\f\n" +
 	"\bNEARLINE\x10\x02\x12\f\n" +
 	"\bCOLDLINE\x10\x03\x12\v\n" +
-	"\aARCHIVE\x10\x04B\b\n" +
-	"\x06option\"\x81\x02\n" +
-	"\x12GcsAutoclassConfig\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x02R\aenabled\x12\x8b\x01\n" +
-	"\x16terminal_storage_class\x18\x02 \x01(\x0e2P.google.cloud.hypercomputecluster.v1beta.GcsAutoclassConfig.TerminalStorageClassB\x03\xe0A\x01R\x14terminalStorageClass\">\n" +
+	"\aARCHIVE\x10\x04\x12\t\n" +
+	"\x05RAPID\x10\x05B\b\n" +
+	"\x06option\"\x9e\x02\n" +
+	"\x12GcsAutoclassConfig\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x02R\aenabled\x12\x8c\x01\n" +
+	"\x16terminal_storage_class\x18\x02 \x01(\x0e2P.google.cloud.hypercomputecluster.v1beta.GcsAutoclassConfig.TerminalStorageClassB\x04\xe2A\x01\x01R\x14terminalStorageClass\"Y\n" +
 	"\x14TerminalStorageClass\x12&\n" +
-	"\"TERMINAL_STORAGE_CLASS_UNSPECIFIED\x10\x00\"?\n" +
-	"\x1eGcsHierarchicalNamespaceConfig\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x02R\aenabled\"X\n" +
-	"\x14ExistingBucketConfig\x12@\n" +
-	"\x06bucket\x18\x01 \x01(\tB(\xe0A\x02\xe0A\x05\xfaA\x1f\n" +
-	"\x1dstorage.googleapis.com/BucketR\x06bucket\"\xac\x01\n" +
-	"\x0fNewLustreConfig\x12\x1e\n" +
-	"\x06lustre\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x06lustre\x12(\n" +
-	"\vdescription\x18\x02 \x01(\tB\x06\xe0A\x01\xe0A\x05R\vdescription\x12&\n" +
+	"\"TERMINAL_STORAGE_CLASS_UNSPECIFIED\x10\x00\x12\f\n" +
+	"\bNEARLINE\x10\x01\x12\v\n" +
+	"\aARCHIVE\x10\x02\"@\n" +
+	"\x1eGcsHierarchicalNamespaceConfig\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x02R\aenabled\"W\n" +
+	"\x14ExistingBucketConfig\x12?\n" +
+	"\x06bucket\x18\x01 \x01(\tB'\xe2A\x02\x02\x05\xfaA\x1f\n" +
+	"\x1dstorage.googleapis.com/BucketR\x06bucket\"\xee\x01\n" +
+	"\x0fNewLustreConfig\x12\x1d\n" +
+	"\x06lustre\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x05R\x06lustre\x12'\n" +
+	"\vdescription\x18\x02 \x01(\tB\x05\xe2A\x02\x01\x05R\vdescription\x12%\n" +
 	"\n" +
-	"filesystem\x18\x03 \x01(\tB\x06\xe0A\x02\xe0A\x05R\n" +
-	"filesystem\x12'\n" +
-	"\vcapacity_gb\x18\x04 \x01(\x03B\x06\xe0A\x02\xe0A\x05R\n" +
-	"capacityGb\"_\n" +
-	"\x14ExistingLustreConfig\x12G\n" +
-	"\x06lustre\x18\x01 \x01(\tB/\xe0A\x02\xe0A\x05\xfaA&\n" +
-	"$lustre.googleapis.com/LustreInstanceR\x06lustre\"q\n" +
-	"\x0fComputeResource\x12^\n" +
-	"\x06config\x18\x06 \x01(\v2>.google.cloud.hypercomputecluster.v1beta.ComputeResourceConfigB\x06\xe0A\x02\xe0A\x05R\x06config\"\xb1\x04\n" +
-	"\x15ComputeResourceConfig\x12\x84\x01\n" +
-	"\x17new_on_demand_instances\x18\x01 \x01(\v2C.google.cloud.hypercomputecluster.v1beta.NewOnDemandInstancesConfigB\x06\xe0A\x01\xe0A\x05H\x00R\x14newOnDemandInstances\x12w\n" +
-	"\x12new_spot_instances\x18\x02 \x01(\v2?.google.cloud.hypercomputecluster.v1beta.NewSpotInstancesConfigB\x06\xe0A\x01\xe0A\x05H\x00R\x10newSpotInstances\x12\x83\x01\n" +
-	"\x16new_reserved_instances\x18\x03 \x01(\v2C.google.cloud.hypercomputecluster.v1beta.NewReservedInstancesConfigB\x06\xe0A\x01\xe0A\x05H\x00R\x14newReservedInstances\x12\x87\x01\n" +
-	"\x18new_flex_start_instances\x18\x05 \x01(\v2D.google.cloud.hypercomputecluster.v1beta.NewFlexStartInstancesConfigB\x06\xe0A\x01\xe0A\x05H\x00R\x15newFlexStartInstancesB\b\n" +
-	"\x06config\"c\n" +
-	"\x1aNewOnDemandInstancesConfig\x12\x1a\n" +
-	"\x04zone\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x04zone\x12)\n" +
-	"\fmachine_type\x18\x02 \x01(\tB\x06\xe0A\x02\xe0A\x05R\vmachineType\"_\n" +
-	"\x16NewSpotInstancesConfig\x12\x1a\n" +
-	"\x04zone\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x04zone\x12)\n" +
-	"\fmachine_type\x18\x02 \x01(\tB\x06\xe0A\x02\xe0A\x05R\vmachineType\"y\n" +
-	"\x1aNewReservedInstancesConfig\x12Q\n" +
-	"\vreservation\x18\x01 \x01(\tB-\xe0A\x01\xe0A\x05\xfaA$\n" +
-	"\"compute.googleapis.com/ReservationH\x00R\vreservationB\b\n" +
-	"\x06source\"\xaa\x01\n" +
-	"\x1bNewFlexStartInstancesConfig\x12\x1a\n" +
-	"\x04zone\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x04zone\x12)\n" +
-	"\fmachine_type\x18\x02 \x01(\tB\x06\xe0A\x02\xe0A\x05R\vmachineType\x12D\n" +
-	"\fmax_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x06\xe0A\x02\xe0A\x05R\vmaxDuration\"k\n" +
-	"\bBootDisk\x12>\n" +
-	"\x04type\x18\x01 \x01(\tB*\xe0A\x02\xe0A\x05\xfaA!\n" +
-	"\x1fcompute.googleapis.com/DiskTypeR\x04type\x12\x1f\n" +
-	"\asize_gb\x18\x02 \x01(\x03B\x06\xe0A\x02\xe0A\x05R\x06sizeGb\"q\n" +
-	"\fOrchestrator\x12W\n" +
-	"\x05slurm\x18\x01 \x01(\v2:.google.cloud.hypercomputecluster.v1beta.SlurmOrchestratorB\x03\xe0A\x01H\x00R\x05slurmB\b\n" +
-	"\x06option\"\xc6\x03\n" +
-	"\x11SlurmOrchestrator\x12^\n" +
-	"\vlogin_nodes\x18\x06 \x01(\v28.google.cloud.hypercomputecluster.v1beta.SlurmLoginNodesB\x03\xe0A\x02R\n" +
-	"loginNodes\x12W\n" +
-	"\tnode_sets\x18\x01 \x03(\v25.google.cloud.hypercomputecluster.v1beta.SlurmNodeSetB\x03\xe0A\x02R\bnodeSets\x12\\\n" +
+	"filesystem\x18\x03 \x01(\tB\x05\xe2A\x02\x02\x05R\n" +
+	"filesystem\x12&\n" +
+	"\vcapacity_gb\x18\x04 \x01(\x03B\x05\xe2A\x02\x02\x05R\n" +
+	"capacityGb\x12D\n" +
+	"\x1bper_unit_storage_throughput\x18\x05 \x01(\x03B\x05\xe2A\x02\x01\x05R\x18perUnitStorageThroughput\"X\n" +
+	"\x14ExistingLustreConfig\x12@\n" +
+	"\x06lustre\x18\x01 \x01(\tB(\xe2A\x02\x02\x05\xfaA \n" +
+	"\x1elustre.googleapis.com/InstanceR\x06lustre\"\xa4\x01\n" +
+	"\x11ExistingNfsConfig\x129\n" +
+	"\x11server_ip_address\x18\x01 \x01(\tB\r\xe2A\x02\x02\x05\xe2\x8c\xcf\xd7\b\x02\b\x04R\x0fserverIpAddress\x12(\n" +
+	"\fremote_mount\x18\x02 \x01(\tB\x05\xe2A\x02\x02\x05R\vremoteMount\x12*\n" +
+	"\rmount_options\x18\x03 \x01(\tB\x05\xe2A\x02\x01\x05R\fmountOptions\"p\n" +
+	"\x0fComputeResource\x12]\n" +
+	"\x06config\x18\x06 \x01(\v2>.google.cloud.hypercomputecluster.v1beta.ComputeResourceConfigB\x05\xe2A\x02\x02\x05R\x06config\"\xad\x04\n" +
+	"\x15ComputeResourceConfig\x12\x83\x01\n" +
+	"\x17new_on_demand_instances\x18\x01 \x01(\v2C.google.cloud.hypercomputecluster.v1beta.NewOnDemandInstancesConfigB\x05\xe2A\x02\x01\x05H\x00R\x14newOnDemandInstances\x12v\n" +
+	"\x12new_spot_instances\x18\x02 \x01(\v2?.google.cloud.hypercomputecluster.v1beta.NewSpotInstancesConfigB\x05\xe2A\x02\x01\x05H\x00R\x10newSpotInstances\x12\x82\x01\n" +
+	"\x16new_reserved_instances\x18\x03 \x01(\v2C.google.cloud.hypercomputecluster.v1beta.NewReservedInstancesConfigB\x05\xe2A\x02\x01\x05H\x00R\x14newReservedInstances\x12\x86\x01\n" +
+	"\x18new_flex_start_instances\x18\x05 \x01(\v2D.google.cloud.hypercomputecluster.v1beta.NewFlexStartInstancesConfigB\x05\xe2A\x02\x01\x05H\x00R\x15newFlexStartInstancesB\b\n" +
+	"\x06config\"\x8b\x01\n" +
+	"\x1aNewOnDemandInstancesConfig\x12\x19\n" +
+	"\x04zone\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x05R\x04zone\x12(\n" +
+	"\fmachine_type\x18\x02 \x01(\tB\x05\xe2A\x02\x02\x05R\vmachineType\x12(\n" +
+	"\fnetwork_tags\x18\x04 \x03(\tB\x05\xe2A\x02\x01\x05R\vnetworkTags\"\xdf\x02\n" +
+	"\x16NewSpotInstancesConfig\x12\x19\n" +
+	"\x04zone\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x05R\x04zone\x12(\n" +
+	"\fmachine_type\x18\x02 \x01(\tB\x05\xe2A\x02\x02\x05R\vmachineType\x12\x86\x01\n" +
+	"\x12termination_action\x18\x05 \x01(\x0e2Q.google.cloud.hypercomputecluster.v1beta.NewSpotInstancesConfig.TerminationActionB\x04\xe2A\x01\x01R\x11terminationAction\x12(\n" +
+	"\fnetwork_tags\x18\x06 \x03(\tB\x05\xe2A\x02\x01\x05R\vnetworkTags\"M\n" +
+	"\x11TerminationAction\x12\"\n" +
+	"\x1eTERMINATION_ACTION_UNSPECIFIED\x10\x00\x12\b\n" +
+	"\x04STOP\x10\x01\x12\n" +
 	"\n" +
-	"partitions\x18\x02 \x03(\v27.google.cloud.hypercomputecluster.v1beta.SlurmPartitionB\x03\xe0A\x02R\n" +
-	"partitions\x120\n" +
-	"\x11default_partition\x18\x03 \x01(\tB\x03\xe0A\x01R\x10defaultPartition\x123\n" +
-	"\x13prolog_bash_scripts\x18\x04 \x03(\tB\x03\xe0A\x01R\x11prologBashScripts\x123\n" +
-	"\x13epilog_bash_scripts\x18\x05 \x03(\tB\x03\xe0A\x01R\x11epilogBashScripts\"\x98\x03\n" +
-	"\fSlurmNodeSet\x12v\n" +
-	"\x10compute_instance\x18\x11 \x01(\v2D.google.cloud.hypercomputecluster.v1beta.ComputeInstanceSlurmNodeSetB\x03\xe0A\x01H\x00R\x0fcomputeInstance\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12\"\n" +
+	"\x06DELETE\x10\x02\"\xf0\x02\n" +
+	"\x1aNewReservedInstancesConfig\x12P\n" +
+	"\vreservation\x18\x01 \x01(\tB,\xe2A\x02\x01\x05\xfaA$\n" +
+	"\"compute.googleapis.com/ReservationH\x00R\vreservation\x12`\n" +
+	"\x11reservation_block\x18\a \x01(\tB1\xe2A\x02\x01\x05\xfaA)\n" +
+	"'compute.googleapis.com/ReservationBlockH\x00R\x10reservationBlock\x12j\n" +
+	"\x15reservation_sub_block\x18\b \x01(\tB4\xe2A\x02\x01\x05\xfaA,\n" +
+	"*compute.googleapis.com/ReservationSubBlockH\x00R\x13reservationSubBlock\x12(\n" +
+	"\fnetwork_tags\x18\t \x03(\tB\x05\xe2A\x02\x01\x05R\vnetworkTagsB\b\n" +
+	"\x06source\"\xd1\x01\n" +
+	"\x1bNewFlexStartInstancesConfig\x12\x19\n" +
+	"\x04zone\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x05R\x04zone\x12(\n" +
+	"\fmachine_type\x18\x02 \x01(\tB\x05\xe2A\x02\x02\x05R\vmachineType\x12C\n" +
+	"\fmax_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x05\xe2A\x02\x02\x05R\vmaxDuration\x12(\n" +
+	"\fnetwork_tags\x18\a \x03(\tB\x05\xe2A\x02\x01\x05R\vnetworkTags\"\xb9\x01\n" +
+	"\bBootDisk\x12<\n" +
+	"\x04type\x18\x01 \x01(\tB(\xe2A\x01\x01\xfaA!\n" +
+	"\x1fcompute.googleapis.com/DiskTypeR\x04type\x12\x1d\n" +
+	"\asize_gb\x18\x02 \x01(\x03B\x04\xe2A\x01\x01R\x06sizeGb\x12P\n" +
+	"\rstorage_pools\x18\x05 \x03(\tB+\xe2A\x01\x01\xfaA$\n" +
+	"\"compute.googleapis.com/StoragePoolR\fstoragePools\"\xe5\x01\n" +
+	"\fOrchestrator\x12X\n" +
+	"\x05slurm\x18\x01 \x01(\v2:.google.cloud.hypercomputecluster.v1beta.SlurmOrchestratorB\x04\xe2A\x01\x01H\x00R\x05slurm\x12q\n" +
+	"\x0ecompute_engine\x18\x02 \x01(\v2B.google.cloud.hypercomputecluster.v1beta.ComputeEngineOrchestratorB\x04\xe2A\x01\x01H\x00R\rcomputeEngineB\b\n" +
+	"\x06option\"\xcc\x03\n" +
+	"\x11SlurmOrchestrator\x12_\n" +
+	"\vlogin_nodes\x18\x06 \x01(\v28.google.cloud.hypercomputecluster.v1beta.SlurmLoginNodesB\x04\xe2A\x01\x02R\n" +
+	"loginNodes\x12X\n" +
+	"\tnode_sets\x18\x01 \x03(\v25.google.cloud.hypercomputecluster.v1beta.SlurmNodeSetB\x04\xe2A\x01\x01R\bnodeSets\x12]\n" +
 	"\n" +
-	"compute_id\x18\x10 \x01(\tB\x03\xe0A\x01R\tcomputeId\x12d\n" +
-	"\x0fstorage_configs\x18\x03 \x03(\v26.google.cloud.hypercomputecluster.v1beta.StorageConfigB\x03\xe0A\x01R\x0estorageConfigs\x12/\n" +
-	"\x11static_node_count\x18\x04 \x01(\x03B\x03\xe0A\x01R\x0fstaticNodeCount\x128\n" +
-	"\x16max_dynamic_node_count\x18\x05 \x01(\x03B\x03\xe0A\x01R\x13maxDynamicNodeCountB\x06\n" +
-	"\x04type\"\xc8\x02\n" +
-	"\x1bComputeInstanceSlurmNodeSet\x12*\n" +
-	"\x0estartup_script\x18\x01 \x01(\tB\x03\xe0A\x01R\rstartupScript\x12m\n" +
-	"\x06labels\x18\x02 \x03(\v2P.google.cloud.hypercomputecluster.v1beta.ComputeInstanceSlurmNodeSet.LabelsEntryB\x03\xe0A\x01R\x06labels\x12S\n" +
-	"\tboot_disk\x18\x03 \x01(\v21.google.cloud.hypercomputecluster.v1beta.BootDiskB\x03\xe0A\x01R\bbootDisk\x1a9\n" +
+	"partitions\x18\x02 \x03(\v27.google.cloud.hypercomputecluster.v1beta.SlurmPartitionB\x04\xe2A\x01\x01R\n" +
+	"partitions\x121\n" +
+	"\x11default_partition\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x10defaultPartition\x124\n" +
+	"\x13prolog_bash_scripts\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\x11prologBashScripts\x124\n" +
+	"\x13epilog_bash_scripts\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x11epilogBashScripts\"\x99\x04\n" +
+	"\fSlurmNodeSet\x12w\n" +
+	"\x10compute_instance\x18\x11 \x01(\v2D.google.cloud.hypercomputecluster.v1beta.ComputeInstanceSlurmNodeSetB\x04\xe2A\x01\x01H\x00R\x0fcomputeInstance\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12#\n" +
+	"\n" +
+	"compute_id\x18\x10 \x01(\tB\x04\xe2A\x01\x02R\tcomputeId\x12e\n" +
+	"\x0fstorage_configs\x18\x03 \x03(\v26.google.cloud.hypercomputecluster.v1beta.StorageConfigB\x04\xe2A\x01\x01R\x0estorageConfigs\x120\n" +
+	"\x11static_node_count\x18\x04 \x01(\x03B\x04\xe2A\x01\x01R\x0fstaticNodeCount\x129\n" +
+	"\x16max_dynamic_node_count\x18\x05 \x01(\x03B\x04\xe2A\x01\x01R\x13maxDynamicNodeCount\x12y\n" +
+	"\x16resource_policy_config\x18\x13 \x01(\v2=.google.cloud.hypercomputecluster.v1beta.ResourcePolicyConfigB\x04\xe2A\x01\x01R\x14resourcePolicyConfigB\x06\n" +
+	"\x04type\"\xcb\x02\n" +
+	"\x1bComputeInstanceSlurmNodeSet\x12+\n" +
+	"\x0estartup_script\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\rstartupScript\x12n\n" +
+	"\x06labels\x18\x02 \x03(\v2P.google.cloud.hypercomputecluster.v1beta.ComputeInstanceSlurmNodeSet.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12T\n" +
+	"\tboot_disk\x18\x03 \x01(\v21.google.cloud.hypercomputecluster.v1beta.BootDiskB\x04\xe2A\x01\x01R\bbootDisk\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"L\n" +
-	"\x0eSlurmPartition\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12%\n" +
-	"\fnode_set_ids\x18\x02 \x03(\tB\x03\xe0A\x02R\n" +
-	"nodeSetIds\"\xad\x05\n" +
-	"\x0fSlurmLoginNodes\x12\x19\n" +
-	"\x05count\x18\x03 \x01(\x03B\x03\xe0A\x02R\x05count\x12\x17\n" +
-	"\x04zone\x18\x02 \x01(\tB\x03\xe0A\x02R\x04zone\x12&\n" +
-	"\fmachine_type\x18\x01 \x01(\tB\x03\xe0A\x02R\vmachineType\x12*\n" +
-	"\x0estartup_script\x18\x05 \x01(\tB\x03\xe0A\x01R\rstartupScript\x12+\n" +
-	"\x0fenable_os_login\x18\x06 \x01(\bB\x03\xe0A\x01R\renableOsLogin\x12/\n" +
-	"\x11enable_public_ips\x18\a \x01(\bB\x03\xe0A\x01R\x0fenablePublicIps\x12a\n" +
-	"\x06labels\x18\b \x03(\v2D.google.cloud.hypercomputecluster.v1beta.SlurmLoginNodes.LabelsEntryB\x03\xe0A\x01R\x06labels\x12d\n" +
-	"\x0fstorage_configs\x18\f \x03(\v26.google.cloud.hypercomputecluster.v1beta.StorageConfigB\x03\xe0A\x01R\x0estorageConfigs\x12[\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"O\n" +
+	"\x14ResourcePolicyConfig\x127\n" +
+	"\x14accelerator_topology\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x13acceleratorTopology\"N\n" +
+	"\x0eSlurmPartition\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12&\n" +
+	"\fnode_set_ids\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\n" +
+	"nodeSetIds\"\xe0\x05\n" +
+	"\x0fSlurmLoginNodes\x12\x1a\n" +
+	"\x05count\x18\x03 \x01(\x03B\x04\xe2A\x01\x02R\x05count\x12\x18\n" +
+	"\x04zone\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04zone\x12'\n" +
+	"\fmachine_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vmachineType\x12+\n" +
+	"\x0estartup_script\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\rstartupScript\x12,\n" +
+	"\x0fenable_os_login\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\renableOsLogin\x120\n" +
+	"\x11enable_public_ips\x18\a \x01(\bB\x04\xe2A\x01\x01R\x0fenablePublicIps\x12b\n" +
+	"\x06labels\x18\b \x03(\v2D.google.cloud.hypercomputecluster.v1beta.SlurmLoginNodes.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12e\n" +
+	"\x0fstorage_configs\x18\f \x03(\v26.google.cloud.hypercomputecluster.v1beta.StorageConfigB\x04\xe2A\x01\x01R\x0estorageConfigs\x12\\\n" +
 	"\tinstances\x18\n" +
-	" \x03(\v28.google.cloud.hypercomputecluster.v1beta.ComputeInstanceB\x03\xe0A\x03R\tinstances\x12S\n" +
-	"\tboot_disk\x18\r \x01(\v21.google.cloud.hypercomputecluster.v1beta.BootDiskB\x03\xe0A\x01R\bbootDisk\x1a9\n" +
+	" \x03(\v28.google.cloud.hypercomputecluster.v1beta.ComputeInstanceB\x04\xe2A\x01\x03R\tinstances\x12T\n" +
+	"\tboot_disk\x18\r \x01(\v21.google.cloud.hypercomputecluster.v1beta.BootDiskB\x04\xe2A\x01\x01R\bbootDisk\x12'\n" +
+	"\fnetwork_tags\x18\x0e \x03(\tB\x04\xe2A\x01\x01R\vnetworkTags\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"J\n" +
-	"\rStorageConfig\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12$\n" +
-	"\vlocal_mount\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"localMount\"]\n" +
-	"\x0fComputeInstance\x12J\n" +
-	"\binstance\x18\x01 \x01(\tB.\xe0A\x03\xfaA(\n" +
-	"&compute.googleapis.com/ComputeInstanceR\binstance2\xb8\t\n" +
+	"\x0eServiceAccount\x12\x1a\n" +
+	"\x05email\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05email\x12\x1c\n" +
+	"\x06scopes\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x06scopes\"L\n" +
+	"\rStorageConfig\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12%\n" +
+	"\vlocal_mount\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"localMount\"^\n" +
+	"\x0fComputeInstance\x12K\n" +
+	"\binstance\x18\x01 \x01(\tB/\xe2A\x01\x03\xfaA(\n" +
+	"&compute.googleapis.com/ComputeInstanceR\binstance\"\x81\t\n" +
+	"\x04Node\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x18\n" +
+	"\x04zone\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x04zone\x12O\n" +
+	"\x05state\x18\x03 \x01(\x0e23.google.cloud.hypercomputecluster.v1beta.Node.StateB\x04\xe2A\x01\x03R\x05state\x12)\n" +
+	"\rstate_message\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\fstateMessage\x12'\n" +
+	"\frunning_jobs\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\vrunningJobs\x12+\n" +
+	"\x0eaccepting_jobs\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\racceptingJobs\x12t\n" +
+	"\x12provisioning_model\x18\f \x01(\x0e2?.google.cloud.hypercomputecluster.v1beta.Node.ProvisioningModelB\x04\xe2A\x01\x03R\x11provisioningModel\x12d\n" +
+	"\rslurm_details\x18\a \x01(\v29.google.cloud.hypercomputecluster.v1beta.SlurmNodeDetailsB\x04\xe2A\x01\x03R\fslurmDetails\x12}\n" +
+	"\x16compute_engine_details\x18\b \x01(\v2A.google.cloud.hypercomputecluster.v1beta.ComputeEngineNodeDetailsB\x04\xe2A\x01\x03R\x14computeEngineDetails\x12A\n" +
+	"\vcreate_time\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\"\x93\x01\n" +
+	"\x05State\x12\x15\n" +
+	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
+	"\bCREATING\x10\x01\x12\n" +
+	"\n" +
+	"\x06ACTIVE\x10\x02\x12\x0e\n" +
+	"\n" +
+	"SUSPENDING\x10\x03\x12\r\n" +
+	"\tSUSPENDED\x10\x04\x12\r\n" +
+	"\tREPAIRING\x10\x05\x12\n" +
+	"\n" +
+	"\x06FAILED\x10\x06\x12\f\n" +
+	"\bDELETING\x10\a\x12\x11\n" +
+	"\rUNPROVISIONED\x10\b\"w\n" +
+	"\x11ProvisioningModel\x12\"\n" +
+	"\x1ePROVISIONING_MODEL_UNSPECIFIED\x10\x00\x12\r\n" +
+	"\tON_DEMAND\x10\x01\x12\b\n" +
+	"\x04SPOT\x10\x02\x12\x15\n" +
+	"\x11RESERVATION_BOUND\x10\x03\x12\x0e\n" +
+	"\n" +
+	"FLEX_START\x10\x04:\x82\x01\xeaA\x7f\n" +
+	"'hypercomputecluster.googleapis.com/Node\x12Gprojects/{project}/locations/{location}/clusters/{cluster}/nodes/{node}*\x05nodes2\x04node\"\xb4\x01\n" +
+	"\x10SlurmNodeDetails\x12\x1c\n" +
+	"\x06states\x18\x01 \x03(\tB\x04\xe2A\x01\x03R\x06states\x12\x1c\n" +
+	"\x06reason\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x06reason\x12$\n" +
+	"\n" +
+	"partitions\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\n" +
+	"partitions\x12\x1e\n" +
+	"\anodeset\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\anodeset\x12\x1e\n" +
+	"\acomment\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\acomment\"\x98\x02\n" +
+	"\x18ComputeEngineNodeDetails\x12K\n" +
+	"\binstance\x18\x01 \x01(\tB/\xe2A\x01\x03\xfaA(\n" +
+	"&compute.googleapis.com/ComputeInstanceR\binstance\x12'\n" +
+	"\fmachine_type\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vmachineType\x12\x1a\n" +
+	"\x05state\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x05state\x12j\n" +
+	"\x16instance_group_manager\x18\x04 \x01(\tB4\xe2A\x01\x03\xfaA-\n" +
+	"+compute.googleapis.com/InstanceGroupManagerR\x14instanceGroupManager\"\xd7\x04\n" +
+	"\x19ComputeEngineOrchestrator\x12\x9b\x01\n" +
+	"\x17managed_instance_groups\x18\x01 \x03(\v2].google.cloud.hypercomputecluster.v1beta.ComputeEngineOrchestrator.ManagedInstanceGroupsEntryB\x04\xe2A\x01\x01R\x15managedInstanceGroups\x12\x8e\x01\n" +
+	"\x12existing_instances\x18\x02 \x03(\v2Y.google.cloud.hypercomputecluster.v1beta.ComputeEngineOrchestrator.ExistingInstancesEntryB\x04\xe2A\x01\x01R\x11existingInstances\x1a\x87\x01\n" +
+	"\x1aManagedInstanceGroupsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12S\n" +
+	"\x05value\x18\x02 \x01(\v2=.google.cloud.hypercomputecluster.v1beta.ManagedInstanceGroupR\x05value:\x028\x01\x1a\x80\x01\n" +
+	"\x16ExistingInstancesEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12P\n" +
+	"\x05value\x18\x02 \x01(\v2:.google.cloud.hypercomputecluster.v1beta.ExistingInstancesR\x05value:\x028\x01\"\xfb\v\n" +
+	"\x14ManagedInstanceGroup\x12j\n" +
+	"\x16instance_group_manager\x18\a \x01(\tB4\xe2A\x01\x03\xfaA-\n" +
+	"+compute.googleapis.com/InstanceGroupManagerR\x14instanceGroupManager\x12#\n" +
+	"\n" +
+	"compute_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tcomputeId\x12%\n" +
+	"\vtarget_size\x18\x02 \x01(\x03B\x04\xe2A\x01\x01R\n" +
+	"targetSize\x12e\n" +
+	"\x0fstorage_configs\x18\x03 \x03(\v26.google.cloud.hypercomputecluster.v1beta.StorageConfigB\x04\xe2A\x01\x01R\x0estorageConfigs\x12]\n" +
+	"\x11instance_template\x18\x04 \x01(\tB0\xe2A\x01\x03\xfaA)\n" +
+	"'compute.googleapis.com/InstanceTemplateR\x10instanceTemplate\x12y\n" +
+	"\x16resource_policy_config\x18\x05 \x01(\v2=.google.cloud.hypercomputecluster.v1beta.ResourcePolicyConfigB\x04\xe2A\x01\x01R\x14resourcePolicyConfig\x12T\n" +
+	"\tboot_disk\x18\x06 \x01(\v21.google.cloud.hypercomputecluster.v1beta.BootDiskB\x04\xe2A\x01\x01R\bbootDisk\x12\x83\x01\n" +
+	"\x10additional_disks\x18\x0f \x03(\v2R.google.cloud.hypercomputecluster.v1beta.ManagedInstanceGroup.AdditionalDisksEntryB\x04\xe2A\x01\x01R\x0fadditionalDisks\x12+\n" +
+	"\x0estartup_script\x18\b \x01(\tB\x04\xe2A\x01\x01R\rstartupScript\x120\n" +
+	"\x11enable_public_ips\x18\t \x01(\bB\x04\xe2A\x01\x01R\x0fenablePublicIps\x12,\n" +
+	"\x0fenable_os_login\x18\n" +
+	" \x01(\bB\x04\xe2A\x01\x01R\renableOsLogin\x12U\n" +
+	"\x16startup_script_timeout\x18\v \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x14startupScriptTimeout\x12m\n" +
+	"\bmetadata\x18\f \x03(\v2K.google.cloud.hypercomputecluster.v1beta.ManagedInstanceGroup.MetadataEntryB\x04\xe2A\x01\x01R\bmetadata\x12g\n" +
+	"\x0fservice_account\x18\r \x01(\v27.google.cloud.hypercomputecluster.v1beta.ServiceAccountB\x05\xe2A\x02\x02\x05R\x0eserviceAccount\x12g\n" +
+	"\x06labels\x18\x0e \x03(\v2I.google.cloud.hypercomputecluster.v1beta.ManagedInstanceGroup.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1aq\n" +
+	"\x14AdditionalDisksEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12C\n" +
+	"\x05value\x18\x02 \x01(\v2-.google.cloud.hypercomputecluster.v1beta.DiskR\x05value:\x028\x01\x1a;\n" +
+	"\rMetadataEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a9\n" +
+	"\vLabelsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xc1\x02\n" +
+	"\x04Disk\x12=\n" +
+	"\x05image\x18\x03 \x01(\tB%\xe2A\x01\x01\xfaA\x1e\n" +
+	"\x1ccompute.googleapis.com/ImageH\x00R\x05image\x12F\n" +
+	"\bsnapshot\x18\x04 \x01(\tB(\xe2A\x01\x01\xfaA!\n" +
+	"\x1fcompute.googleapis.com/SnapshotH\x00R\bsnapshot\x12K\n" +
+	"\rexisting_disk\x18\x05 \x01(\tB$\xe2A\x01\x01\xfaA\x1d\n" +
+	"\x1bcompute.googleapis.com/DiskH\x00R\fexistingDisk\x12<\n" +
+	"\x04type\x18\x01 \x01(\tB(\xe2A\x01\x01\xfaA!\n" +
+	"\x1fcompute.googleapis.com/DiskTypeR\x04type\x12\x1d\n" +
+	"\asize_gb\x18\x02 \x01(\x03B\x04\xe2A\x01\x01R\x06sizeGbB\b\n" +
+	"\x06source\"\xfa\x06\n" +
+	"\x11ExistingInstances\x12Q\n" +
+	"\aproject\x18\a \x01(\tB5\xe2A\x02\x01\x05\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectH\x00R\aproject\x12m\n" +
+	"\x16instance_group_manager\x18\x01 \x01(\tB5\xe2A\x02\x01\x05\xfaA-\n" +
+	"+compute.googleapis.com/InstanceGroupManagerH\x00R\x14instanceGroupManager\x12z\n" +
+	"\x1dregion_instance_group_manager\x18\x02 \x01(\tB5\xe2A\x02\x01\x05\xfaA-\n" +
+	"+compute.googleapis.com/InstanceGroupManagerH\x00R\x1aregionInstanceGroupManager\x12P\n" +
+	"\vreservation\x18\x03 \x01(\tB,\xe2A\x02\x01\x05\xfaA$\n" +
+	"\"compute.googleapis.com/ReservationH\x00R\vreservation\x12`\n" +
+	"\x11reservation_block\x18\x04 \x01(\tB1\xe2A\x02\x01\x05\xfaA)\n" +
+	"'compute.googleapis.com/ReservationBlockH\x00R\x10reservationBlock\x12j\n" +
+	"\x15reservation_sub_block\x18\x05 \x01(\tB4\xe2A\x02\x01\x05\xfaA,\n" +
+	"*compute.googleapis.com/ReservationSubBlockH\x00R\x13reservationSubBlock\x12e\n" +
+	"\x06labels\x18\x06 \x03(\v2F.google.cloud.hypercomputecluster.v1beta.ExistingInstances.LabelsEntryB\x05\xe2A\x02\x01\x05R\x06labels\x12[\n" +
+	"\bnetworks\x18\b \x03(\v29.google.cloud.hypercomputecluster.v1beta.NetworkReferenceB\x04\xe2A\x01\x03R\bnetworks\x1a9\n" +
+	"\vLabelsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\b\n" +
+	"\x06source2\x88\v\n" +
 	"\x13HypercomputeCluster\x12\xce\x01\n" +
 	"\fListClusters\x12<.google.cloud.hypercomputecluster.v1beta.ListClustersRequest\x1a=.google.cloud.hypercomputecluster.v1beta.ListClustersResponse\"A\xdaA\x06parent\x82\xd3\xe4\x93\x022\x120/v1beta/{parent=projects/*/locations/*}/clusters\x12\xbb\x01\n" +
 	"\n" +
@@ -3661,18 +5423,24 @@ const file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_ra
 	"\rUpdateCluster\x12=.google.cloud.hypercomputecluster.v1beta.UpdateClusterRequest\x1a\x1d.google.longrunning.Operation\"~\xcaA\x1c\n" +
 	"\aCluster\x12\x11OperationMetadata\xdaA\x13cluster,update_mask\x82\xd3\xe4\x93\x02C:\acluster28/v1beta/{cluster.name=projects/*/locations/*/clusters/*}\x12\xdb\x01\n" +
 	"\rDeleteCluster\x12=.google.cloud.hypercomputecluster.v1beta.DeleteClusterRequest\x1a\x1d.google.longrunning.Operation\"l\xcaA*\n" +
-	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x022*0/v1beta/{name=projects/*/locations/*/clusters/*}\x1aV\xcaA\"hypercomputecluster.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xa8\v\xeaA^\n" +
-	"&compute.googleapis.com/ComputeInstance\x124projects/{project}/zones/{zone}/instances/{instance}\xeaAX\n" +
+	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x022*0/v1beta/{name=projects/*/locations/*/clusters/*}\x12\xcd\x01\n" +
+	"\tListNodes\x129.google.cloud.hypercomputecluster.v1beta.ListNodesRequest\x1a:.google.cloud.hypercomputecluster.v1beta.ListNodesResponse\"I\xdaA\x06parent\x82\xd3\xe4\x93\x02:\x128/v1beta/{parent=projects/*/locations/*/clusters/*}/nodes\x1aV\xcaA\"hypercomputecluster.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xc8\x10\xeaA^\n" +
+	"&compute.googleapis.com/ComputeInstance\x124projects/{project}/zones/{zone}/instances/{instance}\xeaAK\n" +
+	"\x1bcompute.googleapis.com/Disk\x12,projects/{project}/zones/{zone}/disks/{disk}\xeaAX\n" +
 	"\x1fcompute.googleapis.com/DiskType\x125projects/{project}/zones/{zone}/diskTypes/{disk_type}\xeaAH\n" +
-	"\x1ccompute.googleapis.com/Image\x12(projects/{project}/global/images/{image}\xeaAN\n" +
+	"\x1ccompute.googleapis.com/Image\x12(projects/{project}/global/images/{image}\xeaA\xd1\x01\n" +
+	"+compute.googleapis.com/InstanceGroupManager\x12Nprojects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}\x12Rprojects/{project}/regions/{region}/instanceGroupManagers/{instance_group_manager}\xeaAj\n" +
+	"'compute.googleapis.com/InstanceTemplate\x12?projects/{project}/global/instanceTemplates/{instance_template}\xeaAN\n" +
 	"\x1ecompute.googleapis.com/Network\x12,projects/{project}/global/networks/{network}\xeaA`\n" +
 	"\"compute.googleapis.com/Reservation\x12:projects/{project}/zones/{zone}/reservations/{reservation}\xeaA\x8b\x01\n" +
 	"'compute.googleapis.com/ReservationBlock\x12`projects/{project}/zones/{zone}/reservations/{reservation}/reservationBlocks/{reservation_block}\xeaA\xbc\x01\n" +
-	"*compute.googleapis.com/ReservationSubBlock\x12\x8d\x01projects/{project}/zones/{zone}/reservations/{reservation}/reservationBlocks/{reservation_block}/reservationSubBlocks/{reservation_sub_block}\xeaAa\n" +
+	"*compute.googleapis.com/ReservationSubBlock\x12\x8d\x01projects/{project}/zones/{zone}/reservations/{reservation}/reservationBlocks/{reservation_block}/reservationSubBlocks/{reservation_sub_block}\xeaA\x8b\x01\n" +
+	"\x1fcompute.googleapis.com/Snapshot\x12.projects/{project}/global/snapshots/{snapshot}\x128projects/{project}/regions/{region}/snapshots/{snapshot}\xeaAa\n" +
 	"!compute.googleapis.com/Subnetwork\x12<projects/{project}/regions/{region}/subnetworks/{subnetwork}\xeaA`\n" +
-	" file.googleapis.com/FileInstance\x12<projects/{project}/locations/{location}/instances/{instance}\xeaAd\n" +
-	"$lustre.googleapis.com/LustreInstance\x12<projects/{project}/locations/{location}/instances/{instance}\xeaAD\n" +
-	"\x1dstorage.googleapis.com/Bucket\x12#projects/{project}/buckets/{bucket}\n" +
+	" file.googleapis.com/FileInstance\x12<projects/{project}/locations/{location}/instances/{instance}\xeaAD\n" +
+	"\x1dstorage.googleapis.com/Bucket\x12#projects/{project}/buckets/{bucket}\xeaA\x80\x01\n" +
+	"\x1ccontainer.googleapis.com/Pod\x12`projects/{project}/locations/{location}/clusters/{cluster}/k8s/namespaces/{namespace}/pods/{pod}\xeaAa\n" +
+	"\"compute.googleapis.com/StoragePool\x12;projects/{project}/zones/{zone}/storagePools/{storage_pool}\n" +
 	"+com.google.cloud.hypercomputecluster.v1betaB\x18HypercomputeClusterProtoP\x01Z]cloud.google.com/go/hypercomputecluster/apiv1beta/hypercomputeclusterpb;hypercomputeclusterpb\xaa\x02'Google.Cloud.HypercomputeCluster.V1Beta\xca\x02'Google\\Cloud\\HypercomputeCluster\\V1beta\xea\x02*Google::Cloud::HypercomputeCluster::V1betab\x06proto3"
 
 var (
@@ -3687,134 +5455,183 @@ func file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_raw
 	return file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDescData
 }
 
-var file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes = make([]protoimpl.MessageInfo, 47)
+var file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_enumTypes = make([]protoimpl.EnumInfo, 7)
+var file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes = make([]protoimpl.MessageInfo, 65)
 var file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_goTypes = []any{
-	(NewFilestoreConfig_Tier)(0),                 // 0: google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig.Tier
-	(NewFilestoreConfig_Protocol)(0),             // 1: google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig.Protocol
-	(NewBucketConfig_StorageClass)(0),            // 2: google.cloud.hypercomputecluster.v1beta.NewBucketConfig.StorageClass
-	(GcsAutoclassConfig_TerminalStorageClass)(0), // 3: google.cloud.hypercomputecluster.v1beta.GcsAutoclassConfig.TerminalStorageClass
-	(*Cluster)(nil),                              // 4: google.cloud.hypercomputecluster.v1beta.Cluster
-	(*ListClustersRequest)(nil),                  // 5: google.cloud.hypercomputecluster.v1beta.ListClustersRequest
-	(*ListClustersResponse)(nil),                 // 6: google.cloud.hypercomputecluster.v1beta.ListClustersResponse
-	(*GetClusterRequest)(nil),                    // 7: google.cloud.hypercomputecluster.v1beta.GetClusterRequest
-	(*CreateClusterRequest)(nil),                 // 8: google.cloud.hypercomputecluster.v1beta.CreateClusterRequest
-	(*UpdateClusterRequest)(nil),                 // 9: google.cloud.hypercomputecluster.v1beta.UpdateClusterRequest
-	(*DeleteClusterRequest)(nil),                 // 10: google.cloud.hypercomputecluster.v1beta.DeleteClusterRequest
-	(*NetworkResource)(nil),                      // 11: google.cloud.hypercomputecluster.v1beta.NetworkResource
-	(*NetworkReference)(nil),                     // 12: google.cloud.hypercomputecluster.v1beta.NetworkReference
-	(*NetworkResourceConfig)(nil),                // 13: google.cloud.hypercomputecluster.v1beta.NetworkResourceConfig
-	(*NewNetworkConfig)(nil),                     // 14: google.cloud.hypercomputecluster.v1beta.NewNetworkConfig
-	(*ExistingNetworkConfig)(nil),                // 15: google.cloud.hypercomputecluster.v1beta.ExistingNetworkConfig
-	(*StorageResource)(nil),                      // 16: google.cloud.hypercomputecluster.v1beta.StorageResource
-	(*FilestoreReference)(nil),                   // 17: google.cloud.hypercomputecluster.v1beta.FilestoreReference
-	(*BucketReference)(nil),                      // 18: google.cloud.hypercomputecluster.v1beta.BucketReference
-	(*LustreReference)(nil),                      // 19: google.cloud.hypercomputecluster.v1beta.LustreReference
-	(*StorageResourceConfig)(nil),                // 20: google.cloud.hypercomputecluster.v1beta.StorageResourceConfig
-	(*NewFilestoreConfig)(nil),                   // 21: google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig
-	(*FileShareConfig)(nil),                      // 22: google.cloud.hypercomputecluster.v1beta.FileShareConfig
-	(*ExistingFilestoreConfig)(nil),              // 23: google.cloud.hypercomputecluster.v1beta.ExistingFilestoreConfig
-	(*NewBucketConfig)(nil),                      // 24: google.cloud.hypercomputecluster.v1beta.NewBucketConfig
-	(*GcsAutoclassConfig)(nil),                   // 25: google.cloud.hypercomputecluster.v1beta.GcsAutoclassConfig
-	(*GcsHierarchicalNamespaceConfig)(nil),       // 26: google.cloud.hypercomputecluster.v1beta.GcsHierarchicalNamespaceConfig
-	(*ExistingBucketConfig)(nil),                 // 27: google.cloud.hypercomputecluster.v1beta.ExistingBucketConfig
-	(*NewLustreConfig)(nil),                      // 28: google.cloud.hypercomputecluster.v1beta.NewLustreConfig
-	(*ExistingLustreConfig)(nil),                 // 29: google.cloud.hypercomputecluster.v1beta.ExistingLustreConfig
-	(*ComputeResource)(nil),                      // 30: google.cloud.hypercomputecluster.v1beta.ComputeResource
-	(*ComputeResourceConfig)(nil),                // 31: google.cloud.hypercomputecluster.v1beta.ComputeResourceConfig
-	(*NewOnDemandInstancesConfig)(nil),           // 32: google.cloud.hypercomputecluster.v1beta.NewOnDemandInstancesConfig
-	(*NewSpotInstancesConfig)(nil),               // 33: google.cloud.hypercomputecluster.v1beta.NewSpotInstancesConfig
-	(*NewReservedInstancesConfig)(nil),           // 34: google.cloud.hypercomputecluster.v1beta.NewReservedInstancesConfig
-	(*NewFlexStartInstancesConfig)(nil),          // 35: google.cloud.hypercomputecluster.v1beta.NewFlexStartInstancesConfig
-	(*BootDisk)(nil),                             // 36: google.cloud.hypercomputecluster.v1beta.BootDisk
-	(*Orchestrator)(nil),                         // 37: google.cloud.hypercomputecluster.v1beta.Orchestrator
-	(*SlurmOrchestrator)(nil),                    // 38: google.cloud.hypercomputecluster.v1beta.SlurmOrchestrator
-	(*SlurmNodeSet)(nil),                         // 39: google.cloud.hypercomputecluster.v1beta.SlurmNodeSet
-	(*ComputeInstanceSlurmNodeSet)(nil),          // 40: google.cloud.hypercomputecluster.v1beta.ComputeInstanceSlurmNodeSet
-	(*SlurmPartition)(nil),                       // 41: google.cloud.hypercomputecluster.v1beta.SlurmPartition
-	(*SlurmLoginNodes)(nil),                      // 42: google.cloud.hypercomputecluster.v1beta.SlurmLoginNodes
-	(*StorageConfig)(nil),                        // 43: google.cloud.hypercomputecluster.v1beta.StorageConfig
-	(*ComputeInstance)(nil),                      // 44: google.cloud.hypercomputecluster.v1beta.ComputeInstance
-	nil,                                          // 45: google.cloud.hypercomputecluster.v1beta.Cluster.LabelsEntry
-	nil,                                          // 46: google.cloud.hypercomputecluster.v1beta.Cluster.NetworkResourcesEntry
-	nil,                                          // 47: google.cloud.hypercomputecluster.v1beta.Cluster.StorageResourcesEntry
-	nil,                                          // 48: google.cloud.hypercomputecluster.v1beta.Cluster.ComputeResourcesEntry
-	nil,                                          // 49: google.cloud.hypercomputecluster.v1beta.ComputeInstanceSlurmNodeSet.LabelsEntry
-	nil,                                          // 50: google.cloud.hypercomputecluster.v1beta.SlurmLoginNodes.LabelsEntry
-	(*timestamppb.Timestamp)(nil),                // 51: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),                // 52: google.protobuf.FieldMask
-	(*durationpb.Duration)(nil),                  // 53: google.protobuf.Duration
-	(*longrunningpb.Operation)(nil),              // 54: google.longrunning.Operation
+	(NewFilestoreConfig_Tier)(0),                  // 0: google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig.Tier
+	(NewFilestoreConfig_Protocol)(0),              // 1: google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig.Protocol
+	(NewBucketConfig_StorageClass)(0),             // 2: google.cloud.hypercomputecluster.v1beta.NewBucketConfig.StorageClass
+	(GcsAutoclassConfig_TerminalStorageClass)(0),  // 3: google.cloud.hypercomputecluster.v1beta.GcsAutoclassConfig.TerminalStorageClass
+	(NewSpotInstancesConfig_TerminationAction)(0), // 4: google.cloud.hypercomputecluster.v1beta.NewSpotInstancesConfig.TerminationAction
+	(Node_State)(0),                               // 5: google.cloud.hypercomputecluster.v1beta.Node.State
+	(Node_ProvisioningModel)(0),                   // 6: google.cloud.hypercomputecluster.v1beta.Node.ProvisioningModel
+	(*Cluster)(nil),                               // 7: google.cloud.hypercomputecluster.v1beta.Cluster
+	(*ListClustersRequest)(nil),                   // 8: google.cloud.hypercomputecluster.v1beta.ListClustersRequest
+	(*ListClustersResponse)(nil),                  // 9: google.cloud.hypercomputecluster.v1beta.ListClustersResponse
+	(*GetClusterRequest)(nil),                     // 10: google.cloud.hypercomputecluster.v1beta.GetClusterRequest
+	(*CreateClusterRequest)(nil),                  // 11: google.cloud.hypercomputecluster.v1beta.CreateClusterRequest
+	(*UpdateClusterRequest)(nil),                  // 12: google.cloud.hypercomputecluster.v1beta.UpdateClusterRequest
+	(*DeleteClusterRequest)(nil),                  // 13: google.cloud.hypercomputecluster.v1beta.DeleteClusterRequest
+	(*ListNodesRequest)(nil),                      // 14: google.cloud.hypercomputecluster.v1beta.ListNodesRequest
+	(*ListNodesResponse)(nil),                     // 15: google.cloud.hypercomputecluster.v1beta.ListNodesResponse
+	(*NetworkResource)(nil),                       // 16: google.cloud.hypercomputecluster.v1beta.NetworkResource
+	(*NetworkReference)(nil),                      // 17: google.cloud.hypercomputecluster.v1beta.NetworkReference
+	(*NetworkResourceConfig)(nil),                 // 18: google.cloud.hypercomputecluster.v1beta.NetworkResourceConfig
+	(*NewNetworkConfig)(nil),                      // 19: google.cloud.hypercomputecluster.v1beta.NewNetworkConfig
+	(*ExistingNetworkConfig)(nil),                 // 20: google.cloud.hypercomputecluster.v1beta.ExistingNetworkConfig
+	(*StorageResource)(nil),                       // 21: google.cloud.hypercomputecluster.v1beta.StorageResource
+	(*FilestoreReference)(nil),                    // 22: google.cloud.hypercomputecluster.v1beta.FilestoreReference
+	(*BucketReference)(nil),                       // 23: google.cloud.hypercomputecluster.v1beta.BucketReference
+	(*LustreReference)(nil),                       // 24: google.cloud.hypercomputecluster.v1beta.LustreReference
+	(*StorageResourceConfig)(nil),                 // 25: google.cloud.hypercomputecluster.v1beta.StorageResourceConfig
+	(*NewFilestoreConfig)(nil),                    // 26: google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig
+	(*FileShareConfig)(nil),                       // 27: google.cloud.hypercomputecluster.v1beta.FileShareConfig
+	(*ExistingFilestoreConfig)(nil),               // 28: google.cloud.hypercomputecluster.v1beta.ExistingFilestoreConfig
+	(*NewBucketConfig)(nil),                       // 29: google.cloud.hypercomputecluster.v1beta.NewBucketConfig
+	(*GcsAutoclassConfig)(nil),                    // 30: google.cloud.hypercomputecluster.v1beta.GcsAutoclassConfig
+	(*GcsHierarchicalNamespaceConfig)(nil),        // 31: google.cloud.hypercomputecluster.v1beta.GcsHierarchicalNamespaceConfig
+	(*ExistingBucketConfig)(nil),                  // 32: google.cloud.hypercomputecluster.v1beta.ExistingBucketConfig
+	(*NewLustreConfig)(nil),                       // 33: google.cloud.hypercomputecluster.v1beta.NewLustreConfig
+	(*ExistingLustreConfig)(nil),                  // 34: google.cloud.hypercomputecluster.v1beta.ExistingLustreConfig
+	(*ExistingNfsConfig)(nil),                     // 35: google.cloud.hypercomputecluster.v1beta.ExistingNfsConfig
+	(*ComputeResource)(nil),                       // 36: google.cloud.hypercomputecluster.v1beta.ComputeResource
+	(*ComputeResourceConfig)(nil),                 // 37: google.cloud.hypercomputecluster.v1beta.ComputeResourceConfig
+	(*NewOnDemandInstancesConfig)(nil),            // 38: google.cloud.hypercomputecluster.v1beta.NewOnDemandInstancesConfig
+	(*NewSpotInstancesConfig)(nil),                // 39: google.cloud.hypercomputecluster.v1beta.NewSpotInstancesConfig
+	(*NewReservedInstancesConfig)(nil),            // 40: google.cloud.hypercomputecluster.v1beta.NewReservedInstancesConfig
+	(*NewFlexStartInstancesConfig)(nil),           // 41: google.cloud.hypercomputecluster.v1beta.NewFlexStartInstancesConfig
+	(*BootDisk)(nil),                              // 42: google.cloud.hypercomputecluster.v1beta.BootDisk
+	(*Orchestrator)(nil),                          // 43: google.cloud.hypercomputecluster.v1beta.Orchestrator
+	(*SlurmOrchestrator)(nil),                     // 44: google.cloud.hypercomputecluster.v1beta.SlurmOrchestrator
+	(*SlurmNodeSet)(nil),                          // 45: google.cloud.hypercomputecluster.v1beta.SlurmNodeSet
+	(*ComputeInstanceSlurmNodeSet)(nil),           // 46: google.cloud.hypercomputecluster.v1beta.ComputeInstanceSlurmNodeSet
+	(*ResourcePolicyConfig)(nil),                  // 47: google.cloud.hypercomputecluster.v1beta.ResourcePolicyConfig
+	(*SlurmPartition)(nil),                        // 48: google.cloud.hypercomputecluster.v1beta.SlurmPartition
+	(*SlurmLoginNodes)(nil),                       // 49: google.cloud.hypercomputecluster.v1beta.SlurmLoginNodes
+	(*ServiceAccount)(nil),                        // 50: google.cloud.hypercomputecluster.v1beta.ServiceAccount
+	(*StorageConfig)(nil),                         // 51: google.cloud.hypercomputecluster.v1beta.StorageConfig
+	(*ComputeInstance)(nil),                       // 52: google.cloud.hypercomputecluster.v1beta.ComputeInstance
+	(*Node)(nil),                                  // 53: google.cloud.hypercomputecluster.v1beta.Node
+	(*SlurmNodeDetails)(nil),                      // 54: google.cloud.hypercomputecluster.v1beta.SlurmNodeDetails
+	(*ComputeEngineNodeDetails)(nil),              // 55: google.cloud.hypercomputecluster.v1beta.ComputeEngineNodeDetails
+	(*ComputeEngineOrchestrator)(nil),             // 56: google.cloud.hypercomputecluster.v1beta.ComputeEngineOrchestrator
+	(*ManagedInstanceGroup)(nil),                  // 57: google.cloud.hypercomputecluster.v1beta.ManagedInstanceGroup
+	(*Disk)(nil),                                  // 58: google.cloud.hypercomputecluster.v1beta.Disk
+	(*ExistingInstances)(nil),                     // 59: google.cloud.hypercomputecluster.v1beta.ExistingInstances
+	nil,                                           // 60: google.cloud.hypercomputecluster.v1beta.Cluster.LabelsEntry
+	nil,                                           // 61: google.cloud.hypercomputecluster.v1beta.Cluster.NetworkResourcesEntry
+	nil,                                           // 62: google.cloud.hypercomputecluster.v1beta.Cluster.StorageResourcesEntry
+	nil,                                           // 63: google.cloud.hypercomputecluster.v1beta.Cluster.ComputeResourcesEntry
+	nil,                                           // 64: google.cloud.hypercomputecluster.v1beta.ComputeInstanceSlurmNodeSet.LabelsEntry
+	nil,                                           // 65: google.cloud.hypercomputecluster.v1beta.SlurmLoginNodes.LabelsEntry
+	nil,                                           // 66: google.cloud.hypercomputecluster.v1beta.ComputeEngineOrchestrator.ManagedInstanceGroupsEntry
+	nil,                                           // 67: google.cloud.hypercomputecluster.v1beta.ComputeEngineOrchestrator.ExistingInstancesEntry
+	nil,                                           // 68: google.cloud.hypercomputecluster.v1beta.ManagedInstanceGroup.AdditionalDisksEntry
+	nil,                                           // 69: google.cloud.hypercomputecluster.v1beta.ManagedInstanceGroup.MetadataEntry
+	nil,                                           // 70: google.cloud.hypercomputecluster.v1beta.ManagedInstanceGroup.LabelsEntry
+	nil,                                           // 71: google.cloud.hypercomputecluster.v1beta.ExistingInstances.LabelsEntry
+	(*timestamppb.Timestamp)(nil),                 // 72: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),                 // 73: google.protobuf.FieldMask
+	(*durationpb.Duration)(nil),                   // 74: google.protobuf.Duration
+	(*longrunningpb.Operation)(nil),               // 75: google.longrunning.Operation
 }
 var file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_depIdxs = []int32{
-	45, // 0: google.cloud.hypercomputecluster.v1beta.Cluster.labels:type_name -> google.cloud.hypercomputecluster.v1beta.Cluster.LabelsEntry
-	51, // 1: google.cloud.hypercomputecluster.v1beta.Cluster.create_time:type_name -> google.protobuf.Timestamp
-	51, // 2: google.cloud.hypercomputecluster.v1beta.Cluster.update_time:type_name -> google.protobuf.Timestamp
-	46, // 3: google.cloud.hypercomputecluster.v1beta.Cluster.network_resources:type_name -> google.cloud.hypercomputecluster.v1beta.Cluster.NetworkResourcesEntry
-	47, // 4: google.cloud.hypercomputecluster.v1beta.Cluster.storage_resources:type_name -> google.cloud.hypercomputecluster.v1beta.Cluster.StorageResourcesEntry
-	48, // 5: google.cloud.hypercomputecluster.v1beta.Cluster.compute_resources:type_name -> google.cloud.hypercomputecluster.v1beta.Cluster.ComputeResourcesEntry
-	37, // 6: google.cloud.hypercomputecluster.v1beta.Cluster.orchestrator:type_name -> google.cloud.hypercomputecluster.v1beta.Orchestrator
-	4,  // 7: google.cloud.hypercomputecluster.v1beta.ListClustersResponse.clusters:type_name -> google.cloud.hypercomputecluster.v1beta.Cluster
-	4,  // 8: google.cloud.hypercomputecluster.v1beta.CreateClusterRequest.cluster:type_name -> google.cloud.hypercomputecluster.v1beta.Cluster
-	4,  // 9: google.cloud.hypercomputecluster.v1beta.UpdateClusterRequest.cluster:type_name -> google.cloud.hypercomputecluster.v1beta.Cluster
-	52, // 10: google.cloud.hypercomputecluster.v1beta.UpdateClusterRequest.update_mask:type_name -> google.protobuf.FieldMask
-	12, // 11: google.cloud.hypercomputecluster.v1beta.NetworkResource.network:type_name -> google.cloud.hypercomputecluster.v1beta.NetworkReference
-	13, // 12: google.cloud.hypercomputecluster.v1beta.NetworkResource.config:type_name -> google.cloud.hypercomputecluster.v1beta.NetworkResourceConfig
-	14, // 13: google.cloud.hypercomputecluster.v1beta.NetworkResourceConfig.new_network:type_name -> google.cloud.hypercomputecluster.v1beta.NewNetworkConfig
-	15, // 14: google.cloud.hypercomputecluster.v1beta.NetworkResourceConfig.existing_network:type_name -> google.cloud.hypercomputecluster.v1beta.ExistingNetworkConfig
-	17, // 15: google.cloud.hypercomputecluster.v1beta.StorageResource.filestore:type_name -> google.cloud.hypercomputecluster.v1beta.FilestoreReference
-	18, // 16: google.cloud.hypercomputecluster.v1beta.StorageResource.bucket:type_name -> google.cloud.hypercomputecluster.v1beta.BucketReference
-	19, // 17: google.cloud.hypercomputecluster.v1beta.StorageResource.lustre:type_name -> google.cloud.hypercomputecluster.v1beta.LustreReference
-	20, // 18: google.cloud.hypercomputecluster.v1beta.StorageResource.config:type_name -> google.cloud.hypercomputecluster.v1beta.StorageResourceConfig
-	21, // 19: google.cloud.hypercomputecluster.v1beta.StorageResourceConfig.new_filestore:type_name -> google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig
-	23, // 20: google.cloud.hypercomputecluster.v1beta.StorageResourceConfig.existing_filestore:type_name -> google.cloud.hypercomputecluster.v1beta.ExistingFilestoreConfig
-	24, // 21: google.cloud.hypercomputecluster.v1beta.StorageResourceConfig.new_bucket:type_name -> google.cloud.hypercomputecluster.v1beta.NewBucketConfig
-	27, // 22: google.cloud.hypercomputecluster.v1beta.StorageResourceConfig.existing_bucket:type_name -> google.cloud.hypercomputecluster.v1beta.ExistingBucketConfig
-	28, // 23: google.cloud.hypercomputecluster.v1beta.StorageResourceConfig.new_lustre:type_name -> google.cloud.hypercomputecluster.v1beta.NewLustreConfig
-	29, // 24: google.cloud.hypercomputecluster.v1beta.StorageResourceConfig.existing_lustre:type_name -> google.cloud.hypercomputecluster.v1beta.ExistingLustreConfig
-	22, // 25: google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig.file_shares:type_name -> google.cloud.hypercomputecluster.v1beta.FileShareConfig
-	0,  // 26: google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig.tier:type_name -> google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig.Tier
-	1,  // 27: google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig.protocol:type_name -> google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig.Protocol
-	25, // 28: google.cloud.hypercomputecluster.v1beta.NewBucketConfig.autoclass:type_name -> google.cloud.hypercomputecluster.v1beta.GcsAutoclassConfig
-	2,  // 29: google.cloud.hypercomputecluster.v1beta.NewBucketConfig.storage_class:type_name -> google.cloud.hypercomputecluster.v1beta.NewBucketConfig.StorageClass
-	26, // 30: google.cloud.hypercomputecluster.v1beta.NewBucketConfig.hierarchical_namespace:type_name -> google.cloud.hypercomputecluster.v1beta.GcsHierarchicalNamespaceConfig
-	3,  // 31: google.cloud.hypercomputecluster.v1beta.GcsAutoclassConfig.terminal_storage_class:type_name -> google.cloud.hypercomputecluster.v1beta.GcsAutoclassConfig.TerminalStorageClass
-	31, // 32: google.cloud.hypercomputecluster.v1beta.ComputeResource.config:type_name -> google.cloud.hypercomputecluster.v1beta.ComputeResourceConfig
-	32, // 33: google.cloud.hypercomputecluster.v1beta.ComputeResourceConfig.new_on_demand_instances:type_name -> google.cloud.hypercomputecluster.v1beta.NewOnDemandInstancesConfig
-	33, // 34: google.cloud.hypercomputecluster.v1beta.ComputeResourceConfig.new_spot_instances:type_name -> google.cloud.hypercomputecluster.v1beta.NewSpotInstancesConfig
-	34, // 35: google.cloud.hypercomputecluster.v1beta.ComputeResourceConfig.new_reserved_instances:type_name -> google.cloud.hypercomputecluster.v1beta.NewReservedInstancesConfig
-	35, // 36: google.cloud.hypercomputecluster.v1beta.ComputeResourceConfig.new_flex_start_instances:type_name -> google.cloud.hypercomputecluster.v1beta.NewFlexStartInstancesConfig
-	53, // 37: google.cloud.hypercomputecluster.v1beta.NewFlexStartInstancesConfig.max_duration:type_name -> google.protobuf.Duration
-	38, // 38: google.cloud.hypercomputecluster.v1beta.Orchestrator.slurm:type_name -> google.cloud.hypercomputecluster.v1beta.SlurmOrchestrator
-	42, // 39: google.cloud.hypercomputecluster.v1beta.SlurmOrchestrator.login_nodes:type_name -> google.cloud.hypercomputecluster.v1beta.SlurmLoginNodes
-	39, // 40: google.cloud.hypercomputecluster.v1beta.SlurmOrchestrator.node_sets:type_name -> google.cloud.hypercomputecluster.v1beta.SlurmNodeSet
-	41, // 41: google.cloud.hypercomputecluster.v1beta.SlurmOrchestrator.partitions:type_name -> google.cloud.hypercomputecluster.v1beta.SlurmPartition
-	40, // 42: google.cloud.hypercomputecluster.v1beta.SlurmNodeSet.compute_instance:type_name -> google.cloud.hypercomputecluster.v1beta.ComputeInstanceSlurmNodeSet
-	43, // 43: google.cloud.hypercomputecluster.v1beta.SlurmNodeSet.storage_configs:type_name -> google.cloud.hypercomputecluster.v1beta.StorageConfig
-	49, // 44: google.cloud.hypercomputecluster.v1beta.ComputeInstanceSlurmNodeSet.labels:type_name -> google.cloud.hypercomputecluster.v1beta.ComputeInstanceSlurmNodeSet.LabelsEntry
-	36, // 45: google.cloud.hypercomputecluster.v1beta.ComputeInstanceSlurmNodeSet.boot_disk:type_name -> google.cloud.hypercomputecluster.v1beta.BootDisk
-	50, // 46: google.cloud.hypercomputecluster.v1beta.SlurmLoginNodes.labels:type_name -> google.cloud.hypercomputecluster.v1beta.SlurmLoginNodes.LabelsEntry
-	43, // 47: google.cloud.hypercomputecluster.v1beta.SlurmLoginNodes.storage_configs:type_name -> google.cloud.hypercomputecluster.v1beta.StorageConfig
-	44, // 48: google.cloud.hypercomputecluster.v1beta.SlurmLoginNodes.instances:type_name -> google.cloud.hypercomputecluster.v1beta.ComputeInstance
-	36, // 49: google.cloud.hypercomputecluster.v1beta.SlurmLoginNodes.boot_disk:type_name -> google.cloud.hypercomputecluster.v1beta.BootDisk
-	11, // 50: google.cloud.hypercomputecluster.v1beta.Cluster.NetworkResourcesEntry.value:type_name -> google.cloud.hypercomputecluster.v1beta.NetworkResource
-	16, // 51: google.cloud.hypercomputecluster.v1beta.Cluster.StorageResourcesEntry.value:type_name -> google.cloud.hypercomputecluster.v1beta.StorageResource
-	30, // 52: google.cloud.hypercomputecluster.v1beta.Cluster.ComputeResourcesEntry.value:type_name -> google.cloud.hypercomputecluster.v1beta.ComputeResource
-	5,  // 53: google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.ListClusters:input_type -> google.cloud.hypercomputecluster.v1beta.ListClustersRequest
-	7,  // 54: google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.GetCluster:input_type -> google.cloud.hypercomputecluster.v1beta.GetClusterRequest
-	8,  // 55: google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.CreateCluster:input_type -> google.cloud.hypercomputecluster.v1beta.CreateClusterRequest
-	9,  // 56: google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.UpdateCluster:input_type -> google.cloud.hypercomputecluster.v1beta.UpdateClusterRequest
-	10, // 57: google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.DeleteCluster:input_type -> google.cloud.hypercomputecluster.v1beta.DeleteClusterRequest
-	6,  // 58: google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.ListClusters:output_type -> google.cloud.hypercomputecluster.v1beta.ListClustersResponse
-	4,  // 59: google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.GetCluster:output_type -> google.cloud.hypercomputecluster.v1beta.Cluster
-	54, // 60: google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.CreateCluster:output_type -> google.longrunning.Operation
-	54, // 61: google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.UpdateCluster:output_type -> google.longrunning.Operation
-	54, // 62: google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.DeleteCluster:output_type -> google.longrunning.Operation
-	58, // [58:63] is the sub-list for method output_type
-	53, // [53:58] is the sub-list for method input_type
-	53, // [53:53] is the sub-list for extension type_name
-	53, // [53:53] is the sub-list for extension extendee
-	0,  // [0:53] is the sub-list for field type_name
+	60, // 0: google.cloud.hypercomputecluster.v1beta.Cluster.labels:type_name -> google.cloud.hypercomputecluster.v1beta.Cluster.LabelsEntry
+	72, // 1: google.cloud.hypercomputecluster.v1beta.Cluster.create_time:type_name -> google.protobuf.Timestamp
+	72, // 2: google.cloud.hypercomputecluster.v1beta.Cluster.update_time:type_name -> google.protobuf.Timestamp
+	61, // 3: google.cloud.hypercomputecluster.v1beta.Cluster.network_resources:type_name -> google.cloud.hypercomputecluster.v1beta.Cluster.NetworkResourcesEntry
+	62, // 4: google.cloud.hypercomputecluster.v1beta.Cluster.storage_resources:type_name -> google.cloud.hypercomputecluster.v1beta.Cluster.StorageResourcesEntry
+	63, // 5: google.cloud.hypercomputecluster.v1beta.Cluster.compute_resources:type_name -> google.cloud.hypercomputecluster.v1beta.Cluster.ComputeResourcesEntry
+	43, // 6: google.cloud.hypercomputecluster.v1beta.Cluster.orchestrator:type_name -> google.cloud.hypercomputecluster.v1beta.Orchestrator
+	7,  // 7: google.cloud.hypercomputecluster.v1beta.ListClustersResponse.clusters:type_name -> google.cloud.hypercomputecluster.v1beta.Cluster
+	7,  // 8: google.cloud.hypercomputecluster.v1beta.CreateClusterRequest.cluster:type_name -> google.cloud.hypercomputecluster.v1beta.Cluster
+	7,  // 9: google.cloud.hypercomputecluster.v1beta.UpdateClusterRequest.cluster:type_name -> google.cloud.hypercomputecluster.v1beta.Cluster
+	73, // 10: google.cloud.hypercomputecluster.v1beta.UpdateClusterRequest.update_mask:type_name -> google.protobuf.FieldMask
+	53, // 11: google.cloud.hypercomputecluster.v1beta.ListNodesResponse.nodes:type_name -> google.cloud.hypercomputecluster.v1beta.Node
+	17, // 12: google.cloud.hypercomputecluster.v1beta.NetworkResource.network:type_name -> google.cloud.hypercomputecluster.v1beta.NetworkReference
+	18, // 13: google.cloud.hypercomputecluster.v1beta.NetworkResource.config:type_name -> google.cloud.hypercomputecluster.v1beta.NetworkResourceConfig
+	19, // 14: google.cloud.hypercomputecluster.v1beta.NetworkResourceConfig.new_network:type_name -> google.cloud.hypercomputecluster.v1beta.NewNetworkConfig
+	20, // 15: google.cloud.hypercomputecluster.v1beta.NetworkResourceConfig.existing_network:type_name -> google.cloud.hypercomputecluster.v1beta.ExistingNetworkConfig
+	22, // 16: google.cloud.hypercomputecluster.v1beta.StorageResource.filestore:type_name -> google.cloud.hypercomputecluster.v1beta.FilestoreReference
+	23, // 17: google.cloud.hypercomputecluster.v1beta.StorageResource.bucket:type_name -> google.cloud.hypercomputecluster.v1beta.BucketReference
+	24, // 18: google.cloud.hypercomputecluster.v1beta.StorageResource.lustre:type_name -> google.cloud.hypercomputecluster.v1beta.LustreReference
+	25, // 19: google.cloud.hypercomputecluster.v1beta.StorageResource.config:type_name -> google.cloud.hypercomputecluster.v1beta.StorageResourceConfig
+	26, // 20: google.cloud.hypercomputecluster.v1beta.StorageResourceConfig.new_filestore:type_name -> google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig
+	28, // 21: google.cloud.hypercomputecluster.v1beta.StorageResourceConfig.existing_filestore:type_name -> google.cloud.hypercomputecluster.v1beta.ExistingFilestoreConfig
+	29, // 22: google.cloud.hypercomputecluster.v1beta.StorageResourceConfig.new_bucket:type_name -> google.cloud.hypercomputecluster.v1beta.NewBucketConfig
+	32, // 23: google.cloud.hypercomputecluster.v1beta.StorageResourceConfig.existing_bucket:type_name -> google.cloud.hypercomputecluster.v1beta.ExistingBucketConfig
+	33, // 24: google.cloud.hypercomputecluster.v1beta.StorageResourceConfig.new_lustre:type_name -> google.cloud.hypercomputecluster.v1beta.NewLustreConfig
+	34, // 25: google.cloud.hypercomputecluster.v1beta.StorageResourceConfig.existing_lustre:type_name -> google.cloud.hypercomputecluster.v1beta.ExistingLustreConfig
+	35, // 26: google.cloud.hypercomputecluster.v1beta.StorageResourceConfig.existing_nfs:type_name -> google.cloud.hypercomputecluster.v1beta.ExistingNfsConfig
+	27, // 27: google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig.file_shares:type_name -> google.cloud.hypercomputecluster.v1beta.FileShareConfig
+	0,  // 28: google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig.tier:type_name -> google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig.Tier
+	1,  // 29: google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig.protocol:type_name -> google.cloud.hypercomputecluster.v1beta.NewFilestoreConfig.Protocol
+	30, // 30: google.cloud.hypercomputecluster.v1beta.NewBucketConfig.autoclass:type_name -> google.cloud.hypercomputecluster.v1beta.GcsAutoclassConfig
+	2,  // 31: google.cloud.hypercomputecluster.v1beta.NewBucketConfig.storage_class:type_name -> google.cloud.hypercomputecluster.v1beta.NewBucketConfig.StorageClass
+	31, // 32: google.cloud.hypercomputecluster.v1beta.NewBucketConfig.hierarchical_namespace:type_name -> google.cloud.hypercomputecluster.v1beta.GcsHierarchicalNamespaceConfig
+	3,  // 33: google.cloud.hypercomputecluster.v1beta.GcsAutoclassConfig.terminal_storage_class:type_name -> google.cloud.hypercomputecluster.v1beta.GcsAutoclassConfig.TerminalStorageClass
+	37, // 34: google.cloud.hypercomputecluster.v1beta.ComputeResource.config:type_name -> google.cloud.hypercomputecluster.v1beta.ComputeResourceConfig
+	38, // 35: google.cloud.hypercomputecluster.v1beta.ComputeResourceConfig.new_on_demand_instances:type_name -> google.cloud.hypercomputecluster.v1beta.NewOnDemandInstancesConfig
+	39, // 36: google.cloud.hypercomputecluster.v1beta.ComputeResourceConfig.new_spot_instances:type_name -> google.cloud.hypercomputecluster.v1beta.NewSpotInstancesConfig
+	40, // 37: google.cloud.hypercomputecluster.v1beta.ComputeResourceConfig.new_reserved_instances:type_name -> google.cloud.hypercomputecluster.v1beta.NewReservedInstancesConfig
+	41, // 38: google.cloud.hypercomputecluster.v1beta.ComputeResourceConfig.new_flex_start_instances:type_name -> google.cloud.hypercomputecluster.v1beta.NewFlexStartInstancesConfig
+	4,  // 39: google.cloud.hypercomputecluster.v1beta.NewSpotInstancesConfig.termination_action:type_name -> google.cloud.hypercomputecluster.v1beta.NewSpotInstancesConfig.TerminationAction
+	74, // 40: google.cloud.hypercomputecluster.v1beta.NewFlexStartInstancesConfig.max_duration:type_name -> google.protobuf.Duration
+	44, // 41: google.cloud.hypercomputecluster.v1beta.Orchestrator.slurm:type_name -> google.cloud.hypercomputecluster.v1beta.SlurmOrchestrator
+	56, // 42: google.cloud.hypercomputecluster.v1beta.Orchestrator.compute_engine:type_name -> google.cloud.hypercomputecluster.v1beta.ComputeEngineOrchestrator
+	49, // 43: google.cloud.hypercomputecluster.v1beta.SlurmOrchestrator.login_nodes:type_name -> google.cloud.hypercomputecluster.v1beta.SlurmLoginNodes
+	45, // 44: google.cloud.hypercomputecluster.v1beta.SlurmOrchestrator.node_sets:type_name -> google.cloud.hypercomputecluster.v1beta.SlurmNodeSet
+	48, // 45: google.cloud.hypercomputecluster.v1beta.SlurmOrchestrator.partitions:type_name -> google.cloud.hypercomputecluster.v1beta.SlurmPartition
+	46, // 46: google.cloud.hypercomputecluster.v1beta.SlurmNodeSet.compute_instance:type_name -> google.cloud.hypercomputecluster.v1beta.ComputeInstanceSlurmNodeSet
+	51, // 47: google.cloud.hypercomputecluster.v1beta.SlurmNodeSet.storage_configs:type_name -> google.cloud.hypercomputecluster.v1beta.StorageConfig
+	47, // 48: google.cloud.hypercomputecluster.v1beta.SlurmNodeSet.resource_policy_config:type_name -> google.cloud.hypercomputecluster.v1beta.ResourcePolicyConfig
+	64, // 49: google.cloud.hypercomputecluster.v1beta.ComputeInstanceSlurmNodeSet.labels:type_name -> google.cloud.hypercomputecluster.v1beta.ComputeInstanceSlurmNodeSet.LabelsEntry
+	42, // 50: google.cloud.hypercomputecluster.v1beta.ComputeInstanceSlurmNodeSet.boot_disk:type_name -> google.cloud.hypercomputecluster.v1beta.BootDisk
+	65, // 51: google.cloud.hypercomputecluster.v1beta.SlurmLoginNodes.labels:type_name -> google.cloud.hypercomputecluster.v1beta.SlurmLoginNodes.LabelsEntry
+	51, // 52: google.cloud.hypercomputecluster.v1beta.SlurmLoginNodes.storage_configs:type_name -> google.cloud.hypercomputecluster.v1beta.StorageConfig
+	52, // 53: google.cloud.hypercomputecluster.v1beta.SlurmLoginNodes.instances:type_name -> google.cloud.hypercomputecluster.v1beta.ComputeInstance
+	42, // 54: google.cloud.hypercomputecluster.v1beta.SlurmLoginNodes.boot_disk:type_name -> google.cloud.hypercomputecluster.v1beta.BootDisk
+	5,  // 55: google.cloud.hypercomputecluster.v1beta.Node.state:type_name -> google.cloud.hypercomputecluster.v1beta.Node.State
+	6,  // 56: google.cloud.hypercomputecluster.v1beta.Node.provisioning_model:type_name -> google.cloud.hypercomputecluster.v1beta.Node.ProvisioningModel
+	54, // 57: google.cloud.hypercomputecluster.v1beta.Node.slurm_details:type_name -> google.cloud.hypercomputecluster.v1beta.SlurmNodeDetails
+	55, // 58: google.cloud.hypercomputecluster.v1beta.Node.compute_engine_details:type_name -> google.cloud.hypercomputecluster.v1beta.ComputeEngineNodeDetails
+	72, // 59: google.cloud.hypercomputecluster.v1beta.Node.create_time:type_name -> google.protobuf.Timestamp
+	72, // 60: google.cloud.hypercomputecluster.v1beta.Node.update_time:type_name -> google.protobuf.Timestamp
+	66, // 61: google.cloud.hypercomputecluster.v1beta.ComputeEngineOrchestrator.managed_instance_groups:type_name -> google.cloud.hypercomputecluster.v1beta.ComputeEngineOrchestrator.ManagedInstanceGroupsEntry
+	67, // 62: google.cloud.hypercomputecluster.v1beta.ComputeEngineOrchestrator.existing_instances:type_name -> google.cloud.hypercomputecluster.v1beta.ComputeEngineOrchestrator.ExistingInstancesEntry
+	51, // 63: google.cloud.hypercomputecluster.v1beta.ManagedInstanceGroup.storage_configs:type_name -> google.cloud.hypercomputecluster.v1beta.StorageConfig
+	47, // 64: google.cloud.hypercomputecluster.v1beta.ManagedInstanceGroup.resource_policy_config:type_name -> google.cloud.hypercomputecluster.v1beta.ResourcePolicyConfig
+	42, // 65: google.cloud.hypercomputecluster.v1beta.ManagedInstanceGroup.boot_disk:type_name -> google.cloud.hypercomputecluster.v1beta.BootDisk
+	68, // 66: google.cloud.hypercomputecluster.v1beta.ManagedInstanceGroup.additional_disks:type_name -> google.cloud.hypercomputecluster.v1beta.ManagedInstanceGroup.AdditionalDisksEntry
+	74, // 67: google.cloud.hypercomputecluster.v1beta.ManagedInstanceGroup.startup_script_timeout:type_name -> google.protobuf.Duration
+	69, // 68: google.cloud.hypercomputecluster.v1beta.ManagedInstanceGroup.metadata:type_name -> google.cloud.hypercomputecluster.v1beta.ManagedInstanceGroup.MetadataEntry
+	50, // 69: google.cloud.hypercomputecluster.v1beta.ManagedInstanceGroup.service_account:type_name -> google.cloud.hypercomputecluster.v1beta.ServiceAccount
+	70, // 70: google.cloud.hypercomputecluster.v1beta.ManagedInstanceGroup.labels:type_name -> google.cloud.hypercomputecluster.v1beta.ManagedInstanceGroup.LabelsEntry
+	71, // 71: google.cloud.hypercomputecluster.v1beta.ExistingInstances.labels:type_name -> google.cloud.hypercomputecluster.v1beta.ExistingInstances.LabelsEntry
+	17, // 72: google.cloud.hypercomputecluster.v1beta.ExistingInstances.networks:type_name -> google.cloud.hypercomputecluster.v1beta.NetworkReference
+	16, // 73: google.cloud.hypercomputecluster.v1beta.Cluster.NetworkResourcesEntry.value:type_name -> google.cloud.hypercomputecluster.v1beta.NetworkResource
+	21, // 74: google.cloud.hypercomputecluster.v1beta.Cluster.StorageResourcesEntry.value:type_name -> google.cloud.hypercomputecluster.v1beta.StorageResource
+	36, // 75: google.cloud.hypercomputecluster.v1beta.Cluster.ComputeResourcesEntry.value:type_name -> google.cloud.hypercomputecluster.v1beta.ComputeResource
+	57, // 76: google.cloud.hypercomputecluster.v1beta.ComputeEngineOrchestrator.ManagedInstanceGroupsEntry.value:type_name -> google.cloud.hypercomputecluster.v1beta.ManagedInstanceGroup
+	59, // 77: google.cloud.hypercomputecluster.v1beta.ComputeEngineOrchestrator.ExistingInstancesEntry.value:type_name -> google.cloud.hypercomputecluster.v1beta.ExistingInstances
+	58, // 78: google.cloud.hypercomputecluster.v1beta.ManagedInstanceGroup.AdditionalDisksEntry.value:type_name -> google.cloud.hypercomputecluster.v1beta.Disk
+	8,  // 79: google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.ListClusters:input_type -> google.cloud.hypercomputecluster.v1beta.ListClustersRequest
+	10, // 80: google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.GetCluster:input_type -> google.cloud.hypercomputecluster.v1beta.GetClusterRequest
+	11, // 81: google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.CreateCluster:input_type -> google.cloud.hypercomputecluster.v1beta.CreateClusterRequest
+	12, // 82: google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.UpdateCluster:input_type -> google.cloud.hypercomputecluster.v1beta.UpdateClusterRequest
+	13, // 83: google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.DeleteCluster:input_type -> google.cloud.hypercomputecluster.v1beta.DeleteClusterRequest
+	14, // 84: google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.ListNodes:input_type -> google.cloud.hypercomputecluster.v1beta.ListNodesRequest
+	9,  // 85: google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.ListClusters:output_type -> google.cloud.hypercomputecluster.v1beta.ListClustersResponse
+	7,  // 86: google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.GetCluster:output_type -> google.cloud.hypercomputecluster.v1beta.Cluster
+	75, // 87: google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.CreateCluster:output_type -> google.longrunning.Operation
+	75, // 88: google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.UpdateCluster:output_type -> google.longrunning.Operation
+	75, // 89: google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.DeleteCluster:output_type -> google.longrunning.Operation
+	15, // 90: google.cloud.hypercomputecluster.v1beta.HypercomputeCluster.ListNodes:output_type -> google.cloud.hypercomputecluster.v1beta.ListNodesResponse
+	85, // [85:91] is the sub-list for method output_type
+	79, // [79:85] is the sub-list for method input_type
+	79, // [79:79] is the sub-list for extension type_name
+	79, // [79:79] is the sub-list for extension extendee
+	0,  // [0:79] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_init() }
@@ -3823,52 +5640,69 @@ func file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_ini
 		return
 	}
 	file_google_cloud_hypercomputecluster_v1beta_operation_metadata_proto_init()
-	file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[7].OneofWrappers = []any{
+	file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[9].OneofWrappers = []any{
 		(*NetworkResource_Network)(nil),
 	}
-	file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[9].OneofWrappers = []any{
+	file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[11].OneofWrappers = []any{
 		(*NetworkResourceConfig_NewNetwork)(nil),
 		(*NetworkResourceConfig_ExistingNetwork)(nil),
 	}
-	file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[12].OneofWrappers = []any{
+	file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[14].OneofWrappers = []any{
 		(*StorageResource_Filestore)(nil),
 		(*StorageResource_Bucket)(nil),
 		(*StorageResource_Lustre)(nil),
 	}
-	file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[16].OneofWrappers = []any{
+	file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[18].OneofWrappers = []any{
 		(*StorageResourceConfig_NewFilestore)(nil),
 		(*StorageResourceConfig_ExistingFilestore)(nil),
 		(*StorageResourceConfig_NewBucket)(nil),
 		(*StorageResourceConfig_ExistingBucket)(nil),
 		(*StorageResourceConfig_NewLustre)(nil),
 		(*StorageResourceConfig_ExistingLustre)(nil),
+		(*StorageResourceConfig_ExistingNfs)(nil),
 	}
-	file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[20].OneofWrappers = []any{
+	file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[22].OneofWrappers = []any{
 		(*NewBucketConfig_Autoclass)(nil),
 		(*NewBucketConfig_StorageClass_)(nil),
 	}
-	file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[27].OneofWrappers = []any{
+	file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[30].OneofWrappers = []any{
 		(*ComputeResourceConfig_NewOnDemandInstances)(nil),
 		(*ComputeResourceConfig_NewSpotInstances)(nil),
 		(*ComputeResourceConfig_NewReservedInstances)(nil),
 		(*ComputeResourceConfig_NewFlexStartInstances)(nil),
 	}
-	file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[30].OneofWrappers = []any{
-		(*NewReservedInstancesConfig_Reservation)(nil),
-	}
 	file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[33].OneofWrappers = []any{
-		(*Orchestrator_Slurm)(nil),
+		(*NewReservedInstancesConfig_Reservation)(nil),
+		(*NewReservedInstancesConfig_ReservationBlock)(nil),
+		(*NewReservedInstancesConfig_ReservationSubBlock)(nil),
 	}
-	file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[35].OneofWrappers = []any{
+	file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[36].OneofWrappers = []any{
+		(*Orchestrator_Slurm)(nil),
+		(*Orchestrator_ComputeEngine)(nil),
+	}
+	file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[38].OneofWrappers = []any{
 		(*SlurmNodeSet_ComputeInstance)(nil),
+	}
+	file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[51].OneofWrappers = []any{
+		(*Disk_Image)(nil),
+		(*Disk_Snapshot)(nil),
+		(*Disk_ExistingDisk)(nil),
+	}
+	file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_msgTypes[52].OneofWrappers = []any{
+		(*ExistingInstances_Project)(nil),
+		(*ExistingInstances_InstanceGroupManager)(nil),
+		(*ExistingInstances_RegionInstanceGroupManager)(nil),
+		(*ExistingInstances_Reservation)(nil),
+		(*ExistingInstances_ReservationBlock)(nil),
+		(*ExistingInstances_ReservationSubBlock)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDesc), len(file_google_cloud_hypercomputecluster_v1beta_hypercompute_cluster_proto_rawDesc)),
-			NumEnums:      4,
-			NumMessages:   47,
+			NumEnums:      7,
+			NumMessages:   65,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

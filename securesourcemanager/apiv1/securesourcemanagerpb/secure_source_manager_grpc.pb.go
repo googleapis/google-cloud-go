@@ -68,6 +68,7 @@ const (
 	SecureSourceManager_ListPullRequestFileDiffs_FullMethodName       = "/google.cloud.securesourcemanager.v1.SecureSourceManager/ListPullRequestFileDiffs"
 	SecureSourceManager_FetchTree_FullMethodName                      = "/google.cloud.securesourcemanager.v1.SecureSourceManager/FetchTree"
 	SecureSourceManager_FetchBlob_FullMethodName                      = "/google.cloud.securesourcemanager.v1.SecureSourceManager/FetchBlob"
+	SecureSourceManager_FetchRefs_FullMethodName                      = "/google.cloud.securesourcemanager.v1.SecureSourceManager/FetchRefs"
 	SecureSourceManager_CreateIssue_FullMethodName                    = "/google.cloud.securesourcemanager.v1.SecureSourceManager/CreateIssue"
 	SecureSourceManager_GetIssue_FullMethodName                       = "/google.cloud.securesourcemanager.v1.SecureSourceManager/GetIssue"
 	SecureSourceManager_ListIssues_FullMethodName                     = "/google.cloud.securesourcemanager.v1.SecureSourceManager/ListIssues"
@@ -165,6 +166,8 @@ type SecureSourceManagerClient interface {
 	FetchTree(ctx context.Context, in *FetchTreeRequest, opts ...grpc.CallOption) (*FetchTreeResponse, error)
 	// Fetches a blob from a repository.
 	FetchBlob(ctx context.Context, in *FetchBlobRequest, opts ...grpc.CallOption) (*FetchBlobResponse, error)
+	// Fetches git references from a repository.
+	FetchRefs(ctx context.Context, in *FetchRefsRequest, opts ...grpc.CallOption) (*FetchRefsResponse, error)
 	// Creates an issue.
 	CreateIssue(ctx context.Context, in *CreateIssueRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets an issue.
@@ -517,6 +520,15 @@ func (c *secureSourceManagerClient) FetchBlob(ctx context.Context, in *FetchBlob
 	return out, nil
 }
 
+func (c *secureSourceManagerClient) FetchRefs(ctx context.Context, in *FetchRefsRequest, opts ...grpc.CallOption) (*FetchRefsResponse, error) {
+	out := new(FetchRefsResponse)
+	err := c.cc.Invoke(ctx, SecureSourceManager_FetchRefs_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *secureSourceManagerClient) CreateIssue(ctx context.Context, in *CreateIssueRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, SecureSourceManager_CreateIssue_FullMethodName, in, out, opts...)
@@ -772,6 +784,8 @@ type SecureSourceManagerServer interface {
 	FetchTree(context.Context, *FetchTreeRequest) (*FetchTreeResponse, error)
 	// Fetches a blob from a repository.
 	FetchBlob(context.Context, *FetchBlobRequest) (*FetchBlobResponse, error)
+	// Fetches git references from a repository.
+	FetchRefs(context.Context, *FetchRefsRequest) (*FetchRefsResponse, error)
 	// Creates an issue.
 	CreateIssue(context.Context, *CreateIssueRequest) (*longrunningpb.Operation, error)
 	// Gets an issue.
@@ -927,6 +941,9 @@ func (UnimplementedSecureSourceManagerServer) FetchTree(context.Context, *FetchT
 }
 func (UnimplementedSecureSourceManagerServer) FetchBlob(context.Context, *FetchBlobRequest) (*FetchBlobResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FetchBlob not implemented")
+}
+func (UnimplementedSecureSourceManagerServer) FetchRefs(context.Context, *FetchRefsRequest) (*FetchRefsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchRefs not implemented")
 }
 func (UnimplementedSecureSourceManagerServer) CreateIssue(context.Context, *CreateIssueRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateIssue not implemented")
@@ -1576,6 +1593,24 @@ func _SecureSourceManager_FetchBlob_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SecureSourceManager_FetchRefs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FetchRefsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SecureSourceManagerServer).FetchRefs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SecureSourceManager_FetchRefs_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SecureSourceManagerServer).FetchRefs(ctx, req.(*FetchRefsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _SecureSourceManager_CreateIssue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateIssueRequest)
 	if err := dec(in); err != nil {
@@ -2070,6 +2105,10 @@ var SecureSourceManager_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FetchBlob",
 			Handler:    _SecureSourceManager_FetchBlob_Handler,
+		},
+		{
+			MethodName: "FetchRefs",
+			Handler:    _SecureSourceManager_FetchRefs_Handler,
 		},
 		{
 			MethodName: "CreateIssue",

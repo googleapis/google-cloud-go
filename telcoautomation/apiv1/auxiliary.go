@@ -18,12 +18,14 @@ package telcoautomation
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	telcoautomationpb "cloud.google.com/go/telcoautomation/apiv1/telcoautomationpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -262,6 +264,12 @@ func (op *DeleteOrchestrationClusterOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BlueprintIterator) All() iter.Seq2[*telcoautomationpb.Blueprint, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // BlueprintIterator manages a stream of *telcoautomationpb.Blueprint.
 type BlueprintIterator struct {
 	items    []*telcoautomationpb.Blueprint
@@ -307,6 +315,12 @@ func (it *BlueprintIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DeploymentIterator) All() iter.Seq2[*telcoautomationpb.Deployment, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DeploymentIterator manages a stream of *telcoautomationpb.Deployment.
@@ -356,6 +370,12 @@ func (it *DeploymentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EdgeSlmIterator) All() iter.Seq2[*telcoautomationpb.EdgeSlm, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EdgeSlmIterator manages a stream of *telcoautomationpb.EdgeSlm.
 type EdgeSlmIterator struct {
 	items    []*telcoautomationpb.EdgeSlm
@@ -401,6 +421,12 @@ func (it *EdgeSlmIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *HydratedDeploymentIterator) All() iter.Seq2[*telcoautomationpb.HydratedDeployment, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // HydratedDeploymentIterator manages a stream of *telcoautomationpb.HydratedDeployment.
@@ -450,6 +476,12 @@ func (it *HydratedDeploymentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -495,6 +527,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -544,6 +582,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OrchestrationClusterIterator) All() iter.Seq2[*telcoautomationpb.OrchestrationCluster, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OrchestrationClusterIterator manages a stream of *telcoautomationpb.OrchestrationCluster.
 type OrchestrationClusterIterator struct {
 	items    []*telcoautomationpb.OrchestrationCluster
@@ -589,6 +633,12 @@ func (it *OrchestrationClusterIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PublicBlueprintIterator) All() iter.Seq2[*telcoautomationpb.PublicBlueprint, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PublicBlueprintIterator manages a stream of *telcoautomationpb.PublicBlueprint.

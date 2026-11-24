@@ -178,14 +178,14 @@ func TestBasicRepetition(t *testing.T) {
 	row := &bq.TableRow{
 		F: []*bq.TableCell{
 			{
-				V: []interface{}{
-					map[string]interface{}{
+				V: []any{
+					map[string]any{
 						"v": "1",
 					},
-					map[string]interface{}{
+					map[string]any{
 						"v": "2",
 					},
-					map[string]interface{}{
+					map[string]any{
 						"v": "3",
 					},
 				},
@@ -214,13 +214,13 @@ func TestNestedRecordContainingRepetition(t *testing.T) {
 	row := &bq.TableRow{
 		F: []*bq.TableCell{
 			{
-				V: map[string]interface{}{
-					"f": []interface{}{
-						map[string]interface{}{
-							"v": []interface{}{
-								map[string]interface{}{"v": "1"},
-								map[string]interface{}{"v": "2"},
-								map[string]interface{}{"v": "3"},
+				V: map[string]any{
+					"f": []any{
+						map[string]any{
+							"v": []any{
+								map[string]any{"v": "1"},
+								map[string]any{"v": "2"},
+								map[string]any{"v": "3"},
 							},
 						},
 					},
@@ -251,19 +251,19 @@ func TestRepeatedRecordContainingRepetition(t *testing.T) {
 	}
 	row := &bq.TableRow{F: []*bq.TableCell{
 		{
-			V: []interface{}{ // repeated records.
-				map[string]interface{}{ // first record.
-					"v": map[string]interface{}{ // pointless single-key-map wrapper.
-						"f": []interface{}{ // list of record fields.
-							map[string]interface{}{ // only record (repeated ints)
-								"v": []interface{}{ // pointless wrapper.
-									map[string]interface{}{
+			V: []any{ // repeated records.
+				map[string]any{ // first record.
+					"v": map[string]any{ // pointless single-key-map wrapper.
+						"f": []any{ // list of record fields.
+							map[string]any{ // only record (repeated ints)
+								"v": []any{ // pointless wrapper.
+									map[string]any{
 										"v": "1",
 									},
-									map[string]interface{}{
+									map[string]any{
 										"v": "2",
 									},
-									map[string]interface{}{
+									map[string]any{
 										"v": "3",
 									},
 								},
@@ -271,18 +271,18 @@ func TestRepeatedRecordContainingRepetition(t *testing.T) {
 						},
 					},
 				},
-				map[string]interface{}{ // second record.
-					"v": map[string]interface{}{
-						"f": []interface{}{
-							map[string]interface{}{
-								"v": []interface{}{
-									map[string]interface{}{
+				map[string]any{ // second record.
+					"v": map[string]any{
+						"f": []any{
+							map[string]any{
+								"v": []any{
+									map[string]any{
 										"v": "4",
 									},
-									map[string]interface{}{
+									map[string]any{
 										"v": "5",
 									},
-									map[string]interface{}{
+									map[string]any{
 										"v": "6",
 									},
 								},
@@ -334,20 +334,20 @@ func TestRepeatedRecordContainingRecord(t *testing.T) {
 	}
 	row := &bq.TableRow{F: []*bq.TableCell{
 		{
-			V: []interface{}{ // repeated records.
-				map[string]interface{}{ // first record.
-					"v": map[string]interface{}{ // pointless single-key-map wrapper.
-						"f": []interface{}{ // list of record fields.
-							map[string]interface{}{ // first record field (name)
+			V: []any{ // repeated records.
+				map[string]any{ // first record.
+					"v": map[string]any{ // pointless single-key-map wrapper.
+						"f": []any{ // list of record fields.
+							map[string]any{ // first record field (name)
 								"v": "first repeated record",
 							},
-							map[string]interface{}{ // second record field (nested record).
-								"v": map[string]interface{}{ // pointless single-key-map wrapper.
-									"f": []interface{}{ // nested record fields
-										map[string]interface{}{
+							map[string]any{ // second record field (nested record).
+								"v": map[string]any{ // pointless single-key-map wrapper.
+									"f": []any{ // nested record fields
+										map[string]any{
 											"v": "1",
 										},
-										map[string]interface{}{
+										map[string]any{
 											"v": "two",
 										},
 									},
@@ -356,19 +356,19 @@ func TestRepeatedRecordContainingRecord(t *testing.T) {
 						},
 					},
 				},
-				map[string]interface{}{ // second record.
-					"v": map[string]interface{}{
-						"f": []interface{}{
-							map[string]interface{}{
+				map[string]any{ // second record.
+					"v": map[string]any{
+						"f": []any{
+							map[string]any{
 								"v": "second repeated record",
 							},
-							map[string]interface{}{
-								"v": map[string]interface{}{
-									"f": []interface{}{
-										map[string]interface{}{
+							map[string]any{
+								"v": map[string]any{
+									"f": []any{
+										map[string]any{
 											"v": "3",
 										},
-										map[string]interface{}{
+										map[string]any{
 											"v": "four",
 										},
 									},
@@ -414,17 +414,17 @@ func TestConvertRowErrors(t *testing.T) {
 	if _, err := convertRow(&bq.TableRow{F: []*bq.TableCell{{V: ""}}}, Schema{}); err == nil {
 		t.Error("got nil, want error")
 	}
-	v3 := map[string]interface{}{"v": 3}
+	v3 := map[string]any{"v": 3}
 	for _, test := range []struct {
-		value interface{}
+		value any
 		fs    FieldSchema
 	}{
 		{3, FieldSchema{Type: IntegerFieldType}}, // not a string
-		{[]interface{}{v3}, // not a string, repeated
+		{[]any{v3}, // not a string, repeated
 			FieldSchema{Type: IntegerFieldType, Repeated: true}},
-		{map[string]interface{}{"f": []interface{}{v3}}, // not a string, nested
+		{map[string]any{"f": []any{v3}}, // not a string, nested
 			FieldSchema{Type: RecordFieldType, Schema: Schema{{Type: IntegerFieldType}}}},
-		{map[string]interface{}{"f": []interface{}{v3}}, // wrong length, nested
+		{map[string]any{"f": []any{v3}}, // wrong length, nested
 			FieldSchema{Type: RecordFieldType, Schema: Schema{}}},
 	} {
 		_, err := convertRow(
@@ -647,7 +647,7 @@ func TestStructSaver(t *testing.T) {
 		}
 	)
 
-	check := func(msg string, in interface{}, want map[string]Value) {
+	check := func(msg string, in any, want map[string]Value) {
 		ss := StructSaver{
 			Schema:   schema,
 			InsertID: "iid",
@@ -738,7 +738,7 @@ func TestStructSaverErrors(t *testing.T) {
 	)
 
 	for i, test := range []struct {
-		inputStruct interface{}
+		inputStruct any
 		schema      Schema
 	}{
 		{0, nil},           // not a struct
@@ -1218,7 +1218,7 @@ func TestStructLoaderFieldOverlap(t *testing.T) {
 }
 
 func TestStructLoaderErrors(t *testing.T) {
-	check := func(sp interface{}) {
+	check := func(sp any) {
 		var sl structLoader
 		err := sl.set(sp, schema2)
 		if err == nil {
@@ -1314,13 +1314,13 @@ func TestStructLoaderErrors(t *testing.T) {
 	}
 }
 
-func mustLoad(t *testing.T, pval interface{}, schema Schema, vals []Value) {
+func mustLoad(t *testing.T, pval any, schema Schema, vals []Value) {
 	if err := load(pval, schema, vals); err != nil {
 		t.Fatalf("loading: %v", err)
 	}
 }
 
-func load(pval interface{}, schema Schema, vals []Value) error {
+func load(pval any, schema Schema, vals []Value) error {
 	var sl structLoader
 	if err := sl.set(pval, schema); err != nil {
 		return err
@@ -1340,7 +1340,7 @@ func benchmarkStructLoader(b *testing.B, compile bool) {
 	var ts1 testStruct1
 	for i := 0; i < b.N; i++ {
 		var sl structLoader
-		for j := 0; j < 10; j++ {
+		for range 10 {
 			if err := load(&ts1, schema2, testValues); err != nil {
 				b.Fatal(err)
 			}

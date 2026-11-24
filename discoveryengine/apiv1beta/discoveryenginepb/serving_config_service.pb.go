@@ -390,26 +390,26 @@ var File_google_cloud_discoveryengine_v1beta_serving_config_service_proto protor
 
 const file_google_cloud_discoveryengine_v1beta_serving_config_service_proto_rawDesc = "" +
 	"\n" +
-	"@google/cloud/discoveryengine/v1beta/serving_config_service.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/discoveryengine/v1beta/serving_config.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xfb\x01\n" +
-	"\x1aCreateServingConfigRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,discoveryengine.googleapis.com/ServingConfigR\x06parent\x12^\n" +
-	"\x0eserving_config\x18\x02 \x01(\v22.google.cloud.discoveryengine.v1beta.ServingConfigB\x03\xe0A\x02R\rservingConfig\x12/\n" +
-	"\x11serving_config_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x0fservingConfigId\"\xb9\x01\n" +
-	"\x1aUpdateServingConfigRequest\x12^\n" +
-	"\x0eserving_config\x18\x01 \x01(\v22.google.cloud.discoveryengine.v1beta.ServingConfigB\x03\xe0A\x02R\rservingConfig\x12;\n" +
+	"@google/cloud/discoveryengine/v1beta/serving_config_service.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/discoveryengine/v1beta/serving_config.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xfe\x01\n" +
+	"\x1aCreateServingConfigRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,discoveryengine.googleapis.com/ServingConfigR\x06parent\x12_\n" +
+	"\x0eserving_config\x18\x02 \x01(\v22.google.cloud.discoveryengine.v1beta.ServingConfigB\x04\xe2A\x01\x02R\rservingConfig\x120\n" +
+	"\x11serving_config_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0fservingConfigId\"\xba\x01\n" +
+	"\x1aUpdateServingConfigRequest\x12_\n" +
+	"\x0eserving_config\x18\x01 \x01(\v22.google.cloud.discoveryengine.v1beta.ServingConfigB\x04\xe2A\x01\x02R\rservingConfig\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"f\n" +
-	"\x1aDeleteServingConfigRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",discoveryengine.googleapis.com/ServingConfigR\x04name\"c\n" +
-	"\x17GetServingConfigRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",discoveryengine.googleapis.com/ServingConfigR\x04name\"\xaf\x01\n" +
-	"\x19ListServingConfigsRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,discoveryengine.googleapis.com/ServingConfigR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"updateMask\"g\n" +
+	"\x1aDeleteServingConfigRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",discoveryengine.googleapis.com/ServingConfigR\x04name\"d\n" +
+	"\x17GetServingConfigRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",discoveryengine.googleapis.com/ServingConfigR\x04name\"\xb2\x01\n" +
+	"\x19ListServingConfigsRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,discoveryengine.googleapis.com/ServingConfigR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa1\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa1\x01\n" +
 	"\x1aListServingConfigsResponse\x12[\n" +
 	"\x0fserving_configs\x18\x01 \x03(\v22.google.cloud.discoveryengine.v1beta.ServingConfigR\x0eservingConfigs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xcb\x12\n" +

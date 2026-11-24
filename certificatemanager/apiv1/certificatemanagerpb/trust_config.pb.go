@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,16 +45,16 @@ type ListTrustConfigsRequest struct {
 	// Required. The project and location from which the TrustConfigs should be
 	// listed, specified in the format `projects/*/locations/*`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Maximum number of TrustConfigs to return per call.
+	// Optional. Maximum number of TrustConfigs to return per call.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// The value returned by the last `ListTrustConfigsResponse`. Indicates
-	// that this is a continuation of a prior `ListTrustConfigs` call, and that
-	// the system should return the next page of data.
+	// Optional. The value returned by the last `ListTrustConfigsResponse`.
+	// Indicates that this is a continuation of a prior `ListTrustConfigs` call,
+	// and that the system should return the next page of data.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
-	// Filter expression to restrict the TrustConfigs returned.
+	// Optional. Filter expression to restrict the TrustConfigs returned.
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
-	// A list of TrustConfig field names used to specify the order of the
-	// returned results. The default sorting order is ascending. To specify
+	// Optional. A list of TrustConfig field names used to specify the order of
+	// the returned results. The default sorting order is ascending. To specify
 	// descending order for a field, add a suffix `" desc"`.
 	OrderBy       string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -368,7 +368,7 @@ type DeleteTrustConfigRequest struct {
 	// Required. A name of the TrustConfig to delete. Must be in the format
 	// `projects/*/locations/*/trustConfigs/*`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// The current etag of the TrustConfig.
+	// Optional. The current etag of the TrustConfig.
 	// If an etag is provided and does not match the current etag of the resource,
 	// deletion will be blocked and an ABORTED error will be returned.
 	Etag          string `protobuf:"bytes,2,opt,name=etag,proto3" json:"etag,omitempty"`
@@ -423,29 +423,43 @@ func (x *DeleteTrustConfigRequest) GetEtag() string {
 // Defines a trust config.
 type TrustConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// A user-defined name of the trust config. TrustConfig names must be
-	// unique globally and match pattern
+	// Identifier. A user-defined name of the trust config. TrustConfig names must
+	// be unique globally and match pattern
 	// `projects/*/locations/*/trustConfigs/*`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. The creation timestamp of a TrustConfig.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Output only. The last update timestamp of a TrustConfig.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	// Set of labels associated with a TrustConfig.
+	// Optional. Set of labels associated with a TrustConfig.
 	Labels map[string]string `protobuf:"bytes,4,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// One or more paragraphs of text description of a TrustConfig.
+	// Optional. One or more paragraphs of text description of a TrustConfig.
 	Description string `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
 	// This checksum is computed by the server based on the value of other
 	// fields, and may be sent on update and delete requests to ensure the
 	// client has an up-to-date value before proceeding.
 	Etag string `protobuf:"bytes,6,opt,name=etag,proto3" json:"etag,omitempty"`
-	// Set of trust stores to perform validation against.
+	// Optional. Defines a mapping from a trust domain to a TrustStore. This is
+	// used for SPIFFE certificate validation.
+	SpiffeTrustStores map[string]*TrustConfig_TrustStore `protobuf:"bytes,7,rep,name=spiffe_trust_stores,json=spiffeTrustStores,proto3" json:"spiffe_trust_stores,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Optional. Set of trust stores to perform validation against.
 	//
 	// This field is supported when TrustConfig is configured with Load Balancers,
 	// currently not supported for SPIFFE certificate validation.
 	//
 	// Only one TrustStore specified is currently allowed.
-	TrustStores   []*TrustConfig_TrustStore `protobuf:"bytes,8,rep,name=trust_stores,json=trustStores,proto3" json:"trust_stores,omitempty"`
+	TrustStores []*TrustConfig_TrustStore `protobuf:"bytes,8,rep,name=trust_stores,json=trustStores,proto3" json:"trust_stores,omitempty"`
+	// Optional. A certificate matching an allowlisted certificate is always
+	// considered valid as long as the certificate is parseable, proof of private
+	// key possession is established, and constraints on the certificate's SAN
+	// field are met.
+	AllowlistedCertificates []*TrustConfig_AllowlistedCertificate `protobuf:"bytes,9,rep,name=allowlisted_certificates,json=allowlistedCertificates,proto3" json:"allowlisted_certificates,omitempty"`
+	// Optional. Input only. Immutable. Tag keys/values directly bound to this
+	// resource. For example:
+	//
+	//	"123/environment": "production",
+	//	"123/costCenter": "marketing"
+	Tags          map[string]string `protobuf:"bytes,10,rep,name=tags,proto3" json:"tags,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -522,6 +536,13 @@ func (x *TrustConfig) GetEtag() string {
 	return ""
 }
 
+func (x *TrustConfig) GetSpiffeTrustStores() map[string]*TrustConfig_TrustStore {
+	if x != nil {
+		return x.SpiffeTrustStores
+	}
+	return nil
+}
+
 func (x *TrustConfig) GetTrustStores() []*TrustConfig_TrustStore {
 	if x != nil {
 		return x.TrustStores
@@ -529,9 +550,25 @@ func (x *TrustConfig) GetTrustStores() []*TrustConfig_TrustStore {
 	return nil
 }
 
+func (x *TrustConfig) GetAllowlistedCertificates() []*TrustConfig_AllowlistedCertificate {
+	if x != nil {
+		return x.AllowlistedCertificates
+	}
+	return nil
+}
+
+func (x *TrustConfig) GetTags() map[string]string {
+	if x != nil {
+		return x.Tags
+	}
+	return nil
+}
+
 // Defines a trust anchor.
 type TrustConfig_TrustAnchor struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// Kind of the trust anchor. Required.
+	//
 	// Types that are valid to be assigned to Kind:
 	//
 	//	*TrustConfig_TrustAnchor_PemCertificate
@@ -602,6 +639,8 @@ func (*TrustConfig_TrustAnchor_PemCertificate) isTrustConfig_TrustAnchor_Kind() 
 // Defines an intermediate CA.
 type TrustConfig_IntermediateCA struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// Kind of the intermediate CA. Required.
+	//
 	// Types that are valid to be assigned to Kind:
 	//
 	//	*TrustConfig_IntermediateCA_PemCertificate
@@ -673,10 +712,10 @@ func (*TrustConfig_IntermediateCA_PemCertificate) isTrustConfig_IntermediateCA_K
 // Defines a trust store.
 type TrustConfig_TrustStore struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// List of Trust Anchors to be used while performing validation
+	// Optional. List of Trust Anchors to be used while performing validation
 	// against a given TrustStore.
 	TrustAnchors []*TrustConfig_TrustAnchor `protobuf:"bytes,1,rep,name=trust_anchors,json=trustAnchors,proto3" json:"trust_anchors,omitempty"`
-	// Set of intermediate CA certificates used for the path building
+	// Optional. Set of intermediate CA certificates used for the path building
 	// phase of chain validation.
 	//
 	// The field is currently not supported if TrustConfig is used for the
@@ -730,63 +769,122 @@ func (x *TrustConfig_TrustStore) GetIntermediateCas() []*TrustConfig_Intermediat
 	return nil
 }
 
+// Defines an allowlisted certificate.
+type TrustConfig_AllowlistedCertificate struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. PEM certificate that is allowlisted. The certificate can be up
+	// to 5k bytes, and must be a parseable X.509 certificate.
+	PemCertificate string `protobuf:"bytes,1,opt,name=pem_certificate,json=pemCertificate,proto3" json:"pem_certificate,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *TrustConfig_AllowlistedCertificate) Reset() {
+	*x = TrustConfig_AllowlistedCertificate{}
+	mi := &file_google_cloud_certificatemanager_v1_trust_config_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TrustConfig_AllowlistedCertificate) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TrustConfig_AllowlistedCertificate) ProtoMessage() {}
+
+func (x *TrustConfig_AllowlistedCertificate) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_certificatemanager_v1_trust_config_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TrustConfig_AllowlistedCertificate.ProtoReflect.Descriptor instead.
+func (*TrustConfig_AllowlistedCertificate) Descriptor() ([]byte, []int) {
+	return file_google_cloud_certificatemanager_v1_trust_config_proto_rawDescGZIP(), []int{6, 3}
+}
+
+func (x *TrustConfig_AllowlistedCertificate) GetPemCertificate() string {
+	if x != nil {
+		return x.PemCertificate
+	}
+	return ""
+}
+
 var File_google_cloud_certificatemanager_v1_trust_config_proto protoreflect.FileDescriptor
 
 const file_google_cloud_certificatemanager_v1_trust_config_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/certificatemanager/v1/trust_config.proto\x12\"google.cloud.certificatemanager.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcb\x01\n" +
-	"\x17ListTrustConfigsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"5google/cloud/certificatemanager/v1/trust_config.proto\x12\"google.cloud.certificatemanager.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe4\x01\n" +
+	"\x17ListTrustConfigsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
-	"\x06filter\x18\x04 \x01(\tR\x06filter\x12\x19\n" +
-	"\border_by\x18\x05 \x01(\tR\aorderBy\"\xba\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xba\x01\n" +
 	"\x18ListTrustConfigsResponse\x12T\n" +
 	"\rtrust_configs\x18\x01 \x03(\v2/.google.cloud.certificatemanager.v1.TrustConfigR\ftrustConfigs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"b\n" +
-	"\x15GetTrustConfigRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-certificatemanager.googleapis.com/TrustConfigR\x04name\"\xe3\x01\n" +
-	"\x18CreateTrustConfigRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12+\n" +
-	"\x0ftrust_config_id\x18\x02 \x01(\tB\x03\xe0A\x02R\rtrustConfigId\x12W\n" +
-	"\ftrust_config\x18\x03 \x01(\v2/.google.cloud.certificatemanager.v1.TrustConfigB\x03\xe0A\x02R\vtrustConfig\"\xb5\x01\n" +
-	"\x18UpdateTrustConfigRequest\x12W\n" +
-	"\ftrust_config\x18\x01 \x01(\v2/.google.cloud.certificatemanager.v1.TrustConfigB\x03\xe0A\x02R\vtrustConfig\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"y\n" +
-	"\x18DeleteTrustConfigRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-certificatemanager.googleapis.com/TrustConfigR\x04name\x12\x12\n" +
-	"\x04etag\x18\x02 \x01(\tR\x04etag\"\xa6\a\n" +
-	"\vTrustConfig\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12S\n" +
-	"\x06labels\x18\x04 \x03(\v2;.google.cloud.certificatemanager.v1.TrustConfig.LabelsEntryR\x06labels\x12 \n" +
-	"\vdescription\x18\x05 \x01(\tR\vdescription\x12\x12\n" +
-	"\x04etag\x18\x06 \x01(\tR\x04etag\x12]\n" +
-	"\ftrust_stores\x18\b \x03(\v2:.google.cloud.certificatemanager.v1.TrustConfig.TrustStoreR\vtrustStores\x1a@\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"c\n" +
+	"\x15GetTrustConfigRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-certificatemanager.googleapis.com/TrustConfigR\x04name\"\xe6\x01\n" +
+	"\x18CreateTrustConfigRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12,\n" +
+	"\x0ftrust_config_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rtrustConfigId\x12X\n" +
+	"\ftrust_config\x18\x03 \x01(\v2/.google.cloud.certificatemanager.v1.TrustConfigB\x04\xe2A\x01\x02R\vtrustConfig\"\xb7\x01\n" +
+	"\x18UpdateTrustConfigRequest\x12X\n" +
+	"\ftrust_config\x18\x01 \x01(\v2/.google.cloud.certificatemanager.v1.TrustConfigB\x04\xe2A\x01\x02R\vtrustConfig\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\x80\x01\n" +
+	"\x18DeleteTrustConfigRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-certificatemanager.googleapis.com/TrustConfigR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xcd\f\n" +
+	"\vTrustConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12Y\n" +
+	"\x06labels\x18\x04 \x03(\v2;.google.cloud.certificatemanager.v1.TrustConfig.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x12\n" +
+	"\x04etag\x18\x06 \x01(\tR\x04etag\x12|\n" +
+	"\x13spiffe_trust_stores\x18\a \x03(\v2F.google.cloud.certificatemanager.v1.TrustConfig.SpiffeTrustStoresEntryB\x04\xe2A\x01\x01R\x11spiffeTrustStores\x12c\n" +
+	"\ftrust_stores\x18\b \x03(\v2:.google.cloud.certificatemanager.v1.TrustConfig.TrustStoreB\x04\xe2A\x01\x01R\vtrustStores\x12\x87\x01\n" +
+	"\x18allowlisted_certificates\x18\t \x03(\v2F.google.cloud.certificatemanager.v1.TrustConfig.AllowlistedCertificateB\x04\xe2A\x01\x01R\x17allowlistedCertificates\x12U\n" +
+	"\x04tags\x18\n" +
+	" \x03(\v29.google.cloud.certificatemanager.v1.TrustConfig.TagsEntryB\x06\xe2A\x03\x04\x05\x01R\x04tags\x1a@\n" +
 	"\vTrustAnchor\x12)\n" +
 	"\x0fpem_certificate\x18\x01 \x01(\tH\x00R\x0epemCertificateB\x06\n" +
 	"\x04kind\x1aC\n" +
 	"\x0eIntermediateCA\x12)\n" +
 	"\x0fpem_certificate\x18\x01 \x01(\tH\x00R\x0epemCertificateB\x06\n" +
-	"\x04kind\x1a\xd9\x01\n" +
+	"\x04kind\x1a\xe5\x01\n" +
 	"\n" +
-	"TrustStore\x12`\n" +
-	"\rtrust_anchors\x18\x01 \x03(\v2;.google.cloud.certificatemanager.v1.TrustConfig.TrustAnchorR\ftrustAnchors\x12i\n" +
-	"\x10intermediate_cas\x18\x02 \x03(\v2>.google.cloud.certificatemanager.v1.TrustConfig.IntermediateCAR\x0fintermediateCas\x1a9\n" +
+	"TrustStore\x12f\n" +
+	"\rtrust_anchors\x18\x01 \x03(\v2;.google.cloud.certificatemanager.v1.TrustConfig.TrustAnchorB\x04\xe2A\x01\x01R\ftrustAnchors\x12o\n" +
+	"\x10intermediate_cas\x18\x02 \x03(\v2>.google.cloud.certificatemanager.v1.TrustConfig.IntermediateCAB\x04\xe2A\x01\x01R\x0fintermediateCas\x1aG\n" +
+	"\x16AllowlistedCertificate\x12-\n" +
+	"\x0fpem_certificate\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0epemCertificate\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:w\xeaAt\n" +
-	"-certificatemanager.googleapis.com/TrustConfig\x12Cprojects/{project}/locations/{location}/trustConfigs/{trust_config}B\x86\x02\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a\x80\x01\n" +
+	"\x16SpiffeTrustStoresEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12P\n" +
+	"\x05value\x18\x02 \x01(\v2:.google.cloud.certificatemanager.v1.TrustConfig.TrustStoreR\x05value:\x028\x01\x1a7\n" +
+	"\tTagsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x93\x01\xeaA\x8f\x01\n" +
+	"-certificatemanager.googleapis.com/TrustConfig\x12Cprojects/{project}/locations/{location}/trustConfigs/{trust_config}*\ftrustConfigs2\vtrustConfigB\x86\x02\n" +
 	"&com.google.cloud.certificatemanager.v1B\x10TrustConifgProtoP\x01ZVcloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb;certificatemanagerpb\xaa\x02\"Google.Cloud.CertificateManager.V1\xca\x02\"Google\\Cloud\\CertificateManager\\V1\xea\x02%Google::Cloud::CertificateManager::V1b\x06proto3"
 
 var (
@@ -801,38 +899,45 @@ func file_google_cloud_certificatemanager_v1_trust_config_proto_rawDescGZIP() []
 	return file_google_cloud_certificatemanager_v1_trust_config_proto_rawDescData
 }
 
-var file_google_cloud_certificatemanager_v1_trust_config_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_google_cloud_certificatemanager_v1_trust_config_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_google_cloud_certificatemanager_v1_trust_config_proto_goTypes = []any{
-	(*ListTrustConfigsRequest)(nil),    // 0: google.cloud.certificatemanager.v1.ListTrustConfigsRequest
-	(*ListTrustConfigsResponse)(nil),   // 1: google.cloud.certificatemanager.v1.ListTrustConfigsResponse
-	(*GetTrustConfigRequest)(nil),      // 2: google.cloud.certificatemanager.v1.GetTrustConfigRequest
-	(*CreateTrustConfigRequest)(nil),   // 3: google.cloud.certificatemanager.v1.CreateTrustConfigRequest
-	(*UpdateTrustConfigRequest)(nil),   // 4: google.cloud.certificatemanager.v1.UpdateTrustConfigRequest
-	(*DeleteTrustConfigRequest)(nil),   // 5: google.cloud.certificatemanager.v1.DeleteTrustConfigRequest
-	(*TrustConfig)(nil),                // 6: google.cloud.certificatemanager.v1.TrustConfig
-	(*TrustConfig_TrustAnchor)(nil),    // 7: google.cloud.certificatemanager.v1.TrustConfig.TrustAnchor
-	(*TrustConfig_IntermediateCA)(nil), // 8: google.cloud.certificatemanager.v1.TrustConfig.IntermediateCA
-	(*TrustConfig_TrustStore)(nil),     // 9: google.cloud.certificatemanager.v1.TrustConfig.TrustStore
-	nil,                                // 10: google.cloud.certificatemanager.v1.TrustConfig.LabelsEntry
-	(*fieldmaskpb.FieldMask)(nil),      // 11: google.protobuf.FieldMask
-	(*timestamppb.Timestamp)(nil),      // 12: google.protobuf.Timestamp
+	(*ListTrustConfigsRequest)(nil),            // 0: google.cloud.certificatemanager.v1.ListTrustConfigsRequest
+	(*ListTrustConfigsResponse)(nil),           // 1: google.cloud.certificatemanager.v1.ListTrustConfigsResponse
+	(*GetTrustConfigRequest)(nil),              // 2: google.cloud.certificatemanager.v1.GetTrustConfigRequest
+	(*CreateTrustConfigRequest)(nil),           // 3: google.cloud.certificatemanager.v1.CreateTrustConfigRequest
+	(*UpdateTrustConfigRequest)(nil),           // 4: google.cloud.certificatemanager.v1.UpdateTrustConfigRequest
+	(*DeleteTrustConfigRequest)(nil),           // 5: google.cloud.certificatemanager.v1.DeleteTrustConfigRequest
+	(*TrustConfig)(nil),                        // 6: google.cloud.certificatemanager.v1.TrustConfig
+	(*TrustConfig_TrustAnchor)(nil),            // 7: google.cloud.certificatemanager.v1.TrustConfig.TrustAnchor
+	(*TrustConfig_IntermediateCA)(nil),         // 8: google.cloud.certificatemanager.v1.TrustConfig.IntermediateCA
+	(*TrustConfig_TrustStore)(nil),             // 9: google.cloud.certificatemanager.v1.TrustConfig.TrustStore
+	(*TrustConfig_AllowlistedCertificate)(nil), // 10: google.cloud.certificatemanager.v1.TrustConfig.AllowlistedCertificate
+	nil,                           // 11: google.cloud.certificatemanager.v1.TrustConfig.LabelsEntry
+	nil,                           // 12: google.cloud.certificatemanager.v1.TrustConfig.SpiffeTrustStoresEntry
+	nil,                           // 13: google.cloud.certificatemanager.v1.TrustConfig.TagsEntry
+	(*fieldmaskpb.FieldMask)(nil), // 14: google.protobuf.FieldMask
+	(*timestamppb.Timestamp)(nil), // 15: google.protobuf.Timestamp
 }
 var file_google_cloud_certificatemanager_v1_trust_config_proto_depIdxs = []int32{
 	6,  // 0: google.cloud.certificatemanager.v1.ListTrustConfigsResponse.trust_configs:type_name -> google.cloud.certificatemanager.v1.TrustConfig
 	6,  // 1: google.cloud.certificatemanager.v1.CreateTrustConfigRequest.trust_config:type_name -> google.cloud.certificatemanager.v1.TrustConfig
 	6,  // 2: google.cloud.certificatemanager.v1.UpdateTrustConfigRequest.trust_config:type_name -> google.cloud.certificatemanager.v1.TrustConfig
-	11, // 3: google.cloud.certificatemanager.v1.UpdateTrustConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
-	12, // 4: google.cloud.certificatemanager.v1.TrustConfig.create_time:type_name -> google.protobuf.Timestamp
-	12, // 5: google.cloud.certificatemanager.v1.TrustConfig.update_time:type_name -> google.protobuf.Timestamp
-	10, // 6: google.cloud.certificatemanager.v1.TrustConfig.labels:type_name -> google.cloud.certificatemanager.v1.TrustConfig.LabelsEntry
-	9,  // 7: google.cloud.certificatemanager.v1.TrustConfig.trust_stores:type_name -> google.cloud.certificatemanager.v1.TrustConfig.TrustStore
-	7,  // 8: google.cloud.certificatemanager.v1.TrustConfig.TrustStore.trust_anchors:type_name -> google.cloud.certificatemanager.v1.TrustConfig.TrustAnchor
-	8,  // 9: google.cloud.certificatemanager.v1.TrustConfig.TrustStore.intermediate_cas:type_name -> google.cloud.certificatemanager.v1.TrustConfig.IntermediateCA
-	10, // [10:10] is the sub-list for method output_type
-	10, // [10:10] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	14, // 3: google.cloud.certificatemanager.v1.UpdateTrustConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
+	15, // 4: google.cloud.certificatemanager.v1.TrustConfig.create_time:type_name -> google.protobuf.Timestamp
+	15, // 5: google.cloud.certificatemanager.v1.TrustConfig.update_time:type_name -> google.protobuf.Timestamp
+	11, // 6: google.cloud.certificatemanager.v1.TrustConfig.labels:type_name -> google.cloud.certificatemanager.v1.TrustConfig.LabelsEntry
+	12, // 7: google.cloud.certificatemanager.v1.TrustConfig.spiffe_trust_stores:type_name -> google.cloud.certificatemanager.v1.TrustConfig.SpiffeTrustStoresEntry
+	9,  // 8: google.cloud.certificatemanager.v1.TrustConfig.trust_stores:type_name -> google.cloud.certificatemanager.v1.TrustConfig.TrustStore
+	10, // 9: google.cloud.certificatemanager.v1.TrustConfig.allowlisted_certificates:type_name -> google.cloud.certificatemanager.v1.TrustConfig.AllowlistedCertificate
+	13, // 10: google.cloud.certificatemanager.v1.TrustConfig.tags:type_name -> google.cloud.certificatemanager.v1.TrustConfig.TagsEntry
+	7,  // 11: google.cloud.certificatemanager.v1.TrustConfig.TrustStore.trust_anchors:type_name -> google.cloud.certificatemanager.v1.TrustConfig.TrustAnchor
+	8,  // 12: google.cloud.certificatemanager.v1.TrustConfig.TrustStore.intermediate_cas:type_name -> google.cloud.certificatemanager.v1.TrustConfig.IntermediateCA
+	9,  // 13: google.cloud.certificatemanager.v1.TrustConfig.SpiffeTrustStoresEntry.value:type_name -> google.cloud.certificatemanager.v1.TrustConfig.TrustStore
+	14, // [14:14] is the sub-list for method output_type
+	14, // [14:14] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_certificatemanager_v1_trust_config_proto_init() }
@@ -852,7 +957,7 @@ func file_google_cloud_certificatemanager_v1_trust_config_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_certificatemanager_v1_trust_config_proto_rawDesc), len(file_google_cloud_certificatemanager_v1_trust_config_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   11,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

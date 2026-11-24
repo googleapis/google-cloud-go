@@ -810,17 +810,17 @@ const file_google_cloud_osconfig_agentendpoint_v1beta_tasks_proto_rawDesc = "" +
 	"\ftask_details\"\x87\x01\n" +
 	"\x10ApplyPatchesTask\x12Z\n" +
 	"\fpatch_config\x18\x01 \x01(\v27.google.cloud.osconfig.agentendpoint.v1beta.PatchConfigR\vpatchConfig\x12\x17\n" +
-	"\adry_run\x18\x03 \x01(\bR\x06dryRun\"\xec\x01\n" +
-	"\x18ApplyPatchesTaskProgress\x12e\n" +
-	"\x05state\x18\x01 \x01(\x0e2J.google.cloud.osconfig.agentendpoint.v1beta.ApplyPatchesTaskProgress.StateB\x03\xe0A\x02R\x05state\"i\n" +
+	"\adry_run\x18\x03 \x01(\bR\x06dryRun\"\xed\x01\n" +
+	"\x18ApplyPatchesTaskProgress\x12f\n" +
+	"\x05state\x18\x01 \x01(\x0e2J.google.cloud.osconfig.agentendpoint.v1beta.ApplyPatchesTaskProgress.StateB\x04\xe2A\x01\x02R\x05state\"i\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aSTARTED\x10\x04\x12\x17\n" +
 	"\x13DOWNLOADING_PATCHES\x10\x01\x12\x14\n" +
 	"\x10APPLYING_PATCHES\x10\x02\x12\r\n" +
-	"\tREBOOTING\x10\x03\"\xd7\x01\n" +
-	"\x16ApplyPatchesTaskOutput\x12c\n" +
-	"\x05state\x18\x01 \x01(\x0e2H.google.cloud.osconfig.agentendpoint.v1beta.ApplyPatchesTaskOutput.StateB\x03\xe0A\x02R\x05state\"X\n" +
+	"\tREBOOTING\x10\x03\"\xd8\x01\n" +
+	"\x16ApplyPatchesTaskOutput\x12d\n" +
+	"\x05state\x18\x01 \x01(\x0e2H.google.cloud.osconfig.agentendpoint.v1beta.ApplyPatchesTaskOutput.StateB\x04\xe2A\x01\x02R\x05state\"X\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tSUCCEEDED\x10\x01\x12\x1d\n" +
@@ -828,15 +828,15 @@ const file_google_cloud_osconfig_agentendpoint_v1beta_tasks_proto_rawDesc = "" +
 	"\n" +
 	"\x06FAILED\x10\x03\"a\n" +
 	"\fExecStepTask\x12Q\n" +
-	"\texec_step\x18\x01 \x01(\v24.google.cloud.osconfig.agentendpoint.v1beta.ExecStepR\bexecStep\"\xa6\x01\n" +
-	"\x14ExecStepTaskProgress\x12a\n" +
-	"\x05state\x18\x01 \x01(\x0e2F.google.cloud.osconfig.agentendpoint.v1beta.ExecStepTaskProgress.StateB\x03\xe0A\x02R\x05state\"+\n" +
+	"\texec_step\x18\x01 \x01(\v24.google.cloud.osconfig.agentendpoint.v1beta.ExecStepR\bexecStep\"\xa7\x01\n" +
+	"\x14ExecStepTaskProgress\x12b\n" +
+	"\x05state\x18\x01 \x01(\x0e2F.google.cloud.osconfig.agentendpoint.v1beta.ExecStepTaskProgress.StateB\x04\xe2A\x01\x02R\x05state\"+\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
-	"\aSTARTED\x10\x01\"\xe4\x01\n" +
-	"\x12ExecStepTaskOutput\x12_\n" +
-	"\x05state\x18\x01 \x01(\x0e2D.google.cloud.osconfig.agentendpoint.v1beta.ExecStepTaskOutput.StateB\x03\xe0A\x02R\x05state\x12 \n" +
-	"\texit_code\x18\x02 \x01(\x05B\x03\xe0A\x02R\bexitCode\"K\n" +
+	"\aSTARTED\x10\x01\"\xe6\x01\n" +
+	"\x12ExecStepTaskOutput\x12`\n" +
+	"\x05state\x18\x01 \x01(\x0e2D.google.cloud.osconfig.agentendpoint.v1beta.ExecStepTaskOutput.StateB\x04\xe2A\x01\x02R\x05state\x12!\n" +
+	"\texit_code\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\bexitCode\"K\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tCOMPLETED\x10\x01\x12\r\n" +

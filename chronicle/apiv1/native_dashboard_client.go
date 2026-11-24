@@ -445,6 +445,63 @@ func NewNativeDashboardClient(ctx context.Context, opts ...option.ClientOption) 
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateNativeDashboard = append(client.CallOptions.CreateNativeDashboard, gax.WithClientTracing(tracing))
+		client.CallOptions.GetNativeDashboard = append(client.CallOptions.GetNativeDashboard, gax.WithClientTracing(tracing))
+		client.CallOptions.ListNativeDashboards = append(client.CallOptions.ListNativeDashboards, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateNativeDashboard = append(client.CallOptions.UpdateNativeDashboard, gax.WithClientTracing(tracing))
+		client.CallOptions.DuplicateNativeDashboard = append(client.CallOptions.DuplicateNativeDashboard, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteNativeDashboard = append(client.CallOptions.DeleteNativeDashboard, gax.WithClientTracing(tracing))
+		client.CallOptions.AddChart = append(client.CallOptions.AddChart, gax.WithClientTracing(tracing))
+		client.CallOptions.RemoveChart = append(client.CallOptions.RemoveChart, gax.WithClientTracing(tracing))
+		client.CallOptions.EditChart = append(client.CallOptions.EditChart, gax.WithClientTracing(tracing))
+		client.CallOptions.DuplicateChart = append(client.CallOptions.DuplicateChart, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportNativeDashboards = append(client.CallOptions.ExportNativeDashboards, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportNativeDashboards = append(client.CallOptions.ImportNativeDashboards, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateNativeDashboard = append(client.CallOptions.CreateNativeDashboard, gax.WithClientLogging(logging))
+		client.CallOptions.GetNativeDashboard = append(client.CallOptions.GetNativeDashboard, gax.WithClientLogging(logging))
+		client.CallOptions.ListNativeDashboards = append(client.CallOptions.ListNativeDashboards, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateNativeDashboard = append(client.CallOptions.UpdateNativeDashboard, gax.WithClientLogging(logging))
+		client.CallOptions.DuplicateNativeDashboard = append(client.CallOptions.DuplicateNativeDashboard, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteNativeDashboard = append(client.CallOptions.DeleteNativeDashboard, gax.WithClientLogging(logging))
+		client.CallOptions.AddChart = append(client.CallOptions.AddChart, gax.WithClientLogging(logging))
+		client.CallOptions.RemoveChart = append(client.CallOptions.RemoveChart, gax.WithClientLogging(logging))
+		client.CallOptions.EditChart = append(client.CallOptions.EditChart, gax.WithClientLogging(logging))
+		client.CallOptions.DuplicateChart = append(client.CallOptions.DuplicateChart, gax.WithClientLogging(logging))
+		client.CallOptions.ExportNativeDashboards = append(client.CallOptions.ExportNativeDashboards, gax.WithClientLogging(logging))
+		client.CallOptions.ImportNativeDashboards = append(client.CallOptions.ImportNativeDashboards, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -551,6 +608,63 @@ func NewNativeDashboardRESTClient(ctx context.Context, opts ...option.ClientOpti
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateNativeDashboard = append(callOpts.CreateNativeDashboard, gax.WithClientTracing(tracing))
+		callOpts.GetNativeDashboard = append(callOpts.GetNativeDashboard, gax.WithClientTracing(tracing))
+		callOpts.ListNativeDashboards = append(callOpts.ListNativeDashboards, gax.WithClientTracing(tracing))
+		callOpts.UpdateNativeDashboard = append(callOpts.UpdateNativeDashboard, gax.WithClientTracing(tracing))
+		callOpts.DuplicateNativeDashboard = append(callOpts.DuplicateNativeDashboard, gax.WithClientTracing(tracing))
+		callOpts.DeleteNativeDashboard = append(callOpts.DeleteNativeDashboard, gax.WithClientTracing(tracing))
+		callOpts.AddChart = append(callOpts.AddChart, gax.WithClientTracing(tracing))
+		callOpts.RemoveChart = append(callOpts.RemoveChart, gax.WithClientTracing(tracing))
+		callOpts.EditChart = append(callOpts.EditChart, gax.WithClientTracing(tracing))
+		callOpts.DuplicateChart = append(callOpts.DuplicateChart, gax.WithClientTracing(tracing))
+		callOpts.ExportNativeDashboards = append(callOpts.ExportNativeDashboards, gax.WithClientTracing(tracing))
+		callOpts.ImportNativeDashboards = append(callOpts.ImportNativeDashboards, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateNativeDashboard = append(callOpts.CreateNativeDashboard, gax.WithClientLogging(logging))
+		callOpts.GetNativeDashboard = append(callOpts.GetNativeDashboard, gax.WithClientLogging(logging))
+		callOpts.ListNativeDashboards = append(callOpts.ListNativeDashboards, gax.WithClientLogging(logging))
+		callOpts.UpdateNativeDashboard = append(callOpts.UpdateNativeDashboard, gax.WithClientLogging(logging))
+		callOpts.DuplicateNativeDashboard = append(callOpts.DuplicateNativeDashboard, gax.WithClientLogging(logging))
+		callOpts.DeleteNativeDashboard = append(callOpts.DeleteNativeDashboard, gax.WithClientLogging(logging))
+		callOpts.AddChart = append(callOpts.AddChart, gax.WithClientLogging(logging))
+		callOpts.RemoveChart = append(callOpts.RemoveChart, gax.WithClientLogging(logging))
+		callOpts.EditChart = append(callOpts.EditChart, gax.WithClientLogging(logging))
+		callOpts.DuplicateChart = append(callOpts.DuplicateChart, gax.WithClientLogging(logging))
+		callOpts.ExportNativeDashboards = append(callOpts.ExportNativeDashboards, gax.WithClientLogging(logging))
+		callOpts.ImportNativeDashboards = append(callOpts.ImportNativeDashboards, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &NativeDashboardClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -597,9 +711,6 @@ func (c *nativeDashboardGRPCClient) CreateNativeDashboard(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.NativeDashboardService/CreateNativeDashboard")
 	}
@@ -621,9 +732,6 @@ func (c *nativeDashboardGRPCClient) GetNativeDashboard(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.NativeDashboardService/GetNativeDashboard")
 	}
@@ -645,9 +753,6 @@ func (c *nativeDashboardGRPCClient) ListNativeDashboards(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.NativeDashboardService/ListNativeDashboards")
 	}
@@ -718,9 +823,6 @@ func (c *nativeDashboardGRPCClient) DuplicateNativeDashboard(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.NativeDashboardService/DuplicateNativeDashboard")
 	}
@@ -742,9 +844,6 @@ func (c *nativeDashboardGRPCClient) DeleteNativeDashboard(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.NativeDashboardService/DeleteNativeDashboard")
 	}
@@ -762,9 +861,6 @@ func (c *nativeDashboardGRPCClient) AddChart(ctx context.Context, req *chronicle
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.NativeDashboardService/AddChart")
 	}
@@ -786,9 +882,6 @@ func (c *nativeDashboardGRPCClient) RemoveChart(ctx context.Context, req *chroni
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.NativeDashboardService/RemoveChart")
 	}
@@ -810,9 +903,6 @@ func (c *nativeDashboardGRPCClient) EditChart(ctx context.Context, req *chronicl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.NativeDashboardService/EditChart")
 	}
@@ -834,9 +924,6 @@ func (c *nativeDashboardGRPCClient) DuplicateChart(ctx context.Context, req *chr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.NativeDashboardService/DuplicateChart")
 	}
@@ -858,9 +945,6 @@ func (c *nativeDashboardGRPCClient) ExportNativeDashboards(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.NativeDashboardService/ExportNativeDashboards")
 	}
@@ -882,9 +966,6 @@ func (c *nativeDashboardGRPCClient) ImportNativeDashboards(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.NativeDashboardService/ImportNativeDashboards")
 	}
@@ -1018,6 +1099,11 @@ func (c *nativeDashboardRESTClient) CreateNativeDashboard(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/nativeDashboards", req.GetParent())
 
 	params := url.Values{}
@@ -1031,9 +1117,6 @@ func (c *nativeDashboardRESTClient) CreateNativeDashboard(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.NativeDashboardService/CreateNativeDashboard")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*}/nativeDashboards")
@@ -1075,6 +1158,11 @@ func (c *nativeDashboardRESTClient) GetNativeDashboard(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1091,9 +1179,6 @@ func (c *nativeDashboardRESTClient) GetNativeDashboard(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.NativeDashboardService/GetNativeDashboard")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/nativeDashboards/*}")
@@ -1146,6 +1231,11 @@ func (c *nativeDashboardRESTClient) ListNativeDashboards(ctx context.Context, re
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/nativeDashboards", req.GetParent())
@@ -1223,6 +1313,11 @@ func (c *nativeDashboardRESTClient) UpdateNativeDashboard(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetNativeDashboard().GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetNativeDashboard().GetName())
 
 	params := url.Values{}
@@ -1290,6 +1385,11 @@ func (c *nativeDashboardRESTClient) DuplicateNativeDashboard(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:duplicate", req.GetName())
 
 	params := url.Values{}
@@ -1303,9 +1403,6 @@ func (c *nativeDashboardRESTClient) DuplicateNativeDashboard(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.NativeDashboardService/DuplicateNativeDashboard")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/nativeDashboards/*}:duplicate")
@@ -1347,6 +1444,11 @@ func (c *nativeDashboardRESTClient) DeleteNativeDashboard(ctx context.Context, r
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1360,9 +1462,6 @@ func (c *nativeDashboardRESTClient) DeleteNativeDashboard(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.NativeDashboardService/DeleteNativeDashboard")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/nativeDashboards/*}")
@@ -1395,6 +1494,11 @@ func (c *nativeDashboardRESTClient) AddChart(ctx context.Context, req *chronicle
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:addChart", req.GetName())
 
 	params := url.Values{}
@@ -1408,9 +1512,6 @@ func (c *nativeDashboardRESTClient) AddChart(ctx context.Context, req *chronicle
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.NativeDashboardService/AddChart")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/nativeDashboards/*}:addChart")
@@ -1458,6 +1559,11 @@ func (c *nativeDashboardRESTClient) RemoveChart(ctx context.Context, req *chroni
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:removeChart", req.GetName())
 
 	params := url.Values{}
@@ -1471,9 +1577,6 @@ func (c *nativeDashboardRESTClient) RemoveChart(ctx context.Context, req *chroni
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.NativeDashboardService/RemoveChart")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/nativeDashboards/*}:removeChart")
@@ -1521,6 +1624,11 @@ func (c *nativeDashboardRESTClient) EditChart(ctx context.Context, req *chronicl
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:editChart", req.GetName())
 
 	params := url.Values{}
@@ -1534,9 +1642,6 @@ func (c *nativeDashboardRESTClient) EditChart(ctx context.Context, req *chronicl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.NativeDashboardService/EditChart")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/nativeDashboards/*}:editChart")
@@ -1584,6 +1689,11 @@ func (c *nativeDashboardRESTClient) DuplicateChart(ctx context.Context, req *chr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:duplicateChart", req.GetName())
 
 	params := url.Values{}
@@ -1597,9 +1707,6 @@ func (c *nativeDashboardRESTClient) DuplicateChart(ctx context.Context, req *chr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.NativeDashboardService/DuplicateChart")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/nativeDashboards/*}:duplicateChart")
@@ -1647,6 +1754,11 @@ func (c *nativeDashboardRESTClient) ExportNativeDashboards(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/nativeDashboards:export", req.GetParent())
 
 	params := url.Values{}
@@ -1660,9 +1772,6 @@ func (c *nativeDashboardRESTClient) ExportNativeDashboards(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.NativeDashboardService/ExportNativeDashboards")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*}/nativeDashboards:export")
@@ -1710,6 +1819,11 @@ func (c *nativeDashboardRESTClient) ImportNativeDashboards(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/nativeDashboards:import", req.GetParent())
 
 	params := url.Values{}
@@ -1723,9 +1837,6 @@ func (c *nativeDashboardRESTClient) ImportNativeDashboards(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.NativeDashboardService/ImportNativeDashboards")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*}/nativeDashboards:import")
@@ -1773,6 +1884,11 @@ func (c *nativeDashboardRESTClient) CancelOperation(ctx context.Context, req *lo
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1812,6 +1928,11 @@ func (c *nativeDashboardRESTClient) DeleteOperation(ctx context.Context, req *lo
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1849,6 +1970,11 @@ func (c *nativeDashboardRESTClient) DeleteOperation(ctx context.Context, req *lo
 func (c *nativeDashboardRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1916,6 +2042,11 @@ func (c *nativeDashboardRESTClient) ListOperations(ctx context.Context, req *lon
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

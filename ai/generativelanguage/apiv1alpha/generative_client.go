@@ -296,6 +296,49 @@ func NewGenerativeClient(ctx context.Context, opts ...option.ClientOption) (*Gen
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GenerateContent = append(client.CallOptions.GenerateContent, gax.WithClientTracing(tracing))
+		client.CallOptions.GenerateAnswer = append(client.CallOptions.GenerateAnswer, gax.WithClientTracing(tracing))
+		client.CallOptions.StreamGenerateContent = append(client.CallOptions.StreamGenerateContent, gax.WithClientTracing(tracing))
+		client.CallOptions.EmbedContent = append(client.CallOptions.EmbedContent, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchEmbedContents = append(client.CallOptions.BatchEmbedContents, gax.WithClientTracing(tracing))
+		client.CallOptions.CountTokens = append(client.CallOptions.CountTokens, gax.WithClientTracing(tracing))
+		client.CallOptions.BidiGenerateContent = append(client.CallOptions.BidiGenerateContent, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GenerateContent = append(client.CallOptions.GenerateContent, gax.WithClientLogging(logging))
+		client.CallOptions.GenerateAnswer = append(client.CallOptions.GenerateAnswer, gax.WithClientLogging(logging))
+		client.CallOptions.StreamGenerateContent = append(client.CallOptions.StreamGenerateContent, gax.WithClientLogging(logging))
+		client.CallOptions.EmbedContent = append(client.CallOptions.EmbedContent, gax.WithClientLogging(logging))
+		client.CallOptions.BatchEmbedContents = append(client.CallOptions.BatchEmbedContents, gax.WithClientLogging(logging))
+		client.CallOptions.CountTokens = append(client.CallOptions.CountTokens, gax.WithClientLogging(logging))
+		client.CallOptions.BidiGenerateContent = append(client.CallOptions.BidiGenerateContent, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -396,6 +439,49 @@ func NewGenerativeRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		callOpts.GenerateContent = append(callOpts.GenerateContent, gax.WithClientTracing(tracing))
+		callOpts.GenerateAnswer = append(callOpts.GenerateAnswer, gax.WithClientTracing(tracing))
+		callOpts.StreamGenerateContent = append(callOpts.StreamGenerateContent, gax.WithClientTracing(tracing))
+		callOpts.EmbedContent = append(callOpts.EmbedContent, gax.WithClientTracing(tracing))
+		callOpts.BatchEmbedContents = append(callOpts.BatchEmbedContents, gax.WithClientTracing(tracing))
+		callOpts.CountTokens = append(callOpts.CountTokens, gax.WithClientTracing(tracing))
+		callOpts.BidiGenerateContent = append(callOpts.BidiGenerateContent, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		callOpts.GenerateContent = append(callOpts.GenerateContent, gax.WithClientLogging(logging))
+		callOpts.GenerateAnswer = append(callOpts.GenerateAnswer, gax.WithClientLogging(logging))
+		callOpts.StreamGenerateContent = append(callOpts.StreamGenerateContent, gax.WithClientLogging(logging))
+		callOpts.EmbedContent = append(callOpts.EmbedContent, gax.WithClientLogging(logging))
+		callOpts.BatchEmbedContents = append(callOpts.BatchEmbedContents, gax.WithClientLogging(logging))
+		callOpts.CountTokens = append(callOpts.CountTokens, gax.WithClientLogging(logging))
+		callOpts.BidiGenerateContent = append(callOpts.BidiGenerateContent, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &GenerativeClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -442,9 +528,6 @@ func (c *generativeGRPCClient) GenerateContent(ctx context.Context, req *generat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetModel()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.GenerativeService/GenerateContent")
 	}
@@ -466,9 +549,6 @@ func (c *generativeGRPCClient) GenerateAnswer(ctx context.Context, req *generati
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetModel()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.GenerativeService/GenerateAnswer")
 	}
@@ -490,9 +570,6 @@ func (c *generativeGRPCClient) StreamGenerateContent(ctx context.Context, req *g
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetModel()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.GenerativeService/StreamGenerateContent")
 	}
@@ -516,9 +593,6 @@ func (c *generativeGRPCClient) EmbedContent(ctx context.Context, req *generative
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetModel()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.GenerativeService/EmbedContent")
 	}
@@ -540,9 +614,6 @@ func (c *generativeGRPCClient) BatchEmbedContents(ctx context.Context, req *gene
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetModel()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.GenerativeService/BatchEmbedContents")
 	}
@@ -564,9 +635,6 @@ func (c *generativeGRPCClient) CountTokens(ctx context.Context, req *generativel
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetModel()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.GenerativeService/CountTokens")
 	}
@@ -691,6 +759,11 @@ func (c *generativeRESTClient) GenerateContent(ctx context.Context, req *generat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:generateContent", req.GetModel())
 
 	params := url.Values{}
@@ -704,9 +777,6 @@ func (c *generativeRESTClient) GenerateContent(ctx context.Context, req *generat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetModel()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.GenerativeService/GenerateContent")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{model=models/*}:generateContent")
@@ -755,6 +825,11 @@ func (c *generativeRESTClient) GenerateAnswer(ctx context.Context, req *generati
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:generateAnswer", req.GetModel())
 
 	params := url.Values{}
@@ -768,9 +843,6 @@ func (c *generativeRESTClient) GenerateAnswer(ctx context.Context, req *generati
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetModel()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.GenerativeService/GenerateAnswer")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{model=models/*}:generateAnswer")
@@ -820,6 +892,11 @@ func (c *generativeRESTClient) StreamGenerateContent(ctx context.Context, req *g
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:streamGenerateContent", req.GetModel())
 
 	params := url.Values{}
@@ -833,9 +910,6 @@ func (c *generativeRESTClient) StreamGenerateContent(ctx context.Context, req *g
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetModel()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.GenerativeService/StreamGenerateContent")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{model=models/*}:streamGenerateContent")
@@ -931,6 +1005,11 @@ func (c *generativeRESTClient) EmbedContent(ctx context.Context, req *generative
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:embedContent", req.GetModel())
 
 	params := url.Values{}
@@ -944,9 +1023,6 @@ func (c *generativeRESTClient) EmbedContent(ctx context.Context, req *generative
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetModel()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.GenerativeService/EmbedContent")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{model=models/*}:embedContent")
@@ -996,6 +1072,11 @@ func (c *generativeRESTClient) BatchEmbedContents(ctx context.Context, req *gene
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:batchEmbedContents", req.GetModel())
 
 	params := url.Values{}
@@ -1009,9 +1090,6 @@ func (c *generativeRESTClient) BatchEmbedContents(ctx context.Context, req *gene
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetModel()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.GenerativeService/BatchEmbedContents")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{model=models/*}:batchEmbedContents")
@@ -1061,6 +1139,11 @@ func (c *generativeRESTClient) CountTokens(ctx context.Context, req *generativel
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetModel(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:countTokens", req.GetModel())
 
 	params := url.Values{}
@@ -1074,9 +1157,6 @@ func (c *generativeRESTClient) CountTokens(ctx context.Context, req *generativel
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetModel()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.GenerativeService/CountTokens")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{model=models/*}:countTokens")
@@ -1124,6 +1204,11 @@ func (c *generativeRESTClient) BidiGenerateContent(ctx context.Context, opts ...
 func (c *generativeRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
@@ -1191,6 +1276,11 @@ func (c *generativeRESTClient) ListOperations(ctx context.Context, req *longrunn
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/operations", req.GetName())

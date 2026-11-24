@@ -2399,35 +2399,35 @@ var File_google_cloud_chronicle_v1_dashboard_query_proto protoreflect.FileDescri
 
 const file_google_cloud_chronicle_v1_dashboard_query_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/chronicle/v1/dashboard_query.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x19google/protobuf/any.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\x1a\x1agoogle/type/interval.proto\"\x92\x06\n" +
-	"\x0eDashboardQuery\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x03\xfaA)\n" +
-	"'chronicle.googleapis.com/DashboardQueryR\x04name\x12\x19\n" +
-	"\x05query\x18\x02 \x01(\tB\x03\xe0A\x02R\x05query\x12J\n" +
-	"\x05input\x18\x03 \x01(\v2/.google.cloud.chronicle.v1.DashboardQuery.InputB\x03\xe0A\x02R\x05input\x12X\n" +
-	"\x0fdashboard_chart\x18\x04 \x01(\tB/\xe0A\x03\xfaA)\n" +
-	"'chronicle.googleapis.com/DashboardChartR\x0edashboardChart\x12\x17\n" +
-	"\x04etag\x18\x05 \x01(\tB\x03\xe0A\x01R\x04etag\x1a\xb7\x02\n" +
+	"/google/cloud/chronicle/v1/dashboard_query.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x19google/protobuf/any.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\x1a\x1agoogle/type/interval.proto\"\x99\x06\n" +
+	"\x0eDashboardQuery\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x03\xfaA)\n" +
+	"'chronicle.googleapis.com/DashboardQueryR\x04name\x12\x1a\n" +
+	"\x05query\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12K\n" +
+	"\x05input\x18\x03 \x01(\v2/.google.cloud.chronicle.v1.DashboardQuery.InputB\x04\xe2A\x01\x02R\x05input\x12Y\n" +
+	"\x0fdashboard_chart\x18\x04 \x01(\tB0\xe2A\x01\x03\xfaA)\n" +
+	"'chronicle.googleapis.com/DashboardChartR\x0edashboardChart\x12\x18\n" +
+	"\x04etag\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x1a\xb9\x02\n" +
 	"\x05Input\x128\n" +
 	"\vtime_window\x18\x01 \x01(\v2\x15.google.type.IntervalH\x00R\n" +
 	"timeWindow\x12c\n" +
-	"\rrelative_time\x18\x03 \x01(\v2<.google.cloud.chronicle.v1.DashboardQuery.Input.RelativeTimeH\x00R\frelativeTime\x1a\x80\x01\n" +
-	"\fRelativeTime\x12E\n" +
-	"\ttime_unit\x18\x01 \x01(\x0e2#.google.cloud.chronicle.v1.TimeUnitB\x03\xe0A\x02R\btimeUnit\x12)\n" +
-	"\x0estart_time_val\x18\x02 \x01(\x03B\x03\xe0A\x02R\fstartTimeValB\f\n" +
+	"\rrelative_time\x18\x03 \x01(\v2<.google.cloud.chronicle.v1.DashboardQuery.Input.RelativeTimeH\x00R\frelativeTime\x1a\x82\x01\n" +
+	"\fRelativeTime\x12F\n" +
+	"\ttime_unit\x18\x01 \x01(\x0e2#.google.cloud.chronicle.v1.TimeUnitB\x04\xe2A\x01\x02R\btimeUnit\x12*\n" +
+	"\x0estart_time_val\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\fstartTimeValB\f\n" +
 	"\n" +
 	"time_input:\xa6\x01\xeaA\xa2\x01\n" +
-	"'chronicle.googleapis.com/DashboardQuery\x12Uprojects/{project}/locations/{location}/instances/{instance}/dashboardQueries/{query}*\x10dashboardQueries2\x0edashboardQuery\"_\n" +
-	"\x18GetDashboardQueryRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'chronicle.googleapis.com/DashboardQueryR\x04name\"\xda\x02\n" +
-	"\x1cExecuteDashboardQueryRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'chronicle.googleapis.com/DashboardQueryR\x06parent\x12D\n" +
-	"\x05query\x18\x02 \x01(\v2).google.cloud.chronicle.v1.DashboardQueryB\x03\xe0A\x02R\x05query\x12I\n" +
-	"\afilters\x18\x03 \x03(\v2*.google.cloud.chronicle.v1.DashboardFilterB\x03\xe0A\x01R\afilters\x12$\n" +
-	"\vclear_cache\x18\x04 \x01(\bB\x03\xe0A\x01R\n" +
-	"clearCache\x12:\n" +
-	"\x17use_previous_time_range\x18\x05 \x01(\bB\x03\xe0A\x01R\x14usePreviousTimeRange\"\xa8\x06\n" +
+	"'chronicle.googleapis.com/DashboardQuery\x12Uprojects/{project}/locations/{location}/instances/{instance}/dashboardQueries/{query}*\x10dashboardQueries2\x0edashboardQuery\"`\n" +
+	"\x18GetDashboardQueryRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'chronicle.googleapis.com/DashboardQueryR\x04name\"\xdf\x02\n" +
+	"\x1cExecuteDashboardQueryRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'chronicle.googleapis.com/DashboardQueryR\x06parent\x12E\n" +
+	"\x05query\x18\x02 \x01(\v2).google.cloud.chronicle.v1.DashboardQueryB\x04\xe2A\x01\x02R\x05query\x12J\n" +
+	"\afilters\x18\x03 \x03(\v2*.google.cloud.chronicle.v1.DashboardFilterB\x04\xe2A\x01\x01R\afilters\x12%\n" +
+	"\vclear_cache\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"clearCache\x12;\n" +
+	"\x17use_previous_time_range\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x14usePreviousTimeRange\"\xa8\x06\n" +
 	"\x11QueryRuntimeError\x12\x1f\n" +
 	"\verror_title\x18\x01 \x01(\tR\n" +
 	"errorTitle\x12+\n" +
@@ -2450,15 +2450,15 @@ const file_google_cloud_chronicle_v1_dashboard_query_proto_rawDesc = "" +
 	"\x1aWARNING_REASON_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12ROW_LIMIT_EXCEEDED\x10\x01\x12\x1e\n" +
 	"\x1aDEFAULT_ROW_LIMIT_EXCEEDED\x10\x02\x12,\n" +
-	"(CURATED_QUERY_DEFAULT_ROW_LIMIT_EXCEEDED\x10\x03\"\xeb\r\n" +
+	"(CURATED_QUERY_DEFAULT_ROW_LIMIT_EXCEEDED\x10\x03\"\xed\r\n" +
 	"\x1dExecuteDashboardQueryResponse\x12]\n" +
 	"\aresults\x18\x01 \x03(\v2C.google.cloud.chronicle.v1.ExecuteDashboardQueryResponse.ColumnDataR\aresults\x12H\n" +
-	"\fdata_sources\x18\x03 \x03(\x0e2%.google.cloud.chronicle.v1.DataSourceR\vdataSources\x12i\n" +
-	"!last_backend_cache_refreshed_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x1dlastBackendCacheRefreshedTime\x126\n" +
+	"\fdata_sources\x18\x03 \x03(\x0e2%.google.cloud.chronicle.v1.DataSourceR\vdataSources\x12j\n" +
+	"!last_backend_cache_refreshed_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x1dlastBackendCacheRefreshedTime\x126\n" +
 	"\vtime_window\x18\x05 \x01(\v2\x15.google.type.IntervalR\n" +
 	"timeWindow\x12^\n" +
-	"\x14query_runtime_errors\x18\x06 \x03(\v2,.google.cloud.chronicle.v1.QueryRuntimeErrorR\x12queryRuntimeErrors\x12\\\n" +
-	"\x11language_features\x18\a \x03(\x0e2*.google.cloud.chronicle.v1.LanguageFeatureB\x03\xe0A\x01R\x10languageFeatures\x1a\xb9\x05\n" +
+	"\x14query_runtime_errors\x18\x06 \x03(\v2,.google.cloud.chronicle.v1.QueryRuntimeErrorR\x12queryRuntimeErrors\x12]\n" +
+	"\x11language_features\x18\a \x03(\x0e2*.google.cloud.chronicle.v1.LanguageFeatureB\x04\xe2A\x01\x01R\x10languageFeatures\x1a\xb9\x05\n" +
 	"\vColumnValue\x12\x1b\n" +
 	"\bnull_val\x18\x01 \x01(\bH\x00R\anullVal\x12\x1b\n" +
 	"\bbool_val\x18\x02 \x01(\bH\x00R\aboolVal\x12\x1d\n" +
@@ -2492,7 +2492,7 @@ const file_google_cloud_chronicle_v1_dashboard_query_proto_rawDesc = "" +
 	"ColumnData\x12\x16\n" +
 	"\x06column\x18\x01 \x01(\tR\x06column\x12[\n" +
 	"\x06values\x18\x02 \x03(\v2C.google.cloud.chronicle.v1.ExecuteDashboardQueryResponse.ColumnTypeR\x06values\x12E\n" +
-	"\bmetadata\x18\x03 \x01(\v2).google.cloud.chronicle.v1.ColumnMetadataR\bmetadata\"\xa4\x05\n" +
+	"\bmetadata\x18\x03 \x01(\v2).google.cloud.chronicle.v1.ColumnMetadataR\bmetadata\"\xa8\x05\n" +
 	"\x0fDashboardFilter\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12F\n" +
 	"\vdata_source\x18\x02 \x01(\x0e2%.google.cloud.chronicle.v1.DataSourceR\n" +
@@ -2501,36 +2501,36 @@ const file_google_cloud_chronicle_v1_dashboard_query_proto_rawDesc = "" +
 	"field_path\x18\x03 \x01(\tR\tfieldPath\x12z\n" +
 	" filter_operator_and_field_values\x18\x04 \x03(\v22.google.cloud.chronicle.v1.FilterOperatorAndValuesR\x1cfilterOperatorAndFieldValues\x12!\n" +
 	"\fdisplay_name\x18\x05 \x01(\tR\vdisplayName\x12\x1b\n" +
-	"\tchart_ids\x18\x06 \x03(\tR\bchartIds\x12E\n" +
-	"\x1dis_standard_time_range_filter\x18\a \x01(\bB\x03\xe0A\x01R\x19isStandardTimeRangeFilter\x12&\n" +
-	"\fis_mandatory\x18\b \x01(\bB\x03\xe0A\x01R\visMandatory\x12Y\n" +
-	"%is_standard_time_range_filter_enabled\x18\t \x01(\bB\x03\xe0A\x01H\x00R isStandardTimeRangeFilterEnabled\x88\x01\x01\x12j\n" +
+	"\tchart_ids\x18\x06 \x03(\tR\bchartIds\x12F\n" +
+	"\x1dis_standard_time_range_filter\x18\a \x01(\bB\x04\xe2A\x01\x01R\x19isStandardTimeRangeFilter\x12'\n" +
+	"\fis_mandatory\x18\b \x01(\bB\x04\xe2A\x01\x01R\visMandatory\x12Z\n" +
+	"%is_standard_time_range_filter_enabled\x18\t \x01(\bB\x04\xe2A\x01\x01H\x00R isStandardTimeRangeFilterEnabled\x88\x01\x01\x12k\n" +
 	"\x16advanced_filter_config\x18\n" +
-	" \x01(\v2/.google.cloud.chronicle.v1.AdvancedFilterConfigB\x03\xe0A\x01R\x14advancedFilterConfigB(\n" +
+	" \x01(\v2/.google.cloud.chronicle.v1.AdvancedFilterConfigB\x04\xe2A\x01\x01R\x14advancedFilterConfigB(\n" +
 	"&_is_standard_time_range_filter_enabled\"\x90\x01\n" +
 	"\x17FilterOperatorAndValues\x12R\n" +
 	"\x0ffilter_operator\x18\x01 \x01(\x0e2).google.cloud.chronicle.v1.FilterOperatorR\x0efilterOperator\x12!\n" +
-	"\ffield_values\x18\x02 \x03(\tR\vfieldValues\"\xfe\x06\n" +
-	"\x14AdvancedFilterConfig\x12\x19\n" +
-	"\x05token\x18\x01 \x01(\tB\x03\xe0A\x02R\x05token\x12\x1b\n" +
-	"\x06prefix\x18\x02 \x01(\tB\x03\xe0A\x01R\x06prefix\x12\x1b\n" +
-	"\x06suffix\x18\x03 \x01(\tB\x03\xe0A\x01R\x06suffix\x12!\n" +
-	"\tseparator\x18\x04 \x01(\tB\x03\xe0A\x01R\tseparator\x12.\n" +
-	"\x10multiple_allowed\x18\x05 \x01(\bB\x03\xe0A\x01R\x0fmultipleAllowed\x12*\n" +
-	"\x0edefault_values\x18\x06 \x03(\tB\x03\xe0A\x01R\rdefaultValues\x125\n" +
-	"\x14skip_default_affixes\x18\a \x01(\bB\x03\xe0A\x01R\x12skipDefaultAffixes\x12c\n" +
-	"\fvalue_source\x18\b \x01(\v2;.google.cloud.chronicle.v1.AdvancedFilterConfig.ValueSourceB\x03\xe0A\x02R\vvalueSource\x1a\xee\x01\n" +
-	"\vValueSource\x12k\n" +
-	"\x0emanual_options\x18\x01 \x01(\v2=.google.cloud.chronicle.v1.AdvancedFilterConfig.ManualOptionsB\x03\xe0A\x01H\x00R\rmanualOptions\x12h\n" +
-	"\rquery_options\x18\x02 \x01(\v2<.google.cloud.chronicle.v1.AdvancedFilterConfig.QueryOptionsB\x03\xe0A\x01H\x00R\fqueryOptionsB\b\n" +
-	"\x06source\x1a.\n" +
-	"\rManualOptions\x12\x1d\n" +
-	"\aoptions\x18\x01 \x03(\tB\x03\xe0A\x01R\aoptions\x1a\xd4\x01\n" +
-	"\fQueryOptions\x12\x19\n" +
-	"\x05query\x18\x01 \x01(\tB\x03\xe0A\x02R\x05query\x12\x1b\n" +
-	"\x06column\x18\x02 \x01(\tB\x03\xe0A\x02R\x06column\x12@\n" +
-	"\x1aglobal_time_filter_enabled\x18\x03 \x01(\bB\x03\xe0A\x01R\x17globalTimeFilterEnabled\x12J\n" +
-	"\x05input\x18\x04 \x01(\v2/.google.cloud.chronicle.v1.DashboardQuery.InputB\x03\xe0A\x01R\x05input\"N\n" +
+	"\ffield_values\x18\x02 \x03(\tR\vfieldValues\"\x8d\a\n" +
+	"\x14AdvancedFilterConfig\x12\x1a\n" +
+	"\x05token\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05token\x12\x1c\n" +
+	"\x06prefix\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06prefix\x12\x1c\n" +
+	"\x06suffix\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06suffix\x12\"\n" +
+	"\tseparator\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tseparator\x12/\n" +
+	"\x10multiple_allowed\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x0fmultipleAllowed\x12+\n" +
+	"\x0edefault_values\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\rdefaultValues\x126\n" +
+	"\x14skip_default_affixes\x18\a \x01(\bB\x04\xe2A\x01\x01R\x12skipDefaultAffixes\x12d\n" +
+	"\fvalue_source\x18\b \x01(\v2;.google.cloud.chronicle.v1.AdvancedFilterConfig.ValueSourceB\x04\xe2A\x01\x02R\vvalueSource\x1a\xf0\x01\n" +
+	"\vValueSource\x12l\n" +
+	"\x0emanual_options\x18\x01 \x01(\v2=.google.cloud.chronicle.v1.AdvancedFilterConfig.ManualOptionsB\x04\xe2A\x01\x01H\x00R\rmanualOptions\x12i\n" +
+	"\rquery_options\x18\x02 \x01(\v2<.google.cloud.chronicle.v1.AdvancedFilterConfig.QueryOptionsB\x04\xe2A\x01\x01H\x00R\fqueryOptionsB\b\n" +
+	"\x06source\x1a/\n" +
+	"\rManualOptions\x12\x1e\n" +
+	"\aoptions\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\aoptions\x1a\xd8\x01\n" +
+	"\fQueryOptions\x12\x1a\n" +
+	"\x05query\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12\x1c\n" +
+	"\x06column\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06column\x12A\n" +
+	"\x1aglobal_time_filter_enabled\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x17globalTimeFilterEnabled\x12K\n" +
+	"\x05input\x18\x04 \x01(\v2/.google.cloud.chronicle.v1.DashboardQuery.InputB\x04\xe2A\x01\x01R\x05input\"N\n" +
 	"\tInAppLink\x12\x10\n" +
 	"\x03url\x18\x01 \x01(\tR\x03url\x12\x14\n" +
 	"\x05label\x18\x02 \x01(\tR\x05label\x12\x19\n" +

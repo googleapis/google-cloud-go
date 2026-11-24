@@ -255,16 +255,16 @@ var File_google_cloud_securitycenter_v1beta1_finding_proto protoreflect.FileDesc
 
 const file_google_cloud_securitycenter_v1beta1_finding_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/securitycenter/v1beta1/finding.proto\x12#google.cloud.securitycenter.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/securitycenter/v1beta1/security_marks.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb6\x06\n" +
+	"1google/cloud/securitycenter/v1beta1/finding.proto\x12#google.cloud.securitycenter.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/securitycenter/v1beta1/security_marks.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb8\x06\n" +
 	"\aFinding\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1b\n" +
-	"\x06parent\x18\x02 \x01(\tB\x03\xe0A\x05R\x06parent\x12#\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1c\n" +
+	"\x06parent\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\x06parent\x12#\n" +
 	"\rresource_name\x18\x03 \x01(\tR\fresourceName\x12H\n" +
 	"\x05state\x18\x04 \x01(\x0e22.google.cloud.securitycenter.v1beta1.Finding.StateR\x05state\x12\x1a\n" +
 	"\bcategory\x18\x05 \x01(\tR\bcategory\x12!\n" +
 	"\fexternal_uri\x18\x06 \x01(\tR\vexternalUri\x12o\n" +
-	"\x11source_properties\x18\a \x03(\v2B.google.cloud.securitycenter.v1beta1.Finding.SourcePropertiesEntryR\x10sourceProperties\x12^\n" +
-	"\x0esecurity_marks\x18\b \x01(\v22.google.cloud.securitycenter.v1beta1.SecurityMarksB\x03\xe0A\x03R\rsecurityMarks\x129\n" +
+	"\x11source_properties\x18\a \x03(\v2B.google.cloud.securitycenter.v1beta1.Finding.SourcePropertiesEntryR\x10sourceProperties\x12_\n" +
+	"\x0esecurity_marks\x18\b \x01(\v22.google.cloud.securitycenter.v1beta1.SecurityMarksB\x04\xe2A\x01\x03R\rsecurityMarks\x129\n" +
 	"\n" +
 	"event_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\teventTime\x12;\n" +
 	"\vcreate_time\x18\n" +

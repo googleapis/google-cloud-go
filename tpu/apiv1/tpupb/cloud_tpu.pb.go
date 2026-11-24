@@ -1802,32 +1802,32 @@ const file_google_cloud_tpu_v1_cloud_tpu_proto_rawDesc = "" +
 	"\x0fNetworkEndpoint\x12\x1d\n" +
 	"\n" +
 	"ip_address\x18\x01 \x01(\tR\tipAddress\x12\x12\n" +
-	"\x04port\x18\x02 \x01(\x05R\x04port\"\xbf\f\n" +
-	"\x04Node\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x05\xe0A\x03R\x04name\x12 \n" +
-	"\vdescription\x18\x03 \x01(\tR\vdescription\x12.\n" +
-	"\x10accelerator_type\x18\x05 \x01(\tB\x03\xe0A\x02R\x0facceleratorType\x12!\n" +
+	"\x04port\x18\x02 \x01(\x05R\x04port\"\xc7\f\n" +
+	"\x04Node\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x05\x03R\x04name\x12 \n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x12/\n" +
+	"\x10accelerator_type\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\x0facceleratorType\x12!\n" +
 	"\n" +
 	"ip_address\x18\b \x01(\tB\x02\x18\x01R\tipAddress\x12\x16\n" +
-	"\x04port\x18\x0e \x01(\tB\x02\x18\x01R\x04port\x12:\n" +
-	"\x05state\x18\t \x01(\x0e2\x1f.google.cloud.tpu.v1.Node.StateB\x03\xe0A\x03R\x05state\x122\n" +
+	"\x04port\x18\x0e \x01(\tB\x02\x18\x01R\x04port\x12;\n" +
+	"\x05state\x18\t \x01(\x0e2\x1f.google.cloud.tpu.v1.Node.StateB\x04\xe2A\x01\x03R\x05state\x123\n" +
 	"\x12health_description\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x11healthDescription\x122\n" +
-	"\x12tensorflow_version\x18\v \x01(\tB\x03\xe0A\x02R\x11tensorflowVersion\x12\x18\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x11healthDescription\x123\n" +
+	"\x12tensorflow_version\x18\v \x01(\tB\x04\xe2A\x01\x02R\x11tensorflowVersion\x12\x18\n" +
 	"\anetwork\x18\f \x01(\tR\anetwork\x12\x1d\n" +
 	"\n" +
-	"cidr_block\x18\r \x01(\tR\tcidrBlock\x12,\n" +
-	"\x0fservice_account\x18\x0f \x01(\tB\x03\xe0A\x03R\x0eserviceAccount\x12@\n" +
-	"\vcreate_time\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"cidr_block\x18\r \x01(\tR\tcidrBlock\x12-\n" +
+	"\x0fservice_account\x18\x0f \x01(\tB\x04\xe2A\x01\x03R\x0eserviceAccount\x12A\n" +
+	"\vcreate_time\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\x12R\n" +
-	"\x11scheduling_config\x18\x11 \x01(\v2%.google.cloud.tpu.v1.SchedulingConfigR\x10schedulingConfig\x12V\n" +
-	"\x11network_endpoints\x18\x15 \x03(\v2$.google.cloud.tpu.v1.NetworkEndpointB\x03\xe0A\x03R\x10networkEndpoints\x128\n" +
+	"\x11scheduling_config\x18\x11 \x01(\v2%.google.cloud.tpu.v1.SchedulingConfigR\x10schedulingConfig\x12W\n" +
+	"\x11network_endpoints\x18\x15 \x03(\v2$.google.cloud.tpu.v1.NetworkEndpointB\x04\xe2A\x01\x03R\x10networkEndpoints\x128\n" +
 	"\x06health\x18\x16 \x01(\x0e2 .google.cloud.tpu.v1.Node.HealthR\x06health\x12=\n" +
 	"\x06labels\x18\x18 \x03(\v2%.google.cloud.tpu.v1.Node.LabelsEntryR\x06labels\x124\n" +
-	"\x16use_service_networking\x18\x1b \x01(\bR\x14useServiceNetworking\x12J\n" +
-	"\vapi_version\x18& \x01(\x0e2$.google.cloud.tpu.v1.Node.ApiVersionB\x03\xe0A\x03R\n" +
-	"apiVersion\x12=\n" +
-	"\bsymptoms\x18' \x03(\v2\x1c.google.cloud.tpu.v1.SymptomB\x03\xe0A\x03R\bsymptoms\x1a9\n" +
+	"\x16use_service_networking\x18\x1b \x01(\bR\x14useServiceNetworking\x12K\n" +
+	"\vapi_version\x18& \x01(\x0e2$.google.cloud.tpu.v1.Node.ApiVersionB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\x12>\n" +
+	"\bsymptoms\x18' \x03(\v2\x1c.google.cloud.tpu.v1.SymptomB\x04\xe2A\x01\x03R\bsymptoms\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xee\x01\n" +
@@ -1866,25 +1866,25 @@ const file_google_cloud_tpu_v1_cloud_tpu_proto_rawDesc = "" +
 	"\tV1_ALPHA1\x10\x01\x12\x06\n" +
 	"\x02V1\x10\x02\x12\r\n" +
 	"\tV2_ALPHA1\x10\x03:R\xeaAO\n" +
-	"\x17tpu.googleapis.com/Node\x124projects/{project}/locations/{location}/nodes/{node}\"\x87\x01\n" +
-	"\x10ListNodesRequest\x127\n" +
-	"\x06parent\x18\x01 \x01(\tB\x1f\xe0A\x02\xfaA\x19\x12\x17tpu.googleapis.com/NodeR\x06parent\x12\x1b\n" +
+	"\x17tpu.googleapis.com/Node\x124projects/{project}/locations/{location}/nodes/{node}\"\x88\x01\n" +
+	"\x10ListNodesRequest\x128\n" +
+	"\x06parent\x18\x01 \x01(\tB \xe2A\x01\x02\xfaA\x19\x12\x17tpu.googleapis.com/NodeR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x8e\x01\n" +
 	"\x11ListNodesResponse\x12/\n" +
 	"\x05nodes\x18\x01 \x03(\v2\x19.google.cloud.tpu.v1.NodeR\x05nodes\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"E\n" +
-	"\x0eGetNodeRequest\x123\n" +
-	"\x04name\x18\x01 \x01(\tB\x1f\xe0A\x02\xfaA\x19\n" +
-	"\x17tpu.googleapis.com/NodeR\x04name\"\x99\x01\n" +
-	"\x11CreateNodeRequest\x127\n" +
-	"\x06parent\x18\x01 \x01(\tB\x1f\xe0A\x02\xfaA\x19\x12\x17tpu.googleapis.com/NodeR\x06parent\x12\x17\n" +
-	"\anode_id\x18\x02 \x01(\tR\x06nodeId\x122\n" +
-	"\x04node\x18\x03 \x01(\v2\x19.google.cloud.tpu.v1.NodeB\x03\xe0A\x02R\x04node\"H\n" +
-	"\x11DeleteNodeRequest\x123\n" +
-	"\x04name\x18\x01 \x01(\tB\x1f\xe0A\x02\xfaA\x19\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"F\n" +
+	"\x0eGetNodeRequest\x124\n" +
+	"\x04name\x18\x01 \x01(\tB \xe2A\x01\x02\xfaA\x19\n" +
+	"\x17tpu.googleapis.com/NodeR\x04name\"\x9b\x01\n" +
+	"\x11CreateNodeRequest\x128\n" +
+	"\x06parent\x18\x01 \x01(\tB \xe2A\x01\x02\xfaA\x19\x12\x17tpu.googleapis.com/NodeR\x06parent\x12\x17\n" +
+	"\anode_id\x18\x02 \x01(\tR\x06nodeId\x123\n" +
+	"\x04node\x18\x03 \x01(\v2\x19.google.cloud.tpu.v1.NodeB\x04\xe2A\x01\x02R\x04node\"I\n" +
+	"\x11DeleteNodeRequest\x124\n" +
+	"\x04name\x18\x01 \x01(\tB \xe2A\x01\x02\xfaA\x19\n" +
 	"\x17tpu.googleapis.com/NodeR\x04name\"W\n" +
 	"\x12ReimageNodeRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12-\n" +
@@ -1896,12 +1896,12 @@ const file_google_cloud_tpu_v1_cloud_tpu_proto_rawDesc = "" +
 	"\x11TensorFlowVersion\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\tR\aversion:{\xeaAx\n" +
-	"$tpu.googleapis.com/TensorFlowVersion\x12Pprojects/{project}/locations/{location}/tensorFlowVersions/{tensor_flow_version}\"_\n" +
-	"\x1bGetTensorFlowVersionRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$tpu.googleapis.com/TensorFlowVersionR\x04name\"\xd4\x01\n" +
-	"\x1dListTensorFlowVersionsRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"$tpu.googleapis.com/TensorFlowVersion\x12Pprojects/{project}/locations/{location}/tensorFlowVersions/{tensor_flow_version}\"`\n" +
+	"\x1bGetTensorFlowVersionRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$tpu.googleapis.com/TensorFlowVersionR\x04name\"\xd5\x01\n" +
+	"\x1dListTensorFlowVersionsRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$tpu.googleapis.com/TensorFlowVersionR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -1915,12 +1915,12 @@ const file_google_cloud_tpu_v1_cloud_tpu_proto_rawDesc = "" +
 	"\x0fAcceleratorType\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
 	"\x04type\x18\x02 \x01(\tR\x04type:t\xeaAq\n" +
-	"\"tpu.googleapis.com/AcceleratorType\x12Kprojects/{project}/locations/{location}/acceleratorTypes/{accelerator_type}\"[\n" +
-	"\x19GetAcceleratorTypeRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"tpu.googleapis.com/AcceleratorTypeR\x04name\"\xd0\x01\n" +
-	"\x1bListAcceleratorTypesRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"\"tpu.googleapis.com/AcceleratorType\x12Kprojects/{project}/locations/{location}/acceleratorTypes/{accelerator_type}\"\\\n" +
+	"\x19GetAcceleratorTypeRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"tpu.googleapis.com/AcceleratorTypeR\x04name\"\xd1\x01\n" +
+	"\x1bListAcceleratorTypesRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
 	"\"tpu.googleapis.com/AcceleratorTypeR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +

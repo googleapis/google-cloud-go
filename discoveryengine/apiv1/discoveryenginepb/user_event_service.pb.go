@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -205,24 +205,24 @@ var File_google_cloud_discoveryengine_v1_user_event_service_proto protoreflect.F
 
 const file_google_cloud_discoveryengine_v1_user_event_service_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/discoveryengine/v1/user_event_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1a3google/cloud/discoveryengine/v1/import_config.proto\x1a2google/cloud/discoveryengine/v1/purge_config.proto\x1a0google/cloud/discoveryengine/v1/user_event.proto\x1a#google/longrunning/operations.proto\"\xe6\x01\n" +
-	"\x15WriteUserEventRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12S\n" +
+	"8google/cloud/discoveryengine/v1/user_event_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1a3google/cloud/discoveryengine/v1/import_config.proto\x1a2google/cloud/discoveryengine/v1/purge_config.proto\x1a0google/cloud/discoveryengine/v1/user_event.proto\x1a#google/longrunning/operations.proto\"\xe8\x01\n" +
+	"\x15WriteUserEventRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12T\n" +
 	"\n" +
-	"user_event\x18\x02 \x01(\v2*.google.cloud.discoveryengine.v1.UserEventB\x03\xe0A\x02H\x00R\tuserEvent\x88\x01\x01\x12\x1f\n" +
+	"user_event\x18\x02 \x01(\v2*.google.cloud.discoveryengine.v1.UserEventB\x04\xe2A\x01\x02H\x00R\tuserEvent\x88\x01\x01\x12\x1f\n" +
 	"\vwrite_async\x18\x03 \x01(\bR\n" +
 	"writeAsyncB\r\n" +
-	"\v_user_event\"\xc5\x01\n" +
-	"\x17CollectUserEventRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12\"\n" +
+	"\v_user_event\"\xc7\x01\n" +
+	"\x17CollectUserEventRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12#\n" +
 	"\n" +
-	"user_event\x18\x02 \x01(\tB\x03\xe0A\x02R\tuserEvent\x12\x15\n" +
+	"user_event\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tuserEvent\x12\x15\n" +
 	"\x03uri\x18\x03 \x01(\tH\x00R\x03uri\x88\x01\x01\x12\x15\n" +
 	"\x03ets\x18\x04 \x01(\x03H\x01R\x03ets\x88\x01\x01B\x06\n" +
 	"\x04_uriB\x06\n" +
-	"\x04_ets2\xec\f\n" +
+	"\x04_ets2\xab\x0e\n" +
 	"\x10UserEventService\x12\xf0\x02\n" +
 	"\x0eWriteUserEvent\x126.google.cloud.discoveryengine.v1.WriteUserEventRequest\x1a*.google.cloud.discoveryengine.v1.UserEvent\"\xf9\x01\x82\xd3\xe4\x93\x02\xf2\x01:\n" +
 	"user_eventZ]:\n" +
@@ -232,7 +232,7 @@ const file_google_cloud_discoveryengine_v1_user_event_service_proto_rawDesc = ""
 	"\x0fPurgeUserEvents\x127.google.cloud.discoveryengine.v1.PurgeUserEventsRequest\x1a\x1d.google.longrunning.Operation\"\x98\x02\xcaAr\n" +
 	"7google.cloud.discoveryengine.v1.PurgeUserEventsResponse\x127google.cloud.discoveryengine.v1.PurgeUserEventsMetadata\x82\xd3\xe4\x93\x02\x9c\x01:\x01*ZT:\x01*\"O/v1/{parent=projects/*/locations/*/collections/*/dataStores/*}/userEvents:purge\"A/v1/{parent=projects/*/locations/*/dataStores/*}/userEvents:purge\x12\xc6\x03\n" +
 	"\x10ImportUserEvents\x128.google.cloud.discoveryengine.v1.ImportUserEventsRequest\x1a\x1d.google.longrunning.Operation\"\xd8\x02\xcaAt\n" +
-	"8google.cloud.discoveryengine.v1.ImportUserEventsResponse\x128google.cloud.discoveryengine.v1.ImportUserEventsMetadata\x82\xd3\xe4\x93\x02\xda\x01:\x01*ZU:\x01*\"P/v1/{parent=projects/*/locations/*/collections/*/dataStores/*}/userEvents:importZ::\x01*\"5/v1/{parent=projects/*/locations/*}/userEvents:import\"B/v1/{parent=projects/*/locations/*/dataStores/*}/userEvents:import\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x88\x02\n" +
+	"8google.cloud.discoveryengine.v1.ImportUserEventsResponse\x128google.cloud.discoveryengine.v1.ImportUserEventsMetadata\x82\xd3\xe4\x93\x02\xda\x01:\x01*ZU:\x01*\"P/v1/{parent=projects/*/locations/*/collections/*/dataStores/*}/userEvents:importZ::\x01*\"5/v1/{parent=projects/*/locations/*}/userEvents:import\"B/v1/{parent=projects/*/locations/*/dataStores/*}/userEvents:import\x1a\x90\x02\xcaA\x1ediscoveryengine.googleapis.com\xd2A\xeb\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/discoveryengine.assist.readwrite,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\x88\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B\x15UserEventServiceProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 
 var (

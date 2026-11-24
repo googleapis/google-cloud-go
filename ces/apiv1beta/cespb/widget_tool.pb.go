@@ -532,35 +532,35 @@ var File_google_cloud_ces_v1beta_widget_tool_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_widget_tool_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/ces/v1beta/widget_tool.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a-google/cloud/ces/v1beta/python_function.proto\x1a$google/cloud/ces/v1beta/schema.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xc4\f\n" +
+	")google/cloud/ces/v1beta/widget_tool.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a-google/cloud/ces/v1beta/python_function.proto\x1a$google/cloud/ces/v1beta/schema.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xd2\f\n" +
 	"\n" +
-	"WidgetTool\x12F\n" +
+	"WidgetTool\x12G\n" +
 	"\n" +
-	"parameters\x18\x04 \x01(\v2\x1f.google.cloud.ces.v1beta.SchemaB\x03\xe0A\x01H\x00R\n" +
-	"parameters\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12T\n" +
-	"\vwidget_type\x18\x03 \x01(\x0e2..google.cloud.ces.v1beta.WidgetTool.WidgetTypeB\x03\xe0A\x01R\n" +
-	"widgetType\x129\n" +
-	"\tui_config\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\buiConfig\x12W\n" +
-	"\fdata_mapping\x18\x06 \x01(\v2/.google.cloud.ces.v1beta.WidgetTool.DataMappingB\x03\xe0A\x01R\vdataMapping\x12m\n" +
-	"\x14text_response_config\x18\a \x01(\v26.google.cloud.ces.v1beta.WidgetTool.TextResponseConfigB\x03\xe0A\x01R\x12textResponseConfig\x1a\x98\x02\n" +
-	"\x12TextResponseConfig\x12T\n" +
-	"\x04type\x18\x01 \x01(\x0e2;.google.cloud.ces.v1beta.WidgetTool.TextResponseConfig.TypeB\x03\xe0A\x01R\x04type\x12$\n" +
-	"\vstatic_text\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
-	"staticText\x12?\n" +
-	"\x19text_response_instruction\x18\x03 \x01(\tB\x03\xe0A\x01R\x17textResponseInstruction\"E\n" +
+	"parameters\x18\x04 \x01(\v2\x1f.google.cloud.ces.v1beta.SchemaB\x04\xe2A\x01\x01H\x00R\n" +
+	"parameters\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12U\n" +
+	"\vwidget_type\x18\x03 \x01(\x0e2..google.cloud.ces.v1beta.WidgetTool.WidgetTypeB\x04\xe2A\x01\x01R\n" +
+	"widgetType\x12:\n" +
+	"\tui_config\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\buiConfig\x12X\n" +
+	"\fdata_mapping\x18\x06 \x01(\v2/.google.cloud.ces.v1beta.WidgetTool.DataMappingB\x04\xe2A\x01\x01R\vdataMapping\x12n\n" +
+	"\x14text_response_config\x18\a \x01(\v26.google.cloud.ces.v1beta.WidgetTool.TextResponseConfigB\x04\xe2A\x01\x01R\x12textResponseConfig\x1a\x9b\x02\n" +
+	"\x12TextResponseConfig\x12U\n" +
+	"\x04type\x18\x01 \x01(\x0e2;.google.cloud.ces.v1beta.WidgetTool.TextResponseConfig.TypeB\x04\xe2A\x01\x01R\x04type\x12%\n" +
+	"\vstatic_text\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"staticText\x12@\n" +
+	"\x19text_response_instruction\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x17textResponseInstruction\"E\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04NONE\x10\x01\x12\x11\n" +
 	"\rLLM_GENERATED\x10\x02\x12\n" +
 	"\n" +
-	"\x06STATIC\x10\x03\x1a\x81\x04\n" +
-	"\vDataMapping\x12-\n" +
-	"\x10source_tool_name\x18\x01 \x01(\tB\x03\xe0A\x01R\x0esourceToolName\x12n\n" +
-	"\x0efield_mappings\x18\x02 \x03(\v2B.google.cloud.ces.v1beta.WidgetTool.DataMapping.FieldMappingsEntryB\x03\xe0A\x01R\rfieldMappings\x12U\n" +
-	"\x0fpython_function\x18\x05 \x01(\v2'.google.cloud.ces.v1beta.PythonFunctionB\x03\xe0A\x01R\x0epythonFunction\x12M\n" +
-	"\x04mode\x18\x04 \x01(\x0e24.google.cloud.ces.v1beta.WidgetTool.DataMapping.ModeB\x03\xe0A\x01R\x04mode\x12'\n" +
+	"\x06STATIC\x10\x03\x1a\x85\x04\n" +
+	"\vDataMapping\x12.\n" +
+	"\x10source_tool_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0esourceToolName\x12o\n" +
+	"\x0efield_mappings\x18\x02 \x03(\v2B.google.cloud.ces.v1beta.WidgetTool.DataMapping.FieldMappingsEntryB\x04\xe2A\x01\x01R\rfieldMappings\x12V\n" +
+	"\x0fpython_function\x18\x05 \x01(\v2'.google.cloud.ces.v1beta.PythonFunctionB\x04\xe2A\x01\x01R\x0epythonFunction\x12N\n" +
+	"\x04mode\x18\x04 \x01(\x0e24.google.cloud.ces.v1beta.WidgetTool.DataMapping.ModeB\x04\xe2A\x01\x01R\x04mode\x12'\n" +
 	"\rpython_script\x18\x03 \x01(\tB\x02\x18\x01R\fpythonScript\x1a@\n" +
 	"\x12FieldMappingsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +

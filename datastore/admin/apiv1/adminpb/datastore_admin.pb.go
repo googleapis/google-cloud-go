@@ -1260,21 +1260,21 @@ const file_google_datastore_admin_v1_datastore_admin_proto_rawDesc = "" +
 	"\tCANCELLED\x10\a\"X\n" +
 	"\bProgress\x12%\n" +
 	"\x0ework_completed\x18\x01 \x01(\x03R\rworkCompleted\x12%\n" +
-	"\x0ework_estimated\x18\x02 \x01(\x03R\rworkEstimated\"\xcb\x02\n" +
-	"\x15ExportEntitiesRequest\x12\"\n" +
+	"\x0ework_estimated\x18\x02 \x01(\x03R\rworkEstimated\"\xcd\x02\n" +
+	"\x15ExportEntitiesRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12T\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12T\n" +
 	"\x06labels\x18\x02 \x03(\v2<.google.datastore.admin.v1.ExportEntitiesRequest.LabelsEntryR\x06labels\x12L\n" +
-	"\rentity_filter\x18\x03 \x01(\v2'.google.datastore.admin.v1.EntityFilterR\fentityFilter\x12/\n" +
-	"\x11output_url_prefix\x18\x04 \x01(\tB\x03\xe0A\x02R\x0foutputUrlPrefix\x1a9\n" +
+	"\rentity_filter\x18\x03 \x01(\v2'.google.datastore.admin.v1.EntityFilterR\fentityFilter\x120\n" +
+	"\x11output_url_prefix\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x0foutputUrlPrefix\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xbc\x02\n" +
-	"\x15ImportEntitiesRequest\x12\"\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xbe\x02\n" +
+	"\x15ImportEntitiesRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12T\n" +
-	"\x06labels\x18\x02 \x03(\v2<.google.datastore.admin.v1.ImportEntitiesRequest.LabelsEntryR\x06labels\x12 \n" +
-	"\tinput_url\x18\x03 \x01(\tB\x03\xe0A\x02R\binputUrl\x12L\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12T\n" +
+	"\x06labels\x18\x02 \x03(\v2<.google.datastore.admin.v1.ImportEntitiesRequest.LabelsEntryR\x06labels\x12!\n" +
+	"\tinput_url\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\binputUrl\x12L\n" +
 	"\rentity_filter\x18\x04 \x01(\v2'.google.datastore.admin.v1.EntityFilterR\fentityFilter\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +

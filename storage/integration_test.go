@@ -308,7 +308,7 @@ func testConfigGRPC(ctx context.Context, t *testing.T, opts ...option.ClientOpti
 // initTransportClients initializes Storage clients for each supported transport.
 func initTransportClients(ctx context.Context, t *testing.T, opts ...option.ClientOption) map[string]*Client {
 	withJSON := append(slices.Clone(opts), WithJSONReads())
-	withZonal := append(slices.Clone(opts), experimental.WithZonalBucketAPIs())
+	withZonal := append(slices.Clone(opts), WithGRPCBidiReads(), WithAppendableUploads())
 	return map[string]*Client{
 		"http": testConfig(ctx, t, opts...),
 		"grpc": testConfigGRPC(ctx, t, opts...),
@@ -1279,7 +1279,7 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 			res, err := resource.New(ctx,
 				resource.WithAttributes(
 					attribute.String("gcp.client.service", "storage"),
-					attribute.String("gcp.client.repo", "googleapis/google-cloud-go"),
+					attribute.String("gcp.client.artifact", "cloud.google.com/go/storage"),
 				),
 			)
 			if err != nil {
@@ -1295,6 +1295,7 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 			var client *Client
 			opts := []option.ClientOption{
 				experimental.WithOtelMetrics(),
+				experimental.WithOtelDebugMetrics(),
 				experimental.WithMeterProvider(provider),
 			}
 
@@ -1332,8 +1333,8 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 			if resAttrs["gcp.client.service"] != "storage" {
 				t.Errorf("expected gcp.client.service = storage, got %q", resAttrs["gcp.client.service"])
 			}
-			if resAttrs["gcp.client.repo"] != "googleapis/google-cloud-go" {
-				t.Errorf("expected gcp.client.repo = googleapis/google-cloud-go, got %q", resAttrs["gcp.client.repo"])
+			if resAttrs["gcp.client.artifact"] != "cloud.google.com/go/storage" {
+				t.Errorf("expected gcp.client.artifact = cloud.google.com/go/storage, got %q", resAttrs["gcp.client.artifact"])
 			}
 
 			// Group metrics by name.
@@ -1345,54 +1346,90 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 			}
 
 			// Check transport-level duration metric.
-			expectedMetricName := "rpc.client.call.duration"
+			expectedTransportMetric := "rpc.client.call.duration"
 			if transportType == "http" {
-				expectedMetricName = "http.client.request.duration"
+				expectedTransportMetric = "http.client.request.duration"
 			}
-			if m, ok := metricsMap[expectedMetricName]; !ok {
-				t.Errorf("expected transport metric %q not found", expectedMetricName)
-			} else {
-				hist, ok := m.Data.(metricdata.Histogram[float64])
-				if !ok {
-					t.Fatalf("expected Histogram data, got %T", m.Data)
-				}
-				if len(hist.DataPoints) == 0 {
-					t.Errorf("expected at least 1 datapoint for %q, got 0", expectedMetricName)
-				} else {
-					dp := hist.DataPoints[0]
-					attrs := make(map[string]string)
-					for _, kv := range dp.Attributes.ToSlice() {
-						attrs[string(kv.Key)] = kv.Value.Emit()
-					}
-					if attrs["server.address"] == "" {
-						t.Errorf("expected non-empty server.address")
-					}
+
+			expectedHistograms := []string{
+				expectedTransportMetric,
+				"gcp.client.request.duration",
+			}
+			expectedSums := []string{
+				"gcp.storage.client.operations",
+				"gcp.storage.client.request.active",
+			}
+			expectedNetworkMetrics := []string{
+				"gcp.storage.client.network.tcp.connect.duration",
+				"gcp.storage.client.network.tls.handshake.duration",
+			}
+			if transportType == "http" {
+				expectedNetworkMetrics = append(expectedNetworkMetrics, "gcp.storage.client.network.dns.lookup.duration")
+			}
+
+			// server.duration might not be strictly populated locally, but check it if present.
+			if m, ok := metricsMap["gcp.storage.client.server.duration"]; ok {
+				if hist, ok := m.Data.(metricdata.Histogram[float64]); !ok {
+					t.Errorf("expected Histogram data for server.duration, got %T", m.Data)
+				} else if len(hist.DataPoints) == 0 {
+					t.Errorf("expected at least 1 datapoint for gcp.storage.client.server.duration")
 				}
 			}
 
-			// Check SDK-level duration metric.
-			if m, ok := metricsMap["gcp.client.request.duration"]; !ok {
-				t.Errorf("expected metric gcp.client.request.duration not found")
-			} else {
+			for _, name := range expectedHistograms {
+				m, ok := metricsMap[name]
+				if !ok {
+					t.Errorf("expected metric %q not found", name)
+					continue
+				}
 				hist, ok := m.Data.(metricdata.Histogram[float64])
 				if !ok {
-					t.Fatalf("expected Histogram data, got %T", m.Data)
+					t.Errorf("expected Histogram data for %q, got %T", name, m.Data)
+					continue
 				}
 				if len(hist.DataPoints) == 0 {
-					t.Errorf("expected at least 1 datapoint for gcp.client.request.duration, got 0")
+					t.Errorf("expected at least 1 datapoint for %q", name)
 				}
 			}
 
-			// Check client operations metric.
-			if m, ok := metricsMap["gcp.storage.client.operations"]; !ok {
-				t.Errorf("expected metric gcp.storage.client.operations not found")
-			} else {
-				sum, ok := m.Data.(metricdata.Sum[int64])
+			for _, name := range expectedSums {
+				m, ok := metricsMap[name]
 				if !ok {
-					t.Fatalf("expected Sum data, got %T", m.Data)
+					t.Errorf("expected metric %q not found", name)
+					continue
 				}
-				if len(sum.DataPoints) == 0 {
-					t.Errorf("expected at least 1 datapoint for gcp.storage.client.operations, got 0")
+				_, ok = m.Data.(metricdata.Sum[int64])
+				if !ok {
+					t.Errorf("expected Sum data for %q, got %T", name, m.Data)
+				}
+			}
+
+			for _, name := range expectedNetworkMetrics {
+				m, ok := metricsMap[name]
+				if !ok {
+					t.Errorf("expected metric %q not found", name)
+					continue
+				}
+				hist, ok := m.Data.(metricdata.Histogram[float64])
+				if !ok {
+					t.Errorf("expected Histogram data for %q, got %T", name, m.Data)
+					continue
+				}
+				if len(hist.DataPoints) == 0 {
+					t.Errorf("expected at least 1 datapoint for %q", name)
+					continue
+				}
+
+				dp := hist.DataPoints[0]
+				attrs := make(map[string]string)
+				for _, kv := range dp.Attributes.ToSlice() {
+					attrs[string(kv.Key)] = kv.Value.Emit()
+				}
+				if attrs["server.address"] == "" {
+					t.Errorf("expected non-empty server.address for %q", name)
+				}
+				if attrs["rpc.system.name"] != transportType {
+					t.Errorf("expected rpc.system.name = %q for %q, got %q", transportType, name, attrs["rpc.system.name"])
 				}
 			}
 		})
@@ -2396,6 +2433,7 @@ func TestIntegration_MultiChunkWrite(t *testing.T) {
 		w.CRC32C = crc32c
 		// Use a 1 MB chunk size.
 		w.ChunkSize = 1 << 20
+		w.ChunkTransferTimeout = 30 * time.Second
 		w.ProgressFunc = func(p int64) {
 			t.Logf("%s: committed %d\n", t.Name(), p)
 		}
@@ -2559,6 +2597,150 @@ func TestIntegration_WriterCRC32CValidation(t *testing.T) {
 					} else {
 						t.Errorf("content mismatch: got %d bytes, want %d bytes", len(gotContent), len(tc.content))
 					}
+				}
+			})
+		}
+	})
+}
+
+func TestIntegration_AppendWriterCRC32CValidation(t *testing.T) {
+	multiTransportTest(skipAllButZonal(context.Background(), "Test for appendable writes"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
+		testCases := []struct {
+			name               string
+			content            []byte
+			finalizeOnClose    bool
+			sendCRC32C         bool
+			incorrectSendCRC   bool
+			setAppendFinalCRC  bool
+			incorrectAppendCRC bool
+			wantErr            bool
+		}{
+			{
+				name:              "append with correct final CRC. Finalize",
+				content:           bytes.Repeat([]byte("a"), 1*MiB),
+				setAppendFinalCRC: true,
+				finalizeOnClose:   true,
+			},
+			{
+				name:               "append with incorrect AppendFinalCRC32C. Finalize",
+				content:            bytes.Repeat([]byte("a"), 1*MiB),
+				setAppendFinalCRC:  true,
+				incorrectAppendCRC: true,
+				finalizeOnClose:    true,
+				wantErr:            true,
+			},
+			{
+				name:               "append with incorrect AppendFinalCRC32C. Don't finalize",
+				content:            bytes.Repeat([]byte("a"), 1*MiB),
+				setAppendFinalCRC:  true,
+				incorrectAppendCRC: true,
+				finalizeOnClose:    false,
+			},
+			{
+				name:              "append with both SendCRC32C and AppendFinalCRC32C correct. Finalize",
+				content:           bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:        true,
+				setAppendFinalCRC: true,
+				finalizeOnClose:   true,
+			},
+			{
+				name:               "append with correct SendCRC32C but incorrect AppendFinalCRC32C. Finalize",
+				content:            bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:         true,
+				setAppendFinalCRC:  true,
+				incorrectAppendCRC: true,
+				wantErr:            true,
+				finalizeOnClose:    true,
+			},
+			{
+				name:              "append with incorrect SendCRC32C but correct AppendFinalCRC32C. Finalize",
+				content:           bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:        true,
+				incorrectSendCRC:  true,
+				setAppendFinalCRC: true,
+				wantErr:           false,
+				finalizeOnClose:   true,
+			},
+			{
+				name:            "append with correct SendCRC32C but no AppendFinalCRC32C. Finalize",
+				content:         bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:      true,
+				finalizeOnClose: true,
+			},
+			{
+				name:             "append with incorrect SendCRC32C but no AppendFinalCRC32C. Finalize",
+				content:          bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:       true,
+				incorrectSendCRC: true,
+				finalizeOnClose:  true,
+				wantErr:          true,
+			},
+			{
+				name:             "append with incorrect SendCRC32C but no AppendFinalCRC32C. Don't finalize",
+				content:          bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:       true,
+				incorrectSendCRC: true,
+				finalizeOnClose:  false,
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				correctCRC32C := crc32.Checksum(tc.content, crc32cTable)
+				obj := client.Bucket(bucket).Object(uidSpaceObjects.New())
+				t.Cleanup(func() {
+					h.mustDeleteObject(obj)
+				})
+
+				w := obj.NewWriter(ctx)
+				w.Append = true
+				w.FinalizeOnClose = tc.finalizeOnClose
+				if tc.sendCRC32C {
+					w.SendCRC32C = true
+					if tc.incorrectSendCRC {
+						w.CRC32C = correctCRC32C + 1
+					} else {
+						w.CRC32C = correctCRC32C
+					}
+				}
+
+				if _, err := w.Write(tc.content); err != nil {
+					t.Fatalf("Writer.Write: %v", err)
+				}
+				// Provide CRC after write, before close.
+				if tc.setAppendFinalCRC {
+					w.SendAppendFinalCRC32C = true
+					if tc.incorrectAppendCRC {
+						w.AppendFinalCRC32C = correctCRC32C + 1
+					} else {
+						w.AppendFinalCRC32C = correctCRC32C
+					}
+				}
+				err := w.Close()
+
+				if tc.wantErr {
+					if !errorIsStatusCode(err, http.StatusBadRequest, codes.InvalidArgument) {
+						t.Fatalf("expected an InvalidArgument error for incorrect checksum, but got %v", err)
+					}
+					return
+				}
+				if err != nil {
+					t.Fatalf("Writer.Close: %v", err)
+				}
+
+				// Verify content.
+				r, err := obj.NewReader(ctx)
+				if err != nil {
+					t.Fatalf("NewReader failed: %v", err)
+				}
+				defer r.Close()
+				gotContent, err := io.ReadAll(r)
+				if err != nil {
+					t.Fatalf("ReadAll failed: %v", err)
+				}
+				if !bytes.Equal(gotContent, tc.content) {
+					t.Errorf("content mismatch: got %d bytes, want %d bytes", len(gotContent), len(tc.content))
 				}
 			})
 		}
@@ -4357,6 +4539,9 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 			takeoverFlushOffset  int64
 			opts                 *AppendableWriterOpts
 			checkProgressOffsets []int64
+			sendFinalAppendCRC   bool
+			incorrectAppendCRC   bool
+			wantErr              bool
 		}{
 			{
 				name:           "first message takeover w/large flush",
@@ -4433,6 +4618,53 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 					FinalizeOnClose: true,
 				},
 			},
+			{
+				name:           "takeover and finalize with incorrect initial CRC",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize:       4 * MiB,
+					FinalizeOnClose: true,
+					SendCRC32C:      true,
+					CRC32C:          1234,
+				},
+				wantErr: true,
+			},
+			{
+				name:           "takeover and finalize with incorrect FinalAppendCRC",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize:       4 * MiB,
+					FinalizeOnClose: true,
+				},
+				sendFinalAppendCRC: true,
+				incorrectAppendCRC: true,
+				wantErr:            true,
+			},
+			{
+				name:           "takeover and finalize with correct FinalAppendCRC",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize:       4 * MiB,
+					FinalizeOnClose: true,
+				},
+				sendFinalAppendCRC: true,
+				wantErr:            false,
+			},
+			{
+				name:           "takeover and finalize with incorrect inital CRC but correct FinalAppendCRC",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize:       4 * MiB,
+					FinalizeOnClose: true,
+					CRC32C:          1234,
+				},
+				sendFinalAppendCRC: true,
+				wantErr:            false,
+			},
 		}
 		for _, tc := range testCases {
 			t.Run(tc.name, func(t *testing.T) {
@@ -4500,7 +4732,28 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				}
 
 				// Write remainder of the content and close.
-				h.mustWrite(w2, tc.content[remainingOffset:])
+				if _, err := w2.Write(tc.content[remainingOffset:]); err != nil && !tc.wantErr {
+					t.Fatalf("w2.Write: %v", err)
+				}
+				actualCRC := crc32.Checksum(tc.content, crc32cTable)
+				if tc.sendFinalAppendCRC {
+					w2.SendAppendFinalCRC32C = true
+					if tc.incorrectAppendCRC {
+						w2.AppendFinalCRC32C = actualCRC + 1
+					} else {
+						w2.AppendFinalCRC32C = actualCRC
+					}
+				}
+				err = w2.Close()
+				if tc.wantErr {
+					if err == nil || !errorIsStatusCode(err, http.StatusBadRequest, codes.InvalidArgument) {
+						t.Fatalf("expected an InvalidArgument error for incorrect CRC, but got %v", err)
+					}
+					return
+				}
+				if err != nil {
+					t.Fatalf("w2.Close: %v", err)
+				}
 
 				// Download content again and validate.
 				// Disabled due to b/395944605; unskip after this is resolved.
@@ -6600,6 +6853,25 @@ func TestIntegration_KMS(t *testing.T) {
 		src.Delete(ctx)
 		dest.Delete(ctx)
 
+		// Compose two objects into a destination encrypted with a CMEK.
+		compSrc1 := bkt.Object("kms-compose-src1")
+		compSrc2 := bkt.Object("kms-compose-src2")
+		compDst := bkt.Object("kms-compose-dst")
+		write(compSrc1, true)
+		write(compSrc2, true)
+		comp := compDst.ComposerFrom(compSrc1, compSrc2)
+		comp.KMSKeyName = keyName1
+		compAttrs, err := comp.Run(ctx)
+		if err != nil {
+			t.Fatalf("Composer.Run: %v", err)
+		}
+		if !strings.HasPrefix(compAttrs.KMSKeyName, keyName1) {
+			t.Errorf("compAttrs.KMSKeyName = %q, want prefix %q", compAttrs.KMSKeyName, keyName1)
+		}
+		compSrc1.Delete(ctx)
+		compSrc2.Delete(ctx)
+		compDst.Delete(ctx)
+
 		// Create a bucket with a default key, then write and read an object.
 		bkt = client.Bucket(prefix + uidSpace.New())
 		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
@@ -6971,6 +7243,11 @@ func TestIntegration_Reader(t *testing.T) {
 			{"entire object", 0, objlen, objlen},
 			{"first half of object", 0, objlen / 2, objlen / 2},
 			{"second half of object", objlen / 2, objlen, objlen / 2},
+			// Ranges at a non-zero offset whose length ends before the object
+			// does.
+			{"middle of object - offset smaller than length", objlen / 4, objlen / 2, objlen / 2},
+			{"middle of object - offset larger than length", objlen / 2, objlen / 4, objlen / 4},
+			{"length past end of object", objlen / 2, 3 * objlen / 4, objlen - objlen/2},
 			{"no bytes - start at beginning", 0, 0, 0},
 			{"no bytes - start halfway through", objlen / 2, 0, 0},
 			{"start halfway through - use negative to get rest of obj", objlen / 2, -1, objlen / 2},
@@ -9108,26 +9385,26 @@ func TestIntegration_ParallelUpload(t *testing.T) {
 			{
 				name:     "small object",
 				content:  bytes.Repeat([]byte("a"), 1<<20), // 1 MiB
-				config:   ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 2},
+				config:   ParallelUploadConfig{PartSize: 8 << 20, MaxConcurrency: 2},
 				expected: 1 << 20,
 			},
 			{
 				name:     "exact part size",
-				content:  bytes.Repeat([]byte("b"), 5<<20), // 5 MiB
-				config:   ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 2},
-				expected: 5 << 20,
+				content:  bytes.Repeat([]byte("b"), 8<<20), // 8 MiB
+				config:   ParallelUploadConfig{PartSize: 8 << 20, MaxConcurrency: 2},
+				expected: 8 << 20,
 			},
 			{
 				name:     "large object",
-				content:  bytes.Repeat([]byte("c"), 12<<20), // 12 MiB
-				config:   ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 4},
-				expected: 12 << 20,
+				content:  bytes.Repeat([]byte("c"), 18<<20), // 18 MiB
+				config:   ParallelUploadConfig{PartSize: 8 << 20, MaxConcurrency: 4},
+				expected: 18 << 20,
 			},
 			{
 				name:     "recursive composition logic",
-				content:  bytes.Repeat([]byte("d"), 165<<20), // 165 MiB = 33 parts of 5 MiB each (tests recursive compose)
-				config:   ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 16},
-				expected: 165 << 20,
+				content:  bytes.Repeat([]byte("d"), 264<<20), // 264 MiB = 33 parts of 8 MiB each (tests recursive compose)
+				config:   ParallelUploadConfig{PartSize: 8 << 20, MaxConcurrency: 16},
+				expected: 264 << 20,
 			},
 		}
 
@@ -9192,7 +9469,7 @@ func TestIntegration_ParallelUpload(t *testing.T) {
 							return err
 						}
 						// Only count temporary chunks belonging to this specific test object to avoid test flakes.
-						if strings.Contains(attrsObj.Name, objName) {
+						if strings.Contains(attrsObj.Name, objectNameDigest(objName)) {
 							count++
 						}
 					}
@@ -9219,8 +9496,8 @@ func TestIntegration_ParallelUploadConcurrency(t *testing.T) {
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		h := testHelper{t}
 
-		content := bytes.Repeat([]byte("z"), 15<<20) // 15 MiB
-		config := ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 4}
+		content := bytes.Repeat([]byte("z"), 24<<20) // 24 MiB
+		config := ParallelUploadConfig{PartSize: 8 << 20, MaxConcurrency: 4}
 
 		var wg sync.WaitGroup
 		numUploads := 5
@@ -9269,12 +9546,86 @@ func TestIntegration_ParallelUploadConcurrency(t *testing.T) {
 	})
 }
 
+// TestIntegration_ParallelUpload_Encryption verifies that parallel uploads with a
+// customer-supplied encryption key or a Cloud KMS key succeed and that the
+// final object is encrypted with the configured key.
+func TestIntegration_ParallelUpload_Encryption(t *testing.T) {
+	ctx := skipZonalBucket(skipExtraReadAPIs(skipHTTP("PCU only supported for gRPC"), "no read API variants needed"), "ZB does not support CSEK or KMS")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
+
+		keyRingName := os.Getenv("GCLOUD_TESTS_GOLANG_KEYRING")
+		if keyRingName == "" {
+			t.Fatal("GCLOUD_TESTS_GOLANG_KEYRING must be set. See CONTRIBUTING.md for details")
+		}
+		kmsKeyName := keyRingName + "/cryptoKeys/key1"
+		csek := []byte("my-secret-AES-256-encryption-key")
+		csekHash := sha256.Sum256(csek)
+		csekHashB64 := base64.StdEncoding.EncodeToString(csekHash[:])
+
+		const partSize = 8 << 20
+		testCases := []struct {
+			name       string
+			size       int
+			csek       []byte
+			kmsKeyName string
+		}{
+			{name: "csek_single_level", size: 18 << 20, csek: csek},
+			{name: "kms_single_level", size: 18 << 20, kmsKeyName: kmsKeyName},
+			// 33 parts exceed the compose limit and exercise intermediate composites.
+			{name: "csek_multi_level", size: 33 * partSize, csek: csek},
+			{name: "kms_multi_level", size: 33 * partSize, kmsKeyName: kmsKeyName},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				content := bytes.Repeat([]byte("e"), tc.size)
+				obj := client.Bucket(bucket).Object("pcu-enc-" + uidSpaceObjects.New())
+				if len(tc.csek) > 0 {
+					obj = obj.Key(tc.csek)
+				}
+				t.Cleanup(func() {
+					h.mustDeleteObject(obj)
+				})
+
+				w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
+				w.EnableParallelUpload = true
+				w.ParallelUploadConfig = ParallelUploadConfig{PartSize: partSize, MaxConcurrency: 16}
+				w.KMSKeyName = tc.kmsKeyName
+				if _, err := w.Write(content); err != nil {
+					t.Fatalf("Writer.Write: %v", err)
+				}
+				if err := w.Close(); err != nil {
+					t.Fatalf("Writer.Close: %v", err)
+				}
+
+				attrs := h.mustObjectAttrs(obj)
+				if attrs.Size != int64(tc.size) {
+					t.Errorf("attrs.Size = %d, want %d", attrs.Size, tc.size)
+				}
+				if len(tc.csek) > 0 && attrs.CustomerKeySHA256 != csekHashB64 {
+					t.Errorf("attrs.CustomerKeySHA256 = %q, want %q", attrs.CustomerKeySHA256, csekHashB64)
+				}
+				if tc.kmsKeyName != "" && !strings.HasPrefix(attrs.KMSKeyName, tc.kmsKeyName) {
+					t.Errorf("attrs.KMSKeyName = %q, want prefix %q", attrs.KMSKeyName, tc.kmsKeyName)
+				}
+				if tc.kmsKeyName == "" && attrs.KMSKeyName != "" {
+					t.Errorf("attrs.KMSKeyName = %q, want empty", attrs.KMSKeyName)
+				}
+				if got := h.mustRead(obj); !bytes.Equal(got, content) {
+					t.Errorf("read %d bytes that differ from the %d bytes written", len(got), len(content))
+				}
+			})
+		}
+	})
+}
+
 func TestIntegration_ParallelUpload_ChecksumValidation(t *testing.T) {
 	ctx := skipExtraReadAPIs(skipHTTP("PCU only supported for gRPC"), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		h := testHelper{t}
 
-		content := bytes.Repeat([]byte("z"), 12<<20) // 12 MiB
+		content := bytes.Repeat([]byte("z"), 18<<20) // 18 MiB
 		correctCRC := crc32.Checksum(content, crc32cTable)
 
 		testCases := []struct {
@@ -9304,7 +9655,7 @@ func TestIntegration_ParallelUpload_ChecksumValidation(t *testing.T) {
 
 				w := obj.NewWriter(ctx)
 				w.EnableParallelUpload = true
-				w.ParallelUploadConfig = ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 2}
+				w.ParallelUploadConfig = ParallelUploadConfig{PartSize: 8 << 20, MaxConcurrency: 2}
 				w.SendCRC32C = true
 				w.CRC32C = tc.crc32c
 
@@ -9490,7 +9841,7 @@ func TestIntegration_ClientTracing(t *testing.T) {
 			}
 
 			// First call should have placeholder.
-			verifySpanAttributes(t, attrsSpan, "projects/_/buckets/"+bucketName, "global")
+			verifySpanAttributes(t, attrsSpan, storageResourceNamePrefix+"projects/_/buckets/"+bucketName, "global")
 
 			// Wait for background fetch to complete and populate cache.
 			select {
@@ -9524,7 +9875,7 @@ func TestIntegration_ClientTracing(t *testing.T) {
 			}
 
 			// Second call should have resolved attributes.
-			verifySpanAttributes(t, attrsSpan, fmt.Sprintf("projects/%d/buckets/%s", bAttrs.ProjectNumber, bucketName), "us-east1")
+			verifySpanAttributes(t, attrsSpan, fmt.Sprintf(storageResourceNamePrefix+"projects/%d/buckets/%s", bAttrs.ProjectNumber, bucketName), "us-east1")
 		})
 	}
 }

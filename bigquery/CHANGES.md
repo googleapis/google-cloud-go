@@ -3,6 +3,94 @@
 
 
 
+## [1.86.3](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.86.2...bigquery/v1.86.3) (2026-11-17)
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** Finalize retries on closed writer ([#20743](https://github.com/googleapis/google-cloud-go/issues/20743)) ([4bdbcb7](https://github.com/googleapis/google-cloud-go/commit/4bdbcb75c619e1e028c148cd8c1fe2751d089120))
+* **bigquery/storage/managedwriter:** Release detached multiplexed writers ([#20806](https://github.com/googleapis/google-cloud-go/issues/20806)) ([7b724e4](https://github.com/googleapis/google-cloud-go/commit/7b724e45e22657a8779b6499049cbc6272719ecb))
+
+## [1.86.2](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.86.1...bigquery/v1.86.2) (2026-11-05)
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** Back off once per failed stream ([#20809](https://github.com/googleapis/google-cloud-go/issues/20809)) ([831f6b3](https://github.com/googleapis/google-cloud-go/commit/831f6b383a9082567c694428ffb4035878c9e5c1)), refs [#20808](https://github.com/googleapis/google-cloud-go/issues/20808)
+
+## [1.86.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.86.0...bigquery/v1.86.1) (2026-10-28)
+
+
+### Bug Fixes
+
+* Adds additional validation for REST RPC requests ([#20753](https://github.com/googleapis/google-cloud-go/issues/20753)) ([7827181](https://github.com/googleapis/google-cloud-go/commit/7827181e7cb653fb69645c538b162b2c7490b0bb))
+
+## [1.86.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.85.0...bigquery/v1.86.0) (2026-10-22)
+
+
+### Features
+
+* Update API sources and regenerate ([#20728](https://github.com/googleapis/google-cloud-go/issues/20728)) ([ab1da9d](https://github.com/googleapis/google-cloud-go/commit/ab1da9d200416594ae18fa7a2944961f1c92c928))
+
+## [1.85.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.84.0...bigquery/v1.85.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+
+### Bug Fixes
+
+* **various:** Address format directive issues ([#20547](https://github.com/googleapis/google-cloud-go/issues/20547)) ([e2e1047](https://github.com/googleapis/google-cloud-go/commit/e2e104731999b3bfc75ed0b8f2d71844ced3b073))
+
+## [1.84.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.83.0...bigquery/v1.84.0) (2026-09-17)
+
+
+### Features
+
+* **bigquery:** Add JobCreationMode to QueryConfig to allow per query override ([#20510](https://github.com/googleapis/google-cloud-go/issues/20510)) ([953f5cc](https://github.com/googleapis/google-cloud-go/commit/953f5ccb679e8628992b6d25dd3190731f434060))
+
+
+### Bug Fixes
+
+* **bigquery:** Plumb query ID on polls ([#20512](https://github.com/googleapis/google-cloud-go/issues/20512)) ([ebb729d](https://github.com/googleapis/google-cloud-go/commit/ebb729d1e6b60156ee1b6c4a2b295a0ed1e77243)), refs [#20435](https://github.com/googleapis/google-cloud-go/issues/20435)
+
+## [1.83.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.82.0...bigquery/v1.83.0) (2026-09-02)
+
+
+### Features
+
+* Update API sources and regenerate ([#20459](https://github.com/googleapis/google-cloud-go/issues/20459)) ([5426e32](https://github.com/googleapis/google-cloud-go/commit/5426e32154fdced65087675b6c37aba66436ac47))
+
+## [1.82.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.81.0...bigquery/v1.82.0) (2026-08-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20427](https://github.com/googleapis/google-cloud-go/issues/20427)) ([eb07af9](https://github.com/googleapis/google-cloud-go/commit/eb07af97288cb3446ef50ff1806c7bc12d5c6350))
+
+## [1.81.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.80.0...bigquery/v1.81.0) (2026-08-20)
+
+
+### Features
+
+* Update sources and regenerate ([#20399](https://github.com/googleapis/google-cloud-go/issues/20399)) ([a6b5cdb](https://github.com/googleapis/google-cloud-go/commit/a6b5cdb4eec5e66fb6bb4a00f9ec89c088826e26))
+
+## [1.80.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.79.1...bigquery/v1.80.0) (2026-08-13)
+
+
+### Features
+
+* Update API sources and regenerate ([#20369](https://github.com/googleapis/google-cloud-go/issues/20369)) ([bfe3aaf](https://github.com/googleapis/google-cloud-go/commit/bfe3aafc49e0c13815aa0401b1eba47aef4511df))
+
+## [1.79.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.79.0...bigquery/v1.79.1) (2026-08-07)
+
+
+### Bug Fixes
+
+* **bigquery:** Preserve SourceJob and QueryID when Storage API used ([#20314](https://github.com/googleapis/google-cloud-go/issues/20314)) ([8fc01f2](https://github.com/googleapis/google-cloud-go/commit/8fc01f282c4d4aafb8a82553645ba3aa5e8f2efc))
+
 ## [1.79.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.78.0...bigquery/v1.79.0) (2026-07-13)
 
 

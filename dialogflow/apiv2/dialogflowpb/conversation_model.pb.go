@@ -2062,19 +2062,19 @@ var File_google_cloud_dialogflow_v2_conversation_model_proto protoreflect.FileDe
 
 const file_google_cloud_dialogflow_v2_conversation_model_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/dialogflow/v2/conversation_model.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa1\t\n" +
+	"3google/cloud/dialogflow/v2/conversation_model.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa7\t\n" +
 	"\x11ConversationModel\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12I\n" +
-	"\bdatasets\x18\x04 \x03(\v2(.google.cloud.dialogflow.v2.InputDatasetB\x03\xe0A\x02R\bdatasets\x12N\n" +
-	"\x05state\x18\a \x01(\x0e23.google.cloud.dialogflow.v2.ConversationModel.StateB\x03\xe0A\x03R\x05state\x12#\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12J\n" +
+	"\bdatasets\x18\x04 \x03(\v2(.google.cloud.dialogflow.v2.InputDatasetB\x04\xe2A\x01\x02R\bdatasets\x12O\n" +
+	"\x05state\x18\a \x01(\x0e23.google.cloud.dialogflow.v2.ConversationModel.StateB\x04\xe2A\x01\x03R\x05state\x12#\n" +
 	"\rlanguage_code\x18\x13 \x01(\tR\flanguageCode\x12\x87\x01\n" +
 	"!article_suggestion_model_metadata\x18\b \x01(\v2:.google.cloud.dialogflow.v2.ArticleSuggestionModelMetadataH\x00R\x1earticleSuggestionModelMetadata\x12r\n" +
-	"\x1asmart_reply_model_metadata\x18\t \x01(\v23.google.cloud.dialogflow.v2.SmartReplyModelMetadataH\x00R\x17smartReplyModelMetadata\x12-\n" +
-	"\rsatisfies_pzs\x18\x19 \x01(\bB\x03\xe0A\x03H\x01R\fsatisfiesPzs\x88\x01\x01\x12-\n" +
-	"\rsatisfies_pzi\x18\x1a \x01(\bB\x03\xe0A\x03H\x02R\fsatisfiesPzi\x88\x01\x01\"\x91\x01\n" +
+	"\x1asmart_reply_model_metadata\x18\t \x01(\v23.google.cloud.dialogflow.v2.SmartReplyModelMetadataH\x00R\x17smartReplyModelMetadata\x12.\n" +
+	"\rsatisfies_pzs\x18\x19 \x01(\bB\x04\xe2A\x01\x03H\x01R\fsatisfiesPzs\x88\x01\x01\x12.\n" +
+	"\rsatisfies_pzi\x18\x1a \x01(\bB\x04\xe2A\x01\x03H\x02R\fsatisfiesPzi\x88\x01\x01\"\x91\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\x0e\n" +
@@ -2094,76 +2094,76 @@ const file_google_cloud_dialogflow_v2_conversation_model_proto_rawDesc = "" +
 	"+dialogflow.googleapis.com/ConversationModel\x12Oprojects/{project}/locations/{location}/conversationModels/{conversation_model}\x12:projects/{project}/conversationModels/{conversation_model}B\x10\n" +
 	"\x0emodel_metadataB\x10\n" +
 	"\x0e_satisfies_pzsB\x10\n" +
-	"\x0e_satisfies_pzi\"\xac\x05\n" +
+	"\x0e_satisfies_pzi\"\xb1\x05\n" +
 	"\x1bConversationModelEvaluation\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12^\n" +
-	"\x11evaluation_config\x18\x06 \x01(\v2,.google.cloud.dialogflow.v2.EvaluationConfigB\x03\xe0A\x01R\x10evaluationConfig\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12d\n" +
-	"\x13smart_reply_metrics\x18\x05 \x01(\v2-.google.cloud.dialogflow.v2.SmartReplyMetricsB\x03\xe0A\x03H\x00R\x11smartReplyMetrics\x12A\n" +
-	"\x1braw_human_eval_template_csv\x18\b \x01(\tB\x03\xe0A\x03R\x17rawHumanEvalTemplateCsv:\xfa\x01\xeaA\xf6\x01\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12_\n" +
+	"\x11evaluation_config\x18\x06 \x01(\v2,.google.cloud.dialogflow.v2.EvaluationConfigB\x04\xe2A\x01\x01R\x10evaluationConfig\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12e\n" +
+	"\x13smart_reply_metrics\x18\x05 \x01(\v2-.google.cloud.dialogflow.v2.SmartReplyMetricsB\x04\xe2A\x01\x03H\x00R\x11smartReplyMetrics\x12B\n" +
+	"\x1braw_human_eval_template_csv\x18\b \x01(\tB\x04\xe2A\x01\x03R\x17rawHumanEvalTemplateCsv:\xfa\x01\xeaA\xf6\x01\n" +
 	"5dialogflow.googleapis.com/ConversationModelEvaluation\x12Sprojects/{project}/conversationModels/{conversation_model}/evaluations/{evaluation}\x12hprojects/{project}/locations/{location}/conversationModels/{conversation_model}/evaluations/{evaluation}B\t\n" +
-	"\ametrics\"\x94\x05\n" +
-	"\x10EvaluationConfig\x12I\n" +
-	"\bdatasets\x18\x03 \x03(\v2(.google.cloud.dialogflow.v2.InputDatasetB\x03\xe0A\x02R\bdatasets\x12m\n" +
+	"\ametrics\"\x97\x05\n" +
+	"\x10EvaluationConfig\x12J\n" +
+	"\bdatasets\x18\x03 \x03(\v2(.google.cloud.dialogflow.v2.InputDatasetB\x04\xe2A\x01\x02R\bdatasets\x12m\n" +
 	"\x12smart_reply_config\x18\x02 \x01(\v2=.google.cloud.dialogflow.v2.EvaluationConfig.SmartReplyConfigH\x00R\x10smartReplyConfig\x12s\n" +
-	"\x14smart_compose_config\x18\x04 \x01(\v2?.google.cloud.dialogflow.v2.EvaluationConfig.SmartComposeConfigH\x00R\x12smartComposeConfig\x1a\x99\x01\n" +
+	"\x14smart_compose_config\x18\x04 \x01(\v2?.google.cloud.dialogflow.v2.EvaluationConfig.SmartComposeConfigH\x00R\x12smartComposeConfig\x1a\x9a\x01\n" +
 	"\x10SmartReplyConfig\x12V\n" +
 	"\x12allowlist_document\x18\x01 \x01(\tB'\xfaA$\n" +
-	"\"dialogflow.googleapis.com/DocumentR\x11allowlistDocument\x12-\n" +
-	"\x10max_result_count\x18\x02 \x01(\x05B\x03\xe0A\x02R\x0emaxResultCount\x1a\x9b\x01\n" +
+	"\"dialogflow.googleapis.com/DocumentR\x11allowlistDocument\x12.\n" +
+	"\x10max_result_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x0emaxResultCount\x1a\x9c\x01\n" +
 	"\x12SmartComposeConfig\x12V\n" +
 	"\x12allowlist_document\x18\x01 \x01(\tB'\xfaA$\n" +
-	"\"dialogflow.googleapis.com/DocumentR\x11allowlistDocument\x12-\n" +
-	"\x10max_result_count\x18\x02 \x01(\x05B\x03\xe0A\x02R\x0emaxResultCountB\x17\n" +
-	"\x15model_specific_config\"_\n" +
-	"\fInputDataset\x12O\n" +
-	"\adataset\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-dialogflow.googleapis.com/ConversationDatasetR\adataset\"\x8e\x01\n" +
-	"\x1eArticleSuggestionModelMetadata\x12l\n" +
-	"\x13training_model_type\x18\x03 \x01(\x0e27.google.cloud.dialogflow.v2.ConversationModel.ModelTypeB\x03\xe0A\x01R\x11trainingModelType\"\x87\x01\n" +
-	"\x17SmartReplyModelMetadata\x12l\n" +
-	"\x13training_model_type\x18\x06 \x01(\x0e27.google.cloud.dialogflow.v2.ConversationModel.ModelTypeB\x03\xe0A\x01R\x11trainingModelType\"\x85\x02\n" +
+	"\"dialogflow.googleapis.com/DocumentR\x11allowlistDocument\x12.\n" +
+	"\x10max_result_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x0emaxResultCountB\x17\n" +
+	"\x15model_specific_config\"`\n" +
+	"\fInputDataset\x12P\n" +
+	"\adataset\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-dialogflow.googleapis.com/ConversationDatasetR\adataset\"\x8f\x01\n" +
+	"\x1eArticleSuggestionModelMetadata\x12m\n" +
+	"\x13training_model_type\x18\x03 \x01(\x0e27.google.cloud.dialogflow.v2.ConversationModel.ModelTypeB\x04\xe2A\x01\x01R\x11trainingModelType\"\x88\x01\n" +
+	"\x17SmartReplyModelMetadata\x12m\n" +
+	"\x13training_model_type\x18\x06 \x01(\x0e27.google.cloud.dialogflow.v2.ConversationModel.ModelTypeB\x04\xe2A\x01\x01R\x11trainingModelType\"\x85\x02\n" +
 	"\x11SmartReplyMetrics\x12-\n" +
 	"\x12allowlist_coverage\x18\x01 \x01(\x02R\x11allowlistCoverage\x12]\n" +
 	"\rtop_n_metrics\x18\x02 \x03(\v29.google.cloud.dialogflow.v2.SmartReplyMetrics.TopNMetricsR\vtopNMetrics\x12-\n" +
 	"\x12conversation_count\x18\x03 \x01(\x03R\x11conversationCount\x1a3\n" +
 	"\vTopNMetrics\x12\f\n" +
 	"\x01n\x18\x01 \x01(\x05R\x01n\x12\x16\n" +
-	"\x06recall\x18\x02 \x01(\x02R\x06recall\"\x9b\x01\n" +
+	"\x06recall\x18\x02 \x01(\x02R\x06recall\"\x9c\x01\n" +
 	"\x1eCreateConversationModelRequest\x12\x16\n" +
-	"\x06parent\x18\x01 \x01(\tR\x06parent\x12a\n" +
-	"\x12conversation_model\x18\x02 \x01(\v2-.google.cloud.dialogflow.v2.ConversationModelB\x03\xe0A\x02R\x11conversationModel\"6\n" +
-	"\x1bGetConversationModelRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"\x82\x01\n" +
-	"\x1dListConversationModelsRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x06parent\x18\x01 \x01(\tR\x06parent\x12b\n" +
+	"\x12conversation_model\x18\x02 \x01(\v2-.google.cloud.dialogflow.v2.ConversationModelB\x04\xe2A\x01\x02R\x11conversationModel\"7\n" +
+	"\x1bGetConversationModelRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\"\x85\x01\n" +
+	"\x1dListConversationModelsRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa8\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa8\x01\n" +
 	"\x1eListConversationModelsResponse\x12^\n" +
 	"\x13conversation_models\x18\x01 \x03(\v2-.google.cloud.dialogflow.v2.ConversationModelR\x12conversationModels\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"9\n" +
-	"\x1eDeleteConversationModelRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"9\n" +
-	"\x1eDeployConversationModelRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\";\n" +
-	" UndeployConversationModelRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"@\n" +
-	"%GetConversationModelEvaluationRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"\x8c\x01\n" +
-	"'ListConversationModelEvaluationsRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\":\n" +
+	"\x1eDeleteConversationModelRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\":\n" +
+	"\x1eDeployConversationModelRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\"<\n" +
+	" UndeployConversationModelRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\"A\n" +
+	"%GetConversationModelEvaluationRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\"\x8f\x01\n" +
+	"'ListConversationModelEvaluationsRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xd1\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xd1\x01\n" +
 	"(ListConversationModelEvaluationsResponse\x12}\n" +
 	"\x1econversation_model_evaluations\x18\x01 \x03(\v27.google.cloud.dialogflow.v2.ConversationModelEvaluationR\x1cconversationModelEvaluations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x84\x02\n" +
-	"(CreateConversationModelEvaluationRequest\x12U\n" +
-	"\x06parent\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\x125dialogflow.googleapis.com/ConversationModelEvaluationR\x06parent\x12\x80\x01\n" +
-	"\x1dconversation_model_evaluation\x18\x02 \x01(\v27.google.cloud.dialogflow.v2.ConversationModelEvaluationB\x03\xe0A\x02R\x1bconversationModelEvaluation\"\xa6\x03\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x86\x02\n" +
+	"(CreateConversationModelEvaluationRequest\x12V\n" +
+	"\x06parent\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\x125dialogflow.googleapis.com/ConversationModelEvaluationR\x06parent\x12\x81\x01\n" +
+	"\x1dconversation_model_evaluation\x18\x02 \x01(\v27.google.cloud.dialogflow.v2.ConversationModelEvaluationB\x04\xe2A\x01\x02R\x1bconversationModelEvaluation\"\xa6\x03\n" +
 	"(CreateConversationModelOperationMetadata\x12-\n" +
 	"\x12conversation_model\x18\x01 \x01(\tR\x11conversationModel\x12`\n" +
 	"\x05state\x18\x02 \x01(\x0e2J.google.cloud.dialogflow.v2.CreateConversationModelOperationMetadata.StateR\x05state\x12;\n" +

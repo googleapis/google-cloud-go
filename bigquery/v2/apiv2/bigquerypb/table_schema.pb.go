@@ -451,20 +451,20 @@ type TableFieldSchema struct {
 	PolicyTags *TableFieldSchema_PolicyTagList `protobuf:"bytes,9,opt,name=policy_tags,json=policyTags,proto3" json:"policy_tags,omitempty"`
 	// Optional. Specifies the data governance tags on this field. This field
 	// works with other column-level security fields as follows:
-	//   - Precedence: If a data governance tag is attached to a column, it takes
-	//     precedence over the policy tag attached to the column.
-	//     However, if a data policy is attached to a column, it takes precedence
-	//     over the data governance tag.
 	//
-	// - Patching behavior (how this field behaves during a `Table.patch` schema
-	// update):
-	//   - Unset: If the `data_governance_tags_info` field is omitted
-	//     from the update request, the existing tags on the column are preserved.
-	//   - Empty Field: To clear data governance tags from a column, send the
-	//     `data_governance_tags_info` field as an empty object. This will remove
-	//     all tags from the column.
-	//   - Updating tags: To replace existing tag, send the field with the
-	//     new tag.
+	//   - **Precedence**: If a data governance tag is attached to a column, it
+	//     takes precedence over the policy tag attached to the column. However,
+	//     if a data policy is attached to a column, it takes precedence over the
+	//     data governance tag.
+	//   - **Patching behavior**: Describes how this field behaves during a
+	//     `Table.patch` schema update:
+	//   - **Unset**: If the `data_governance_tags_info` field is omitted from
+	//     the update request, the existing tags on the column are preserved.
+	//   - **Empty Field**: To clear data governance tags from a column, send
+	//     the `data_governance_tags_info` field as an empty object. This
+	//     removes all tags from the column.
+	//   - **Updating tags**: To replace an existing tag, send the field with
+	//     the new tag.
 	DataGovernanceTagsInfo *TableFieldSchema_DataGovernanceTagsInfo `protobuf:"bytes,30,opt,name=data_governance_tags_info,json=dataGovernanceTagsInfo,proto3" json:"data_governance_tags_info,omitempty"`
 	// Optional. Data policies attached to this field, used for field-level access
 	// control.
@@ -775,14 +775,14 @@ type TableFieldSchema_DataGovernanceTagsInfo struct {
 	// Optional. The data governance tags added to this field are used for
 	// field-level access control. Only one data governance tag is currently
 	// supported on a field. Tag keys are globally unique. Tag key is expected
-	// to be in the namespaced format, for example "123456789012/pii" where
-	// 123456789012 is the ID of the parent organization or project resource for
+	// to be in the namespaced format, for example "parent-id/pii" where
+	// parent-id is the ID of the parent organization or project resource for
 	// this tag key. Tag value is expected to be the short name, for example
 	// "sensitive". See [Tag
 	// definitions](https://cloud.google.com/iam/docs/tags-access-control#definitions)
 	// for more details. For example:
 	//
-	//	"123456789012/pii": "sensitive",
+	//	"parent-id/pii": "sensitive",
 	//	"myProject/cost_center": "sales"
 	DataGovernanceTags map[string]string `protobuf:"bytes,1,rep,name=data_governance_tags,json=dataGovernanceTags,proto3" json:"data_governance_tags,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields      protoimpl.UnknownFields
@@ -876,8 +876,8 @@ func (x *TableFieldSchema_FieldElementType) GetType() string {
 // Definition of the expression used to generate the field.
 type TableFieldSchema_GeneratedExpressionInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Optional. The generation expression (e.g. AI.EMBED(...)) used to
-	// generated the field.
+	// Optional. The generation expression (e.g. AI.EMBED(...)) used to generate
+	// the field.
 	GenerationExpression *string `protobuf:"bytes,1,opt,name=generation_expression,json=generationExpression,proto3,oneof" json:"generation_expression,omitempty"`
 	// Optional. Whether the column generation is done asynchronously.
 	Asynchronous *bool `protobuf:"varint,2,opt,name=asynchronous,proto3,oneof" json:"asynchronous,omitempty"`
@@ -945,8 +945,7 @@ type TableFieldSchema_GeneratedColumn struct {
 	// Optional. Dictates when system generated values are used to populate the
 	// field.
 	GeneratedMode *TableFieldSchema_GeneratedColumn_GeneratedMode `protobuf:"varint,1,opt,name=generated_mode,json=generatedMode,proto3,enum=google.cloud.bigquery.v2.TableFieldSchema_GeneratedColumn_GeneratedMode,oneof" json:"generated_mode,omitempty"`
-	// Captures the metadata for the generated column. Could be either an
-	// identity column or a generated column.
+	// Captures the metadata for the generated column.
 	//
 	// Types that are valid to be assigned to Definition:
 	//
@@ -1025,12 +1024,12 @@ var File_google_cloud_bigquery_v2_table_schema_proto protoreflect.FileDescriptor
 
 const file_google_cloud_bigquery_v2_table_schema_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/bigquery/v2/table_schema.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xad\x01\n" +
+	"+google/cloud/bigquery/v2/table_schema.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xae\x01\n" +
 	"\vTableSchema\x12B\n" +
-	"\x06fields\x18\x01 \x03(\v2*.google.cloud.bigquery.v2.TableFieldSchemaR\x06fields\x12Z\n" +
-	"\x11foreign_type_info\x18\x03 \x01(\v2).google.cloud.bigquery.v2.ForeignTypeInfoB\x03\xe0A\x01R\x0fforeignTypeInfo\"\xa2\x01\n" +
-	"\x0fForeignTypeInfo\x12Z\n" +
-	"\vtype_system\x18\x01 \x01(\x0e24.google.cloud.bigquery.v2.ForeignTypeInfo.TypeSystemB\x03\xe0A\x02R\n" +
+	"\x06fields\x18\x01 \x03(\v2*.google.cloud.bigquery.v2.TableFieldSchemaR\x06fields\x12[\n" +
+	"\x11foreign_type_info\x18\x03 \x01(\v2).google.cloud.bigquery.v2.ForeignTypeInfoB\x04\xe2A\x01\x01R\x0fforeignTypeInfo\"\xa3\x01\n" +
+	"\x0fForeignTypeInfo\x12[\n" +
+	"\vtype_system\x18\x01 \x01(\x0e24.google.cloud.bigquery.v2.ForeignTypeInfo.TypeSystemB\x04\xe2A\x01\x02R\n" +
 	"typeSystem\"3\n" +
 	"\n" +
 	"TypeSystem\x12\x1b\n" +
@@ -1040,48 +1039,48 @@ const file_google_cloud_bigquery_v2_table_schema_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tH\x00R\x04name\x88\x01\x01B\a\n" +
 	"\x05_name\"a\n" +
 	"\x0eDataPolicyList\x12O\n" +
-	"\rdata_policies\x18\x01 \x03(\v2*.google.cloud.bigquery.v2.DataPolicyOptionR\fdataPolicies\"\xee\x12\n" +
-	"\x10TableFieldSchema\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x17\n" +
-	"\x04type\x18\x02 \x01(\tB\x03\xe0A\x02R\x04type\x12\x17\n" +
-	"\x04mode\x18\x03 \x01(\tB\x03\xe0A\x01R\x04mode\x12G\n" +
-	"\x06fields\x18\x04 \x03(\v2*.google.cloud.bigquery.v2.TableFieldSchemaB\x03\xe0A\x01R\x06fields\x12C\n" +
-	"\vdescription\x18\x06 \x01(\v2\x1c.google.protobuf.StringValueB\x03\xe0A\x01R\vdescription\x12^\n" +
-	"\vpolicy_tags\x18\t \x01(\v28.google.cloud.bigquery.v2.TableFieldSchema.PolicyTagListB\x03\xe0A\x01R\n" +
-	"policyTags\x12\x81\x01\n" +
-	"\x19data_governance_tags_info\x18\x1e \x01(\v2A.google.cloud.bigquery.v2.TableFieldSchema.DataGovernanceTagsInfoB\x03\xe0A\x01R\x16dataGovernanceTagsInfo\x12T\n" +
-	"\rdata_policies\x18\x15 \x03(\v2*.google.cloud.bigquery.v2.DataPolicyOptionB\x03\xe0A\x01R\fdataPolicies\x12W\n" +
-	"\x10data_policy_list\x18\x1d \x01(\v2(.google.cloud.bigquery.v2.DataPolicyListB\x03\xe0A\x01R\x0edataPolicyList\x12\"\n" +
+	"\rdata_policies\x18\x01 \x03(\v2*.google.cloud.bigquery.v2.DataPolicyOptionR\fdataPolicies\"\x87\x13\n" +
+	"\x10TableFieldSchema\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x18\n" +
+	"\x04type\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04type\x12\x18\n" +
+	"\x04mode\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04mode\x12H\n" +
+	"\x06fields\x18\x04 \x03(\v2*.google.cloud.bigquery.v2.TableFieldSchemaB\x04\xe2A\x01\x01R\x06fields\x12D\n" +
+	"\vdescription\x18\x06 \x01(\v2\x1c.google.protobuf.StringValueB\x04\xe2A\x01\x01R\vdescription\x12_\n" +
+	"\vpolicy_tags\x18\t \x01(\v28.google.cloud.bigquery.v2.TableFieldSchema.PolicyTagListB\x04\xe2A\x01\x01R\n" +
+	"policyTags\x12\x82\x01\n" +
+	"\x19data_governance_tags_info\x18\x1e \x01(\v2A.google.cloud.bigquery.v2.TableFieldSchema.DataGovernanceTagsInfoB\x04\xe2A\x01\x01R\x16dataGovernanceTagsInfo\x12U\n" +
+	"\rdata_policies\x18\x15 \x03(\v2*.google.cloud.bigquery.v2.DataPolicyOptionB\x04\xe2A\x01\x01R\fdataPolicies\x12X\n" +
+	"\x10data_policy_list\x18\x1d \x01(\v2(.google.cloud.bigquery.v2.DataPolicyListB\x04\xe2A\x01\x01R\x0edataPolicyList\x12#\n" +
 	"\n" +
 	"max_length\x18\n" +
-	" \x01(\x03B\x03\xe0A\x01R\tmaxLength\x12!\n" +
-	"\tprecision\x18\v \x01(\x03B\x03\xe0A\x01R\tprecision\x12\x19\n" +
-	"\x05scale\x18\f \x01(\x03B\x03\xe0A\x01R\x05scale\x12Q\n" +
-	"\x13timestamp_precision\x18\x1b \x01(\v2\x1b.google.protobuf.Int64ValueB\x03\xe0A\x01R\x12timestampPrecision\x12a\n" +
-	"\rrounding_mode\x18\x0f \x01(\x0e27.google.cloud.bigquery.v2.TableFieldSchema.RoundingModeB\x03\xe0A\x01R\froundingMode\x12?\n" +
-	"\tcollation\x18\r \x01(\v2\x1c.google.protobuf.StringValueB\x03\xe0A\x01R\tcollation\x12[\n" +
-	"\x18default_value_expression\x18\x0e \x01(\v2\x1c.google.protobuf.StringValueB\x03\xe0A\x01R\x16defaultValueExpression\x12n\n" +
-	"\x12range_element_type\x18\x12 \x01(\v2;.google.cloud.bigquery.v2.TableFieldSchema.FieldElementTypeB\x03\xe0A\x01R\x10rangeElementType\x12;\n" +
-	"\x17foreign_type_definition\x18\x17 \x01(\tB\x03\xe0A\x01R\x15foreignTypeDefinition\x12j\n" +
-	"\x10generated_column\x18\x1c \x01(\v2:.google.cloud.bigquery.v2.TableFieldSchema.GeneratedColumnB\x03\xe0A\x01R\x0fgeneratedColumn\x1a%\n" +
+	" \x01(\x03B\x04\xe2A\x01\x01R\tmaxLength\x12\"\n" +
+	"\tprecision\x18\v \x01(\x03B\x04\xe2A\x01\x01R\tprecision\x12\x1a\n" +
+	"\x05scale\x18\f \x01(\x03B\x04\xe2A\x01\x01R\x05scale\x12R\n" +
+	"\x13timestamp_precision\x18\x1b \x01(\v2\x1b.google.protobuf.Int64ValueB\x04\xe2A\x01\x01R\x12timestampPrecision\x12b\n" +
+	"\rrounding_mode\x18\x0f \x01(\x0e27.google.cloud.bigquery.v2.TableFieldSchema.RoundingModeB\x04\xe2A\x01\x01R\froundingMode\x12@\n" +
+	"\tcollation\x18\r \x01(\v2\x1c.google.protobuf.StringValueB\x04\xe2A\x01\x01R\tcollation\x12\\\n" +
+	"\x18default_value_expression\x18\x0e \x01(\v2\x1c.google.protobuf.StringValueB\x04\xe2A\x01\x01R\x16defaultValueExpression\x12o\n" +
+	"\x12range_element_type\x18\x12 \x01(\v2;.google.cloud.bigquery.v2.TableFieldSchema.FieldElementTypeB\x04\xe2A\x01\x01R\x10rangeElementType\x12<\n" +
+	"\x17foreign_type_definition\x18\x17 \x01(\tB\x04\xe2A\x01\x01R\x15foreignTypeDefinition\x12k\n" +
+	"\x10generated_column\x18\x1c \x01(\v2:.google.cloud.bigquery.v2.TableFieldSchema.GeneratedColumnB\x04\xe2A\x01\x01R\x0fgeneratedColumn\x1a%\n" +
 	"\rPolicyTagList\x12\x14\n" +
-	"\x05names\x18\x01 \x03(\tR\x05names\x1a\xf2\x01\n" +
-	"\x16DataGovernanceTagsInfo\x12\x90\x01\n" +
-	"\x14data_governance_tags\x18\x01 \x03(\v2Y.google.cloud.bigquery.v2.TableFieldSchema.DataGovernanceTagsInfo.DataGovernanceTagsEntryB\x03\xe0A\x01R\x12dataGovernanceTags\x1aE\n" +
+	"\x05names\x18\x01 \x03(\tR\x05names\x1a\xf3\x01\n" +
+	"\x16DataGovernanceTagsInfo\x12\x91\x01\n" +
+	"\x14data_governance_tags\x18\x01 \x03(\v2Y.google.cloud.bigquery.v2.TableFieldSchema.DataGovernanceTagsInfo.DataGovernanceTagsEntryB\x04\xe2A\x01\x01R\x12dataGovernanceTags\x1aE\n" +
 	"\x17DataGovernanceTagsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a+\n" +
-	"\x10FieldElementType\x12\x17\n" +
-	"\x04type\x18\x01 \x01(\tB\x03\xe0A\x02R\x04type\x1a\xde\x01\n" +
-	"\x17GeneratedExpressionInfo\x12=\n" +
-	"\x15generation_expression\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\x14generationExpression\x88\x01\x01\x12,\n" +
-	"\fasynchronous\x18\x02 \x01(\bB\x03\xe0A\x01H\x01R\fasynchronous\x88\x01\x01\x12 \n" +
-	"\x06stored\x18\x03 \x01(\bB\x03\xe0A\x01H\x02R\x06stored\x88\x01\x01B\x18\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a,\n" +
+	"\x10FieldElementType\x12\x18\n" +
+	"\x04type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04type\x1a\xe1\x01\n" +
+	"\x17GeneratedExpressionInfo\x12>\n" +
+	"\x15generation_expression\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\x14generationExpression\x88\x01\x01\x12-\n" +
+	"\fasynchronous\x18\x02 \x01(\bB\x04\xe2A\x01\x01H\x01R\fasynchronous\x88\x01\x01\x12!\n" +
+	"\x06stored\x18\x03 \x01(\bB\x04\xe2A\x01\x01H\x02R\x06stored\x88\x01\x01B\x18\n" +
 	"\x16_generation_expressionB\x0f\n" +
 	"\r_asynchronousB\t\n" +
-	"\a_stored\x1a\x91\x03\n" +
-	"\x0fGeneratedColumn\x12y\n" +
-	"\x0egenerated_mode\x18\x01 \x01(\x0e2H.google.cloud.bigquery.v2.TableFieldSchema.GeneratedColumn.GeneratedModeB\x03\xe0A\x01H\x01R\rgeneratedMode\x88\x01\x01\x12\x80\x01\n" +
+	"\a_stored\x1a\x92\x03\n" +
+	"\x0fGeneratedColumn\x12z\n" +
+	"\x0egenerated_mode\x18\x01 \x01(\x0e2H.google.cloud.bigquery.v2.TableFieldSchema.GeneratedColumn.GeneratedModeB\x04\xe2A\x01\x01H\x01R\rgeneratedMode\x88\x01\x01\x12\x80\x01\n" +
 	"\x19generated_expression_info\x18\x03 \x01(\v2B.google.cloud.bigquery.v2.TableFieldSchema.GeneratedExpressionInfoH\x00R\x17generatedExpressionInfo\"_\n" +
 	"\rGeneratedMode\x12\x1e\n" +
 	"\x1aGENERATED_MODE_UNSPECIFIED\x10\x00\x12\x14\n" +

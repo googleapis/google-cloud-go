@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -34,7 +35,12 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AssistantService_StreamAssist_FullMethodName = "/google.cloud.discoveryengine.v1.AssistantService/StreamAssist"
+	AssistantService_StreamAssist_FullMethodName    = "/google.cloud.discoveryengine.v1.AssistantService/StreamAssist"
+	AssistantService_CreateAssistant_FullMethodName = "/google.cloud.discoveryengine.v1.AssistantService/CreateAssistant"
+	AssistantService_DeleteAssistant_FullMethodName = "/google.cloud.discoveryengine.v1.AssistantService/DeleteAssistant"
+	AssistantService_UpdateAssistant_FullMethodName = "/google.cloud.discoveryengine.v1.AssistantService/UpdateAssistant"
+	AssistantService_GetAssistant_FullMethodName    = "/google.cloud.discoveryengine.v1.AssistantService/GetAssistant"
+	AssistantService_ListAssistants_FullMethodName  = "/google.cloud.discoveryengine.v1.AssistantService/ListAssistants"
 )
 
 // AssistantServiceClient is the client API for AssistantService service.
@@ -43,6 +49,17 @@ const (
 type AssistantServiceClient interface {
 	// Assists the user with a query in a streaming fashion.
 	StreamAssist(ctx context.Context, in *StreamAssistRequest, opts ...grpc.CallOption) (AssistantService_StreamAssistClient, error)
+	// Creates an [Assistant][google.cloud.discoveryengine.v1.Assistant].
+	CreateAssistant(ctx context.Context, in *CreateAssistantRequest, opts ...grpc.CallOption) (*Assistant, error)
+	// Deletes an [Assistant][google.cloud.discoveryengine.v1.Assistant].
+	DeleteAssistant(ctx context.Context, in *DeleteAssistantRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Updates an [Assistant][google.cloud.discoveryengine.v1.Assistant]
+	UpdateAssistant(ctx context.Context, in *UpdateAssistantRequest, opts ...grpc.CallOption) (*Assistant, error)
+	// Gets an [Assistant][google.cloud.discoveryengine.v1.Assistant].
+	GetAssistant(ctx context.Context, in *GetAssistantRequest, opts ...grpc.CallOption) (*Assistant, error)
+	// Lists all [Assistant][google.cloud.discoveryengine.v1.Assistant]s under an
+	// [Engine][google.cloud.discoveryengine.v1.Engine].
+	ListAssistants(ctx context.Context, in *ListAssistantsRequest, opts ...grpc.CallOption) (*ListAssistantsResponse, error)
 }
 
 type assistantServiceClient struct {
@@ -85,12 +102,68 @@ func (x *assistantServiceStreamAssistClient) Recv() (*StreamAssistResponse, erro
 	return m, nil
 }
 
+func (c *assistantServiceClient) CreateAssistant(ctx context.Context, in *CreateAssistantRequest, opts ...grpc.CallOption) (*Assistant, error) {
+	out := new(Assistant)
+	err := c.cc.Invoke(ctx, AssistantService_CreateAssistant_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *assistantServiceClient) DeleteAssistant(ctx context.Context, in *DeleteAssistantRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AssistantService_DeleteAssistant_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *assistantServiceClient) UpdateAssistant(ctx context.Context, in *UpdateAssistantRequest, opts ...grpc.CallOption) (*Assistant, error) {
+	out := new(Assistant)
+	err := c.cc.Invoke(ctx, AssistantService_UpdateAssistant_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *assistantServiceClient) GetAssistant(ctx context.Context, in *GetAssistantRequest, opts ...grpc.CallOption) (*Assistant, error) {
+	out := new(Assistant)
+	err := c.cc.Invoke(ctx, AssistantService_GetAssistant_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *assistantServiceClient) ListAssistants(ctx context.Context, in *ListAssistantsRequest, opts ...grpc.CallOption) (*ListAssistantsResponse, error) {
+	out := new(ListAssistantsResponse)
+	err := c.cc.Invoke(ctx, AssistantService_ListAssistants_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AssistantServiceServer is the server API for AssistantService service.
 // All implementations should embed UnimplementedAssistantServiceServer
 // for forward compatibility
 type AssistantServiceServer interface {
 	// Assists the user with a query in a streaming fashion.
 	StreamAssist(*StreamAssistRequest, AssistantService_StreamAssistServer) error
+	// Creates an [Assistant][google.cloud.discoveryengine.v1.Assistant].
+	CreateAssistant(context.Context, *CreateAssistantRequest) (*Assistant, error)
+	// Deletes an [Assistant][google.cloud.discoveryengine.v1.Assistant].
+	DeleteAssistant(context.Context, *DeleteAssistantRequest) (*emptypb.Empty, error)
+	// Updates an [Assistant][google.cloud.discoveryengine.v1.Assistant]
+	UpdateAssistant(context.Context, *UpdateAssistantRequest) (*Assistant, error)
+	// Gets an [Assistant][google.cloud.discoveryengine.v1.Assistant].
+	GetAssistant(context.Context, *GetAssistantRequest) (*Assistant, error)
+	// Lists all [Assistant][google.cloud.discoveryengine.v1.Assistant]s under an
+	// [Engine][google.cloud.discoveryengine.v1.Engine].
+	ListAssistants(context.Context, *ListAssistantsRequest) (*ListAssistantsResponse, error)
 }
 
 // UnimplementedAssistantServiceServer should be embedded to have forward compatible implementations.
@@ -99,6 +172,21 @@ type UnimplementedAssistantServiceServer struct {
 
 func (UnimplementedAssistantServiceServer) StreamAssist(*StreamAssistRequest, AssistantService_StreamAssistServer) error {
 	return status.Errorf(codes.Unimplemented, "method StreamAssist not implemented")
+}
+func (UnimplementedAssistantServiceServer) CreateAssistant(context.Context, *CreateAssistantRequest) (*Assistant, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateAssistant not implemented")
+}
+func (UnimplementedAssistantServiceServer) DeleteAssistant(context.Context, *DeleteAssistantRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteAssistant not implemented")
+}
+func (UnimplementedAssistantServiceServer) UpdateAssistant(context.Context, *UpdateAssistantRequest) (*Assistant, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAssistant not implemented")
+}
+func (UnimplementedAssistantServiceServer) GetAssistant(context.Context, *GetAssistantRequest) (*Assistant, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAssistant not implemented")
+}
+func (UnimplementedAssistantServiceServer) ListAssistants(context.Context, *ListAssistantsRequest) (*ListAssistantsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListAssistants not implemented")
 }
 
 // UnsafeAssistantServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -133,13 +221,124 @@ func (x *assistantServiceStreamAssistServer) Send(m *StreamAssistResponse) error
 	return x.ServerStream.SendMsg(m)
 }
 
+func _AssistantService_CreateAssistant_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAssistantRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssistantServiceServer).CreateAssistant(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssistantService_CreateAssistant_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssistantServiceServer).CreateAssistant(ctx, req.(*CreateAssistantRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AssistantService_DeleteAssistant_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAssistantRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssistantServiceServer).DeleteAssistant(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssistantService_DeleteAssistant_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssistantServiceServer).DeleteAssistant(ctx, req.(*DeleteAssistantRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AssistantService_UpdateAssistant_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateAssistantRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssistantServiceServer).UpdateAssistant(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssistantService_UpdateAssistant_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssistantServiceServer).UpdateAssistant(ctx, req.(*UpdateAssistantRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AssistantService_GetAssistant_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAssistantRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssistantServiceServer).GetAssistant(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssistantService_GetAssistant_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssistantServiceServer).GetAssistant(ctx, req.(*GetAssistantRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AssistantService_ListAssistants_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListAssistantsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssistantServiceServer).ListAssistants(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AssistantService_ListAssistants_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssistantServiceServer).ListAssistants(ctx, req.(*ListAssistantsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AssistantService_ServiceDesc is the grpc.ServiceDesc for AssistantService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var AssistantService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "google.cloud.discoveryengine.v1.AssistantService",
 	HandlerType: (*AssistantServiceServer)(nil),
-	Methods:     []grpc.MethodDesc{},
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateAssistant",
+			Handler:    _AssistantService_CreateAssistant_Handler,
+		},
+		{
+			MethodName: "DeleteAssistant",
+			Handler:    _AssistantService_DeleteAssistant_Handler,
+		},
+		{
+			MethodName: "UpdateAssistant",
+			Handler:    _AssistantService_UpdateAssistant_Handler,
+		},
+		{
+			MethodName: "GetAssistant",
+			Handler:    _AssistantService_GetAssistant_Handler,
+		},
+		{
+			MethodName: "ListAssistants",
+			Handler:    _AssistantService_ListAssistants_Handler,
+		},
+	},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "StreamAssist",

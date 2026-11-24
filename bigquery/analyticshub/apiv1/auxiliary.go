@@ -18,11 +18,13 @@ package analyticshub
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	analyticshubpb "cloud.google.com/go/bigquery/analyticshub/apiv1/analyticshubpb"
 	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -207,6 +209,12 @@ func (op *SubscribeDataExchangeOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataExchangeIterator) All() iter.Seq2[*analyticshubpb.DataExchange, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DataExchangeIterator manages a stream of *analyticshubpb.DataExchange.
 type DataExchangeIterator struct {
 	items    []*analyticshubpb.DataExchange
@@ -252,6 +260,12 @@ func (it *DataExchangeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ListingIterator) All() iter.Seq2[*analyticshubpb.Listing, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ListingIterator manages a stream of *analyticshubpb.Listing.
@@ -301,6 +315,12 @@ func (it *ListingIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *QueryTemplateIterator) All() iter.Seq2[*analyticshubpb.QueryTemplate, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // QueryTemplateIterator manages a stream of *analyticshubpb.QueryTemplate.
 type QueryTemplateIterator struct {
 	items    []*analyticshubpb.QueryTemplate
@@ -346,6 +366,12 @@ func (it *QueryTemplateIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SubscriptionIterator) All() iter.Seq2[*analyticshubpb.Subscription, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SubscriptionIterator manages a stream of *analyticshubpb.Subscription.

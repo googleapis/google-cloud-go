@@ -30,7 +30,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/uid"
-	"cloud.google.com/go/storage/experimental"
 	storage_v1_tests "cloud.google.com/go/storage/internal/test/conformance"
 	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/gax-go/v2"
@@ -1303,7 +1302,7 @@ func (et *emulatorTest) create(instructions map[string][]string, transport strin
 		et.Fatalf("HTTP transportClient: %v", err)
 	}
 	if transport == "grpc" {
-		transportClient, err = NewGRPCClient(ctx, experimental.WithGRPCBidiReads())
+		transportClient, err = NewGRPCClient(ctx, WithGRPCBidiReads())
 		if err != nil {
 			et.Fatalf("GRPC transportClient: %v", err)
 		}
@@ -1363,8 +1362,7 @@ func TestRetryConformance_MaxAttempts(t *testing.T) {
 		t.Fatalf("error parsing emulator host: %v", err)
 	}
 
-	ctx := context.Background()
-	client, err := NewClient(ctx)
+	client, err := NewClient(t.Context())
 	if err != nil {
 		t.Fatalf("storage.NewClient: %v", err)
 	}
@@ -1384,6 +1382,14 @@ func TestRetryConformance_MaxAttempts(t *testing.T) {
 				if len(instructions.Instructions) < 2 {
 					continue
 				}
+				// Skip cases with partial-progress (-after-NK) instructions: persisting
+				// bytes resets the per-chunk retry counter on reconnect, so maxAttempts
+				// is not exhausted across those sequences.
+				if slices.ContainsFunc(instructions.Instructions, func(inst string) bool {
+					return strings.Contains(inst, "-after-")
+				}) {
+					continue
+				}
 				for _, method := range retryTest.Methods {
 					methodName := method.Name
 					if method.Group != "" {
@@ -1397,7 +1403,7 @@ func TestRetryConformance_MaxAttempts(t *testing.T) {
 						for _, transport := range []string{"http", "grpc"} {
 							testName := fmt.Sprintf("%v-%v-%v-%v-%v", transport, retryTest.Id, instructions.Instructions, methodName, i)
 							t.Run(testName, func(t *testing.T) {
-								runMaxAttemptsTest(t, ctx, client, endpoint, transport, method, instructions.Instructions, fn, retryTest.PreconditionProvided)
+								runMaxAttemptsTest(t, client, endpoint, transport, method, instructions.Instructions, fn, retryTest.PreconditionProvided)
 							})
 						}
 					}
@@ -1409,13 +1415,14 @@ func TestRetryConformance_MaxAttempts(t *testing.T) {
 
 // runMaxAttemptsTest runs fn against the emulator with the given failure
 // instructions and checks that it fails after exactly maxAttempts attempts.
-func runMaxAttemptsTest(t *testing.T, ctx context.Context, client *Client, endpoint *url.URL, transport string, method *storage_v1_tests.Method, instructions []string, fn retryFunc, preconditions bool) {
+func runMaxAttemptsTest(t *testing.T, client *Client, endpoint *url.URL, transport string, method *storage_v1_tests.Method, instructions []string, fn retryFunc, preconditions bool) {
+	t.Helper()
 	subtest := &emulatorTest{T: t, name: t.Name(), host: endpoint}
 	subtest.create(map[string][]string{method.Name: instructions}, transport)
 	defer subtest.delete()
 	defer subtest.transportClient.Close()
 
-	subtest.populateResources(ctx, client, method.Resources)
+	subtest.populateResources(t.Context(), client, method.Resources)
 
 	// The first maxAttempts instructions each fail one attempt.
 	const maxAttempts = 2
@@ -1425,10 +1432,10 @@ func runMaxAttemptsTest(t *testing.T, ctx context.Context, client *Client, endpo
 		WithPolicy(RetryAlways),
 	)
 
-	ctx = callctx.SetHeaders(context.Background(), "x-retry-test-id", subtest.id)
+	ctx := callctx.SetHeaders(t.Context(), "x-retry-test-id", subtest.id)
 	err := fn(ctx, subtest.transportClient, &subtest.resources, preconditions)
 	if err == nil {
-		t.Fatalf("expected failure due to max attempts exceeded, got success")
+		t.Fatalf("%s(%s) err = nil, want max attempts exceeded error", method.Name, transport)
 	}
 	if want := fmt.Sprintf("retry failed after %d attempts", maxAttempts); !strings.Contains(err.Error(), want) {
 		t.Errorf("got error %q, want error to contain %q", err.Error(), want)

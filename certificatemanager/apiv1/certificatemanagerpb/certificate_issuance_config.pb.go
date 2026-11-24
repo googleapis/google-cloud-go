@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -89,7 +90,7 @@ func (x CertificateIssuanceConfig_KeyAlgorithm) Number() protoreflect.EnumNumber
 
 // Deprecated: Use CertificateIssuanceConfig_KeyAlgorithm.Descriptor instead.
 func (CertificateIssuanceConfig_KeyAlgorithm) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_rawDescGZIP(), []int{5, 0}
+	return file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_rawDescGZIP(), []int{6, 0}
 }
 
 // Request for the `ListCertificateIssuanceConfigs` method.
@@ -98,18 +99,18 @@ type ListCertificateIssuanceConfigsRequest struct {
 	// Required. The project and location from which the certificate should be
 	// listed, specified in the format `projects/*/locations/*`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Maximum number of certificate configs to return per call.
+	// Optional. Maximum number of certificate configs to return per call.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// The value returned by the last `ListCertificateIssuanceConfigsResponse`.
-	// Indicates that this is a continuation of a prior
-	// `ListCertificateIssuanceConfigs` call, and that the system should return
-	// the next page of data.
+	// Optional. The value returned by the last
+	// `ListCertificateIssuanceConfigsResponse`. Indicates that this is a
+	// continuation of a prior `ListCertificateIssuanceConfigs` call, and that the
+	// system should return the next page of data.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
-	// Filter expression to restrict the Certificates Configs returned.
+	// Optional. Filter expression to restrict the Certificates Configs returned.
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
-	// A list of Certificate Config field names used to specify the order of the
-	// returned results. The default sorting order is ascending. To specify
-	// descending order for a field, add a suffix `" desc"`.
+	// Optional. A list of Certificate Config field names used to specify the
+	// order of the returned results. The default sorting order is ascending. To
+	// specify descending order for a field, add a suffix `" desc"`.
 	OrderBy       string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -358,6 +359,63 @@ func (x *CreateCertificateIssuanceConfigRequest) GetCertificateIssuanceConfig() 
 	return nil
 }
 
+// Request for the `UpdateCertificateIssuanceConfig` method.
+type UpdateCertificateIssuanceConfigRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. A definition of the certificate issuance config to update.
+	CertificateIssuanceConfig *CertificateIssuanceConfig `protobuf:"bytes,1,opt,name=certificate_issuance_config,json=certificateIssuanceConfig,proto3" json:"certificate_issuance_config,omitempty"`
+	// Required. The update mask applies to the resource. For the `FieldMask`
+	// definition, see
+	// https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#fieldmask.
+	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateCertificateIssuanceConfigRequest) Reset() {
+	*x = UpdateCertificateIssuanceConfigRequest{}
+	mi := &file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateCertificateIssuanceConfigRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateCertificateIssuanceConfigRequest) ProtoMessage() {}
+
+func (x *UpdateCertificateIssuanceConfigRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateCertificateIssuanceConfigRequest.ProtoReflect.Descriptor instead.
+func (*UpdateCertificateIssuanceConfigRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *UpdateCertificateIssuanceConfigRequest) GetCertificateIssuanceConfig() *CertificateIssuanceConfig {
+	if x != nil {
+		return x.CertificateIssuanceConfig
+	}
+	return nil
+}
+
+func (x *UpdateCertificateIssuanceConfigRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
+	}
+	return nil
+}
+
 // Request for the `DeleteCertificateIssuanceConfig` method.
 type DeleteCertificateIssuanceConfigRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -370,7 +428,7 @@ type DeleteCertificateIssuanceConfigRequest struct {
 
 func (x *DeleteCertificateIssuanceConfigRequest) Reset() {
 	*x = DeleteCertificateIssuanceConfigRequest{}
-	mi := &file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_msgTypes[4]
+	mi := &file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -382,7 +440,7 @@ func (x *DeleteCertificateIssuanceConfigRequest) String() string {
 func (*DeleteCertificateIssuanceConfigRequest) ProtoMessage() {}
 
 func (x *DeleteCertificateIssuanceConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_msgTypes[4]
+	mi := &file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -395,7 +453,7 @@ func (x *DeleteCertificateIssuanceConfigRequest) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use DeleteCertificateIssuanceConfigRequest.ProtoReflect.Descriptor instead.
 func (*DeleteCertificateIssuanceConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *DeleteCertificateIssuanceConfigRequest) GetName() string {
@@ -408,7 +466,7 @@ func (x *DeleteCertificateIssuanceConfigRequest) GetName() string {
 // CertificateIssuanceConfig specifies how to issue and manage a certificate.
 type CertificateIssuanceConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// A user-defined name of the certificate issuance config.
+	// Identifier. A user-defined name of the certificate issuance config.
 	// CertificateIssuanceConfig names must be unique globally and match pattern
 	// `projects/*/locations/*/certificateIssuanceConfigs/*`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -416,9 +474,10 @@ type CertificateIssuanceConfig struct {
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Output only. The last update timestamp of a CertificateIssuanceConfig.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	// Set of labels associated with a CertificateIssuanceConfig.
+	// Optional. Set of labels associated with a CertificateIssuanceConfig.
 	Labels map[string]string `protobuf:"bytes,4,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// One or more paragraphs of text description of a CertificateIssuanceConfig.
+	// Optional. One or more paragraphs of text description of a
+	// CertificateIssuanceConfig.
 	Description string `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
 	// Required. The CA that issues the workload certificate. It includes the CA
 	// address, type, authentication to CA service, etc.
@@ -430,14 +489,20 @@ type CertificateIssuanceConfig struct {
 	// 1-99, inclusive.
 	RotationWindowPercentage int32 `protobuf:"varint,8,opt,name=rotation_window_percentage,json=rotationWindowPercentage,proto3" json:"rotation_window_percentage,omitempty"`
 	// Required. The key algorithm to use when generating the private key.
-	KeyAlgorithm  CertificateIssuanceConfig_KeyAlgorithm `protobuf:"varint,9,opt,name=key_algorithm,json=keyAlgorithm,proto3,enum=google.cloud.certificatemanager.v1.CertificateIssuanceConfig_KeyAlgorithm" json:"key_algorithm,omitempty"`
+	KeyAlgorithm CertificateIssuanceConfig_KeyAlgorithm `protobuf:"varint,9,opt,name=key_algorithm,json=keyAlgorithm,proto3,enum=google.cloud.certificatemanager.v1.CertificateIssuanceConfig_KeyAlgorithm" json:"key_algorithm,omitempty"`
+	// Optional. Input only. Immutable. Tag keys/values directly bound to this
+	// resource. For example:
+	//
+	//	"123/environment": "production",
+	//	"123/costCenter": "marketing"
+	Tags          map[string]string `protobuf:"bytes,10,rep,name=tags,proto3" json:"tags,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CertificateIssuanceConfig) Reset() {
 	*x = CertificateIssuanceConfig{}
-	mi := &file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_msgTypes[5]
+	mi := &file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -449,7 +514,7 @@ func (x *CertificateIssuanceConfig) String() string {
 func (*CertificateIssuanceConfig) ProtoMessage() {}
 
 func (x *CertificateIssuanceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_msgTypes[5]
+	mi := &file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -462,7 +527,7 @@ func (x *CertificateIssuanceConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CertificateIssuanceConfig.ProtoReflect.Descriptor instead.
 func (*CertificateIssuanceConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_rawDescGZIP(), []int{5}
+	return file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *CertificateIssuanceConfig) GetName() string {
@@ -528,10 +593,19 @@ func (x *CertificateIssuanceConfig) GetKeyAlgorithm() CertificateIssuanceConfig_
 	return CertificateIssuanceConfig_KEY_ALGORITHM_UNSPECIFIED
 }
 
+func (x *CertificateIssuanceConfig) GetTags() map[string]string {
+	if x != nil {
+		return x.Tags
+	}
+	return nil
+}
+
 // The CA that issues the workload certificate. It includes CA address, type,
 // authentication to CA service, etc.
 type CertificateIssuanceConfig_CertificateAuthorityConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// The kind of CA config.
+	//
 	// Types that are valid to be assigned to Kind:
 	//
 	//	*CertificateIssuanceConfig_CertificateAuthorityConfig_CertificateAuthorityServiceConfig_
@@ -542,7 +616,7 @@ type CertificateIssuanceConfig_CertificateAuthorityConfig struct {
 
 func (x *CertificateIssuanceConfig_CertificateAuthorityConfig) Reset() {
 	*x = CertificateIssuanceConfig_CertificateAuthorityConfig{}
-	mi := &file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_msgTypes[6]
+	mi := &file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -554,7 +628,7 @@ func (x *CertificateIssuanceConfig_CertificateAuthorityConfig) String() string {
 func (*CertificateIssuanceConfig_CertificateAuthorityConfig) ProtoMessage() {}
 
 func (x *CertificateIssuanceConfig_CertificateAuthorityConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_msgTypes[6]
+	mi := &file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -567,7 +641,7 @@ func (x *CertificateIssuanceConfig_CertificateAuthorityConfig) ProtoReflect() pr
 
 // Deprecated: Use CertificateIssuanceConfig_CertificateAuthorityConfig.ProtoReflect.Descriptor instead.
 func (*CertificateIssuanceConfig_CertificateAuthorityConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_rawDescGZIP(), []int{5, 0}
+	return file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_rawDescGZIP(), []int{6, 0}
 }
 
 func (x *CertificateIssuanceConfig_CertificateAuthorityConfig) GetKind() isCertificateIssuanceConfig_CertificateAuthorityConfig_Kind {
@@ -611,7 +685,7 @@ type CertificateIssuanceConfig_CertificateAuthorityConfig_CertificateAuthoritySe
 
 func (x *CertificateIssuanceConfig_CertificateAuthorityConfig_CertificateAuthorityServiceConfig) Reset() {
 	*x = CertificateIssuanceConfig_CertificateAuthorityConfig_CertificateAuthorityServiceConfig{}
-	mi := &file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_msgTypes[8]
+	mi := &file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -624,7 +698,7 @@ func (*CertificateIssuanceConfig_CertificateAuthorityConfig_CertificateAuthority
 }
 
 func (x *CertificateIssuanceConfig_CertificateAuthorityConfig_CertificateAuthorityServiceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_msgTypes[8]
+	mi := &file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -637,7 +711,7 @@ func (x *CertificateIssuanceConfig_CertificateAuthorityConfig_CertificateAuthori
 
 // Deprecated: Use CertificateIssuanceConfig_CertificateAuthorityConfig_CertificateAuthorityServiceConfig.ProtoReflect.Descriptor instead.
 func (*CertificateIssuanceConfig_CertificateAuthorityConfig_CertificateAuthorityServiceConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_rawDescGZIP(), []int{5, 0, 0}
+	return file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_rawDescGZIP(), []int{6, 0, 0}
 }
 
 func (x *CertificateIssuanceConfig_CertificateAuthorityConfig_CertificateAuthorityServiceConfig) GetCaPool() string {
@@ -651,58 +725,66 @@ var File_google_cloud_certificatemanager_v1_certificate_issuance_config_proto pr
 
 const file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_rawDesc = "" +
 	"\n" +
-	"Dgoogle/cloud/certificatemanager/v1/certificate_issuance_config.proto\x12\"google.cloud.certificatemanager.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd9\x01\n" +
-	"%ListCertificateIssuanceConfigsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"Dgoogle/cloud/certificatemanager/v1/certificate_issuance_config.proto\x12\"google.cloud.certificatemanager.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf2\x01\n" +
+	"%ListCertificateIssuanceConfigsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
-	"\x06filter\x18\x04 \x01(\tR\x06filter\x12\x19\n" +
-	"\border_by\x18\x05 \x01(\tR\aorderBy\"\xf3\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xf3\x01\n" +
 	"&ListCertificateIssuanceConfigsResponse\x12\x7f\n" +
 	"\x1ccertificate_issuance_configs\x18\x01 \x03(\v2=.google.cloud.certificatemanager.v1.CertificateIssuanceConfigR\x1acertificateIssuanceConfigs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"~\n" +
-	"#GetCertificateIssuanceConfigRequest\x12W\n" +
-	"\x04name\x18\x01 \x01(\tBC\xe0A\x02\xfaA=\n" +
-	";certificatemanager.googleapis.com/CertificateIssuanceConfigR\x04name\"\xba\x02\n" +
-	"&CreateCertificateIssuanceConfigRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12H\n" +
-	"\x1ecertificate_issuance_config_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x1bcertificateIssuanceConfigId\x12\x82\x01\n" +
-	"\x1bcertificate_issuance_config\x18\x03 \x01(\v2=.google.cloud.certificatemanager.v1.CertificateIssuanceConfigB\x03\xe0A\x02R\x19certificateIssuanceConfig\"\x81\x01\n" +
-	"&DeleteCertificateIssuanceConfigRequest\x12W\n" +
-	"\x04name\x18\x01 \x01(\tBC\xe0A\x02\xfaA=\n" +
-	";certificatemanager.googleapis.com/CertificateIssuanceConfigR\x04name\"\xdb\n" +
-	"\n" +
-	"\x19CertificateIssuanceConfig\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12a\n" +
-	"\x06labels\x18\x04 \x03(\v2I.google.cloud.certificatemanager.v1.CertificateIssuanceConfig.LabelsEntryR\x06labels\x12 \n" +
-	"\vdescription\x18\x05 \x01(\tR\vdescription\x12\x9f\x01\n" +
-	"\x1ccertificate_authority_config\x18\x06 \x01(\v2X.google.cloud.certificatemanager.v1.CertificateIssuanceConfig.CertificateAuthorityConfigB\x03\xe0A\x02R\x1acertificateAuthorityConfig\x12:\n" +
-	"\blifetime\x18\a \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\blifetime\x12A\n" +
-	"\x1arotation_window_percentage\x18\b \x01(\x05B\x03\xe0A\x02R\x18rotationWindowPercentage\x12t\n" +
-	"\rkey_algorithm\x18\t \x01(\x0e2J.google.cloud.certificatemanager.v1.CertificateIssuanceConfig.KeyAlgorithmB\x03\xe0A\x02R\fkeyAlgorithm\x1a\xdb\x02\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x7f\n" +
+	"#GetCertificateIssuanceConfigRequest\x12X\n" +
+	"\x04name\x18\x01 \x01(\tBD\xe2A\x01\x02\xfaA=\n" +
+	";certificatemanager.googleapis.com/CertificateIssuanceConfigR\x04name\"\xbd\x02\n" +
+	"&CreateCertificateIssuanceConfigRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12I\n" +
+	"\x1ecertificate_issuance_config_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x1bcertificateIssuanceConfigId\x12\x83\x01\n" +
+	"\x1bcertificate_issuance_config\x18\x03 \x01(\v2=.google.cloud.certificatemanager.v1.CertificateIssuanceConfigB\x04\xe2A\x01\x02R\x19certificateIssuanceConfig\"\xf1\x01\n" +
+	"&UpdateCertificateIssuanceConfigRequest\x12\x83\x01\n" +
+	"\x1bcertificate_issuance_config\x18\x01 \x01(\v2=.google.cloud.certificatemanager.v1.CertificateIssuanceConfigB\x04\xe2A\x01\x02R\x19certificateIssuanceConfig\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\x82\x01\n" +
+	"&DeleteCertificateIssuanceConfigRequest\x12X\n" +
+	"\x04name\x18\x01 \x01(\tBD\xe2A\x01\x02\xfaA=\n" +
+	";certificatemanager.googleapis.com/CertificateIssuanceConfigR\x04name\"\xc9\f\n" +
+	"\x19CertificateIssuanceConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12g\n" +
+	"\x06labels\x18\x04 \x03(\v2I.google.cloud.certificatemanager.v1.CertificateIssuanceConfig.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\xa0\x01\n" +
+	"\x1ccertificate_authority_config\x18\x06 \x01(\v2X.google.cloud.certificatemanager.v1.CertificateIssuanceConfig.CertificateAuthorityConfigB\x04\xe2A\x01\x02R\x1acertificateAuthorityConfig\x12;\n" +
+	"\blifetime\x18\a \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\blifetime\x12B\n" +
+	"\x1arotation_window_percentage\x18\b \x01(\x05B\x04\xe2A\x01\x02R\x18rotationWindowPercentage\x12u\n" +
+	"\rkey_algorithm\x18\t \x01(\x0e2J.google.cloud.certificatemanager.v1.CertificateIssuanceConfig.KeyAlgorithmB\x04\xe2A\x01\x02R\fkeyAlgorithm\x12c\n" +
+	"\x04tags\x18\n" +
+	" \x03(\v2G.google.cloud.certificatemanager.v1.CertificateIssuanceConfig.TagsEntryB\x06\xe2A\x03\x04\x05\x01R\x04tags\x1a\xdc\x02\n" +
 	"\x1aCertificateAuthorityConfig\x12\xcd\x01\n" +
-	"$certificate_authority_service_config\x18\x01 \x01(\v2z.google.cloud.certificatemanager.v1.CertificateIssuanceConfig.CertificateAuthorityConfig.CertificateAuthorityServiceConfigH\x00R!certificateAuthorityServiceConfig\x1ae\n" +
-	"!CertificateAuthorityServiceConfig\x12@\n" +
-	"\aca_pool\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"$certificate_authority_service_config\x18\x01 \x01(\v2z.google.cloud.certificatemanager.v1.CertificateIssuanceConfig.CertificateAuthorityConfig.CertificateAuthorityServiceConfigH\x00R!certificateAuthorityServiceConfig\x1af\n" +
+	"!CertificateAuthorityServiceConfig\x12A\n" +
+	"\aca_pool\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
 	"\x1fprivateca.googleapis.com/CaPoolR\x06caPoolB\x06\n" +
 	"\x04kind\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a7\n" +
+	"\tTagsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"K\n" +
 	"\fKeyAlgorithm\x12\x1d\n" +
 	"\x19KEY_ALGORITHM_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bRSA_2048\x10\x01\x12\x0e\n" +
 	"\n" +
-	"ECDSA_P256\x10\x04:\xa3\x01\xeaA\x9f\x01\n" +
-	";certificatemanager.googleapis.com/CertificateIssuanceConfig\x12`projects/{project}/locations/{location}/certificateIssuanceConfigs/{certificate_issuance_config}B\xf3\x02\xeaA\\\n" +
+	"ECDSA_P256\x10\x04:\xda\x01\xeaA\xd6\x01\n" +
+	";certificatemanager.googleapis.com/CertificateIssuanceConfig\x12`projects/{project}/locations/{location}/certificateIssuanceConfigs/{certificate_issuance_config}*\x1acertificateIssuanceConfigs2\x19certificateIssuanceConfigB\xf3\x02\xeaA\\\n" +
 	"\x1fprivateca.googleapis.com/CaPool\x129projects/{project}/locations/{location}/caPools/{ca_pool}\n" +
 	"&com.google.cloud.certificatemanager.v1B\x1eCertificateIssuanceConfigProtoP\x01ZVcloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb;certificatemanagerpb\xaa\x02\"Google.Cloud.CertificateManager.V1\xca\x02\"Google\\Cloud\\CertificateManager\\V1\xea\x02%Google::Cloud::CertificateManager::V1b\x06proto3"
 
@@ -719,36 +801,42 @@ func file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_r
 }
 
 var file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_goTypes = []any{
 	(CertificateIssuanceConfig_KeyAlgorithm)(0),                  // 0: google.cloud.certificatemanager.v1.CertificateIssuanceConfig.KeyAlgorithm
 	(*ListCertificateIssuanceConfigsRequest)(nil),                // 1: google.cloud.certificatemanager.v1.ListCertificateIssuanceConfigsRequest
 	(*ListCertificateIssuanceConfigsResponse)(nil),               // 2: google.cloud.certificatemanager.v1.ListCertificateIssuanceConfigsResponse
 	(*GetCertificateIssuanceConfigRequest)(nil),                  // 3: google.cloud.certificatemanager.v1.GetCertificateIssuanceConfigRequest
 	(*CreateCertificateIssuanceConfigRequest)(nil),               // 4: google.cloud.certificatemanager.v1.CreateCertificateIssuanceConfigRequest
-	(*DeleteCertificateIssuanceConfigRequest)(nil),               // 5: google.cloud.certificatemanager.v1.DeleteCertificateIssuanceConfigRequest
-	(*CertificateIssuanceConfig)(nil),                            // 6: google.cloud.certificatemanager.v1.CertificateIssuanceConfig
-	(*CertificateIssuanceConfig_CertificateAuthorityConfig)(nil), // 7: google.cloud.certificatemanager.v1.CertificateIssuanceConfig.CertificateAuthorityConfig
-	nil, // 8: google.cloud.certificatemanager.v1.CertificateIssuanceConfig.LabelsEntry
-	(*CertificateIssuanceConfig_CertificateAuthorityConfig_CertificateAuthorityServiceConfig)(nil), // 9: google.cloud.certificatemanager.v1.CertificateIssuanceConfig.CertificateAuthorityConfig.CertificateAuthorityServiceConfig
-	(*timestamppb.Timestamp)(nil), // 10: google.protobuf.Timestamp
-	(*durationpb.Duration)(nil),   // 11: google.protobuf.Duration
+	(*UpdateCertificateIssuanceConfigRequest)(nil),               // 5: google.cloud.certificatemanager.v1.UpdateCertificateIssuanceConfigRequest
+	(*DeleteCertificateIssuanceConfigRequest)(nil),               // 6: google.cloud.certificatemanager.v1.DeleteCertificateIssuanceConfigRequest
+	(*CertificateIssuanceConfig)(nil),                            // 7: google.cloud.certificatemanager.v1.CertificateIssuanceConfig
+	(*CertificateIssuanceConfig_CertificateAuthorityConfig)(nil), // 8: google.cloud.certificatemanager.v1.CertificateIssuanceConfig.CertificateAuthorityConfig
+	nil, // 9: google.cloud.certificatemanager.v1.CertificateIssuanceConfig.LabelsEntry
+	nil, // 10: google.cloud.certificatemanager.v1.CertificateIssuanceConfig.TagsEntry
+	(*CertificateIssuanceConfig_CertificateAuthorityConfig_CertificateAuthorityServiceConfig)(nil), // 11: google.cloud.certificatemanager.v1.CertificateIssuanceConfig.CertificateAuthorityConfig.CertificateAuthorityServiceConfig
+	(*fieldmaskpb.FieldMask)(nil), // 12: google.protobuf.FieldMask
+	(*timestamppb.Timestamp)(nil), // 13: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),   // 14: google.protobuf.Duration
 }
 var file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_depIdxs = []int32{
-	6,  // 0: google.cloud.certificatemanager.v1.ListCertificateIssuanceConfigsResponse.certificate_issuance_configs:type_name -> google.cloud.certificatemanager.v1.CertificateIssuanceConfig
-	6,  // 1: google.cloud.certificatemanager.v1.CreateCertificateIssuanceConfigRequest.certificate_issuance_config:type_name -> google.cloud.certificatemanager.v1.CertificateIssuanceConfig
-	10, // 2: google.cloud.certificatemanager.v1.CertificateIssuanceConfig.create_time:type_name -> google.protobuf.Timestamp
-	10, // 3: google.cloud.certificatemanager.v1.CertificateIssuanceConfig.update_time:type_name -> google.protobuf.Timestamp
-	8,  // 4: google.cloud.certificatemanager.v1.CertificateIssuanceConfig.labels:type_name -> google.cloud.certificatemanager.v1.CertificateIssuanceConfig.LabelsEntry
-	7,  // 5: google.cloud.certificatemanager.v1.CertificateIssuanceConfig.certificate_authority_config:type_name -> google.cloud.certificatemanager.v1.CertificateIssuanceConfig.CertificateAuthorityConfig
-	11, // 6: google.cloud.certificatemanager.v1.CertificateIssuanceConfig.lifetime:type_name -> google.protobuf.Duration
-	0,  // 7: google.cloud.certificatemanager.v1.CertificateIssuanceConfig.key_algorithm:type_name -> google.cloud.certificatemanager.v1.CertificateIssuanceConfig.KeyAlgorithm
-	9,  // 8: google.cloud.certificatemanager.v1.CertificateIssuanceConfig.CertificateAuthorityConfig.certificate_authority_service_config:type_name -> google.cloud.certificatemanager.v1.CertificateIssuanceConfig.CertificateAuthorityConfig.CertificateAuthorityServiceConfig
-	9,  // [9:9] is the sub-list for method output_type
-	9,  // [9:9] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	7,  // 0: google.cloud.certificatemanager.v1.ListCertificateIssuanceConfigsResponse.certificate_issuance_configs:type_name -> google.cloud.certificatemanager.v1.CertificateIssuanceConfig
+	7,  // 1: google.cloud.certificatemanager.v1.CreateCertificateIssuanceConfigRequest.certificate_issuance_config:type_name -> google.cloud.certificatemanager.v1.CertificateIssuanceConfig
+	7,  // 2: google.cloud.certificatemanager.v1.UpdateCertificateIssuanceConfigRequest.certificate_issuance_config:type_name -> google.cloud.certificatemanager.v1.CertificateIssuanceConfig
+	12, // 3: google.cloud.certificatemanager.v1.UpdateCertificateIssuanceConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
+	13, // 4: google.cloud.certificatemanager.v1.CertificateIssuanceConfig.create_time:type_name -> google.protobuf.Timestamp
+	13, // 5: google.cloud.certificatemanager.v1.CertificateIssuanceConfig.update_time:type_name -> google.protobuf.Timestamp
+	9,  // 6: google.cloud.certificatemanager.v1.CertificateIssuanceConfig.labels:type_name -> google.cloud.certificatemanager.v1.CertificateIssuanceConfig.LabelsEntry
+	8,  // 7: google.cloud.certificatemanager.v1.CertificateIssuanceConfig.certificate_authority_config:type_name -> google.cloud.certificatemanager.v1.CertificateIssuanceConfig.CertificateAuthorityConfig
+	14, // 8: google.cloud.certificatemanager.v1.CertificateIssuanceConfig.lifetime:type_name -> google.protobuf.Duration
+	0,  // 9: google.cloud.certificatemanager.v1.CertificateIssuanceConfig.key_algorithm:type_name -> google.cloud.certificatemanager.v1.CertificateIssuanceConfig.KeyAlgorithm
+	10, // 10: google.cloud.certificatemanager.v1.CertificateIssuanceConfig.tags:type_name -> google.cloud.certificatemanager.v1.CertificateIssuanceConfig.TagsEntry
+	11, // 11: google.cloud.certificatemanager.v1.CertificateIssuanceConfig.CertificateAuthorityConfig.certificate_authority_service_config:type_name -> google.cloud.certificatemanager.v1.CertificateIssuanceConfig.CertificateAuthorityConfig.CertificateAuthorityServiceConfig
+	12, // [12:12] is the sub-list for method output_type
+	12, // [12:12] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_init() }
@@ -756,7 +844,7 @@ func file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_i
 	if File_google_cloud_certificatemanager_v1_certificate_issuance_config_proto != nil {
 		return
 	}
-	file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_msgTypes[6].OneofWrappers = []any{
+	file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_msgTypes[7].OneofWrappers = []any{
 		(*CertificateIssuanceConfig_CertificateAuthorityConfig_CertificateAuthorityServiceConfig_)(nil),
 	}
 	type x struct{}
@@ -765,7 +853,7 @@ func file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_i
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_rawDesc), len(file_google_cloud_certificatemanager_v1_certificate_issuance_config_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   9,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

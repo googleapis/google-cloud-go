@@ -283,30 +283,30 @@ var File_google_spanner_adapter_v1_adapter_proto protoreflect.FileDescriptor
 
 const file_google_spanner_adapter_v1_adapter_proto_rawDesc = "" +
 	"\n" +
-	"'google/spanner/adapter/v1/adapter.proto\x12\x19google.spanner.adapter.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xb9\x02\n" +
-	"\x13AdaptMessageRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1espanner.googleapis.com/SessionR\x04name\x12\x1f\n" +
-	"\bprotocol\x18\x02 \x01(\tB\x03\xe0A\x02R\bprotocol\x12\x1d\n" +
-	"\apayload\x18\x03 \x01(\fB\x03\xe0A\x01R\apayload\x12f\n" +
-	"\vattachments\x18\x04 \x03(\v2?.google.spanner.adapter.v1.AdaptMessageRequest.AttachmentsEntryB\x03\xe0A\x01R\vattachments\x1a>\n" +
+	"'google/spanner/adapter/v1/adapter.proto\x12\x19google.spanner.adapter.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xbd\x02\n" +
+	"\x13AdaptMessageRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1espanner.googleapis.com/SessionR\x04name\x12 \n" +
+	"\bprotocol\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bprotocol\x12\x1e\n" +
+	"\apayload\x18\x03 \x01(\fB\x04\xe2A\x01\x01R\apayload\x12g\n" +
+	"\vattachments\x18\x04 \x03(\v2?.google.spanner.adapter.v1.AdaptMessageRequest.AttachmentsEntryB\x04\xe2A\x01\x01R\vattachments\x1a>\n" +
 	"\x10AttachmentsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xfc\x01\n" +
-	"\x14AdaptMessageResponse\x12\x1d\n" +
-	"\apayload\x18\x01 \x01(\fB\x03\xe0A\x01R\apayload\x12k\n" +
-	"\rstate_updates\x18\x02 \x03(\v2A.google.spanner.adapter.v1.AdaptMessageResponse.StateUpdatesEntryB\x03\xe0A\x01R\fstateUpdates\x12\x17\n" +
-	"\x04last\x18\x03 \x01(\bB\x03\xe0A\x01R\x04last\x1a?\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xff\x01\n" +
+	"\x14AdaptMessageResponse\x12\x1e\n" +
+	"\apayload\x18\x01 \x01(\fB\x04\xe2A\x01\x01R\apayload\x12l\n" +
+	"\rstate_updates\x18\x02 \x03(\v2A.google.spanner.adapter.v1.AdaptMessageResponse.StateUpdatesEntryB\x04\xe2A\x01\x01R\fstateUpdates\x12\x18\n" +
+	"\x04last\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x04last\x1a?\n" +
 	"\x11StateUpdatesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xad\x01\n" +
-	"\aSession\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name:\x88\x01\xeaA\x84\x01\n" +
-	"\x1espanner.googleapis.com/Session\x12Oprojects/{project}/instances/{instance}/databases/{database}/sessions/{session}*\bsessions2\asession\"\x9a\x01\n" +
-	"\x14CreateSessionRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fspanner.googleapis.com/DatabaseR\x06parent\x12A\n" +
-	"\asession\x18\x02 \x01(\v2\".google.spanner.adapter.v1.SessionB\x03\xe0A\x02R\asession2\x93\x04\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xae\x01\n" +
+	"\aSession\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name:\x88\x01\xeaA\x84\x01\n" +
+	"\x1espanner.googleapis.com/Session\x12Oprojects/{project}/instances/{instance}/databases/{database}/sessions/{session}*\bsessions2\asession\"\x9c\x01\n" +
+	"\x14CreateSessionRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fspanner.googleapis.com/DatabaseR\x06parent\x12B\n" +
+	"\asession\x18\x02 \x01(\v2\".google.spanner.adapter.v1.SessionB\x04\xe2A\x01\x02R\asession2\x93\x04\n" +
 	"\aAdapter\x12\xc8\x01\n" +
 	"\rCreateSession\x12/.google.spanner.adapter.v1.CreateSessionRequest\x1a\".google.spanner.adapter.v1.Session\"b\xdaA\x0eparent,session\x82\xd3\xe4\x93\x02K:\asession\"@/v1/{parent=projects/*/instances/*/databases/*}/sessions:adapter\x12\xc3\x01\n" +
 	"\fAdaptMessage\x12..google.spanner.adapter.v1.AdaptMessageRequest\x1a/.google.spanner.adapter.v1.AdaptMessageResponse\"P\x82\xd3\xe4\x93\x02J:\x01*\"E/v1/{name=projects/*/instances/*/databases/*/sessions/*}:adaptMessage0\x01\x1aw\xcaA\x16spanner.googleapis.com\xd2A[https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/spanner.dataB\xba\x02\xeaA_\n" +

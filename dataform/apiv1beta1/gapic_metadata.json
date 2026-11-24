@@ -20,6 +20,11 @@
                 "CancelWorkflowInvocation"
               ]
             },
+            "CheckoutWorkspaceBranch": {
+              "methods": [
+                "CheckoutWorkspaceBranch"
+              ]
+            },
             "CommitRepositoryChanges": {
               "methods": [
                 "CommitRepositoryChanges"
@@ -38,6 +43,11 @@
             "CreateCompilationResult": {
               "methods": [
                 "CreateCompilationResult"
+              ]
+            },
+            "CreateCompilationResultLongRunning": {
+              "methods": [
+                "CreateCompilationResultLongRunning"
               ]
             },
             "CreateFolder": {
@@ -73,6 +83,11 @@
             "CreateWorkspace": {
               "methods": [
                 "CreateWorkspace"
+              ]
+            },
+            "DeleteBranch": {
+              "methods": [
+                "DeleteBranch"
               ]
             },
             "DeleteFolder": {
@@ -130,6 +145,11 @@
                 "DeleteWorkspace"
               ]
             },
+            "FetchCurrentWorkspaceBranch": {
+              "methods": [
+                "FetchCurrentWorkspaceBranch"
+              ]
+            },
             "FetchFileDiff": {
               "methods": [
                 "FetchFileDiff"
@@ -153,6 +173,16 @@
             "FetchRepositoryHistory": {
               "methods": [
                 "FetchRepositoryHistory"
+              ]
+            },
+            "FetchWorkspaceBranches": {
+              "methods": [
+                "FetchWorkspaceBranches"
+              ]
+            },
+            "FetchWorkspaceHistory": {
+              "methods": [
+                "FetchWorkspaceHistory"
               ]
             },
             "GetCompilationResult": {
@@ -368,6 +398,11 @@
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
+              ]
+            },
+            "SyncWorkspaceRefs": {
+              "methods": [
+                "SyncWorkspaceRefs"
               ]
             },
             "TestIamPermissions": {
@@ -425,6 +460,11 @@
                 "CancelWorkflowInvocation"
               ]
             },
+            "CheckoutWorkspaceBranch": {
+              "methods": [
+                "CheckoutWorkspaceBranch"
+              ]
+            },
             "CommitRepositoryChanges": {
               "methods": [
                 "CommitRepositoryChanges"
@@ -443,6 +483,11 @@
             "CreateCompilationResult": {
               "methods": [
                 "CreateCompilationResult"
+              ]
+            },
+            "CreateCompilationResultLongRunning": {
+              "methods": [
+                "CreateCompilationResultLongRunning"
               ]
             },
             "CreateFolder": {
@@ -478,6 +523,11 @@
             "CreateWorkspace": {
               "methods": [
                 "CreateWorkspace"
+              ]
+            },
+            "DeleteBranch": {
+              "methods": [
+                "DeleteBranch"
               ]
             },
             "DeleteFolder": {
@@ -535,6 +585,11 @@
                 "DeleteWorkspace"
               ]
             },
+            "FetchCurrentWorkspaceBranch": {
+              "methods": [
+                "FetchCurrentWorkspaceBranch"
+              ]
+            },
             "FetchFileDiff": {
               "methods": [
                 "FetchFileDiff"
@@ -558,6 +613,16 @@
             "FetchRepositoryHistory": {
               "methods": [
                 "FetchRepositoryHistory"
+              ]
+            },
+            "FetchWorkspaceBranches": {
+              "methods": [
+                "FetchWorkspaceBranches"
+              ]
+            },
+            "FetchWorkspaceHistory": {
+              "methods": [
+                "FetchWorkspaceHistory"
               ]
             },
             "GetCompilationResult": {
@@ -773,6 +838,11 @@
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
+              ]
+            },
+            "SyncWorkspaceRefs": {
+              "methods": [
+                "SyncWorkspaceRefs"
               ]
             },
             "TestIamPermissions": {

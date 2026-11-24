@@ -4,32 +4,18 @@
     "agentplatform": {
       "component": "agentplatform"
     },
-    "auth": {
-      "component": "auth",
-      "exclude-paths": [
-        "auth/oauth2adapt"
-      ]
-    },
-    "auth/oauth2adapt": {
-      "component": "auth/oauth2adapt"
-    },
-    "bigquery": {
-      "component": "bigquery",
-      "exclude-paths": [
-        "bigquery/v2"
-      ]
-    },
     "bigtable": {
       "component": "bigtable"
     },
-    "compute/metadata": {
-      "component": "compute/metadata"
-    },
-    "datastore": {
-      "component": "datastore"
-    },
-    "firestore": {
-      "component": "firestore"
+    "chronicle": {
+      "component": "chronicle",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.chronicle.v1.json",
+          "type": "json"
+        }
+      ]
     },
     "pubsub": {
       "component": "pubsub",

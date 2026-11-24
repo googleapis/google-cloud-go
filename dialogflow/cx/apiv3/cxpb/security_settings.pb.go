@@ -1021,31 +1021,31 @@ var File_google_cloud_dialogflow_cx_v3_security_settings_proto protoreflect.File
 
 const file_google_cloud_dialogflow_cx_v3_security_settings_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/dialogflow/cx/v3/security_settings.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"d\n" +
-	"\x1aGetSecuritySettingsRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*dialogflow.googleapis.com/SecuritySettingsR\x04name\"\xc4\x01\n" +
-	"\x1dUpdateSecuritySettingsRequest\x12a\n" +
-	"\x11security_settings\x18\x01 \x01(\v2/.google.cloud.dialogflow.cx.v3.SecuritySettingsB\x03\xe0A\x02R\x10securitySettings\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xa5\x01\n" +
-	"\x1bListSecuritySettingsRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*dialogflow.googleapis.com/SecuritySettingsR\x06parent\x12\x1b\n" +
+	"5google/cloud/dialogflow/cx/v3/security_settings.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"e\n" +
+	"\x1aGetSecuritySettingsRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*dialogflow.googleapis.com/SecuritySettingsR\x04name\"\xc6\x01\n" +
+	"\x1dUpdateSecuritySettingsRequest\x12b\n" +
+	"\x11security_settings\x18\x01 \x01(\v2/.google.cloud.dialogflow.cx.v3.SecuritySettingsB\x04\xe2A\x01\x02R\x10securitySettings\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xa6\x01\n" +
+	"\x1bListSecuritySettingsRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*dialogflow.googleapis.com/SecuritySettingsR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa4\x01\n" +
 	"\x1cListSecuritySettingsResponse\x12\\\n" +
 	"\x11security_settings\x18\x01 \x03(\v2/.google.cloud.dialogflow.cx.v3.SecuritySettingsR\x10securitySettings\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xce\x01\n" +
-	"\x1dCreateSecuritySettingsRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*dialogflow.googleapis.com/SecuritySettingsR\x06parent\x12a\n" +
-	"\x11security_settings\x18\x02 \x01(\v2/.google.cloud.dialogflow.cx.v3.SecuritySettingsB\x03\xe0A\x02R\x10securitySettings\"g\n" +
-	"\x1dDeleteSecuritySettingsRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*dialogflow.googleapis.com/SecuritySettingsR\x04name\"\x8f\x0f\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd0\x01\n" +
+	"\x1dCreateSecuritySettingsRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*dialogflow.googleapis.com/SecuritySettingsR\x06parent\x12b\n" +
+	"\x11security_settings\x18\x02 \x01(\v2/.google.cloud.dialogflow.cx.v3.SecuritySettingsB\x04\xe2A\x01\x02R\x10securitySettings\"h\n" +
+	"\x1dDeleteSecuritySettingsRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*dialogflow.googleapis.com/SecuritySettingsR\x04name\"\x90\x0f\n" +
 	"\x10SecuritySettings\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12p\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12p\n" +
 	"\x12redaction_strategy\x18\x03 \x01(\x0e2A.google.cloud.dialogflow.cx.v3.SecuritySettings.RedactionStrategyR\x11redactionStrategy\x12g\n" +
 	"\x0fredaction_scope\x18\x04 \x01(\x0e2>.google.cloud.dialogflow.cx.v3.SecuritySettings.RedactionScopeR\x0eredactionScope\x12R\n" +
 	"\x10inspect_template\x18\t \x01(\tB'\xfaA$\n" +

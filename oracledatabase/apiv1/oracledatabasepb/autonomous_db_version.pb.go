@@ -118,13 +118,13 @@ var File_google_cloud_oracledatabase_v1_autonomous_db_version_proto protoreflect
 
 const file_google_cloud_oracledatabase_v1_autonomous_db_version_proto_rawDesc = "" +
 	"\n" +
-	":google/cloud/oracledatabase/v1/autonomous_db_version.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/oracledatabase/v1/autonomous_database.proto\"\x82\x03\n" +
-	"\x13AutonomousDbVersion\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\aversion\x18\x02 \x01(\tB\x03\xe0A\x03R\aversion\x12P\n" +
-	"\vdb_workload\x18\x04 \x01(\x0e2*.google.cloud.oracledatabase.v1.DBWorkloadB\x03\xe0A\x03R\n" +
-	"dbWorkload\x12&\n" +
-	"\fworkload_uri\x18\x05 \x01(\tB\x03\xe0A\x03R\vworkloadUri:\xb8\x01\xeaA\xb4\x01\n" +
+	":google/cloud/oracledatabase/v1/autonomous_db_version.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/oracledatabase/v1/autonomous_database.proto\"\x86\x03\n" +
+	"\x13AutonomousDbVersion\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1e\n" +
+	"\aversion\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\aversion\x12Q\n" +
+	"\vdb_workload\x18\x04 \x01(\x0e2*.google.cloud.oracledatabase.v1.DBWorkloadB\x04\xe2A\x01\x03R\n" +
+	"dbWorkload\x12'\n" +
+	"\fworkload_uri\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\vworkloadUri:\xb8\x01\xeaA\xb4\x01\n" +
 	"1oracledatabase.googleapis.com/AutonomousDbVersion\x12Tprojects/{project}/locations/{location}/autonomousDbVersions/{autonomous_db_version}*\x14autonomousDbVersions2\x13autonomousDbVersionB\xf2\x01\n" +
 	"\"com.google.cloud.oracledatabase.v1B\x18AutonomousDbVersionProtoP\x01ZJcloud.google.com/go/oracledatabase/apiv1/oracledatabasepb;oracledatabasepb\xaa\x02\x1eGoogle.Cloud.OracleDatabase.V1\xca\x02\x1eGoogle\\Cloud\\OracleDatabase\\V1\xea\x02!Google::Cloud::OracleDatabase::V1b\x06proto3"
 

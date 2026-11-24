@@ -212,6 +212,39 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetExecution = append(client.CallOptions.GetExecution, gax.WithClientMetrics(metrics))
 		client.CallOptions.CancelExecution = append(client.CallOptions.CancelExecution, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "workflowexecutions",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/workflows/executions/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "workflowexecutions.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListExecutions = append(client.CallOptions.ListExecutions, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateExecution = append(client.CallOptions.CreateExecution, gax.WithClientTracing(tracing))
+		client.CallOptions.GetExecution = append(client.CallOptions.GetExecution, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelExecution = append(client.CallOptions.CancelExecution, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "workflowexecutions",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/workflows/executions/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "workflowexecutions.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListExecutions = append(client.CallOptions.ListExecutions, gax.WithClientLogging(logging))
+		client.CallOptions.CreateExecution = append(client.CallOptions.CreateExecution, gax.WithClientLogging(logging))
+		client.CallOptions.GetExecution = append(client.CallOptions.GetExecution, gax.WithClientLogging(logging))
+		client.CallOptions.CancelExecution = append(client.CallOptions.CancelExecution, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -248,9 +281,6 @@ func (c *gRPCClient) ListExecutions(ctx context.Context, req *executionspb.ListE
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workflowexecutions.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workflows.executions.v1.Executions/ListExecutions")
 	}
@@ -300,9 +330,6 @@ func (c *gRPCClient) CreateExecution(ctx context.Context, req *executionspb.Crea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workflowexecutions.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workflows.executions.v1.Executions/CreateExecution")
 	}
@@ -324,9 +351,6 @@ func (c *gRPCClient) GetExecution(ctx context.Context, req *executionspb.GetExec
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workflowexecutions.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workflows.executions.v1.Executions/GetExecution")
 	}
@@ -348,9 +372,6 @@ func (c *gRPCClient) CancelExecution(ctx context.Context, req *executionspb.Canc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workflowexecutions.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workflows.executions.v1.Executions/CancelExecution")
 	}

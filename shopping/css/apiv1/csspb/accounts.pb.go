@@ -508,43 +508,43 @@ var File_google_shopping_css_v1_accounts_proto protoreflect.FileDescriptor
 
 const file_google_shopping_css_v1_accounts_proto_rawDesc = "" +
 	"\n" +
-	"%google/shopping/css/v1/accounts.proto\x12\x16google.shopping.css.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xf9\x01\n" +
-	"\x18ListChildAccountsRequest\x12:\n" +
-	"\x06parent\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
+	"%google/shopping/css/v1/accounts.proto\x12\x16google.shopping.css.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xfc\x01\n" +
+	"\x18ListChildAccountsRequest\x12;\n" +
+	"\x06parent\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
 	"\x1acss.googleapis.com/AccountR\x06parent\x12\x1e\n" +
 	"\blabel_id\x18\x02 \x01(\x03H\x00R\alabelId\x88\x01\x01\x12 \n" +
-	"\tfull_name\x18\x03 \x01(\tH\x01R\bfullName\x88\x01\x01\x12 \n" +
-	"\tpage_size\x18\x04 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\tfull_name\x18\x03 \x01(\tH\x01R\bfullName\x88\x01\x01\x12!\n" +
+	"\tpage_size\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x05 \x01(\tB\x03\xe0A\x01R\tpageTokenB\v\n" +
+	"page_token\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\tpageTokenB\v\n" +
 	"\t_label_idB\f\n" +
 	"\n" +
 	"_full_name\"\x80\x01\n" +
 	"\x19ListChildAccountsResponse\x12;\n" +
 	"\baccounts\x18\x01 \x03(\v2\x1f.google.shopping.css.v1.AccountR\baccounts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x97\x01\n" +
-	"\x11GetAccountRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1acss.googleapis.com/AccountR\x04name\x12?\n" +
-	"\x06parent\x18\x02 \x01(\tB\"\xe0A\x01\xfaA\x1c\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x99\x01\n" +
+	"\x11GetAccountRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1acss.googleapis.com/AccountR\x04name\x12@\n" +
+	"\x06parent\x18\x02 \x01(\tB#\xe2A\x01\x01\xfaA\x1c\n" +
 	"\x1acss.googleapis.com/AccountH\x00R\x06parent\x88\x01\x01B\t\n" +
-	"\a_parent\"\xbd\x01\n" +
-	"\x1aUpdateAccountLabelsRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
+	"\a_parent\"\xbf\x01\n" +
+	"\x1aUpdateAccountLabelsRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
 	"\x1acss.googleapis.com/AccountR\x04name\x12\x1b\n" +
-	"\tlabel_ids\x18\x02 \x03(\x03R\blabelIds\x12?\n" +
-	"\x06parent\x18\x03 \x01(\tB\"\xe0A\x01\xfaA\x1c\n" +
+	"\tlabel_ids\x18\x02 \x03(\x03R\blabelIds\x12@\n" +
+	"\x06parent\x18\x03 \x01(\tB#\xe2A\x01\x01\xfaA\x1c\n" +
 	"\x1acss.googleapis.com/AccountH\x00R\x06parent\x88\x01\x01B\t\n" +
-	"\a_parent\"\x97\x05\n" +
+	"\a_parent\"\x96\x05\n" +
 	"\aAccount\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12#\n" +
-	"\tfull_name\x18\x02 \x01(\tB\x06\xe0A\x03\xe0A\x05R\bfullName\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tH\x00R\vdisplayName\x88\x01\x01\x12.\n" +
-	"\fhomepage_uri\x18\x04 \x01(\tB\x06\xe0A\x03\xe0A\x05H\x01R\vhomepageUri\x88\x01\x01\x12\x1b\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\"\n" +
+	"\tfull_name\x18\x02 \x01(\tB\x05\xe2A\x02\x03\x05R\bfullName\x12&\n" +
+	"\fdisplay_name\x18\x03 \x01(\tH\x00R\vdisplayName\x88\x01\x01\x12-\n" +
+	"\fhomepage_uri\x18\x04 \x01(\tB\x05\xe2A\x02\x03\x05H\x01R\vhomepageUri\x88\x01\x01\x12\x1b\n" +
 	"\x06parent\x18\x05 \x01(\tH\x02R\x06parent\x88\x01\x01\x12\x1b\n" +
 	"\tlabel_ids\x18\x06 \x03(\x03R\blabelIds\x12.\n" +
-	"\x13automatic_label_ids\x18\a \x03(\x03R\x11automaticLabelIds\x12S\n" +
-	"\faccount_type\x18\b \x01(\x0e2+.google.shopping.css.v1.Account.AccountTypeB\x03\xe0A\x03R\vaccountType\"\xc6\x01\n" +
+	"\x13automatic_label_ids\x18\a \x03(\x03R\x11automaticLabelIds\x12T\n" +
+	"\faccount_type\x18\b \x01(\x0e2+.google.shopping.css.v1.Account.AccountTypeB\x04\xe2A\x01\x03R\vaccountType\"\xc6\x01\n" +
 	"\vAccountType\x12\x1c\n" +
 	"\x18ACCOUNT_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tCSS_GROUP\x10\x01\x12\x0e\n" +

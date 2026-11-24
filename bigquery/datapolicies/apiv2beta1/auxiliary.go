@@ -17,9 +17,18 @@
 package datapolicies
 
 import (
+	"iter"
+
 	datapoliciespb "cloud.google.com/go/bigquery/datapolicies/apiv2beta1/datapoliciespb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataPolicyIterator) All() iter.Seq2[*datapoliciespb.DataPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // DataPolicyIterator manages a stream of *datapoliciespb.DataPolicy.
 type DataPolicyIterator struct {

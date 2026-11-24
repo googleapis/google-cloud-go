@@ -261,6 +261,35 @@ func NewEmailPreferencesClient(ctx context.Context, opts ...option.ClientOption)
 		client.CallOptions.GetEmailPreferences = append(client.CallOptions.GetEmailPreferences, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateEmailPreferences = append(client.CallOptions.UpdateEmailPreferences, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetEmailPreferences = append(client.CallOptions.GetEmailPreferences, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateEmailPreferences = append(client.CallOptions.UpdateEmailPreferences, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetEmailPreferences = append(client.CallOptions.GetEmailPreferences, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateEmailPreferences = append(client.CallOptions.UpdateEmailPreferences, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -356,6 +385,35 @@ func NewEmailPreferencesRESTClient(ctx context.Context, opts ...option.ClientOpt
 		callOpts.GetEmailPreferences = append(callOpts.GetEmailPreferences, gax.WithClientMetrics(metrics))
 		callOpts.UpdateEmailPreferences = append(callOpts.UpdateEmailPreferences, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetEmailPreferences = append(callOpts.GetEmailPreferences, gax.WithClientTracing(tracing))
+		callOpts.UpdateEmailPreferences = append(callOpts.UpdateEmailPreferences, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetEmailPreferences = append(callOpts.GetEmailPreferences, gax.WithClientLogging(logging))
+		callOpts.UpdateEmailPreferences = append(callOpts.UpdateEmailPreferences, gax.WithClientLogging(logging))
+	}
 
 	return &EmailPreferencesClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -402,9 +460,6 @@ func (c *emailPreferencesGRPCClient) GetEmailPreferences(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.EmailPreferencesService/GetEmailPreferences")
 	}
@@ -451,6 +506,11 @@ func (c *emailPreferencesRESTClient) GetEmailPreferences(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -464,9 +524,6 @@ func (c *emailPreferencesRESTClient) GetEmailPreferences(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.EmailPreferencesService/GetEmailPreferences")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{name=accounts/*/users/*/emailPreferences}")
@@ -523,6 +580,11 @@ func (c *emailPreferencesRESTClient) UpdateEmailPreferences(ctx context.Context,
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEmailPreferences().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v", req.GetEmailPreferences().GetName())

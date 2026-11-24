@@ -766,24 +766,24 @@ var File_google_cloud_financialservices_v1_model_proto protoreflect.FileDescript
 
 const file_google_cloud_financialservices_v1_model_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/financialservices/v1/model.proto\x12!google.cloud.financialservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a<google/cloud/financialservices/v1/bigquery_destination.proto\x1a8google/cloud/financialservices/v1/line_of_business.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x80\b\n" +
-	"\x05Model\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"-google/cloud/financialservices/v1/model.proto\x12!google.cloud.financialservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a<google/cloud/financialservices/v1/bigquery_destination.proto\x1a8google/cloud/financialservices/v1/line_of_business.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x89\b\n" +
+	"\x05Model\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12L\n" +
-	"\x06labels\x18\x04 \x03(\v24.google.cloud.financialservices.v1.Model.LabelsEntryR\x06labels\x12I\n" +
-	"\x05state\x18\x05 \x01(\x0e2..google.cloud.financialservices.v1.Model.StateB\x03\xe0A\x03R\x05state\x12]\n" +
-	"\x0eengine_version\x18\x06 \x01(\tB6\xe0A\x03\xfaA0\n" +
-	".financialservices.googleapis.com/EngineVersionR\rengineVersion\x12Z\n" +
-	"\rengine_config\x18\a \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-financialservices.googleapis.com/EngineConfigR\fengineConfig\x12Y\n" +
-	"\x0fprimary_dataset\x18\b \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(financialservices.googleapis.com/DatasetR\x0eprimaryDataset\x12:\n" +
+	"\x06labels\x18\x04 \x03(\v24.google.cloud.financialservices.v1.Model.LabelsEntryR\x06labels\x12J\n" +
+	"\x05state\x18\x05 \x01(\x0e2..google.cloud.financialservices.v1.Model.StateB\x04\xe2A\x01\x03R\x05state\x12^\n" +
+	"\x0eengine_version\x18\x06 \x01(\tB7\xe2A\x01\x03\xfaA0\n" +
+	".financialservices.googleapis.com/EngineVersionR\rengineVersion\x12[\n" +
+	"\rengine_config\x18\a \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-financialservices.googleapis.com/EngineConfigR\fengineConfig\x12Z\n" +
+	"\x0fprimary_dataset\x18\b \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(financialservices.googleapis.com/DatasetR\x0eprimaryDataset\x12;\n" +
 	"\bend_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\aendTime\x12`\n" +
-	"\x10line_of_business\x18\f \x01(\x0e21.google.cloud.financialservices.v1.LineOfBusinessB\x03\xe0A\x03R\x0elineOfBusiness\x1a9\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\aendTime\x12a\n" +
+	"\x10line_of_business\x18\f \x01(\x0e21.google.cloud.financialservices.v1.LineOfBusinessB\x04\xe2A\x01\x03R\x0elineOfBusiness\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"T\n" +
@@ -794,9 +794,9 @@ const file_google_cloud_financialservices_v1_model_proto_rawDesc = "" +
 	"\x06ACTIVE\x10\x02\x12\f\n" +
 	"\bUPDATING\x10\x03\x12\f\n" +
 	"\bDELETING\x10\x04:|\xeaAy\n" +
-	"&financialservices.googleapis.com/Model\x12Oprojects/{project_num}/locations/{location}/instances/{instance}/models/{model}\"\xcd\x01\n" +
-	"\x11ListModelsRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"&financialservices.googleapis.com/Model\x12Oprojects/{project_num}/locations/{location}/instances/{instance}/models/{model}\"\xce\x01\n" +
+	"\x11ListModelsRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")financialservices.googleapis.com/InstanceR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -806,32 +806,32 @@ const file_google_cloud_financialservices_v1_model_proto_rawDesc = "" +
 	"\x12ListModelsResponse\x12@\n" +
 	"\x06models\x18\x01 \x03(\v2(.google.cloud.financialservices.v1.ModelR\x06models\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"U\n" +
-	"\x0fGetModelRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&financialservices.googleapis.com/ModelR\x04name\"\xe8\x01\n" +
-	"\x12CreateModelRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")financialservices.googleapis.com/InstanceR\x06parent\x12\x1e\n" +
-	"\bmodel_id\x18\x02 \x01(\tB\x03\xe0A\x02R\amodelId\x12C\n" +
-	"\x05model\x18\x03 \x01(\v2(.google.cloud.financialservices.v1.ModelB\x03\xe0A\x02R\x05model\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"V\n" +
+	"\x0fGetModelRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&financialservices.googleapis.com/ModelR\x04name\"\xec\x01\n" +
+	"\x12CreateModelRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")financialservices.googleapis.com/InstanceR\x06parent\x12\x1f\n" +
+	"\bmodel_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\amodelId\x12D\n" +
+	"\x05model\x18\x03 \x01(\v2(.google.cloud.financialservices.v1.ModelB\x04\xe2A\x01\x02R\x05model\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xbf\x01\n" +
-	"\x12UpdateModelRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12C\n" +
-	"\x05model\x18\x02 \x01(\v2(.google.cloud.financialservices.v1.ModelB\x03\xe0A\x02R\x05model\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xc2\x01\n" +
+	"\x12UpdateModelRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12D\n" +
+	"\x05model\x18\x02 \x01(\v2(.google.cloud.financialservices.v1.ModelB\x04\xe2A\x01\x02R\x05model\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"|\n" +
-	"\x12DeleteModelRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&financialservices.googleapis.com/ModelR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"~\n" +
+	"\x12DeleteModelRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&financialservices.googleapis.com/ModelR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xe8\x01\n" +
-	"\x1aExportModelMetadataRequest\x12D\n" +
-	"\x05model\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&financialservices.googleapis.com/ModelR\x05model\x12\x83\x01\n" +
-	"\x1fstructured_metadata_destination\x18\x02 \x01(\v26.google.cloud.financialservices.v1.BigQueryDestinationB\x03\xe0A\x02R\x1dstructuredMetadataDestination\"\x1d\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xea\x01\n" +
+	"\x1aExportModelMetadataRequest\x12E\n" +
+	"\x05model\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&financialservices.googleapis.com/ModelR\x05model\x12\x84\x01\n" +
+	"\x1fstructured_metadata_destination\x18\x02 \x01(\v26.google.cloud.financialservices.v1.BigQueryDestinationB\x04\xe2A\x01\x02R\x1dstructuredMetadataDestination\"\x1d\n" +
 	"\x1bExportModelMetadataResponseB\xf9\x01\n" +
 	"%com.google.cloud.financialservices.v1B\n" +
 	"ModelProtoP\x01ZScloud.google.com/go/financialservices/apiv1/financialservicespb;financialservicespb\xaa\x02!Google.Cloud.FinancialServices.V1\xca\x02!Google\\Cloud\\FinancialServices\\V1\xea\x02$Google::Cloud::FinancialServices::V1b\x06proto3"

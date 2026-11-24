@@ -177,6 +177,33 @@ func NewSpeechTranslationClient(ctx context.Context, opts ...option.ClientOption
 
 		client.CallOptions.StreamingTranslateSpeech = append(client.CallOptions.StreamingTranslateSpeech, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "mediatranslation",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/mediatranslation/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "mediatranslation.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.StreamingTranslateSpeech = append(client.CallOptions.StreamingTranslateSpeech, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "mediatranslation",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/mediatranslation/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "mediatranslation.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.StreamingTranslateSpeech = append(client.CallOptions.StreamingTranslateSpeech, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 

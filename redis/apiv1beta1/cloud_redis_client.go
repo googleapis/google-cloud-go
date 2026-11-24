@@ -480,6 +480,53 @@ func NewCloudRedisClient(ctx context.Context, opts ...option.ClientOption) (*Clo
 		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientMetrics(metrics))
 		client.CallOptions.RescheduleMaintenance = append(client.CallOptions.RescheduleMaintenance, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "redis",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/redis/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "redis.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientTracing(tracing))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.GetInstanceAuthString = append(client.CallOptions.GetInstanceAuthString, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateInstance = append(client.CallOptions.CreateInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateInstance = append(client.CallOptions.UpdateInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.UpgradeInstance = append(client.CallOptions.UpgradeInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportInstance = append(client.CallOptions.ImportInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportInstance = append(client.CallOptions.ExportInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.FailoverInstance = append(client.CallOptions.FailoverInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.RescheduleMaintenance = append(client.CallOptions.RescheduleMaintenance, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "redis",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/redis/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "redis.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientLogging(logging))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientLogging(logging))
+		client.CallOptions.GetInstanceAuthString = append(client.CallOptions.GetInstanceAuthString, gax.WithClientLogging(logging))
+		client.CallOptions.CreateInstance = append(client.CallOptions.CreateInstance, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateInstance = append(client.CallOptions.UpdateInstance, gax.WithClientLogging(logging))
+		client.CallOptions.UpgradeInstance = append(client.CallOptions.UpgradeInstance, gax.WithClientLogging(logging))
+		client.CallOptions.ImportInstance = append(client.CallOptions.ImportInstance, gax.WithClientLogging(logging))
+		client.CallOptions.ExportInstance = append(client.CallOptions.ExportInstance, gax.WithClientLogging(logging))
+		client.CallOptions.FailoverInstance = append(client.CallOptions.FailoverInstance, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientLogging(logging))
+		client.CallOptions.RescheduleMaintenance = append(client.CallOptions.RescheduleMaintenance, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -616,6 +663,53 @@ func NewCloudRedisRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientMetrics(metrics))
 		callOpts.RescheduleMaintenance = append(callOpts.RescheduleMaintenance, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "redis",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/redis/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "redis.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientTracing(tracing))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientTracing(tracing))
+		callOpts.GetInstanceAuthString = append(callOpts.GetInstanceAuthString, gax.WithClientTracing(tracing))
+		callOpts.CreateInstance = append(callOpts.CreateInstance, gax.WithClientTracing(tracing))
+		callOpts.UpdateInstance = append(callOpts.UpdateInstance, gax.WithClientTracing(tracing))
+		callOpts.UpgradeInstance = append(callOpts.UpgradeInstance, gax.WithClientTracing(tracing))
+		callOpts.ImportInstance = append(callOpts.ImportInstance, gax.WithClientTracing(tracing))
+		callOpts.ExportInstance = append(callOpts.ExportInstance, gax.WithClientTracing(tracing))
+		callOpts.FailoverInstance = append(callOpts.FailoverInstance, gax.WithClientTracing(tracing))
+		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientTracing(tracing))
+		callOpts.RescheduleMaintenance = append(callOpts.RescheduleMaintenance, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "redis",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/redis/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "redis.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientLogging(logging))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientLogging(logging))
+		callOpts.GetInstanceAuthString = append(callOpts.GetInstanceAuthString, gax.WithClientLogging(logging))
+		callOpts.CreateInstance = append(callOpts.CreateInstance, gax.WithClientLogging(logging))
+		callOpts.UpdateInstance = append(callOpts.UpdateInstance, gax.WithClientLogging(logging))
+		callOpts.UpgradeInstance = append(callOpts.UpgradeInstance, gax.WithClientLogging(logging))
+		callOpts.ImportInstance = append(callOpts.ImportInstance, gax.WithClientLogging(logging))
+		callOpts.ExportInstance = append(callOpts.ExportInstance, gax.WithClientLogging(logging))
+		callOpts.FailoverInstance = append(callOpts.FailoverInstance, gax.WithClientLogging(logging))
+		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientLogging(logging))
+		callOpts.RescheduleMaintenance = append(callOpts.RescheduleMaintenance, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -672,9 +766,6 @@ func (c *cloudRedisGRPCClient) ListInstances(ctx context.Context, req *redispb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//redis.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.v1beta1.CloudRedis/ListInstances")
 	}
@@ -724,9 +815,6 @@ func (c *cloudRedisGRPCClient) GetInstance(ctx context.Context, req *redispb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//redis.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.v1beta1.CloudRedis/GetInstance")
 	}
@@ -748,9 +836,6 @@ func (c *cloudRedisGRPCClient) GetInstanceAuthString(ctx context.Context, req *r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//redis.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.v1beta1.CloudRedis/GetInstanceAuthString")
 	}
@@ -772,9 +857,6 @@ func (c *cloudRedisGRPCClient) CreateInstance(ctx context.Context, req *redispb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//redis.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.v1beta1.CloudRedis/CreateInstance")
 	}
@@ -829,9 +911,6 @@ func (c *cloudRedisGRPCClient) UpgradeInstance(ctx context.Context, req *redispb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//redis.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.v1beta1.CloudRedis/UpgradeInstance")
 	}
@@ -913,9 +992,6 @@ func (c *cloudRedisGRPCClient) FailoverInstance(ctx context.Context, req *redisp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//redis.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.v1beta1.CloudRedis/FailoverInstance")
 	}
@@ -943,9 +1019,6 @@ func (c *cloudRedisGRPCClient) DeleteInstance(ctx context.Context, req *redispb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//redis.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.v1beta1.CloudRedis/DeleteInstance")
 	}
@@ -973,9 +1046,6 @@ func (c *cloudRedisGRPCClient) RescheduleMaintenance(ctx context.Context, req *r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//redis.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.v1beta1.CloudRedis/RescheduleMaintenance")
 	}
@@ -1023,6 +1093,11 @@ func (c *cloudRedisRESTClient) ListInstances(ctx context.Context, req *redispb.L
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/instances", req.GetParent())
@@ -1090,6 +1165,11 @@ func (c *cloudRedisRESTClient) GetInstance(ctx context.Context, req *redispb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1103,9 +1183,6 @@ func (c *cloudRedisRESTClient) GetInstance(ctx context.Context, req *redispb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//redis.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.v1beta1.CloudRedis/GetInstance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/instances/*}")
@@ -1149,6 +1226,11 @@ func (c *cloudRedisRESTClient) GetInstanceAuthString(ctx context.Context, req *r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/authString", req.GetName())
 
 	params := url.Values{}
@@ -1162,9 +1244,6 @@ func (c *cloudRedisRESTClient) GetInstanceAuthString(ctx context.Context, req *r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//redis.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.v1beta1.CloudRedis/GetInstanceAuthString")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/instances/*}/authString")
@@ -1224,6 +1303,11 @@ func (c *cloudRedisRESTClient) CreateInstance(ctx context.Context, req *redispb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/instances", req.GetParent())
 
 	params := url.Values{}
@@ -1238,9 +1322,6 @@ func (c *cloudRedisRESTClient) CreateInstance(ctx context.Context, req *redispb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//redis.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.v1beta1.CloudRedis/CreateInstance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*}/instances")
@@ -1298,6 +1379,11 @@ func (c *cloudRedisRESTClient) UpdateInstance(ctx context.Context, req *redispb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetInstance().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetInstance().GetName())
@@ -1375,6 +1461,11 @@ func (c *cloudRedisRESTClient) UpgradeInstance(ctx context.Context, req *redispb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:upgrade", req.GetName())
 
 	params := url.Values{}
@@ -1388,9 +1479,6 @@ func (c *cloudRedisRESTClient) UpgradeInstance(ctx context.Context, req *redispb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//redis.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.v1beta1.CloudRedis/UpgradeInstance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/instances/*}:upgrade")
@@ -1450,6 +1538,11 @@ func (c *cloudRedisRESTClient) ImportInstance(ctx context.Context, req *redispb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:import", req.GetName())
@@ -1524,6 +1617,11 @@ func (c *cloudRedisRESTClient) ExportInstance(ctx context.Context, req *redispb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:export", req.GetName())
 
 	params := url.Values{}
@@ -1592,6 +1690,11 @@ func (c *cloudRedisRESTClient) FailoverInstance(ctx context.Context, req *redisp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:failover", req.GetName())
 
 	params := url.Values{}
@@ -1605,9 +1708,6 @@ func (c *cloudRedisRESTClient) FailoverInstance(ctx context.Context, req *redisp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//redis.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.v1beta1.CloudRedis/FailoverInstance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/instances/*}:failover")
@@ -1657,6 +1757,11 @@ func (c *cloudRedisRESTClient) DeleteInstance(ctx context.Context, req *redispb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1670,9 +1775,6 @@ func (c *cloudRedisRESTClient) DeleteInstance(ctx context.Context, req *redispb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//redis.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.v1beta1.CloudRedis/DeleteInstance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/instances/*}")
@@ -1728,6 +1830,11 @@ func (c *cloudRedisRESTClient) RescheduleMaintenance(ctx context.Context, req *r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:rescheduleMaintenance", req.GetName())
 
 	params := url.Values{}
@@ -1741,9 +1848,6 @@ func (c *cloudRedisRESTClient) RescheduleMaintenance(ctx context.Context, req *r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//redis.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.redis.v1beta1.CloudRedis/RescheduleMaintenance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/instances/*}:rescheduleMaintenance")

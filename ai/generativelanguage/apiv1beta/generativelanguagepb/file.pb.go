@@ -398,27 +398,27 @@ var File_google_ai_generativelanguage_v1beta_file_proto protoreflect.FileDescrip
 
 const file_google_ai_generativelanguage_v1beta_file_proto_rawDesc = "" +
 	"\n" +
-	".google/ai/generativelanguage/v1beta/file.proto\x12#google.ai.generativelanguage.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xd9\a\n" +
-	"\x04File\x12d\n" +
-	"\x0evideo_metadata\x18\f \x01(\v26.google.ai.generativelanguage.v1beta.VideoFileMetadataB\x03\xe0A\x03H\x00R\rvideoMetadata\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x05R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12 \n" +
-	"\tmime_type\x18\x03 \x01(\tB\x03\xe0A\x03R\bmimeType\x12\"\n" +
+	".google/ai/generativelanguage/v1beta/file.proto\x12#google.ai.generativelanguage.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xe4\a\n" +
+	"\x04File\x12e\n" +
+	"\x0evideo_metadata\x18\f \x01(\v26.google.ai.generativelanguage.v1beta.VideoFileMetadataB\x04\xe2A\x01\x03H\x00R\rvideoMetadata\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x05R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12!\n" +
+	"\tmime_type\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\bmimeType\x12#\n" +
 	"\n" +
-	"size_bytes\x18\x04 \x01(\x03B\x03\xe0A\x03R\tsizeBytes\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12H\n" +
-	"\x0fexpiration_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0eexpirationTime\x12$\n" +
-	"\vsha256_hash\x18\b \x01(\fB\x03\xe0A\x03R\n" +
-	"sha256Hash\x12\x15\n" +
-	"\x03uri\x18\t \x01(\tB\x03\xe0A\x03R\x03uri\x12&\n" +
-	"\fdownload_uri\x18\x0e \x01(\tB\x03\xe0A\x03R\vdownloadUri\x12J\n" +
+	"size_bytes\x18\x04 \x01(\x03B\x04\xe2A\x01\x03R\tsizeBytes\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12I\n" +
+	"\x0fexpiration_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0eexpirationTime\x12%\n" +
+	"\vsha256_hash\x18\b \x01(\fB\x04\xe2A\x01\x03R\n" +
+	"sha256Hash\x12\x16\n" +
+	"\x03uri\x18\t \x01(\tB\x04\xe2A\x01\x03R\x03uri\x12'\n" +
+	"\fdownload_uri\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\vdownloadUri\x12K\n" +
 	"\x05state\x18\n" +
-	" \x01(\x0e2/.google.ai.generativelanguage.v1beta.File.StateB\x03\xe0A\x03R\x05state\x12H\n" +
-	"\x06source\x18\r \x01(\x0e20.google.ai.generativelanguage.v1beta.File.SourceR\x06source\x12-\n" +
-	"\x05error\x18\v \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\"F\n" +
+	" \x01(\x0e2/.google.ai.generativelanguage.v1beta.File.StateB\x04\xe2A\x01\x03R\x05state\x12H\n" +
+	"\x06source\x18\r \x01(\x0e20.google.ai.generativelanguage.v1beta.File.SourceR\x06source\x12.\n" +
+	"\x05error\x18\v \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\"F\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +

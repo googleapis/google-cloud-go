@@ -818,6 +818,163 @@ func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_ZeroFields_Invalid(t *t
 	}
 }
 
+func TestTableAdmin_CreateTableFromConf_AutomatedBackupPolicy_KeepHotDurationAndDisabled(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	keepHotDuration := 48 * time.Hour
+	automatedBackupPolicy := TableAutomatedBackupPolicy{
+		RetentionPeriod: 72 * time.Hour,
+		Frequency:       24 * time.Hour,
+		KeepHotDuration: keepHotDuration,
+	}
+
+	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", AutomatedBackupConfig: &automatedBackupPolicy})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.Table.GetAutomatedBackupPolicy().GetKeepHotDuration().GetSeconds(), int64(keepHotDuration.Seconds())) {
+		t.Errorf("Unexpected table automated backup policy keep_hot_duration: %v, expected %v", createTableReq.Table.GetAutomatedBackupPolicy().GetKeepHotDuration(), keepHotDuration)
+	}
+
+	disabledPolicy := TableAutomatedBackupPolicy{
+		Disabled: true,
+	}
+	err = c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-disabled-table", AutomatedBackupConfig: &disabledPolicy})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf with Disabled=true failed: %v", err)
+	}
+	if !mock.createTableReq.Table.GetAutomatedBackupPolicy().GetDisabled() {
+		t.Errorf("Expected Disabled=true on CreateTableRequest automated backup policy")
+	}
+
+	invalidDisabledPolicy := TableAutomatedBackupPolicy{
+		Disabled:        true,
+		RetentionPeriod: 72 * time.Hour,
+	}
+	if err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-invalid-table", AutomatedBackupConfig: &invalidDisabledPolicy}); err == nil {
+		t.Errorf("Expected CreateTableFromConf to fail when Disabled=true is set alongside other fields")
+	}
+}
+
+func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_KeepHotDuration(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	keepHotDuration := 48 * time.Hour
+	automatedBackupPolicy := TableAutomatedBackupPolicy{
+		KeepHotDuration: keepHotDuration,
+	}
+
+	err := c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", automatedBackupPolicy)
+	if err != nil {
+		t.Fatalf("UpdateTableWithAutomatedBackupPolicy failed: %v", err)
+	}
+	updateTableReq := mock.updateTableReq
+	if !cmp.Equal(updateTableReq.Table.GetAutomatedBackupPolicy().GetKeepHotDuration().GetSeconds(), int64(keepHotDuration.Seconds())) {
+		t.Errorf("UpdateTableRequest does not match, KeepHotDuration: %v", updateTableReq.Table.GetAutomatedBackupPolicy().GetKeepHotDuration())
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths, []string{"automated_backup_policy.keep_hot_duration"}) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths)
+	}
+}
+
+func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_Disabled(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	automatedBackupPolicy := TableAutomatedBackupPolicy{
+		Disabled: true,
+	}
+
+	err := c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", automatedBackupPolicy)
+	if err != nil {
+		t.Fatalf("UpdateTableWithAutomatedBackupPolicy failed: %v", err)
+	}
+	updateTableReq := mock.updateTableReq
+	if !updateTableReq.Table.GetAutomatedBackupPolicy().GetDisabled() {
+		t.Errorf("UpdateTableRequest does not match, expected Disabled=true")
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths, []string{"automated_backup_policy.disabled"}) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths)
+	}
+
+	invalidPolicy := TableAutomatedBackupPolicy{
+		Disabled:  true,
+		Frequency: 24 * time.Hour,
+	}
+	if err := c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", invalidPolicy); err == nil {
+		t.Errorf("Expected UpdateTableWithAutomatedBackupPolicy to fail when Disabled=true is combined with other fields")
+	}
+}
+
+func TestTableAdmin_TableInfo_AutomatedBackupPolicyAndEffectivePolicy(t *testing.T) {
+	mock := &mockTableAdminClock{
+		getTableResp: &btapb.Table{
+			Name: "projects/my-cool-project/instances/my-cool-instance/tables/My-table",
+			AutomatedBackupConfig: &btapb.Table_AutomatedBackupPolicy_{
+				AutomatedBackupPolicy: &btapb.Table_AutomatedBackupPolicy{
+					RetentionPeriod: durationpb.New(72 * time.Hour),
+					Frequency:       durationpb.New(24 * time.Hour),
+					Locations:       []string{"projects/my-cool-project/locations/us-east1-b"},
+					KeepHotDuration: durationpb.New(48 * time.Hour),
+				},
+			},
+			EffectiveAutomatedBackupPolicy: &btapb.Table_AutomatedBackupPolicy{
+				RetentionPeriod: durationpb.New(72 * time.Hour),
+				Frequency:       durationpb.New(24 * time.Hour),
+				Locations:       []string{"projects/my-cool-project/locations/us-east1-b"},
+				KeepHotDuration: durationpb.New(48 * time.Hour),
+			},
+		},
+	}
+	c := setupTableClient(t, mock)
+
+	info, err := c.TableInfo(context.Background(), "My-table")
+	if err != nil {
+		t.Fatalf("TableInfo failed: %v", err)
+	}
+	abp, ok := info.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
+	if !ok || abp == nil {
+		t.Fatalf("Expected AutomatedBackupConfig to be *TableAutomatedBackupPolicy, got %T", info.AutomatedBackupConfig)
+	}
+	if !cmp.Equal(abp.KeepHotDuration, optional.Duration(48*time.Hour)) {
+		t.Errorf("Unexpected AutomatedBackupConfig.KeepHotDuration: %v", abp.KeepHotDuration)
+	}
+	if info.EffectiveAutomatedBackupPolicy == nil {
+		t.Fatalf("Expected EffectiveAutomatedBackupPolicy to be non-nil")
+	}
+	if !cmp.Equal(info.EffectiveAutomatedBackupPolicy.KeepHotDuration, optional.Duration(48*time.Hour)) {
+		t.Errorf("Unexpected EffectiveAutomatedBackupPolicy.KeepHotDuration: %v", info.EffectiveAutomatedBackupPolicy.KeepHotDuration)
+	}
+
+	// Verify GetTable returning {disabled: true} leaves duration fields nil.
+	mock.getTableResp = &btapb.Table{
+		Name: "projects/my-cool-project/instances/my-cool-instance/tables/My-disabled-table",
+		AutomatedBackupConfig: &btapb.Table_AutomatedBackupPolicy_{
+			AutomatedBackupPolicy: &btapb.Table_AutomatedBackupPolicy{
+				Disabled: true,
+			},
+		},
+	}
+	disabledInfo, err := c.TableInfo(context.Background(), "My-disabled-table")
+	if err != nil {
+		t.Fatalf("TableInfo for disabled table failed: %v", err)
+	}
+	disabledAbp, ok := disabledInfo.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
+	if !ok || disabledAbp == nil {
+		t.Fatalf("Expected AutomatedBackupConfig to be *TableAutomatedBackupPolicy, got %T", disabledInfo.AutomatedBackupConfig)
+	}
+	if !disabledAbp.Disabled {
+		t.Errorf("Expected Disabled=true on TableInfo.AutomatedBackupConfig")
+	}
+	if disabledAbp.RetentionPeriod != nil || disabledAbp.Frequency != nil || disabledAbp.KeepHotDuration != nil {
+		t.Errorf("Expected nil duration fields when Disabled=true, got RetentionPeriod=%v, Frequency=%v, KeepHotDuration=%v",
+			disabledAbp.RetentionPeriod, disabledAbp.Frequency, disabledAbp.KeepHotDuration)
+	}
+}
+
 func TestTableAdmin_UpdateTableWithTieredStorageConfig(t *testing.T) {
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)

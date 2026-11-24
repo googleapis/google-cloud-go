@@ -41,6 +41,59 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// The level of commit details to return in the response.
+type CommitView int32
+
+const (
+	// Unspecified, defaults to BASIC.
+	CommitView_COMMIT_VIEW_UNSPECIFIED CommitView = 0
+	// Basic view, returns commit metadata but no file diffs.
+	CommitView_BASIC CommitView = 1
+	// Full view, returns commit metadata and file diffs.
+	CommitView_FULL CommitView = 2
+)
+
+// Enum value maps for CommitView.
+var (
+	CommitView_name = map[int32]string{
+		0: "COMMIT_VIEW_UNSPECIFIED",
+		1: "BASIC",
+		2: "FULL",
+	}
+	CommitView_value = map[string]int32{
+		"COMMIT_VIEW_UNSPECIFIED": 0,
+		"BASIC":                   1,
+		"FULL":                    2,
+	}
+)
+
+func (x CommitView) Enum() *CommitView {
+	p := new(CommitView)
+	*p = x
+	return p
+}
+
+func (x CommitView) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (CommitView) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[0].Descriptor()
+}
+
+func (CommitView) Type() protoreflect.EnumType {
+	return &file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[0]
+}
+
+func (x CommitView) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use CommitView.Descriptor instead.
+func (CommitView) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{0}
+}
+
 // SystemProvider is a list of providers that are owned by Developer Connect.
 type SystemProvider int32
 
@@ -115,11 +168,11 @@ func (x SystemProvider) String() string {
 }
 
 func (SystemProvider) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[0].Descriptor()
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[1].Descriptor()
 }
 
 func (SystemProvider) Type() protoreflect.EnumType {
-	return &file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[0]
+	return &file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[1]
 }
 
 func (x SystemProvider) Number() protoreflect.EnumNumber {
@@ -128,7 +181,7 @@ func (x SystemProvider) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SystemProvider.Descriptor instead.
 func (SystemProvider) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{0}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{1}
 }
 
 // Stage of the installation process.
@@ -177,11 +230,11 @@ func (x InstallationState_Stage) String() string {
 }
 
 func (InstallationState_Stage) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[1].Descriptor()
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[2].Descriptor()
 }
 
 func (InstallationState_Stage) Type() protoreflect.EnumType {
-	return &file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[1]
+	return &file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[2]
 }
 
 func (x InstallationState_Stage) Number() protoreflect.EnumNumber {
@@ -235,11 +288,11 @@ func (x GitHubConfig_GitHubApp) String() string {
 }
 
 func (GitHubConfig_GitHubApp) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[2].Descriptor()
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[3].Descriptor()
 }
 
 func (GitHubConfig_GitHubApp) Type() protoreflect.EnumType {
-	return &file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[2]
+	return &file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[3]
 }
 
 func (x GitHubConfig_GitHubApp) Number() protoreflect.EnumNumber {
@@ -288,11 +341,11 @@ func (x FetchGitRefsRequest_RefType) String() string {
 }
 
 func (FetchGitRefsRequest_RefType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[3].Descriptor()
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[4].Descriptor()
 }
 
 func (FetchGitRefsRequest_RefType) Type() protoreflect.EnumType {
-	return &file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[3]
+	return &file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[4]
 }
 
 func (x FetchGitRefsRequest_RefType) Number() protoreflect.EnumNumber {
@@ -301,7 +354,235 @@ func (x FetchGitRefsRequest_RefType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use FetchGitRefsRequest_RefType.Descriptor instead.
 func (FetchGitRefsRequest_RefType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{55, 0}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{59, 0}
+}
+
+// The state of the PR.
+type PullRequest_State int32
+
+const (
+	// Default value.
+	PullRequest_STATE_UNSPECIFIED PullRequest_State = 0
+	// The PR is open.
+	PullRequest_OPEN PullRequest_State = 1
+	// The PR is closed.
+	PullRequest_CLOSED PullRequest_State = 2
+	// The PR is merged.
+	PullRequest_MERGED PullRequest_State = 3
+	// The PR is declined. Only used by SCM providers that support declining
+	// pull requests. Never used for GitHub, GitHub Enterprise, GitLab, or
+	// GitLab Enterprise, where a pull request closed without being merged is
+	// `CLOSED`.
+	PullRequest_DECLINED PullRequest_State = 4
+)
+
+// Enum value maps for PullRequest_State.
+var (
+	PullRequest_State_name = map[int32]string{
+		0: "STATE_UNSPECIFIED",
+		1: "OPEN",
+		2: "CLOSED",
+		3: "MERGED",
+		4: "DECLINED",
+	}
+	PullRequest_State_value = map[string]int32{
+		"STATE_UNSPECIFIED": 0,
+		"OPEN":              1,
+		"CLOSED":            2,
+		"MERGED":            3,
+		"DECLINED":          4,
+	}
+)
+
+func (x PullRequest_State) Enum() *PullRequest_State {
+	p := new(PullRequest_State)
+	*p = x
+	return p
+}
+
+func (x PullRequest_State) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (PullRequest_State) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[5].Descriptor()
+}
+
+func (PullRequest_State) Type() protoreflect.EnumType {
+	return &file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[5]
+}
+
+func (x PullRequest_State) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use PullRequest_State.Descriptor instead.
+func (PullRequest_State) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{70, 0}
+}
+
+// The mergeability state of a pull request.
+type PullRequest_Mergeability int32
+
+const (
+	// Mergeability state is unspecified.
+	PullRequest_MERGEABILITY_UNSPECIFIED PullRequest_Mergeability = 0
+	// The pull request can be merged cleanly without Git conflicts.
+	PullRequest_MERGEABLE PullRequest_Mergeability = 1
+	// The pull request has merge conflicts and cannot be merged cleanly.
+	PullRequest_CONFLICTING PullRequest_Mergeability = 2
+	// The mergeability state is currently being computed asynchronously
+	// by the upstream SCM provider.
+	PullRequest_COMPUTING PullRequest_Mergeability = 3
+)
+
+// Enum value maps for PullRequest_Mergeability.
+var (
+	PullRequest_Mergeability_name = map[int32]string{
+		0: "MERGEABILITY_UNSPECIFIED",
+		1: "MERGEABLE",
+		2: "CONFLICTING",
+		3: "COMPUTING",
+	}
+	PullRequest_Mergeability_value = map[string]int32{
+		"MERGEABILITY_UNSPECIFIED": 0,
+		"MERGEABLE":                1,
+		"CONFLICTING":              2,
+		"COMPUTING":                3,
+	}
+)
+
+func (x PullRequest_Mergeability) Enum() *PullRequest_Mergeability {
+	p := new(PullRequest_Mergeability)
+	*p = x
+	return p
+}
+
+func (x PullRequest_Mergeability) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (PullRequest_Mergeability) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[6].Descriptor()
+}
+
+func (PullRequest_Mergeability) Type() protoreflect.EnumType {
+	return &file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[6]
+}
+
+func (x PullRequest_Mergeability) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use PullRequest_Mergeability.Descriptor instead.
+func (PullRequest_Mergeability) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{70, 1}
+}
+
+// DiffSide represents which side of the diff the comment is on.
+type PullRequestReviewComment_DiffSide int32
+
+const (
+	// Default value. This value is unused.
+	PullRequestReviewComment_DIFF_SIDE_UNSPECIFIED PullRequestReviewComment_DiffSide = 0
+	// The side of the diff before changes (deleted or modified lines).
+	PullRequestReviewComment_BASE PullRequestReviewComment_DiffSide = 1
+	// The side of the diff after changes (added or modified lines).
+	PullRequestReviewComment_HEAD PullRequestReviewComment_DiffSide = 2
+)
+
+// Enum value maps for PullRequestReviewComment_DiffSide.
+var (
+	PullRequestReviewComment_DiffSide_name = map[int32]string{
+		0: "DIFF_SIDE_UNSPECIFIED",
+		1: "BASE",
+		2: "HEAD",
+	}
+	PullRequestReviewComment_DiffSide_value = map[string]int32{
+		"DIFF_SIDE_UNSPECIFIED": 0,
+		"BASE":                  1,
+		"HEAD":                  2,
+	}
+)
+
+func (x PullRequestReviewComment_DiffSide) Enum() *PullRequestReviewComment_DiffSide {
+	p := new(PullRequestReviewComment_DiffSide)
+	*p = x
+	return p
+}
+
+func (x PullRequestReviewComment_DiffSide) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (PullRequestReviewComment_DiffSide) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[7].Descriptor()
+}
+
+func (PullRequestReviewComment_DiffSide) Type() protoreflect.EnumType {
+	return &file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[7]
+}
+
+func (x PullRequestReviewComment_DiffSide) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use PullRequestReviewComment_DiffSide.Descriptor instead.
+func (PullRequestReviewComment_DiffSide) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{73, 0}
+}
+
+// State represents the state of the pull request.
+type ModifyGitRepositoryLinkPullRequestRequest_State int32
+
+const (
+	// Default value. This value is unused.
+	ModifyGitRepositoryLinkPullRequestRequest_STATE_UNSPECIFIED ModifyGitRepositoryLinkPullRequestRequest_State = 0
+	// The pull request is open.
+	ModifyGitRepositoryLinkPullRequestRequest_OPEN ModifyGitRepositoryLinkPullRequestRequest_State = 1
+	// The pull request is closed.
+	ModifyGitRepositoryLinkPullRequestRequest_CLOSED ModifyGitRepositoryLinkPullRequestRequest_State = 2
+)
+
+// Enum value maps for ModifyGitRepositoryLinkPullRequestRequest_State.
+var (
+	ModifyGitRepositoryLinkPullRequestRequest_State_name = map[int32]string{
+		0: "STATE_UNSPECIFIED",
+		1: "OPEN",
+		2: "CLOSED",
+	}
+	ModifyGitRepositoryLinkPullRequestRequest_State_value = map[string]int32{
+		"STATE_UNSPECIFIED": 0,
+		"OPEN":              1,
+		"CLOSED":            2,
+	}
+)
+
+func (x ModifyGitRepositoryLinkPullRequestRequest_State) Enum() *ModifyGitRepositoryLinkPullRequestRequest_State {
+	p := new(ModifyGitRepositoryLinkPullRequestRequest_State)
+	*p = x
+	return p
+}
+
+func (x ModifyGitRepositoryLinkPullRequestRequest_State) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ModifyGitRepositoryLinkPullRequestRequest_State) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[8].Descriptor()
+}
+
+func (ModifyGitRepositoryLinkPullRequestRequest_State) Type() protoreflect.EnumType {
+	return &file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes[8]
+}
+
+func (x ModifyGitRepositoryLinkPullRequestRequest_State) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ModifyGitRepositoryLinkPullRequestRequest_State.Descriptor instead.
+func (ModifyGitRepositoryLinkPullRequestRequest_State) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{75, 0}
 }
 
 // Message for requesting a list of Users
@@ -3256,6 +3537,194 @@ func (x *FetchAccessTokenResponse) GetExchangeError() *ExchangeError {
 	return nil
 }
 
+// Request message for DiffGitRepositoryLinkCommit.
+type DiffGitRepositoryLinkCommitRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The resource name of the GitRepositoryLink.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Required. The base commit SHA or ref.
+	BaseSha string `protobuf:"bytes,2,opt,name=base_sha,json=baseSha,proto3" json:"base_sha,omitempty"`
+	// Required. The head commit SHA or ref.
+	HeadSha string `protobuf:"bytes,3,opt,name=head_sha,json=headSha,proto3" json:"head_sha,omitempty"`
+	// Optional. Path patterns or exact paths to filter returned files.
+	// When `path_filters` is specified, `FileDiff.patch` is populated for all
+	// matching files (use `["**"]` to include patches for all changed files).
+	// When `path_filters` is omitted or empty, the full list of `FileDiff` is
+	// returned without patch diffs (`FileDiff.patch` is empty).
+	PathFilters   []string `protobuf:"bytes,4,rep,name=path_filters,json=pathFilters,proto3" json:"path_filters,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DiffGitRepositoryLinkCommitRequest) Reset() {
+	*x = DiffGitRepositoryLinkCommitRequest{}
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[35]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DiffGitRepositoryLinkCommitRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DiffGitRepositoryLinkCommitRequest) ProtoMessage() {}
+
+func (x *DiffGitRepositoryLinkCommitRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[35]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DiffGitRepositoryLinkCommitRequest.ProtoReflect.Descriptor instead.
+func (*DiffGitRepositoryLinkCommitRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{35}
+}
+
+func (x *DiffGitRepositoryLinkCommitRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *DiffGitRepositoryLinkCommitRequest) GetBaseSha() string {
+	if x != nil {
+		return x.BaseSha
+	}
+	return ""
+}
+
+func (x *DiffGitRepositoryLinkCommitRequest) GetHeadSha() string {
+	if x != nil {
+		return x.HeadSha
+	}
+	return ""
+}
+
+func (x *DiffGitRepositoryLinkCommitRequest) GetPathFilters() []string {
+	if x != nil {
+		return x.PathFilters
+	}
+	return nil
+}
+
+// Response message for DiffGitRepositoryLinkCommit.
+type DiffGitRepositoryLinkCommitResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The file diff extracted from the unified diff.
+	Files         []*FileDiff `protobuf:"bytes,2,rep,name=files,proto3" json:"files,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DiffGitRepositoryLinkCommitResponse) Reset() {
+	*x = DiffGitRepositoryLinkCommitResponse{}
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DiffGitRepositoryLinkCommitResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DiffGitRepositoryLinkCommitResponse) ProtoMessage() {}
+
+func (x *DiffGitRepositoryLinkCommitResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DiffGitRepositoryLinkCommitResponse.ProtoReflect.Descriptor instead.
+func (*DiffGitRepositoryLinkCommitResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{36}
+}
+
+func (x *DiffGitRepositoryLinkCommitResponse) GetFiles() []*FileDiff {
+	if x != nil {
+		return x.Files
+	}
+	return nil
+}
+
+// Message for a file diff.
+type FileDiff struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Relative path to the file in the repository.
+	Path string `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
+	// Status of change: "ADDED", "MODIFIED", "REMOVED", "RENAMED".
+	Status string `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
+	// Standard unified diff patch hunk for the file. Only populated when
+	// `path_filters` is specified in the request; otherwise empty.
+	Patch         string `protobuf:"bytes,3,opt,name=patch,proto3" json:"patch,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FileDiff) Reset() {
+	*x = FileDiff{}
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[37]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FileDiff) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FileDiff) ProtoMessage() {}
+
+func (x *FileDiff) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[37]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FileDiff.ProtoReflect.Descriptor instead.
+func (*FileDiff) Descriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{37}
+}
+
+func (x *FileDiff) GetPath() string {
+	if x != nil {
+		return x.Path
+	}
+	return ""
+}
+
+func (x *FileDiff) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *FileDiff) GetPatch() string {
+	if x != nil {
+		return x.Patch
+	}
+	return ""
+}
+
 // Message for starting an OAuth flow.
 type StartOAuthRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -3268,7 +3737,7 @@ type StartOAuthRequest struct {
 
 func (x *StartOAuthRequest) Reset() {
 	*x = StartOAuthRequest{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[35]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3280,7 +3749,7 @@ func (x *StartOAuthRequest) String() string {
 func (*StartOAuthRequest) ProtoMessage() {}
 
 func (x *StartOAuthRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[35]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3293,7 +3762,7 @@ func (x *StartOAuthRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartOAuthRequest.ProtoReflect.Descriptor instead.
 func (*StartOAuthRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{35}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *StartOAuthRequest) GetAccountConnector() string {
@@ -3331,7 +3800,7 @@ type StartOAuthResponse struct {
 
 func (x *StartOAuthResponse) Reset() {
 	*x = StartOAuthResponse{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[36]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3343,7 +3812,7 @@ func (x *StartOAuthResponse) String() string {
 func (*StartOAuthResponse) ProtoMessage() {}
 
 func (x *StartOAuthResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[36]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3356,7 +3825,7 @@ func (x *StartOAuthResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartOAuthResponse.ProtoReflect.Descriptor instead.
 func (*StartOAuthResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{36}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *StartOAuthResponse) GetId() isStartOAuthResponse_Id {
@@ -3447,7 +3916,7 @@ type FinishOAuthRequest struct {
 
 func (x *FinishOAuthRequest) Reset() {
 	*x = FinishOAuthRequest{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[37]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3459,7 +3928,7 @@ func (x *FinishOAuthRequest) String() string {
 func (*FinishOAuthRequest) ProtoMessage() {}
 
 func (x *FinishOAuthRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[37]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3472,7 +3941,7 @@ func (x *FinishOAuthRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FinishOAuthRequest.ProtoReflect.Descriptor instead.
 func (*FinishOAuthRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{37}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *FinishOAuthRequest) GetParams() isFinishOAuthRequest_Params {
@@ -3536,7 +4005,7 @@ type FinishOAuthResponse struct {
 
 func (x *FinishOAuthResponse) Reset() {
 	*x = FinishOAuthResponse{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[38]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3548,7 +4017,7 @@ func (x *FinishOAuthResponse) String() string {
 func (*FinishOAuthResponse) ProtoMessage() {}
 
 func (x *FinishOAuthResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[38]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3561,7 +4030,7 @@ func (x *FinishOAuthResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FinishOAuthResponse.ProtoReflect.Descriptor instead.
 func (*FinishOAuthResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{38}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *FinishOAuthResponse) GetExchangeError() *ExchangeError {
@@ -3585,7 +4054,7 @@ type ExchangeError struct {
 
 func (x *ExchangeError) Reset() {
 	*x = ExchangeError{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[39]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3597,7 +4066,7 @@ func (x *ExchangeError) String() string {
 func (*ExchangeError) ProtoMessage() {}
 
 func (x *ExchangeError) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[39]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3610,7 +4079,7 @@ func (x *ExchangeError) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExchangeError.ProtoReflect.Descriptor instead.
 func (*ExchangeError) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{39}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *ExchangeError) GetCode() string {
@@ -3666,7 +4135,7 @@ type GitRepositoryLink struct {
 
 func (x *GitRepositoryLink) Reset() {
 	*x = GitRepositoryLink{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[40]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3678,7 +4147,7 @@ func (x *GitRepositoryLink) String() string {
 func (*GitRepositoryLink) ProtoMessage() {}
 
 func (x *GitRepositoryLink) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[40]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3691,7 +4160,7 @@ func (x *GitRepositoryLink) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GitRepositoryLink.ProtoReflect.Descriptor instead.
 func (*GitRepositoryLink) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{40}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *GitRepositoryLink) GetName() string {
@@ -3812,7 +4281,7 @@ type CreateGitRepositoryLinkRequest struct {
 
 func (x *CreateGitRepositoryLinkRequest) Reset() {
 	*x = CreateGitRepositoryLinkRequest{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[41]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3824,7 +4293,7 @@ func (x *CreateGitRepositoryLinkRequest) String() string {
 func (*CreateGitRepositoryLinkRequest) ProtoMessage() {}
 
 func (x *CreateGitRepositoryLinkRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[41]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3837,7 +4306,7 @@ func (x *CreateGitRepositoryLinkRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateGitRepositoryLinkRequest.ProtoReflect.Descriptor instead.
 func (*CreateGitRepositoryLinkRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{41}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *CreateGitRepositoryLinkRequest) GetParent() string {
@@ -3906,7 +4375,7 @@ type DeleteGitRepositoryLinkRequest struct {
 
 func (x *DeleteGitRepositoryLinkRequest) Reset() {
 	*x = DeleteGitRepositoryLinkRequest{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[42]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3918,7 +4387,7 @@ func (x *DeleteGitRepositoryLinkRequest) String() string {
 func (*DeleteGitRepositoryLinkRequest) ProtoMessage() {}
 
 func (x *DeleteGitRepositoryLinkRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[42]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3931,7 +4400,7 @@ func (x *DeleteGitRepositoryLinkRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteGitRepositoryLinkRequest.ProtoReflect.Descriptor instead.
 func (*DeleteGitRepositoryLinkRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{42}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *DeleteGitRepositoryLinkRequest) GetName() string {
@@ -3982,7 +4451,7 @@ type ListGitRepositoryLinksRequest struct {
 
 func (x *ListGitRepositoryLinksRequest) Reset() {
 	*x = ListGitRepositoryLinksRequest{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[43]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3994,7 +4463,7 @@ func (x *ListGitRepositoryLinksRequest) String() string {
 func (*ListGitRepositoryLinksRequest) ProtoMessage() {}
 
 func (x *ListGitRepositoryLinksRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[43]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4007,7 +4476,7 @@ func (x *ListGitRepositoryLinksRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListGitRepositoryLinksRequest.ProtoReflect.Descriptor instead.
 func (*ListGitRepositoryLinksRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{43}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *ListGitRepositoryLinksRequest) GetParent() string {
@@ -4060,7 +4529,7 @@ type ListGitRepositoryLinksResponse struct {
 
 func (x *ListGitRepositoryLinksResponse) Reset() {
 	*x = ListGitRepositoryLinksResponse{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[44]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4072,7 +4541,7 @@ func (x *ListGitRepositoryLinksResponse) String() string {
 func (*ListGitRepositoryLinksResponse) ProtoMessage() {}
 
 func (x *ListGitRepositoryLinksResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[44]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4085,7 +4554,7 @@ func (x *ListGitRepositoryLinksResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListGitRepositoryLinksResponse.ProtoReflect.Descriptor instead.
 func (*ListGitRepositoryLinksResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{44}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *ListGitRepositoryLinksResponse) GetGitRepositoryLinks() []*GitRepositoryLink {
@@ -4120,7 +4589,7 @@ type GetGitRepositoryLinkRequest struct {
 
 func (x *GetGitRepositoryLinkRequest) Reset() {
 	*x = GetGitRepositoryLinkRequest{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[45]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4132,7 +4601,7 @@ func (x *GetGitRepositoryLinkRequest) String() string {
 func (*GetGitRepositoryLinkRequest) ProtoMessage() {}
 
 func (x *GetGitRepositoryLinkRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[45]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4145,7 +4614,7 @@ func (x *GetGitRepositoryLinkRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetGitRepositoryLinkRequest.ProtoReflect.Descriptor instead.
 func (*GetGitRepositoryLinkRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{45}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *GetGitRepositoryLinkRequest) GetName() string {
@@ -4167,7 +4636,7 @@ type FetchReadWriteTokenRequest struct {
 
 func (x *FetchReadWriteTokenRequest) Reset() {
 	*x = FetchReadWriteTokenRequest{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[46]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4179,7 +4648,7 @@ func (x *FetchReadWriteTokenRequest) String() string {
 func (*FetchReadWriteTokenRequest) ProtoMessage() {}
 
 func (x *FetchReadWriteTokenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[46]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4192,7 +4661,7 @@ func (x *FetchReadWriteTokenRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchReadWriteTokenRequest.ProtoReflect.Descriptor instead.
 func (*FetchReadWriteTokenRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{46}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *FetchReadWriteTokenRequest) GetGitRepositoryLink() string {
@@ -4214,7 +4683,7 @@ type FetchReadTokenRequest struct {
 
 func (x *FetchReadTokenRequest) Reset() {
 	*x = FetchReadTokenRequest{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[47]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4226,7 +4695,7 @@ func (x *FetchReadTokenRequest) String() string {
 func (*FetchReadTokenRequest) ProtoMessage() {}
 
 func (x *FetchReadTokenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[47]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4239,7 +4708,7 @@ func (x *FetchReadTokenRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchReadTokenRequest.ProtoReflect.Descriptor instead.
 func (*FetchReadTokenRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{47}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *FetchReadTokenRequest) GetGitRepositoryLink() string {
@@ -4266,7 +4735,7 @@ type FetchReadTokenResponse struct {
 
 func (x *FetchReadTokenResponse) Reset() {
 	*x = FetchReadTokenResponse{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[48]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4278,7 +4747,7 @@ func (x *FetchReadTokenResponse) String() string {
 func (*FetchReadTokenResponse) ProtoMessage() {}
 
 func (x *FetchReadTokenResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[48]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4291,7 +4760,7 @@ func (x *FetchReadTokenResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchReadTokenResponse.ProtoReflect.Descriptor instead.
 func (*FetchReadTokenResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{48}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *FetchReadTokenResponse) GetToken() string {
@@ -4332,7 +4801,7 @@ type FetchReadWriteTokenResponse struct {
 
 func (x *FetchReadWriteTokenResponse) Reset() {
 	*x = FetchReadWriteTokenResponse{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[49]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4344,7 +4813,7 @@ func (x *FetchReadWriteTokenResponse) String() string {
 func (*FetchReadWriteTokenResponse) ProtoMessage() {}
 
 func (x *FetchReadWriteTokenResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[49]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4357,7 +4826,7 @@ func (x *FetchReadWriteTokenResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchReadWriteTokenResponse.ProtoReflect.Descriptor instead.
 func (*FetchReadWriteTokenResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{49}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *FetchReadWriteTokenResponse) GetToken() string {
@@ -4381,6 +4850,63 @@ func (x *FetchReadWriteTokenResponse) GetGitUsername() string {
 	return ""
 }
 
+// Message for opening SCM Pull Request.
+type OpenGitRepositoryLinkPullRequestRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The GitRepositoryLink resource name in the format
+	// `projects/*/locations/*/connections/*/gitRepositoryLinks/*`.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Required. The Pull Request details to open.
+	// Input fields used: title, body, head_ref, base_ref.
+	PullRequest   *PullRequest `protobuf:"bytes,2,opt,name=pull_request,json=pullRequest,proto3" json:"pull_request,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OpenGitRepositoryLinkPullRequestRequest) Reset() {
+	*x = OpenGitRepositoryLinkPullRequestRequest{}
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[53]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OpenGitRepositoryLinkPullRequestRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OpenGitRepositoryLinkPullRequestRequest) ProtoMessage() {}
+
+func (x *OpenGitRepositoryLinkPullRequestRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[53]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OpenGitRepositoryLinkPullRequestRequest.ProtoReflect.Descriptor instead.
+func (*OpenGitRepositoryLinkPullRequestRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{53}
+}
+
+func (x *OpenGitRepositoryLinkPullRequestRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *OpenGitRepositoryLinkPullRequestRequest) GetPullRequest() *PullRequest {
+	if x != nil {
+		return x.PullRequest
+	}
+	return nil
+}
+
 // Request message for FetchLinkableGitRepositoriesRequest.
 type FetchLinkableGitRepositoriesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -4397,7 +4923,7 @@ type FetchLinkableGitRepositoriesRequest struct {
 
 func (x *FetchLinkableGitRepositoriesRequest) Reset() {
 	*x = FetchLinkableGitRepositoriesRequest{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[50]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4409,7 +4935,7 @@ func (x *FetchLinkableGitRepositoriesRequest) String() string {
 func (*FetchLinkableGitRepositoriesRequest) ProtoMessage() {}
 
 func (x *FetchLinkableGitRepositoriesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[50]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4422,7 +4948,7 @@ func (x *FetchLinkableGitRepositoriesRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use FetchLinkableGitRepositoriesRequest.ProtoReflect.Descriptor instead.
 func (*FetchLinkableGitRepositoriesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{50}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *FetchLinkableGitRepositoriesRequest) GetConnection() string {
@@ -4459,7 +4985,7 @@ type FetchLinkableGitRepositoriesResponse struct {
 
 func (x *FetchLinkableGitRepositoriesResponse) Reset() {
 	*x = FetchLinkableGitRepositoriesResponse{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[51]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4471,7 +4997,7 @@ func (x *FetchLinkableGitRepositoriesResponse) String() string {
 func (*FetchLinkableGitRepositoriesResponse) ProtoMessage() {}
 
 func (x *FetchLinkableGitRepositoriesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[51]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4484,7 +5010,7 @@ func (x *FetchLinkableGitRepositoriesResponse) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use FetchLinkableGitRepositoriesResponse.ProtoReflect.Descriptor instead.
 func (*FetchLinkableGitRepositoriesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{51}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *FetchLinkableGitRepositoriesResponse) GetLinkableGitRepositories() []*LinkableGitRepository {
@@ -4513,7 +5039,7 @@ type LinkableGitRepository struct {
 
 func (x *LinkableGitRepository) Reset() {
 	*x = LinkableGitRepository{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[52]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4525,7 +5051,7 @@ func (x *LinkableGitRepository) String() string {
 func (*LinkableGitRepository) ProtoMessage() {}
 
 func (x *LinkableGitRepository) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[52]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4538,7 +5064,7 @@ func (x *LinkableGitRepository) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LinkableGitRepository.ProtoReflect.Descriptor instead.
 func (*LinkableGitRepository) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{52}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *LinkableGitRepository) GetCloneUri() string {
@@ -4560,7 +5086,7 @@ type FetchGitHubInstallationsRequest struct {
 
 func (x *FetchGitHubInstallationsRequest) Reset() {
 	*x = FetchGitHubInstallationsRequest{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[53]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4572,7 +5098,7 @@ func (x *FetchGitHubInstallationsRequest) String() string {
 func (*FetchGitHubInstallationsRequest) ProtoMessage() {}
 
 func (x *FetchGitHubInstallationsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[53]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4585,7 +5111,7 @@ func (x *FetchGitHubInstallationsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchGitHubInstallationsRequest.ProtoReflect.Descriptor instead.
 func (*FetchGitHubInstallationsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{53}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *FetchGitHubInstallationsRequest) GetConnection() string {
@@ -4607,7 +5133,7 @@ type FetchGitHubInstallationsResponse struct {
 
 func (x *FetchGitHubInstallationsResponse) Reset() {
 	*x = FetchGitHubInstallationsResponse{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[54]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4619,7 +5145,7 @@ func (x *FetchGitHubInstallationsResponse) String() string {
 func (*FetchGitHubInstallationsResponse) ProtoMessage() {}
 
 func (x *FetchGitHubInstallationsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[54]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4632,7 +5158,7 @@ func (x *FetchGitHubInstallationsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchGitHubInstallationsResponse.ProtoReflect.Descriptor instead.
 func (*FetchGitHubInstallationsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{54}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *FetchGitHubInstallationsResponse) GetInstallations() []*FetchGitHubInstallationsResponse_Installation {
@@ -4660,7 +5186,7 @@ type FetchGitRefsRequest struct {
 
 func (x *FetchGitRefsRequest) Reset() {
 	*x = FetchGitRefsRequest{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[55]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4672,7 +5198,7 @@ func (x *FetchGitRefsRequest) String() string {
 func (*FetchGitRefsRequest) ProtoMessage() {}
 
 func (x *FetchGitRefsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[55]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4685,7 +5211,7 @@ func (x *FetchGitRefsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchGitRefsRequest.ProtoReflect.Descriptor instead.
 func (*FetchGitRefsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{55}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *FetchGitRefsRequest) GetGitRepositoryLink() string {
@@ -4729,7 +5255,7 @@ type FetchGitRefsResponse struct {
 
 func (x *FetchGitRefsResponse) Reset() {
 	*x = FetchGitRefsResponse{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[56]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4741,7 +5267,7 @@ func (x *FetchGitRefsResponse) String() string {
 func (*FetchGitRefsResponse) ProtoMessage() {}
 
 func (x *FetchGitRefsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[56]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4754,7 +5280,7 @@ func (x *FetchGitRefsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchGitRefsResponse.ProtoReflect.Descriptor instead.
 func (*FetchGitRefsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{56}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *FetchGitRefsResponse) GetRefNames() []string {
@@ -4765,6 +5291,1388 @@ func (x *FetchGitRefsResponse) GetRefNames() []string {
 }
 
 func (x *FetchGitRefsResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
+// Request message for FetchGitRepositoryLinkCommit.
+type FetchGitRepositoryLinkCommitRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The resource name of the GitRepositoryLink in the format
+	// `projects/*/locations/*/connections/*/gitRepositoryLinks/*`.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Required. The commit SHA, or symbolic revision (e.g., branch name, tag, or
+	// Git reference).
+	CommitSha string `protobuf:"bytes,2,opt,name=commit_sha,json=commitSha,proto3" json:"commit_sha,omitempty"`
+	// Optional. The level of commit details to return in the response.
+	// Defaults to `FULL` if unspecified. In `FULL` view, `files` metadata (paths
+	// and statuses) are returned; `path_filters` must also be specified to
+	// populate line patch hunks.
+	View CommitView `protobuf:"varint,3,opt,name=view,proto3,enum=google.cloud.developerconnect.v1.CommitView" json:"view,omitempty"`
+	// Optional. Path patterns or exact paths to filter returned files (only
+	// applicable in `FULL` view).
+	// When `path_filters` is specified, `FileDiff.patch` is populated for all
+	// matching files (use `["**"]` to include patches for all changed files).
+	// When `path_filters` is omitted or empty, the full list of `FileDiff` is
+	// returned without patch diffs (`FileDiff.patch` is empty).
+	PathFilters   []string `protobuf:"bytes,4,rep,name=path_filters,json=pathFilters,proto3" json:"path_filters,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FetchGitRepositoryLinkCommitRequest) Reset() {
+	*x = FetchGitRepositoryLinkCommitRequest{}
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[61]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FetchGitRepositoryLinkCommitRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FetchGitRepositoryLinkCommitRequest) ProtoMessage() {}
+
+func (x *FetchGitRepositoryLinkCommitRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[61]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FetchGitRepositoryLinkCommitRequest.ProtoReflect.Descriptor instead.
+func (*FetchGitRepositoryLinkCommitRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{61}
+}
+
+func (x *FetchGitRepositoryLinkCommitRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *FetchGitRepositoryLinkCommitRequest) GetCommitSha() string {
+	if x != nil {
+		return x.CommitSha
+	}
+	return ""
+}
+
+func (x *FetchGitRepositoryLinkCommitRequest) GetView() CommitView {
+	if x != nil {
+		return x.View
+	}
+	return CommitView_COMMIT_VIEW_UNSPECIFIED
+}
+
+func (x *FetchGitRepositoryLinkCommitRequest) GetPathFilters() []string {
+	if x != nil {
+		return x.PathFilters
+	}
+	return nil
+}
+
+// Response message for FetchGitRepositoryLinkCommit.
+type FetchGitRepositoryLinkCommitResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The commit metadata.
+	Commit *SCMCommit `protobuf:"bytes,1,opt,name=commit,proto3" json:"commit,omitempty"`
+	// List of file changes and patch diffs. Omitted when view is `BASIC`.
+	// Patch diffs (`FileDiff.patch`) are only populated when `path_filters` is
+	// specified in the request.
+	Files         []*FileDiff `protobuf:"bytes,2,rep,name=files,proto3" json:"files,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FetchGitRepositoryLinkCommitResponse) Reset() {
+	*x = FetchGitRepositoryLinkCommitResponse{}
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[62]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FetchGitRepositoryLinkCommitResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FetchGitRepositoryLinkCommitResponse) ProtoMessage() {}
+
+func (x *FetchGitRepositoryLinkCommitResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[62]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FetchGitRepositoryLinkCommitResponse.ProtoReflect.Descriptor instead.
+func (*FetchGitRepositoryLinkCommitResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{62}
+}
+
+func (x *FetchGitRepositoryLinkCommitResponse) GetCommit() *SCMCommit {
+	if x != nil {
+		return x.Commit
+	}
+	return nil
+}
+
+func (x *FetchGitRepositoryLinkCommitResponse) GetFiles() []*FileDiff {
+	if x != nil {
+		return x.Files
+	}
+	return nil
+}
+
+// Request message for FetchGitRepositoryLinkCommitList.
+type FetchGitRepositoryLinkCommitListRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The resource name of the GitRepositoryLink in the format
+	// `projects/*/locations/*/connections/*/gitRepositoryLinks/*`.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. The commit SHA, or symbolic revision (e.g., branch name, tag, or
+	// Git reference) from which to start listing commits.
+	Ref string `protobuf:"bytes,2,opt,name=ref,proto3" json:"ref,omitempty"`
+	// Optional. Number of results to return in the list. Default is 50. Max is
+	// 100.
+	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. A page token, received from a previous
+	// `FetchGitRepositoryLinkCommitList` call. Provide this to retrieve the
+	// subsequent page.
+	//
+	// When paginating, all other parameters provided to
+	// `FetchGitRepositoryLinkCommitList` must match the call that provided the
+	// page token.
+	PageToken string `protobuf:"bytes,4,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	// Optional. The level of commit details to return in the response.
+	// Only `BASIC` is supported; `FULL` returns `INVALID_ARGUMENT`. Defaults to
+	// `BASIC` if unspecified. Use `FetchGitRepositoryLinkCommit` to get file
+	// diffs for a single commit.
+	View          CommitView `protobuf:"varint,5,opt,name=view,proto3,enum=google.cloud.developerconnect.v1.CommitView" json:"view,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FetchGitRepositoryLinkCommitListRequest) Reset() {
+	*x = FetchGitRepositoryLinkCommitListRequest{}
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[63]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FetchGitRepositoryLinkCommitListRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FetchGitRepositoryLinkCommitListRequest) ProtoMessage() {}
+
+func (x *FetchGitRepositoryLinkCommitListRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[63]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FetchGitRepositoryLinkCommitListRequest.ProtoReflect.Descriptor instead.
+func (*FetchGitRepositoryLinkCommitListRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{63}
+}
+
+func (x *FetchGitRepositoryLinkCommitListRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *FetchGitRepositoryLinkCommitListRequest) GetRef() string {
+	if x != nil {
+		return x.Ref
+	}
+	return ""
+}
+
+func (x *FetchGitRepositoryLinkCommitListRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *FetchGitRepositoryLinkCommitListRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+func (x *FetchGitRepositoryLinkCommitListRequest) GetView() CommitView {
+	if x != nil {
+		return x.View
+	}
+	return CommitView_COMMIT_VIEW_UNSPECIFIED
+}
+
+// Response message for FetchGitRepositoryLinkCommitList.
+type FetchGitRepositoryLinkCommitListResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The list of commit metadata.
+	Commits []*SCMCommit `protobuf:"bytes,1,rep,name=commits,proto3" json:"commits,omitempty"`
+	// A token, which can be sent as `page_token` to retrieve the next page.
+	// If this field is omitted, there are no subsequent pages.
+	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FetchGitRepositoryLinkCommitListResponse) Reset() {
+	*x = FetchGitRepositoryLinkCommitListResponse{}
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[64]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FetchGitRepositoryLinkCommitListResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FetchGitRepositoryLinkCommitListResponse) ProtoMessage() {}
+
+func (x *FetchGitRepositoryLinkCommitListResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[64]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FetchGitRepositoryLinkCommitListResponse.ProtoReflect.Descriptor instead.
+func (*FetchGitRepositoryLinkCommitListResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{64}
+}
+
+func (x *FetchGitRepositoryLinkCommitListResponse) GetCommits() []*SCMCommit {
+	if x != nil {
+		return x.Commits
+	}
+	return nil
+}
+
+func (x *FetchGitRepositoryLinkCommitListResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
+// SCMCommit represents commit metadata.
+type SCMCommit struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Full 40-character SCM commit SHA.
+	Sha string `protobuf:"bytes,1,opt,name=sha,proto3" json:"sha,omitempty"`
+	// Commit message text.
+	Message string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	// The author's display name.
+	Author string `protobuf:"bytes,3,opt,name=author,proto3" json:"author,omitempty"`
+	// The author's email address.
+	AuthorEmail string `protobuf:"bytes,4,opt,name=author_email,json=authorEmail,proto3" json:"author_email,omitempty"`
+	// Timestamp when the commit was authored.
+	CommitTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=commit_time,json=commitTime,proto3" json:"commit_time,omitempty"`
+	// The SCM provider's HTML URL link for this commit.
+	Url           string `protobuf:"bytes,6,opt,name=url,proto3" json:"url,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SCMCommit) Reset() {
+	*x = SCMCommit{}
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[65]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SCMCommit) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SCMCommit) ProtoMessage() {}
+
+func (x *SCMCommit) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[65]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SCMCommit.ProtoReflect.Descriptor instead.
+func (*SCMCommit) Descriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{65}
+}
+
+func (x *SCMCommit) GetSha() string {
+	if x != nil {
+		return x.Sha
+	}
+	return ""
+}
+
+func (x *SCMCommit) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *SCMCommit) GetAuthor() string {
+	if x != nil {
+		return x.Author
+	}
+	return ""
+}
+
+func (x *SCMCommit) GetAuthorEmail() string {
+	if x != nil {
+		return x.AuthorEmail
+	}
+	return ""
+}
+
+func (x *SCMCommit) GetCommitTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CommitTime
+	}
+	return nil
+}
+
+func (x *SCMCommit) GetUrl() string {
+	if x != nil {
+		return x.Url
+	}
+	return ""
+}
+
+// Request message for FetchGitRepositoryLinkFileBlame.
+type FetchGitRepositoryLinkFileBlameRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The resource name of the GitRepositoryLink in the format
+	// `projects/*/locations/*/connections/*/gitRepositoryLinks/*`.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Required. The SCM commit SHA, or symbolic revision (e.g., branch name, tag)
+	// from which to fetch the blame.
+	Ref string `protobuf:"bytes,2,opt,name=ref,proto3" json:"ref,omitempty"`
+	// Required. The file path within the repository.
+	Path string `protobuf:"bytes,3,opt,name=path,proto3" json:"path,omitempty"`
+	// Optional. The 1-indexed starting line number of the range to blame
+	// (inclusive). If not specified, blame begins at line 1.
+	FirstLine int32 `protobuf:"varint,4,opt,name=first_line,json=firstLine,proto3" json:"first_line,omitempty"`
+	// Optional. The 1-indexed ending line number of the range to blame
+	// (inclusive). If not specified, blame extends to the end of the file.
+	LastLine      int32 `protobuf:"varint,5,opt,name=last_line,json=lastLine,proto3" json:"last_line,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FetchGitRepositoryLinkFileBlameRequest) Reset() {
+	*x = FetchGitRepositoryLinkFileBlameRequest{}
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[66]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FetchGitRepositoryLinkFileBlameRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FetchGitRepositoryLinkFileBlameRequest) ProtoMessage() {}
+
+func (x *FetchGitRepositoryLinkFileBlameRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[66]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FetchGitRepositoryLinkFileBlameRequest.ProtoReflect.Descriptor instead.
+func (*FetchGitRepositoryLinkFileBlameRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{66}
+}
+
+func (x *FetchGitRepositoryLinkFileBlameRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *FetchGitRepositoryLinkFileBlameRequest) GetRef() string {
+	if x != nil {
+		return x.Ref
+	}
+	return ""
+}
+
+func (x *FetchGitRepositoryLinkFileBlameRequest) GetPath() string {
+	if x != nil {
+		return x.Path
+	}
+	return ""
+}
+
+func (x *FetchGitRepositoryLinkFileBlameRequest) GetFirstLine() int32 {
+	if x != nil {
+		return x.FirstLine
+	}
+	return 0
+}
+
+func (x *FetchGitRepositoryLinkFileBlameRequest) GetLastLine() int32 {
+	if x != nil {
+		return x.LastLine
+	}
+	return 0
+}
+
+// BlameRange represents blame information for a range of lines.
+type BlameRange struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The 1-indexed starting line number of the range (inclusive).
+	FirstLine int32 `protobuf:"varint,1,opt,name=first_line,json=firstLine,proto3" json:"first_line,omitempty"`
+	// The 1-indexed ending line number of the range (inclusive).
+	LastLine int32 `protobuf:"varint,2,opt,name=last_line,json=lastLine,proto3" json:"last_line,omitempty"`
+	// The commit metadata for this line range.
+	Commit        *SCMCommit `protobuf:"bytes,3,opt,name=commit,proto3" json:"commit,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BlameRange) Reset() {
+	*x = BlameRange{}
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[67]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BlameRange) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BlameRange) ProtoMessage() {}
+
+func (x *BlameRange) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[67]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BlameRange.ProtoReflect.Descriptor instead.
+func (*BlameRange) Descriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{67}
+}
+
+func (x *BlameRange) GetFirstLine() int32 {
+	if x != nil {
+		return x.FirstLine
+	}
+	return 0
+}
+
+func (x *BlameRange) GetLastLine() int32 {
+	if x != nil {
+		return x.LastLine
+	}
+	return 0
+}
+
+func (x *BlameRange) GetCommit() *SCMCommit {
+	if x != nil {
+		return x.Commit
+	}
+	return nil
+}
+
+// Response message for FetchGitRepositoryLinkFileBlame.
+type FetchGitRepositoryLinkFileBlameResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The list of blame ranges for the file.
+	Ranges        []*BlameRange `protobuf:"bytes,1,rep,name=ranges,proto3" json:"ranges,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FetchGitRepositoryLinkFileBlameResponse) Reset() {
+	*x = FetchGitRepositoryLinkFileBlameResponse{}
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[68]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FetchGitRepositoryLinkFileBlameResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FetchGitRepositoryLinkFileBlameResponse) ProtoMessage() {}
+
+func (x *FetchGitRepositoryLinkFileBlameResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[68]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FetchGitRepositoryLinkFileBlameResponse.ProtoReflect.Descriptor instead.
+func (*FetchGitRepositoryLinkFileBlameResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{68}
+}
+
+func (x *FetchGitRepositoryLinkFileBlameResponse) GetRanges() []*BlameRange {
+	if x != nil {
+		return x.Ranges
+	}
+	return nil
+}
+
+// Request message for FetchGitRepositoryLinkPullRequest.
+type FetchGitRepositoryLinkPullRequestRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The resource name of the GitRepositoryLink in the format
+	// `projects/*/locations/*/connections/*/gitRepositoryLinks/*`.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Required. The ID of the Pull Request.
+	PullRequestId string `protobuf:"bytes,2,opt,name=pull_request_id,json=pullRequestId,proto3" json:"pull_request_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FetchGitRepositoryLinkPullRequestRequest) Reset() {
+	*x = FetchGitRepositoryLinkPullRequestRequest{}
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[69]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FetchGitRepositoryLinkPullRequestRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FetchGitRepositoryLinkPullRequestRequest) ProtoMessage() {}
+
+func (x *FetchGitRepositoryLinkPullRequestRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[69]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FetchGitRepositoryLinkPullRequestRequest.ProtoReflect.Descriptor instead.
+func (*FetchGitRepositoryLinkPullRequestRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{69}
+}
+
+func (x *FetchGitRepositoryLinkPullRequestRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *FetchGitRepositoryLinkPullRequestRequest) GetPullRequestId() string {
+	if x != nil {
+		return x.PullRequestId
+	}
+	return ""
+}
+
+// Message representing a SCM Pull Request.
+type PullRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The ID of the PR.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Required. The title of the PR.
+	Title string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	// Optional. The body description of the PR.
+	Body string `protobuf:"bytes,3,opt,name=body,proto3" json:"body,omitempty"`
+	// Required. The source commit SHA of the head branch.
+	HeadRef string `protobuf:"bytes,4,opt,name=head_ref,json=headRef,proto3" json:"head_ref,omitempty"`
+	// Required. The target commit SHA of the base branch.
+	BaseRef string `protobuf:"bytes,5,opt,name=base_ref,json=baseRef,proto3" json:"base_ref,omitempty"`
+	// Output only. The username of the author.
+	Author string `protobuf:"bytes,6,opt,name=author,proto3" json:"author,omitempty"`
+	// Output only. When the PR was created.
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	// Output only. When the PR was updated.
+	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
+	// Output only. When the PR was merged.
+	MergeTime *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=merge_time,json=mergeTime,proto3" json:"merge_time,omitempty"`
+	// Output only. When the PR was closed.
+	CloseTime *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=close_time,json=closeTime,proto3" json:"close_time,omitempty"`
+	// Output only. When the PR was declined. Only set for SCM providers that
+	// support declining pull requests. Never set for GitHub, GitHub Enterprise,
+	// GitLab, or GitLab Enterprise, where a pull request closed without being
+	// merged is `CLOSED`.
+	DeclineTime *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=decline_time,json=declineTime,proto3" json:"decline_time,omitempty"`
+	// Output only. The current state of the PR.
+	State PullRequest_State `protobuf:"varint,12,opt,name=state,proto3,enum=google.cloud.developerconnect.v1.PullRequest_State" json:"state,omitempty"`
+	// Output only. The mergeability state of the pull request.
+	Mergeability PullRequest_Mergeability `protobuf:"varint,13,opt,name=mergeability,proto3,enum=google.cloud.developerconnect.v1.PullRequest_Mergeability" json:"mergeability,omitempty"`
+	// Output only. The HTML URL of the pull request on the SCM provider.
+	HtmlUrl       string `protobuf:"bytes,14,opt,name=html_url,json=htmlUrl,proto3" json:"html_url,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PullRequest) Reset() {
+	*x = PullRequest{}
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[70]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PullRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PullRequest) ProtoMessage() {}
+
+func (x *PullRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[70]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PullRequest.ProtoReflect.Descriptor instead.
+func (*PullRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{70}
+}
+
+func (x *PullRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *PullRequest) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *PullRequest) GetBody() string {
+	if x != nil {
+		return x.Body
+	}
+	return ""
+}
+
+func (x *PullRequest) GetHeadRef() string {
+	if x != nil {
+		return x.HeadRef
+	}
+	return ""
+}
+
+func (x *PullRequest) GetBaseRef() string {
+	if x != nil {
+		return x.BaseRef
+	}
+	return ""
+}
+
+func (x *PullRequest) GetAuthor() string {
+	if x != nil {
+		return x.Author
+	}
+	return ""
+}
+
+func (x *PullRequest) GetCreateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreateTime
+	}
+	return nil
+}
+
+func (x *PullRequest) GetUpdateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdateTime
+	}
+	return nil
+}
+
+func (x *PullRequest) GetMergeTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.MergeTime
+	}
+	return nil
+}
+
+func (x *PullRequest) GetCloseTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CloseTime
+	}
+	return nil
+}
+
+func (x *PullRequest) GetDeclineTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.DeclineTime
+	}
+	return nil
+}
+
+func (x *PullRequest) GetState() PullRequest_State {
+	if x != nil {
+		return x.State
+	}
+	return PullRequest_STATE_UNSPECIFIED
+}
+
+func (x *PullRequest) GetMergeability() PullRequest_Mergeability {
+	if x != nil {
+		return x.Mergeability
+	}
+	return PullRequest_MERGEABILITY_UNSPECIFIED
+}
+
+func (x *PullRequest) GetHtmlUrl() string {
+	if x != nil {
+		return x.HtmlUrl
+	}
+	return ""
+}
+
+// Message representing a SCM Pull Request Comment.
+type PullRequestComment struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The ID of the comment.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Required. The body of the comment.
+	Body string `protobuf:"bytes,2,opt,name=body,proto3" json:"body,omitempty"`
+	// Output only. The username of the author.
+	Author string `protobuf:"bytes,3,opt,name=author,proto3" json:"author,omitempty"`
+	// Output only. When the comment was created.
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	// Output only. When the comment was updated.
+	UpdateTime    *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PullRequestComment) Reset() {
+	*x = PullRequestComment{}
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[71]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PullRequestComment) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PullRequestComment) ProtoMessage() {}
+
+func (x *PullRequestComment) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[71]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PullRequestComment.ProtoReflect.Descriptor instead.
+func (*PullRequestComment) Descriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{71}
+}
+
+func (x *PullRequestComment) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *PullRequestComment) GetBody() string {
+	if x != nil {
+		return x.Body
+	}
+	return ""
+}
+
+func (x *PullRequestComment) GetAuthor() string {
+	if x != nil {
+		return x.Author
+	}
+	return ""
+}
+
+func (x *PullRequestComment) GetCreateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreateTime
+	}
+	return nil
+}
+
+func (x *PullRequestComment) GetUpdateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdateTime
+	}
+	return nil
+}
+
+// Request message for AddGitRepositoryLinkPullRequestComment.
+type AddGitRepositoryLinkPullRequestCommentRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The resource name of the GitRepositoryLink in the format
+	// `projects/*/locations/*/connections/*/gitRepositoryLinks/*`.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Required. The ID of the Pull Request.
+	PullRequestId string `protobuf:"bytes,2,opt,name=pull_request_id,json=pullRequestId,proto3" json:"pull_request_id,omitempty"`
+	// Required. The comment to add.
+	Comment       *PullRequestComment `protobuf:"bytes,3,opt,name=comment,proto3" json:"comment,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddGitRepositoryLinkPullRequestCommentRequest) Reset() {
+	*x = AddGitRepositoryLinkPullRequestCommentRequest{}
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[72]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddGitRepositoryLinkPullRequestCommentRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddGitRepositoryLinkPullRequestCommentRequest) ProtoMessage() {}
+
+func (x *AddGitRepositoryLinkPullRequestCommentRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[72]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddGitRepositoryLinkPullRequestCommentRequest.ProtoReflect.Descriptor instead.
+func (*AddGitRepositoryLinkPullRequestCommentRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{72}
+}
+
+func (x *AddGitRepositoryLinkPullRequestCommentRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *AddGitRepositoryLinkPullRequestCommentRequest) GetPullRequestId() string {
+	if x != nil {
+		return x.PullRequestId
+	}
+	return ""
+}
+
+func (x *AddGitRepositoryLinkPullRequestCommentRequest) GetComment() *PullRequestComment {
+	if x != nil {
+		return x.Comment
+	}
+	return nil
+}
+
+// Message representing a SCM Pull Request Review Comment (inline on diff).
+type PullRequestReviewComment struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The ID of the comment.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Required. The body of the comment.
+	Body string `protobuf:"bytes,2,opt,name=body,proto3" json:"body,omitempty"`
+	// Required. The file path to comment on.
+	Path string `protobuf:"bytes,3,opt,name=path,proto3" json:"path,omitempty"`
+	// Optional. The first line of the comment range (inclusive). If not
+	// specified, the comment applies only to the `last_line`.
+	FirstLine int32 `protobuf:"varint,4,opt,name=first_line,json=firstLine,proto3" json:"first_line,omitempty"`
+	// Required. The last line of the comment range (inclusive). If `first_line`
+	// is not specified, the comment applies only to this line.
+	LastLine int32 `protobuf:"varint,5,opt,name=last_line,json=lastLine,proto3" json:"last_line,omitempty"`
+	// Optional. The side of the diff to comment on. Defaults to HEAD.
+	Side PullRequestReviewComment_DiffSide `protobuf:"varint,6,opt,name=side,proto3,enum=google.cloud.developerconnect.v1.PullRequestReviewComment_DiffSide" json:"side,omitempty"`
+	// Output only. The username of the author.
+	Author string `protobuf:"bytes,7,opt,name=author,proto3" json:"author,omitempty"`
+	// Output only. When the comment was created.
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	// Output only. When the comment was updated.
+	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
+	// Output only. The commit SHA the comment was actually applied to.
+	CommitId      string `protobuf:"bytes,10,opt,name=commit_id,json=commitId,proto3" json:"commit_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PullRequestReviewComment) Reset() {
+	*x = PullRequestReviewComment{}
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[73]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PullRequestReviewComment) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PullRequestReviewComment) ProtoMessage() {}
+
+func (x *PullRequestReviewComment) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[73]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PullRequestReviewComment.ProtoReflect.Descriptor instead.
+func (*PullRequestReviewComment) Descriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{73}
+}
+
+func (x *PullRequestReviewComment) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *PullRequestReviewComment) GetBody() string {
+	if x != nil {
+		return x.Body
+	}
+	return ""
+}
+
+func (x *PullRequestReviewComment) GetPath() string {
+	if x != nil {
+		return x.Path
+	}
+	return ""
+}
+
+func (x *PullRequestReviewComment) GetFirstLine() int32 {
+	if x != nil {
+		return x.FirstLine
+	}
+	return 0
+}
+
+func (x *PullRequestReviewComment) GetLastLine() int32 {
+	if x != nil {
+		return x.LastLine
+	}
+	return 0
+}
+
+func (x *PullRequestReviewComment) GetSide() PullRequestReviewComment_DiffSide {
+	if x != nil {
+		return x.Side
+	}
+	return PullRequestReviewComment_DIFF_SIDE_UNSPECIFIED
+}
+
+func (x *PullRequestReviewComment) GetAuthor() string {
+	if x != nil {
+		return x.Author
+	}
+	return ""
+}
+
+func (x *PullRequestReviewComment) GetCreateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreateTime
+	}
+	return nil
+}
+
+func (x *PullRequestReviewComment) GetUpdateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdateTime
+	}
+	return nil
+}
+
+func (x *PullRequestReviewComment) GetCommitId() string {
+	if x != nil {
+		return x.CommitId
+	}
+	return ""
+}
+
+// Request message for AddGitRepositoryLinkPullRequestReviewComment.
+type AddGitRepositoryLinkPullRequestReviewCommentRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The resource name of the GitRepositoryLink in the format
+	// `projects/*/locations/*/connections/*/gitRepositoryLinks/*`.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Required. The ID of the Pull Request.
+	PullRequestId string `protobuf:"bytes,2,opt,name=pull_request_id,json=pullRequestId,proto3" json:"pull_request_id,omitempty"`
+	// Required. The review comment to add.
+	Comment *PullRequestReviewComment `protobuf:"bytes,3,opt,name=comment,proto3" json:"comment,omitempty"`
+	// Optional. The commit SHA to comment on. If not specified, defaults to the
+	// HEAD commit of the Pull Request.
+	CommitId      string `protobuf:"bytes,4,opt,name=commit_id,json=commitId,proto3" json:"commit_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddGitRepositoryLinkPullRequestReviewCommentRequest) Reset() {
+	*x = AddGitRepositoryLinkPullRequestReviewCommentRequest{}
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[74]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddGitRepositoryLinkPullRequestReviewCommentRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddGitRepositoryLinkPullRequestReviewCommentRequest) ProtoMessage() {}
+
+func (x *AddGitRepositoryLinkPullRequestReviewCommentRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[74]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddGitRepositoryLinkPullRequestReviewCommentRequest.ProtoReflect.Descriptor instead.
+func (*AddGitRepositoryLinkPullRequestReviewCommentRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{74}
+}
+
+func (x *AddGitRepositoryLinkPullRequestReviewCommentRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *AddGitRepositoryLinkPullRequestReviewCommentRequest) GetPullRequestId() string {
+	if x != nil {
+		return x.PullRequestId
+	}
+	return ""
+}
+
+func (x *AddGitRepositoryLinkPullRequestReviewCommentRequest) GetComment() *PullRequestReviewComment {
+	if x != nil {
+		return x.Comment
+	}
+	return nil
+}
+
+func (x *AddGitRepositoryLinkPullRequestReviewCommentRequest) GetCommitId() string {
+	if x != nil {
+		return x.CommitId
+	}
+	return ""
+}
+
+// Message for modifying SCM Pull Request.
+type ModifyGitRepositoryLinkPullRequestRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The GitRepositoryLink resource name in the format
+	// `projects/*/locations/*/connections/*/gitRepositoryLinks/*`.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Required. The SCM-specific Pull Request identifier (e.g., "45").
+	PullRequestId string `protobuf:"bytes,2,opt,name=pull_request_id,json=pullRequestId,proto3" json:"pull_request_id,omitempty"`
+	// Optional. The title of the Pull Request.
+	Title string `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
+	// Optional. The body description of the Pull Request.
+	Body string `protobuf:"bytes,4,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. The target branch to merge into.
+	BaseRef string `protobuf:"bytes,5,opt,name=base_ref,json=baseRef,proto3" json:"base_ref,omitempty"`
+	// Optional. The state of the Pull Request.
+	State         ModifyGitRepositoryLinkPullRequestRequest_State `protobuf:"varint,6,opt,name=state,proto3,enum=google.cloud.developerconnect.v1.ModifyGitRepositoryLinkPullRequestRequest_State" json:"state,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ModifyGitRepositoryLinkPullRequestRequest) Reset() {
+	*x = ModifyGitRepositoryLinkPullRequestRequest{}
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[75]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ModifyGitRepositoryLinkPullRequestRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ModifyGitRepositoryLinkPullRequestRequest) ProtoMessage() {}
+
+func (x *ModifyGitRepositoryLinkPullRequestRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[75]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ModifyGitRepositoryLinkPullRequestRequest.ProtoReflect.Descriptor instead.
+func (*ModifyGitRepositoryLinkPullRequestRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{75}
+}
+
+func (x *ModifyGitRepositoryLinkPullRequestRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ModifyGitRepositoryLinkPullRequestRequest) GetPullRequestId() string {
+	if x != nil {
+		return x.PullRequestId
+	}
+	return ""
+}
+
+func (x *ModifyGitRepositoryLinkPullRequestRequest) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *ModifyGitRepositoryLinkPullRequestRequest) GetBody() string {
+	if x != nil {
+		return x.Body
+	}
+	return ""
+}
+
+func (x *ModifyGitRepositoryLinkPullRequestRequest) GetBaseRef() string {
+	if x != nil {
+		return x.BaseRef
+	}
+	return ""
+}
+
+func (x *ModifyGitRepositoryLinkPullRequestRequest) GetState() ModifyGitRepositoryLinkPullRequestRequest_State {
+	if x != nil {
+		return x.State
+	}
+	return ModifyGitRepositoryLinkPullRequestRequest_STATE_UNSPECIFIED
+}
+
+// Request message for FetchGitRepositoryLinkPullRequestList.
+type FetchGitRepositoryLinkPullRequestListRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The GitRepositoryLink resource name in the format
+	// `projects/*/locations/*/connections/*/gitRepositoryLinks/*`.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. A filter expression that filters the pull requests returned in
+	// the response. Only a single equality comparison on `state` is supported,
+	// for example `state = "OPEN"`. Supported values are `OPEN`, `CLOSED`, and
+	// `MERGED`. `DECLINED` is only supported for SCM providers that support
+	// declining pull requests, and returns `INVALID_ARGUMENT` for GitHub, GitHub
+	// Enterprise, GitLab, and GitLab Enterprise. Other values or expressions
+	// return `INVALID_ARGUMENT`. Defaults to `state = "OPEN"` if unspecified.
+	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
+	// Optional. Number of results to return in the list. Default is 20. Max is
+	// 100. A page may contain fewer than `page_size` results even when more
+	// results are available; use `next_page_token` to check for more pages.
+	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. A page token, received from a previous
+	// `FetchGitRepositoryLinkPullRequestList` call. Provide this to retrieve the
+	// subsequent page.
+	PageToken     string `protobuf:"bytes,4,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FetchGitRepositoryLinkPullRequestListRequest) Reset() {
+	*x = FetchGitRepositoryLinkPullRequestListRequest{}
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[76]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FetchGitRepositoryLinkPullRequestListRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FetchGitRepositoryLinkPullRequestListRequest) ProtoMessage() {}
+
+func (x *FetchGitRepositoryLinkPullRequestListRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[76]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FetchGitRepositoryLinkPullRequestListRequest.ProtoReflect.Descriptor instead.
+func (*FetchGitRepositoryLinkPullRequestListRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{76}
+}
+
+func (x *FetchGitRepositoryLinkPullRequestListRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *FetchGitRepositoryLinkPullRequestListRequest) GetFilter() string {
+	if x != nil {
+		return x.Filter
+	}
+	return ""
+}
+
+func (x *FetchGitRepositoryLinkPullRequestListRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *FetchGitRepositoryLinkPullRequestListRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+// Response message for FetchGitRepositoryLinkPullRequestList.
+type FetchGitRepositoryLinkPullRequestListResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The list of Pull Requests.
+	PullRequests []*PullRequest `protobuf:"bytes,1,rep,name=pull_requests,json=pullRequests,proto3" json:"pull_requests,omitempty"`
+	// A token, which can be sent as `page_token` to retrieve the next page.
+	// If this field is omitted, there are no subsequent pages.
+	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FetchGitRepositoryLinkPullRequestListResponse) Reset() {
+	*x = FetchGitRepositoryLinkPullRequestListResponse{}
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[77]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FetchGitRepositoryLinkPullRequestListResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FetchGitRepositoryLinkPullRequestListResponse) ProtoMessage() {}
+
+func (x *FetchGitRepositoryLinkPullRequestListResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[77]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FetchGitRepositoryLinkPullRequestListResponse.ProtoReflect.Descriptor instead.
+func (*FetchGitRepositoryLinkPullRequestListResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{77}
+}
+
+func (x *FetchGitRepositoryLinkPullRequestListResponse) GetPullRequests() []*PullRequest {
+	if x != nil {
+		return x.PullRequests
+	}
+	return nil
+}
+
+func (x *FetchGitRepositoryLinkPullRequestListResponse) GetNextPageToken() string {
 	if x != nil {
 		return x.NextPageToken
 	}
@@ -4806,7 +6714,7 @@ type AccountConnector struct {
 
 func (x *AccountConnector) Reset() {
 	*x = AccountConnector{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[57]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4818,7 +6726,7 @@ func (x *AccountConnector) String() string {
 func (*AccountConnector) ProtoMessage() {}
 
 func (x *AccountConnector) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[57]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4831,7 +6739,7 @@ func (x *AccountConnector) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AccountConnector.ProtoReflect.Descriptor instead.
 func (*AccountConnector) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{57}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{78}
 }
 
 func (x *AccountConnector) GetAccountConnectorConfig() isAccountConnector_AccountConnectorConfig {
@@ -4930,7 +6838,7 @@ type User struct {
 
 func (x *User) Reset() {
 	*x = User{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[58]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4942,7 +6850,7 @@ func (x *User) String() string {
 func (*User) ProtoMessage() {}
 
 func (x *User) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[58]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4955,7 +6863,7 @@ func (x *User) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use User.ProtoReflect.Descriptor instead.
 func (*User) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{58}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{79}
 }
 
 func (x *User) GetName() string {
@@ -5006,7 +6914,7 @@ type ProviderOAuthConfig struct {
 
 func (x *ProviderOAuthConfig) Reset() {
 	*x = ProviderOAuthConfig{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[59]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5018,7 +6926,7 @@ func (x *ProviderOAuthConfig) String() string {
 func (*ProviderOAuthConfig) ProtoMessage() {}
 
 func (x *ProviderOAuthConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[59]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5031,7 +6939,7 @@ func (x *ProviderOAuthConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProviderOAuthConfig.ProtoReflect.Descriptor instead.
 func (*ProviderOAuthConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{59}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{80}
 }
 
 func (x *ProviderOAuthConfig) GetOauthProviderId() isProviderOAuthConfig_OauthProviderId {
@@ -5085,7 +6993,7 @@ type GenericHTTPEndpointConfig_BasicAuthentication struct {
 
 func (x *GenericHTTPEndpointConfig_BasicAuthentication) Reset() {
 	*x = GenericHTTPEndpointConfig_BasicAuthentication{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[62]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[83]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5097,7 +7005,7 @@ func (x *GenericHTTPEndpointConfig_BasicAuthentication) String() string {
 func (*GenericHTTPEndpointConfig_BasicAuthentication) ProtoMessage() {}
 
 func (x *GenericHTTPEndpointConfig_BasicAuthentication) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[62]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[83]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5163,7 +7071,7 @@ type GenericHTTPEndpointConfig_BearerTokenAuthentication struct {
 
 func (x *GenericHTTPEndpointConfig_BearerTokenAuthentication) Reset() {
 	*x = GenericHTTPEndpointConfig_BearerTokenAuthentication{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[63]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[84]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5175,7 +7083,7 @@ func (x *GenericHTTPEndpointConfig_BearerTokenAuthentication) String() string {
 func (*GenericHTTPEndpointConfig_BearerTokenAuthentication) ProtoMessage() {}
 
 func (x *GenericHTTPEndpointConfig_BearerTokenAuthentication) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[63]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[84]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5233,7 +7141,7 @@ type FinishOAuthRequest_OAuthParams struct {
 
 func (x *FinishOAuthRequest_OAuthParams) Reset() {
 	*x = FinishOAuthRequest_OAuthParams{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[64]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5245,7 +7153,7 @@ func (x *FinishOAuthRequest_OAuthParams) String() string {
 func (*FinishOAuthRequest_OAuthParams) ProtoMessage() {}
 
 func (x *FinishOAuthRequest_OAuthParams) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[64]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5258,7 +7166,7 @@ func (x *FinishOAuthRequest_OAuthParams) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FinishOAuthRequest_OAuthParams.ProtoReflect.Descriptor instead.
 func (*FinishOAuthRequest_OAuthParams) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{37, 0}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{40, 0}
 }
 
 func (x *FinishOAuthRequest_OAuthParams) GetCode() string {
@@ -5291,7 +7199,7 @@ type FinishOAuthRequest_GoogleOAuthParams struct {
 
 func (x *FinishOAuthRequest_GoogleOAuthParams) Reset() {
 	*x = FinishOAuthRequest_GoogleOAuthParams{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[65]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[86]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5303,7 +7211,7 @@ func (x *FinishOAuthRequest_GoogleOAuthParams) String() string {
 func (*FinishOAuthRequest_GoogleOAuthParams) ProtoMessage() {}
 
 func (x *FinishOAuthRequest_GoogleOAuthParams) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[65]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[86]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5316,7 +7224,7 @@ func (x *FinishOAuthRequest_GoogleOAuthParams) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use FinishOAuthRequest_GoogleOAuthParams.ProtoReflect.Descriptor instead.
 func (*FinishOAuthRequest_GoogleOAuthParams) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{37, 1}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{40, 1}
 }
 
 func (x *FinishOAuthRequest_GoogleOAuthParams) GetScopes() []string {
@@ -5355,7 +7263,7 @@ type FetchGitHubInstallationsResponse_Installation struct {
 
 func (x *FetchGitHubInstallationsResponse_Installation) Reset() {
 	*x = FetchGitHubInstallationsResponse_Installation{}
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[68]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[89]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5367,7 +7275,7 @@ func (x *FetchGitHubInstallationsResponse_Installation) String() string {
 func (*FetchGitHubInstallationsResponse_Installation) ProtoMessage() {}
 
 func (x *FetchGitHubInstallationsResponse_Installation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[68]
+	mi := &file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[89]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5380,7 +7288,7 @@ func (x *FetchGitHubInstallationsResponse_Installation) ProtoReflect() protorefl
 
 // Deprecated: Use FetchGitHubInstallationsResponse_Installation.ProtoReflect.Descriptor instead.
 func (*FetchGitHubInstallationsResponse_Installation) Descriptor() ([]byte, []int) {
-	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{54, 0}
+	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP(), []int{58, 0}
 }
 
 func (x *FetchGitHubInstallationsResponse_Installation) GetId() int64 {
@@ -5408,18 +7316,18 @@ var File_google_cloud_developerconnect_v1_developer_connect_proto protoreflect.F
 
 const file_google_cloud_developerconnect_v1_developer_connect_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/developerconnect/v1/developer_connect.proto\x12 google.cloud.developerconnect.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdb\x01\n" +
-	"\x10ListUsersRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$developerconnect.googleapis.com/UserR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"8google/cloud/developerconnect/v1/developer_connect.proto\x12 google.cloud.developerconnect.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe0\x01\n" +
+	"\x10ListUsersRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$developerconnect.googleapis.com/UserR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x9b\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x9b\x01\n" +
 	"\x11ListUsersResponse\x12<\n" +
 	"\x05users\x18\x01 \x03(\v2&.google.cloud.developerconnect.v1.UserR\x05users\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x80\x10\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x8e\x10\n" +
 	"\n" +
 	"Connection\x12U\n" +
 	"\rgithub_config\x18\x05 \x01(\v2..google.cloud.developerconnect.v1.GitHubConfigH\x00R\fgithubConfig\x12t\n" +
@@ -5428,26 +7336,26 @@ const file_google_cloud_developerconnect_v1_developer_connect_proto_rawDesc = ""
 	"\x18gitlab_enterprise_config\x18\x10 \x01(\v28.google.cloud.developerconnect.v1.GitLabEnterpriseConfigH\x00R\x16gitlabEnterpriseConfig\x12~\n" +
 	"\x1cbitbucket_data_center_config\x18\x11 \x01(\v2;.google.cloud.developerconnect.v1.BitbucketDataCenterConfigH\x00R\x19bitbucketDataCenterConfig\x12n\n" +
 	"\x16bitbucket_cloud_config\x18\x12 \x01(\v26.google.cloud.developerconnect.v1.BitbucketCloudConfigH\x00R\x14bitbucketCloudConfig\x12\x97\x01\n" +
-	"%secure_source_manager_instance_config\x18\x14 \x01(\v2C.google.cloud.developerconnect.v1.SecureSourceManagerInstanceConfigH\x00R!secureSourceManagerInstanceConfig\x12c\n" +
-	"\vhttp_config\x18\x15 \x01(\v2;.google.cloud.developerconnect.v1.GenericHTTPEndpointConfigB\x03\xe0A\x01H\x00R\n" +
-	"httpConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12U\n" +
-	"\x06labels\x18\x04 \x03(\v28.google.cloud.developerconnect.v1.Connection.LabelsEntryB\x03\xe0A\x01R\x06labels\x12g\n" +
-	"\x12installation_state\x18\x06 \x01(\v23.google.cloud.developerconnect.v1.InstallationStateB\x03\xe0A\x03R\x11installationState\x12\x1f\n" +
-	"\bdisabled\x18\a \x01(\bB\x03\xe0A\x01R\bdisabled\x12%\n" +
-	"\vreconciling\x18\b \x01(\bB\x03\xe0A\x03R\vreconciling\x12d\n" +
-	"\vannotations\x18\t \x03(\v2=.google.cloud.developerconnect.v1.Connection.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12\x17\n" +
+	"%secure_source_manager_instance_config\x18\x14 \x01(\v2C.google.cloud.developerconnect.v1.SecureSourceManagerInstanceConfigH\x00R!secureSourceManagerInstanceConfig\x12d\n" +
+	"\vhttp_config\x18\x15 \x01(\v2;.google.cloud.developerconnect.v1.GenericHTTPEndpointConfigB\x04\xe2A\x01\x01H\x00R\n" +
+	"httpConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12V\n" +
+	"\x06labels\x18\x04 \x03(\v28.google.cloud.developerconnect.v1.Connection.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12h\n" +
+	"\x12installation_state\x18\x06 \x01(\v23.google.cloud.developerconnect.v1.InstallationStateB\x04\xe2A\x01\x03R\x11installationState\x12 \n" +
+	"\bdisabled\x18\a \x01(\bB\x04\xe2A\x01\x01R\bdisabled\x12&\n" +
+	"\vreconciling\x18\b \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12e\n" +
+	"\vannotations\x18\t \x03(\v2=.google.cloud.developerconnect.v1.Connection.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12\x18\n" +
 	"\x04etag\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x04etag\x12\x1d\n" +
-	"\x03uid\x18\f \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12b\n" +
-	"\x11crypto_key_config\x18\x0f \x01(\v21.google.cloud.developerconnect.v1.CryptoKeyConfigB\x03\xe0A\x01R\x0fcryptoKeyConfig\x12_\n" +
-	"\x10git_proxy_config\x18\x13 \x01(\v20.google.cloud.developerconnect.v1.GitProxyConfigB\x03\xe0A\x01R\x0egitProxyConfig\x1a9\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12\x1e\n" +
+	"\x03uid\x18\f \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12c\n" +
+	"\x11crypto_key_config\x18\x0f \x01(\v21.google.cloud.developerconnect.v1.CryptoKeyConfigB\x04\xe2A\x01\x01R\x0fcryptoKeyConfig\x12`\n" +
+	"\x10git_proxy_config\x18\x13 \x01(\v20.google.cloud.developerconnect.v1.GitProxyConfigB\x04\xe2A\x01\x01R\x0egitProxyConfig\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +
@@ -5456,221 +7364,233 @@ const file_google_cloud_developerconnect_v1_developer_connect_proto_rawDesc = ""
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x8e\x01\xeaA\x8a\x01\n" +
 	"*developerconnect.googleapis.com/Connection\x12@projects/{project}/locations/{location}/connections/{connection}*\vconnections2\n" +
 	"connectionR\x01\x01B\x13\n" +
-	"\x11connection_config\"a\n" +
-	"\x0fCryptoKeyConfig\x12N\n" +
-	"\rkey_reference\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\fkeyReference\"c\n" +
-	"\x0eGitProxyConfig\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabled\x122\n" +
-	"\x13http_proxy_base_uri\x18\x02 \x01(\tB\x03\xe0A\x03R\x10httpProxyBaseUri\"\xa3\x02\n" +
-	"\x11InstallationState\x12T\n" +
-	"\x05stage\x18\x01 \x01(\x0e29.google.cloud.developerconnect.v1.InstallationState.StageB\x03\xe0A\x03R\x05stage\x12\x1d\n" +
-	"\amessage\x18\x02 \x01(\tB\x03\xe0A\x03R\amessage\x12\"\n" +
+	"\x11connection_config\"b\n" +
+	"\x0fCryptoKeyConfig\x12O\n" +
+	"\rkey_reference\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\fkeyReference\"e\n" +
+	"\x0eGitProxyConfig\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\aenabled\x123\n" +
+	"\x13http_proxy_base_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x10httpProxyBaseUri\"\xa6\x02\n" +
+	"\x11InstallationState\x12U\n" +
+	"\x05stage\x18\x01 \x01(\x0e29.google.cloud.developerconnect.v1.InstallationState.StageB\x04\xe2A\x01\x03R\x05stage\x12\x1e\n" +
+	"\amessage\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\amessage\x12#\n" +
 	"\n" +
-	"action_uri\x18\x03 \x01(\tB\x03\xe0A\x03R\tactionUri\"u\n" +
+	"action_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\tactionUri\"u\n" +
 	"\x05Stage\x12\x15\n" +
 	"\x11STAGE_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12PENDING_CREATE_APP\x10\x01\x12\x16\n" +
 	"\x12PENDING_USER_OAUTH\x10\x02\x12\x17\n" +
 	"\x13PENDING_INSTALL_APP\x10\x03\x12\f\n" +
 	"\bCOMPLETE\x10\n" +
-	"\"\xe6\x06\n" +
-	"\x19GenericHTTPEndpointConfig\x12\x89\x01\n" +
-	"\x14basic_authentication\x18\x01 \x01(\v2O.google.cloud.developerconnect.v1.GenericHTTPEndpointConfig.BasicAuthenticationB\x03\xe0A\x01H\x00R\x13basicAuthentication\x12\x9c\x01\n" +
-	"\x1bbearer_token_authentication\x18\x02 \x01(\v2U.google.cloud.developerconnect.v1.GenericHTTPEndpointConfig.BearerTokenAuthenticationB\x03\xe0A\x01H\x00R\x19bearerTokenAuthentication\x12!\n" +
-	"\bhost_uri\x18\x03 \x01(\tB\x06\xe0A\x02\xe0A\x05R\ahostUri\x12w\n" +
-	"\x18service_directory_config\x18\x04 \x01(\v28.google.cloud.developerconnect.v1.ServiceDirectoryConfigB\x03\xe0A\x01R\x16serviceDirectoryConfig\x121\n" +
-	"\x12ssl_ca_certificate\x18\x05 \x01(\tB\x03\xe0A\x01R\x10sslCaCertificate\x1a\xad\x01\n" +
+	"\"\xeb\x06\n" +
+	"\x19GenericHTTPEndpointConfig\x12\x8a\x01\n" +
+	"\x14basic_authentication\x18\x01 \x01(\v2O.google.cloud.developerconnect.v1.GenericHTTPEndpointConfig.BasicAuthenticationB\x04\xe2A\x01\x01H\x00R\x13basicAuthentication\x12\x9d\x01\n" +
+	"\x1bbearer_token_authentication\x18\x02 \x01(\v2U.google.cloud.developerconnect.v1.GenericHTTPEndpointConfig.BearerTokenAuthenticationB\x04\xe2A\x01\x01H\x00R\x19bearerTokenAuthentication\x12 \n" +
+	"\bhost_uri\x18\x03 \x01(\tB\x05\xe2A\x02\x02\x05R\ahostUri\x12x\n" +
+	"\x18service_directory_config\x18\x04 \x01(\v28.google.cloud.developerconnect.v1.ServiceDirectoryConfigB\x04\xe2A\x01\x01R\x16serviceDirectoryConfig\x122\n" +
+	"\x12ssl_ca_certificate\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x10sslCaCertificate\x1a\xae\x01\n" +
 	"\x13BasicAuthentication\x12i\n" +
 	"\x17password_secret_version\x18\x02 \x01(\tB/\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12\x1f\n" +
-	"\busername\x18\x01 \x01(\tB\x03\xe0A\x02R\busernameB\n" +
+	"*secretmanager.googleapis.com/SecretVersionH\x00R\x15passwordSecretVersion\x12 \n" +
+	"\busername\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\busernameB\n" +
 	"\n" +
-	"\bpassword\x1a\x8c\x01\n" +
-	"\x19BearerTokenAuthentication\x12f\n" +
-	"\x14token_secret_version\x18\x01 \x01(\tB2\xe0A\x01\xfaA,\n" +
+	"\bpassword\x1a\x8d\x01\n" +
+	"\x19BearerTokenAuthentication\x12g\n" +
+	"\x14token_secret_version\x18\x01 \x01(\tB3\xe2A\x01\x01\xfaA,\n" +
 	"*secretmanager.googleapis.com/SecretVersionH\x00R\x12tokenSecretVersionB\a\n" +
 	"\x05tokenB\x10\n" +
-	"\x0eauthentication\"\xa8\x03\n" +
-	"\fGitHubConfig\x12_\n" +
+	"\x0eauthentication\"\xaa\x03\n" +
+	"\fGitHubConfig\x12^\n" +
 	"\n" +
-	"github_app\x18\x01 \x01(\x0e28.google.cloud.developerconnect.v1.GitHubConfig.GitHubAppB\x06\xe0A\x02\xe0A\x05R\tgithubApp\x12k\n" +
-	"\x15authorizer_credential\x18\x02 \x01(\v21.google.cloud.developerconnect.v1.OAuthCredentialB\x03\xe0A\x01R\x14authorizerCredential\x123\n" +
-	"\x13app_installation_id\x18\x03 \x01(\x03B\x03\xe0A\x01R\x11appInstallationId\x12.\n" +
-	"\x10installation_uri\x18\x04 \x01(\tB\x03\xe0A\x03R\x0finstallationUri\"e\n" +
+	"github_app\x18\x01 \x01(\x0e28.google.cloud.developerconnect.v1.GitHubConfig.GitHubAppB\x05\xe2A\x02\x02\x05R\tgithubApp\x12l\n" +
+	"\x15authorizer_credential\x18\x02 \x01(\v21.google.cloud.developerconnect.v1.OAuthCredentialB\x04\xe2A\x01\x01R\x14authorizerCredential\x124\n" +
+	"\x13app_installation_id\x18\x03 \x01(\x03B\x04\xe2A\x01\x01R\x11appInstallationId\x12/\n" +
+	"\x10installation_uri\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x0finstallationUri\"e\n" +
 	"\tGitHubApp\x12\x1b\n" +
 	"\x17GIT_HUB_APP_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11DEVELOPER_CONNECT\x10\x01\x12\f\n" +
 	"\bFIREBASE\x10\x02\x12\x16\n" +
-	"\x12GEMINI_CODE_ASSIST\x10\x03\"\xc5\x05\n" +
-	"\x16GitHubEnterpriseConfig\x12\x1e\n" +
-	"\bhost_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\ahostUri\x12\x1a\n" +
-	"\x06app_id\x18\x02 \x01(\x03B\x03\xe0A\x01R\x05appId\x12\x1e\n" +
-	"\bapp_slug\x18\x03 \x01(\tB\x03\xe0A\x03R\aappSlug\x12o\n" +
-	"\x1aprivate_key_secret_version\x18\x04 \x01(\tB2\xe0A\x01\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x17privateKeySecretVersion\x12u\n" +
-	"\x1dwebhook_secret_secret_version\x18\x05 \x01(\tB2\xe0A\x01\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x123\n" +
-	"\x13app_installation_id\x18\b \x01(\x03B\x03\xe0A\x01R\x11appInstallationId\x12.\n" +
-	"\x10installation_uri\x18\t \x01(\tB\x03\xe0A\x03R\x0finstallationUri\x12w\n" +
+	"\x12GEMINI_CODE_ASSIST\x10\x03\"\xce\x05\n" +
+	"\x16GitHubEnterpriseConfig\x12\x1f\n" +
+	"\bhost_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\ahostUri\x12\x1b\n" +
+	"\x06app_id\x18\x02 \x01(\x03B\x04\xe2A\x01\x01R\x05appId\x12\x1f\n" +
+	"\bapp_slug\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\aappSlug\x12p\n" +
+	"\x1aprivate_key_secret_version\x18\x04 \x01(\tB3\xe2A\x01\x01\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x17privateKeySecretVersion\x12v\n" +
+	"\x1dwebhook_secret_secret_version\x18\x05 \x01(\tB3\xe2A\x01\x01\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x124\n" +
+	"\x13app_installation_id\x18\b \x01(\x03B\x04\xe2A\x01\x01R\x11appInstallationId\x12/\n" +
+	"\x10installation_uri\x18\t \x01(\tB\x04\xe2A\x01\x03R\x0finstallationUri\x12x\n" +
 	"\x18service_directory_config\x18\n" +
-	" \x01(\v28.google.cloud.developerconnect.v1.ServiceDirectoryConfigB\x03\xe0A\x01R\x16serviceDirectoryConfig\x12*\n" +
-	"\x0eserver_version\x18\f \x01(\tB\x03\xe0A\x03R\rserverVersion\x121\n" +
-	"\x12ssl_ca_certificate\x18\x0e \x01(\tB\x03\xe0A\x01R\x10sslCaCertificate\x12*\n" +
-	"\forganization\x18\x0f \x01(\tB\x06\xe0A\x01\xe0A\x05R\forganization\"c\n" +
-	"\x16ServiceDirectoryConfig\x12I\n" +
-	"\aservice\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'servicedirectory.googleapis.com/ServiceR\aservice\"\xa3\x01\n" +
-	"\x0fOAuthCredential\x12o\n" +
-	"\x1aoauth_token_secret_version\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x17oauthTokenSecretVersion\x12\x1f\n" +
-	"\busername\x18\x02 \x01(\tB\x03\xe0A\x03R\busername\"\xe9\x02\n" +
-	"\fGitLabConfig\x12x\n" +
-	"\x1dwebhook_secret_secret_version\x18\x01 \x01(\tB5\xe0A\x02\xe0A\x05\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x12s\n" +
-	"\x1aread_authorizer_credential\x18\x02 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x03\xe0A\x02R\x18readAuthorizerCredential\x12j\n" +
-	"\x15authorizer_credential\x18\x03 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x03\xe0A\x02R\x14authorizerCredential\"\xa0\x01\n" +
-	"\x0eUserCredential\x12m\n" +
-	"\x19user_token_secret_version\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x16userTokenSecretVersion\x12\x1f\n" +
-	"\busername\x18\x02 \x01(\tB\x03\xe0A\x03R\busername\"\xeb\x04\n" +
-	"\x16GitLabEnterpriseConfig\x12\x1e\n" +
-	"\bhost_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\ahostUri\x12x\n" +
-	"\x1dwebhook_secret_secret_version\x18\x02 \x01(\tB5\xe0A\x02\xe0A\x05\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x12s\n" +
-	"\x1aread_authorizer_credential\x18\x03 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x03\xe0A\x02R\x18readAuthorizerCredential\x12j\n" +
-	"\x15authorizer_credential\x18\x04 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x03\xe0A\x02R\x14authorizerCredential\x12w\n" +
-	"\x18service_directory_config\x18\x05 \x01(\v28.google.cloud.developerconnect.v1.ServiceDirectoryConfigB\x03\xe0A\x01R\x16serviceDirectoryConfig\x121\n" +
-	"\x12ssl_ca_certificate\x18\x06 \x01(\tB\x03\xe0A\x01R\x10sslCaCertificate\x12*\n" +
-	"\x0eserver_version\x18\a \x01(\tB\x03\xe0A\x03R\rserverVersion\"\xee\x04\n" +
-	"\x19BitbucketDataCenterConfig\x12\x1e\n" +
-	"\bhost_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\ahostUri\x12x\n" +
-	"\x1dwebhook_secret_secret_version\x18\x02 \x01(\tB5\xe0A\x02\xe0A\x05\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x12s\n" +
-	"\x1aread_authorizer_credential\x18\x03 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x03\xe0A\x02R\x18readAuthorizerCredential\x12j\n" +
-	"\x15authorizer_credential\x18\x04 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x03\xe0A\x02R\x14authorizerCredential\x12w\n" +
-	"\x18service_directory_config\x18\x05 \x01(\v28.google.cloud.developerconnect.v1.ServiceDirectoryConfigB\x03\xe0A\x01R\x16serviceDirectoryConfig\x121\n" +
-	"\x12ssl_ca_certificate\x18\x06 \x01(\tB\x03\xe0A\x01R\x10sslCaCertificate\x12*\n" +
-	"\x0eserver_version\x18\a \x01(\tB\x03\xe0A\x03R\rserverVersion\"\x94\x03\n" +
-	"\x14BitbucketCloudConfig\x12!\n" +
-	"\tworkspace\x18\x01 \x01(\tB\x03\xe0A\x02R\tworkspace\x12x\n" +
-	"\x1dwebhook_secret_secret_version\x18\x02 \x01(\tB5\xe0A\x02\xe0A\x05\xfaA,\n" +
-	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x12s\n" +
-	"\x1aread_authorizer_credential\x18\x03 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x03\xe0A\x02R\x18readAuthorizerCredential\x12j\n" +
-	"\x15authorizer_credential\x18\x04 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x03\xe0A\x02R\x14authorizerCredential\"w\n" +
-	"!SecureSourceManagerInstanceConfig\x12R\n" +
-	"\binstance\x18\x01 \x01(\tB6\xe0A\x02\xe0A\x05\xfaA-\n" +
-	"+securesourcemanager.googleapis.com/InstanceR\binstance\"\xe7\x01\n" +
-	"\x16ListConnectionsRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*developerconnect.googleapis.com/ConnectionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	" \x01(\v28.google.cloud.developerconnect.v1.ServiceDirectoryConfigB\x04\xe2A\x01\x01R\x16serviceDirectoryConfig\x12+\n" +
+	"\x0eserver_version\x18\f \x01(\tB\x04\xe2A\x01\x03R\rserverVersion\x122\n" +
+	"\x12ssl_ca_certificate\x18\x0e \x01(\tB\x04\xe2A\x01\x01R\x10sslCaCertificate\x12)\n" +
+	"\forganization\x18\x0f \x01(\tB\x05\xe2A\x02\x01\x05R\forganization\"d\n" +
+	"\x16ServiceDirectoryConfig\x12J\n" +
+	"\aservice\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'servicedirectory.googleapis.com/ServiceR\aservice\"\xa5\x01\n" +
+	"\x0fOAuthCredential\x12p\n" +
+	"\x1aoauth_token_secret_version\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x17oauthTokenSecretVersion\x12 \n" +
+	"\busername\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\busername\"\xea\x02\n" +
+	"\fGitLabConfig\x12w\n" +
+	"\x1dwebhook_secret_secret_version\x18\x01 \x01(\tB4\xe2A\x02\x02\x05\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x12t\n" +
+	"\x1aread_authorizer_credential\x18\x02 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x04\xe2A\x01\x02R\x18readAuthorizerCredential\x12k\n" +
+	"\x15authorizer_credential\x18\x03 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x04\xe2A\x01\x02R\x14authorizerCredential\"\xa2\x01\n" +
+	"\x0eUserCredential\x12n\n" +
+	"\x19user_token_secret_version\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x16userTokenSecretVersion\x12 \n" +
+	"\busername\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\busername\"\xf0\x04\n" +
+	"\x16GitLabEnterpriseConfig\x12\x1f\n" +
+	"\bhost_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\ahostUri\x12w\n" +
+	"\x1dwebhook_secret_secret_version\x18\x02 \x01(\tB4\xe2A\x02\x02\x05\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x12t\n" +
+	"\x1aread_authorizer_credential\x18\x03 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x04\xe2A\x01\x02R\x18readAuthorizerCredential\x12k\n" +
+	"\x15authorizer_credential\x18\x04 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x04\xe2A\x01\x02R\x14authorizerCredential\x12x\n" +
+	"\x18service_directory_config\x18\x05 \x01(\v28.google.cloud.developerconnect.v1.ServiceDirectoryConfigB\x04\xe2A\x01\x01R\x16serviceDirectoryConfig\x122\n" +
+	"\x12ssl_ca_certificate\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x10sslCaCertificate\x12+\n" +
+	"\x0eserver_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\rserverVersion\"\xf3\x04\n" +
+	"\x19BitbucketDataCenterConfig\x12\x1f\n" +
+	"\bhost_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\ahostUri\x12w\n" +
+	"\x1dwebhook_secret_secret_version\x18\x02 \x01(\tB4\xe2A\x02\x02\x05\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x12t\n" +
+	"\x1aread_authorizer_credential\x18\x03 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x04\xe2A\x01\x02R\x18readAuthorizerCredential\x12k\n" +
+	"\x15authorizer_credential\x18\x04 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x04\xe2A\x01\x02R\x14authorizerCredential\x12x\n" +
+	"\x18service_directory_config\x18\x05 \x01(\v28.google.cloud.developerconnect.v1.ServiceDirectoryConfigB\x04\xe2A\x01\x01R\x16serviceDirectoryConfig\x122\n" +
+	"\x12ssl_ca_certificate\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x10sslCaCertificate\x12+\n" +
+	"\x0eserver_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\rserverVersion\"\x96\x03\n" +
+	"\x14BitbucketCloudConfig\x12\"\n" +
+	"\tworkspace\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tworkspace\x12w\n" +
+	"\x1dwebhook_secret_secret_version\x18\x02 \x01(\tB4\xe2A\x02\x02\x05\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x1awebhookSecretSecretVersion\x12t\n" +
+	"\x1aread_authorizer_credential\x18\x03 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x04\xe2A\x01\x02R\x18readAuthorizerCredential\x12k\n" +
+	"\x15authorizer_credential\x18\x04 \x01(\v20.google.cloud.developerconnect.v1.UserCredentialB\x04\xe2A\x01\x02R\x14authorizerCredential\"v\n" +
+	"!SecureSourceManagerInstanceConfig\x12Q\n" +
+	"\binstance\x18\x01 \x01(\tB5\xe2A\x02\x02\x05\xfaA-\n" +
+	"+securesourcemanager.googleapis.com/InstanceR\binstance\"\xec\x01\n" +
+	"\x16ListConnectionsRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*developerconnect.googleapis.com/ConnectionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xb3\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xb3\x01\n" +
 	"\x17ListConnectionsResponse\x12N\n" +
 	"\vconnections\x18\x01 \x03(\v2,.google.cloud.developerconnect.v1.ConnectionR\vconnections\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"^\n" +
-	"\x14GetConnectionRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*developerconnect.googleapis.com/ConnectionR\x04name\"\xb8\x02\n" +
-	"\x17CreateConnectionRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*developerconnect.googleapis.com/ConnectionR\x06parent\x12(\n" +
-	"\rconnection_id\x18\x02 \x01(\tB\x03\xe0A\x02R\fconnectionId\x12Q\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"_\n" +
+	"\x14GetConnectionRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*developerconnect.googleapis.com/ConnectionR\x04name\"\xbd\x02\n" +
+	"\x17CreateConnectionRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*developerconnect.googleapis.com/ConnectionR\x06parent\x12)\n" +
+	"\rconnection_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fconnectionId\x12R\n" +
 	"\n" +
-	"connection\x18\x03 \x01(\v2,.google.cloud.developerconnect.v1.ConnectionB\x03\xe0A\x02R\n" +
-	"connection\x12*\n" +
+	"connection\x18\x03 \x01(\v2,.google.cloud.developerconnect.v1.ConnectionB\x04\xe2A\x01\x02R\n" +
+	"connection\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xae\x02\n" +
-	"\x17UpdateConnectionRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12Q\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xb3\x02\n" +
+	"\x17UpdateConnectionRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12R\n" +
 	"\n" +
-	"connection\x18\x02 \x01(\v2,.google.cloud.developerconnect.v1.ConnectionB\x03\xe0A\x02R\n" +
-	"connection\x12*\n" +
+	"connection\x18\x02 \x01(\v2,.google.cloud.developerconnect.v1.ConnectionB\x04\xe2A\x01\x02R\n" +
+	"connection\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12(\n" +
-	"\rallow_missing\x18\x04 \x01(\bB\x03\xe0A\x01R\fallowMissing\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xd0\x01\n" +
-	"\x17DeleteConnectionRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*developerconnect.googleapis.com/ConnectionR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12)\n" +
+	"\rallow_missing\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xd4\x01\n" +
+	"\x17DeleteConnectionRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*developerconnect.googleapis.com/ConnectionR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x17\n" +
-	"\x04etag\x18\x04 \x01(\tB\x03\xe0A\x01R\x04etag\"\xf3\x01\n" +
-	"\x1cListAccountConnectorsRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120developerconnect.googleapis.com/AccountConnectorR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x18\n" +
+	"\x04etag\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xf8\x01\n" +
+	"\x1cListAccountConnectorsRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120developerconnect.googleapis.com/AccountConnectorR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xcc\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xcc\x01\n" +
 	"\x1dListAccountConnectorsResponse\x12a\n" +
 	"\x12account_connectors\x18\x01 \x03(\v22.google.cloud.developerconnect.v1.AccountConnectorR\x11accountConnectors\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"j\n" +
-	"\x1aGetAccountConnectorRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0developerconnect.googleapis.com/AccountConnectorR\x04name\"\xe4\x02\n" +
-	"\x1dCreateAccountConnectorRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120developerconnect.googleapis.com/AccountConnectorR\x06parent\x125\n" +
-	"\x14account_connector_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x12accountConnectorId\x12d\n" +
-	"\x11account_connector\x18\x03 \x01(\v22.google.cloud.developerconnect.v1.AccountConnectorB\x03\xe0A\x02R\x10accountConnector\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"k\n" +
+	"\x1aGetAccountConnectorRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0developerconnect.googleapis.com/AccountConnectorR\x04name\"\xe9\x02\n" +
+	"\x1dCreateAccountConnectorRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120developerconnect.googleapis.com/AccountConnectorR\x06parent\x126\n" +
+	"\x14account_connector_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12accountConnectorId\x12e\n" +
+	"\x11account_connector\x18\x03 \x01(\v22.google.cloud.developerconnect.v1.AccountConnectorB\x04\xe2A\x01\x02R\x10accountConnector\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xc7\x02\n" +
-	"\x1dUpdateAccountConnectorRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12d\n" +
-	"\x11account_connector\x18\x02 \x01(\v22.google.cloud.developerconnect.v1.AccountConnectorB\x03\xe0A\x02R\x10accountConnector\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xcc\x02\n" +
+	"\x1dUpdateAccountConnectorRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12e\n" +
+	"\x11account_connector\x18\x02 \x01(\v22.google.cloud.developerconnect.v1.AccountConnectorB\x04\xe2A\x01\x02R\x10accountConnector\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12(\n" +
-	"\rallow_missing\x18\x04 \x01(\bB\x03\xe0A\x01R\fallowMissing\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xf7\x01\n" +
-	"\x1dDeleteAccountConnectorRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0developerconnect.googleapis.com/AccountConnectorR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12)\n" +
+	"\rallow_missing\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xfc\x01\n" +
+	"\x1dDeleteAccountConnectorRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0developerconnect.googleapis.com/AccountConnectorR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x17\n" +
-	"\x04etag\x18\x04 \x01(\tB\x03\xe0A\x01R\x04etag\x12\x19\n" +
-	"\x05force\x18\x05 \x01(\bB\x03\xe0A\x01R\x05force\"\xc4\x01\n" +
-	"\x11DeleteUserRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$developerconnect.googleapis.com/UserR\x04name\x12*\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x18\n" +
+	"\x04etag\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12\x1a\n" +
+	"\x05force\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xc8\x01\n" +
+	"\x11DeleteUserRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$developerconnect.googleapis.com/UserR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x17\n" +
-	"\x04etag\x18\x04 \x01(\tB\x03\xe0A\x01R\x04etag\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"`\n" +
-	"\x10FetchSelfRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0developerconnect.googleapis.com/AccountConnectorR\x04name\"a\n" +
-	"\x11DeleteSelfRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0developerconnect.googleapis.com/AccountConnectorR\x04name\"\x80\x01\n" +
-	"\x17FetchAccessTokenRequest\x12e\n" +
-	"\x11account_connector\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x18\n" +
+	"\x04etag\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"a\n" +
+	"\x10FetchSelfRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0developerconnect.googleapis.com/AccountConnectorR\x04name\"b\n" +
+	"\x11DeleteSelfRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0developerconnect.googleapis.com/AccountConnectorR\x04name\"\x81\x01\n" +
+	"\x17FetchAccessTokenRequest\x12f\n" +
+	"\x11account_connector\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
 	"0developerconnect.googleapis.com/AccountConnectorR\x10accountConnector\"\xe5\x01\n" +
 	"\x18FetchAccessTokenResponse\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\x12C\n" +
 	"\x0fexpiration_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x0eexpirationTime\x12\x16\n" +
 	"\x06scopes\x18\x03 \x03(\tR\x06scopes\x12V\n" +
-	"\x0eexchange_error\x18\x04 \x01(\v2/.google.cloud.developerconnect.v1.ExchangeErrorR\rexchangeError\"z\n" +
-	"\x11StartOAuthRequest\x12e\n" +
-	"\x11account_connector\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
+	"\x0eexchange_error\x18\x04 \x01(\v2/.google.cloud.developerconnect.v1.ExchangeErrorR\rexchangeError\"\xdf\x01\n" +
+	"\"DiffGitRepositoryLinkCommitRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1developerconnect.googleapis.com/GitRepositoryLinkR\x04name\x12\x1f\n" +
+	"\bbase_sha\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\abaseSha\x12\x1f\n" +
+	"\bhead_sha\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\aheadSha\x12'\n" +
+	"\fpath_filters\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\vpathFilters\"g\n" +
+	"#DiffGitRepositoryLinkCommitResponse\x12@\n" +
+	"\x05files\x18\x02 \x03(\v2*.google.cloud.developerconnect.v1.FileDiffR\x05files\"L\n" +
+	"\bFileDiff\x12\x12\n" +
+	"\x04path\x18\x01 \x01(\tR\x04path\x12\x16\n" +
+	"\x06status\x18\x02 \x01(\tR\x06status\x12\x14\n" +
+	"\x05patch\x18\x03 \x01(\tR\x05patch\"{\n" +
+	"\x11StartOAuthRequest\x12f\n" +
+	"\x11account_connector\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
 	"0developerconnect.googleapis.com/AccountConnectorR\x10accountConnector\"\xbf\x02\n" +
 	"\x12StartOAuthResponse\x12`\n" +
 	"\x12system_provider_id\x18\a \x01(\x0e20.google.cloud.developerconnect.v1.SystemProviderH\x00R\x10systemProviderId\x12\x16\n" +
@@ -5680,83 +7600,83 @@ const file_google_cloud_developerconnect_v1_developer_connect_proto_rawDesc = ""
 	"\tclient_id\x18\x04 \x01(\tR\bclientId\x12\x16\n" +
 	"\x06scopes\x18\x05 \x03(\tR\x06scopes\x12\x19\n" +
 	"\bauth_uri\x18\x06 \x01(\tR\aauthUriB\x04\n" +
-	"\x02id\"\xa2\x04\n" +
+	"\x02id\"\xa8\x04\n" +
 	"\x12FinishOAuthRequest\x12e\n" +
 	"\foauth_params\x18\x02 \x01(\v2@.google.cloud.developerconnect.v1.FinishOAuthRequest.OAuthParamsH\x00R\voauthParams\x12x\n" +
-	"\x13google_oauth_params\x18\x03 \x01(\v2F.google.cloud.developerconnect.v1.FinishOAuthRequest.GoogleOAuthParamsH\x00R\x11googleOauthParams\x12e\n" +
-	"\x11account_connector\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0developerconnect.googleapis.com/AccountConnectorR\x10accountConnector\x1aC\n" +
-	"\vOAuthParams\x12\x17\n" +
-	"\x04code\x18\x01 \x01(\tB\x03\xe0A\x02R\x04code\x12\x1b\n" +
-	"\x06ticket\x18\x02 \x01(\tB\x03\xe0A\x02R\x06ticket\x1au\n" +
-	"\x11GoogleOAuthParams\x12\x1b\n" +
-	"\x06scopes\x18\x01 \x03(\tB\x03\xe0A\x02R\x06scopes\x12&\n" +
-	"\fversion_info\x18\x02 \x01(\tB\x03\xe0A\x01R\vversionInfo\x12\x1b\n" +
-	"\x06ticket\x18\x03 \x01(\tB\x03\xe0A\x02R\x06ticketB\b\n" +
+	"\x13google_oauth_params\x18\x03 \x01(\v2F.google.cloud.developerconnect.v1.FinishOAuthRequest.GoogleOAuthParamsH\x00R\x11googleOauthParams\x12f\n" +
+	"\x11account_connector\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0developerconnect.googleapis.com/AccountConnectorR\x10accountConnector\x1aE\n" +
+	"\vOAuthParams\x12\x18\n" +
+	"\x04code\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04code\x12\x1c\n" +
+	"\x06ticket\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06ticket\x1ax\n" +
+	"\x11GoogleOAuthParams\x12\x1c\n" +
+	"\x06scopes\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x06scopes\x12'\n" +
+	"\fversion_info\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vversionInfo\x12\x1c\n" +
+	"\x06ticket\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06ticketB\b\n" +
 	"\x06params\"m\n" +
 	"\x13FinishOAuthResponse\x12V\n" +
 	"\x0eexchange_error\x18\x01 \x01(\v2/.google.cloud.developerconnect.v1.ExchangeErrorR\rexchangeError\"E\n" +
 	"\rExchangeError\x12\x12\n" +
 	"\x04code\x18\x01 \x01(\tR\x04code\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\"\xd5\a\n" +
-	"\x11GitRepositoryLink\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12 \n" +
-	"\tclone_uri\x18\x02 \x01(\tB\x03\xe0A\x02R\bcloneUri\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\vdelete_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12\\\n" +
-	"\x06labels\x18\x06 \x03(\v2?.google.cloud.developerconnect.v1.GitRepositoryLink.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x17\n" +
-	"\x04etag\x18\a \x01(\tB\x03\xe0A\x01R\x04etag\x12%\n" +
-	"\vreconciling\x18\b \x01(\bB\x03\xe0A\x03R\vreconciling\x12k\n" +
-	"\vannotations\x18\t \x03(\v2D.google.cloud.developerconnect.v1.GitRepositoryLink.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12\x1d\n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\"\xe1\a\n" +
+	"\x11GitRepositoryLink\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12!\n" +
+	"\tclone_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bcloneUri\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vdelete_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12]\n" +
+	"\x06labels\x18\x06 \x03(\v2?.google.cloud.developerconnect.v1.GitRepositoryLink.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12\x18\n" +
+	"\x04etag\x18\a \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12&\n" +
+	"\vreconciling\x18\b \x01(\bB\x04\xe2A\x01\x03R\vreconciling\x12l\n" +
+	"\vannotations\x18\t \x03(\v2D.google.cloud.developerconnect.v1.GitRepositoryLink.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12\x1e\n" +
 	"\x03uid\x18\n" +
-	" \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\"\n" +
+	" \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12#\n" +
 	"\n" +
-	"webhook_id\x18\v \x01(\tB\x03\xe0A\x03R\twebhookId\x12'\n" +
-	"\rgit_proxy_uri\x18\f \x01(\tB\x03\xe0A\x03R\vgitProxyUri\x1a9\n" +
+	"webhook_id\x18\v \x01(\tB\x04\xe2A\x01\x03R\twebhookId\x12(\n" +
+	"\rgit_proxy_uri\x18\f \x01(\tB\x04\xe2A\x01\x03R\vgitProxyUri\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xcc\x01\xeaA\xc8\x01\n" +
-	"1developerconnect.googleapis.com/GitRepositoryLink\x12iprojects/{project}/locations/{location}/connections/{connection}/gitRepositoryLinks/{git_repository_link}*\x12gitRepositoryLinks2\x11gitRepositoryLinkR\x01\x01\"\xed\x02\n" +
-	"\x1eCreateGitRepositoryLinkRequest\x12Q\n" +
-	"\x06parent\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\x121developerconnect.googleapis.com/GitRepositoryLinkR\x06parent\x12h\n" +
-	"\x13git_repository_link\x18\x02 \x01(\v23.google.cloud.developerconnect.v1.GitRepositoryLinkB\x03\xe0A\x02R\x11gitRepositoryLink\x128\n" +
-	"\x16git_repository_link_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x13gitRepositoryLinkId\x12*\n" +
+	"1developerconnect.googleapis.com/GitRepositoryLink\x12iprojects/{project}/locations/{location}/connections/{connection}/gitRepositoryLinks/{git_repository_link}*\x12gitRepositoryLinks2\x11gitRepositoryLinkR\x01\x01\"\xf2\x02\n" +
+	"\x1eCreateGitRepositoryLinkRequest\x12R\n" +
+	"\x06parent\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\x121developerconnect.googleapis.com/GitRepositoryLinkR\x06parent\x12i\n" +
+	"\x13git_repository_link\x18\x02 \x01(\v23.google.cloud.developerconnect.v1.GitRepositoryLinkB\x04\xe2A\x01\x02R\x11gitRepositoryLink\x129\n" +
+	"\x16git_repository_link_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x13gitRepositoryLinkId\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xde\x01\n" +
-	"\x1eDeleteGitRepositoryLinkRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1developerconnect.googleapis.com/GitRepositoryLinkR\x04name\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xe2\x01\n" +
+	"\x1eDeleteGitRepositoryLinkRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1developerconnect.googleapis.com/GitRepositoryLinkR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x17\n" +
-	"\x04etag\x18\x04 \x01(\tB\x03\xe0A\x01R\x04etag\"\xf5\x01\n" +
-	"\x1dListGitRepositoryLinksRequest\x12Q\n" +
-	"\x06parent\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\x121developerconnect.googleapis.com/GitRepositoryLinkR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x18\n" +
+	"\x04etag\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xfa\x01\n" +
+	"\x1dListGitRepositoryLinksRequest\x12R\n" +
+	"\x06parent\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\x121developerconnect.googleapis.com/GitRepositoryLinkR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xd1\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xd1\x01\n" +
 	"\x1eListGitRepositoryLinksResponse\x12e\n" +
 	"\x14git_repository_links\x18\x01 \x03(\v23.google.cloud.developerconnect.v1.GitRepositoryLinkR\x12gitRepositoryLinks\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"l\n" +
-	"\x1bGetGitRepositoryLinkRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1developerconnect.googleapis.com/GitRepositoryLinkR\x04name\"\x87\x01\n" +
-	"\x1aFetchReadWriteTokenRequest\x12i\n" +
-	"\x13git_repository_link\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1developerconnect.googleapis.com/GitRepositoryLinkR\x11gitRepositoryLink\"\x82\x01\n" +
-	"\x15FetchReadTokenRequest\x12i\n" +
-	"\x13git_repository_link\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"m\n" +
+	"\x1bGetGitRepositoryLinkRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1developerconnect.googleapis.com/GitRepositoryLinkR\x04name\"\x88\x01\n" +
+	"\x1aFetchReadWriteTokenRequest\x12j\n" +
+	"\x13git_repository_link\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1developerconnect.googleapis.com/GitRepositoryLinkR\x11gitRepositoryLink\"\x83\x01\n" +
+	"\x15FetchReadTokenRequest\x12j\n" +
+	"\x13git_repository_link\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
 	"1developerconnect.googleapis.com/GitRepositoryLinkR\x11gitRepositoryLink\"\x96\x01\n" +
 	"\x16FetchReadTokenResponse\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\x12C\n" +
@@ -5765,23 +7685,27 @@ const file_google_cloud_developerconnect_v1_developer_connect_proto_rawDesc = ""
 	"\x1bFetchReadWriteTokenResponse\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\x12C\n" +
 	"\x0fexpiration_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x0eexpirationTime\x12!\n" +
-	"\fgit_username\x18\x03 \x01(\tR\vgitUsername\"\xbf\x01\n" +
-	"#FetchLinkableGitRepositoriesRequest\x12R\n" +
+	"\fgit_username\x18\x03 \x01(\tR\vgitUsername\"\xd1\x01\n" +
+	"'OpenGitRepositoryLinkPullRequestRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1developerconnect.googleapis.com/GitRepositoryLinkR\x04name\x12V\n" +
+	"\fpull_request\x18\x02 \x01(\v2-.google.cloud.developerconnect.v1.PullRequestB\x04\xe2A\x01\x02R\vpullRequest\"\xc2\x01\n" +
+	"#FetchLinkableGitRepositoriesRequest\x12S\n" +
 	"\n" +
-	"connection\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"connection\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*developerconnect.googleapis.com/ConnectionR\n" +
-	"connection\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"connection\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xc3\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xc3\x01\n" +
 	"$FetchLinkableGitRepositoriesResponse\x12s\n" +
 	"\x19linkable_git_repositories\x18\x01 \x03(\v27.google.cloud.developerconnect.v1.LinkableGitRepositoryR\x17linkableGitRepositories\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"4\n" +
 	"\x15LinkableGitRepository\x12\x1b\n" +
-	"\tclone_uri\x18\x01 \x01(\tR\bcloneUri\"u\n" +
-	"\x1fFetchGitHubInstallationsRequest\x12R\n" +
+	"\tclone_uri\x18\x01 \x01(\tR\bcloneUri\"v\n" +
+	"\x1fFetchGitHubInstallationsRequest\x12S\n" +
 	"\n" +
-	"connection\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"connection\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*developerconnect.googleapis.com/ConnectionR\n" +
 	"connection\"\xe1\x01\n" +
 	" FetchGitHubInstallationsResponse\x12u\n" +
@@ -5789,14 +7713,14 @@ const file_google_cloud_developerconnect_v1_developer_connect_proto_rawDesc = ""
 	"\fInstallation\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
-	"\x04type\x18\x03 \x01(\tR\x04type\"\xdf\x02\n" +
-	"\x13FetchGitRefsRequest\x12i\n" +
-	"\x13git_repository_link\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1developerconnect.googleapis.com/GitRepositoryLinkR\x11gitRepositoryLink\x12]\n" +
-	"\bref_type\x18\x02 \x01(\x0e2=.google.cloud.developerconnect.v1.FetchGitRefsRequest.RefTypeB\x03\xe0A\x02R\arefType\x12 \n" +
-	"\tpage_size\x18\x04 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x04type\x18\x03 \x01(\tR\x04type\"\xe3\x02\n" +
+	"\x13FetchGitRefsRequest\x12j\n" +
+	"\x13git_repository_link\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1developerconnect.googleapis.com/GitRepositoryLinkR\x11gitRepositoryLink\x12^\n" +
+	"\bref_type\x18\x02 \x01(\x0e2=.google.cloud.developerconnect.v1.FetchGitRefsRequest.RefTypeB\x04\xe2A\x01\x02R\arefType\x12!\n" +
+	"\tpage_size\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x05 \x01(\tB\x03\xe0A\x01R\tpageToken\"8\n" +
+	"page_token\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"8\n" +
 	"\aRefType\x12\x18\n" +
 	"\x14REF_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03TAG\x10\x01\x12\n" +
@@ -5804,19 +7728,162 @@ const file_google_cloud_developerconnect_v1_developer_connect_proto_rawDesc = ""
 	"\x06BRANCH\x10\x02\"[\n" +
 	"\x14FetchGitRefsResponse\x12\x1b\n" +
 	"\tref_names\x18\x01 \x03(\tR\brefNames\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xf7\x06\n" +
-	"\x10AccountConnector\x12p\n" +
-	"\x15provider_oauth_config\x18\x05 \x01(\v25.google.cloud.developerconnect.v1.ProviderOAuthConfigB\x03\xe0A\x01H\x00R\x13providerOauthConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12j\n" +
-	"\vannotations\x18\x06 \x03(\v2C.google.cloud.developerconnect.v1.AccountConnector.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12\x17\n" +
-	"\x04etag\x18\a \x01(\tB\x03\xe0A\x01R\x04etag\x12[\n" +
-	"\x06labels\x18\b \x03(\v2>.google.cloud.developerconnect.v1.AccountConnector.LabelsEntryB\x03\xe0A\x01R\x06labels\x12+\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8b\x02\n" +
+	"#FetchGitRepositoryLinkCommitRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1developerconnect.googleapis.com/GitRepositoryLinkR\x04name\x12#\n" +
+	"\n" +
+	"commit_sha\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tcommitSha\x12F\n" +
+	"\x04view\x18\x03 \x01(\x0e2,.google.cloud.developerconnect.v1.CommitViewB\x04\xe2A\x01\x01R\x04view\x12'\n" +
+	"\fpath_filters\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\vpathFilters\"\xad\x01\n" +
+	"$FetchGitRepositoryLinkCommitResponse\x12C\n" +
+	"\x06commit\x18\x01 \x01(\v2+.google.cloud.developerconnect.v1.SCMCommitR\x06commit\x12@\n" +
+	"\x05files\x18\x02 \x03(\v2*.google.cloud.developerconnect.v1.FileDiffR\x05files\"\xa1\x02\n" +
+	"'FetchGitRepositoryLinkCommitListRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1developerconnect.googleapis.com/GitRepositoryLinkR\x04name\x12\x16\n" +
+	"\x03ref\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x03ref\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
+	"\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12F\n" +
+	"\x04view\x18\x05 \x01(\x0e2,.google.cloud.developerconnect.v1.CommitViewB\x04\xe2A\x01\x01R\x04view\"\x99\x01\n" +
+	"(FetchGitRepositoryLinkCommitListResponse\x12E\n" +
+	"\acommits\x18\x01 \x03(\v2+.google.cloud.developerconnect.v1.SCMCommitR\acommits\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc1\x01\n" +
+	"\tSCMCommit\x12\x10\n" +
+	"\x03sha\x18\x01 \x01(\tR\x03sha\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\x16\n" +
+	"\x06author\x18\x03 \x01(\tR\x06author\x12!\n" +
+	"\fauthor_email\x18\x04 \x01(\tR\vauthorEmail\x12;\n" +
+	"\vcommit_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"commitTime\x12\x10\n" +
+	"\x03url\x18\x06 \x01(\tR\x03url\"\xf2\x01\n" +
+	"&FetchGitRepositoryLinkFileBlameRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1developerconnect.googleapis.com/GitRepositoryLinkR\x04name\x12\x16\n" +
+	"\x03ref\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x03ref\x12\x18\n" +
+	"\x04path\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x04path\x12#\n" +
+	"\n" +
+	"first_line\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\tfirstLine\x12!\n" +
+	"\tlast_line\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\blastLine\"\x8d\x01\n" +
+	"\n" +
+	"BlameRange\x12\x1d\n" +
+	"\n" +
+	"first_line\x18\x01 \x01(\x05R\tfirstLine\x12\x1b\n" +
+	"\tlast_line\x18\x02 \x01(\x05R\blastLine\x12C\n" +
+	"\x06commit\x18\x03 \x01(\v2+.google.cloud.developerconnect.v1.SCMCommitR\x06commit\"o\n" +
+	"'FetchGitRepositoryLinkFileBlameResponse\x12D\n" +
+	"\x06ranges\x18\x01 \x03(\v2,.google.cloud.developerconnect.v1.BlameRangeR\x06ranges\"\xa8\x01\n" +
+	"(FetchGitRepositoryLinkPullRequestRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1developerconnect.googleapis.com/GitRepositoryLinkR\x04name\x12,\n" +
+	"\x0fpull_request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rpullRequestId\"\x8b\a\n" +
+	"\vPullRequest\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12\x1a\n" +
+	"\x05title\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05title\x12\x18\n" +
+	"\x04body\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04body\x12\x1f\n" +
+	"\bhead_ref\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\aheadRef\x12\x1f\n" +
+	"\bbase_ref\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\abaseRef\x12\x1c\n" +
+	"\x06author\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x06author\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12?\n" +
+	"\n" +
+	"merge_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tmergeTime\x12?\n" +
+	"\n" +
+	"close_time\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tcloseTime\x12C\n" +
+	"\fdecline_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\vdeclineTime\x12O\n" +
+	"\x05state\x18\f \x01(\x0e23.google.cloud.developerconnect.v1.PullRequest.StateB\x04\xe2A\x01\x03R\x05state\x12d\n" +
+	"\fmergeability\x18\r \x01(\x0e2:.google.cloud.developerconnect.v1.PullRequest.MergeabilityB\x04\xe2A\x01\x03R\fmergeability\x12\x1f\n" +
+	"\bhtml_url\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\ahtmlUrl\"N\n" +
+	"\x05State\x12\x15\n" +
+	"\x11STATE_UNSPECIFIED\x10\x00\x12\b\n" +
+	"\x04OPEN\x10\x01\x12\n" +
+	"\n" +
+	"\x06CLOSED\x10\x02\x12\n" +
+	"\n" +
+	"\x06MERGED\x10\x03\x12\f\n" +
+	"\bDECLINED\x10\x04\"[\n" +
+	"\fMergeability\x12\x1c\n" +
+	"\x18MERGEABILITY_UNSPECIFIED\x10\x00\x12\r\n" +
+	"\tMERGEABLE\x10\x01\x12\x0f\n" +
+	"\vCONFLICTING\x10\x02\x12\r\n" +
+	"\tCOMPUTING\x10\x03\"\xe8\x01\n" +
+	"\x12PullRequestComment\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x02id\x12\x18\n" +
+	"\x04body\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04body\x12\x1c\n" +
+	"\x06author\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06author\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\"\x83\x02\n" +
+	"-AddGitRepositoryLinkPullRequestCommentRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1developerconnect.googleapis.com/GitRepositoryLinkR\x04name\x12,\n" +
+	"\x0fpull_request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rpullRequestId\x12T\n" +
+	"\acomment\x18\x03 \x01(\v24.google.cloud.developerconnect.v1.PullRequestCommentB\x04\xe2A\x01\x02R\acomment\"\x8d\x04\n" +
+	"\x18PullRequestReviewComment\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x02id\x12\x18\n" +
+	"\x04body\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04body\x12\x18\n" +
+	"\x04path\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x04path\x12#\n" +
+	"\n" +
+	"first_line\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\tfirstLine\x12!\n" +
+	"\tlast_line\x18\x05 \x01(\x05B\x04\xe2A\x01\x02R\blastLine\x12]\n" +
+	"\x04side\x18\x06 \x01(\x0e2C.google.cloud.developerconnect.v1.PullRequestReviewComment.DiffSideB\x04\xe2A\x01\x01R\x04side\x12\x1c\n" +
+	"\x06author\x18\a \x01(\tB\x04\xe2A\x01\x03R\x06author\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12!\n" +
+	"\tcommit_id\x18\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\bcommitId\"9\n" +
+	"\bDiffSide\x12\x19\n" +
+	"\x15DIFF_SIDE_UNSPECIFIED\x10\x00\x12\b\n" +
+	"\x04BASE\x10\x01\x12\b\n" +
+	"\x04HEAD\x10\x02\"\xb2\x02\n" +
+	"3AddGitRepositoryLinkPullRequestReviewCommentRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1developerconnect.googleapis.com/GitRepositoryLinkR\x04name\x12,\n" +
+	"\x0fpull_request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rpullRequestId\x12Z\n" +
+	"\acomment\x18\x03 \x01(\v2:.google.cloud.developerconnect.v1.PullRequestReviewCommentB\x04\xe2A\x01\x02R\acomment\x12!\n" +
+	"\tcommit_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\bcommitId\"\xa5\x03\n" +
+	")ModifyGitRepositoryLinkPullRequestRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1developerconnect.googleapis.com/GitRepositoryLinkR\x04name\x12,\n" +
+	"\x0fpull_request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rpullRequestId\x12\x1a\n" +
+	"\x05title\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x05title\x12\x18\n" +
+	"\x04body\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x04body\x12\x1f\n" +
+	"\bbase_ref\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\abaseRef\x12m\n" +
+	"\x05state\x18\x06 \x01(\x0e2Q.google.cloud.developerconnect.v1.ModifyGitRepositoryLinkPullRequestRequest.StateB\x04\xe2A\x01\x01R\x05state\"4\n" +
+	"\x05State\x12\x15\n" +
+	"\x11STATE_UNSPECIFIED\x10\x00\x12\b\n" +
+	"\x04OPEN\x10\x01\x12\n" +
+	"\n" +
+	"\x06CLOSED\x10\x02\"\xe4\x01\n" +
+	",FetchGitRepositoryLinkPullRequestListRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1developerconnect.googleapis.com/GitRepositoryLinkR\x04name\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
+	"\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xab\x01\n" +
+	"-FetchGitRepositoryLinkPullRequestListResponse\x12R\n" +
+	"\rpull_requests\x18\x01 \x03(\v2-.google.cloud.developerconnect.v1.PullRequestR\fpullRequests\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xff\x06\n" +
+	"\x10AccountConnector\x12q\n" +
+	"\x15provider_oauth_config\x18\x05 \x01(\v25.google.cloud.developerconnect.v1.ProviderOAuthConfigB\x04\xe2A\x01\x01H\x00R\x13providerOauthConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12k\n" +
+	"\vannotations\x18\x06 \x03(\v2C.google.cloud.developerconnect.v1.AccountConnector.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12\x18\n" +
+	"\x04etag\x18\a \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12\\\n" +
+	"\x06labels\x18\b \x03(\v2>.google.cloud.developerconnect.v1.AccountConnector.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12,\n" +
 	"\x0foauth_start_uri\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\roauthStartUri\x1a>\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\roauthStartUri\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a9\n" +
@@ -5824,18 +7891,23 @@ const file_google_cloud_developerconnect_v1_developer_connect_proto_rawDesc = ""
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xad\x01\xeaA\xa9\x01\n" +
 	"0developerconnect.googleapis.com/AccountConnector\x12Mprojects/{project}/locations/{location}/accountConnectors/{account_connector}*\x11accountConnectors2\x10accountConnectorR\x01\x01B\x1a\n" +
-	"\x18account_connector_config\"\xf7\x02\n" +
-	"\x04User\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12V\n" +
-	"\x17last_token_request_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x14lastTokenRequestTime:\x93\x01\xeaA\x8f\x01\n" +
+	"\x18account_connector_config\"\xfb\x02\n" +
+	"\x04User\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12W\n" +
+	"\x17last_token_request_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x14lastTokenRequestTime:\x93\x01\xeaA\x8f\x01\n" +
 	"$developerconnect.googleapis.com/User\x12Zprojects/{project}/locations/{location}/accountConnectors/{account_connector}/users/{user}*\x05users2\x04user\"\xb1\x01\n" +
-	"\x13ProviderOAuthConfig\x12h\n" +
-	"\x12system_provider_id\x18\x01 \x01(\x0e20.google.cloud.developerconnect.v1.SystemProviderB\x06\xe0A\x05\xe0A\x01H\x00R\x10systemProviderId\x12\x1b\n" +
-	"\x06scopes\x18\x02 \x03(\tB\x03\xe0A\x02R\x06scopesB\x13\n" +
-	"\x11oauth_provider_id*\x97\x01\n" +
+	"\x13ProviderOAuthConfig\x12g\n" +
+	"\x12system_provider_id\x18\x01 \x01(\x0e20.google.cloud.developerconnect.v1.SystemProviderB\x05\xe2A\x02\x05\x01H\x00R\x10systemProviderId\x12\x1c\n" +
+	"\x06scopes\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x06scopesB\x13\n" +
+	"\x11oauth_provider_id*>\n" +
+	"\n" +
+	"CommitView\x12\x1b\n" +
+	"\x17COMMIT_VIEW_UNSPECIFIED\x10\x00\x12\t\n" +
+	"\x05BASIC\x10\x01\x12\b\n" +
+	"\x04FULL\x10\x02*\x97\x01\n" +
 	"\x0eSystemProvider\x12\x1f\n" +
 	"\x1bSYSTEM_PROVIDER_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -5849,7 +7921,7 @@ const file_google_cloud_developerconnect_v1_developer_connect_proto_rawDesc = ""
 	"\x04ROVO\x10\x05\x12\r\n" +
 	"\tNEW_RELIC\x10\x06\x12\f\n" +
 	"\bDATASTAX\x10\a\x12\r\n" +
-	"\tDYNATRACE\x10\b2\xcb2\n" +
+	"\tDYNATRACE\x10\b2\xd8I\n" +
 	"\x10DeveloperConnect\x12\xc8\x01\n" +
 	"\x0fListConnections\x128.google.cloud.developerconnect.v1.ListConnectionsRequest\x1a9.google.cloud.developerconnect.v1.ListConnectionsResponse\"@\xdaA\x06parent\x82\xd3\xe4\x93\x021\x12//v1/{parent=projects/*/locations/*}/connections\x12\xb5\x01\n" +
 	"\rGetConnection\x126.google.cloud.developerconnect.v1.GetConnectionRequest\x1a,.google.cloud.developerconnect.v1.Connection\">\xdaA\x04name\x82\xd3\xe4\x93\x021\x12//v1/{name=projects/*/locations/*/connections/*}\x12\xf6\x01\n" +
@@ -5870,12 +7942,22 @@ const file_google_cloud_developerconnect_v1_developer_connect_proto_rawDesc = ""
 	"\x16ListGitRepositoryLinks\x12?.google.cloud.developerconnect.v1.ListGitRepositoryLinksRequest\x1a@.google.cloud.developerconnect.v1.ListGitRepositoryLinksResponse\"U\xdaA\x06parent\x82\xd3\xe4\x93\x02F\x12D/v1/{parent=projects/*/locations/*/connections/*}/gitRepositoryLinks\x12\xdf\x01\n" +
 	"\x14GetGitRepositoryLink\x12=.google.cloud.developerconnect.v1.GetGitRepositoryLinkRequest\x1a3.google.cloud.developerconnect.v1.GitRepositoryLink\"S\xdaA\x04name\x82\xd3\xe4\x93\x02F\x12D/v1/{name=projects/*/locations/*/connections/*/gitRepositoryLinks/*}\x12\x9d\x02\n" +
 	"\x13FetchReadWriteToken\x12<.google.cloud.developerconnect.v1.FetchReadWriteTokenRequest\x1a=.google.cloud.developerconnect.v1.FetchReadWriteTokenResponse\"\x88\x01\xdaA\x13git_repository_link\x82\xd3\xe4\x93\x02l:\x01*\"g/v1/{git_repository_link=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:fetchReadWriteToken\x12\x89\x02\n" +
-	"\x0eFetchReadToken\x127.google.cloud.developerconnect.v1.FetchReadTokenRequest\x1a8.google.cloud.developerconnect.v1.FetchReadTokenResponse\"\x83\x01\xdaA\x13git_repository_link\x82\xd3\xe4\x93\x02g:\x01*\"b/v1/{git_repository_link=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:fetchReadToken\x12\x96\x02\n" +
+	"\x0eFetchReadToken\x127.google.cloud.developerconnect.v1.FetchReadTokenRequest\x1a8.google.cloud.developerconnect.v1.FetchReadTokenResponse\"\x83\x01\xdaA\x13git_repository_link\x82\xd3\xe4\x93\x02g:\x01*\"b/v1/{git_repository_link=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:fetchReadToken\x12\x91\x02\n" +
+	" OpenGitRepositoryLinkPullRequest\x12I.google.cloud.developerconnect.v1.OpenGitRepositoryLinkPullRequestRequest\x1a-.google.cloud.developerconnect.v1.PullRequest\"s\xdaA\x11name,pull_request\x82\xd3\xe4\x93\x02Y:\x01*\"T/v1/{name=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:openPullRequest\x12\x96\x02\n" +
 	"\x1cFetchLinkableGitRepositories\x12E.google.cloud.developerconnect.v1.FetchLinkableGitRepositoriesRequest\x1aF.google.cloud.developerconnect.v1.FetchLinkableGitRepositoriesResponse\"g\xdaA\n" +
 	"connection\x82\xd3\xe4\x93\x02T\x12R/v1/{connection=projects/*/locations/*/connections/*}:fetchLinkableGitRepositories\x12\x86\x02\n" +
 	"\x18FetchGitHubInstallations\x12A.google.cloud.developerconnect.v1.FetchGitHubInstallationsRequest\x1aB.google.cloud.developerconnect.v1.FetchGitHubInstallationsResponse\"c\xdaA\n" +
 	"connection\x82\xd3\xe4\x93\x02P\x12N/v1/{connection=projects/*/locations/*/connections/*}:fetchGitHubInstallations\x12\x87\x02\n" +
-	"\fFetchGitRefs\x125.google.cloud.developerconnect.v1.FetchGitRefsRequest\x1a6.google.cloud.developerconnect.v1.FetchGitRefsResponse\"\x87\x01\xdaA\x1cgit_repository_link,ref_type\x82\xd3\xe4\x93\x02b\x12`/v1/{git_repository_link=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:fetchGitRefs\x12\xe0\x01\n" +
+	"\fFetchGitRefs\x125.google.cloud.developerconnect.v1.FetchGitRefsRequest\x1a6.google.cloud.developerconnect.v1.FetchGitRefsResponse\"\x87\x01\xdaA\x1cgit_repository_link,ref_type\x82\xd3\xe4\x93\x02b\x12`/v1/{git_repository_link=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:fetchGitRefs\x12\x9c\x02\n" +
+	"\x1bDiffGitRepositoryLinkCommit\x12D.google.cloud.developerconnect.v1.DiffGitRepositoryLinkCommitRequest\x1aE.google.cloud.developerconnect.v1.DiffGitRepositoryLinkCommitResponse\"p\xdaA\x16name,base_sha,head_sha\x82\xd3\xe4\x93\x02Q\x12O/v1/{name=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:diffCommit\x12\x99\x02\n" +
+	"\x1cFetchGitRepositoryLinkCommit\x12E.google.cloud.developerconnect.v1.FetchGitRepositoryLinkCommitRequest\x1aF.google.cloud.developerconnect.v1.FetchGitRepositoryLinkCommitResponse\"j\xdaA\x0fname,commit_sha\x82\xd3\xe4\x93\x02R\x12P/v1/{name=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:fetchCommit\x12\xa2\x02\n" +
+	" FetchGitRepositoryLinkCommitList\x12I.google.cloud.developerconnect.v1.FetchGitRepositoryLinkCommitListRequest\x1aJ.google.cloud.developerconnect.v1.FetchGitRepositoryLinkCommitListResponse\"g\xdaA\bname,ref\x82\xd3\xe4\x93\x02V\x12T/v1/{name=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:fetchCommitList\x12\xa3\x02\n" +
+	"\x1fFetchGitRepositoryLinkFileBlame\x12H.google.cloud.developerconnect.v1.FetchGitRepositoryLinkFileBlameRequest\x1aI.google.cloud.developerconnect.v1.FetchGitRepositoryLinkFileBlameResponse\"k\xdaA\rname,ref,path\x82\xd3\xe4\x93\x02U\x12S/v1/{name=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:fetchFileBlame\x12\x94\x02\n" +
+	"!FetchGitRepositoryLinkPullRequest\x12J.google.cloud.developerconnect.v1.FetchGitRepositoryLinkPullRequestRequest\x1a-.google.cloud.developerconnect.v1.PullRequest\"t\xdaA\x14name,pull_request_id\x82\xd3\xe4\x93\x02W\x12U/v1/{name=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:fetchPullRequest\x12\xb6\x02\n" +
+	"&AddGitRepositoryLinkPullRequestComment\x12O.google.cloud.developerconnect.v1.AddGitRepositoryLinkPullRequestCommentRequest\x1a4.google.cloud.developerconnect.v1.PullRequestComment\"\x84\x01\xdaA\x1cname,pull_request_id,comment\x82\xd3\xe4\x93\x02_:\x01*\"Z/v1/{name=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:addPullRequestComment\x12\xce\x02\n" +
+	",AddGitRepositoryLinkPullRequestReviewComment\x12U.google.cloud.developerconnect.v1.AddGitRepositoryLinkPullRequestReviewCommentRequest\x1a:.google.cloud.developerconnect.v1.PullRequestReviewComment\"\x8a\x01\xdaA\x1cname,pull_request_id,comment\x82\xd3\xe4\x93\x02e:\x01*\"`/v1/{name=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:addPullRequestReviewComment\x12\x9a\x02\n" +
+	"\"ModifyGitRepositoryLinkPullRequest\x12K.google.cloud.developerconnect.v1.ModifyGitRepositoryLinkPullRequestRequest\x1a-.google.cloud.developerconnect.v1.PullRequest\"x\xdaA\x14name,pull_request_id\x82\xd3\xe4\x93\x02[:\x01*\"V/v1/{name=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:modifyPullRequest\x12\xb2\x02\n" +
+	"%FetchGitRepositoryLinkPullRequestList\x12N.google.cloud.developerconnect.v1.FetchGitRepositoryLinkPullRequestListRequest\x1aO.google.cloud.developerconnect.v1.FetchGitRepositoryLinkPullRequestListResponse\"h\xdaA\x04name\x82\xd3\xe4\x93\x02[\x12Y/v1/{name=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:fetchPullRequestList\x12\xe0\x01\n" +
 	"\x15ListAccountConnectors\x12>.google.cloud.developerconnect.v1.ListAccountConnectorsRequest\x1a?.google.cloud.developerconnect.v1.ListAccountConnectorsResponse\"F\xdaA\x06parent\x82\xd3\xe4\x93\x027\x125/v1/{parent=projects/*/locations/*}/accountConnectors\x12\xcd\x01\n" +
 	"\x13GetAccountConnector\x12<.google.cloud.developerconnect.v1.GetAccountConnectorRequest\x1a2.google.cloud.developerconnect.v1.AccountConnector\"D\xdaA\x04name\x82\xd3\xe4\x93\x027\x125/v1/{name=projects/*/locations/*/accountConnectors/*}\x12\xa3\x02\n" +
 	"\x16CreateAccountConnector\x12?.google.cloud.developerconnect.v1.CreateAccountConnectorRequest\x1a\x1d.google.longrunning.Operation\"\xa8\x01\xcaA%\n" +
@@ -5914,216 +7996,288 @@ func file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescGZIP()
 	return file_google_cloud_developerconnect_v1_developer_connect_proto_rawDescData
 }
 
-var file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes = make([]protoimpl.MessageInfo, 71)
+var file_google_cloud_developerconnect_v1_developer_connect_proto_enumTypes = make([]protoimpl.EnumInfo, 9)
+var file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes = make([]protoimpl.MessageInfo, 92)
 var file_google_cloud_developerconnect_v1_developer_connect_proto_goTypes = []any{
-	(SystemProvider)(0),                                         // 0: google.cloud.developerconnect.v1.SystemProvider
-	(InstallationState_Stage)(0),                                // 1: google.cloud.developerconnect.v1.InstallationState.Stage
-	(GitHubConfig_GitHubApp)(0),                                 // 2: google.cloud.developerconnect.v1.GitHubConfig.GitHubApp
-	(FetchGitRefsRequest_RefType)(0),                            // 3: google.cloud.developerconnect.v1.FetchGitRefsRequest.RefType
-	(*ListUsersRequest)(nil),                                    // 4: google.cloud.developerconnect.v1.ListUsersRequest
-	(*ListUsersResponse)(nil),                                   // 5: google.cloud.developerconnect.v1.ListUsersResponse
-	(*Connection)(nil),                                          // 6: google.cloud.developerconnect.v1.Connection
-	(*CryptoKeyConfig)(nil),                                     // 7: google.cloud.developerconnect.v1.CryptoKeyConfig
-	(*GitProxyConfig)(nil),                                      // 8: google.cloud.developerconnect.v1.GitProxyConfig
-	(*InstallationState)(nil),                                   // 9: google.cloud.developerconnect.v1.InstallationState
-	(*GenericHTTPEndpointConfig)(nil),                           // 10: google.cloud.developerconnect.v1.GenericHTTPEndpointConfig
-	(*GitHubConfig)(nil),                                        // 11: google.cloud.developerconnect.v1.GitHubConfig
-	(*GitHubEnterpriseConfig)(nil),                              // 12: google.cloud.developerconnect.v1.GitHubEnterpriseConfig
-	(*ServiceDirectoryConfig)(nil),                              // 13: google.cloud.developerconnect.v1.ServiceDirectoryConfig
-	(*OAuthCredential)(nil),                                     // 14: google.cloud.developerconnect.v1.OAuthCredential
-	(*GitLabConfig)(nil),                                        // 15: google.cloud.developerconnect.v1.GitLabConfig
-	(*UserCredential)(nil),                                      // 16: google.cloud.developerconnect.v1.UserCredential
-	(*GitLabEnterpriseConfig)(nil),                              // 17: google.cloud.developerconnect.v1.GitLabEnterpriseConfig
-	(*BitbucketDataCenterConfig)(nil),                           // 18: google.cloud.developerconnect.v1.BitbucketDataCenterConfig
-	(*BitbucketCloudConfig)(nil),                                // 19: google.cloud.developerconnect.v1.BitbucketCloudConfig
-	(*SecureSourceManagerInstanceConfig)(nil),                   // 20: google.cloud.developerconnect.v1.SecureSourceManagerInstanceConfig
-	(*ListConnectionsRequest)(nil),                              // 21: google.cloud.developerconnect.v1.ListConnectionsRequest
-	(*ListConnectionsResponse)(nil),                             // 22: google.cloud.developerconnect.v1.ListConnectionsResponse
-	(*GetConnectionRequest)(nil),                                // 23: google.cloud.developerconnect.v1.GetConnectionRequest
-	(*CreateConnectionRequest)(nil),                             // 24: google.cloud.developerconnect.v1.CreateConnectionRequest
-	(*UpdateConnectionRequest)(nil),                             // 25: google.cloud.developerconnect.v1.UpdateConnectionRequest
-	(*DeleteConnectionRequest)(nil),                             // 26: google.cloud.developerconnect.v1.DeleteConnectionRequest
-	(*ListAccountConnectorsRequest)(nil),                        // 27: google.cloud.developerconnect.v1.ListAccountConnectorsRequest
-	(*ListAccountConnectorsResponse)(nil),                       // 28: google.cloud.developerconnect.v1.ListAccountConnectorsResponse
-	(*GetAccountConnectorRequest)(nil),                          // 29: google.cloud.developerconnect.v1.GetAccountConnectorRequest
-	(*CreateAccountConnectorRequest)(nil),                       // 30: google.cloud.developerconnect.v1.CreateAccountConnectorRequest
-	(*UpdateAccountConnectorRequest)(nil),                       // 31: google.cloud.developerconnect.v1.UpdateAccountConnectorRequest
-	(*DeleteAccountConnectorRequest)(nil),                       // 32: google.cloud.developerconnect.v1.DeleteAccountConnectorRequest
-	(*DeleteUserRequest)(nil),                                   // 33: google.cloud.developerconnect.v1.DeleteUserRequest
-	(*OperationMetadata)(nil),                                   // 34: google.cloud.developerconnect.v1.OperationMetadata
-	(*FetchSelfRequest)(nil),                                    // 35: google.cloud.developerconnect.v1.FetchSelfRequest
-	(*DeleteSelfRequest)(nil),                                   // 36: google.cloud.developerconnect.v1.DeleteSelfRequest
-	(*FetchAccessTokenRequest)(nil),                             // 37: google.cloud.developerconnect.v1.FetchAccessTokenRequest
-	(*FetchAccessTokenResponse)(nil),                            // 38: google.cloud.developerconnect.v1.FetchAccessTokenResponse
-	(*StartOAuthRequest)(nil),                                   // 39: google.cloud.developerconnect.v1.StartOAuthRequest
-	(*StartOAuthResponse)(nil),                                  // 40: google.cloud.developerconnect.v1.StartOAuthResponse
-	(*FinishOAuthRequest)(nil),                                  // 41: google.cloud.developerconnect.v1.FinishOAuthRequest
-	(*FinishOAuthResponse)(nil),                                 // 42: google.cloud.developerconnect.v1.FinishOAuthResponse
-	(*ExchangeError)(nil),                                       // 43: google.cloud.developerconnect.v1.ExchangeError
-	(*GitRepositoryLink)(nil),                                   // 44: google.cloud.developerconnect.v1.GitRepositoryLink
-	(*CreateGitRepositoryLinkRequest)(nil),                      // 45: google.cloud.developerconnect.v1.CreateGitRepositoryLinkRequest
-	(*DeleteGitRepositoryLinkRequest)(nil),                      // 46: google.cloud.developerconnect.v1.DeleteGitRepositoryLinkRequest
-	(*ListGitRepositoryLinksRequest)(nil),                       // 47: google.cloud.developerconnect.v1.ListGitRepositoryLinksRequest
-	(*ListGitRepositoryLinksResponse)(nil),                      // 48: google.cloud.developerconnect.v1.ListGitRepositoryLinksResponse
-	(*GetGitRepositoryLinkRequest)(nil),                         // 49: google.cloud.developerconnect.v1.GetGitRepositoryLinkRequest
-	(*FetchReadWriteTokenRequest)(nil),                          // 50: google.cloud.developerconnect.v1.FetchReadWriteTokenRequest
-	(*FetchReadTokenRequest)(nil),                               // 51: google.cloud.developerconnect.v1.FetchReadTokenRequest
-	(*FetchReadTokenResponse)(nil),                              // 52: google.cloud.developerconnect.v1.FetchReadTokenResponse
-	(*FetchReadWriteTokenResponse)(nil),                         // 53: google.cloud.developerconnect.v1.FetchReadWriteTokenResponse
-	(*FetchLinkableGitRepositoriesRequest)(nil),                 // 54: google.cloud.developerconnect.v1.FetchLinkableGitRepositoriesRequest
-	(*FetchLinkableGitRepositoriesResponse)(nil),                // 55: google.cloud.developerconnect.v1.FetchLinkableGitRepositoriesResponse
-	(*LinkableGitRepository)(nil),                               // 56: google.cloud.developerconnect.v1.LinkableGitRepository
-	(*FetchGitHubInstallationsRequest)(nil),                     // 57: google.cloud.developerconnect.v1.FetchGitHubInstallationsRequest
-	(*FetchGitHubInstallationsResponse)(nil),                    // 58: google.cloud.developerconnect.v1.FetchGitHubInstallationsResponse
-	(*FetchGitRefsRequest)(nil),                                 // 59: google.cloud.developerconnect.v1.FetchGitRefsRequest
-	(*FetchGitRefsResponse)(nil),                                // 60: google.cloud.developerconnect.v1.FetchGitRefsResponse
-	(*AccountConnector)(nil),                                    // 61: google.cloud.developerconnect.v1.AccountConnector
-	(*User)(nil),                                                // 62: google.cloud.developerconnect.v1.User
-	(*ProviderOAuthConfig)(nil),                                 // 63: google.cloud.developerconnect.v1.ProviderOAuthConfig
-	nil,                                                         // 64: google.cloud.developerconnect.v1.Connection.LabelsEntry
-	nil,                                                         // 65: google.cloud.developerconnect.v1.Connection.AnnotationsEntry
-	(*GenericHTTPEndpointConfig_BasicAuthentication)(nil),       // 66: google.cloud.developerconnect.v1.GenericHTTPEndpointConfig.BasicAuthentication
-	(*GenericHTTPEndpointConfig_BearerTokenAuthentication)(nil), // 67: google.cloud.developerconnect.v1.GenericHTTPEndpointConfig.BearerTokenAuthentication
-	(*FinishOAuthRequest_OAuthParams)(nil),                      // 68: google.cloud.developerconnect.v1.FinishOAuthRequest.OAuthParams
-	(*FinishOAuthRequest_GoogleOAuthParams)(nil),                // 69: google.cloud.developerconnect.v1.FinishOAuthRequest.GoogleOAuthParams
-	nil, // 70: google.cloud.developerconnect.v1.GitRepositoryLink.LabelsEntry
-	nil, // 71: google.cloud.developerconnect.v1.GitRepositoryLink.AnnotationsEntry
-	(*FetchGitHubInstallationsResponse_Installation)(nil), // 72: google.cloud.developerconnect.v1.FetchGitHubInstallationsResponse.Installation
-	nil,                             // 73: google.cloud.developerconnect.v1.AccountConnector.AnnotationsEntry
-	nil,                             // 74: google.cloud.developerconnect.v1.AccountConnector.LabelsEntry
-	(*timestamppb.Timestamp)(nil),   // 75: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),   // 76: google.protobuf.FieldMask
-	(*longrunningpb.Operation)(nil), // 77: google.longrunning.Operation
+	(CommitView)(0),                                             // 0: google.cloud.developerconnect.v1.CommitView
+	(SystemProvider)(0),                                         // 1: google.cloud.developerconnect.v1.SystemProvider
+	(InstallationState_Stage)(0),                                // 2: google.cloud.developerconnect.v1.InstallationState.Stage
+	(GitHubConfig_GitHubApp)(0),                                 // 3: google.cloud.developerconnect.v1.GitHubConfig.GitHubApp
+	(FetchGitRefsRequest_RefType)(0),                            // 4: google.cloud.developerconnect.v1.FetchGitRefsRequest.RefType
+	(PullRequest_State)(0),                                      // 5: google.cloud.developerconnect.v1.PullRequest.State
+	(PullRequest_Mergeability)(0),                               // 6: google.cloud.developerconnect.v1.PullRequest.Mergeability
+	(PullRequestReviewComment_DiffSide)(0),                      // 7: google.cloud.developerconnect.v1.PullRequestReviewComment.DiffSide
+	(ModifyGitRepositoryLinkPullRequestRequest_State)(0),        // 8: google.cloud.developerconnect.v1.ModifyGitRepositoryLinkPullRequestRequest.State
+	(*ListUsersRequest)(nil),                                    // 9: google.cloud.developerconnect.v1.ListUsersRequest
+	(*ListUsersResponse)(nil),                                   // 10: google.cloud.developerconnect.v1.ListUsersResponse
+	(*Connection)(nil),                                          // 11: google.cloud.developerconnect.v1.Connection
+	(*CryptoKeyConfig)(nil),                                     // 12: google.cloud.developerconnect.v1.CryptoKeyConfig
+	(*GitProxyConfig)(nil),                                      // 13: google.cloud.developerconnect.v1.GitProxyConfig
+	(*InstallationState)(nil),                                   // 14: google.cloud.developerconnect.v1.InstallationState
+	(*GenericHTTPEndpointConfig)(nil),                           // 15: google.cloud.developerconnect.v1.GenericHTTPEndpointConfig
+	(*GitHubConfig)(nil),                                        // 16: google.cloud.developerconnect.v1.GitHubConfig
+	(*GitHubEnterpriseConfig)(nil),                              // 17: google.cloud.developerconnect.v1.GitHubEnterpriseConfig
+	(*ServiceDirectoryConfig)(nil),                              // 18: google.cloud.developerconnect.v1.ServiceDirectoryConfig
+	(*OAuthCredential)(nil),                                     // 19: google.cloud.developerconnect.v1.OAuthCredential
+	(*GitLabConfig)(nil),                                        // 20: google.cloud.developerconnect.v1.GitLabConfig
+	(*UserCredential)(nil),                                      // 21: google.cloud.developerconnect.v1.UserCredential
+	(*GitLabEnterpriseConfig)(nil),                              // 22: google.cloud.developerconnect.v1.GitLabEnterpriseConfig
+	(*BitbucketDataCenterConfig)(nil),                           // 23: google.cloud.developerconnect.v1.BitbucketDataCenterConfig
+	(*BitbucketCloudConfig)(nil),                                // 24: google.cloud.developerconnect.v1.BitbucketCloudConfig
+	(*SecureSourceManagerInstanceConfig)(nil),                   // 25: google.cloud.developerconnect.v1.SecureSourceManagerInstanceConfig
+	(*ListConnectionsRequest)(nil),                              // 26: google.cloud.developerconnect.v1.ListConnectionsRequest
+	(*ListConnectionsResponse)(nil),                             // 27: google.cloud.developerconnect.v1.ListConnectionsResponse
+	(*GetConnectionRequest)(nil),                                // 28: google.cloud.developerconnect.v1.GetConnectionRequest
+	(*CreateConnectionRequest)(nil),                             // 29: google.cloud.developerconnect.v1.CreateConnectionRequest
+	(*UpdateConnectionRequest)(nil),                             // 30: google.cloud.developerconnect.v1.UpdateConnectionRequest
+	(*DeleteConnectionRequest)(nil),                             // 31: google.cloud.developerconnect.v1.DeleteConnectionRequest
+	(*ListAccountConnectorsRequest)(nil),                        // 32: google.cloud.developerconnect.v1.ListAccountConnectorsRequest
+	(*ListAccountConnectorsResponse)(nil),                       // 33: google.cloud.developerconnect.v1.ListAccountConnectorsResponse
+	(*GetAccountConnectorRequest)(nil),                          // 34: google.cloud.developerconnect.v1.GetAccountConnectorRequest
+	(*CreateAccountConnectorRequest)(nil),                       // 35: google.cloud.developerconnect.v1.CreateAccountConnectorRequest
+	(*UpdateAccountConnectorRequest)(nil),                       // 36: google.cloud.developerconnect.v1.UpdateAccountConnectorRequest
+	(*DeleteAccountConnectorRequest)(nil),                       // 37: google.cloud.developerconnect.v1.DeleteAccountConnectorRequest
+	(*DeleteUserRequest)(nil),                                   // 38: google.cloud.developerconnect.v1.DeleteUserRequest
+	(*OperationMetadata)(nil),                                   // 39: google.cloud.developerconnect.v1.OperationMetadata
+	(*FetchSelfRequest)(nil),                                    // 40: google.cloud.developerconnect.v1.FetchSelfRequest
+	(*DeleteSelfRequest)(nil),                                   // 41: google.cloud.developerconnect.v1.DeleteSelfRequest
+	(*FetchAccessTokenRequest)(nil),                             // 42: google.cloud.developerconnect.v1.FetchAccessTokenRequest
+	(*FetchAccessTokenResponse)(nil),                            // 43: google.cloud.developerconnect.v1.FetchAccessTokenResponse
+	(*DiffGitRepositoryLinkCommitRequest)(nil),                  // 44: google.cloud.developerconnect.v1.DiffGitRepositoryLinkCommitRequest
+	(*DiffGitRepositoryLinkCommitResponse)(nil),                 // 45: google.cloud.developerconnect.v1.DiffGitRepositoryLinkCommitResponse
+	(*FileDiff)(nil),                                            // 46: google.cloud.developerconnect.v1.FileDiff
+	(*StartOAuthRequest)(nil),                                   // 47: google.cloud.developerconnect.v1.StartOAuthRequest
+	(*StartOAuthResponse)(nil),                                  // 48: google.cloud.developerconnect.v1.StartOAuthResponse
+	(*FinishOAuthRequest)(nil),                                  // 49: google.cloud.developerconnect.v1.FinishOAuthRequest
+	(*FinishOAuthResponse)(nil),                                 // 50: google.cloud.developerconnect.v1.FinishOAuthResponse
+	(*ExchangeError)(nil),                                       // 51: google.cloud.developerconnect.v1.ExchangeError
+	(*GitRepositoryLink)(nil),                                   // 52: google.cloud.developerconnect.v1.GitRepositoryLink
+	(*CreateGitRepositoryLinkRequest)(nil),                      // 53: google.cloud.developerconnect.v1.CreateGitRepositoryLinkRequest
+	(*DeleteGitRepositoryLinkRequest)(nil),                      // 54: google.cloud.developerconnect.v1.DeleteGitRepositoryLinkRequest
+	(*ListGitRepositoryLinksRequest)(nil),                       // 55: google.cloud.developerconnect.v1.ListGitRepositoryLinksRequest
+	(*ListGitRepositoryLinksResponse)(nil),                      // 56: google.cloud.developerconnect.v1.ListGitRepositoryLinksResponse
+	(*GetGitRepositoryLinkRequest)(nil),                         // 57: google.cloud.developerconnect.v1.GetGitRepositoryLinkRequest
+	(*FetchReadWriteTokenRequest)(nil),                          // 58: google.cloud.developerconnect.v1.FetchReadWriteTokenRequest
+	(*FetchReadTokenRequest)(nil),                               // 59: google.cloud.developerconnect.v1.FetchReadTokenRequest
+	(*FetchReadTokenResponse)(nil),                              // 60: google.cloud.developerconnect.v1.FetchReadTokenResponse
+	(*FetchReadWriteTokenResponse)(nil),                         // 61: google.cloud.developerconnect.v1.FetchReadWriteTokenResponse
+	(*OpenGitRepositoryLinkPullRequestRequest)(nil),             // 62: google.cloud.developerconnect.v1.OpenGitRepositoryLinkPullRequestRequest
+	(*FetchLinkableGitRepositoriesRequest)(nil),                 // 63: google.cloud.developerconnect.v1.FetchLinkableGitRepositoriesRequest
+	(*FetchLinkableGitRepositoriesResponse)(nil),                // 64: google.cloud.developerconnect.v1.FetchLinkableGitRepositoriesResponse
+	(*LinkableGitRepository)(nil),                               // 65: google.cloud.developerconnect.v1.LinkableGitRepository
+	(*FetchGitHubInstallationsRequest)(nil),                     // 66: google.cloud.developerconnect.v1.FetchGitHubInstallationsRequest
+	(*FetchGitHubInstallationsResponse)(nil),                    // 67: google.cloud.developerconnect.v1.FetchGitHubInstallationsResponse
+	(*FetchGitRefsRequest)(nil),                                 // 68: google.cloud.developerconnect.v1.FetchGitRefsRequest
+	(*FetchGitRefsResponse)(nil),                                // 69: google.cloud.developerconnect.v1.FetchGitRefsResponse
+	(*FetchGitRepositoryLinkCommitRequest)(nil),                 // 70: google.cloud.developerconnect.v1.FetchGitRepositoryLinkCommitRequest
+	(*FetchGitRepositoryLinkCommitResponse)(nil),                // 71: google.cloud.developerconnect.v1.FetchGitRepositoryLinkCommitResponse
+	(*FetchGitRepositoryLinkCommitListRequest)(nil),             // 72: google.cloud.developerconnect.v1.FetchGitRepositoryLinkCommitListRequest
+	(*FetchGitRepositoryLinkCommitListResponse)(nil),            // 73: google.cloud.developerconnect.v1.FetchGitRepositoryLinkCommitListResponse
+	(*SCMCommit)(nil),                                           // 74: google.cloud.developerconnect.v1.SCMCommit
+	(*FetchGitRepositoryLinkFileBlameRequest)(nil),              // 75: google.cloud.developerconnect.v1.FetchGitRepositoryLinkFileBlameRequest
+	(*BlameRange)(nil),                                          // 76: google.cloud.developerconnect.v1.BlameRange
+	(*FetchGitRepositoryLinkFileBlameResponse)(nil),             // 77: google.cloud.developerconnect.v1.FetchGitRepositoryLinkFileBlameResponse
+	(*FetchGitRepositoryLinkPullRequestRequest)(nil),            // 78: google.cloud.developerconnect.v1.FetchGitRepositoryLinkPullRequestRequest
+	(*PullRequest)(nil),                                         // 79: google.cloud.developerconnect.v1.PullRequest
+	(*PullRequestComment)(nil),                                  // 80: google.cloud.developerconnect.v1.PullRequestComment
+	(*AddGitRepositoryLinkPullRequestCommentRequest)(nil),       // 81: google.cloud.developerconnect.v1.AddGitRepositoryLinkPullRequestCommentRequest
+	(*PullRequestReviewComment)(nil),                            // 82: google.cloud.developerconnect.v1.PullRequestReviewComment
+	(*AddGitRepositoryLinkPullRequestReviewCommentRequest)(nil), // 83: google.cloud.developerconnect.v1.AddGitRepositoryLinkPullRequestReviewCommentRequest
+	(*ModifyGitRepositoryLinkPullRequestRequest)(nil),           // 84: google.cloud.developerconnect.v1.ModifyGitRepositoryLinkPullRequestRequest
+	(*FetchGitRepositoryLinkPullRequestListRequest)(nil),        // 85: google.cloud.developerconnect.v1.FetchGitRepositoryLinkPullRequestListRequest
+	(*FetchGitRepositoryLinkPullRequestListResponse)(nil),       // 86: google.cloud.developerconnect.v1.FetchGitRepositoryLinkPullRequestListResponse
+	(*AccountConnector)(nil),                                    // 87: google.cloud.developerconnect.v1.AccountConnector
+	(*User)(nil),                                                // 88: google.cloud.developerconnect.v1.User
+	(*ProviderOAuthConfig)(nil),                                 // 89: google.cloud.developerconnect.v1.ProviderOAuthConfig
+	nil,                                                         // 90: google.cloud.developerconnect.v1.Connection.LabelsEntry
+	nil,                                                         // 91: google.cloud.developerconnect.v1.Connection.AnnotationsEntry
+	(*GenericHTTPEndpointConfig_BasicAuthentication)(nil),       // 92: google.cloud.developerconnect.v1.GenericHTTPEndpointConfig.BasicAuthentication
+	(*GenericHTTPEndpointConfig_BearerTokenAuthentication)(nil), // 93: google.cloud.developerconnect.v1.GenericHTTPEndpointConfig.BearerTokenAuthentication
+	(*FinishOAuthRequest_OAuthParams)(nil),                      // 94: google.cloud.developerconnect.v1.FinishOAuthRequest.OAuthParams
+	(*FinishOAuthRequest_GoogleOAuthParams)(nil),                // 95: google.cloud.developerconnect.v1.FinishOAuthRequest.GoogleOAuthParams
+	nil, // 96: google.cloud.developerconnect.v1.GitRepositoryLink.LabelsEntry
+	nil, // 97: google.cloud.developerconnect.v1.GitRepositoryLink.AnnotationsEntry
+	(*FetchGitHubInstallationsResponse_Installation)(nil), // 98: google.cloud.developerconnect.v1.FetchGitHubInstallationsResponse.Installation
+	nil,                             // 99: google.cloud.developerconnect.v1.AccountConnector.AnnotationsEntry
+	nil,                             // 100: google.cloud.developerconnect.v1.AccountConnector.LabelsEntry
+	(*timestamppb.Timestamp)(nil),   // 101: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),   // 102: google.protobuf.FieldMask
+	(*longrunningpb.Operation)(nil), // 103: google.longrunning.Operation
 }
 var file_google_cloud_developerconnect_v1_developer_connect_proto_depIdxs = []int32{
-	62, // 0: google.cloud.developerconnect.v1.ListUsersResponse.users:type_name -> google.cloud.developerconnect.v1.User
-	11, // 1: google.cloud.developerconnect.v1.Connection.github_config:type_name -> google.cloud.developerconnect.v1.GitHubConfig
-	12, // 2: google.cloud.developerconnect.v1.Connection.github_enterprise_config:type_name -> google.cloud.developerconnect.v1.GitHubEnterpriseConfig
-	15, // 3: google.cloud.developerconnect.v1.Connection.gitlab_config:type_name -> google.cloud.developerconnect.v1.GitLabConfig
-	17, // 4: google.cloud.developerconnect.v1.Connection.gitlab_enterprise_config:type_name -> google.cloud.developerconnect.v1.GitLabEnterpriseConfig
-	18, // 5: google.cloud.developerconnect.v1.Connection.bitbucket_data_center_config:type_name -> google.cloud.developerconnect.v1.BitbucketDataCenterConfig
-	19, // 6: google.cloud.developerconnect.v1.Connection.bitbucket_cloud_config:type_name -> google.cloud.developerconnect.v1.BitbucketCloudConfig
-	20, // 7: google.cloud.developerconnect.v1.Connection.secure_source_manager_instance_config:type_name -> google.cloud.developerconnect.v1.SecureSourceManagerInstanceConfig
-	10, // 8: google.cloud.developerconnect.v1.Connection.http_config:type_name -> google.cloud.developerconnect.v1.GenericHTTPEndpointConfig
-	75, // 9: google.cloud.developerconnect.v1.Connection.create_time:type_name -> google.protobuf.Timestamp
-	75, // 10: google.cloud.developerconnect.v1.Connection.update_time:type_name -> google.protobuf.Timestamp
-	75, // 11: google.cloud.developerconnect.v1.Connection.delete_time:type_name -> google.protobuf.Timestamp
-	64, // 12: google.cloud.developerconnect.v1.Connection.labels:type_name -> google.cloud.developerconnect.v1.Connection.LabelsEntry
-	9,  // 13: google.cloud.developerconnect.v1.Connection.installation_state:type_name -> google.cloud.developerconnect.v1.InstallationState
-	65, // 14: google.cloud.developerconnect.v1.Connection.annotations:type_name -> google.cloud.developerconnect.v1.Connection.AnnotationsEntry
-	7,  // 15: google.cloud.developerconnect.v1.Connection.crypto_key_config:type_name -> google.cloud.developerconnect.v1.CryptoKeyConfig
-	8,  // 16: google.cloud.developerconnect.v1.Connection.git_proxy_config:type_name -> google.cloud.developerconnect.v1.GitProxyConfig
-	1,  // 17: google.cloud.developerconnect.v1.InstallationState.stage:type_name -> google.cloud.developerconnect.v1.InstallationState.Stage
-	66, // 18: google.cloud.developerconnect.v1.GenericHTTPEndpointConfig.basic_authentication:type_name -> google.cloud.developerconnect.v1.GenericHTTPEndpointConfig.BasicAuthentication
-	67, // 19: google.cloud.developerconnect.v1.GenericHTTPEndpointConfig.bearer_token_authentication:type_name -> google.cloud.developerconnect.v1.GenericHTTPEndpointConfig.BearerTokenAuthentication
-	13, // 20: google.cloud.developerconnect.v1.GenericHTTPEndpointConfig.service_directory_config:type_name -> google.cloud.developerconnect.v1.ServiceDirectoryConfig
-	2,  // 21: google.cloud.developerconnect.v1.GitHubConfig.github_app:type_name -> google.cloud.developerconnect.v1.GitHubConfig.GitHubApp
-	14, // 22: google.cloud.developerconnect.v1.GitHubConfig.authorizer_credential:type_name -> google.cloud.developerconnect.v1.OAuthCredential
-	13, // 23: google.cloud.developerconnect.v1.GitHubEnterpriseConfig.service_directory_config:type_name -> google.cloud.developerconnect.v1.ServiceDirectoryConfig
-	16, // 24: google.cloud.developerconnect.v1.GitLabConfig.read_authorizer_credential:type_name -> google.cloud.developerconnect.v1.UserCredential
-	16, // 25: google.cloud.developerconnect.v1.GitLabConfig.authorizer_credential:type_name -> google.cloud.developerconnect.v1.UserCredential
-	16, // 26: google.cloud.developerconnect.v1.GitLabEnterpriseConfig.read_authorizer_credential:type_name -> google.cloud.developerconnect.v1.UserCredential
-	16, // 27: google.cloud.developerconnect.v1.GitLabEnterpriseConfig.authorizer_credential:type_name -> google.cloud.developerconnect.v1.UserCredential
-	13, // 28: google.cloud.developerconnect.v1.GitLabEnterpriseConfig.service_directory_config:type_name -> google.cloud.developerconnect.v1.ServiceDirectoryConfig
-	16, // 29: google.cloud.developerconnect.v1.BitbucketDataCenterConfig.read_authorizer_credential:type_name -> google.cloud.developerconnect.v1.UserCredential
-	16, // 30: google.cloud.developerconnect.v1.BitbucketDataCenterConfig.authorizer_credential:type_name -> google.cloud.developerconnect.v1.UserCredential
-	13, // 31: google.cloud.developerconnect.v1.BitbucketDataCenterConfig.service_directory_config:type_name -> google.cloud.developerconnect.v1.ServiceDirectoryConfig
-	16, // 32: google.cloud.developerconnect.v1.BitbucketCloudConfig.read_authorizer_credential:type_name -> google.cloud.developerconnect.v1.UserCredential
-	16, // 33: google.cloud.developerconnect.v1.BitbucketCloudConfig.authorizer_credential:type_name -> google.cloud.developerconnect.v1.UserCredential
-	6,  // 34: google.cloud.developerconnect.v1.ListConnectionsResponse.connections:type_name -> google.cloud.developerconnect.v1.Connection
-	6,  // 35: google.cloud.developerconnect.v1.CreateConnectionRequest.connection:type_name -> google.cloud.developerconnect.v1.Connection
-	76, // 36: google.cloud.developerconnect.v1.UpdateConnectionRequest.update_mask:type_name -> google.protobuf.FieldMask
-	6,  // 37: google.cloud.developerconnect.v1.UpdateConnectionRequest.connection:type_name -> google.cloud.developerconnect.v1.Connection
-	61, // 38: google.cloud.developerconnect.v1.ListAccountConnectorsResponse.account_connectors:type_name -> google.cloud.developerconnect.v1.AccountConnector
-	61, // 39: google.cloud.developerconnect.v1.CreateAccountConnectorRequest.account_connector:type_name -> google.cloud.developerconnect.v1.AccountConnector
-	76, // 40: google.cloud.developerconnect.v1.UpdateAccountConnectorRequest.update_mask:type_name -> google.protobuf.FieldMask
-	61, // 41: google.cloud.developerconnect.v1.UpdateAccountConnectorRequest.account_connector:type_name -> google.cloud.developerconnect.v1.AccountConnector
-	75, // 42: google.cloud.developerconnect.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	75, // 43: google.cloud.developerconnect.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	75, // 44: google.cloud.developerconnect.v1.FetchAccessTokenResponse.expiration_time:type_name -> google.protobuf.Timestamp
-	43, // 45: google.cloud.developerconnect.v1.FetchAccessTokenResponse.exchange_error:type_name -> google.cloud.developerconnect.v1.ExchangeError
-	0,  // 46: google.cloud.developerconnect.v1.StartOAuthResponse.system_provider_id:type_name -> google.cloud.developerconnect.v1.SystemProvider
-	68, // 47: google.cloud.developerconnect.v1.FinishOAuthRequest.oauth_params:type_name -> google.cloud.developerconnect.v1.FinishOAuthRequest.OAuthParams
-	69, // 48: google.cloud.developerconnect.v1.FinishOAuthRequest.google_oauth_params:type_name -> google.cloud.developerconnect.v1.FinishOAuthRequest.GoogleOAuthParams
-	43, // 49: google.cloud.developerconnect.v1.FinishOAuthResponse.exchange_error:type_name -> google.cloud.developerconnect.v1.ExchangeError
-	75, // 50: google.cloud.developerconnect.v1.GitRepositoryLink.create_time:type_name -> google.protobuf.Timestamp
-	75, // 51: google.cloud.developerconnect.v1.GitRepositoryLink.update_time:type_name -> google.protobuf.Timestamp
-	75, // 52: google.cloud.developerconnect.v1.GitRepositoryLink.delete_time:type_name -> google.protobuf.Timestamp
-	70, // 53: google.cloud.developerconnect.v1.GitRepositoryLink.labels:type_name -> google.cloud.developerconnect.v1.GitRepositoryLink.LabelsEntry
-	71, // 54: google.cloud.developerconnect.v1.GitRepositoryLink.annotations:type_name -> google.cloud.developerconnect.v1.GitRepositoryLink.AnnotationsEntry
-	44, // 55: google.cloud.developerconnect.v1.CreateGitRepositoryLinkRequest.git_repository_link:type_name -> google.cloud.developerconnect.v1.GitRepositoryLink
-	44, // 56: google.cloud.developerconnect.v1.ListGitRepositoryLinksResponse.git_repository_links:type_name -> google.cloud.developerconnect.v1.GitRepositoryLink
-	75, // 57: google.cloud.developerconnect.v1.FetchReadTokenResponse.expiration_time:type_name -> google.protobuf.Timestamp
-	75, // 58: google.cloud.developerconnect.v1.FetchReadWriteTokenResponse.expiration_time:type_name -> google.protobuf.Timestamp
-	56, // 59: google.cloud.developerconnect.v1.FetchLinkableGitRepositoriesResponse.linkable_git_repositories:type_name -> google.cloud.developerconnect.v1.LinkableGitRepository
-	72, // 60: google.cloud.developerconnect.v1.FetchGitHubInstallationsResponse.installations:type_name -> google.cloud.developerconnect.v1.FetchGitHubInstallationsResponse.Installation
-	3,  // 61: google.cloud.developerconnect.v1.FetchGitRefsRequest.ref_type:type_name -> google.cloud.developerconnect.v1.FetchGitRefsRequest.RefType
-	63, // 62: google.cloud.developerconnect.v1.AccountConnector.provider_oauth_config:type_name -> google.cloud.developerconnect.v1.ProviderOAuthConfig
-	75, // 63: google.cloud.developerconnect.v1.AccountConnector.create_time:type_name -> google.protobuf.Timestamp
-	75, // 64: google.cloud.developerconnect.v1.AccountConnector.update_time:type_name -> google.protobuf.Timestamp
-	73, // 65: google.cloud.developerconnect.v1.AccountConnector.annotations:type_name -> google.cloud.developerconnect.v1.AccountConnector.AnnotationsEntry
-	74, // 66: google.cloud.developerconnect.v1.AccountConnector.labels:type_name -> google.cloud.developerconnect.v1.AccountConnector.LabelsEntry
-	75, // 67: google.cloud.developerconnect.v1.User.create_time:type_name -> google.protobuf.Timestamp
-	75, // 68: google.cloud.developerconnect.v1.User.last_token_request_time:type_name -> google.protobuf.Timestamp
-	0,  // 69: google.cloud.developerconnect.v1.ProviderOAuthConfig.system_provider_id:type_name -> google.cloud.developerconnect.v1.SystemProvider
-	21, // 70: google.cloud.developerconnect.v1.DeveloperConnect.ListConnections:input_type -> google.cloud.developerconnect.v1.ListConnectionsRequest
-	23, // 71: google.cloud.developerconnect.v1.DeveloperConnect.GetConnection:input_type -> google.cloud.developerconnect.v1.GetConnectionRequest
-	24, // 72: google.cloud.developerconnect.v1.DeveloperConnect.CreateConnection:input_type -> google.cloud.developerconnect.v1.CreateConnectionRequest
-	25, // 73: google.cloud.developerconnect.v1.DeveloperConnect.UpdateConnection:input_type -> google.cloud.developerconnect.v1.UpdateConnectionRequest
-	26, // 74: google.cloud.developerconnect.v1.DeveloperConnect.DeleteConnection:input_type -> google.cloud.developerconnect.v1.DeleteConnectionRequest
-	45, // 75: google.cloud.developerconnect.v1.DeveloperConnect.CreateGitRepositoryLink:input_type -> google.cloud.developerconnect.v1.CreateGitRepositoryLinkRequest
-	46, // 76: google.cloud.developerconnect.v1.DeveloperConnect.DeleteGitRepositoryLink:input_type -> google.cloud.developerconnect.v1.DeleteGitRepositoryLinkRequest
-	47, // 77: google.cloud.developerconnect.v1.DeveloperConnect.ListGitRepositoryLinks:input_type -> google.cloud.developerconnect.v1.ListGitRepositoryLinksRequest
-	49, // 78: google.cloud.developerconnect.v1.DeveloperConnect.GetGitRepositoryLink:input_type -> google.cloud.developerconnect.v1.GetGitRepositoryLinkRequest
-	50, // 79: google.cloud.developerconnect.v1.DeveloperConnect.FetchReadWriteToken:input_type -> google.cloud.developerconnect.v1.FetchReadWriteTokenRequest
-	51, // 80: google.cloud.developerconnect.v1.DeveloperConnect.FetchReadToken:input_type -> google.cloud.developerconnect.v1.FetchReadTokenRequest
-	54, // 81: google.cloud.developerconnect.v1.DeveloperConnect.FetchLinkableGitRepositories:input_type -> google.cloud.developerconnect.v1.FetchLinkableGitRepositoriesRequest
-	57, // 82: google.cloud.developerconnect.v1.DeveloperConnect.FetchGitHubInstallations:input_type -> google.cloud.developerconnect.v1.FetchGitHubInstallationsRequest
-	59, // 83: google.cloud.developerconnect.v1.DeveloperConnect.FetchGitRefs:input_type -> google.cloud.developerconnect.v1.FetchGitRefsRequest
-	27, // 84: google.cloud.developerconnect.v1.DeveloperConnect.ListAccountConnectors:input_type -> google.cloud.developerconnect.v1.ListAccountConnectorsRequest
-	29, // 85: google.cloud.developerconnect.v1.DeveloperConnect.GetAccountConnector:input_type -> google.cloud.developerconnect.v1.GetAccountConnectorRequest
-	30, // 86: google.cloud.developerconnect.v1.DeveloperConnect.CreateAccountConnector:input_type -> google.cloud.developerconnect.v1.CreateAccountConnectorRequest
-	31, // 87: google.cloud.developerconnect.v1.DeveloperConnect.UpdateAccountConnector:input_type -> google.cloud.developerconnect.v1.UpdateAccountConnectorRequest
-	32, // 88: google.cloud.developerconnect.v1.DeveloperConnect.DeleteAccountConnector:input_type -> google.cloud.developerconnect.v1.DeleteAccountConnectorRequest
-	37, // 89: google.cloud.developerconnect.v1.DeveloperConnect.FetchAccessToken:input_type -> google.cloud.developerconnect.v1.FetchAccessTokenRequest
-	4,  // 90: google.cloud.developerconnect.v1.DeveloperConnect.ListUsers:input_type -> google.cloud.developerconnect.v1.ListUsersRequest
-	33, // 91: google.cloud.developerconnect.v1.DeveloperConnect.DeleteUser:input_type -> google.cloud.developerconnect.v1.DeleteUserRequest
-	35, // 92: google.cloud.developerconnect.v1.DeveloperConnect.FetchSelf:input_type -> google.cloud.developerconnect.v1.FetchSelfRequest
-	36, // 93: google.cloud.developerconnect.v1.DeveloperConnect.DeleteSelf:input_type -> google.cloud.developerconnect.v1.DeleteSelfRequest
-	39, // 94: google.cloud.developerconnect.v1.DeveloperConnect.StartOAuth:input_type -> google.cloud.developerconnect.v1.StartOAuthRequest
-	41, // 95: google.cloud.developerconnect.v1.DeveloperConnect.FinishOAuth:input_type -> google.cloud.developerconnect.v1.FinishOAuthRequest
-	22, // 96: google.cloud.developerconnect.v1.DeveloperConnect.ListConnections:output_type -> google.cloud.developerconnect.v1.ListConnectionsResponse
-	6,  // 97: google.cloud.developerconnect.v1.DeveloperConnect.GetConnection:output_type -> google.cloud.developerconnect.v1.Connection
-	77, // 98: google.cloud.developerconnect.v1.DeveloperConnect.CreateConnection:output_type -> google.longrunning.Operation
-	77, // 99: google.cloud.developerconnect.v1.DeveloperConnect.UpdateConnection:output_type -> google.longrunning.Operation
-	77, // 100: google.cloud.developerconnect.v1.DeveloperConnect.DeleteConnection:output_type -> google.longrunning.Operation
-	77, // 101: google.cloud.developerconnect.v1.DeveloperConnect.CreateGitRepositoryLink:output_type -> google.longrunning.Operation
-	77, // 102: google.cloud.developerconnect.v1.DeveloperConnect.DeleteGitRepositoryLink:output_type -> google.longrunning.Operation
-	48, // 103: google.cloud.developerconnect.v1.DeveloperConnect.ListGitRepositoryLinks:output_type -> google.cloud.developerconnect.v1.ListGitRepositoryLinksResponse
-	44, // 104: google.cloud.developerconnect.v1.DeveloperConnect.GetGitRepositoryLink:output_type -> google.cloud.developerconnect.v1.GitRepositoryLink
-	53, // 105: google.cloud.developerconnect.v1.DeveloperConnect.FetchReadWriteToken:output_type -> google.cloud.developerconnect.v1.FetchReadWriteTokenResponse
-	52, // 106: google.cloud.developerconnect.v1.DeveloperConnect.FetchReadToken:output_type -> google.cloud.developerconnect.v1.FetchReadTokenResponse
-	55, // 107: google.cloud.developerconnect.v1.DeveloperConnect.FetchLinkableGitRepositories:output_type -> google.cloud.developerconnect.v1.FetchLinkableGitRepositoriesResponse
-	58, // 108: google.cloud.developerconnect.v1.DeveloperConnect.FetchGitHubInstallations:output_type -> google.cloud.developerconnect.v1.FetchGitHubInstallationsResponse
-	60, // 109: google.cloud.developerconnect.v1.DeveloperConnect.FetchGitRefs:output_type -> google.cloud.developerconnect.v1.FetchGitRefsResponse
-	28, // 110: google.cloud.developerconnect.v1.DeveloperConnect.ListAccountConnectors:output_type -> google.cloud.developerconnect.v1.ListAccountConnectorsResponse
-	61, // 111: google.cloud.developerconnect.v1.DeveloperConnect.GetAccountConnector:output_type -> google.cloud.developerconnect.v1.AccountConnector
-	77, // 112: google.cloud.developerconnect.v1.DeveloperConnect.CreateAccountConnector:output_type -> google.longrunning.Operation
-	77, // 113: google.cloud.developerconnect.v1.DeveloperConnect.UpdateAccountConnector:output_type -> google.longrunning.Operation
-	77, // 114: google.cloud.developerconnect.v1.DeveloperConnect.DeleteAccountConnector:output_type -> google.longrunning.Operation
-	38, // 115: google.cloud.developerconnect.v1.DeveloperConnect.FetchAccessToken:output_type -> google.cloud.developerconnect.v1.FetchAccessTokenResponse
-	5,  // 116: google.cloud.developerconnect.v1.DeveloperConnect.ListUsers:output_type -> google.cloud.developerconnect.v1.ListUsersResponse
-	77, // 117: google.cloud.developerconnect.v1.DeveloperConnect.DeleteUser:output_type -> google.longrunning.Operation
-	62, // 118: google.cloud.developerconnect.v1.DeveloperConnect.FetchSelf:output_type -> google.cloud.developerconnect.v1.User
-	77, // 119: google.cloud.developerconnect.v1.DeveloperConnect.DeleteSelf:output_type -> google.longrunning.Operation
-	40, // 120: google.cloud.developerconnect.v1.DeveloperConnect.StartOAuth:output_type -> google.cloud.developerconnect.v1.StartOAuthResponse
-	42, // 121: google.cloud.developerconnect.v1.DeveloperConnect.FinishOAuth:output_type -> google.cloud.developerconnect.v1.FinishOAuthResponse
-	96, // [96:122] is the sub-list for method output_type
-	70, // [70:96] is the sub-list for method input_type
-	70, // [70:70] is the sub-list for extension type_name
-	70, // [70:70] is the sub-list for extension extendee
-	0,  // [0:70] is the sub-list for field type_name
+	88,  // 0: google.cloud.developerconnect.v1.ListUsersResponse.users:type_name -> google.cloud.developerconnect.v1.User
+	16,  // 1: google.cloud.developerconnect.v1.Connection.github_config:type_name -> google.cloud.developerconnect.v1.GitHubConfig
+	17,  // 2: google.cloud.developerconnect.v1.Connection.github_enterprise_config:type_name -> google.cloud.developerconnect.v1.GitHubEnterpriseConfig
+	20,  // 3: google.cloud.developerconnect.v1.Connection.gitlab_config:type_name -> google.cloud.developerconnect.v1.GitLabConfig
+	22,  // 4: google.cloud.developerconnect.v1.Connection.gitlab_enterprise_config:type_name -> google.cloud.developerconnect.v1.GitLabEnterpriseConfig
+	23,  // 5: google.cloud.developerconnect.v1.Connection.bitbucket_data_center_config:type_name -> google.cloud.developerconnect.v1.BitbucketDataCenterConfig
+	24,  // 6: google.cloud.developerconnect.v1.Connection.bitbucket_cloud_config:type_name -> google.cloud.developerconnect.v1.BitbucketCloudConfig
+	25,  // 7: google.cloud.developerconnect.v1.Connection.secure_source_manager_instance_config:type_name -> google.cloud.developerconnect.v1.SecureSourceManagerInstanceConfig
+	15,  // 8: google.cloud.developerconnect.v1.Connection.http_config:type_name -> google.cloud.developerconnect.v1.GenericHTTPEndpointConfig
+	101, // 9: google.cloud.developerconnect.v1.Connection.create_time:type_name -> google.protobuf.Timestamp
+	101, // 10: google.cloud.developerconnect.v1.Connection.update_time:type_name -> google.protobuf.Timestamp
+	101, // 11: google.cloud.developerconnect.v1.Connection.delete_time:type_name -> google.protobuf.Timestamp
+	90,  // 12: google.cloud.developerconnect.v1.Connection.labels:type_name -> google.cloud.developerconnect.v1.Connection.LabelsEntry
+	14,  // 13: google.cloud.developerconnect.v1.Connection.installation_state:type_name -> google.cloud.developerconnect.v1.InstallationState
+	91,  // 14: google.cloud.developerconnect.v1.Connection.annotations:type_name -> google.cloud.developerconnect.v1.Connection.AnnotationsEntry
+	12,  // 15: google.cloud.developerconnect.v1.Connection.crypto_key_config:type_name -> google.cloud.developerconnect.v1.CryptoKeyConfig
+	13,  // 16: google.cloud.developerconnect.v1.Connection.git_proxy_config:type_name -> google.cloud.developerconnect.v1.GitProxyConfig
+	2,   // 17: google.cloud.developerconnect.v1.InstallationState.stage:type_name -> google.cloud.developerconnect.v1.InstallationState.Stage
+	92,  // 18: google.cloud.developerconnect.v1.GenericHTTPEndpointConfig.basic_authentication:type_name -> google.cloud.developerconnect.v1.GenericHTTPEndpointConfig.BasicAuthentication
+	93,  // 19: google.cloud.developerconnect.v1.GenericHTTPEndpointConfig.bearer_token_authentication:type_name -> google.cloud.developerconnect.v1.GenericHTTPEndpointConfig.BearerTokenAuthentication
+	18,  // 20: google.cloud.developerconnect.v1.GenericHTTPEndpointConfig.service_directory_config:type_name -> google.cloud.developerconnect.v1.ServiceDirectoryConfig
+	3,   // 21: google.cloud.developerconnect.v1.GitHubConfig.github_app:type_name -> google.cloud.developerconnect.v1.GitHubConfig.GitHubApp
+	19,  // 22: google.cloud.developerconnect.v1.GitHubConfig.authorizer_credential:type_name -> google.cloud.developerconnect.v1.OAuthCredential
+	18,  // 23: google.cloud.developerconnect.v1.GitHubEnterpriseConfig.service_directory_config:type_name -> google.cloud.developerconnect.v1.ServiceDirectoryConfig
+	21,  // 24: google.cloud.developerconnect.v1.GitLabConfig.read_authorizer_credential:type_name -> google.cloud.developerconnect.v1.UserCredential
+	21,  // 25: google.cloud.developerconnect.v1.GitLabConfig.authorizer_credential:type_name -> google.cloud.developerconnect.v1.UserCredential
+	21,  // 26: google.cloud.developerconnect.v1.GitLabEnterpriseConfig.read_authorizer_credential:type_name -> google.cloud.developerconnect.v1.UserCredential
+	21,  // 27: google.cloud.developerconnect.v1.GitLabEnterpriseConfig.authorizer_credential:type_name -> google.cloud.developerconnect.v1.UserCredential
+	18,  // 28: google.cloud.developerconnect.v1.GitLabEnterpriseConfig.service_directory_config:type_name -> google.cloud.developerconnect.v1.ServiceDirectoryConfig
+	21,  // 29: google.cloud.developerconnect.v1.BitbucketDataCenterConfig.read_authorizer_credential:type_name -> google.cloud.developerconnect.v1.UserCredential
+	21,  // 30: google.cloud.developerconnect.v1.BitbucketDataCenterConfig.authorizer_credential:type_name -> google.cloud.developerconnect.v1.UserCredential
+	18,  // 31: google.cloud.developerconnect.v1.BitbucketDataCenterConfig.service_directory_config:type_name -> google.cloud.developerconnect.v1.ServiceDirectoryConfig
+	21,  // 32: google.cloud.developerconnect.v1.BitbucketCloudConfig.read_authorizer_credential:type_name -> google.cloud.developerconnect.v1.UserCredential
+	21,  // 33: google.cloud.developerconnect.v1.BitbucketCloudConfig.authorizer_credential:type_name -> google.cloud.developerconnect.v1.UserCredential
+	11,  // 34: google.cloud.developerconnect.v1.ListConnectionsResponse.connections:type_name -> google.cloud.developerconnect.v1.Connection
+	11,  // 35: google.cloud.developerconnect.v1.CreateConnectionRequest.connection:type_name -> google.cloud.developerconnect.v1.Connection
+	102, // 36: google.cloud.developerconnect.v1.UpdateConnectionRequest.update_mask:type_name -> google.protobuf.FieldMask
+	11,  // 37: google.cloud.developerconnect.v1.UpdateConnectionRequest.connection:type_name -> google.cloud.developerconnect.v1.Connection
+	87,  // 38: google.cloud.developerconnect.v1.ListAccountConnectorsResponse.account_connectors:type_name -> google.cloud.developerconnect.v1.AccountConnector
+	87,  // 39: google.cloud.developerconnect.v1.CreateAccountConnectorRequest.account_connector:type_name -> google.cloud.developerconnect.v1.AccountConnector
+	102, // 40: google.cloud.developerconnect.v1.UpdateAccountConnectorRequest.update_mask:type_name -> google.protobuf.FieldMask
+	87,  // 41: google.cloud.developerconnect.v1.UpdateAccountConnectorRequest.account_connector:type_name -> google.cloud.developerconnect.v1.AccountConnector
+	101, // 42: google.cloud.developerconnect.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	101, // 43: google.cloud.developerconnect.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	101, // 44: google.cloud.developerconnect.v1.FetchAccessTokenResponse.expiration_time:type_name -> google.protobuf.Timestamp
+	51,  // 45: google.cloud.developerconnect.v1.FetchAccessTokenResponse.exchange_error:type_name -> google.cloud.developerconnect.v1.ExchangeError
+	46,  // 46: google.cloud.developerconnect.v1.DiffGitRepositoryLinkCommitResponse.files:type_name -> google.cloud.developerconnect.v1.FileDiff
+	1,   // 47: google.cloud.developerconnect.v1.StartOAuthResponse.system_provider_id:type_name -> google.cloud.developerconnect.v1.SystemProvider
+	94,  // 48: google.cloud.developerconnect.v1.FinishOAuthRequest.oauth_params:type_name -> google.cloud.developerconnect.v1.FinishOAuthRequest.OAuthParams
+	95,  // 49: google.cloud.developerconnect.v1.FinishOAuthRequest.google_oauth_params:type_name -> google.cloud.developerconnect.v1.FinishOAuthRequest.GoogleOAuthParams
+	51,  // 50: google.cloud.developerconnect.v1.FinishOAuthResponse.exchange_error:type_name -> google.cloud.developerconnect.v1.ExchangeError
+	101, // 51: google.cloud.developerconnect.v1.GitRepositoryLink.create_time:type_name -> google.protobuf.Timestamp
+	101, // 52: google.cloud.developerconnect.v1.GitRepositoryLink.update_time:type_name -> google.protobuf.Timestamp
+	101, // 53: google.cloud.developerconnect.v1.GitRepositoryLink.delete_time:type_name -> google.protobuf.Timestamp
+	96,  // 54: google.cloud.developerconnect.v1.GitRepositoryLink.labels:type_name -> google.cloud.developerconnect.v1.GitRepositoryLink.LabelsEntry
+	97,  // 55: google.cloud.developerconnect.v1.GitRepositoryLink.annotations:type_name -> google.cloud.developerconnect.v1.GitRepositoryLink.AnnotationsEntry
+	52,  // 56: google.cloud.developerconnect.v1.CreateGitRepositoryLinkRequest.git_repository_link:type_name -> google.cloud.developerconnect.v1.GitRepositoryLink
+	52,  // 57: google.cloud.developerconnect.v1.ListGitRepositoryLinksResponse.git_repository_links:type_name -> google.cloud.developerconnect.v1.GitRepositoryLink
+	101, // 58: google.cloud.developerconnect.v1.FetchReadTokenResponse.expiration_time:type_name -> google.protobuf.Timestamp
+	101, // 59: google.cloud.developerconnect.v1.FetchReadWriteTokenResponse.expiration_time:type_name -> google.protobuf.Timestamp
+	79,  // 60: google.cloud.developerconnect.v1.OpenGitRepositoryLinkPullRequestRequest.pull_request:type_name -> google.cloud.developerconnect.v1.PullRequest
+	65,  // 61: google.cloud.developerconnect.v1.FetchLinkableGitRepositoriesResponse.linkable_git_repositories:type_name -> google.cloud.developerconnect.v1.LinkableGitRepository
+	98,  // 62: google.cloud.developerconnect.v1.FetchGitHubInstallationsResponse.installations:type_name -> google.cloud.developerconnect.v1.FetchGitHubInstallationsResponse.Installation
+	4,   // 63: google.cloud.developerconnect.v1.FetchGitRefsRequest.ref_type:type_name -> google.cloud.developerconnect.v1.FetchGitRefsRequest.RefType
+	0,   // 64: google.cloud.developerconnect.v1.FetchGitRepositoryLinkCommitRequest.view:type_name -> google.cloud.developerconnect.v1.CommitView
+	74,  // 65: google.cloud.developerconnect.v1.FetchGitRepositoryLinkCommitResponse.commit:type_name -> google.cloud.developerconnect.v1.SCMCommit
+	46,  // 66: google.cloud.developerconnect.v1.FetchGitRepositoryLinkCommitResponse.files:type_name -> google.cloud.developerconnect.v1.FileDiff
+	0,   // 67: google.cloud.developerconnect.v1.FetchGitRepositoryLinkCommitListRequest.view:type_name -> google.cloud.developerconnect.v1.CommitView
+	74,  // 68: google.cloud.developerconnect.v1.FetchGitRepositoryLinkCommitListResponse.commits:type_name -> google.cloud.developerconnect.v1.SCMCommit
+	101, // 69: google.cloud.developerconnect.v1.SCMCommit.commit_time:type_name -> google.protobuf.Timestamp
+	74,  // 70: google.cloud.developerconnect.v1.BlameRange.commit:type_name -> google.cloud.developerconnect.v1.SCMCommit
+	76,  // 71: google.cloud.developerconnect.v1.FetchGitRepositoryLinkFileBlameResponse.ranges:type_name -> google.cloud.developerconnect.v1.BlameRange
+	101, // 72: google.cloud.developerconnect.v1.PullRequest.create_time:type_name -> google.protobuf.Timestamp
+	101, // 73: google.cloud.developerconnect.v1.PullRequest.update_time:type_name -> google.protobuf.Timestamp
+	101, // 74: google.cloud.developerconnect.v1.PullRequest.merge_time:type_name -> google.protobuf.Timestamp
+	101, // 75: google.cloud.developerconnect.v1.PullRequest.close_time:type_name -> google.protobuf.Timestamp
+	101, // 76: google.cloud.developerconnect.v1.PullRequest.decline_time:type_name -> google.protobuf.Timestamp
+	5,   // 77: google.cloud.developerconnect.v1.PullRequest.state:type_name -> google.cloud.developerconnect.v1.PullRequest.State
+	6,   // 78: google.cloud.developerconnect.v1.PullRequest.mergeability:type_name -> google.cloud.developerconnect.v1.PullRequest.Mergeability
+	101, // 79: google.cloud.developerconnect.v1.PullRequestComment.create_time:type_name -> google.protobuf.Timestamp
+	101, // 80: google.cloud.developerconnect.v1.PullRequestComment.update_time:type_name -> google.protobuf.Timestamp
+	80,  // 81: google.cloud.developerconnect.v1.AddGitRepositoryLinkPullRequestCommentRequest.comment:type_name -> google.cloud.developerconnect.v1.PullRequestComment
+	7,   // 82: google.cloud.developerconnect.v1.PullRequestReviewComment.side:type_name -> google.cloud.developerconnect.v1.PullRequestReviewComment.DiffSide
+	101, // 83: google.cloud.developerconnect.v1.PullRequestReviewComment.create_time:type_name -> google.protobuf.Timestamp
+	101, // 84: google.cloud.developerconnect.v1.PullRequestReviewComment.update_time:type_name -> google.protobuf.Timestamp
+	82,  // 85: google.cloud.developerconnect.v1.AddGitRepositoryLinkPullRequestReviewCommentRequest.comment:type_name -> google.cloud.developerconnect.v1.PullRequestReviewComment
+	8,   // 86: google.cloud.developerconnect.v1.ModifyGitRepositoryLinkPullRequestRequest.state:type_name -> google.cloud.developerconnect.v1.ModifyGitRepositoryLinkPullRequestRequest.State
+	79,  // 87: google.cloud.developerconnect.v1.FetchGitRepositoryLinkPullRequestListResponse.pull_requests:type_name -> google.cloud.developerconnect.v1.PullRequest
+	89,  // 88: google.cloud.developerconnect.v1.AccountConnector.provider_oauth_config:type_name -> google.cloud.developerconnect.v1.ProviderOAuthConfig
+	101, // 89: google.cloud.developerconnect.v1.AccountConnector.create_time:type_name -> google.protobuf.Timestamp
+	101, // 90: google.cloud.developerconnect.v1.AccountConnector.update_time:type_name -> google.protobuf.Timestamp
+	99,  // 91: google.cloud.developerconnect.v1.AccountConnector.annotations:type_name -> google.cloud.developerconnect.v1.AccountConnector.AnnotationsEntry
+	100, // 92: google.cloud.developerconnect.v1.AccountConnector.labels:type_name -> google.cloud.developerconnect.v1.AccountConnector.LabelsEntry
+	101, // 93: google.cloud.developerconnect.v1.User.create_time:type_name -> google.protobuf.Timestamp
+	101, // 94: google.cloud.developerconnect.v1.User.last_token_request_time:type_name -> google.protobuf.Timestamp
+	1,   // 95: google.cloud.developerconnect.v1.ProviderOAuthConfig.system_provider_id:type_name -> google.cloud.developerconnect.v1.SystemProvider
+	26,  // 96: google.cloud.developerconnect.v1.DeveloperConnect.ListConnections:input_type -> google.cloud.developerconnect.v1.ListConnectionsRequest
+	28,  // 97: google.cloud.developerconnect.v1.DeveloperConnect.GetConnection:input_type -> google.cloud.developerconnect.v1.GetConnectionRequest
+	29,  // 98: google.cloud.developerconnect.v1.DeveloperConnect.CreateConnection:input_type -> google.cloud.developerconnect.v1.CreateConnectionRequest
+	30,  // 99: google.cloud.developerconnect.v1.DeveloperConnect.UpdateConnection:input_type -> google.cloud.developerconnect.v1.UpdateConnectionRequest
+	31,  // 100: google.cloud.developerconnect.v1.DeveloperConnect.DeleteConnection:input_type -> google.cloud.developerconnect.v1.DeleteConnectionRequest
+	53,  // 101: google.cloud.developerconnect.v1.DeveloperConnect.CreateGitRepositoryLink:input_type -> google.cloud.developerconnect.v1.CreateGitRepositoryLinkRequest
+	54,  // 102: google.cloud.developerconnect.v1.DeveloperConnect.DeleteGitRepositoryLink:input_type -> google.cloud.developerconnect.v1.DeleteGitRepositoryLinkRequest
+	55,  // 103: google.cloud.developerconnect.v1.DeveloperConnect.ListGitRepositoryLinks:input_type -> google.cloud.developerconnect.v1.ListGitRepositoryLinksRequest
+	57,  // 104: google.cloud.developerconnect.v1.DeveloperConnect.GetGitRepositoryLink:input_type -> google.cloud.developerconnect.v1.GetGitRepositoryLinkRequest
+	58,  // 105: google.cloud.developerconnect.v1.DeveloperConnect.FetchReadWriteToken:input_type -> google.cloud.developerconnect.v1.FetchReadWriteTokenRequest
+	59,  // 106: google.cloud.developerconnect.v1.DeveloperConnect.FetchReadToken:input_type -> google.cloud.developerconnect.v1.FetchReadTokenRequest
+	62,  // 107: google.cloud.developerconnect.v1.DeveloperConnect.OpenGitRepositoryLinkPullRequest:input_type -> google.cloud.developerconnect.v1.OpenGitRepositoryLinkPullRequestRequest
+	63,  // 108: google.cloud.developerconnect.v1.DeveloperConnect.FetchLinkableGitRepositories:input_type -> google.cloud.developerconnect.v1.FetchLinkableGitRepositoriesRequest
+	66,  // 109: google.cloud.developerconnect.v1.DeveloperConnect.FetchGitHubInstallations:input_type -> google.cloud.developerconnect.v1.FetchGitHubInstallationsRequest
+	68,  // 110: google.cloud.developerconnect.v1.DeveloperConnect.FetchGitRefs:input_type -> google.cloud.developerconnect.v1.FetchGitRefsRequest
+	44,  // 111: google.cloud.developerconnect.v1.DeveloperConnect.DiffGitRepositoryLinkCommit:input_type -> google.cloud.developerconnect.v1.DiffGitRepositoryLinkCommitRequest
+	70,  // 112: google.cloud.developerconnect.v1.DeveloperConnect.FetchGitRepositoryLinkCommit:input_type -> google.cloud.developerconnect.v1.FetchGitRepositoryLinkCommitRequest
+	72,  // 113: google.cloud.developerconnect.v1.DeveloperConnect.FetchGitRepositoryLinkCommitList:input_type -> google.cloud.developerconnect.v1.FetchGitRepositoryLinkCommitListRequest
+	75,  // 114: google.cloud.developerconnect.v1.DeveloperConnect.FetchGitRepositoryLinkFileBlame:input_type -> google.cloud.developerconnect.v1.FetchGitRepositoryLinkFileBlameRequest
+	78,  // 115: google.cloud.developerconnect.v1.DeveloperConnect.FetchGitRepositoryLinkPullRequest:input_type -> google.cloud.developerconnect.v1.FetchGitRepositoryLinkPullRequestRequest
+	81,  // 116: google.cloud.developerconnect.v1.DeveloperConnect.AddGitRepositoryLinkPullRequestComment:input_type -> google.cloud.developerconnect.v1.AddGitRepositoryLinkPullRequestCommentRequest
+	83,  // 117: google.cloud.developerconnect.v1.DeveloperConnect.AddGitRepositoryLinkPullRequestReviewComment:input_type -> google.cloud.developerconnect.v1.AddGitRepositoryLinkPullRequestReviewCommentRequest
+	84,  // 118: google.cloud.developerconnect.v1.DeveloperConnect.ModifyGitRepositoryLinkPullRequest:input_type -> google.cloud.developerconnect.v1.ModifyGitRepositoryLinkPullRequestRequest
+	85,  // 119: google.cloud.developerconnect.v1.DeveloperConnect.FetchGitRepositoryLinkPullRequestList:input_type -> google.cloud.developerconnect.v1.FetchGitRepositoryLinkPullRequestListRequest
+	32,  // 120: google.cloud.developerconnect.v1.DeveloperConnect.ListAccountConnectors:input_type -> google.cloud.developerconnect.v1.ListAccountConnectorsRequest
+	34,  // 121: google.cloud.developerconnect.v1.DeveloperConnect.GetAccountConnector:input_type -> google.cloud.developerconnect.v1.GetAccountConnectorRequest
+	35,  // 122: google.cloud.developerconnect.v1.DeveloperConnect.CreateAccountConnector:input_type -> google.cloud.developerconnect.v1.CreateAccountConnectorRequest
+	36,  // 123: google.cloud.developerconnect.v1.DeveloperConnect.UpdateAccountConnector:input_type -> google.cloud.developerconnect.v1.UpdateAccountConnectorRequest
+	37,  // 124: google.cloud.developerconnect.v1.DeveloperConnect.DeleteAccountConnector:input_type -> google.cloud.developerconnect.v1.DeleteAccountConnectorRequest
+	42,  // 125: google.cloud.developerconnect.v1.DeveloperConnect.FetchAccessToken:input_type -> google.cloud.developerconnect.v1.FetchAccessTokenRequest
+	9,   // 126: google.cloud.developerconnect.v1.DeveloperConnect.ListUsers:input_type -> google.cloud.developerconnect.v1.ListUsersRequest
+	38,  // 127: google.cloud.developerconnect.v1.DeveloperConnect.DeleteUser:input_type -> google.cloud.developerconnect.v1.DeleteUserRequest
+	40,  // 128: google.cloud.developerconnect.v1.DeveloperConnect.FetchSelf:input_type -> google.cloud.developerconnect.v1.FetchSelfRequest
+	41,  // 129: google.cloud.developerconnect.v1.DeveloperConnect.DeleteSelf:input_type -> google.cloud.developerconnect.v1.DeleteSelfRequest
+	47,  // 130: google.cloud.developerconnect.v1.DeveloperConnect.StartOAuth:input_type -> google.cloud.developerconnect.v1.StartOAuthRequest
+	49,  // 131: google.cloud.developerconnect.v1.DeveloperConnect.FinishOAuth:input_type -> google.cloud.developerconnect.v1.FinishOAuthRequest
+	27,  // 132: google.cloud.developerconnect.v1.DeveloperConnect.ListConnections:output_type -> google.cloud.developerconnect.v1.ListConnectionsResponse
+	11,  // 133: google.cloud.developerconnect.v1.DeveloperConnect.GetConnection:output_type -> google.cloud.developerconnect.v1.Connection
+	103, // 134: google.cloud.developerconnect.v1.DeveloperConnect.CreateConnection:output_type -> google.longrunning.Operation
+	103, // 135: google.cloud.developerconnect.v1.DeveloperConnect.UpdateConnection:output_type -> google.longrunning.Operation
+	103, // 136: google.cloud.developerconnect.v1.DeveloperConnect.DeleteConnection:output_type -> google.longrunning.Operation
+	103, // 137: google.cloud.developerconnect.v1.DeveloperConnect.CreateGitRepositoryLink:output_type -> google.longrunning.Operation
+	103, // 138: google.cloud.developerconnect.v1.DeveloperConnect.DeleteGitRepositoryLink:output_type -> google.longrunning.Operation
+	56,  // 139: google.cloud.developerconnect.v1.DeveloperConnect.ListGitRepositoryLinks:output_type -> google.cloud.developerconnect.v1.ListGitRepositoryLinksResponse
+	52,  // 140: google.cloud.developerconnect.v1.DeveloperConnect.GetGitRepositoryLink:output_type -> google.cloud.developerconnect.v1.GitRepositoryLink
+	61,  // 141: google.cloud.developerconnect.v1.DeveloperConnect.FetchReadWriteToken:output_type -> google.cloud.developerconnect.v1.FetchReadWriteTokenResponse
+	60,  // 142: google.cloud.developerconnect.v1.DeveloperConnect.FetchReadToken:output_type -> google.cloud.developerconnect.v1.FetchReadTokenResponse
+	79,  // 143: google.cloud.developerconnect.v1.DeveloperConnect.OpenGitRepositoryLinkPullRequest:output_type -> google.cloud.developerconnect.v1.PullRequest
+	64,  // 144: google.cloud.developerconnect.v1.DeveloperConnect.FetchLinkableGitRepositories:output_type -> google.cloud.developerconnect.v1.FetchLinkableGitRepositoriesResponse
+	67,  // 145: google.cloud.developerconnect.v1.DeveloperConnect.FetchGitHubInstallations:output_type -> google.cloud.developerconnect.v1.FetchGitHubInstallationsResponse
+	69,  // 146: google.cloud.developerconnect.v1.DeveloperConnect.FetchGitRefs:output_type -> google.cloud.developerconnect.v1.FetchGitRefsResponse
+	45,  // 147: google.cloud.developerconnect.v1.DeveloperConnect.DiffGitRepositoryLinkCommit:output_type -> google.cloud.developerconnect.v1.DiffGitRepositoryLinkCommitResponse
+	71,  // 148: google.cloud.developerconnect.v1.DeveloperConnect.FetchGitRepositoryLinkCommit:output_type -> google.cloud.developerconnect.v1.FetchGitRepositoryLinkCommitResponse
+	73,  // 149: google.cloud.developerconnect.v1.DeveloperConnect.FetchGitRepositoryLinkCommitList:output_type -> google.cloud.developerconnect.v1.FetchGitRepositoryLinkCommitListResponse
+	77,  // 150: google.cloud.developerconnect.v1.DeveloperConnect.FetchGitRepositoryLinkFileBlame:output_type -> google.cloud.developerconnect.v1.FetchGitRepositoryLinkFileBlameResponse
+	79,  // 151: google.cloud.developerconnect.v1.DeveloperConnect.FetchGitRepositoryLinkPullRequest:output_type -> google.cloud.developerconnect.v1.PullRequest
+	80,  // 152: google.cloud.developerconnect.v1.DeveloperConnect.AddGitRepositoryLinkPullRequestComment:output_type -> google.cloud.developerconnect.v1.PullRequestComment
+	82,  // 153: google.cloud.developerconnect.v1.DeveloperConnect.AddGitRepositoryLinkPullRequestReviewComment:output_type -> google.cloud.developerconnect.v1.PullRequestReviewComment
+	79,  // 154: google.cloud.developerconnect.v1.DeveloperConnect.ModifyGitRepositoryLinkPullRequest:output_type -> google.cloud.developerconnect.v1.PullRequest
+	86,  // 155: google.cloud.developerconnect.v1.DeveloperConnect.FetchGitRepositoryLinkPullRequestList:output_type -> google.cloud.developerconnect.v1.FetchGitRepositoryLinkPullRequestListResponse
+	33,  // 156: google.cloud.developerconnect.v1.DeveloperConnect.ListAccountConnectors:output_type -> google.cloud.developerconnect.v1.ListAccountConnectorsResponse
+	87,  // 157: google.cloud.developerconnect.v1.DeveloperConnect.GetAccountConnector:output_type -> google.cloud.developerconnect.v1.AccountConnector
+	103, // 158: google.cloud.developerconnect.v1.DeveloperConnect.CreateAccountConnector:output_type -> google.longrunning.Operation
+	103, // 159: google.cloud.developerconnect.v1.DeveloperConnect.UpdateAccountConnector:output_type -> google.longrunning.Operation
+	103, // 160: google.cloud.developerconnect.v1.DeveloperConnect.DeleteAccountConnector:output_type -> google.longrunning.Operation
+	43,  // 161: google.cloud.developerconnect.v1.DeveloperConnect.FetchAccessToken:output_type -> google.cloud.developerconnect.v1.FetchAccessTokenResponse
+	10,  // 162: google.cloud.developerconnect.v1.DeveloperConnect.ListUsers:output_type -> google.cloud.developerconnect.v1.ListUsersResponse
+	103, // 163: google.cloud.developerconnect.v1.DeveloperConnect.DeleteUser:output_type -> google.longrunning.Operation
+	88,  // 164: google.cloud.developerconnect.v1.DeveloperConnect.FetchSelf:output_type -> google.cloud.developerconnect.v1.User
+	103, // 165: google.cloud.developerconnect.v1.DeveloperConnect.DeleteSelf:output_type -> google.longrunning.Operation
+	48,  // 166: google.cloud.developerconnect.v1.DeveloperConnect.StartOAuth:output_type -> google.cloud.developerconnect.v1.StartOAuthResponse
+	50,  // 167: google.cloud.developerconnect.v1.DeveloperConnect.FinishOAuth:output_type -> google.cloud.developerconnect.v1.FinishOAuthResponse
+	132, // [132:168] is the sub-list for method output_type
+	96,  // [96:132] is the sub-list for method input_type
+	96,  // [96:96] is the sub-list for extension type_name
+	96,  // [96:96] is the sub-list for extension extendee
+	0,   // [0:96] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_developerconnect_v1_developer_connect_proto_init() }
@@ -6145,23 +8299,23 @@ func file_google_cloud_developerconnect_v1_developer_connect_proto_init() {
 		(*GenericHTTPEndpointConfig_BasicAuthentication_)(nil),
 		(*GenericHTTPEndpointConfig_BearerTokenAuthentication_)(nil),
 	}
-	file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[36].OneofWrappers = []any{
+	file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[39].OneofWrappers = []any{
 		(*StartOAuthResponse_SystemProviderId)(nil),
 	}
-	file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[37].OneofWrappers = []any{
+	file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[40].OneofWrappers = []any{
 		(*FinishOAuthRequest_OauthParams)(nil),
 		(*FinishOAuthRequest_GoogleOauthParams)(nil),
 	}
-	file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[57].OneofWrappers = []any{
+	file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[78].OneofWrappers = []any{
 		(*AccountConnector_ProviderOauthConfig)(nil),
 	}
-	file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[59].OneofWrappers = []any{
+	file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[80].OneofWrappers = []any{
 		(*ProviderOAuthConfig_SystemProviderId)(nil),
 	}
-	file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[62].OneofWrappers = []any{
+	file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[83].OneofWrappers = []any{
 		(*GenericHTTPEndpointConfig_BasicAuthentication_PasswordSecretVersion)(nil),
 	}
-	file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[63].OneofWrappers = []any{
+	file_google_cloud_developerconnect_v1_developer_connect_proto_msgTypes[84].OneofWrappers = []any{
 		(*GenericHTTPEndpointConfig_BearerTokenAuthentication_TokenSecretVersion)(nil),
 	}
 	type x struct{}
@@ -6169,8 +8323,8 @@ func file_google_cloud_developerconnect_v1_developer_connect_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_developerconnect_v1_developer_connect_proto_rawDesc), len(file_google_cloud_developerconnect_v1_developer_connect_proto_rawDesc)),
-			NumEnums:      4,
-			NumMessages:   71,
+			NumEnums:      9,
+			NumMessages:   92,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -881,15 +881,15 @@ var File_google_cloud_dataproc_v1_autoscaling_policies_proto protoreflect.FileDe
 
 const file_google_cloud_dataproc_v1_autoscaling_policies_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/dataproc/v1/autoscaling_policies.proto\x12\x18google.cloud.dataproc.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xa4\a\n" +
+	"3google/cloud/dataproc/v1/autoscaling_policies.proto\x12\x18google.cloud.dataproc.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xaa\a\n" +
 	"\x11AutoscalingPolicy\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
-	"\x04name\x18\x02 \x01(\tB\x03\xe0A\x03R\x04name\x12c\n" +
-	"\x0fbasic_algorithm\x18\x03 \x01(\v23.google.cloud.dataproc.v1.BasicAutoscalingAlgorithmB\x03\xe0A\x02H\x00R\x0ebasicAlgorithm\x12h\n" +
-	"\rworker_config\x18\x04 \x01(\v2>.google.cloud.dataproc.v1.InstanceGroupAutoscalingPolicyConfigB\x03\xe0A\x02R\fworkerConfig\x12{\n" +
-	"\x17secondary_worker_config\x18\x05 \x01(\v2>.google.cloud.dataproc.v1.InstanceGroupAutoscalingPolicyConfigB\x03\xe0A\x01R\x15secondaryWorkerConfig\x12T\n" +
-	"\x06labels\x18\x06 \x03(\v27.google.cloud.dataproc.v1.AutoscalingPolicy.LabelsEntryB\x03\xe0A\x01R\x06labels\x12_\n" +
-	"\fcluster_type\x18\a \x01(\x0e27.google.cloud.dataproc.v1.AutoscalingPolicy.ClusterTypeB\x03\xe0A\x01R\vclusterType\x1a9\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
+	"\x04name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12d\n" +
+	"\x0fbasic_algorithm\x18\x03 \x01(\v23.google.cloud.dataproc.v1.BasicAutoscalingAlgorithmB\x04\xe2A\x01\x02H\x00R\x0ebasicAlgorithm\x12i\n" +
+	"\rworker_config\x18\x04 \x01(\v2>.google.cloud.dataproc.v1.InstanceGroupAutoscalingPolicyConfigB\x04\xe2A\x01\x02R\fworkerConfig\x12|\n" +
+	"\x17secondary_worker_config\x18\x05 \x01(\v2>.google.cloud.dataproc.v1.InstanceGroupAutoscalingPolicyConfigB\x04\xe2A\x01\x01R\x15secondaryWorkerConfig\x12U\n" +
+	"\x06labels\x18\x06 \x03(\v27.google.cloud.dataproc.v1.AutoscalingPolicy.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12`\n" +
+	"\fcluster_type\x18\a \x01(\x0e27.google.cloud.dataproc.v1.AutoscalingPolicy.ClusterTypeB\x04\xe2A\x01\x01R\vclusterType\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"I\n" +
@@ -899,41 +899,41 @@ const file_google_cloud_dataproc_v1_autoscaling_policies_proto_rawDesc = "" +
 	"\n" +
 	"ZERO_SCALE\x10\x02:\xcf\x01\xeaA\xcb\x01\n" +
 	")dataproc.googleapis.com/AutoscalingPolicy\x12Pprojects/{project}/locations/{location}/autoscalingPolicies/{autoscaling_policy}\x12Lprojects/{project}/regions/{region}/autoscalingPolicies/{autoscaling_policy}B\v\n" +
-	"\talgorithm\"\xcc\x01\n" +
-	"\x19BasicAutoscalingAlgorithm\x12\\\n" +
-	"\vyarn_config\x18\x01 \x01(\v24.google.cloud.dataproc.v1.BasicYarnAutoscalingConfigB\x03\xe0A\x02H\x00R\n" +
-	"yarnConfig\x12G\n" +
-	"\x0fcooldown_period\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x0ecooldownPeriodB\b\n" +
-	"\x06config\"\xec\x02\n" +
-	"\x1aBasicYarnAutoscalingConfig\x12b\n" +
-	"\x1dgraceful_decommission_timeout\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x1bgracefulDecommissionTimeout\x12+\n" +
-	"\x0fscale_up_factor\x18\x01 \x01(\x01B\x03\xe0A\x02R\rscaleUpFactor\x12/\n" +
-	"\x11scale_down_factor\x18\x02 \x01(\x01B\x03\xe0A\x02R\x0fscaleDownFactor\x12C\n" +
-	"\x1cscale_up_min_worker_fraction\x18\x03 \x01(\x01B\x03\xe0A\x01R\x18scaleUpMinWorkerFraction\x12G\n" +
-	"\x1escale_down_min_worker_fraction\x18\x04 \x01(\x01B\x03\xe0A\x01R\x1ascaleDownMinWorkerFraction\"\x97\x01\n" +
-	"$InstanceGroupAutoscalingPolicyConfig\x12(\n" +
-	"\rmin_instances\x18\x01 \x01(\x05B\x03\xe0A\x01R\fminInstances\x12(\n" +
-	"\rmax_instances\x18\x02 \x01(\x05B\x03\xe0A\x02R\fmaxInstances\x12\x1b\n" +
-	"\x06weight\x18\x03 \x01(\x05B\x03\xe0A\x01R\x06weight\"\xb5\x01\n" +
-	"\x1eCreateAutoscalingPolicyRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)dataproc.googleapis.com/AutoscalingPolicyR\x06parent\x12H\n" +
-	"\x06policy\x18\x02 \x01(\v2+.google.cloud.dataproc.v1.AutoscalingPolicyB\x03\xe0A\x02R\x06policy\"d\n" +
-	"\x1bGetAutoscalingPolicyRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")dataproc.googleapis.com/AutoscalingPolicyR\x04name\"j\n" +
-	"\x1eUpdateAutoscalingPolicyRequest\x12H\n" +
-	"\x06policy\x18\x01 \x01(\v2+.google.cloud.dataproc.v1.AutoscalingPolicyB\x03\xe0A\x02R\x06policy\"g\n" +
-	"\x1eDeleteAutoscalingPolicyRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")dataproc.googleapis.com/AutoscalingPolicyR\x04name\"\xb1\x01\n" +
-	"\x1eListAutoscalingPoliciesRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)dataproc.googleapis.com/AutoscalingPolicyR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\talgorithm\"\xce\x01\n" +
+	"\x19BasicAutoscalingAlgorithm\x12]\n" +
+	"\vyarn_config\x18\x01 \x01(\v24.google.cloud.dataproc.v1.BasicYarnAutoscalingConfigB\x04\xe2A\x01\x02H\x00R\n" +
+	"yarnConfig\x12H\n" +
+	"\x0fcooldown_period\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x0ecooldownPeriodB\b\n" +
+	"\x06config\"\xf1\x02\n" +
+	"\x1aBasicYarnAutoscalingConfig\x12c\n" +
+	"\x1dgraceful_decommission_timeout\x18\x05 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\x1bgracefulDecommissionTimeout\x12,\n" +
+	"\x0fscale_up_factor\x18\x01 \x01(\x01B\x04\xe2A\x01\x02R\rscaleUpFactor\x120\n" +
+	"\x11scale_down_factor\x18\x02 \x01(\x01B\x04\xe2A\x01\x02R\x0fscaleDownFactor\x12D\n" +
+	"\x1cscale_up_min_worker_fraction\x18\x03 \x01(\x01B\x04\xe2A\x01\x01R\x18scaleUpMinWorkerFraction\x12H\n" +
+	"\x1escale_down_min_worker_fraction\x18\x04 \x01(\x01B\x04\xe2A\x01\x01R\x1ascaleDownMinWorkerFraction\"\x9a\x01\n" +
+	"$InstanceGroupAutoscalingPolicyConfig\x12)\n" +
+	"\rmin_instances\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\fminInstances\x12)\n" +
+	"\rmax_instances\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\fmaxInstances\x12\x1c\n" +
+	"\x06weight\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x06weight\"\xb7\x01\n" +
+	"\x1eCreateAutoscalingPolicyRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)dataproc.googleapis.com/AutoscalingPolicyR\x06parent\x12I\n" +
+	"\x06policy\x18\x02 \x01(\v2+.google.cloud.dataproc.v1.AutoscalingPolicyB\x04\xe2A\x01\x02R\x06policy\"e\n" +
+	"\x1bGetAutoscalingPolicyRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")dataproc.googleapis.com/AutoscalingPolicyR\x04name\"k\n" +
+	"\x1eUpdateAutoscalingPolicyRequest\x12I\n" +
+	"\x06policy\x18\x01 \x01(\v2+.google.cloud.dataproc.v1.AutoscalingPolicyB\x04\xe2A\x01\x02R\x06policy\"h\n" +
+	"\x1eDeleteAutoscalingPolicyRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")dataproc.googleapis.com/AutoscalingPolicyR\x04name\"\xb4\x01\n" +
+	"\x1eListAutoscalingPoliciesRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)dataproc.googleapis.com/AutoscalingPolicyR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x9c\x01\n" +
-	"\x1fListAutoscalingPoliciesResponse\x12L\n" +
-	"\bpolicies\x18\x01 \x03(\v2+.google.cloud.dataproc.v1.AutoscalingPolicyB\x03\xe0A\x03R\bpolicies\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken2\xae\v\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x9e\x01\n" +
+	"\x1fListAutoscalingPoliciesResponse\x12M\n" +
+	"\bpolicies\x18\x01 \x03(\v2+.google.cloud.dataproc.v1.AutoscalingPolicyB\x04\xe2A\x01\x03R\bpolicies\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken2\xae\v\n" +
 	"\x18AutoscalingPolicyService\x12\x9c\x02\n" +
 	"\x17CreateAutoscalingPolicy\x128.google.cloud.dataproc.v1.CreateAutoscalingPolicyRequest\x1a+.google.cloud.dataproc.v1.AutoscalingPolicy\"\x99\x01\xdaA\rparent,policy\x82\xd3\xe4\x93\x02\x82\x01:\x06policyZ?:\x06policy\"5/v1/{parent=projects/*/regions/*}/autoscalingPolicies\"7/v1/{parent=projects/*/locations/*}/autoscalingPolicies\x12\xa3\x02\n" +
 	"\x17UpdateAutoscalingPolicy\x128.google.cloud.dataproc.v1.UpdateAutoscalingPolicyRequest\x1a+.google.cloud.dataproc.v1.AutoscalingPolicy\"\xa0\x01\xdaA\x06policy\x82\xd3\xe4\x93\x02\x90\x01:\x06policyZF:\x06policy\x1a</v1/{policy.name=projects/*/regions/*/autoscalingPolicies/*}\x1a>/v1/{policy.name=projects/*/locations/*/autoscalingPolicies/*}\x12\xfb\x01\n" +

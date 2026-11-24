@@ -173,12 +173,12 @@ var File_google_cloud_notebooks_v1_event_proto protoreflect.FileDescriptor
 
 const file_google_cloud_notebooks_v1_event_proto_rawDesc = "" +
 	"\n" +
-	"%google/cloud/notebooks/v1/event.proto\x12\x19google.cloud.notebooks.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xed\x02\n" +
+	"%google/cloud/notebooks/v1/event.proto\x12\x19google.cloud.notebooks.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xee\x02\n" +
 	"\x05Event\x12;\n" +
 	"\vreport_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"reportTime\x12>\n" +
-	"\x04type\x18\x02 \x01(\x0e2*.google.cloud.notebooks.v1.Event.EventTypeR\x04type\x12L\n" +
-	"\adetails\x18\x03 \x03(\v2-.google.cloud.notebooks.v1.Event.DetailsEntryB\x03\xe0A\x01R\adetails\x1a:\n" +
+	"\x04type\x18\x02 \x01(\x0e2*.google.cloud.notebooks.v1.Event.EventTypeR\x04type\x12M\n" +
+	"\adetails\x18\x03 \x03(\v2-.google.cloud.notebooks.v1.Event.DetailsEntryB\x04\xe2A\x01\x01R\adetails\x1a:\n" +
 	"\fDetailsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"]\n" +

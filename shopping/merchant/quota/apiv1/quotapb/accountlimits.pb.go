@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -417,35 +417,35 @@ var File_google_shopping_merchant_quota_v1_accountlimits_proto protoreflect.File
 
 const file_google_shopping_merchant_quota_v1_accountlimits_proto_rawDesc = "" +
 	"\n" +
-	"5google/shopping/merchant/quota/v1/accountlimits.proto\x12!google.shopping.merchant.quota.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xb9\x01\n" +
-	"\fProductLimit\x12P\n" +
-	"\x05scope\x18\x01 \x01(\x0e25.google.shopping.merchant.quota.v1.ProductLimit.ScopeB\x03\xe0A\x02R\x05scope\x12\x19\n" +
-	"\x05limit\x18\x02 \x01(\x03B\x03\xe0A\x02R\x05limit\"<\n" +
+	"5google/shopping/merchant/quota/v1/accountlimits.proto\x12!google.shopping.merchant.quota.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xbb\x01\n" +
+	"\fProductLimit\x12Q\n" +
+	"\x05scope\x18\x01 \x01(\x0e25.google.shopping.merchant.quota.v1.ProductLimit.ScopeB\x04\xe2A\x01\x02R\x05scope\x12\x1a\n" +
+	"\x05limit\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\x05limit\"<\n" +
 	"\x05Scope\x12\x15\n" +
 	"\x11SCOPE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vADS_NON_EEA\x10\x01\x12\v\n" +
-	"\aADS_EEA\x10\x02\"\xec\x01\n" +
+	"\aADS_EEA\x10\x02\"\xed\x01\n" +
 	"\fAccountLimit\x12M\n" +
-	"\bproducts\x18d \x01(\v2/.google.shopping.merchant.quota.v1.ProductLimitH\x00R\bproducts\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name:l\xeaAi\n" +
+	"\bproducts\x18d \x01(\v2/.google.shopping.merchant.quota.v1.ProductLimitH\x00R\bproducts\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name:l\xeaAi\n" +
 	"'merchantapi.googleapis.com/AccountLimit\x12!accounts/{account}/limits/{limit}*\raccountLimits2\faccountLimitB\x06\n" +
-	"\x04type\"]\n" +
-	"\x16GetAccountLimitRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'merchantapi.googleapis.com/AccountLimitR\x04name\"\xc1\x01\n" +
-	"\x18ListAccountLimitsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/AccountR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x04type\"^\n" +
+	"\x16GetAccountLimitRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'merchantapi.googleapis.com/AccountLimitR\x04name\"\xc5\x01\n" +
+	"\x18ListAccountLimitsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/AccountR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x02R\x06filter\"\x9b\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x06filter\"\x9b\x01\n" +
 	"\x19ListAccountLimitsResponse\x12V\n" +
 	"\x0eaccount_limits\x18\x01 \x03(\v2/.google.shopping.merchant.quota.v1.AccountLimitR\raccountLimits\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xe2\x03\n" +
-	"\x14AccountLimitsService\x12\xb5\x01\n" +
-	"\x0fGetAccountLimit\x129.google.shopping.merchant.quota.v1.GetAccountLimitRequest\x1a/.google.shopping.merchant.quota.v1.AccountLimit\"6\xdaA\x04name\x82\xd3\xe4\x93\x02)\x12'/accounts/v1/{name=accounts/*/limits/*}\x12\xc8\x01\n" +
-	"\x11ListAccountLimits\x12;.google.shopping.merchant.quota.v1.ListAccountLimitsRequest\x1a<.google.shopping.merchant.quota.v1.ListAccountLimitsResponse\"8\xdaA\x06parent\x82\xd3\xe4\x93\x02)\x12'/accounts/v1/{parent=accounts/*}/limits\x1aG\xcaA\x1amerchantapi.googleapis.com\xd2A'https://www.googleapis.com/auth/contentB\xf0\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xdc\x03\n" +
+	"\x14AccountLimitsService\x12\xb2\x01\n" +
+	"\x0fGetAccountLimit\x129.google.shopping.merchant.quota.v1.GetAccountLimitRequest\x1a/.google.shopping.merchant.quota.v1.AccountLimit\"3\xdaA\x04name\x82\xd3\xe4\x93\x02&\x12$/quota/v1/{name=accounts/*/limits/*}\x12\xc5\x01\n" +
+	"\x11ListAccountLimits\x12;.google.shopping.merchant.quota.v1.ListAccountLimitsRequest\x1a<.google.shopping.merchant.quota.v1.ListAccountLimitsResponse\"5\xdaA\x06parent\x82\xd3\xe4\x93\x02&\x12$/quota/v1/{parent=accounts/*}/limits\x1aG\xcaA\x1amerchantapi.googleapis.com\xd2A'https://www.googleapis.com/auth/contentB\xf0\x01\n" +
 	"%com.google.shopping.merchant.quota.v1B\x12AccountLimitsProtoP\x01ZAcloud.google.com/go/shopping/merchant/quota/apiv1/quotapb;quotapb\xaa\x02!Google.Shopping.Merchant.Quota.V1\xca\x02!Google\\Shopping\\Merchant\\Quota\\V1\xea\x02%Google::Shopping::Merchant::Quota::V1b\x06proto3"
 
 var (

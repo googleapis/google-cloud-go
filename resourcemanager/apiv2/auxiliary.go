@@ -18,11 +18,13 @@ package resourcemanager
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv2/resourcemanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -152,6 +154,12 @@ func (op *MoveFolderOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *MoveFolderOperation) Name() string {
 	return op.lro.Name()
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FolderIterator) All() iter.Seq2[*resourcemanagerpb.Folder, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // FolderIterator manages a stream of *resourcemanagerpb.Folder.

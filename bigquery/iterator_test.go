@@ -464,8 +464,8 @@ func TestNextAfterFinished(t *testing.T) {
 
 func TestIteratorNextTypes(t *testing.T) {
 	it := newRowIterator(context.Background(), nil, nil)
-	for _, v := range []interface{}{3, "s", []int{}, &[]int{},
-		map[string]Value{}, &map[string]interface{}{},
+	for _, v := range []any{3, "s", []int{}, &[]int{},
+		map[string]Value{}, &map[string]any{},
 		struct{}{},
 	} {
 		if err := it.Next(v); err == nil {

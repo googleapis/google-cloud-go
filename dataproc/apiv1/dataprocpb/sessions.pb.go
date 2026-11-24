@@ -956,61 +956,61 @@ var File_google_cloud_dataproc_v1_sessions_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dataproc_v1_sessions_proto_rawDesc = "" +
 	"\n" +
-	"'google/cloud/dataproc/v1/sessions.proto\x12\x18google.cloud.dataproc.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/cloud/dataproc/v1/shared.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe1\x01\n" +
-	"\x14CreateSessionRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fdataproc.googleapis.com/SessionR\x06parent\x12@\n" +
-	"\asession\x18\x02 \x01(\v2!.google.cloud.dataproc.v1.SessionB\x03\xe0A\x02R\asession\x12\"\n" +
+	"'google/cloud/dataproc/v1/sessions.proto\x12\x18google.cloud.dataproc.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/cloud/dataproc/v1/shared.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe5\x01\n" +
+	"\x14CreateSessionRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fdataproc.googleapis.com/SessionR\x06parent\x12A\n" +
+	"\asession\x18\x02 \x01(\v2!.google.cloud.dataproc.v1.SessionB\x04\xe2A\x01\x02R\asession\x12#\n" +
 	"\n" +
-	"session_id\x18\x03 \x01(\tB\x03\xe0A\x02R\tsessionId\x12\"\n" +
+	"session_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tsessionId\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"P\n" +
-	"\x11GetSessionRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fdataproc.googleapis.com/SessionR\x04name\"\xb9\x01\n" +
-	"\x13ListSessionsRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fdataproc.googleapis.com/SessionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"Q\n" +
+	"\x11GetSessionRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fdataproc.googleapis.com/SessionR\x04name\"\xbd\x01\n" +
+	"\x13ListSessionsRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fdataproc.googleapis.com/SessionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x82\x01\n" +
-	"\x14ListSessionsResponse\x12B\n" +
-	"\bsessions\x18\x01 \x03(\v2!.google.cloud.dataproc.v1.SessionB\x03\xe0A\x03R\bsessions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"z\n" +
-	"\x17TerminateSessionRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fdataproc.googleapis.com/SessionR\x04name\x12\"\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x83\x01\n" +
+	"\x14ListSessionsResponse\x12C\n" +
+	"\bsessions\x18\x01 \x03(\v2!.google.cloud.dataproc.v1.SessionB\x04\xe2A\x01\x03R\bsessions\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"|\n" +
+	"\x17TerminateSessionRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fdataproc.googleapis.com/SessionR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"w\n" +
-	"\x14DeleteSessionRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fdataproc.googleapis.com/SessionR\x04name\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"y\n" +
+	"\x14DeleteSessionRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fdataproc.googleapis.com/SessionR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\x9a\f\n" +
-	"\aSession\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x17\n" +
-	"\x04uuid\x18\x02 \x01(\tB\x03\xe0A\x03R\x04uuid\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12W\n" +
-	"\x0fjupyter_session\x18\x04 \x01(\v2'.google.cloud.dataproc.v1.JupyterConfigB\x03\xe0A\x01H\x00R\x0ejupyterSession\x12g\n" +
-	"\x15spark_connect_session\x18\x11 \x01(\v2,.google.cloud.dataproc.v1.SparkConnectConfigB\x03\xe0A\x01H\x00R\x13sparkConnectSession\x12M\n" +
-	"\fruntime_info\x18\x06 \x01(\v2%.google.cloud.dataproc.v1.RuntimeInfoB\x03\xe0A\x03R\vruntimeInfo\x12B\n" +
-	"\x05state\x18\a \x01(\x0e2'.google.cloud.dataproc.v1.Session.StateB\x03\xe0A\x03R\x05state\x12(\n" +
-	"\rstate_message\x18\b \x01(\tB\x03\xe0A\x03R\fstateMessage\x12>\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xad\f\n" +
+	"\aSession\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x18\n" +
+	"\x04uuid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x04uuid\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12X\n" +
+	"\x0fjupyter_session\x18\x04 \x01(\v2'.google.cloud.dataproc.v1.JupyterConfigB\x04\xe2A\x01\x01H\x00R\x0ejupyterSession\x12h\n" +
+	"\x15spark_connect_session\x18\x11 \x01(\v2,.google.cloud.dataproc.v1.SparkConnectConfigB\x04\xe2A\x01\x01H\x00R\x13sparkConnectSession\x12N\n" +
+	"\fruntime_info\x18\x06 \x01(\v2%.google.cloud.dataproc.v1.RuntimeInfoB\x04\xe2A\x01\x03R\vruntimeInfo\x12C\n" +
+	"\x05state\x18\a \x01(\x0e2'.google.cloud.dataproc.v1.Session.StateB\x04\xe2A\x01\x03R\x05state\x12)\n" +
+	"\rstate_message\x18\b \x01(\tB\x04\xe2A\x01\x03R\fstateMessage\x12?\n" +
 	"\n" +
-	"state_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstateTime\x12\x1d\n" +
+	"state_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstateTime\x12\x1e\n" +
 	"\acreator\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\acreator\x12J\n" +
-	"\x06labels\x18\v \x03(\v2-.google.cloud.dataproc.v1.Session.LabelsEntryB\x03\xe0A\x01R\x06labels\x12S\n" +
-	"\x0eruntime_config\x18\f \x01(\v2'.google.cloud.dataproc.v1.RuntimeConfigB\x03\xe0A\x01R\rruntimeConfig\x12_\n" +
-	"\x12environment_config\x18\r \x01(\v2+.google.cloud.dataproc.v1.EnvironmentConfigB\x03\xe0A\x01R\x11environmentConfig\x12\x17\n" +
-	"\x04user\x18\x0e \x01(\tB\x03\xe0A\x01R\x04user\x12_\n" +
-	"\rstate_history\x18\x0f \x03(\v25.google.cloud.dataproc.v1.Session.SessionStateHistoryB\x03\xe0A\x03R\fstateHistory\x12Z\n" +
-	"\x10session_template\x18\x10 \x01(\tB/\xe0A\x01\xfaA)\n" +
-	"'dataproc.googleapis.com/SessionTemplateR\x0fsessionTemplate\x1a\xce\x01\n" +
-	"\x13SessionStateHistory\x12B\n" +
-	"\x05state\x18\x01 \x01(\x0e2'.google.cloud.dataproc.v1.Session.StateB\x03\xe0A\x03R\x05state\x12(\n" +
-	"\rstate_message\x18\x02 \x01(\tB\x03\xe0A\x03R\fstateMessage\x12I\n" +
-	"\x10state_start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0estateStartTime\x1a9\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\acreator\x12K\n" +
+	"\x06labels\x18\v \x03(\v2-.google.cloud.dataproc.v1.Session.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12T\n" +
+	"\x0eruntime_config\x18\f \x01(\v2'.google.cloud.dataproc.v1.RuntimeConfigB\x04\xe2A\x01\x01R\rruntimeConfig\x12`\n" +
+	"\x12environment_config\x18\r \x01(\v2+.google.cloud.dataproc.v1.EnvironmentConfigB\x04\xe2A\x01\x01R\x11environmentConfig\x12\x18\n" +
+	"\x04user\x18\x0e \x01(\tB\x04\xe2A\x01\x01R\x04user\x12`\n" +
+	"\rstate_history\x18\x0f \x03(\v25.google.cloud.dataproc.v1.Session.SessionStateHistoryB\x04\xe2A\x01\x03R\fstateHistory\x12[\n" +
+	"\x10session_template\x18\x10 \x01(\tB0\xe2A\x01\x01\xfaA)\n" +
+	"'dataproc.googleapis.com/SessionTemplateR\x0fsessionTemplate\x1a\xd1\x01\n" +
+	"\x13SessionStateHistory\x12C\n" +
+	"\x05state\x18\x01 \x01(\x0e2'.google.cloud.dataproc.v1.Session.StateB\x04\xe2A\x01\x03R\x05state\x12)\n" +
+	"\rstate_message\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\fstateMessage\x12J\n" +
+	"\x10state_start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0estateStartTime\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"e\n" +
@@ -1025,10 +1025,10 @@ const file_google_cloud_dataproc_v1_sessions_proto_rawDesc = "" +
 	"\n" +
 	"\x06FAILED\x10\x05:`\xeaA]\n" +
 	"\x1fdataproc.googleapis.com/Session\x12:projects/{project}/locations/{location}/sessions/{session}B\x10\n" +
-	"\x0esession_config\"\xbd\x01\n" +
-	"\rJupyterConfig\x12K\n" +
-	"\x06kernel\x18\x01 \x01(\x0e2..google.cloud.dataproc.v1.JupyterConfig.KernelB\x03\xe0A\x01R\x06kernel\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\"7\n" +
+	"\x0esession_config\"\xbf\x01\n" +
+	"\rJupyterConfig\x12L\n" +
+	"\x06kernel\x18\x01 \x01(\x0e2..google.cloud.dataproc.v1.JupyterConfig.KernelB\x04\xe2A\x01\x01R\x06kernel\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\"7\n" +
 	"\x06Kernel\x12\x16\n" +
 	"\x12KERNEL_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +

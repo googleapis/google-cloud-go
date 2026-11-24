@@ -241,19 +241,19 @@ var File_google_cloud_ces_v1beta_security_settings_proto protoreflect.FileDescri
 
 const file_google_cloud_ces_v1beta_security_settings_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/ces/v1beta/security_settings.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbf\x03\n" +
-	"\x10SecuritySettings\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12k\n" +
-	"\x17endpoint_control_policy\x18\x02 \x01(\v2..google.cloud.ces.v1beta.EndpointControlPolicyB\x03\xe0A\x01R\x15endpointControlPolicy\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04etag\x18\x05 \x01(\tB\x03\xe0A\x03R\x04etag:\x87\x01\xeaA\x83\x01\n" +
-	"#ces.googleapis.com/SecuritySettings\x128projects/{project}/locations/{location}/securitySettings*\x10securitySettings2\x10securitySettings\"\x8b\x02\n" +
-	"\x15EndpointControlPolicy\x12q\n" +
-	"\x11enforcement_scope\x18\x01 \x01(\x0e2?.google.cloud.ces.v1beta.EndpointControlPolicy.EnforcementScopeB\x03\xe0A\x01R\x10enforcementScope\x12,\n" +
-	"\x0fallowed_origins\x18\x02 \x03(\tB\x03\xe0A\x01R\x0eallowedOrigins\"Q\n" +
+	"/google/cloud/ces/v1beta/security_settings.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc4\x03\n" +
+	"\x10SecuritySettings\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12l\n" +
+	"\x17endpoint_control_policy\x18\x02 \x01(\v2..google.cloud.ces.v1beta.EndpointControlPolicyB\x04\xe2A\x01\x01R\x15endpointControlPolicy\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04etag\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x04etag:\x87\x01\xeaA\x83\x01\n" +
+	"#ces.googleapis.com/SecuritySettings\x128projects/{project}/locations/{location}/securitySettings*\x10securitySettings2\x10securitySettings\"\x8d\x02\n" +
+	"\x15EndpointControlPolicy\x12r\n" +
+	"\x11enforcement_scope\x18\x01 \x01(\x0e2?.google.cloud.ces.v1beta.EndpointControlPolicy.EnforcementScopeB\x04\xe2A\x01\x01R\x10enforcementScope\x12-\n" +
+	"\x0fallowed_origins\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x0eallowedOrigins\"Q\n" +
 	"\x10EnforcementScope\x12!\n" +
 	"\x1dENFORCEMENT_SCOPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +

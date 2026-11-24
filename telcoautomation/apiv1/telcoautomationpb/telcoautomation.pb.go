@@ -5425,18 +5425,18 @@ var File_google_cloud_telcoautomation_v1_telcoautomation_proto protoreflect.File
 
 const file_google_cloud_telcoautomation_v1_telcoautomation_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/telcoautomation/v1/telcoautomation.proto\x12\x1fgoogle.cloud.telcoautomation.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x89\x06\n" +
+	"5google/cloud/telcoautomation/v1/telcoautomation.proto\x12\x1fgoogle.cloud.telcoautomation.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8d\x06\n" +
 	"\x14OrchestrationCluster\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12^\n" +
-	"\x11management_config\x18\x05 \x01(\v21.google.cloud.telcoautomation.v1.ManagementConfigR\x10managementConfig\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x11management_config\x18\x05 \x01(\v21.google.cloud.telcoautomation.v1.ManagementConfigR\x10managementConfig\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12Y\n" +
-	"\x06labels\x18\x04 \x03(\v2A.google.cloud.telcoautomation.v1.OrchestrationCluster.LabelsEntryR\x06labels\x12$\n" +
-	"\vtna_version\x18\x06 \x01(\tB\x03\xe0A\x03R\n" +
-	"tnaVersion\x12V\n" +
-	"\x05state\x18\a \x01(\x0e2;.google.cloud.telcoautomation.v1.OrchestrationCluster.StateB\x03\xe0A\x03R\x05state\x1a9\n" +
+	"\x06labels\x18\x04 \x03(\v2A.google.cloud.telcoautomation.v1.OrchestrationCluster.LabelsEntryR\x06labels\x12%\n" +
+	"\vtna_version\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"tnaVersion\x12W\n" +
+	"\x05state\x18\a \x01(\x0e2;.google.cloud.telcoautomation.v1.OrchestrationCluster.StateB\x04\xe2A\x01\x03R\x05state\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"R\n" +
@@ -5448,20 +5448,20 @@ const file_google_cloud_telcoautomation_v1_telcoautomation_proto_rawDesc = "" +
 	"\bDELETING\x10\x03\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x04:\x90\x01\xeaA\x8c\x01\n" +
-	"3telcoautomation.googleapis.com/OrchestrationCluster\x12Uprojects/{project}/locations/{location}/orchestrationClusters/{orchestration_cluster}\"\xab\a\n" +
+	"3telcoautomation.googleapis.com/OrchestrationCluster\x12Uprojects/{project}/locations/{location}/orchestrationClusters/{orchestration_cluster}\"\xb2\a\n" +
 	"\aEdgeSlm\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12p\n" +
-	"\x15orchestration_cluster\x18\x05 \x01(\tB;\xe0A\x05\xfaA5\n" +
-	"3telcoautomation.googleapis.com/OrchestrationClusterR\x14orchestrationCluster\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12Q\n" +
-	"\x06labels\x18\x04 \x03(\v24.google.cloud.telcoautomation.v1.EdgeSlm.LabelsEntryB\x03\xe0A\x01R\x06labels\x12$\n" +
-	"\vtna_version\x18\x06 \x01(\tB\x03\xe0A\x03R\n" +
-	"tnaVersion\x12I\n" +
-	"\x05state\x18\a \x01(\x0e2..google.cloud.telcoautomation.v1.EdgeSlm.StateB\x03\xe0A\x03R\x05state\x12u\n" +
-	"\x15workload_cluster_type\x18\b \x01(\x0e2<.google.cloud.telcoautomation.v1.EdgeSlm.WorkloadClusterTypeB\x03\xe0A\x01R\x13workloadClusterType\x1a9\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12q\n" +
+	"\x15orchestration_cluster\x18\x05 \x01(\tB<\xe2A\x01\x05\xfaA5\n" +
+	"3telcoautomation.googleapis.com/OrchestrationClusterR\x14orchestrationCluster\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12R\n" +
+	"\x06labels\x18\x04 \x03(\v24.google.cloud.telcoautomation.v1.EdgeSlm.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12%\n" +
+	"\vtna_version\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"tnaVersion\x12J\n" +
+	"\x05state\x18\a \x01(\x0e2..google.cloud.telcoautomation.v1.EdgeSlm.StateB\x04\xe2A\x01\x03R\x05state\x12v\n" +
+	"\x15workload_cluster_type\x18\b \x01(\x0e2<.google.cloud.telcoautomation.v1.EdgeSlm.WorkloadClusterTypeB\x04\xe2A\x01\x01R\x13workloadClusterType\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"R\n" +
@@ -5477,28 +5477,28 @@ const file_google_cloud_telcoautomation_v1_telcoautomation_proto_rawDesc = "" +
 	"!WORKLOAD_CLUSTER_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04GDCE\x10\x01\x12\a\n" +
 	"\x03GKE\x10\x02:{\xeaAx\n" +
-	"&telcoautomation.googleapis.com/EdgeSlm\x12;projects/{project}/locations/{location}/edgeSlms/{edge_slm}*\bedgeSlms2\aedgeSlm\"\xa5\t\n" +
+	"&telcoautomation.googleapis.com/EdgeSlm\x12;projects/{project}/locations/{location}/edgeSlms/{edge_slm}*\bedgeSlms2\aedgeSlm\"\xae\t\n" +
 	"\tBlueprint\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
-	"\vrevision_id\x18\x02 \x01(\tB\x06\xe0A\x05\xe0A\x03R\n" +
-	"revisionId\x121\n" +
-	"\x10source_blueprint\x18\x03 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x0fsourceBlueprint\x12Q\n" +
-	"\x14revision_create_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x12revisionCreateTime\x12d\n" +
-	"\x0eapproval_state\x18\x06 \x01(\x0e28.google.cloud.telcoautomation.v1.Blueprint.ApprovalStateB\x03\xe0A\x03R\rapprovalState\x12&\n" +
-	"\fdisplay_name\x18\a \x01(\tB\x03\xe0A\x01R\vdisplayName\x12#\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
+	"\vrevision_id\x18\x02 \x01(\tB\x05\xe2A\x02\x05\x03R\n" +
+	"revisionId\x120\n" +
+	"\x10source_blueprint\x18\x03 \x01(\tB\x05\xe2A\x02\x02\x05R\x0fsourceBlueprint\x12R\n" +
+	"\x14revision_create_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x12revisionCreateTime\x12e\n" +
+	"\x0eapproval_state\x18\x06 \x01(\x0e28.google.cloud.telcoautomation.v1.Blueprint.ApprovalStateB\x04\xe2A\x01\x03R\rapprovalState\x12'\n" +
+	"\fdisplay_name\x18\a \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12$\n" +
 	"\n" +
-	"repository\x18\b \x01(\tB\x03\xe0A\x03R\n" +
-	"repository\x12@\n" +
-	"\x05files\x18\t \x03(\v2%.google.cloud.telcoautomation.v1.FileB\x03\xe0A\x01R\x05files\x12S\n" +
+	"repository\x18\b \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"repository\x12A\n" +
+	"\x05files\x18\t \x03(\v2%.google.cloud.telcoautomation.v1.FileB\x04\xe2A\x01\x01R\x05files\x12T\n" +
 	"\x06labels\x18\n" +
-	" \x03(\v26.google.cloud.telcoautomation.v1.Blueprint.LabelsEntryB\x03\xe0A\x01R\x06labels\x12@\n" +
-	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12,\n" +
-	"\x0fsource_provider\x18\r \x01(\tB\x03\xe0A\x03R\x0esourceProvider\x12`\n" +
-	"\x10deployment_level\x18\x0e \x01(\x0e20.google.cloud.telcoautomation.v1.DeploymentLevelB\x03\xe0A\x03R\x0fdeploymentLevel\x12.\n" +
-	"\x10rollback_support\x18\x0f \x01(\bB\x03\xe0A\x03R\x0frollbackSupport\x1a9\n" +
+	" \x03(\v26.google.cloud.telcoautomation.v1.Blueprint.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12A\n" +
+	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12-\n" +
+	"\x0fsource_provider\x18\r \x01(\tB\x04\xe2A\x01\x03R\x0esourceProvider\x12a\n" +
+	"\x10deployment_level\x18\x0e \x01(\x0e20.google.cloud.telcoautomation.v1.DeploymentLevelB\x04\xe2A\x01\x03R\x0fdeploymentLevel\x12/\n" +
+	"\x10rollback_support\x18\x0f \x01(\bB\x04\xe2A\x01\x03R\x0frollbackSupport\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"V\n" +
@@ -5508,38 +5508,38 @@ const file_google_cloud_telcoautomation_v1_telcoautomation_proto_rawDesc = "" +
 	"\bPROPOSED\x10\x02\x12\f\n" +
 	"\bAPPROVED\x10\x03:\xb3\x01\xeaA\xaf\x01\n" +
 	"(telcoautomation.googleapis.com/Blueprint\x12lprojects/{project}/locations/{location}/orchestrationClusters/{orchestration_cluster}/blueprints/{blueprint}*\n" +
-	"blueprints2\tblueprint\"\xc6\x03\n" +
+	"blueprints2\tblueprint\"\xc7\x03\n" +
 	"\x0fPublicBlueprint\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12[\n" +
 	"\x10deployment_level\x18\x04 \x01(\x0e20.google.cloud.telcoautomation.v1.DeploymentLevelR\x0fdeploymentLevel\x12'\n" +
-	"\x0fsource_provider\x18\x05 \x01(\tR\x0esourceProvider\x12.\n" +
-	"\x10rollback_support\x18\x0f \x01(\bB\x03\xe0A\x03R\x0frollbackSupport:\xa3\x01\xeaA\x9f\x01\n" +
-	".telcoautomation.googleapis.com/PublicBlueprint\x12Jprojects/{project}/locations/{location}/publicBlueprints/{public_lueprint}*\x10publicBlueprints2\x0fpublicBlueprint\"\xc3\t\n" +
+	"\x0fsource_provider\x18\x05 \x01(\tR\x0esourceProvider\x12/\n" +
+	"\x10rollback_support\x18\x0f \x01(\bB\x04\xe2A\x01\x03R\x0frollbackSupport:\xa3\x01\xeaA\x9f\x01\n" +
+	".telcoautomation.googleapis.com/PublicBlueprint\x12Jprojects/{project}/locations/{location}/publicBlueprints/{public_lueprint}*\x10publicBlueprints2\x0fpublicBlueprint\"\xcd\t\n" +
 	"\n" +
 	"Deployment\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
-	"\vrevision_id\x18\x02 \x01(\tB\x06\xe0A\x05\xe0A\x03R\n" +
-	"revisionId\x12?\n" +
-	"\x19source_blueprint_revision\x18\x03 \x01(\tB\x03\xe0A\x02R\x17sourceBlueprintRevision\x12Q\n" +
-	"\x14revision_create_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x12revisionCreateTime\x12L\n" +
-	"\x05state\x18\x05 \x01(\x0e21.google.cloud.telcoautomation.v1.Deployment.StateB\x03\xe0A\x03R\x05state\x12&\n" +
-	"\fdisplay_name\x18\x06 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12#\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
+	"\vrevision_id\x18\x02 \x01(\tB\x05\xe2A\x02\x05\x03R\n" +
+	"revisionId\x12@\n" +
+	"\x19source_blueprint_revision\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x17sourceBlueprintRevision\x12R\n" +
+	"\x14revision_create_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x12revisionCreateTime\x12M\n" +
+	"\x05state\x18\x05 \x01(\x0e21.google.cloud.telcoautomation.v1.Deployment.StateB\x04\xe2A\x01\x03R\x05state\x12'\n" +
+	"\fdisplay_name\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12$\n" +
 	"\n" +
-	"repository\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"repository\x12@\n" +
-	"\x05files\x18\b \x03(\v2%.google.cloud.telcoautomation.v1.FileB\x03\xe0A\x01R\x05files\x12T\n" +
-	"\x06labels\x18\t \x03(\v27.google.cloud.telcoautomation.v1.Deployment.LabelsEntryB\x03\xe0A\x01R\x06labels\x12@\n" +
+	"repository\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"repository\x12A\n" +
+	"\x05files\x18\b \x03(\v2%.google.cloud.telcoautomation.v1.FileB\x04\xe2A\x01\x01R\x05files\x12U\n" +
+	"\x06labels\x18\t \x03(\v27.google.cloud.telcoautomation.v1.Deployment.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12A\n" +
 	"\vcreate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12,\n" +
-	"\x0fsource_provider\x18\f \x01(\tB\x03\xe0A\x03R\x0esourceProvider\x121\n" +
-	"\x10workload_cluster\x18\r \x01(\tB\x06\xe0A\x05\xe0A\x01R\x0fworkloadCluster\x12`\n" +
-	"\x10deployment_level\x18\x0e \x01(\x0e20.google.cloud.telcoautomation.v1.DeploymentLevelB\x03\xe0A\x03R\x0fdeploymentLevel\x12.\n" +
-	"\x10rollback_support\x18\x0f \x01(\bB\x03\xe0A\x03R\x0frollbackSupport\x1a9\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12-\n" +
+	"\x0fsource_provider\x18\f \x01(\tB\x04\xe2A\x01\x03R\x0esourceProvider\x120\n" +
+	"\x10workload_cluster\x18\r \x01(\tB\x05\xe2A\x02\x05\x01R\x0fworkloadCluster\x12a\n" +
+	"\x10deployment_level\x18\x0e \x01(\x0e20.google.cloud.telcoautomation.v1.DeploymentLevelB\x04\xe2A\x01\x03R\x0fdeploymentLevel\x12/\n" +
+	"\x10rollback_support\x18\x0f \x01(\bB\x04\xe2A\x01\x03R\x0frollbackSupport\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"D\n" +
@@ -5549,19 +5549,19 @@ const file_google_cloud_telcoautomation_v1_telcoautomation_proto_rawDesc = "" +
 	"\aAPPLIED\x10\x02\x12\f\n" +
 	"\bDELETING\x10\x03:\xb8\x01\xeaA\xb4\x01\n" +
 	")telcoautomation.googleapis.com/Deployment\x12nprojects/{project}/locations/{location}/orchestrationClusters/{orchestration_cluster}/deployments/{deployment}*\vdeployments2\n" +
-	"deployment\"\xab\x04\n" +
-	"\x12HydratedDeployment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12T\n" +
-	"\x05state\x18\x02 \x01(\x0e29.google.cloud.telcoautomation.v1.HydratedDeployment.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\x05files\x18\x03 \x03(\v2%.google.cloud.telcoautomation.v1.FileB\x03\xe0A\x01R\x05files\x12.\n" +
-	"\x10workload_cluster\x18\x04 \x01(\tB\x03\xe0A\x03R\x0fworkloadCluster\"6\n" +
+	"deployment\"\xaf\x04\n" +
+	"\x12HydratedDeployment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12U\n" +
+	"\x05state\x18\x02 \x01(\x0e29.google.cloud.telcoautomation.v1.HydratedDeployment.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\x05files\x18\x03 \x03(\v2%.google.cloud.telcoautomation.v1.FileB\x04\xe2A\x01\x01R\x05files\x12/\n" +
+	"\x10workload_cluster\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x0fworkloadCluster\"6\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05DRAFT\x10\x01\x12\v\n" +
 	"\aAPPLIED\x10\x02:\xfb\x01\xeaA\xf7\x01\n" +
-	"1telcoautomation.googleapis.com/HydratedDeployment\x12\x98\x01projects/{project}/locations/{location}/orchestrationClusters/{orchestration_cluster}/deployments/{deployment}/hydratedDeployments/{hydrated_deployment}*\x13hydratedDeployments2\x12hydratedDeployment\"\xe6\x01\n" +
-	" ListOrchestrationClustersRequest\x12S\n" +
-	"\x06parent\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\x123telcoautomation.googleapis.com/OrchestrationClusterR\x06parent\x12\x1b\n" +
+	"1telcoautomation.googleapis.com/HydratedDeployment\x12\x98\x01projects/{project}/locations/{location}/orchestrationClusters/{orchestration_cluster}/deployments/{deployment}/hydratedDeployments/{hydrated_deployment}*\x13hydratedDeployments2\x12hydratedDeployment\"\xe7\x01\n" +
+	" ListOrchestrationClustersRequest\x12T\n" +
+	"\x06parent\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\x123telcoautomation.googleapis.com/OrchestrationClusterR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -5570,23 +5570,23 @@ const file_google_cloud_telcoautomation_v1_telcoautomation_proto_rawDesc = "" +
 	"!ListOrchestrationClustersResponse\x12l\n" +
 	"\x16orchestration_clusters\x18\x01 \x03(\v25.google.cloud.telcoautomation.v1.OrchestrationClusterR\x15orchestrationClusters\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"q\n" +
-	"\x1eGetOrchestrationClusterRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3telcoautomation.googleapis.com/OrchestrationClusterR\x04name\"\xcc\x02\n" +
-	"!CreateOrchestrationClusterRequest\x12S\n" +
-	"\x06parent\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\x123telcoautomation.googleapis.com/OrchestrationClusterR\x06parent\x12=\n" +
-	"\x18orchestration_cluster_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x16orchestrationClusterId\x12o\n" +
-	"\x15orchestration_cluster\x18\x03 \x01(\v25.google.cloud.telcoautomation.v1.OrchestrationClusterB\x03\xe0A\x02R\x14orchestrationCluster\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"r\n" +
+	"\x1eGetOrchestrationClusterRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3telcoautomation.googleapis.com/OrchestrationClusterR\x04name\"\xd0\x02\n" +
+	"!CreateOrchestrationClusterRequest\x12T\n" +
+	"\x06parent\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\x123telcoautomation.googleapis.com/OrchestrationClusterR\x06parent\x12>\n" +
+	"\x18orchestration_cluster_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x16orchestrationClusterId\x12p\n" +
+	"\x15orchestration_cluster\x18\x03 \x01(\v25.google.cloud.telcoautomation.v1.OrchestrationClusterB\x04\xe2A\x01\x02R\x14orchestrationCluster\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\x98\x01\n" +
-	"!DeleteOrchestrationClusterRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3telcoautomation.googleapis.com/OrchestrationClusterR\x04name\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x9a\x01\n" +
+	"!DeleteOrchestrationClusterRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3telcoautomation.googleapis.com/OrchestrationClusterR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xcc\x01\n" +
-	"\x13ListEdgeSlmsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&telcoautomation.googleapis.com/EdgeSlmR\x06parent\x12\x1b\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xcd\x01\n" +
+	"\x13ListEdgeSlmsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&telcoautomation.googleapis.com/EdgeSlmR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
@@ -5595,58 +5595,58 @@ const file_google_cloud_telcoautomation_v1_telcoautomation_proto_rawDesc = "" +
 	"\x14ListEdgeSlmsResponse\x12E\n" +
 	"\tedge_slms\x18\x01 \x03(\v2(.google.cloud.telcoautomation.v1.EdgeSlmR\bedgeSlms\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"W\n" +
-	"\x11GetEdgeSlmRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&telcoautomation.googleapis.com/EdgeSlmR\x04name\"\xf1\x01\n" +
-	"\x14CreateEdgeSlmRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&telcoautomation.googleapis.com/EdgeSlmR\x06parent\x12#\n" +
-	"\vedge_slm_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tedgeSlmId\x12H\n" +
-	"\bedge_slm\x18\x03 \x01(\v2(.google.cloud.telcoautomation.v1.EdgeSlmB\x03\xe0A\x02R\aedgeSlm\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"X\n" +
+	"\x11GetEdgeSlmRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&telcoautomation.googleapis.com/EdgeSlmR\x04name\"\xf5\x01\n" +
+	"\x14CreateEdgeSlmRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&telcoautomation.googleapis.com/EdgeSlmR\x06parent\x12$\n" +
+	"\vedge_slm_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tedgeSlmId\x12I\n" +
+	"\bedge_slm\x18\x03 \x01(\v2(.google.cloud.telcoautomation.v1.EdgeSlmB\x04\xe2A\x01\x02R\aedgeSlm\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"~\n" +
-	"\x14DeleteEdgeSlmRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&telcoautomation.googleapis.com/EdgeSlmR\x04name\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x80\x01\n" +
+	"\x14DeleteEdgeSlmRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&telcoautomation.googleapis.com/EdgeSlmR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xd9\x01\n" +
-	"\x16CreateBlueprintRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(telcoautomation.googleapis.com/BlueprintR\x06parent\x12&\n" +
-	"\fblueprint_id\x18\x02 \x01(\tB\x03\xe0A\x01R\vblueprintId\x12M\n" +
-	"\tblueprint\x18\x03 \x01(\v2*.google.cloud.telcoautomation.v1.BlueprintB\x03\xe0A\x02R\tblueprint\"\xa9\x01\n" +
-	"\x16UpdateBlueprintRequest\x12M\n" +
-	"\tblueprint\x18\x01 \x01(\v2*.google.cloud.telcoautomation.v1.BlueprintB\x03\xe0A\x02R\tblueprint\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xa4\x01\n" +
-	"\x13GetBlueprintRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(telcoautomation.googleapis.com/BlueprintR\x04name\x12G\n" +
-	"\x04view\x18\x02 \x01(\x0e2..google.cloud.telcoautomation.v1.BlueprintViewB\x03\xe0A\x01R\x04view\"^\n" +
-	"\x16DeleteBlueprintRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(telcoautomation.googleapis.com/BlueprintR\x04name\"\xc4\x01\n" +
-	"\x15ListBlueprintsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(telcoautomation.googleapis.com/BlueprintR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xdc\x01\n" +
+	"\x16CreateBlueprintRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(telcoautomation.googleapis.com/BlueprintR\x06parent\x12'\n" +
+	"\fblueprint_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vblueprintId\x12N\n" +
+	"\tblueprint\x18\x03 \x01(\v2*.google.cloud.telcoautomation.v1.BlueprintB\x04\xe2A\x01\x02R\tblueprint\"\xab\x01\n" +
+	"\x16UpdateBlueprintRequest\x12N\n" +
+	"\tblueprint\x18\x01 \x01(\v2*.google.cloud.telcoautomation.v1.BlueprintB\x04\xe2A\x01\x02R\tblueprint\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xa6\x01\n" +
+	"\x13GetBlueprintRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(telcoautomation.googleapis.com/BlueprintR\x04name\x12H\n" +
+	"\x04view\x18\x02 \x01(\x0e2..google.cloud.telcoautomation.v1.BlueprintViewB\x04\xe2A\x01\x01R\x04view\"_\n" +
+	"\x16DeleteBlueprintRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(telcoautomation.googleapis.com/BlueprintR\x04name\"\xc8\x01\n" +
+	"\x15ListBlueprintsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(telcoautomation.googleapis.com/BlueprintR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x8c\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x8c\x01\n" +
 	"\x16ListBlueprintsResponse\x12J\n" +
 	"\n" +
 	"blueprints\x18\x01 \x03(\v2*.google.cloud.telcoautomation.v1.BlueprintR\n" +
 	"blueprints\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"_\n" +
-	"\x17ApproveBlueprintRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"`\n" +
+	"\x17ApproveBlueprintRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(telcoautomation.googleapis.com/BlueprintR\x04name\"`\n" +
+	"\x17ProposeBlueprintRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(telcoautomation.googleapis.com/BlueprintR\x04name\"_\n" +
-	"\x17ProposeBlueprintRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(telcoautomation.googleapis.com/BlueprintR\x04name\"^\n" +
-	"\x16RejectBlueprintRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(telcoautomation.googleapis.com/BlueprintR\x04name\"\xa1\x01\n" +
-	"\x1dListBlueprintRevisionsRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"\x16RejectBlueprintRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(telcoautomation.googleapis.com/BlueprintR\x04name\"\xa2\x01\n" +
+	"\x1dListBlueprintRevisionsRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(telcoautomation.googleapis.com/BlueprintR\x04name\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -5655,189 +5655,189 @@ const file_google_cloud_telcoautomation_v1_telcoautomation_proto_rawDesc = "" +
 	"\n" +
 	"blueprints\x18\x01 \x03(\v2*.google.cloud.telcoautomation.v1.BlueprintR\n" +
 	"blueprints\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xcc\x01\n" +
-	"\x1fSearchBlueprintRevisionsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(telcoautomation.googleapis.com/BlueprintR\x06parent\x12\x19\n" +
-	"\x05query\x18\x02 \x01(\tB\x03\xe0A\x02R\x05query\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd0\x01\n" +
+	"\x1fSearchBlueprintRevisionsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(telcoautomation.googleapis.com/BlueprintR\x06parent\x12\x1a\n" +
+	"\x05query\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x96\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x96\x01\n" +
 	" SearchBlueprintRevisionsResponse\x12J\n" +
 	"\n" +
 	"blueprints\x18\x01 \x03(\v2*.google.cloud.telcoautomation.v1.BlueprintR\n" +
 	"blueprints\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"f\n" +
-	"\x1eDiscardBlueprintChangesRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"g\n" +
+	"\x1eDiscardBlueprintChangesRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(telcoautomation.googleapis.com/BlueprintR\x04name\"!\n" +
-	"\x1fDiscardBlueprintChangesResponse\"\xb3\x01\n" +
-	"\x1bListPublicBlueprintsRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\x12.telcoautomation.googleapis.com/PublicBlueprintR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x1fDiscardBlueprintChangesResponse\"\xb6\x01\n" +
+	"\x1bListPublicBlueprintsRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\x12.telcoautomation.googleapis.com/PublicBlueprintR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xaa\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xab\x01\n" +
 	"\x1cListPublicBlueprintsResponse\x12]\n" +
-	"\x11public_blueprints\x18\x01 \x03(\v20.google.cloud.telcoautomation.v1.PublicBlueprintR\x10publicBlueprints\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"g\n" +
-	"\x19GetPublicBlueprintRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".telcoautomation.googleapis.com/PublicBlueprintR\x04name\"\xe0\x01\n" +
-	"\x17CreateDeploymentRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)telcoautomation.googleapis.com/DeploymentR\x06parent\x12(\n" +
-	"\rdeployment_id\x18\x02 \x01(\tB\x03\xe0A\x01R\fdeploymentId\x12P\n" +
+	"\x11public_blueprints\x18\x01 \x03(\v20.google.cloud.telcoautomation.v1.PublicBlueprintR\x10publicBlueprints\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"h\n" +
+	"\x19GetPublicBlueprintRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".telcoautomation.googleapis.com/PublicBlueprintR\x04name\"\xe3\x01\n" +
+	"\x17CreateDeploymentRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)telcoautomation.googleapis.com/DeploymentR\x06parent\x12)\n" +
+	"\rdeployment_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\fdeploymentId\x12Q\n" +
 	"\n" +
-	"deployment\x18\x03 \x01(\v2+.google.cloud.telcoautomation.v1.DeploymentB\x03\xe0A\x02R\n" +
-	"deployment\"\xad\x01\n" +
-	"\x17UpdateDeploymentRequest\x12P\n" +
+	"deployment\x18\x03 \x01(\v2+.google.cloud.telcoautomation.v1.DeploymentB\x04\xe2A\x01\x02R\n" +
+	"deployment\"\xaf\x01\n" +
+	"\x17UpdateDeploymentRequest\x12Q\n" +
 	"\n" +
-	"deployment\x18\x01 \x01(\v2+.google.cloud.telcoautomation.v1.DeploymentB\x03\xe0A\x02R\n" +
-	"deployment\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xa7\x01\n" +
-	"\x14GetDeploymentRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")telcoautomation.googleapis.com/DeploymentR\x04name\x12H\n" +
-	"\x04view\x18\x02 \x01(\x0e2/.google.cloud.telcoautomation.v1.DeploymentViewB\x03\xe0A\x01R\x04view\"`\n" +
-	"\x17RemoveDeploymentRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")telcoautomation.googleapis.com/DeploymentR\x04name\"\xc6\x01\n" +
-	"\x16ListDeploymentsRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)telcoautomation.googleapis.com/DeploymentR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"deployment\x18\x01 \x01(\v2+.google.cloud.telcoautomation.v1.DeploymentB\x04\xe2A\x01\x02R\n" +
+	"deployment\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xa9\x01\n" +
+	"\x14GetDeploymentRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")telcoautomation.googleapis.com/DeploymentR\x04name\x12I\n" +
+	"\x04view\x18\x02 \x01(\x0e2/.google.cloud.telcoautomation.v1.DeploymentViewB\x04\xe2A\x01\x01R\x04view\"a\n" +
+	"\x17RemoveDeploymentRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")telcoautomation.googleapis.com/DeploymentR\x04name\"\xca\x01\n" +
+	"\x16ListDeploymentsRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)telcoautomation.googleapis.com/DeploymentR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x90\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x90\x01\n" +
 	"\x17ListDeploymentsResponse\x12M\n" +
 	"\vdeployments\x18\x01 \x03(\v2+.google.cloud.telcoautomation.v1.DeploymentR\vdeployments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xad\x01\n" +
-	"\x1eListDeploymentRevisionsRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")telcoautomation.googleapis.com/DeploymentR\x04name\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb0\x01\n" +
+	"\x1eListDeploymentRevisionsRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")telcoautomation.googleapis.com/DeploymentR\x04name\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x98\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x98\x01\n" +
 	"\x1fListDeploymentRevisionsResponse\x12M\n" +
 	"\vdeployments\x18\x01 \x03(\v2+.google.cloud.telcoautomation.v1.DeploymentR\vdeployments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xcd\x01\n" +
-	" SearchDeploymentRevisionsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(telcoautomation.googleapis.com/BlueprintR\x06parent\x12\x19\n" +
-	"\x05query\x18\x02 \x01(\tB\x03\xe0A\x02R\x05query\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd1\x01\n" +
+	" SearchDeploymentRevisionsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(telcoautomation.googleapis.com/BlueprintR\x06parent\x12\x1a\n" +
+	"\x05query\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x9a\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x9a\x01\n" +
 	"!SearchDeploymentRevisionsResponse\x12M\n" +
 	"\vdeployments\x18\x01 \x03(\v2+.google.cloud.telcoautomation.v1.DeploymentR\vdeployments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"h\n" +
-	"\x1fDiscardDeploymentChangesRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"i\n" +
+	"\x1fDiscardDeploymentChangesRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")telcoautomation.googleapis.com/DeploymentR\x04name\"\"\n" +
-	" DiscardDeploymentChangesResponse\"_\n" +
-	"\x16ApplyDeploymentRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")telcoautomation.googleapis.com/DeploymentR\x04name\"g\n" +
-	"\x1eComputeDeploymentStatusRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")telcoautomation.googleapis.com/DeploymentR\x04name\"\xf3\x01\n" +
+	" DiscardDeploymentChangesResponse\"`\n" +
+	"\x16ApplyDeploymentRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")telcoautomation.googleapis.com/DeploymentR\x04name\"h\n" +
+	"\x1eComputeDeploymentStatusRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")telcoautomation.googleapis.com/DeploymentR\x04name\"\xf5\x01\n" +
 	"\x1fComputeDeploymentStatusResponse\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12Y\n" +
-	"\x11aggregated_status\x18\x02 \x01(\x0e2'.google.cloud.telcoautomation.v1.StatusB\x03\xe0A\x03R\x10aggregatedStatus\x12a\n" +
-	"\x11resource_statuses\x18\x03 \x03(\v2/.google.cloud.telcoautomation.v1.ResourceStatusB\x03\xe0A\x03R\x10resourceStatuses\"\x88\x01\n" +
-	"\x19RollbackDeploymentRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")telcoautomation.googleapis.com/DeploymentR\x04name\x12$\n" +
-	"\vrevision_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"revisionId\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"m\n" +
-	"\x1cGetHydratedDeploymentRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1telcoautomation.googleapis.com/HydratedDeploymentR\x04name\"\xb9\x01\n" +
-	"\x1eListHydratedDeploymentsRequest\x12Q\n" +
-	"\x06parent\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\x121telcoautomation.googleapis.com/HydratedDeploymentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12Z\n" +
+	"\x11aggregated_status\x18\x02 \x01(\x0e2'.google.cloud.telcoautomation.v1.StatusB\x04\xe2A\x01\x03R\x10aggregatedStatus\x12b\n" +
+	"\x11resource_statuses\x18\x03 \x03(\v2/.google.cloud.telcoautomation.v1.ResourceStatusB\x04\xe2A\x01\x03R\x10resourceStatuses\"\x8a\x01\n" +
+	"\x19RollbackDeploymentRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")telcoautomation.googleapis.com/DeploymentR\x04name\x12%\n" +
+	"\vrevision_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"revisionId\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"n\n" +
+	"\x1cGetHydratedDeploymentRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1telcoautomation.googleapis.com/HydratedDeploymentR\x04name\"\xbc\x01\n" +
+	"\x1eListHydratedDeploymentsRequest\x12R\n" +
+	"\x06parent\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\x121telcoautomation.googleapis.com/HydratedDeploymentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xb1\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xb1\x01\n" +
 	"\x1fListHydratedDeploymentsResponse\x12f\n" +
 	"\x14hydrated_deployments\x18\x01 \x03(\v23.google.cloud.telcoautomation.v1.HydratedDeploymentR\x13hydratedDeployments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xce\x01\n" +
-	"\x1fUpdateHydratedDeploymentRequest\x12i\n" +
-	"\x13hydrated_deployment\x18\x01 \x01(\v23.google.cloud.telcoautomation.v1.HydratedDeploymentB\x03\xe0A\x02R\x12hydratedDeployment\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"o\n" +
-	"\x1eApplyHydratedDeploymentRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd0\x01\n" +
+	"\x1fUpdateHydratedDeploymentRequest\x12j\n" +
+	"\x13hydrated_deployment\x18\x01 \x01(\v23.google.cloud.telcoautomation.v1.HydratedDeploymentB\x04\xe2A\x01\x02R\x12hydratedDeployment\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"p\n" +
+	"\x1eApplyHydratedDeploymentRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
 	"1telcoautomation.googleapis.com/HydratedDeploymentR\x04name\"\x8c\x02\n" +
 	"\x10ManagementConfig\x12y\n" +
 	"\x1astandard_management_config\x18\x01 \x01(\v29.google.cloud.telcoautomation.v1.StandardManagementConfigH\x00R\x18standardManagementConfig\x12m\n" +
 	"\x16full_management_config\x18\x02 \x01(\v25.google.cloud.telcoautomation.v1.FullManagementConfigH\x00R\x14fullManagementConfigB\x0e\n" +
-	"\foneof_config\"\xf6\x03\n" +
-	"\x18StandardManagementConfig\x12\x1d\n" +
-	"\anetwork\x18\x01 \x01(\tB\x03\xe0A\x01R\anetwork\x12\x1b\n" +
-	"\x06subnet\x18\x02 \x01(\tB\x03\xe0A\x01R\x06subnet\x128\n" +
-	"\x16master_ipv4_cidr_block\x18\x03 \x01(\tB\x03\xe0A\x01R\x13masterIpv4CidrBlock\x121\n" +
-	"\x12cluster_cidr_block\x18\x04 \x01(\tB\x03\xe0A\x01R\x10clusterCidrBlock\x123\n" +
-	"\x13services_cidr_block\x18\x05 \x01(\tB\x03\xe0A\x01R\x11servicesCidrBlock\x123\n" +
-	"\x13cluster_named_range\x18\x06 \x01(\tB\x03\xe0A\x01R\x11clusterNamedRange\x125\n" +
-	"\x14services_named_range\x18\a \x01(\tB\x03\xe0A\x01R\x12servicesNamedRange\x12\x8f\x01\n" +
-	"!master_authorized_networks_config\x18\b \x01(\v2?.google.cloud.telcoautomation.v1.MasterAuthorizedNetworksConfigB\x03\xe0A\x01R\x1emasterAuthorizedNetworksConfig\"\xf2\x03\n" +
-	"\x14FullManagementConfig\x12\x1d\n" +
-	"\anetwork\x18\x01 \x01(\tB\x03\xe0A\x01R\anetwork\x12\x1b\n" +
-	"\x06subnet\x18\x02 \x01(\tB\x03\xe0A\x01R\x06subnet\x128\n" +
-	"\x16master_ipv4_cidr_block\x18\x03 \x01(\tB\x03\xe0A\x01R\x13masterIpv4CidrBlock\x121\n" +
-	"\x12cluster_cidr_block\x18\x04 \x01(\tB\x03\xe0A\x01R\x10clusterCidrBlock\x123\n" +
-	"\x13services_cidr_block\x18\x05 \x01(\tB\x03\xe0A\x01R\x11servicesCidrBlock\x123\n" +
-	"\x13cluster_named_range\x18\x06 \x01(\tB\x03\xe0A\x01R\x11clusterNamedRange\x125\n" +
-	"\x14services_named_range\x18\a \x01(\tB\x03\xe0A\x01R\x12servicesNamedRange\x12\x8f\x01\n" +
-	"!master_authorized_networks_config\x18\b \x01(\v2?.google.cloud.telcoautomation.v1.MasterAuthorizedNetworksConfigB\x03\xe0A\x01R\x1emasterAuthorizedNetworksConfig\"\xea\x01\n" +
-	"\x1eMasterAuthorizedNetworksConfig\x12o\n" +
-	"\vcidr_blocks\x18\x01 \x03(\v2I.google.cloud.telcoautomation.v1.MasterAuthorizedNetworksConfig.CidrBlockB\x03\xe0A\x01R\n" +
-	"cidrBlocks\x1aW\n" +
-	"\tCidrBlock\x12&\n" +
-	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12\"\n" +
+	"\foneof_config\"\xfe\x03\n" +
+	"\x18StandardManagementConfig\x12\x1e\n" +
+	"\anetwork\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\anetwork\x12\x1c\n" +
+	"\x06subnet\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06subnet\x129\n" +
+	"\x16master_ipv4_cidr_block\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x13masterIpv4CidrBlock\x122\n" +
+	"\x12cluster_cidr_block\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x10clusterCidrBlock\x124\n" +
+	"\x13services_cidr_block\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x11servicesCidrBlock\x124\n" +
+	"\x13cluster_named_range\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x11clusterNamedRange\x126\n" +
+	"\x14services_named_range\x18\a \x01(\tB\x04\xe2A\x01\x01R\x12servicesNamedRange\x12\x90\x01\n" +
+	"!master_authorized_networks_config\x18\b \x01(\v2?.google.cloud.telcoautomation.v1.MasterAuthorizedNetworksConfigB\x04\xe2A\x01\x01R\x1emasterAuthorizedNetworksConfig\"\xfa\x03\n" +
+	"\x14FullManagementConfig\x12\x1e\n" +
+	"\anetwork\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\anetwork\x12\x1c\n" +
+	"\x06subnet\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06subnet\x129\n" +
+	"\x16master_ipv4_cidr_block\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x13masterIpv4CidrBlock\x122\n" +
+	"\x12cluster_cidr_block\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x10clusterCidrBlock\x124\n" +
+	"\x13services_cidr_block\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x11servicesCidrBlock\x124\n" +
+	"\x13cluster_named_range\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x11clusterNamedRange\x126\n" +
+	"\x14services_named_range\x18\a \x01(\tB\x04\xe2A\x01\x01R\x12servicesNamedRange\x12\x90\x01\n" +
+	"!master_authorized_networks_config\x18\b \x01(\v2?.google.cloud.telcoautomation.v1.MasterAuthorizedNetworksConfigB\x04\xe2A\x01\x01R\x1emasterAuthorizedNetworksConfig\"\xed\x01\n" +
+	"\x1eMasterAuthorizedNetworksConfig\x12p\n" +
+	"\vcidr_blocks\x18\x01 \x03(\v2I.google.cloud.telcoautomation.v1.MasterAuthorizedNetworksConfig.CidrBlockB\x04\xe2A\x01\x01R\n" +
+	"cidrBlocks\x1aY\n" +
+	"\tCidrBlock\x12'\n" +
+	"\fdisplay_name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12#\n" +
 	"\n" +
-	"cidr_block\x18\x02 \x01(\tB\x03\xe0A\x01R\tcidrBlock\"~\n" +
-	"\x04File\x12\x17\n" +
-	"\x04path\x18\x01 \x01(\tB\x03\xe0A\x02R\x04path\x12\x1d\n" +
-	"\acontent\x18\x02 \x01(\tB\x03\xe0A\x01R\acontent\x12\x1d\n" +
-	"\adeleted\x18\x03 \x01(\bB\x03\xe0A\x01R\adeleted\x12\x1f\n" +
-	"\beditable\x18\x04 \x01(\bB\x03\xe0A\x01R\beditable\"\x96\x03\n" +
+	"cidr_block\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tcidrBlock\"\x82\x01\n" +
+	"\x04File\x12\x18\n" +
+	"\x04path\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04path\x12\x1e\n" +
+	"\acontent\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\acontent\x12\x1e\n" +
+	"\adeleted\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\adeleted\x12 \n" +
+	"\beditable\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\beditable\"\x99\x03\n" +
 	"\x0eResourceStatus\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12-\n" +
 	"\x12resource_namespace\x18\x02 \x01(\tR\x11resourceNamespace\x12\x14\n" +
 	"\x05group\x18\x03 \x01(\tR\x05group\x12\x18\n" +
 	"\aversion\x18\x04 \x01(\tR\aversion\x12\x12\n" +
-	"\x04kind\x18\x05 \x01(\tR\x04kind\x12W\n" +
-	"\rresource_type\x18\x06 \x01(\x0e2-.google.cloud.telcoautomation.v1.ResourceTypeB\x03\xe0A\x03R\fresourceType\x12D\n" +
-	"\x06status\x18\a \x01(\x0e2'.google.cloud.telcoautomation.v1.StatusB\x03\xe0A\x03R\x06status\x12^\n" +
-	"\x10nf_deploy_status\x18\b \x01(\v2/.google.cloud.telcoautomation.v1.NFDeployStatusB\x03\xe0A\x03R\x0enfDeployStatus\"\xaa\x01\n" +
-	"\x0eNFDeployStatus\x12&\n" +
-	"\ftargeted_nfs\x18\x01 \x01(\x05B\x03\xe0A\x03R\vtargetedNfs\x12 \n" +
-	"\tready_nfs\x18\x02 \x01(\x05B\x03\xe0A\x03R\breadyNfs\x12N\n" +
-	"\x05sites\x18\x03 \x03(\v23.google.cloud.telcoautomation.v1.NFDeploySiteStatusB\x03\xe0A\x03R\x05sites\"\x84\x02\n" +
-	"\x12NFDeploySiteStatus\x12\x17\n" +
-	"\x04site\x18\x01 \x01(\tB\x03\xe0A\x03R\x04site\x12.\n" +
-	"\x10pending_deletion\x18\x02 \x01(\bB\x03\xe0A\x03R\x0fpendingDeletion\x12S\n" +
-	"\thydration\x18\x03 \x01(\v20.google.cloud.telcoautomation.v1.HydrationStatusB\x03\xe0A\x03R\thydration\x12P\n" +
-	"\bworkload\x18\x04 \x01(\v2/.google.cloud.telcoautomation.v1.WorkloadStatusB\x03\xe0A\x03R\bworkload\"\x84\x01\n" +
-	"\x0fHydrationStatus\x12T\n" +
-	"\fsite_version\x18\x01 \x01(\v2,.google.cloud.telcoautomation.v1.SiteVersionB\x03\xe0A\x03R\vsiteVersion\x12\x1b\n" +
-	"\x06status\x18\x02 \x01(\tB\x03\xe0A\x03R\x06status\"q\n" +
-	"\vSiteVersion\x12 \n" +
-	"\tnf_vendor\x18\x01 \x01(\tB\x03\xe0A\x03R\bnfVendor\x12\x1c\n" +
-	"\anf_type\x18\x02 \x01(\tB\x03\xe0A\x03R\x06nfType\x12\"\n" +
+	"\x04kind\x18\x05 \x01(\tR\x04kind\x12X\n" +
+	"\rresource_type\x18\x06 \x01(\x0e2-.google.cloud.telcoautomation.v1.ResourceTypeB\x04\xe2A\x01\x03R\fresourceType\x12E\n" +
+	"\x06status\x18\a \x01(\x0e2'.google.cloud.telcoautomation.v1.StatusB\x04\xe2A\x01\x03R\x06status\x12_\n" +
+	"\x10nf_deploy_status\x18\b \x01(\v2/.google.cloud.telcoautomation.v1.NFDeployStatusB\x04\xe2A\x01\x03R\x0enfDeployStatus\"\xad\x01\n" +
+	"\x0eNFDeployStatus\x12'\n" +
+	"\ftargeted_nfs\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\vtargetedNfs\x12!\n" +
+	"\tready_nfs\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\breadyNfs\x12O\n" +
+	"\x05sites\x18\x03 \x03(\v23.google.cloud.telcoautomation.v1.NFDeploySiteStatusB\x04\xe2A\x01\x03R\x05sites\"\x88\x02\n" +
+	"\x12NFDeploySiteStatus\x12\x18\n" +
+	"\x04site\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04site\x12/\n" +
+	"\x10pending_deletion\x18\x02 \x01(\bB\x04\xe2A\x01\x03R\x0fpendingDeletion\x12T\n" +
+	"\thydration\x18\x03 \x01(\v20.google.cloud.telcoautomation.v1.HydrationStatusB\x04\xe2A\x01\x03R\thydration\x12Q\n" +
+	"\bworkload\x18\x04 \x01(\v2/.google.cloud.telcoautomation.v1.WorkloadStatusB\x04\xe2A\x01\x03R\bworkload\"\x86\x01\n" +
+	"\x0fHydrationStatus\x12U\n" +
+	"\fsite_version\x18\x01 \x01(\v2,.google.cloud.telcoautomation.v1.SiteVersionB\x04\xe2A\x01\x03R\vsiteVersion\x12\x1c\n" +
+	"\x06status\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x06status\"t\n" +
+	"\vSiteVersion\x12!\n" +
+	"\tnf_vendor\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\bnfVendor\x12\x1d\n" +
+	"\anf_type\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x06nfType\x12#\n" +
 	"\n" +
-	"nf_version\x18\x03 \x01(\tB\x03\xe0A\x03R\tnfVersion\"\x83\x01\n" +
-	"\x0eWorkloadStatus\x12T\n" +
-	"\fsite_version\x18\x01 \x01(\v2,.google.cloud.telcoautomation.v1.SiteVersionB\x03\xe0A\x03R\vsiteVersion\x12\x1b\n" +
-	"\x06status\x18\x02 \x01(\tB\x03\xe0A\x03R\x06status*b\n" +
+	"nf_version\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\tnfVersion\"\x85\x01\n" +
+	"\x0eWorkloadStatus\x12U\n" +
+	"\fsite_version\x18\x01 \x01(\v2,.google.cloud.telcoautomation.v1.SiteVersionB\x04\xe2A\x01\x03R\vsiteVersion\x12\x1c\n" +
+	"\x06status\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x06status*b\n" +
 	"\rBlueprintView\x12\x1e\n" +
 	"\x1aBLUEPRINT_VIEW_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14BLUEPRINT_VIEW_BASIC\x10\x01\x12\x17\n" +

@@ -132,7 +132,12 @@ type Factory struct {
 // (client-UID / exporter / instrument creation) are swallowed and the
 // disabled factory is returned instead, since metrics are not critical
 // to client creation.
-func NewFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider, opts ...option.ClientOption) (*Factory, error) {
+//
+// clientNameOverride sets the client_name attribute stamped on every exported
+// metric. An empty string keeps the default "go-bigtable/<version>" token; the
+// accelerator daemon passes its --user-agent flag here so CSM attributes the
+// metrics to the calling client library rather than the daemon build.
+func NewFactory(ctx context.Context, project, instance, appProfile, clientNameOverride string, metricsProvider MetricsProvider, opts ...option.ClientOption) (*Factory, error) {
 	switch metricsProvider.(type) {
 	case nil, DefaultMetricsProvider:
 		// fall through to the enabled path
@@ -149,6 +154,11 @@ func NewFactory(ctx context.Context, project, instance, appProfile string, metri
 		return disabledMetricsTracerFactory, nil
 	}
 
+	effectiveClientName := clientName
+	if clientNameOverride != "" {
+		effectiveClientName = clientNameOverride
+	}
+
 	tracerFactory := &Factory{
 		Enabled: true,
 		clientAttributes: []attribute.KeyValue{
@@ -156,7 +166,7 @@ func NewFactory(ctx context.Context, project, instance, appProfile string, metri
 			attribute.String(MetricLabelKeyInstance, instance),
 			attribute.String(MetricLabelKeyAppProfile, appProfile),
 			attribute.String(MetricLabelKeyClientUID, clientUID),
-			attribute.String(MetricLabelKeyClientName, clientName),
+			attribute.String(MetricLabelKeyClientName, effectiveClientName),
 		},
 		Shutdown: func() {},
 	}
@@ -173,7 +183,7 @@ func NewFactory(ctx context.Context, project, instance, appProfile string, metri
 		project:    project,
 		instance:   instance,
 		appProfile: appProfile,
-		clientName: clientName,
+		clientName: effectiveClientName,
 		clientUID:  clientUID,
 		interval:   DefaultSamplePeriod,
 	})
@@ -383,8 +393,10 @@ func (tf *Factory) createInstruments(meter metric.Meter) error {
 // CreateTracer returns a per-operation Tracer wired to this factory's
 // instruments. Callers stash it on the operation context via
 // NewContext so the shared StatsHandler can retrieve it on each
-// attempt.
-func (tf *Factory) CreateTracer(ctx context.Context, tableName string, isStreaming bool) Tracer {
+// attempt. Returns *Tracer (not Tracer) because Tracer holds a
+// sync.Mutex that guards concurrent HandleRPC dispatches from the
+// transport reader and caller goroutines.
+func (tf *Factory) CreateTracer(ctx context.Context, tableName string, isStreaming bool) *Tracer {
 	// Operation has started but not the attempt.
 	// So, create only operation tracer and not attempt tracer
 	currOpTracer := OpTracer{
@@ -393,13 +405,13 @@ func (tf *Factory) CreateTracer(ctx context.Context, tableName string, isStreami
 	currOpTracer.SetStartTime(time.Now())
 
 	if !tf.Enabled {
-		return Tracer{
+		return &Tracer{
 			BuiltInEnabled: false,
 			currOp:         currOpTracer,
 		}
 	}
 
-	return Tracer{
+	return &Tracer{
 		ctx:            ctx,
 		BuiltInEnabled: tf.Enabled,
 

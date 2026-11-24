@@ -1509,74 +1509,74 @@ var File_google_cloud_dataplex_v1_tasks_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dataplex_v1_tasks_proto_rawDesc = "" +
 	"\n" +
-	"$google/cloud/dataplex/v1/tasks.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/dataplex/v1/resources.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x93\x1b\n" +
-	"\x04Task\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x03\xfaA\x1e\n" +
-	"\x1cdataplex.googleapis.com/TaskR\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12&\n" +
-	"\fdisplay_name\x18\x06 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12:\n" +
-	"\x05state\x18\a \x01(\x0e2\x1f.google.cloud.dataplex.v1.StateB\x03\xe0A\x03R\x05state\x12G\n" +
-	"\x06labels\x18\b \x03(\v2*.google.cloud.dataplex.v1.Task.LabelsEntryB\x03\xe0A\x01R\x06labels\x12R\n" +
-	"\ftrigger_spec\x18d \x01(\v2*.google.cloud.dataplex.v1.Task.TriggerSpecB\x03\xe0A\x02R\vtriggerSpec\x12X\n" +
-	"\x0eexecution_spec\x18e \x01(\v2,.google.cloud.dataplex.v1.Task.ExecutionSpecB\x03\xe0A\x02R\rexecutionSpec\x12_\n" +
-	"\x10execution_status\x18\xc9\x01 \x01(\v2..google.cloud.dataplex.v1.Task.ExecutionStatusB\x03\xe0A\x03R\x0fexecutionStatus\x12G\n" +
+	"$google/cloud/dataplex/v1/tasks.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/dataplex/v1/resources.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb8\x1b\n" +
+	"\x04Task\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x03\xfaA\x1e\n" +
+	"\x1cdataplex.googleapis.com/TaskR\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12'\n" +
+	"\fdisplay_name\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12;\n" +
+	"\x05state\x18\a \x01(\x0e2\x1f.google.cloud.dataplex.v1.StateB\x04\xe2A\x01\x03R\x05state\x12H\n" +
+	"\x06labels\x18\b \x03(\v2*.google.cloud.dataplex.v1.Task.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12S\n" +
+	"\ftrigger_spec\x18d \x01(\v2*.google.cloud.dataplex.v1.Task.TriggerSpecB\x04\xe2A\x01\x02R\vtriggerSpec\x12Y\n" +
+	"\x0eexecution_spec\x18e \x01(\v2,.google.cloud.dataplex.v1.Task.ExecutionSpecB\x04\xe2A\x01\x02R\rexecutionSpec\x12`\n" +
+	"\x10execution_status\x18\xc9\x01 \x01(\v2..google.cloud.dataplex.v1.Task.ExecutionStatusB\x04\xe2A\x01\x03R\x0fexecutionStatus\x12G\n" +
 	"\x05spark\x18\xac\x02 \x01(\v2..google.cloud.dataplex.v1.Task.SparkTaskConfigH\x00R\x05spark\x12P\n" +
-	"\bnotebook\x18\xae\x02 \x01(\v21.google.cloud.dataplex.v1.Task.NotebookTaskConfigH\x00R\bnotebook\x1a\xbc\a\n" +
+	"\bnotebook\x18\xae\x02 \x01(\v21.google.cloud.dataplex.v1.Task.NotebookTaskConfigH\x00R\bnotebook\x1a\xc5\a\n" +
 	"\x12InfrastructureSpec\x12_\n" +
 	"\x05batch\x184 \x01(\v2G.google.cloud.dataplex.v1.Task.InfrastructureSpec.BatchComputeResourcesH\x00R\x05batch\x12r\n" +
 	"\x0fcontainer_image\x18e \x01(\v2G.google.cloud.dataplex.v1.Task.InfrastructureSpec.ContainerImageRuntimeH\x01R\x0econtainerImage\x12`\n" +
 	"\vvpc_network\x18\x96\x01 \x01(\v2<.google.cloud.dataplex.v1.Task.InfrastructureSpec.VpcNetworkH\x02R\n" +
-	"vpcNetwork\x1az\n" +
-	"\x15BatchComputeResources\x12,\n" +
-	"\x0fexecutors_count\x18\x01 \x01(\x05B\x03\xe0A\x01R\x0eexecutorsCount\x123\n" +
-	"\x13max_executors_count\x18\x02 \x01(\x05B\x03\xe0A\x01R\x11maxExecutorsCount\x1a\xbf\x02\n" +
-	"\x15ContainerImageRuntime\x12\x19\n" +
-	"\x05image\x18\x01 \x01(\tB\x03\xe0A\x01R\x05image\x12 \n" +
-	"\tjava_jars\x18\x02 \x03(\tB\x03\xe0A\x01R\bjavaJars\x12,\n" +
-	"\x0fpython_packages\x18\x03 \x03(\tB\x03\xe0A\x01R\x0epythonPackages\x12|\n" +
+	"vpcNetwork\x1a|\n" +
+	"\x15BatchComputeResources\x12-\n" +
+	"\x0fexecutors_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x0eexecutorsCount\x124\n" +
+	"\x13max_executors_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x11maxExecutorsCount\x1a\xc3\x02\n" +
+	"\x15ContainerImageRuntime\x12\x1a\n" +
+	"\x05image\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05image\x12!\n" +
+	"\tjava_jars\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\bjavaJars\x12-\n" +
+	"\x0fpython_packages\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x0epythonPackages\x12}\n" +
 	"\n" +
-	"properties\x18\x04 \x03(\v2W.google.cloud.dataplex.v1.Task.InfrastructureSpec.ContainerImageRuntime.PropertiesEntryB\x03\xe0A\x01R\n" +
+	"properties\x18\x04 \x03(\v2W.google.cloud.dataplex.v1.Task.InfrastructureSpec.ContainerImageRuntime.PropertiesEntryB\x04\xe2A\x01\x01R\n" +
 	"properties\x1a=\n" +
 	"\x0fPropertiesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a\x8d\x01\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a\x90\x01\n" +
 	"\n" +
-	"VpcNetwork\x12\x1f\n" +
-	"\anetwork\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\anetwork\x12&\n" +
-	"\vsub_network\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\n" +
-	"subNetwork\x12&\n" +
-	"\fnetwork_tags\x18\x03 \x03(\tB\x03\xe0A\x01R\vnetworkTagsB\x0e\n" +
+	"VpcNetwork\x12 \n" +
+	"\anetwork\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\anetwork\x12'\n" +
+	"\vsub_network\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\n" +
+	"subNetwork\x12'\n" +
+	"\fnetwork_tags\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\vnetworkTagsB\x0e\n" +
 	"\fnetwork_nameB\v\n" +
 	"\tresourcesB\t\n" +
 	"\aruntimeB\t\n" +
-	"\anetwork\x1a\xcb\x02\n" +
-	"\vTriggerSpec\x12K\n" +
-	"\x04type\x18\x05 \x01(\x0e2/.google.cloud.dataplex.v1.Task.TriggerSpec.TypeB\x06\xe0A\x02\xe0A\x05R\x04type\x12>\n" +
+	"\anetwork\x1a\xce\x02\n" +
+	"\vTriggerSpec\x12J\n" +
+	"\x04type\x18\x05 \x01(\x0e2/.google.cloud.dataplex.v1.Task.TriggerSpec.TypeB\x05\xe2A\x02\x02\x05R\x04type\x12?\n" +
 	"\n" +
-	"start_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\tstartTime\x12\x1f\n" +
-	"\bdisabled\x18\x04 \x01(\bB\x03\xe0A\x01R\bdisabled\x12$\n" +
-	"\vmax_retries\x18\a \x01(\x05B\x03\xe0A\x01R\n" +
-	"maxRetries\x12!\n" +
-	"\bschedule\x18d \x01(\tB\x03\xe0A\x01H\x00R\bschedule\":\n" +
+	"start_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\tstartTime\x12 \n" +
+	"\bdisabled\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\bdisabled\x12%\n" +
+	"\vmax_retries\x18\a \x01(\x05B\x04\xe2A\x01\x01R\n" +
+	"maxRetries\x12\"\n" +
+	"\bschedule\x18d \x01(\tB\x04\xe2A\x01\x01H\x00R\bschedule\":\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tON_DEMAND\x10\x01\x12\r\n" +
 	"\tRECURRING\x10\x02B\t\n" +
-	"\atrigger\x1a\xe1\x02\n" +
-	"\rExecutionSpec\x12O\n" +
-	"\x04args\x18\x04 \x03(\v26.google.cloud.dataplex.v1.Task.ExecutionSpec.ArgsEntryB\x03\xe0A\x01R\x04args\x12,\n" +
-	"\x0fservice_account\x18\x05 \x01(\tB\x03\xe0A\x02R\x0eserviceAccount\x12\x1d\n" +
-	"\aproject\x18\a \x01(\tB\x03\xe0A\x01R\aproject\x12[\n" +
-	"\x1amax_job_execution_lifetime\x18\b \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x17maxJobExecutionLifetime\x12\x1c\n" +
-	"\akms_key\x18\t \x01(\tB\x03\xe0A\x01R\x06kmsKey\x1a7\n" +
+	"\atrigger\x1a\xe6\x02\n" +
+	"\rExecutionSpec\x12P\n" +
+	"\x04args\x18\x04 \x03(\v26.google.cloud.dataplex.v1.Task.ExecutionSpec.ArgsEntryB\x04\xe2A\x01\x01R\x04args\x12-\n" +
+	"\x0fservice_account\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\x0eserviceAccount\x12\x1e\n" +
+	"\aproject\x18\a \x01(\tB\x04\xe2A\x01\x01R\aproject\x12\\\n" +
+	"\x1amax_job_execution_lifetime\x18\b \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x17maxJobExecutionLifetime\x12\x1d\n" +
+	"\akms_key\x18\t \x01(\tB\x04\xe2A\x01\x01R\x06kmsKey\x1a7\n" +
 	"\tArgsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a\x97\x03\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a\x9a\x03\n" +
 	"\x0fSparkTaskConfig\x12+\n" +
 	"\x11main_jar_file_uri\x18d \x01(\tH\x00R\x0emainJarFileUri\x12\x1f\n" +
 	"\n" +
@@ -1584,44 +1584,44 @@ const file_google_cloud_dataplex_v1_tasks_proto_rawDesc = "" +
 	"\x12python_script_file\x18f \x01(\tH\x00R\x10pythonScriptFile\x12(\n" +
 	"\x0fsql_script_file\x18h \x01(\tH\x00R\rsqlScriptFile\x12\x1f\n" +
 	"\n" +
-	"sql_script\x18i \x01(\tH\x00R\tsqlScript\x12 \n" +
-	"\tfile_uris\x18\x03 \x03(\tB\x03\xe0A\x01R\bfileUris\x12&\n" +
-	"\farchive_uris\x18\x04 \x03(\tB\x03\xe0A\x01R\varchiveUris\x12g\n" +
-	"\x13infrastructure_spec\x18\x06 \x01(\v21.google.cloud.dataplex.v1.Task.InfrastructureSpecB\x03\xe0A\x01R\x12infrastructureSpecB\b\n" +
-	"\x06driver\x1a\xe8\x01\n" +
-	"\x12NotebookTaskConfig\x12\x1f\n" +
-	"\bnotebook\x18\x04 \x01(\tB\x03\xe0A\x02R\bnotebook\x12g\n" +
-	"\x13infrastructure_spec\x18\x03 \x01(\v21.google.cloud.dataplex.v1.Task.InfrastructureSpecB\x03\xe0A\x01R\x12infrastructureSpec\x12 \n" +
-	"\tfile_uris\x18\x05 \x03(\tB\x03\xe0A\x01R\bfileUris\x12&\n" +
-	"\farchive_uris\x18\x06 \x03(\tB\x03\xe0A\x01R\varchiveUris\x1a\x96\x01\n" +
-	"\x0fExecutionStatus\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12A\n" +
+	"sql_script\x18i \x01(\tH\x00R\tsqlScript\x12!\n" +
+	"\tfile_uris\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\bfileUris\x12'\n" +
+	"\farchive_uris\x18\x04 \x03(\tB\x04\xe2A\x01\x01R\varchiveUris\x12h\n" +
+	"\x13infrastructure_spec\x18\x06 \x01(\v21.google.cloud.dataplex.v1.Task.InfrastructureSpecB\x04\xe2A\x01\x01R\x12infrastructureSpecB\b\n" +
+	"\x06driver\x1a\xec\x01\n" +
+	"\x12NotebookTaskConfig\x12 \n" +
+	"\bnotebook\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\bnotebook\x12h\n" +
+	"\x13infrastructure_spec\x18\x03 \x01(\v21.google.cloud.dataplex.v1.Task.InfrastructureSpecB\x04\xe2A\x01\x01R\x12infrastructureSpec\x12!\n" +
+	"\tfile_uris\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\bfileUris\x12'\n" +
+	"\farchive_uris\x18\x06 \x03(\tB\x04\xe2A\x01\x01R\varchiveUris\x1a\x98\x01\n" +
+	"\x0fExecutionStatus\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12B\n" +
 	"\n" +
-	"latest_job\x18\t \x01(\v2\x1d.google.cloud.dataplex.v1.JobB\x03\xe0A\x03R\tlatestJob\x1a9\n" +
+	"latest_job\x18\t \x01(\v2\x1d.google.cloud.dataplex.v1.JobB\x04\xe2A\x01\x03R\tlatestJob\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:d\xeaAa\n" +
 	"\x1cdataplex.googleapis.com/Task\x12Aprojects/{project}/locations/{location}/lakes/{lake}/tasks/{task}B\b\n" +
-	"\x06config\"\xc1\b\n" +
-	"\x03Job\x127\n" +
-	"\x04name\x18\x01 \x01(\tB#\xe0A\x03\xfaA\x1d\n" +
-	"\x1bdataplex.googleapis.com/JobR\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12>\n" +
+	"\x06config\"\xcd\b\n" +
+	"\x03Job\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x03\xfaA\x1d\n" +
+	"\x1bdataplex.googleapis.com/JobR\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12?\n" +
 	"\n" +
-	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12>\n" +
-	"\x05state\x18\x05 \x01(\x0e2#.google.cloud.dataplex.v1.Job.StateB\x03\xe0A\x03R\x05state\x12$\n" +
-	"\vretry_count\x18\x06 \x01(\rB\x03\xe0A\x03R\n" +
-	"retryCount\x12D\n" +
-	"\aservice\x18\a \x01(\x0e2%.google.cloud.dataplex.v1.Job.ServiceB\x03\xe0A\x03R\aservice\x12$\n" +
-	"\vservice_job\x18\b \x01(\tB\x03\xe0A\x03R\n" +
-	"serviceJob\x12\x1d\n" +
-	"\amessage\x18\t \x01(\tB\x03\xe0A\x03R\amessage\x12F\n" +
+	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12?\n" +
+	"\x05state\x18\x05 \x01(\x0e2#.google.cloud.dataplex.v1.Job.StateB\x04\xe2A\x01\x03R\x05state\x12%\n" +
+	"\vretry_count\x18\x06 \x01(\rB\x04\xe2A\x01\x03R\n" +
+	"retryCount\x12E\n" +
+	"\aservice\x18\a \x01(\x0e2%.google.cloud.dataplex.v1.Job.ServiceB\x04\xe2A\x01\x03R\aservice\x12%\n" +
+	"\vservice_job\x18\b \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"serviceJob\x12\x1e\n" +
+	"\amessage\x18\t \x01(\tB\x04\xe2A\x01\x03R\amessage\x12G\n" +
 	"\x06labels\x18\n" +
-	" \x03(\v2).google.cloud.dataplex.v1.Job.LabelsEntryB\x03\xe0A\x03R\x06labels\x12D\n" +
-	"\atrigger\x18\v \x01(\x0e2%.google.cloud.dataplex.v1.Job.TriggerB\x03\xe0A\x03R\atrigger\x12X\n" +
-	"\x0eexecution_spec\x18d \x01(\v2,.google.cloud.dataplex.v1.Task.ExecutionSpecB\x03\xe0A\x03R\rexecutionSpec\x1a9\n" +
+	" \x03(\v2).google.cloud.dataplex.v1.Job.LabelsEntryB\x04\xe2A\x01\x03R\x06labels\x12E\n" +
+	"\atrigger\x18\v \x01(\x0e2%.google.cloud.dataplex.v1.Job.TriggerB\x04\xe2A\x01\x03R\atrigger\x12Y\n" +
+	"\x0eexecution_spec\x18d \x01(\v2,.google.cloud.dataplex.v1.Task.ExecutionSpecB\x04\xe2A\x01\x03R\rexecutionSpec\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"0\n" +

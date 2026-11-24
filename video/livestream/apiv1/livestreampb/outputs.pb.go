@@ -2406,29 +2406,29 @@ const file_google_cloud_video_livestream_v1_outputs_proto_rawDesc = "" +
 	"\tcontainer\x18\x03 \x01(\tR\tcontainer\x12-\n" +
 	"\x12elementary_streams\x18\x04 \x03(\tR\x11elementaryStreams\x12\\\n" +
 	"\x10segment_settings\x18\x05 \x01(\v21.google.cloud.video.livestream.v1.SegmentSettingsR\x0fsegmentSettings\x12#\n" +
-	"\rencryption_id\x18\x06 \x01(\tR\fencryptionId\"\xac\x03\n" +
+	"\rencryption_id\x18\x06 \x01(\tR\fencryptionId\"\xaf\x03\n" +
 	"\bManifest\x12\x1b\n" +
-	"\tfile_name\x18\x01 \x01(\tR\bfileName\x12P\n" +
-	"\x04type\x18\x02 \x01(\x0e27.google.cloud.video.livestream.v1.Manifest.ManifestTypeB\x03\xe0A\x02R\x04type\x12$\n" +
-	"\vmux_streams\x18\x03 \x03(\tB\x03\xe0A\x02R\n" +
+	"\tfile_name\x18\x01 \x01(\tR\bfileName\x12Q\n" +
+	"\x04type\x18\x02 \x01(\x0e27.google.cloud.video.livestream.v1.Manifest.ManifestTypeB\x04\xe2A\x01\x02R\x04type\x12%\n" +
+	"\vmux_streams\x18\x03 \x03(\tB\x04\xe2A\x01\x02R\n" +
 	"muxStreams\x12*\n" +
 	"\x11max_segment_count\x18\x04 \x01(\x05R\x0fmaxSegmentCount\x12M\n" +
 	"\x15segment_keep_duration\x18\x05 \x01(\v2\x19.google.protobuf.DurationR\x13segmentKeepDuration\x127\n" +
-	"\x18use_timecode_as_timeline\x18\x06 \x01(\bR\x15useTimecodeAsTimeline\x12\x15\n" +
-	"\x03key\x18\a \x01(\tB\x03\xe0A\x01R\x03key\"@\n" +
+	"\x18use_timecode_as_timeline\x18\x06 \x01(\bR\x15useTimecodeAsTimeline\x12\x16\n" +
+	"\x03key\x18\a \x01(\tB\x04\xe2A\x01\x01R\x03key\"@\n" +
 	"\fManifestType\x12\x1d\n" +
 	"\x19MANIFEST_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03HLS\x10\x01\x12\b\n" +
-	"\x04DASH\x10\x02\"\x82\x01\n" +
-	"\x12DistributionStream\x12\x15\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x02R\x03key\x12!\n" +
-	"\tcontainer\x18\x02 \x01(\tB\x03\xe0A\x02R\tcontainer\x122\n" +
-	"\x12elementary_streams\x18\x03 \x03(\tB\x03\xe0A\x02R\x11elementaryStreams\"\x81\x04\n" +
-	"\fDistribution\x12\x15\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x02R\x03key\x124\n" +
-	"\x13distribution_stream\x18\x02 \x01(\tB\x03\xe0A\x02R\x12distributionStream\x12O\n" +
-	"\x05state\x18\x03 \x01(\x0e24.google.cloud.video.livestream.v1.Distribution.StateB\x03\xe0A\x03R\x05state\x12-\n" +
-	"\x05error\x18\x04 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x12T\n" +
+	"\x04DASH\x10\x02\"\x85\x01\n" +
+	"\x12DistributionStream\x12\x16\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03key\x12\"\n" +
+	"\tcontainer\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tcontainer\x123\n" +
+	"\x12elementary_streams\x18\x03 \x03(\tB\x04\xe2A\x01\x02R\x11elementaryStreams\"\x85\x04\n" +
+	"\fDistribution\x12\x16\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03key\x125\n" +
+	"\x13distribution_stream\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12distributionStream\x12P\n" +
+	"\x05state\x18\x03 \x01(\x0e24.google.cloud.video.livestream.v1.Distribution.StateB\x04\xe2A\x01\x03R\x05state\x12.\n" +
+	"\x05error\x18\x04 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x12T\n" +
 	"\bsrt_push\x18\x05 \x01(\v27.google.cloud.video.livestream.v1.SrtPushOutputEndpointH\x00R\asrtPush\x12W\n" +
 	"\trtmp_push\x18\x06 \x01(\v28.google.cloud.video.livestream.v1.RtmpPushOutputEndpointH\x00R\brtmpPush\"i\n" +
 	"\x05State\x12\x15\n" +
@@ -2439,22 +2439,22 @@ const file_google_cloud_video_livestream_v1_outputs_proto_rawDesc = "" +
 	"\x0eAWAITING_INPUT\x10\b\x12\x10\n" +
 	"\fDISTRIBUTING\x10\tB\n" +
 	"\n" +
-	"\bendpoint\"\xb2\x01\n" +
-	"\x15SrtPushOutputEndpoint\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\x12m\n" +
+	"\bendpoint\"\xb3\x01\n" +
+	"\x15SrtPushOutputEndpoint\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12m\n" +
 	"\x19passphrase_secret_version\x18\x02 \x01(\tB/\xfaA,\n" +
 	"*secretmanager.googleapis.com/SecretVersionH\x00R\x17passphraseSecretVersionB\x13\n" +
-	"\x11passphrase_source\"S\n" +
-	"\x16RtmpPushOutputEndpoint\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\x12\"\n" +
+	"\x11passphrase_source\"U\n" +
+	"\x16RtmpPushOutputEndpoint\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12#\n" +
 	"\n" +
-	"stream_key\x18\x02 \x01(\tB\x03\xe0A\x02R\tstreamKey\"\xc8\x02\n" +
+	"stream_key\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tstreamKey\"\xcb\x02\n" +
 	"\vSpriteSheet\x12\x16\n" +
-	"\x06format\x18\x01 \x01(\tR\x06format\x12$\n" +
-	"\vfile_prefix\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"filePrefix\x123\n" +
-	"\x13sprite_width_pixels\x18\x03 \x01(\x05B\x03\xe0A\x02R\x11spriteWidthPixels\x125\n" +
-	"\x14sprite_height_pixels\x18\x04 \x01(\x05B\x03\xe0A\x02R\x12spriteHeightPixels\x12!\n" +
+	"\x06format\x18\x01 \x01(\tR\x06format\x12%\n" +
+	"\vfile_prefix\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"filePrefix\x124\n" +
+	"\x13sprite_width_pixels\x18\x03 \x01(\x05B\x04\xe2A\x01\x02R\x11spriteWidthPixels\x126\n" +
+	"\x14sprite_height_pixels\x18\x04 \x01(\x05B\x04\xe2A\x01\x02R\x12spriteHeightPixels\x12!\n" +
 	"\fcolumn_count\x18\x05 \x01(\x05R\vcolumnCount\x12\x1b\n" +
 	"\trow_count\x18\x06 \x01(\x05R\browCount\x125\n" +
 	"\binterval\x18\a \x01(\v2\x19.google.protobuf.DurationR\binterval\x12\x18\n" +
@@ -2478,17 +2478,17 @@ const file_google_cloud_video_livestream_v1_outputs_proto_rawDesc = "" +
 	"\rbottom_pixels\x18\x02 \x01(\x05R\fbottomPixels\x12\x1f\n" +
 	"\vleft_pixels\x18\x03 \x01(\x05R\n" +
 	"leftPixels\x12!\n" +
-	"\fright_pixels\x18\x04 \x01(\x05R\vrightPixels\"\x93\n" +
+	"\fright_pixels\x18\x04 \x01(\x05R\vrightPixels\"\xa0\n" +
 	"\n" +
 	"\vVideoStream\x12U\n" +
 	"\x04h264\x18\x14 \x01(\v2?.google.cloud.video.livestream.v1.VideoStream.H264CodecSettingsH\x00R\x04h264\x12U\n" +
-	"\x04h265\x18\x15 \x01(\v2?.google.cloud.video.livestream.v1.VideoStream.H265CodecSettingsH\x00R\x04h265\x1a\xc6\x04\n" +
+	"\x04h265\x18\x15 \x01(\v2?.google.cloud.video.livestream.v1.VideoStream.H265CodecSettingsH\x00R\x04h265\x1a\xc8\x04\n" +
 	"\x11H264CodecSettings\x12!\n" +
 	"\fwidth_pixels\x18\x01 \x01(\x05R\vwidthPixels\x12#\n" +
-	"\rheight_pixels\x18\x02 \x01(\x05R\fheightPixels\x12\"\n" +
+	"\rheight_pixels\x18\x02 \x01(\x05R\fheightPixels\x12#\n" +
 	"\n" +
-	"frame_rate\x18\x03 \x01(\x01B\x03\xe0A\x02R\tframeRate\x12$\n" +
-	"\vbitrate_bps\x18\x04 \x01(\x05B\x03\xe0A\x02R\n" +
+	"frame_rate\x18\x03 \x01(\x01B\x04\xe2A\x01\x02R\tframeRate\x12%\n" +
+	"\vbitrate_bps\x18\x04 \x01(\x05B\x04\xe2A\x01\x02R\n" +
 	"bitrateBps\x12$\n" +
 	"\x0eallow_open_gop\x18\x06 \x01(\bR\fallowOpenGop\x12(\n" +
 	"\x0fgop_frame_count\x18\a \x01(\x05H\x00R\rgopFrameCount\x12>\n" +
@@ -2504,55 +2504,55 @@ const file_google_cloud_video_livestream_v1_outputs_proto_rawDesc = "" +
 	"\aprofile\x18\x0f \x01(\tR\aprofile\x12\x12\n" +
 	"\x04tune\x18\x10 \x01(\tR\x04tuneB\n" +
 	"\n" +
-	"\bgop_mode\x1a\xfa\x03\n" +
-	"\x11H265CodecSettings\x12&\n" +
-	"\fwidth_pixels\x18\x01 \x01(\x05B\x03\xe0A\x01R\vwidthPixels\x12(\n" +
-	"\rheight_pixels\x18\x02 \x01(\x05B\x03\xe0A\x01R\fheightPixels\x12\"\n" +
+	"\bgop_mode\x1a\x85\x04\n" +
+	"\x11H265CodecSettings\x12'\n" +
+	"\fwidth_pixels\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\vwidthPixels\x12)\n" +
+	"\rheight_pixels\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\fheightPixels\x12#\n" +
 	"\n" +
-	"frame_rate\x18\x03 \x01(\x01B\x03\xe0A\x02R\tframeRate\x12$\n" +
-	"\vbitrate_bps\x18\x04 \x01(\x05B\x03\xe0A\x02R\n" +
-	"bitrateBps\x12-\n" +
-	"\x0fgop_frame_count\x18\a \x01(\x05B\x03\xe0A\x01H\x00R\rgopFrameCount\x12C\n" +
-	"\fgop_duration\x18\b \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01H\x00R\vgopDuration\x12'\n" +
-	"\rvbv_size_bits\x18\t \x01(\x05B\x03\xe0A\x01R\vvbvSizeBits\x12/\n" +
+	"frame_rate\x18\x03 \x01(\x01B\x04\xe2A\x01\x02R\tframeRate\x12%\n" +
+	"\vbitrate_bps\x18\x04 \x01(\x05B\x04\xe2A\x01\x02R\n" +
+	"bitrateBps\x12.\n" +
+	"\x0fgop_frame_count\x18\a \x01(\x05B\x04\xe2A\x01\x01H\x00R\rgopFrameCount\x12D\n" +
+	"\fgop_duration\x18\b \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01H\x00R\vgopDuration\x12(\n" +
+	"\rvbv_size_bits\x18\t \x01(\x05B\x04\xe2A\x01\x01R\vvbvSizeBits\x120\n" +
 	"\x11vbv_fullness_bits\x18\n" +
-	" \x01(\x05B\x03\xe0A\x01R\x0fvbvFullnessBits\x12 \n" +
-	"\tb_pyramid\x18\v \x01(\bB\x03\xe0A\x01R\bbPyramid\x12'\n" +
-	"\rb_frame_count\x18\f \x01(\x05B\x03\xe0A\x01R\vbFrameCount\x12$\n" +
-	"\vaq_strength\x18\r \x01(\x01B\x03\xe0A\x01R\n" +
+	" \x01(\x05B\x04\xe2A\x01\x01R\x0fvbvFullnessBits\x12!\n" +
+	"\tb_pyramid\x18\v \x01(\bB\x04\xe2A\x01\x01R\bbPyramid\x12(\n" +
+	"\rb_frame_count\x18\f \x01(\x05B\x04\xe2A\x01\x01R\vbFrameCount\x12%\n" +
+	"\vaq_strength\x18\r \x01(\x01B\x04\xe2A\x01\x01R\n" +
 	"aqStrengthB\n" +
 	"\n" +
 	"\bgop_modeB\x10\n" +
-	"\x0ecodec_settings\"\xfb\x03\n" +
+	"\x0ecodec_settings\"\x80\x04\n" +
 	"\vAudioStream\x12\x1a\n" +
 	"\btransmux\x18\b \x01(\bR\btransmux\x12\x14\n" +
-	"\x05codec\x18\x01 \x01(\tR\x05codec\x12$\n" +
-	"\vbitrate_bps\x18\x02 \x01(\x05B\x03\xe0A\x02R\n" +
+	"\x05codec\x18\x01 \x01(\tR\x05codec\x12%\n" +
+	"\vbitrate_bps\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\n" +
 	"bitrateBps\x12#\n" +
 	"\rchannel_count\x18\x03 \x01(\x05R\fchannelCount\x12%\n" +
 	"\x0echannel_layout\x18\x04 \x03(\tR\rchannelLayout\x12T\n" +
 	"\amapping\x18\x05 \x03(\v2:.google.cloud.video.livestream.v1.AudioStream.AudioMappingR\amapping\x12*\n" +
-	"\x11sample_rate_hertz\x18\x06 \x01(\x05R\x0fsampleRateHertz\x1a\xc5\x01\n" +
-	"\fAudioMapping\x12 \n" +
-	"\tinput_key\x18\x06 \x01(\tB\x03\xe0A\x02R\binputKey\x12$\n" +
-	"\vinput_track\x18\x02 \x01(\x05B\x03\xe0A\x02R\n" +
-	"inputTrack\x12(\n" +
-	"\rinput_channel\x18\x03 \x01(\x05B\x03\xe0A\x02R\finputChannel\x12*\n" +
-	"\x0eoutput_channel\x18\x04 \x01(\x05B\x03\xe0A\x02R\routputChannel\x12\x17\n" +
-	"\again_db\x18\x05 \x01(\x01R\x06gainDb\"\xc1\x03\n" +
+	"\x11sample_rate_hertz\x18\x06 \x01(\x05R\x0fsampleRateHertz\x1a\xc9\x01\n" +
+	"\fAudioMapping\x12!\n" +
+	"\tinput_key\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\binputKey\x12%\n" +
+	"\vinput_track\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\n" +
+	"inputTrack\x12)\n" +
+	"\rinput_channel\x18\x03 \x01(\x05B\x04\xe2A\x01\x02R\finputChannel\x12+\n" +
+	"\x0eoutput_channel\x18\x04 \x01(\x05B\x04\xe2A\x01\x02R\routputChannel\x12\x17\n" +
+	"\again_db\x18\x05 \x01(\x01R\x06gainDb\"\xca\x03\n" +
 	"\n" +
-	"TextStream\x12\x19\n" +
-	"\x05codec\x18\x01 \x01(\tB\x03\xe0A\x02R\x05codec\x12(\n" +
-	"\rlanguage_code\x18\x02 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12&\n" +
-	"\fdisplay_name\x18\x04 \x01(\tB\x03\xe0A\x01R\vdisplayName\x121\n" +
-	"\x12output_cea_channel\x18\x05 \x01(\tB\x03\xe0A\x01R\x10outputCeaChannel\x12W\n" +
-	"\amapping\x18\x03 \x03(\v28.google.cloud.video.livestream.v1.TextStream.TextMappingB\x03\xe0A\x01R\amapping\x1a\xb9\x01\n" +
-	"\vTextMapping\x12 \n" +
-	"\tinput_key\x18\x04 \x01(\tB\x03\xe0A\x01R\binputKey\x12$\n" +
-	"\vinput_track\x18\x02 \x01(\x05B\x03\xe0A\x01R\n" +
-	"inputTrack\x12/\n" +
-	"\x11input_cea_channel\x18\x05 \x01(\tB\x03\xe0A\x01R\x0finputCeaChannel\x121\n" +
-	"\x12from_language_code\x18\x06 \x01(\tB\x03\xe0A\x01R\x10fromLanguageCode\"W\n" +
+	"TextStream\x12\x1a\n" +
+	"\x05codec\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05codec\x12)\n" +
+	"\rlanguage_code\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12'\n" +
+	"\fdisplay_name\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x122\n" +
+	"\x12output_cea_channel\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x10outputCeaChannel\x12X\n" +
+	"\amapping\x18\x03 \x03(\v28.google.cloud.video.livestream.v1.TextStream.TextMappingB\x04\xe2A\x01\x01R\amapping\x1a\xbd\x01\n" +
+	"\vTextMapping\x12!\n" +
+	"\tinput_key\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\binputKey\x12%\n" +
+	"\vinput_track\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\n" +
+	"inputTrack\x120\n" +
+	"\x11input_cea_channel\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x0finputCeaChannel\x122\n" +
+	"\x12from_language_code\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x10fromLanguageCode\"W\n" +
 	"\x0fSegmentSettings\x12D\n" +
 	"\x10segment_duration\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\x0fsegmentDuration\"\xc9\x02\n" +
 	"\x0eTimecodeConfig\x12W\n" +

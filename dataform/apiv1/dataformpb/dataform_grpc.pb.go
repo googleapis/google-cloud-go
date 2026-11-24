@@ -93,6 +93,7 @@ const (
 	Dataform_ListCompilationResults_FullMethodName             = "/google.cloud.dataform.v1.Dataform/ListCompilationResults"
 	Dataform_GetCompilationResult_FullMethodName               = "/google.cloud.dataform.v1.Dataform/GetCompilationResult"
 	Dataform_CreateCompilationResult_FullMethodName            = "/google.cloud.dataform.v1.Dataform/CreateCompilationResult"
+	Dataform_CreateCompilationResultLongRunning_FullMethodName = "/google.cloud.dataform.v1.Dataform/CreateCompilationResultLongRunning"
 	Dataform_QueryCompilationResultActions_FullMethodName      = "/google.cloud.dataform.v1.Dataform/QueryCompilationResultActions"
 	Dataform_ListWorkflowConfigs_FullMethodName                = "/google.cloud.dataform.v1.Dataform/ListWorkflowConfigs"
 	Dataform_GetWorkflowConfig_FullMethodName                  = "/google.cloud.dataform.v1.Dataform/GetWorkflowConfig"
@@ -251,6 +252,9 @@ type DataformClient interface {
 	GetCompilationResult(ctx context.Context, in *GetCompilationResultRequest, opts ...grpc.CallOption) (*CompilationResult, error)
 	// Creates a new CompilationResult in a given project and location.
 	CreateCompilationResult(ctx context.Context, in *CreateCompilationResultRequest, opts ...grpc.CallOption) (*CompilationResult, error)
+	// Creates a new CompilationResult in a given project and location
+	// asynchronously.
+	CreateCompilationResultLongRunning(ctx context.Context, in *CreateCompilationResultRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Returns CompilationResultActions in a given CompilationResult.
 	QueryCompilationResultActions(ctx context.Context, in *QueryCompilationResultActionsRequest, opts ...grpc.CallOption) (*QueryCompilationResultActionsResponse, error)
 	// Lists WorkflowConfigs in a given Repository.
@@ -820,6 +824,15 @@ func (c *dataformClient) CreateCompilationResult(ctx context.Context, in *Create
 	return out, nil
 }
 
+func (c *dataformClient) CreateCompilationResultLongRunning(ctx context.Context, in *CreateCompilationResultRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Dataform_CreateCompilationResultLongRunning_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *dataformClient) QueryCompilationResultActions(ctx context.Context, in *QueryCompilationResultActionsRequest, opts ...grpc.CallOption) (*QueryCompilationResultActionsResponse, error) {
 	out := new(QueryCompilationResultActionsResponse)
 	err := c.cc.Invoke(ctx, Dataform_QueryCompilationResultActions_FullMethodName, in, out, opts...)
@@ -1112,6 +1125,9 @@ type DataformServer interface {
 	GetCompilationResult(context.Context, *GetCompilationResultRequest) (*CompilationResult, error)
 	// Creates a new CompilationResult in a given project and location.
 	CreateCompilationResult(context.Context, *CreateCompilationResultRequest) (*CompilationResult, error)
+	// Creates a new CompilationResult in a given project and location
+	// asynchronously.
+	CreateCompilationResultLongRunning(context.Context, *CreateCompilationResultRequest) (*longrunningpb.Operation, error)
 	// Returns CompilationResultActions in a given CompilationResult.
 	QueryCompilationResultActions(context.Context, *QueryCompilationResultActionsRequest) (*QueryCompilationResultActionsResponse, error)
 	// Lists WorkflowConfigs in a given Repository.
@@ -1340,6 +1356,9 @@ func (UnimplementedDataformServer) GetCompilationResult(context.Context, *GetCom
 }
 func (UnimplementedDataformServer) CreateCompilationResult(context.Context, *CreateCompilationResultRequest) (*CompilationResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCompilationResult not implemented")
+}
+func (UnimplementedDataformServer) CreateCompilationResultLongRunning(context.Context, *CreateCompilationResultRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateCompilationResultLongRunning not implemented")
 }
 func (UnimplementedDataformServer) QueryCompilationResultActions(context.Context, *QueryCompilationResultActionsRequest) (*QueryCompilationResultActionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryCompilationResultActions not implemented")
@@ -2412,6 +2431,24 @@ func _Dataform_CreateCompilationResult_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Dataform_CreateCompilationResultLongRunning_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateCompilationResultRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).CreateCompilationResultLongRunning(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_CreateCompilationResultLongRunning_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).CreateCompilationResultLongRunning(ctx, req.(*CreateCompilationResultRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Dataform_QueryCompilationResultActions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryCompilationResultActionsRequest)
 	if err := dec(in); err != nil {
@@ -2948,6 +2985,10 @@ var Dataform_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateCompilationResult",
 			Handler:    _Dataform_CreateCompilationResult_Handler,
+		},
+		{
+			MethodName: "CreateCompilationResultLongRunning",
+			Handler:    _Dataform_CreateCompilationResultLongRunning_Handler,
 		},
 		{
 			MethodName: "QueryCompilationResultActions",

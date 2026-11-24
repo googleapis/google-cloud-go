@@ -2592,50 +2592,50 @@ var File_google_cloud_dialogflow_cx_v3beta1_trace_proto protoreflect.FileDescrip
 
 const file_google_cloud_dialogflow_cx_v3beta1_trace_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/dialogflow/cx/v3beta1/trace.proto\x12\"google.cloud.dialogflow.cx.v3beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a>google/cloud/dialogflow/cx/v3beta1/data_store_connection.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb0\x06\n" +
+	".google/cloud/dialogflow/cx/v3beta1/trace.proto\x12\"google.cloud.dialogflow.cx.v3beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a>google/cloud/dialogflow/cx/v3beta1/data_store_connection.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb3\x06\n" +
 	"\n" +
 	"TraceBlock\x12s\n" +
 	"\x17playbook_trace_metadata\x18\x01 \x01(\v29.google.cloud.dialogflow.cx.v3beta1.PlaybookTraceMetadataH\x00R\x15playbookTraceMetadata\x12g\n" +
 	"\x13flow_trace_metadata\x18\x02 \x01(\v25.google.cloud.dialogflow.cx.v3beta1.FlowTraceMetadataH\x00R\x11flowTraceMetadata\x12|\n" +
 	"\x1aspeech_processing_metadata\x18\b \x01(\v2<.google.cloud.dialogflow.cx.v3beta1.SpeechProcessingMetadataH\x00R\x18speechProcessingMetadata\x12D\n" +
-	"\aactions\x18\x03 \x03(\v2*.google.cloud.dialogflow.cx.v3beta1.ActionR\aactions\x12>\n" +
+	"\aactions\x18\x03 \x03(\v2*.google.cloud.dialogflow.cx.v3beta1.ActionR\aactions\x12?\n" +
 	"\n" +
-	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12D\n" +
-	"\rcomplete_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fcompleteTime\x12G\n" +
-	"\x10input_parameters\x18\t \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x0finputParameters\x12I\n" +
-	"\x11output_parameters\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x10outputParameters\x12T\n" +
-	"\tend_state\x18\a \x01(\x0e2/.google.cloud.dialogflow.cx.v3beta1.OutputStateB\x06\xe0A\x03\xe0A\x01R\bendStateB\x10\n" +
-	"\x0etrace_metadata\"B\n" +
-	"\x18SpeechProcessingMetadata\x12&\n" +
-	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x03R\vdisplayName\"\x87\x01\n" +
-	"\x15PlaybookTraceMetadata\x12F\n" +
-	"\bplaybook\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dialogflow.googleapis.com/PlaybookR\bplaybook\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\"w\n" +
-	"\x11FlowTraceMetadata\x12:\n" +
-	"\x04flow\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edialogflow.googleapis.com/FlowR\x04flow\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\"\xd9\x12\n" +
-	"\x06Action\x12_\n" +
-	"\x0euser_utterance\x18\x01 \x01(\v21.google.cloud.dialogflow.cx.v3beta1.UserUtteranceB\x03\xe0A\x01H\x00R\ruserUtterance\x12F\n" +
-	"\x05event\x18\a \x01(\v2).google.cloud.dialogflow.cx.v3beta1.EventB\x03\xe0A\x01H\x00R\x05event\x12b\n" +
-	"\x0fagent_utterance\x18\x02 \x01(\v22.google.cloud.dialogflow.cx.v3beta1.AgentUtteranceB\x03\xe0A\x01H\x00R\x0eagentUtterance\x12M\n" +
-	"\btool_use\x18\x03 \x01(\v2+.google.cloud.dialogflow.cx.v3beta1.ToolUseB\x03\xe0A\x01H\x00R\atoolUse\x12P\n" +
-	"\bllm_call\x18\x0e \x01(\v2+.google.cloud.dialogflow.cx.v3beta1.LlmCallB\x06\xe0A\x03\xe0A\x01H\x00R\allmCall\x12c\n" +
-	"\fintent_match\x18\x11 \x01(\v26.google.cloud.dialogflow.cx.v3beta1.Action.IntentMatchB\x06\xe0A\x03\xe0A\x01H\x00R\vintentMatch\x12p\n" +
-	"\x11flow_state_update\x18\x12 \x01(\v2:.google.cloud.dialogflow.cx.v3beta1.Action.FlowStateUpdateB\x06\xe0A\x03\xe0A\x01H\x00R\x0fflowStateUpdate\x12n\n" +
-	"\x13playbook_invocation\x18\x04 \x01(\v26.google.cloud.dialogflow.cx.v3beta1.PlaybookInvocationB\x03\xe0A\x01H\x00R\x12playbookInvocation\x12b\n" +
-	"\x0fflow_invocation\x18\x05 \x01(\v22.google.cloud.dialogflow.cx.v3beta1.FlowInvocationB\x03\xe0A\x01H\x00R\x0eflowInvocation\x12n\n" +
-	"\x13playbook_transition\x18\f \x01(\v26.google.cloud.dialogflow.cx.v3beta1.PlaybookTransitionB\x03\xe0A\x01H\x00R\x12playbookTransition\x12b\n" +
-	"\x0fflow_transition\x18\r \x01(\v22.google.cloud.dialogflow.cx.v3beta1.FlowTransitionB\x03\xe0A\x01H\x00R\x0eflowTransition\x12G\n" +
-	"\x03tts\x18\x13 \x01(\v2..google.cloud.dialogflow.cx.v3beta1.Action.TTSB\x03\xe0A\x01H\x00R\x03tts\x12G\n" +
-	"\x03stt\x18\x14 \x01(\v2..google.cloud.dialogflow.cx.v3beta1.Action.STTB\x03\xe0A\x01H\x00R\x03stt\x12&\n" +
-	"\fdisplay_name\x18\x0f \x01(\tB\x03\xe0A\x03R\vdisplayName\x12>\n" +
+	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12E\n" +
+	"\rcomplete_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fcompleteTime\x12H\n" +
+	"\x10input_parameters\x18\t \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x0finputParameters\x12J\n" +
+	"\x11output_parameters\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x10outputParameters\x12S\n" +
+	"\tend_state\x18\a \x01(\x0e2/.google.cloud.dialogflow.cx.v3beta1.OutputStateB\x05\xe2A\x02\x03\x01R\bendStateB\x10\n" +
+	"\x0etrace_metadata\"C\n" +
+	"\x18SpeechProcessingMetadata\x12'\n" +
+	"\fdisplay_name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\"\x89\x01\n" +
+	"\x15PlaybookTraceMetadata\x12G\n" +
+	"\bplaybook\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dialogflow.googleapis.com/PlaybookR\bplaybook\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\"y\n" +
+	"\x11FlowTraceMetadata\x12;\n" +
+	"\x04flow\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edialogflow.googleapis.com/FlowR\x04flow\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\"\xe3\x12\n" +
+	"\x06Action\x12`\n" +
+	"\x0euser_utterance\x18\x01 \x01(\v21.google.cloud.dialogflow.cx.v3beta1.UserUtteranceB\x04\xe2A\x01\x01H\x00R\ruserUtterance\x12G\n" +
+	"\x05event\x18\a \x01(\v2).google.cloud.dialogflow.cx.v3beta1.EventB\x04\xe2A\x01\x01H\x00R\x05event\x12c\n" +
+	"\x0fagent_utterance\x18\x02 \x01(\v22.google.cloud.dialogflow.cx.v3beta1.AgentUtteranceB\x04\xe2A\x01\x01H\x00R\x0eagentUtterance\x12N\n" +
+	"\btool_use\x18\x03 \x01(\v2+.google.cloud.dialogflow.cx.v3beta1.ToolUseB\x04\xe2A\x01\x01H\x00R\atoolUse\x12O\n" +
+	"\bllm_call\x18\x0e \x01(\v2+.google.cloud.dialogflow.cx.v3beta1.LlmCallB\x05\xe2A\x02\x03\x01H\x00R\allmCall\x12b\n" +
+	"\fintent_match\x18\x11 \x01(\v26.google.cloud.dialogflow.cx.v3beta1.Action.IntentMatchB\x05\xe2A\x02\x03\x01H\x00R\vintentMatch\x12o\n" +
+	"\x11flow_state_update\x18\x12 \x01(\v2:.google.cloud.dialogflow.cx.v3beta1.Action.FlowStateUpdateB\x05\xe2A\x02\x03\x01H\x00R\x0fflowStateUpdate\x12o\n" +
+	"\x13playbook_invocation\x18\x04 \x01(\v26.google.cloud.dialogflow.cx.v3beta1.PlaybookInvocationB\x04\xe2A\x01\x01H\x00R\x12playbookInvocation\x12c\n" +
+	"\x0fflow_invocation\x18\x05 \x01(\v22.google.cloud.dialogflow.cx.v3beta1.FlowInvocationB\x04\xe2A\x01\x01H\x00R\x0eflowInvocation\x12o\n" +
+	"\x13playbook_transition\x18\f \x01(\v26.google.cloud.dialogflow.cx.v3beta1.PlaybookTransitionB\x04\xe2A\x01\x01H\x00R\x12playbookTransition\x12c\n" +
+	"\x0fflow_transition\x18\r \x01(\v22.google.cloud.dialogflow.cx.v3beta1.FlowTransitionB\x04\xe2A\x01\x01H\x00R\x0eflowTransition\x12H\n" +
+	"\x03tts\x18\x13 \x01(\v2..google.cloud.dialogflow.cx.v3beta1.Action.TTSB\x04\xe2A\x01\x01H\x00R\x03tts\x12H\n" +
+	"\x03stt\x18\x14 \x01(\v2..google.cloud.dialogflow.cx.v3beta1.Action.STTB\x04\xe2A\x01\x01H\x00R\x03stt\x12'\n" +
+	"\fdisplay_name\x18\x0f \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12?\n" +
 	"\n" +
-	"start_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12D\n" +
-	"\rcomplete_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fcompleteTime\x12]\n" +
-	"\x13sub_execution_steps\x18\v \x03(\v2(.google.cloud.dialogflow.cx.v3beta1.SpanB\x03\xe0A\x01R\x11subExecutionSteps\x12J\n" +
-	"\x06status\x18\x10 \x01(\v2*.google.cloud.dialogflow.cx.v3beta1.StatusB\x06\xe0A\x01\xe0A\x03R\x06status\x1a\xae\x02\n" +
+	"start_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12E\n" +
+	"\rcomplete_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fcompleteTime\x12^\n" +
+	"\x13sub_execution_steps\x18\v \x03(\v2(.google.cloud.dialogflow.cx.v3beta1.SpanB\x04\xe2A\x01\x01R\x11subExecutionSteps\x12I\n" +
+	"\x06status\x18\x10 \x01(\v2*.google.cloud.dialogflow.cx.v3beta1.StatusB\x05\xe2A\x02\x01\x03R\x06status\x1a\xae\x02\n" +
 	"\vIntentMatch\x12m\n" +
 	"\x0fmatched_intents\x18\x01 \x03(\v2D.google.cloud.dialogflow.cx.v3beta1.Action.IntentMatch.MatchedIntentR\x0ematchedIntents\x1a\xaf\x01\n" +
 	"\rMatchedIntent\x12\x1b\n" +
@@ -2659,85 +2659,85 @@ const file_google_cloud_dialogflow_cx_v3beta1_trace_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x1a\x05\n" +
 	"\x03TTS\x1a\x05\n" +
 	"\x03STTB\b\n" +
-	"\x06action\"k\n" +
-	"\rUserUtterance\x12\x17\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x02R\x04text\x12&\n" +
-	"\faudio_tokens\x18\x02 \x03(\x05B\x03\xe0A\x01R\vaudioTokens\x12\x19\n" +
-	"\x05audio\x18\x03 \x01(\fB\x03\xe0A\x01R\x05audio\"H\n" +
-	"\x05Event\x12\x19\n" +
-	"\x05event\x18\x01 \x01(\tB\x03\xe0A\x02R\x05event\x12\x19\n" +
-	"\x04text\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\x04textB\t\n" +
-	"\apayload\"]\n" +
-	"\x0eAgentUtterance\x12\x17\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x02R\x04text\x122\n" +
-	"\x12require_generation\x18\x02 \x01(\bB\x03\xe0A\x01R\x11requireGeneration\"\xb2\x06\n" +
-	"\aToolUse\x12:\n" +
-	"\x04tool\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edialogflow.googleapis.com/ToolR\x04tool\x12&\n" +
-	"\fdisplay_name\x18\b \x01(\tB\x03\xe0A\x03R\vdisplayName\x12\x1b\n" +
-	"\x06action\x18\x02 \x01(\tB\x03\xe0A\x01R\x06action\x12T\n" +
-	"\x17input_action_parameters\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x15inputActionParameters\x12V\n" +
-	"\x18output_action_parameters\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x16outputActionParameters\x12x\n" +
-	"\x15data_store_tool_trace\x18\a \x01(\v2>.google.cloud.dialogflow.cx.v3beta1.ToolUse.DataStoreToolTraceB\x03\xe0A\x01H\x00R\x12dataStoreToolTrace\x12q\n" +
-	"\x12webhook_tool_trace\x18\t \x01(\v2<.google.cloud.dialogflow.cx.v3beta1.ToolUse.WebhookToolTraceB\x03\xe0A\x01H\x00R\x10webhookToolTrace\x1a\x9d\x01\n" +
-	"\x12DataStoreToolTrace\x12\x86\x01\n" +
-	"\x1ddata_store_connection_signals\x18\x01 \x01(\v2>.google.cloud.dialogflow.cx.v3beta1.DataStoreConnectionSignalsB\x03\xe0A\x01R\x1adataStoreConnectionSignals\x1a^\n" +
-	"\x10WebhookToolTrace\x12$\n" +
-	"\vwebhook_tag\x18\x01 \x01(\tB\x03\xe0A\x01R\n" +
-	"webhookTag\x12$\n" +
-	"\vwebhook_uri\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
+	"\x06action\"n\n" +
+	"\rUserUtterance\x12\x18\n" +
+	"\x04text\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04text\x12'\n" +
+	"\faudio_tokens\x18\x02 \x03(\x05B\x04\xe2A\x01\x01R\vaudioTokens\x12\x1a\n" +
+	"\x05audio\x18\x03 \x01(\fB\x04\xe2A\x01\x01R\x05audio\"J\n" +
+	"\x05Event\x12\x1a\n" +
+	"\x05event\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05event\x12\x1a\n" +
+	"\x04text\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\x04textB\t\n" +
+	"\apayload\"_\n" +
+	"\x0eAgentUtterance\x12\x18\n" +
+	"\x04text\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04text\x123\n" +
+	"\x12require_generation\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x11requireGeneration\"\xbc\x06\n" +
+	"\aToolUse\x12;\n" +
+	"\x04tool\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edialogflow.googleapis.com/ToolR\x04tool\x12'\n" +
+	"\fdisplay_name\x18\b \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12\x1c\n" +
+	"\x06action\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06action\x12U\n" +
+	"\x17input_action_parameters\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x15inputActionParameters\x12W\n" +
+	"\x18output_action_parameters\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x16outputActionParameters\x12y\n" +
+	"\x15data_store_tool_trace\x18\a \x01(\v2>.google.cloud.dialogflow.cx.v3beta1.ToolUse.DataStoreToolTraceB\x04\xe2A\x01\x01H\x00R\x12dataStoreToolTrace\x12r\n" +
+	"\x12webhook_tool_trace\x18\t \x01(\v2<.google.cloud.dialogflow.cx.v3beta1.ToolUse.WebhookToolTraceB\x04\xe2A\x01\x01H\x00R\x10webhookToolTrace\x1a\x9e\x01\n" +
+	"\x12DataStoreToolTrace\x12\x87\x01\n" +
+	"\x1ddata_store_connection_signals\x18\x01 \x01(\v2>.google.cloud.dialogflow.cx.v3beta1.DataStoreConnectionSignalsB\x04\xe2A\x01\x01R\x1adataStoreConnectionSignals\x1a`\n" +
+	"\x10WebhookToolTrace\x12%\n" +
+	"\vwebhook_tag\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"webhookTag\x12%\n" +
+	"\vwebhook_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
 	"webhookUriB\v\n" +
-	"\tToolTrace\"\x88\x06\n" +
+	"\tToolTrace\"\x89\x06\n" +
 	"\aLlmCall\x12k\n" +
 	"\x12retrieved_examples\x18\x01 \x03(\v2<.google.cloud.dialogflow.cx.v3beta1.LlmCall.RetrievedExampleR\x11retrievedExamples\x12W\n" +
 	"\vtoken_count\x18\x02 \x01(\v26.google.cloud.dialogflow.cx.v3beta1.LlmCall.TokenCountR\n" +
 	"tokenCount\x12\x14\n" +
 	"\x05model\x18\x03 \x01(\tR\x05model\x12 \n" +
-	"\vtemperature\x18\x04 \x01(\x02R\vtemperature\x1a\x86\x02\n" +
+	"\vtemperature\x18\x04 \x01(\x02R\vtemperature\x1a\x87\x02\n" +
 	"\x10RetrievedExample\x12\x1d\n" +
 	"\n" +
 	"example_id\x18\x01 \x01(\tR\texampleId\x120\n" +
 	"\x14example_display_name\x18\x02 \x01(\tR\x12exampleDisplayName\x12d\n" +
-	"\x12retrieval_strategy\x18\x03 \x01(\x0e25.google.cloud.dialogflow.cx.v3beta1.RetrievalStrategyR\x11retrievalStrategy\x12;\n" +
-	"\x17matched_retrieval_label\x18\x0e \x01(\tB\x03\xe0A\x01R\x15matchedRetrievalLabel\x1a\xf5\x01\n" +
+	"\x12retrieval_strategy\x18\x03 \x01(\x0e25.google.cloud.dialogflow.cx.v3beta1.RetrievalStrategyR\x11retrievalStrategy\x12<\n" +
+	"\x17matched_retrieval_label\x18\x0e \x01(\tB\x04\xe2A\x01\x01R\x15matchedRetrievalLabel\x1a\xf5\x01\n" +
 	"\n" +
 	"TokenCount\x125\n" +
 	"\x17total_input_token_count\x18\x01 \x01(\x03R\x14totalInputTokenCount\x12G\n" +
 	" conversation_context_token_count\x18\x03 \x01(\x03R\x1dconversationContextTokenCount\x12.\n" +
 	"\x13example_token_count\x18\x04 \x01(\x03R\x11exampleTokenCount\x127\n" +
-	"\x18total_output_token_count\x18\x05 \x01(\x03R\x15totalOutputTokenCount\"\xa2\x03\n" +
-	"\x12PlaybookInvocation\x12F\n" +
-	"\bplaybook\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dialogflow.googleapis.com/PlaybookR\bplaybook\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12]\n" +
-	"\x0eplaybook_input\x18\x02 \x01(\v21.google.cloud.dialogflow.cx.v3beta1.PlaybookInputB\x03\xe0A\x01R\rplaybookInput\x12`\n" +
-	"\x0fplaybook_output\x18\x03 \x01(\v22.google.cloud.dialogflow.cx.v3beta1.PlaybookOutputB\x03\xe0A\x01R\x0eplaybookOutput\x12[\n" +
-	"\x0eplaybook_state\x18\x04 \x01(\x0e2/.google.cloud.dialogflow.cx.v3beta1.OutputStateB\x03\xe0A\x02R\rplaybookState\"\xf7\x02\n" +
-	"\x0eFlowInvocation\x12:\n" +
-	"\x04flow\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edialogflow.googleapis.com/FlowR\x04flow\x12&\n" +
-	"\fdisplay_name\x18\a \x01(\tB\x03\xe0A\x03R\vdisplayName\x12T\n" +
-	"\x17input_action_parameters\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x15inputActionParameters\x12V\n" +
-	"\x18output_action_parameters\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x16outputActionParameters\x12S\n" +
+	"\x18total_output_token_count\x18\x05 \x01(\x03R\x15totalOutputTokenCount\"\xa7\x03\n" +
+	"\x12PlaybookInvocation\x12G\n" +
+	"\bplaybook\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dialogflow.googleapis.com/PlaybookR\bplaybook\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12^\n" +
+	"\x0eplaybook_input\x18\x02 \x01(\v21.google.cloud.dialogflow.cx.v3beta1.PlaybookInputB\x04\xe2A\x01\x01R\rplaybookInput\x12a\n" +
+	"\x0fplaybook_output\x18\x03 \x01(\v22.google.cloud.dialogflow.cx.v3beta1.PlaybookOutputB\x04\xe2A\x01\x01R\x0eplaybookOutput\x12\\\n" +
+	"\x0eplaybook_state\x18\x04 \x01(\x0e2/.google.cloud.dialogflow.cx.v3beta1.OutputStateB\x04\xe2A\x01\x02R\rplaybookState\"\xfc\x02\n" +
+	"\x0eFlowInvocation\x12;\n" +
+	"\x04flow\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edialogflow.googleapis.com/FlowR\x04flow\x12'\n" +
+	"\fdisplay_name\x18\a \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12U\n" +
+	"\x17input_action_parameters\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x15inputActionParameters\x12W\n" +
+	"\x18output_action_parameters\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x16outputActionParameters\x12T\n" +
 	"\n" +
-	"flow_state\x18\x04 \x01(\x0e2/.google.cloud.dialogflow.cx.v3beta1.OutputStateB\x03\xe0A\x02R\tflowState\"\xd9\x01\n" +
-	"\x12PlaybookTransition\x12F\n" +
-	"\bplaybook\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dialogflow.googleapis.com/PlaybookR\bplaybook\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12S\n" +
-	"\x17input_action_parameters\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x02\x18\x01R\x15inputActionParameters\"\xc9\x01\n" +
-	"\x0eFlowTransition\x12:\n" +
-	"\x04flow\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edialogflow.googleapis.com/FlowR\x04flow\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12S\n" +
-	"\x17input_action_parameters\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x02\x18\x01R\x15inputActionParameters\"\xa5\x01\n" +
-	"\rPlaybookInput\x12I\n" +
-	"\x1epreceding_conversation_summary\x18\x01 \x01(\tB\x03\xe0A\x01R\x1cprecedingConversationSummary\x12I\n" +
-	"\x11action_parameters\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x10actionParameters\"\xb7\x02\n" +
-	"\x0ePlaybookOutput\x120\n" +
-	"\x11execution_summary\x18\x01 \x01(\tB\x03\xe0A\x01R\x10executionSummary\x12R\n" +
-	"\x05state\x18\x02 \x01(\x0e28.google.cloud.dialogflow.cx.v3beta1.PlaybookOutput.StateB\x02\x18\x01R\x05state\x12I\n" +
-	"\x11action_parameters\x18\x04 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x10actionParameters\"T\n" +
+	"flow_state\x18\x04 \x01(\x0e2/.google.cloud.dialogflow.cx.v3beta1.OutputStateB\x04\xe2A\x01\x02R\tflowState\"\xdb\x01\n" +
+	"\x12PlaybookTransition\x12G\n" +
+	"\bplaybook\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dialogflow.googleapis.com/PlaybookR\bplaybook\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12S\n" +
+	"\x17input_action_parameters\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x02\x18\x01R\x15inputActionParameters\"\xcb\x01\n" +
+	"\x0eFlowTransition\x12;\n" +
+	"\x04flow\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edialogflow.googleapis.com/FlowR\x04flow\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12S\n" +
+	"\x17input_action_parameters\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x02\x18\x01R\x15inputActionParameters\"\xa7\x01\n" +
+	"\rPlaybookInput\x12J\n" +
+	"\x1epreceding_conversation_summary\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x1cprecedingConversationSummary\x12J\n" +
+	"\x11action_parameters\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x10actionParameters\"\xb9\x02\n" +
+	"\x0ePlaybookOutput\x121\n" +
+	"\x11execution_summary\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x10executionSummary\x12R\n" +
+	"\x05state\x18\x02 \x01(\x0e28.google.cloud.dialogflow.cx.v3beta1.PlaybookOutput.StateB\x02\x18\x01R\x05state\x12J\n" +
+	"\x11action_parameters\x18\x04 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x10actionParameters\"T\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x06\n" +
 	"\x02OK\x10\x01\x12\r\n" +
@@ -2755,11 +2755,11 @@ const file_google_cloud_dialogflow_cx_v3beta1_trace_proto_rawDesc = "" +
 	"\vNamedMetric\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12,\n" +
 	"\x05value\x18\x02 \x01(\v2\x16.google.protobuf.ValueR\x05value\x12\x12\n" +
-	"\x04unit\x18\x03 \x01(\tR\x04unit\"`\n" +
-	"\x06Status\x12V\n" +
-	"\texception\x18\x01 \x01(\v23.google.cloud.dialogflow.cx.v3beta1.ExceptionDetailB\x03\xe0A\x01R\texception\";\n" +
-	"\x0fExceptionDetail\x12(\n" +
-	"\rerror_message\x18\x01 \x01(\tB\x03\xe0A\x01R\ferrorMessage*\xab\x01\n" +
+	"\x04unit\x18\x03 \x01(\tR\x04unit\"a\n" +
+	"\x06Status\x12W\n" +
+	"\texception\x18\x01 \x01(\v23.google.cloud.dialogflow.cx.v3beta1.ExceptionDetailB\x04\xe2A\x01\x01R\texception\"<\n" +
+	"\x0fExceptionDetail\x12)\n" +
+	"\rerror_message\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\ferrorMessage*\xab\x01\n" +
 	"\vOutputState\x12\x1c\n" +
 	"\x18OUTPUT_STATE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fOUTPUT_STATE_OK\x10\x01\x12\x1a\n" +

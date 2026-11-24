@@ -619,16 +619,16 @@ var File_google_cloud_locationfinder_v1_cloud_location_proto protoreflect.FileDe
 
 const file_google_cloud_locationfinder_v1_cloud_location_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/locationfinder/v1/cloud_location.proto\x12\x1egoogle.cloud.locationfinder.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xbb\b\n" +
-	"\rCloudLocation\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12t\n" +
-	"\x19containing_cloud_location\x18\x02 \x01(\tB8\xe0A\x03\xfaA2\n" +
-	"0cloudlocationfinder.googleapis.com/CloudLocationR\x17containingCloudLocation\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12g\n" +
-	"\x0ecloud_provider\x18\x04 \x01(\x0e2;.google.cloud.locationfinder.v1.CloudLocation.CloudProviderB\x03\xe0A\x01R\rcloudProvider\x12*\n" +
-	"\x0eterritory_code\x18\x05 \x01(\tB\x03\xe0A\x01R\rterritoryCode\x12t\n" +
-	"\x13cloud_location_type\x18\x06 \x01(\x0e2?.google.cloud.locationfinder.v1.CloudLocation.CloudLocationTypeB\x03\xe0A\x01R\x11cloudLocationType\x12K\n" +
-	"\x1dcarbon_free_energy_percentage\x18\a \x01(\x02B\x03\xe0A\x01H\x00R\x1acarbonFreeEnergyPercentage\x88\x01\x01\"\x91\x01\n" +
+	"3google/cloud/locationfinder/v1/cloud_location.proto\x12\x1egoogle.cloud.locationfinder.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xc2\b\n" +
+	"\rCloudLocation\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12u\n" +
+	"\x19containing_cloud_location\x18\x02 \x01(\tB9\xe2A\x01\x03\xfaA2\n" +
+	"0cloudlocationfinder.googleapis.com/CloudLocationR\x17containingCloudLocation\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12h\n" +
+	"\x0ecloud_provider\x18\x04 \x01(\x0e2;.google.cloud.locationfinder.v1.CloudLocation.CloudProviderB\x04\xe2A\x01\x01R\rcloudProvider\x12+\n" +
+	"\x0eterritory_code\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\rterritoryCode\x12u\n" +
+	"\x13cloud_location_type\x18\x06 \x01(\x0e2?.google.cloud.locationfinder.v1.CloudLocation.CloudLocationTypeB\x04\xe2A\x01\x01R\x11cloudLocationType\x12L\n" +
+	"\x1dcarbon_free_energy_percentage\x18\a \x01(\x02B\x04\xe2A\x01\x01H\x00R\x1acarbonFreeEnergyPercentage\x88\x01\x01\"\x91\x01\n" +
 	"\rCloudProvider\x12\x1e\n" +
 	"\x1aCLOUD_PROVIDER_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12CLOUD_PROVIDER_GCP\x10\x01\x12\x16\n" +
@@ -642,30 +642,30 @@ const file_google_cloud_locationfinder_v1_cloud_location_proto_rawDesc = "" +
 	"$CLOUD_LOCATION_TYPE_REGION_EXTENSION\x10\x03\x12!\n" +
 	"\x1dCLOUD_LOCATION_TYPE_GDCC_ZONE\x10\x04:\x9e\x01\xeaA\x9a\x01\n" +
 	"0cloudlocationfinder.googleapis.com/CloudLocation\x12Gprojects/{project}/locations/{location}/cloudLocations/{cloud_location}*\x0ecloudLocations2\rcloudLocationB \n" +
-	"\x1e_carbon_free_energy_percentage\"\xd0\x01\n" +
-	"\x19ListCloudLocationsRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120cloudlocationfinder.googleapis.com/CloudLocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x1e_carbon_free_energy_percentage\"\xd4\x01\n" +
+	"\x19ListCloudLocationsRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120cloudlocationfinder.googleapis.com/CloudLocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xa6\x01\n" +
-	"\x1aListCloudLocationsResponse\x12[\n" +
-	"\x0fcloud_locations\x18\x01 \x03(\v2-.google.cloud.locationfinder.v1.CloudLocationB\x03\xe0A\x03R\x0ecloudLocations\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"g\n" +
-	"\x17GetCloudLocationRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0cloudlocationfinder.googleapis.com/CloudLocationR\x04name\"\xbe\x02\n" +
-	"\x1bSearchCloudLocationsRequest\x12P\n" +
-	"\x06parent\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\x120cloudlocationfinder.googleapis.com/CloudLocationR\x06parent\x12l\n" +
-	"\x15source_cloud_location\x18\x02 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0cloudlocationfinder.googleapis.com/CloudLocationR\x13sourceCloudLocation\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xa8\x01\n" +
+	"\x1aListCloudLocationsResponse\x12\\\n" +
+	"\x0fcloud_locations\x18\x01 \x03(\v2-.google.cloud.locationfinder.v1.CloudLocationB\x04\xe2A\x01\x03R\x0ecloudLocations\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"h\n" +
+	"\x17GetCloudLocationRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0cloudlocationfinder.googleapis.com/CloudLocationR\x04name\"\xc3\x02\n" +
+	"\x1bSearchCloudLocationsRequest\x12Q\n" +
+	"\x06parent\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\x120cloudlocationfinder.googleapis.com/CloudLocationR\x06parent\x12m\n" +
+	"\x15source_cloud_location\x18\x02 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0cloudlocationfinder.googleapis.com/CloudLocationR\x13sourceCloudLocation\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x19\n" +
-	"\x05query\x18\x06 \x01(\tB\x03\xe0A\x01R\x05query\"\xa8\x01\n" +
-	"\x1cSearchCloudLocationsResponse\x12[\n" +
-	"\x0fcloud_locations\x18\x01 \x03(\v2-.google.cloud.locationfinder.v1.CloudLocationB\x03\xe0A\x03R\x0ecloudLocations\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageTokenB\xec\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1a\n" +
+	"\x05query\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x05query\"\xaa\x01\n" +
+	"\x1cSearchCloudLocationsResponse\x12\\\n" +
+	"\x0fcloud_locations\x18\x01 \x03(\v2-.google.cloud.locationfinder.v1.CloudLocationB\x04\xe2A\x01\x03R\x0ecloudLocations\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageTokenB\xec\x01\n" +
 	"\"com.google.cloud.locationfinder.v1B\x12CloudLocationProtoP\x01ZJcloud.google.com/go/locationfinder/apiv1/locationfinderpb;locationfinderpb\xaa\x02\x1eGoogle.Cloud.LocationFinder.V1\xca\x02\x1eGoogle\\Cloud\\LocationFinder\\V1\xea\x02!Google::Cloud::LocationFinder::V1b\x06proto3"
 
 var (

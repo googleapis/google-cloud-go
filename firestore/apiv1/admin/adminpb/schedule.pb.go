@@ -273,13 +273,13 @@ var File_google_firestore_admin_v1_schedule_proto protoreflect.FileDescriptor
 
 const file_google_firestore_admin_v1_schedule_proto_rawDesc = "" +
 	"\n" +
-	"(google/firestore/admin/v1/schedule.proto\x12\x19google.firestore.admin.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\"\xa2\x04\n" +
-	"\x0eBackupSchedule\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
+	"(google/firestore/admin/v1/schedule.proto\x12\x19google.firestore.admin.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\"\xa5\x04\n" +
+	"\x0eBackupSchedule\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
 	"\vupdate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x127\n" +
 	"\tretention\x18\x06 \x01(\v2\x19.google.protobuf.DurationR\tretention\x12W\n" +
 	"\x10daily_recurrence\x18\a \x01(\v2*.google.firestore.admin.v1.DailyRecurrenceH\x00R\x0fdailyRecurrence\x12Z\n" +

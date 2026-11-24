@@ -1075,22 +1075,22 @@ var File_google_shopping_merchant_accounts_v1_accountservices_proto protoreflect
 
 const file_google_shopping_merchant_accounts_v1_accountservices_proto_rawDesc = "" +
 	"\n" +
-	":google/shopping/merchant/accounts/v1/accountservices.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xed\t\n" +
+	":google/shopping/merchant/accounts/v1/accountservices.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xf3\t\n" +
 	"\x0eAccountService\x12k\n" +
 	"\x13products_management\x18d \x01(\v28.google.shopping.merchant.accounts.v1.ProductsManagementH\x00R\x12productsManagement\x12n\n" +
 	"\x14campaigns_management\x18e \x01(\v29.google.shopping.merchant.accounts.v1.CampaignsManagementH\x00R\x13campaignsManagement\x12h\n" +
 	"\x12account_management\x18f \x01(\v27.google.shopping.merchant.accounts.v1.AccountManagementH\x00R\x11accountManagement\x12k\n" +
 	"\x13account_aggregation\x18g \x01(\v28.google.shopping.merchant.accounts.v1.AccountAggregationH\x00R\x12accountAggregation\x12x\n" +
 	"\x18local_listing_management\x18h \x01(\v2<.google.shopping.merchant.accounts.v1.LocalListingManagementH\x00R\x16localListingManagement\x12k\n" +
-	"\x13comparison_shopping\x18i \x01(\v28.google.shopping.merchant.accounts.v1.ComparisonShoppingH\x00R\x12comparisonShopping\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12$\n" +
-	"\bprovider\x18\x02 \x01(\tB\x03\xe0A\x03H\x01R\bprovider\x88\x01\x01\x127\n" +
-	"\x15provider_display_name\x18\x03 \x01(\tB\x03\xe0A\x03R\x13providerDisplayName\x12R\n" +
-	"\thandshake\x18\x04 \x01(\v2/.google.shopping.merchant.accounts.v1.HandshakeB\x03\xe0A\x03R\thandshake\x12d\n" +
+	"\x13comparison_shopping\x18i \x01(\v28.google.shopping.merchant.accounts.v1.ComparisonShoppingH\x00R\x12comparisonShopping\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12%\n" +
+	"\bprovider\x18\x02 \x01(\tB\x04\xe2A\x01\x03H\x01R\bprovider\x88\x01\x01\x128\n" +
+	"\x15provider_display_name\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x13providerDisplayName\x12S\n" +
+	"\thandshake\x18\x04 \x01(\v2/.google.shopping.merchant.accounts.v1.HandshakeB\x04\xe2A\x01\x03R\thandshake\x12e\n" +
 	"\n" +
-	"mutability\x18\x05 \x01(\x0e2?.google.shopping.merchant.accounts.v1.AccountService.MutabilityB\x03\xe0A\x03R\n" +
-	"mutability\x123\n" +
-	"\x13external_account_id\x18\x06 \x01(\tB\x03\xe0A\x05R\x11externalAccountId\"D\n" +
+	"mutability\x18\x05 \x01(\x0e2?.google.shopping.merchant.accounts.v1.AccountService.MutabilityB\x04\xe2A\x01\x03R\n" +
+	"mutability\x124\n" +
+	"\x13external_account_id\x18\x06 \x01(\tB\x04\xe2A\x01\x05R\x11externalAccountId\"D\n" +
 	"\n" +
 	"Mutability\x12\x1a\n" +
 	"\x16MUTABILITY_UNSPECIFIED\x10\x00\x12\v\n" +
@@ -1098,39 +1098,39 @@ const file_google_shopping_merchant_accounts_v1_accountservices_proto_rawDesc = 
 	"\tIMMUTABLE\x10\x02:v\xeaAs\n" +
 	")merchantapi.googleapis.com/AccountService\x12%accounts/{account}/services/{service}*\x0faccountServices2\x0eaccountServiceB\x0e\n" +
 	"\fservice_typeB\v\n" +
-	"\t_provider\"a\n" +
-	"\x18GetAccountServiceRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")merchantapi.googleapis.com/AccountServiceR\x04name\"\xa6\x01\n" +
-	"\x1aListAccountServicesRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/AccountR\x06parent\x12\"\n" +
+	"\t_provider\"b\n" +
+	"\x18GetAccountServiceRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")merchantapi.googleapis.com/AccountServiceR\x04name\"\xa9\x01\n" +
+	"\x1aListAccountServicesRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/AccountR\x06parent\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\x12 \n" +
-	"\tpage_size\x18\x05 \x01(\x05B\x03\xe0A\x01R\bpageSize\"\xa6\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12!\n" +
+	"\tpage_size\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\"\xa6\x01\n" +
 	"\x1bListAccountServicesResponse\x12_\n" +
 	"\x10account_services\x18\x01 \x03(\v24.google.shopping.merchant.accounts.v1.AccountServiceR\x0faccountServices\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe7\x01\n" +
-	"\x1cProposeAccountServiceRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/AccountR\x06parent\x12\x1f\n" +
-	"\bprovider\x18\x02 \x01(\tB\x03\xe0A\x02R\bprovider\x12b\n" +
-	"\x0faccount_service\x18\x04 \x01(\v24.google.shopping.merchant.accounts.v1.AccountServiceB\x03\xe0A\x02R\x0eaccountService\"e\n" +
-	"\x1cApproveAccountServiceRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")merchantapi.googleapis.com/AccountServiceR\x04name\"d\n" +
-	"\x1bRejectAccountServiceRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xea\x01\n" +
+	"\x1cProposeAccountServiceRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/AccountR\x06parent\x12 \n" +
+	"\bprovider\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bprovider\x12c\n" +
+	"\x0faccount_service\x18\x04 \x01(\v24.google.shopping.merchant.accounts.v1.AccountServiceB\x04\xe2A\x01\x02R\x0eaccountService\"f\n" +
+	"\x1cApproveAccountServiceRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")merchantapi.googleapis.com/AccountServiceR\x04name\"e\n" +
+	"\x1bRejectAccountServiceRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")merchantapi.googleapis.com/AccountServiceR\x04name\"\x14\n" +
 	"\x12ProductsManagement\"\x15\n" +
 	"\x13CampaignsManagement\"\x13\n" +
 	"\x11AccountManagement\"\x14\n" +
 	"\x12AccountAggregation\"\x18\n" +
 	"\x16LocalListingManagement\"\x14\n" +
-	"\x12ComparisonShopping\"\xe3\x02\n" +
-	"\tHandshake\x12i\n" +
-	"\x0eapproval_state\x18\x01 \x01(\x0e2=.google.shopping.merchant.accounts.v1.Handshake.ApprovalStateB\x03\xe0A\x03R\rapprovalState\x12P\n" +
-	"\x05actor\x18\x02 \x01(\x0e25.google.shopping.merchant.accounts.v1.Handshake.ActorB\x03\xe0A\x03R\x05actor\"[\n" +
+	"\x12ComparisonShopping\"\xe5\x02\n" +
+	"\tHandshake\x12j\n" +
+	"\x0eapproval_state\x18\x01 \x01(\x0e2=.google.shopping.merchant.accounts.v1.Handshake.ApprovalStateB\x04\xe2A\x01\x03R\rapprovalState\x12Q\n" +
+	"\x05actor\x18\x02 \x01(\x0e25.google.shopping.merchant.accounts.v1.Handshake.ActorB\x04\xe2A\x01\x03R\x05actor\"[\n" +
 	"\rApprovalState\x12\x1e\n" +
 	"\x1aAPPROVAL_STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPENDING\x10\x01\x12\x0f\n" +

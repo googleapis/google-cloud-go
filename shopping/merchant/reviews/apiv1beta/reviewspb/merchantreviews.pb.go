@@ -439,34 +439,34 @@ var File_google_shopping_merchant_reviews_v1beta_merchantreviews_proto protorefl
 
 const file_google_shopping_merchant_reviews_v1beta_merchantreviews_proto_rawDesc = "" +
 	"\n" +
-	"=google/shopping/merchant/reviews/v1beta/merchantreviews.proto\x12'google.shopping.merchant.reviews.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1aDgoogle/shopping/merchant/reviews/v1beta/merchantreviews_common.proto\x1a google/shopping/type/types.proto\"a\n" +
-	"\x18GetMerchantReviewRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")merchantapi.googleapis.com/MerchantReviewR\x04name\"d\n" +
-	"\x1bDeleteMerchantReviewRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")merchantapi.googleapis.com/MerchantReviewR\x04name\"\xad\x01\n" +
-	"\x1aListMerchantReviewsRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)merchantapi.googleapis.com/MerchantReviewR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"=google/shopping/merchant/reviews/v1beta/merchantreviews.proto\x12'google.shopping.merchant.reviews.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1aDgoogle/shopping/merchant/reviews/v1beta/merchantreviews_common.proto\x1a google/shopping/type/types.proto\"b\n" +
+	"\x18GetMerchantReviewRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")merchantapi.googleapis.com/MerchantReviewR\x04name\"e\n" +
+	"\x1bDeleteMerchantReviewRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")merchantapi.googleapis.com/MerchantReviewR\x04name\"\xb0\x01\n" +
+	"\x1aListMerchantReviewsRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)merchantapi.googleapis.com/MerchantReviewR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xc7\x01\n" +
-	"\x1bInsertMerchantReviewRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12e\n" +
-	"\x0fmerchant_review\x18\x02 \x01(\v27.google.shopping.merchant.reviews.v1beta.MerchantReviewB\x03\xe0A\x02R\x0emerchantReview\x12$\n" +
-	"\vdata_source\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xca\x01\n" +
+	"\x1bInsertMerchantReviewRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12f\n" +
+	"\x0fmerchant_review\x18\x02 \x01(\v27.google.shopping.merchant.reviews.v1beta.MerchantReviewB\x04\xe2A\x01\x02R\x0emerchantReview\x12%\n" +
+	"\vdata_source\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"dataSource\"\xa9\x01\n" +
 	"\x1bListMerchantReviewsResponse\x12b\n" +
 	"\x10merchant_reviews\x18\x01 \x03(\v27.google.shopping.merchant.reviews.v1beta.MerchantReviewR\x0fmerchantReviews\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd8\x04\n" +
-	"\x0eMerchantReview\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x121\n" +
-	"\x12merchant_review_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x10merchantReviewId\x12\x84\x01\n" +
-	"\x1amerchant_review_attributes\x18\x03 \x01(\v2A.google.shopping.merchant.reviews.v1beta.MerchantReviewAttributesB\x03\xe0A\x01R\x18merchantReviewAttributes\x12W\n" +
-	"\x11custom_attributes\x18\x04 \x03(\v2%.google.shopping.type.CustomAttributeB\x03\xe0A\x01R\x10customAttributes\x12$\n" +
-	"\vdata_source\x18\x05 \x01(\tB\x03\xe0A\x03R\n" +
-	"dataSource\x12x\n" +
-	"\x16merchant_review_status\x18\x06 \x01(\v2=.google.shopping.merchant.reviews.v1beta.MerchantReviewStatusB\x03\xe0A\x03R\x14merchantReviewStatus:z\xeaAw\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xde\x04\n" +
+	"\x0eMerchantReview\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x122\n" +
+	"\x12merchant_review_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x10merchantReviewId\x12\x85\x01\n" +
+	"\x1amerchant_review_attributes\x18\x03 \x01(\v2A.google.shopping.merchant.reviews.v1beta.MerchantReviewAttributesB\x04\xe2A\x01\x01R\x18merchantReviewAttributes\x12X\n" +
+	"\x11custom_attributes\x18\x04 \x03(\v2%.google.shopping.type.CustomAttributeB\x04\xe2A\x01\x01R\x10customAttributes\x12%\n" +
+	"\vdata_source\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"dataSource\x12y\n" +
+	"\x16merchant_review_status\x18\x06 \x01(\v2=.google.shopping.merchant.reviews.v1beta.MerchantReviewStatusB\x04\xe2A\x01\x03R\x14merchantReviewStatus:z\xeaAw\n" +
 	")merchantapi.googleapis.com/MerchantReview\x12)accounts/{account}/merchantReviews/{name}*\x0fmerchantReviews2\x0emerchantReview2\xc8\a\n" +
 	"\x16MerchantReviewsService\x12\xd3\x01\n" +
 	"\x11GetMerchantReview\x12A.google.shopping.merchant.reviews.v1beta.GetMerchantReviewRequest\x1a7.google.shopping.merchant.reviews.v1beta.MerchantReview\"B\xdaA\x04name\x82\xd3\xe4\x93\x025\x123/reviews/v1beta/{name=accounts/*/merchantReviews/*}\x12\xe6\x01\n" +

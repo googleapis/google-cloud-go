@@ -717,11 +717,11 @@ var File_google_cloud_bigquery_migration_v2alpha_migration_entities_proto protor
 const file_google_cloud_bigquery_migration_v2alpha_migration_entities_proto_rawDesc = "" +
 	"\n" +
 	"@google/cloud/bigquery/migration/v2alpha/migration_entities.proto\x12'google.cloud.bigquery.migration.v2alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a=google/cloud/bigquery/migration/v2alpha/assessment_task.proto\x1aEgoogle/cloud/bigquery/migration/v2alpha/migration_error_details.proto\x1a?google/cloud/bigquery/migration/v2alpha/migration_metrics.proto\x1a>google/cloud/bigquery/migration/v2alpha/translation_task.proto\x1a\x19google/protobuf/any.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/rpc/error_details.proto\"\xcb\x05\n" +
-	"\x11MigrationWorkflow\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\x05R\x04name\x12!\n" +
+	"\x11MigrationWorkflow\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\x05R\x04name\x12!\n" +
 	"\fdisplay_name\x18\x06 \x01(\tR\vdisplayName\x12[\n" +
-	"\x05tasks\x18\x02 \x03(\v2E.google.cloud.bigquery.migration.v2alpha.MigrationWorkflow.TasksEntryR\x05tasks\x12[\n" +
-	"\x05state\x18\x03 \x01(\x0e2@.google.cloud.bigquery.migration.v2alpha.MigrationWorkflow.StateB\x03\xe0A\x03R\x05state\x12;\n" +
+	"\x05tasks\x18\x02 \x03(\v2E.google.cloud.bigquery.migration.v2alpha.MigrationWorkflow.TasksEntryR\x05tasks\x12\\\n" +
+	"\x05state\x18\x03 \x01(\x0e2@.google.cloud.bigquery.migration.v2alpha.MigrationWorkflow.StateB\x04\xe2A\x01\x03R\x05state\x12;\n" +
 	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12D\n" +
 	"\x10last_update_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\x0elastUpdateTime\x1ap\n" +
@@ -736,20 +736,20 @@ const file_google_cloud_bigquery_migration_v2alpha_migration_entities_proto_rawD
 	"\n" +
 	"\x06PAUSED\x10\x03\x12\r\n" +
 	"\tCOMPLETED\x10\x04:u\xeaAr\n" +
-	"2bigquerymigration.googleapis.com/MigrationWorkflow\x12<projects/{project}/locations/{location}/workflows/{workflow}\"\x8d\a\n" +
+	"2bigquerymigration.googleapis.com/MigrationWorkflow\x12<projects/{project}/locations/{location}/workflows/{workflow}\"\x8f\a\n" +
 	"\rMigrationTask\x12x\n" +
 	"\x17assessment_task_details\x18\f \x01(\v2>.google.cloud.bigquery.migration.v2alpha.AssessmentTaskDetailsH\x00R\x15assessmentTaskDetails\x12{\n" +
-	"\x18translation_task_details\x18\r \x01(\v2?.google.cloud.bigquery.migration.v2alpha.TranslationTaskDetailsH\x00R\x16translationTaskDetails\x12\x16\n" +
-	"\x02id\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\x05R\x02id\x12\x12\n" +
+	"\x18translation_task_details\x18\r \x01(\v2?.google.cloud.bigquery.migration.v2alpha.TranslationTaskDetailsH\x00R\x16translationTaskDetails\x12\x15\n" +
+	"\x02id\x18\x01 \x01(\tB\x05\xe2A\x02\x03\x05R\x02id\x12\x12\n" +
 	"\x04type\x18\x02 \x01(\tR\x04type\x12.\n" +
-	"\adetails\x18\x03 \x01(\v2\x14.google.protobuf.AnyR\adetails\x12W\n" +
-	"\x05state\x18\x04 \x01(\x0e2<.google.cloud.bigquery.migration.v2alpha.MigrationTask.StateB\x03\xe0A\x03R\x05state\x12E\n" +
-	"\x10processing_error\x18\x05 \x01(\v2\x15.google.rpc.ErrorInfoB\x03\xe0A\x03R\x0fprocessingError\x12;\n" +
+	"\adetails\x18\x03 \x01(\v2\x14.google.protobuf.AnyR\adetails\x12X\n" +
+	"\x05state\x18\x04 \x01(\x0e2<.google.cloud.bigquery.migration.v2alpha.MigrationTask.StateB\x04\xe2A\x01\x03R\x05state\x12F\n" +
+	"\x10processing_error\x18\x05 \x01(\v2\x15.google.rpc.ErrorInfoB\x04\xe2A\x01\x03R\x0fprocessingError\x12;\n" +
 	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12D\n" +
-	"\x10last_update_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\x0elastUpdateTime\x12\x81\x01\n" +
+	"\x10last_update_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\x0elastUpdateTime\x12\x82\x01\n" +
 	"\x14orchestration_result\x18\n" +
-	" \x01(\v2I.google.cloud.bigquery.migration.v2alpha.MigrationTaskOrchestrationResultB\x03\xe0A\x03R\x13orchestrationResult\"r\n" +
+	" \x01(\v2I.google.cloud.bigquery.migration.v2alpha.MigrationTaskOrchestrationResultB\x04\xe2A\x01\x03R\x13orchestrationResult\"r\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPENDING\x10\x01\x12\x11\n" +
@@ -760,14 +760,14 @@ const file_google_cloud_bigquery_migration_v2alpha_migration_entities_proto_rawD
 	"\tSUCCEEDED\x10\x05\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x06B\x0e\n" +
-	"\ftask_details\"\xe6\x06\n" +
-	"\x10MigrationSubtask\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\x05R\x04name\x12\x17\n" +
+	"\ftask_details\"\xe8\x06\n" +
+	"\x10MigrationSubtask\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\x05R\x04name\x12\x17\n" +
 	"\atask_id\x18\x02 \x01(\tR\x06taskId\x12\x12\n" +
-	"\x04type\x18\x03 \x01(\tR\x04type\x12Z\n" +
-	"\x05state\x18\x05 \x01(\x0e2?.google.cloud.bigquery.migration.v2alpha.MigrationSubtask.StateB\x03\xe0A\x03R\x05state\x12E\n" +
-	"\x10processing_error\x18\x06 \x01(\v2\x15.google.rpc.ErrorInfoB\x03\xe0A\x03R\x0fprocessingError\x12w\n" +
-	"\x16resource_error_details\x18\f \x03(\v2<.google.cloud.bigquery.migration.v2alpha.ResourceErrorDetailB\x03\xe0A\x03R\x14resourceErrorDetails\x120\n" +
+	"\x04type\x18\x03 \x01(\tR\x04type\x12[\n" +
+	"\x05state\x18\x05 \x01(\x0e2?.google.cloud.bigquery.migration.v2alpha.MigrationSubtask.StateB\x04\xe2A\x01\x03R\x05state\x12F\n" +
+	"\x10processing_error\x18\x06 \x01(\v2\x15.google.rpc.ErrorInfoB\x04\xe2A\x01\x03R\x0fprocessingError\x12x\n" +
+	"\x16resource_error_details\x18\f \x03(\v2<.google.cloud.bigquery.migration.v2alpha.ResourceErrorDetailB\x04\xe2A\x01\x03R\x14resourceErrorDetails\x120\n" +
 	"\x14resource_error_count\x18\r \x01(\x05R\x12resourceErrorCount\x12;\n" +
 	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12D\n" +

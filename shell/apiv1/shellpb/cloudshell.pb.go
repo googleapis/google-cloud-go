@@ -1155,17 +1155,17 @@ var File_google_cloud_shell_v1_cloudshell_proto protoreflect.FileDescriptor
 
 const file_google_cloud_shell_v1_cloudshell_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/shell/v1/cloudshell.proto\x12\x15google.cloud.shell.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x85\x04\n" +
-	"\vEnvironment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12\x13\n" +
-	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x03R\x02id\x12)\n" +
-	"\fdocker_image\x18\x03 \x01(\tB\x06\xe0A\x02\xe0A\x05R\vdockerImage\x12C\n" +
-	"\x05state\x18\x04 \x01(\x0e2(.google.cloud.shell.v1.Environment.StateB\x03\xe0A\x03R\x05state\x12\x1e\n" +
-	"\bweb_host\x18\f \x01(\tB\x03\xe0A\x03R\awebHost\x12&\n" +
-	"\fssh_username\x18\x05 \x01(\tB\x03\xe0A\x03R\vsshUsername\x12\x1e\n" +
-	"\bssh_host\x18\x06 \x01(\tB\x03\xe0A\x03R\asshHost\x12\x1e\n" +
-	"\bssh_port\x18\a \x01(\x05B\x03\xe0A\x03R\asshPort\x12$\n" +
-	"\vpublic_keys\x18\b \x03(\tB\x03\xe0A\x03R\n" +
+	"&google/cloud/shell/v1/cloudshell.proto\x12\x15google.cloud.shell.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8c\x04\n" +
+	"\vEnvironment\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12\x14\n" +
+	"\x02id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x02id\x12(\n" +
+	"\fdocker_image\x18\x03 \x01(\tB\x05\xe2A\x02\x02\x05R\vdockerImage\x12D\n" +
+	"\x05state\x18\x04 \x01(\x0e2(.google.cloud.shell.v1.Environment.StateB\x04\xe2A\x01\x03R\x05state\x12\x1f\n" +
+	"\bweb_host\x18\f \x01(\tB\x04\xe2A\x01\x03R\awebHost\x12'\n" +
+	"\fssh_username\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\vsshUsername\x12\x1f\n" +
+	"\bssh_host\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\asshHost\x12\x1f\n" +
+	"\bssh_port\x18\a \x01(\x05B\x04\xe2A\x01\x03R\asshPort\x12%\n" +
+	"\vpublic_keys\x18\b \x03(\tB\x04\xe2A\x01\x03R\n" +
 	"publicKeys\"U\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\r\n" +
@@ -1173,9 +1173,9 @@ const file_google_cloud_shell_v1_cloudshell_proto_rawDesc = "" +
 	"\aPENDING\x10\x02\x12\v\n" +
 	"\aRUNNING\x10\x03\x12\f\n" +
 	"\bDELETING\x10\x04:S\xeaAP\n" +
-	"%cloudshell.googleapis.com/Environment\x12'users/{user}/environments/{environment}\"Z\n" +
-	"\x15GetEnvironmentRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"%cloudshell.googleapis.com/Environment\x12'users/{user}/environments/{environment}\"[\n" +
+	"\x15GetEnvironmentRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%cloudshell.googleapis.com/EnvironmentR\x04name\"\x1b\n" +
 	"\x19CreateEnvironmentMetadata\"\x1b\n" +
 	"\x19DeleteEnvironmentMetadata\"q\n" +

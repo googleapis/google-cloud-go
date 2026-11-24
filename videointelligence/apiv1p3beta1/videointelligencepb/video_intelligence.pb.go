@@ -4265,15 +4265,15 @@ var File_google_cloud_videointelligence_v1p3beta1_video_intelligence_proto proto
 
 const file_google_cloud_videointelligence_v1p3beta1_video_intelligence_proto_rawDesc = "" +
 	"\n" +
-	"Agoogle/cloud/videointelligence/v1p3beta1/video_intelligence.proto\x12(google.cloud.videointelligence.v1p3beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xd3\x02\n" +
+	"Agoogle/cloud/videointelligence/v1p3beta1/video_intelligence.proto\x12(google.cloud.videointelligence.v1p3beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xd6\x02\n" +
 	"\x14AnnotateVideoRequest\x12\x1b\n" +
 	"\tinput_uri\x18\x01 \x01(\tR\binputUri\x12#\n" +
-	"\rinput_content\x18\x06 \x01(\fR\finputContent\x12R\n" +
-	"\bfeatures\x18\x02 \x03(\x0e21.google.cloud.videointelligence.v1p3beta1.FeatureB\x03\xe0A\x02R\bfeatures\x12[\n" +
-	"\rvideo_context\x18\x03 \x01(\v26.google.cloud.videointelligence.v1p3beta1.VideoContextR\fvideoContext\x12\"\n" +
+	"\rinput_content\x18\x06 \x01(\fR\finputContent\x12S\n" +
+	"\bfeatures\x18\x02 \x03(\x0e21.google.cloud.videointelligence.v1p3beta1.FeatureB\x04\xe2A\x01\x02R\bfeatures\x12[\n" +
+	"\rvideo_context\x18\x03 \x01(\v26.google.cloud.videointelligence.v1p3beta1.VideoContextR\fvideoContext\x12#\n" +
 	"\n" +
-	"output_uri\x18\x04 \x01(\tB\x03\xe0A\x01R\toutputUri\x12$\n" +
-	"\vlocation_id\x18\x05 \x01(\tB\x03\xe0A\x01R\n" +
+	"output_uri\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\toutputUri\x12%\n" +
+	"\vlocation_id\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\n" +
 	"locationId\"\xd0\b\n" +
 	"\fVideoContext\x12R\n" +
 	"\bsegments\x18\x01 \x03(\v26.google.cloud.videointelligence.v1p3beta1.VideoSegmentR\bsegments\x12t\n" +
@@ -4342,23 +4342,23 @@ const file_google_cloud_videointelligence_v1p3beta1_video_intelligence_proto_raw
 	"\x04left\x18\x01 \x01(\x02R\x04left\x12\x10\n" +
 	"\x03top\x18\x02 \x01(\x02R\x03top\x12\x14\n" +
 	"\x05right\x18\x03 \x01(\x02R\x05right\x12\x16\n" +
-	"\x06bottom\x18\x04 \x01(\x02R\x06bottom\"\x89\x03\n" +
+	"\x06bottom\x18\x04 \x01(\x02R\x06bottom\"\x8b\x03\n" +
 	"\x11TimestampedObject\x12w\n" +
 	"\x17normalized_bounding_box\x18\x01 \x01(\v2?.google.cloud.videointelligence.v1p3beta1.NormalizedBoundingBoxR\x15normalizedBoundingBox\x12:\n" +
 	"\vtime_offset\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\n" +
-	"timeOffset\x12`\n" +
+	"timeOffset\x12a\n" +
 	"\n" +
-	"attributes\x18\x03 \x03(\v2;.google.cloud.videointelligence.v1p3beta1.DetectedAttributeB\x03\xe0A\x01R\n" +
-	"attributes\x12]\n" +
-	"\tlandmarks\x18\x04 \x03(\v2:.google.cloud.videointelligence.v1p3beta1.DetectedLandmarkB\x03\xe0A\x01R\tlandmarks\"\xce\x02\n" +
+	"attributes\x18\x03 \x03(\v2;.google.cloud.videointelligence.v1p3beta1.DetectedAttributeB\x04\xe2A\x01\x01R\n" +
+	"attributes\x12^\n" +
+	"\tlandmarks\x18\x04 \x03(\v2:.google.cloud.videointelligence.v1p3beta1.DetectedLandmarkB\x04\xe2A\x01\x01R\tlandmarks\"\xd0\x02\n" +
 	"\x05Track\x12P\n" +
 	"\asegment\x18\x01 \x01(\v26.google.cloud.videointelligence.v1p3beta1.VideoSegmentR\asegment\x12l\n" +
-	"\x13timestamped_objects\x18\x02 \x03(\v2;.google.cloud.videointelligence.v1p3beta1.TimestampedObjectR\x12timestampedObjects\x12`\n" +
+	"\x13timestamped_objects\x18\x02 \x03(\v2;.google.cloud.videointelligence.v1p3beta1.TimestampedObjectR\x12timestampedObjects\x12a\n" +
 	"\n" +
-	"attributes\x18\x03 \x03(\v2;.google.cloud.videointelligence.v1p3beta1.DetectedAttributeB\x03\xe0A\x01R\n" +
-	"attributes\x12#\n" +
+	"attributes\x18\x03 \x03(\v2;.google.cloud.videointelligence.v1p3beta1.DetectedAttributeB\x04\xe2A\x01\x01R\n" +
+	"attributes\x12$\n" +
 	"\n" +
-	"confidence\x18\x04 \x01(\x02B\x03\xe0A\x01R\n" +
+	"confidence\x18\x04 \x01(\x02B\x04\xe2A\x01\x01R\n" +
 	"confidence\"]\n" +
 	"\x11DetectedAttribute\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1e\n" +
@@ -4423,39 +4423,39 @@ const file_google_cloud_videointelligence_v1p3beta1_video_intelligence_proto_raw
 	"\afeature\x18\x05 \x01(\x0e21.google.cloud.videointelligence.v1p3beta1.FeatureR\afeature\x12P\n" +
 	"\asegment\x18\x06 \x01(\v26.google.cloud.videointelligence.v1p3beta1.VideoSegmentR\asegment\"\x8b\x01\n" +
 	"\x15AnnotateVideoProgress\x12r\n" +
-	"\x13annotation_progress\x18\x01 \x03(\v2A.google.cloud.videointelligence.v1p3beta1.VideoAnnotationProgressR\x12annotationProgress\"\xba\x04\n" +
-	"\x19SpeechTranscriptionConfig\x12(\n" +
-	"\rlanguage_code\x18\x01 \x01(\tB\x03\xe0A\x02R\flanguageCode\x12.\n" +
-	"\x10max_alternatives\x18\x02 \x01(\x05B\x03\xe0A\x01R\x0fmaxAlternatives\x12.\n" +
-	"\x10filter_profanity\x18\x03 \x01(\bB\x03\xe0A\x01R\x0ffilterProfanity\x12e\n" +
-	"\x0fspeech_contexts\x18\x04 \x03(\v27.google.cloud.videointelligence.v1p3beta1.SpeechContextB\x03\xe0A\x01R\x0espeechContexts\x12E\n" +
-	"\x1cenable_automatic_punctuation\x18\x05 \x01(\bB\x03\xe0A\x01R\x1aenableAutomaticPunctuation\x12&\n" +
-	"\faudio_tracks\x18\x06 \x03(\x05B\x03\xe0A\x01R\vaudioTracks\x12A\n" +
-	"\x1aenable_speaker_diarization\x18\a \x01(\bB\x03\xe0A\x01R\x18enableSpeakerDiarization\x12?\n" +
-	"\x19diarization_speaker_count\x18\b \x01(\x05B\x03\xe0A\x01R\x17diarizationSpeakerCount\x129\n" +
-	"\x16enable_word_confidence\x18\t \x01(\bB\x03\xe0A\x01R\x14enableWordConfidence\".\n" +
-	"\rSpeechContext\x12\x1d\n" +
-	"\aphrases\x18\x01 \x03(\tB\x03\xe0A\x01R\aphrases\"\xab\x01\n" +
+	"\x13annotation_progress\x18\x01 \x03(\v2A.google.cloud.videointelligence.v1p3beta1.VideoAnnotationProgressR\x12annotationProgress\"\xc3\x04\n" +
+	"\x19SpeechTranscriptionConfig\x12)\n" +
+	"\rlanguage_code\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\flanguageCode\x12/\n" +
+	"\x10max_alternatives\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x0fmaxAlternatives\x12/\n" +
+	"\x10filter_profanity\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x0ffilterProfanity\x12f\n" +
+	"\x0fspeech_contexts\x18\x04 \x03(\v27.google.cloud.videointelligence.v1p3beta1.SpeechContextB\x04\xe2A\x01\x01R\x0espeechContexts\x12F\n" +
+	"\x1cenable_automatic_punctuation\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x1aenableAutomaticPunctuation\x12'\n" +
+	"\faudio_tracks\x18\x06 \x03(\x05B\x04\xe2A\x01\x01R\vaudioTracks\x12B\n" +
+	"\x1aenable_speaker_diarization\x18\a \x01(\bB\x04\xe2A\x01\x01R\x18enableSpeakerDiarization\x12@\n" +
+	"\x19diarization_speaker_count\x18\b \x01(\x05B\x04\xe2A\x01\x01R\x17diarizationSpeakerCount\x12:\n" +
+	"\x16enable_word_confidence\x18\t \x01(\bB\x04\xe2A\x01\x01R\x14enableWordConfidence\"/\n" +
+	"\rSpeechContext\x12\x1e\n" +
+	"\aphrases\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\aphrases\"\xac\x01\n" +
 	"\x13SpeechTranscription\x12j\n" +
-	"\falternatives\x18\x01 \x03(\v2F.google.cloud.videointelligence.v1p3beta1.SpeechRecognitionAlternativeR\falternatives\x12(\n" +
-	"\rlanguage_code\x18\x02 \x01(\tB\x03\xe0A\x03R\flanguageCode\"\xb2\x01\n" +
+	"\falternatives\x18\x01 \x03(\v2F.google.cloud.videointelligence.v1p3beta1.SpeechRecognitionAlternativeR\falternatives\x12)\n" +
+	"\rlanguage_code\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\flanguageCode\"\xb4\x01\n" +
 	"\x1cSpeechRecognitionAlternative\x12\x1e\n" +
 	"\n" +
 	"transcript\x18\x01 \x01(\tR\n" +
-	"transcript\x12#\n" +
+	"transcript\x12$\n" +
 	"\n" +
-	"confidence\x18\x02 \x01(\x02B\x03\xe0A\x03R\n" +
-	"confidence\x12M\n" +
-	"\x05words\x18\x03 \x03(\v22.google.cloud.videointelligence.v1p3beta1.WordInfoB\x03\xe0A\x03R\x05words\"\xd9\x01\n" +
+	"confidence\x18\x02 \x01(\x02B\x04\xe2A\x01\x03R\n" +
+	"confidence\x12N\n" +
+	"\x05words\x18\x03 \x03(\v22.google.cloud.videointelligence.v1p3beta1.WordInfoB\x04\xe2A\x01\x03R\x05words\"\xdb\x01\n" +
 	"\bWordInfo\x128\n" +
 	"\n" +
 	"start_time\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\tstartTime\x124\n" +
 	"\bend_time\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\aendTime\x12\x12\n" +
-	"\x04word\x18\x03 \x01(\tR\x04word\x12#\n" +
+	"\x04word\x18\x03 \x01(\tR\x04word\x12$\n" +
 	"\n" +
-	"confidence\x18\x04 \x01(\x02B\x03\xe0A\x03R\n" +
-	"confidence\x12$\n" +
-	"\vspeaker_tag\x18\x05 \x01(\x05B\x03\xe0A\x03R\n" +
+	"confidence\x18\x04 \x01(\x02B\x04\xe2A\x01\x03R\n" +
+	"confidence\x12%\n" +
+	"\vspeaker_tag\x18\x05 \x01(\x05B\x04\xe2A\x01\x03R\n" +
 	"speakerTag\".\n" +
 	"\x10NormalizedVertex\x12\f\n" +
 	"\x01x\x18\x01 \x01(\x02R\x01x\x12\f\n" +

@@ -221,19 +221,19 @@ var File_google_cloud_bigquery_migration_v2_migration_error_details_proto protor
 
 const file_google_cloud_bigquery_migration_v2_migration_error_details_proto_rawDesc = "" +
 	"\n" +
-	"@google/cloud/bigquery/migration/v2/migration_error_details.proto\x12\"google.cloud.bigquery.migration.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/rpc/error_details.proto\"\xda\x01\n" +
-	"\x13ResourceErrorDetail\x12B\n" +
-	"\rresource_info\x18\x01 \x01(\v2\x18.google.rpc.ResourceInfoB\x03\xe0A\x02R\fresourceInfo\x12Y\n" +
-	"\rerror_details\x18\x02 \x03(\v2/.google.cloud.bigquery.migration.v2.ErrorDetailB\x03\xe0A\x02R\ferrorDetails\x12$\n" +
-	"\verror_count\x18\x03 \x01(\x05B\x03\xe0A\x02R\n" +
-	"errorCount\"\x9c\x01\n" +
-	"\vErrorDetail\x12R\n" +
-	"\blocation\x18\x01 \x01(\v21.google.cloud.bigquery.migration.v2.ErrorLocationB\x03\xe0A\x01R\blocation\x129\n" +
+	"@google/cloud/bigquery/migration/v2/migration_error_details.proto\x12\"google.cloud.bigquery.migration.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/rpc/error_details.proto\"\xdd\x01\n" +
+	"\x13ResourceErrorDetail\x12C\n" +
+	"\rresource_info\x18\x01 \x01(\v2\x18.google.rpc.ResourceInfoB\x04\xe2A\x01\x02R\fresourceInfo\x12Z\n" +
+	"\rerror_details\x18\x02 \x03(\v2/.google.cloud.bigquery.migration.v2.ErrorDetailB\x04\xe2A\x01\x02R\ferrorDetails\x12%\n" +
+	"\verror_count\x18\x03 \x01(\x05B\x04\xe2A\x01\x02R\n" +
+	"errorCount\"\x9e\x01\n" +
+	"\vErrorDetail\x12S\n" +
+	"\blocation\x18\x01 \x01(\v21.google.cloud.bigquery.migration.v2.ErrorLocationB\x04\xe2A\x01\x01R\blocation\x12:\n" +
 	"\n" +
-	"error_info\x18\x02 \x01(\v2\x15.google.rpc.ErrorInfoB\x03\xe0A\x02R\terrorInfo\"E\n" +
-	"\rErrorLocation\x12\x17\n" +
-	"\x04line\x18\x01 \x01(\x05B\x03\xe0A\x01R\x04line\x12\x1b\n" +
-	"\x06column\x18\x02 \x01(\x05B\x03\xe0A\x01R\x06columnB\xd6\x01\n" +
+	"error_info\x18\x02 \x01(\v2\x15.google.rpc.ErrorInfoB\x04\xe2A\x01\x02R\terrorInfo\"G\n" +
+	"\rErrorLocation\x12\x18\n" +
+	"\x04line\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\x04line\x12\x1c\n" +
+	"\x06column\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x06columnB\xd6\x01\n" +
 	"&com.google.cloud.bigquery.migration.v2B\x1aMigrationErrorDetailsProtoP\x01ZDcloud.google.com/go/bigquery/migration/apiv2/migrationpb;migrationpb\xaa\x02\"Google.Cloud.BigQuery.Migration.V2\xca\x02\"Google\\Cloud\\BigQuery\\Migration\\V2b\x06proto3"
 
 var (

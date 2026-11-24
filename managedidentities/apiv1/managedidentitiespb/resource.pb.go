@@ -599,23 +599,23 @@ var File_google_cloud_managedidentities_v1_resource_proto protoreflect.FileDescr
 
 const file_google_cloud_managedidentities_v1_resource_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/managedidentities/v1/resource.proto\x12!google.cloud.managedidentities.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xab\a\n" +
-	"\x06Domain\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12R\n" +
-	"\x06labels\x18\x02 \x03(\v25.google.cloud.managedidentities.v1.Domain.LabelsEntryB\x03\xe0A\x01R\x06labels\x124\n" +
-	"\x13authorized_networks\x18\x03 \x03(\tB\x03\xe0A\x01R\x12authorizedNetworks\x12/\n" +
-	"\x11reserved_ip_range\x18\x04 \x01(\tB\x03\xe0A\x02R\x0freservedIpRange\x12!\n" +
-	"\tlocations\x18\x05 \x03(\tB\x03\xe0A\x02R\tlocations\x12\x19\n" +
-	"\x05admin\x18\x06 \x01(\tB\x03\xe0A\x01R\x05admin\x12\x17\n" +
+	"0google/cloud/managedidentities/v1/resource.proto\x12!google.cloud.managedidentities.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb7\a\n" +
+	"\x06Domain\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12S\n" +
+	"\x06labels\x18\x02 \x03(\v25.google.cloud.managedidentities.v1.Domain.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x125\n" +
+	"\x13authorized_networks\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x12authorizedNetworks\x120\n" +
+	"\x11reserved_ip_range\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x0freservedIpRange\x12\"\n" +
+	"\tlocations\x18\x05 \x03(\tB\x04\xe2A\x01\x02R\tlocations\x12\x1a\n" +
+	"\x05admin\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x05admin\x12\x18\n" +
 	"\x04fqdn\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x04fqdn\x12@\n" +
-	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12J\n" +
-	"\x05state\x18\r \x01(\x0e2/.google.cloud.managedidentities.v1.Domain.StateB\x03\xe0A\x03R\x05state\x12*\n" +
-	"\x0estatus_message\x18\x0e \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12E\n" +
-	"\x06trusts\x18\x0f \x03(\v2(.google.cloud.managedidentities.v1.TrustB\x03\xe0A\x03R\x06trusts\x1a9\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x04fqdn\x12A\n" +
+	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12K\n" +
+	"\x05state\x18\r \x01(\x0e2/.google.cloud.managedidentities.v1.Domain.StateB\x04\xe2A\x01\x03R\x05state\x12+\n" +
+	"\x0estatus_message\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12F\n" +
+	"\x06trusts\x18\x0f \x03(\v2(.google.cloud.managedidentities.v1.TrustB\x04\xe2A\x01\x03R\x06trusts\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x8f\x01\n" +
@@ -628,22 +628,22 @@ const file_google_cloud_managedidentities_v1_resource_proto_rawDesc = "" +
 	"\tREPAIRING\x10\x05\x12\x1a\n" +
 	"\x16PERFORMING_MAINTENANCE\x10\x06\x12\x0f\n" +
 	"\vUNAVAILABLE\x10\a:f\xeaAc\n" +
-	"'managedidentities.googleapis.com/Domain\x128projects/{project}/locations/{location}/domains/{domain}\"\x9c\b\n" +
-	"\x05Trust\x121\n" +
-	"\x12target_domain_name\x18\x01 \x01(\tB\x03\xe0A\x02R\x10targetDomainName\x12V\n" +
+	"'managedidentities.googleapis.com/Domain\x128projects/{project}/locations/{location}/domains/{domain}\"\xa7\b\n" +
+	"\x05Trust\x122\n" +
+	"\x12target_domain_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x10targetDomainName\x12W\n" +
 	"\n" +
-	"trust_type\x18\x02 \x01(\x0e22.google.cloud.managedidentities.v1.Trust.TrustTypeB\x03\xe0A\x02R\ttrustType\x12e\n" +
-	"\x0ftrust_direction\x18\x03 \x01(\x0e27.google.cloud.managedidentities.v1.Trust.TrustDirectionB\x03\xe0A\x02R\x0etrustDirection\x12>\n" +
-	"\x18selective_authentication\x18\x04 \x01(\bB\x03\xe0A\x01R\x17selectiveAuthentication\x12:\n" +
-	"\x17target_dns_ip_addresses\x18\x05 \x03(\tB\x03\xe0A\x02R\x14targetDnsIpAddresses\x129\n" +
-	"\x16trust_handshake_secret\x18\x06 \x01(\tB\x03\xe0A\x02R\x14trustHandshakeSecret\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12I\n" +
-	"\x05state\x18\t \x01(\x0e2..google.cloud.managedidentities.v1.Trust.StateB\x03\xe0A\x03R\x05state\x120\n" +
-	"\x11state_description\x18\v \x01(\tB\x03\xe0A\x03R\x10stateDescription\x12Z\n" +
-	"\x19last_trust_heartbeat_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x16lastTrustHeartbeatTime\"i\n" +
+	"trust_type\x18\x02 \x01(\x0e22.google.cloud.managedidentities.v1.Trust.TrustTypeB\x04\xe2A\x01\x02R\ttrustType\x12f\n" +
+	"\x0ftrust_direction\x18\x03 \x01(\x0e27.google.cloud.managedidentities.v1.Trust.TrustDirectionB\x04\xe2A\x01\x02R\x0etrustDirection\x12?\n" +
+	"\x18selective_authentication\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x17selectiveAuthentication\x12;\n" +
+	"\x17target_dns_ip_addresses\x18\x05 \x03(\tB\x04\xe2A\x01\x02R\x14targetDnsIpAddresses\x12:\n" +
+	"\x16trust_handshake_secret\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\x14trustHandshakeSecret\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12J\n" +
+	"\x05state\x18\t \x01(\x0e2..google.cloud.managedidentities.v1.Trust.StateB\x04\xe2A\x01\x03R\x05state\x121\n" +
+	"\x11state_description\x18\v \x01(\tB\x04\xe2A\x01\x03R\x10stateDescription\x12[\n" +
+	"\x19last_trust_heartbeat_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x16lastTrustHeartbeatTime\"i\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\f\n" +

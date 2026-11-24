@@ -155,11 +155,11 @@ var File_google_cloud_support_v2_escalation_proto protoreflect.FileDescriptor
 
 const file_google_cloud_support_v2_escalation_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/support/v2/escalation.proto\x12\x17google.cloud.support.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xe5\x01\n" +
+	"(google/cloud/support/v2/escalation.proto\x12\x17google.cloud.support.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xe7\x01\n" +
 	"\n" +
-	"Escalation\x12G\n" +
-	"\x06reason\x18\x04 \x01(\x0e2*.google.cloud.support.v2.Escalation.ReasonB\x03\xe0A\x02R\x06reason\x12)\n" +
-	"\rjustification\x18\x05 \x01(\tB\x03\xe0A\x02R\rjustification\"c\n" +
+	"Escalation\x12H\n" +
+	"\x06reason\x18\x04 \x01(\x0e2*.google.cloud.support.v2.Escalation.ReasonB\x04\xe2A\x01\x02R\x06reason\x12*\n" +
+	"\rjustification\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\rjustification\"c\n" +
 	"\x06Reason\x12\x16\n" +
 	"\x12REASON_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fRESOLUTION_TIME\x10\x01\x12\x17\n" +

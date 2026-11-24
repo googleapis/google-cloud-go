@@ -1,0 +1,63 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.developers.knowledge.v1",
+  "libraryPackage": "cloud.google.com/go/developerknowledge/apiv1",
+  "services": {
+    "DeveloperKnowledge": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DeveloperKnowledgeClient",
+          "rpcs": {
+            "AnswerQuery": {
+              "methods": [
+                "AnswerQuery"
+              ]
+            },
+            "BatchGetDocuments": {
+              "methods": [
+                "BatchGetDocuments"
+              ]
+            },
+            "GetDocument": {
+              "methods": [
+                "GetDocument"
+              ]
+            },
+            "SearchDocumentChunks": {
+              "methods": [
+                "SearchDocumentChunks"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DeveloperKnowledgeClient",
+          "rpcs": {
+            "AnswerQuery": {
+              "methods": [
+                "AnswerQuery"
+              ]
+            },
+            "BatchGetDocuments": {
+              "methods": [
+                "BatchGetDocuments"
+              ]
+            },
+            "GetDocument": {
+              "methods": [
+                "GetDocument"
+              ]
+            },
+            "SearchDocumentChunks": {
+              "methods": [
+                "SearchDocumentChunks"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -284,6 +284,37 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetPromotion = append(client.CallOptions.GetPromotion, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListPromotions = append(client.CallOptions.ListPromotions, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/promotions/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.InsertPromotion = append(client.CallOptions.InsertPromotion, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPromotion = append(client.CallOptions.GetPromotion, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPromotions = append(client.CallOptions.ListPromotions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/promotions/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.InsertPromotion = append(client.CallOptions.InsertPromotion, gax.WithClientLogging(logging))
+		client.CallOptions.GetPromotion = append(client.CallOptions.GetPromotion, gax.WithClientLogging(logging))
+		client.CallOptions.ListPromotions = append(client.CallOptions.ListPromotions, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -377,6 +408,37 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetPromotion = append(callOpts.GetPromotion, gax.WithClientMetrics(metrics))
 		callOpts.ListPromotions = append(callOpts.ListPromotions, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/promotions/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.InsertPromotion = append(callOpts.InsertPromotion, gax.WithClientTracing(tracing))
+		callOpts.GetPromotion = append(callOpts.GetPromotion, gax.WithClientTracing(tracing))
+		callOpts.ListPromotions = append(callOpts.ListPromotions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/promotions/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.InsertPromotion = append(callOpts.InsertPromotion, gax.WithClientLogging(logging))
+		callOpts.GetPromotion = append(callOpts.GetPromotion, gax.WithClientLogging(logging))
+		callOpts.ListPromotions = append(callOpts.ListPromotions, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -444,9 +506,6 @@ func (c *gRPCClient) GetPromotion(ctx context.Context, req *promotionspb.GetProm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.promotions.v1.PromotionsService/GetPromotion")
 	}
@@ -525,6 +584,11 @@ func (c *restClient) InsertPromotion(ctx context.Context, req *promotionspb.Inse
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/promotions/v1/%v/promotions:insert", req.GetParent())
 
 	params := url.Values{}
@@ -582,6 +646,11 @@ func (c *restClient) GetPromotion(ctx context.Context, req *promotionspb.GetProm
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/promotions/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -595,9 +664,6 @@ func (c *restClient) GetPromotion(ctx context.Context, req *promotionspb.GetProm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.promotions.v1.PromotionsService/GetPromotion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/promotions/v1/{name=accounts/*/promotions/*}")
@@ -655,6 +721,11 @@ func (c *restClient) ListPromotions(ctx context.Context, req *promotionspb.ListP
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/promotions/v1/%v/promotions", req.GetParent())

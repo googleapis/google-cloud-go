@@ -2668,27 +2668,27 @@ var File_google_cloud_saasplatform_saasservicemgmt_v1beta1_deployments_resources
 
 const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_deployments_resources_proto_rawDesc = "" +
 	"\n" +
-	"Mgoogle/cloud/saasplatform/saasservicemgmt/v1beta1/deployments_resources.proto\x121google.cloud.saasplatform.saasservicemgmt.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a>google/cloud/saasplatform/saasservicemgmt/v1beta1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"#\n" +
-	"\bLocation\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\"\x9c\n" +
+	"Mgoogle/cloud/saasplatform/saasservicemgmt/v1beta1/deployments_resources.proto\x121google.cloud.saasplatform.saasservicemgmt.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a>google/cloud/saasplatform/saasservicemgmt/v1beta1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"$\n" +
+	"\bLocation\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\"\xa8\n" +
 	"\n" +
-	"\x04Saas\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12^\n" +
-	"\tlocations\x18\x04 \x03(\v2;.google.cloud.saasplatform.saasservicemgmt.v1beta1.LocationB\x03\xe0A\x01R\tlocations\x12r\n" +
-	"\x14application_template\x18\x05 \x01(\v2?.google.cloud.saasplatform.saasservicemgmt.v1beta1.CompositeRefR\x13applicationTemplate\x12*\n" +
-	"\x0eblueprint_repo\x18\x06 \x01(\tB\x03\xe0A\x03R\rblueprintRepo\x12X\n" +
-	"\x05state\x18\a \x01(\x0e2=.google.cloud.saasplatform.saasservicemgmt.v1beta1.Saas.StateB\x03\xe0A\x03R\x05state\x12e\n" +
+	"\x04Saas\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12_\n" +
+	"\tlocations\x18\x04 \x03(\v2;.google.cloud.saasplatform.saasservicemgmt.v1beta1.LocationB\x04\xe2A\x01\x01R\tlocations\x12r\n" +
+	"\x14application_template\x18\x05 \x01(\v2?.google.cloud.saasplatform.saasservicemgmt.v1beta1.CompositeRefR\x13applicationTemplate\x12+\n" +
+	"\x0eblueprint_repo\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\rblueprintRepo\x12Y\n" +
+	"\x05state\x18\a \x01(\x0e2=.google.cloud.saasplatform.saasservicemgmt.v1beta1.Saas.StateB\x04\xe2A\x01\x03R\x05state\x12f\n" +
 	"\n" +
-	"conditions\x18\b \x03(\v2@.google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasConditionB\x03\xe0A\x03R\n" +
-	"conditions\x12-\n" +
-	"\x05error\x18\t \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x12a\n" +
-	"\x06labels\x18\xa1Q \x03(\v2C.google.cloud.saasplatform.saasservicemgmt.v1beta1.Saas.LabelsEntryB\x03\xe0A\x01R\x06labels\x12p\n" +
-	"\vannotations\x18\xa2Q \x03(\v2H.google.cloud.saasplatform.saasservicemgmt.v1beta1.Saas.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12\x1e\n" +
-	"\x03uid\x18\xd9O \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x18\n" +
-	"\x04etag\x18\xdaO \x01(\tB\x03\xe0A\x03R\x04etag\x12A\n" +
-	"\vcreate_time\x18\xbfP \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12A\n" +
-	"\vupdate_time\x18\xc0P \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"conditions\x18\b \x03(\v2@.google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasConditionB\x04\xe2A\x01\x03R\n" +
+	"conditions\x12.\n" +
+	"\x05error\x18\t \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x12b\n" +
+	"\x06labels\x18\xa1Q \x03(\v2C.google.cloud.saasplatform.saasservicemgmt.v1beta1.Saas.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12q\n" +
+	"\vannotations\x18\xa2Q \x03(\v2H.google.cloud.saasplatform.saasservicemgmt.v1beta1.Saas.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12\x1f\n" +
+	"\x03uid\x18\xd9O \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x19\n" +
+	"\x04etag\x18\xdaO \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12B\n" +
+	"\vcreate_time\x18\xbfP \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12B\n" +
+	"\vupdate_time\x18\xc0P \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -2704,19 +2704,19 @@ const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_deployments_resourc
 	"\x06ACTIVE\x10\x01\x1a\x02\b\x01\x12\x0f\n" +
 	"\aRUNNING\x10\x02\x1a\x02\b\x01\x12\x0e\n" +
 	"\x06FAILED\x10\x03\x1a\x02\b\x01\x1a\x02\x10\x01:i\xeaAf\n" +
-	"#saasservicemgmt.googleapis.com/Saas\x123projects/{project}/locations/{location}/saas/{saas}*\x04saas2\x04saas\"\xa5\x06\n" +
-	"\x06Tenant\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x123\n" +
-	"\x11consumer_resource\x18\x02 \x01(\tB\x06\xe0A\x01\xe0A\x05R\x10consumerResource\x12B\n" +
-	"\x04saas\x18\x03 \x01(\tB.\xe0A\x02\xe0A\x05\xfaA%\n" +
-	"#saasservicemgmt.googleapis.com/SaasR\x04saas\x12c\n" +
-	"\x06labels\x18\xa1Q \x03(\v2E.google.cloud.saasplatform.saasservicemgmt.v1beta1.Tenant.LabelsEntryB\x03\xe0A\x01R\x06labels\x12r\n" +
-	"\vannotations\x18\xa2Q \x03(\v2J.google.cloud.saasplatform.saasservicemgmt.v1beta1.Tenant.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12\x1e\n" +
-	"\x03uid\x18\xd9O \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x18\n" +
-	"\x04etag\x18\xdaO \x01(\tB\x03\xe0A\x03R\x04etag\x12A\n" +
-	"\vcreate_time\x18\xbfP \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12A\n" +
-	"\vupdate_time\x18\xc0P \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"#saasservicemgmt.googleapis.com/Saas\x123projects/{project}/locations/{location}/saas/{saas}*\x04saas2\x04saas\"\xaa\x06\n" +
+	"\x06Tenant\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x122\n" +
+	"\x11consumer_resource\x18\x02 \x01(\tB\x05\xe2A\x02\x01\x05R\x10consumerResource\x12A\n" +
+	"\x04saas\x18\x03 \x01(\tB-\xe2A\x02\x02\x05\xfaA%\n" +
+	"#saasservicemgmt.googleapis.com/SaasR\x04saas\x12d\n" +
+	"\x06labels\x18\xa1Q \x03(\v2E.google.cloud.saasplatform.saasservicemgmt.v1beta1.Tenant.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12s\n" +
+	"\vannotations\x18\xa2Q \x03(\v2J.google.cloud.saasplatform.saasservicemgmt.v1beta1.Tenant.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12\x1f\n" +
+	"\x03uid\x18\xd9O \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x19\n" +
+	"\x04etag\x18\xdaO \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12B\n" +
+	"\vcreate_time\x18\xbfP \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12B\n" +
+	"\vupdate_time\x18\xc0P \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -2724,27 +2724,27 @@ const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_deployments_resourc
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:u\xeaAr\n" +
-	"%saasservicemgmt.googleapis.com/Tenant\x128projects/{project}/locations/{location}/tenants/{tenant}*\atenants2\x06tenant\"\xb3\v\n" +
-	"\bUnitKind\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12W\n" +
-	"\x0fdefault_release\x18\x02 \x01(\tB.\xe0A\x01\xfaA(\n" +
-	"&saasservicemgmt.googleapis.com/ReleaseR\x0edefaultRelease\x12i\n" +
-	"\fdependencies\x18\x04 \x03(\v2=.google.cloud.saasplatform.saasservicemgmt.v1beta1.DependencyB\x06\xe0A\x01\xe0A\x05R\fdependencies\x12\x7f\n" +
-	"\x17input_variable_mappings\x18\x05 \x03(\v2B.google.cloud.saasplatform.saasservicemgmt.v1beta1.VariableMappingB\x03\xe0A\x01R\x15inputVariableMappings\x12\x81\x01\n" +
-	"\x18output_variable_mappings\x18\x06 \x03(\v2B.google.cloud.saasplatform.saasservicemgmt.v1beta1.VariableMappingB\x03\xe0A\x01R\x16outputVariableMappings\x12B\n" +
-	"\x04saas\x18\b \x01(\tB.\xe0A\x02\xe0A\x05\xfaA%\n" +
-	"#saasservicemgmt.googleapis.com/SaasR\x04saas\x12\x8a\x01\n" +
+	"%saasservicemgmt.googleapis.com/Tenant\x128projects/{project}/locations/{location}/tenants/{tenant}*\atenants2\x06tenant\"\xbd\v\n" +
+	"\bUnitKind\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12X\n" +
+	"\x0fdefault_release\x18\x02 \x01(\tB/\xe2A\x01\x01\xfaA(\n" +
+	"&saasservicemgmt.googleapis.com/ReleaseR\x0edefaultRelease\x12h\n" +
+	"\fdependencies\x18\x04 \x03(\v2=.google.cloud.saasplatform.saasservicemgmt.v1beta1.DependencyB\x05\xe2A\x02\x01\x05R\fdependencies\x12\x80\x01\n" +
+	"\x17input_variable_mappings\x18\x05 \x03(\v2B.google.cloud.saasplatform.saasservicemgmt.v1beta1.VariableMappingB\x04\xe2A\x01\x01R\x15inputVariableMappings\x12\x82\x01\n" +
+	"\x18output_variable_mappings\x18\x06 \x03(\v2B.google.cloud.saasplatform.saasservicemgmt.v1beta1.VariableMappingB\x04\xe2A\x01\x01R\x16outputVariableMappings\x12A\n" +
+	"\x04saas\x18\b \x01(\tB-\xe2A\x02\x02\x05\xfaA%\n" +
+	"#saasservicemgmt.googleapis.com/SaasR\x04saas\x12\x8b\x01\n" +
 	"\x1eapplication_template_component\x18\n" +
-	" \x01(\v2?.google.cloud.saasplatform.saasservicemgmt.v1beta1.ComponentRefB\x03\xe0A\x03R\x1capplicationTemplateComponent\x12[\n" +
+	" \x01(\v2?.google.cloud.saasplatform.saasservicemgmt.v1beta1.ComponentRefB\x04\xe2A\x01\x03R\x1capplicationTemplateComponent\x12[\n" +
 	"\n" +
-	"app_params\x18\v \x01(\v2<.google.cloud.saasplatform.saasservicemgmt.v1beta1.AppParamsR\tappParams\x12e\n" +
-	"\x06labels\x18\xa1Q \x03(\v2G.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitKind.LabelsEntryB\x03\xe0A\x01R\x06labels\x12t\n" +
-	"\vannotations\x18\xa2Q \x03(\v2L.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitKind.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12\x1e\n" +
-	"\x03uid\x18\xd9O \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x18\n" +
-	"\x04etag\x18\xdaO \x01(\tB\x03\xe0A\x03R\x04etag\x12A\n" +
-	"\vcreate_time\x18\xbfP \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12A\n" +
-	"\vupdate_time\x18\xc0P \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"app_params\x18\v \x01(\v2<.google.cloud.saasplatform.saasservicemgmt.v1beta1.AppParamsR\tappParams\x12f\n" +
+	"\x06labels\x18\xa1Q \x03(\v2G.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitKind.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12u\n" +
+	"\vannotations\x18\xa2Q \x03(\v2L.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitKind.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12\x1f\n" +
+	"\x03uid\x18\xd9O \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x19\n" +
+	"\x04etag\x18\xdaO \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12B\n" +
+	"\vcreate_time\x18\xbfP \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12B\n" +
+	"\vupdate_time\x18\xc0P \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -2752,50 +2752,50 @@ const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_deployments_resourc
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x7f\xeaA|\n" +
-	"'saasservicemgmt.googleapis.com/UnitKind\x12<projects/{project}/locations/{location}/unitKinds/{unitKind}*\tunitKinds2\bunitKind\"\xee\x17\n" +
-	"\x04Unit\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12L\n" +
-	"\tunit_kind\x18\x02 \x01(\tB/\xe0A\x01\xfaA)\n" +
-	"'saasservicemgmt.googleapis.com/UnitKindR\bunitKind\x12K\n" +
-	"\arelease\x18\r \x01(\tB1\xe0A\x01\xe0A\x03\xfaA(\n" +
-	"&saasservicemgmt.googleapis.com/ReleaseR\arelease\x12E\n" +
-	"\x06tenant\x18\x04 \x01(\tB-\xe0A\x01\xfaA'\n" +
-	"%saasservicemgmt.googleapis.com/TenantR\x06tenant\x12f\n" +
-	"\x12ongoing_operations\x18\x05 \x03(\tB7\xe0A\x01\xe0A\x03\xfaA.\n" +
-	",saasservicemgmt.googleapis.com/UnitOperationR\x11ongoingOperations\x12f\n" +
-	"\x12pending_operations\x18\x06 \x03(\tB7\xe0A\x01\xe0A\x03\xfaA.\n" +
-	",saasservicemgmt.googleapis.com/UnitOperationR\x11pendingOperations\x12j\n" +
-	"\x14scheduled_operations\x18\x18 \x03(\tB7\xe0A\x01\xe0A\x03\xfaA.\n" +
-	",saasservicemgmt.googleapis.com/UnitOperationR\x13scheduledOperations\x12i\n" +
+	"'saasservicemgmt.googleapis.com/UnitKind\x12<projects/{project}/locations/{location}/unitKinds/{unitKind}*\tunitKinds2\bunitKind\"\xef\x17\n" +
+	"\x04Unit\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12M\n" +
+	"\tunit_kind\x18\x02 \x01(\tB0\xe2A\x01\x01\xfaA)\n" +
+	"'saasservicemgmt.googleapis.com/UnitKindR\bunitKind\x12J\n" +
+	"\arelease\x18\r \x01(\tB0\xe2A\x02\x01\x03\xfaA(\n" +
+	"&saasservicemgmt.googleapis.com/ReleaseR\arelease\x12F\n" +
+	"\x06tenant\x18\x04 \x01(\tB.\xe2A\x01\x01\xfaA'\n" +
+	"%saasservicemgmt.googleapis.com/TenantR\x06tenant\x12e\n" +
+	"\x12ongoing_operations\x18\x05 \x03(\tB6\xe2A\x02\x01\x03\xfaA.\n" +
+	",saasservicemgmt.googleapis.com/UnitOperationR\x11ongoingOperations\x12e\n" +
+	"\x12pending_operations\x18\x06 \x03(\tB6\xe2A\x02\x01\x03\xfaA.\n" +
+	",saasservicemgmt.googleapis.com/UnitOperationR\x11pendingOperations\x12i\n" +
+	"\x14scheduled_operations\x18\x18 \x03(\tB6\xe2A\x02\x01\x03\xfaA.\n" +
+	",saasservicemgmt.googleapis.com/UnitOperationR\x13scheduledOperations\x12h\n" +
 	"\n" +
-	"dependents\x18\a \x03(\v2A.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitDependencyB\x06\xe0A\x01\xe0A\x03R\n" +
-	"dependents\x12m\n" +
-	"\fdependencies\x18\b \x03(\v2A.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitDependencyB\x06\xe0A\x01\xe0A\x03R\fdependencies\x12p\n" +
-	"\x0finput_variables\x18\t \x03(\v2?.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitVariableB\x06\xe0A\x01\xe0A\x03R\x0einputVariables\x12r\n" +
+	"dependents\x18\a \x03(\v2A.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitDependencyB\x05\xe2A\x02\x01\x03R\n" +
+	"dependents\x12l\n" +
+	"\fdependencies\x18\b \x03(\v2A.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitDependencyB\x05\xe2A\x02\x01\x03R\fdependencies\x12o\n" +
+	"\x0finput_variables\x18\t \x03(\v2?.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitVariableB\x05\xe2A\x02\x01\x03R\x0einputVariables\x12q\n" +
 	"\x10output_variables\x18\n" +
-	" \x03(\v2?.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitVariableB\x06\xe0A\x01\xe0A\x03R\x0foutputVariables\x12r\n" +
-	"\vmaintenance\x18\x0e \x01(\v2K.google.cloud.saasplatform.saasservicemgmt.v1beta1.Unit.MaintenanceSettingsB\x03\xe0A\x01R\vmaintenance\x12_\n" +
-	"\x05state\x18\x10 \x01(\x0e2A.google.cloud.saasplatform.saasservicemgmt.v1beta1.Unit.UnitStateB\x06\xe0A\x01\xe0A\x03R\x05state\x12h\n" +
+	" \x03(\v2?.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitVariableB\x05\xe2A\x02\x01\x03R\x0foutputVariables\x12s\n" +
+	"\vmaintenance\x18\x0e \x01(\v2K.google.cloud.saasplatform.saasservicemgmt.v1beta1.Unit.MaintenanceSettingsB\x04\xe2A\x01\x01R\vmaintenance\x12^\n" +
+	"\x05state\x18\x10 \x01(\x0e2A.google.cloud.saasplatform.saasservicemgmt.v1beta1.Unit.UnitStateB\x05\xe2A\x02\x01\x03R\x05state\x12g\n" +
 	"\n" +
-	"conditions\x18\x14 \x03(\v2@.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitConditionB\x06\xe0A\x01\xe0A\x03R\n" +
-	"conditions\x12w\n" +
-	"\x0fmanagement_mode\x18\x16 \x01(\x0e2F.google.cloud.saasplatform.saasservicemgmt.v1beta1.Unit.ManagementModeB\x06\xe0A\x01\xe0A\x05R\x0emanagementMode\x12\x84\x01\n" +
-	"\x14system_managed_state\x18\x19 \x01(\x0e2J.google.cloud.saasplatform.saasservicemgmt.v1beta1.Unit.SystemManagedStateB\x06\xe0A\x01\xe0A\x03R\x12systemManagedState\x12N\n" +
-	"\x11system_cleanup_at\x18\x1a \x01(\v2\x1a.google.protobuf.TimestampB\x06\xe0A\x01\xe0A\x03R\x0fsystemCleanupAt\x12K\n" +
-	"\vapplication\x18\x1d \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!apphub.googleapis.com/ApplicationR\vapplication\x12a\n" +
-	"\x06labels\x18\xa1Q \x03(\v2C.google.cloud.saasplatform.saasservicemgmt.v1beta1.Unit.LabelsEntryB\x03\xe0A\x01R\x06labels\x12p\n" +
-	"\vannotations\x18\xa2Q \x03(\v2H.google.cloud.saasplatform.saasservicemgmt.v1beta1.Unit.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12\x1e\n" +
-	"\x03uid\x18\xd9O \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x18\n" +
-	"\x04etag\x18\xdaO \x01(\tB\x03\xe0A\x03R\x04etag\x12A\n" +
-	"\vcreate_time\x18\xbfP \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12A\n" +
-	"\vupdate_time\x18\xc0P \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12)\n" +
-	"\rsatisfies_pzs\x18\xc1P \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x12)\n" +
-	"\rsatisfies_pzi\x18\xc2P \x01(\bB\x03\xe0A\x03R\fsatisfiesPzi\x1ab\n" +
-	"\x13MaintenanceSettings\x12K\n" +
-	"\x11pinned_until_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x0fpinnedUntilTime\x1a9\n" +
+	"conditions\x18\x14 \x03(\v2@.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitConditionB\x05\xe2A\x02\x01\x03R\n" +
+	"conditions\x12v\n" +
+	"\x0fmanagement_mode\x18\x16 \x01(\x0e2F.google.cloud.saasplatform.saasservicemgmt.v1beta1.Unit.ManagementModeB\x05\xe2A\x02\x01\x05R\x0emanagementMode\x12\x83\x01\n" +
+	"\x14system_managed_state\x18\x19 \x01(\x0e2J.google.cloud.saasplatform.saasservicemgmt.v1beta1.Unit.SystemManagedStateB\x05\xe2A\x02\x01\x03R\x12systemManagedState\x12M\n" +
+	"\x11system_cleanup_at\x18\x1a \x01(\v2\x1a.google.protobuf.TimestampB\x05\xe2A\x02\x01\x03R\x0fsystemCleanupAt\x12L\n" +
+	"\vapplication\x18\x1d \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!apphub.googleapis.com/ApplicationR\vapplication\x12b\n" +
+	"\x06labels\x18\xa1Q \x03(\v2C.google.cloud.saasplatform.saasservicemgmt.v1beta1.Unit.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12q\n" +
+	"\vannotations\x18\xa2Q \x03(\v2H.google.cloud.saasplatform.saasservicemgmt.v1beta1.Unit.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12\x1f\n" +
+	"\x03uid\x18\xd9O \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x19\n" +
+	"\x04etag\x18\xdaO \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12B\n" +
+	"\vcreate_time\x18\xbfP \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12B\n" +
+	"\vupdate_time\x18\xc0P \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12*\n" +
+	"\rsatisfies_pzs\x18\xc1P \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12*\n" +
+	"\rsatisfies_pzi\x18\xc2P \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzi\x1ac\n" +
+	"\x13MaintenanceSettings\x12L\n" +
+	"\x11pinned_until_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x0fpinnedUntilTime\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +
@@ -2819,40 +2819,40 @@ const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_deployments_resourc
 	"\x1bSYSTEM_MANAGED_STATE_ACTIVE\x10\x01\x12!\n" +
 	"\x1dSYSTEM_MANAGED_STATE_INACTIVE\x10\x02\x12'\n" +
 	"#SYSTEM_MANAGED_STATE_DECOMMISSIONED\x10\x03:k\xeaAh\n" +
-	"#saasservicemgmt.googleapis.com/Unit\x124projects/{project}/locations/{location}/units/{unit}*\x05units2\x04unit\"l\n" +
-	"\x0eUnitDependency\x12\x19\n" +
-	"\x05alias\x18\x01 \x01(\tB\x03\xe0A\x03R\x05alias\x12?\n" +
-	"\x04unit\x18\x02 \x01(\tB+\xe0A\x03\xfaA%\n" +
-	"#saasservicemgmt.googleapis.com/UnitR\x04unit\"\xf5\x10\n" +
-	"\rUnitOperation\x12a\n" +
-	"\tprovision\x18\b \x01(\v2<.google.cloud.saasplatform.saasservicemgmt.v1beta1.ProvisionB\x03\xe0A\x01H\x00R\tprovision\x12[\n" +
-	"\aupgrade\x18\t \x01(\v2:.google.cloud.saasplatform.saasservicemgmt.v1beta1.UpgradeB\x03\xe0A\x01H\x00R\aupgrade\x12g\n" +
+	"#saasservicemgmt.googleapis.com/Unit\x124projects/{project}/locations/{location}/units/{unit}*\x05units2\x04unit\"n\n" +
+	"\x0eUnitDependency\x12\x1a\n" +
+	"\x05alias\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x05alias\x12@\n" +
+	"\x04unit\x18\x02 \x01(\tB,\xe2A\x01\x03\xfaA%\n" +
+	"#saasservicemgmt.googleapis.com/UnitR\x04unit\"\xff\x10\n" +
+	"\rUnitOperation\x12b\n" +
+	"\tprovision\x18\b \x01(\v2<.google.cloud.saasplatform.saasservicemgmt.v1beta1.ProvisionB\x04\xe2A\x01\x01H\x00R\tprovision\x12\\\n" +
+	"\aupgrade\x18\t \x01(\v2:.google.cloud.saasplatform.saasservicemgmt.v1beta1.UpgradeB\x04\xe2A\x01\x01H\x00R\aupgrade\x12h\n" +
 	"\vdeprovision\x18\n" +
-	" \x01(\v2>.google.cloud.saasplatform.saasservicemgmt.v1beta1.DeprovisionB\x03\xe0A\x01H\x00R\vdeprovision\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12B\n" +
-	"\x04unit\x18\x02 \x01(\tB.\xe0A\x02\xe0A\x05\xfaA%\n" +
-	"#saasservicemgmt.googleapis.com/UnitR\x04unit\x12h\n" +
-	"\x15parent_unit_operation\x18\x03 \x01(\tB4\xe0A\x01\xfaA.\n" +
-	",saasservicemgmt.googleapis.com/UnitOperationR\x13parentUnitOperation\x12H\n" +
-	"\arollout\x18\x04 \x01(\tB.\xe0A\x01\xfaA(\n" +
-	"&saasservicemgmt.googleapis.com/RolloutR\arollout\x12\x1b\n" +
-	"\x06cancel\x18\x05 \x01(\bB\x03\xe0A\x01R\x06cancel\x12q\n" +
-	"\x05state\x18\x06 \x01(\x0e2S.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperation.UnitOperationStateB\x06\xe0A\x01\xe0A\x03R\x05state\x12q\n" +
+	" \x01(\v2>.google.cloud.saasplatform.saasservicemgmt.v1beta1.DeprovisionB\x04\xe2A\x01\x01H\x00R\vdeprovision\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\x04unit\x18\x02 \x01(\tB-\xe2A\x02\x02\x05\xfaA%\n" +
+	"#saasservicemgmt.googleapis.com/UnitR\x04unit\x12i\n" +
+	"\x15parent_unit_operation\x18\x03 \x01(\tB5\xe2A\x01\x01\xfaA.\n" +
+	",saasservicemgmt.googleapis.com/UnitOperationR\x13parentUnitOperation\x12I\n" +
+	"\arollout\x18\x04 \x01(\tB/\xe2A\x01\x01\xfaA(\n" +
+	"&saasservicemgmt.googleapis.com/RolloutR\arollout\x12\x1c\n" +
+	"\x06cancel\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x06cancel\x12p\n" +
+	"\x05state\x18\x06 \x01(\x0e2S.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperation.UnitOperationStateB\x05\xe2A\x02\x01\x03R\x05state\x12p\n" +
 	"\n" +
-	"conditions\x18\a \x03(\v2I.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperationConditionB\x06\xe0A\x01\xe0A\x03R\n" +
-	"conditions\x12\\\n" +
-	"\bschedule\x18\f \x01(\v2;.google.cloud.saasplatform.saasservicemgmt.v1beta1.ScheduleB\x03\xe0A\x01R\bschedule\x12)\n" +
-	"\fengine_state\x18\x0e \x01(\tB\x06\xe0A\x01\xe0A\x03R\vengineState\x12|\n" +
-	"\x0eerror_category\x18\x0f \x01(\x0e2M.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperationErrorCategoryB\x06\xe0A\x01\xe0A\x03R\rerrorCategory\x12j\n" +
-	"\x06labels\x18\xa1Q \x03(\v2L.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperation.LabelsEntryB\x03\xe0A\x01R\x06labels\x12y\n" +
-	"\vannotations\x18\xa2Q \x03(\v2Q.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperation.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12\x1e\n" +
-	"\x03uid\x18\xd9O \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x18\n" +
-	"\x04etag\x18\xdaO \x01(\tB\x03\xe0A\x03R\x04etag\x12A\n" +
-	"\vcreate_time\x18\xbfP \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12A\n" +
-	"\vupdate_time\x18\xc0P \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12A\n" +
-	"\vdelete_time\x18\xc1P \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"conditions\x18\a \x03(\v2I.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperationConditionB\x05\xe2A\x02\x01\x03R\n" +
+	"conditions\x12]\n" +
+	"\bschedule\x18\f \x01(\v2;.google.cloud.saasplatform.saasservicemgmt.v1beta1.ScheduleB\x04\xe2A\x01\x01R\bschedule\x12(\n" +
+	"\fengine_state\x18\x0e \x01(\tB\x05\xe2A\x02\x01\x03R\vengineState\x12{\n" +
+	"\x0eerror_category\x18\x0f \x01(\x0e2M.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperationErrorCategoryB\x05\xe2A\x02\x01\x03R\rerrorCategory\x12k\n" +
+	"\x06labels\x18\xa1Q \x03(\v2L.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperation.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12z\n" +
+	"\vannotations\x18\xa2Q \x03(\v2Q.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperation.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12\x1f\n" +
+	"\x03uid\x18\xd9O \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x19\n" +
+	"\x04etag\x18\xdaO \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12B\n" +
+	"\vcreate_time\x18\xbfP \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12B\n" +
+	"\vupdate_time\x18\xc0P \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12B\n" +
+	"\vdelete_time\x18\xc1P \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"deleteTime\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -2869,39 +2869,39 @@ const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_deployments_resourc
 	"\x1bUNIT_OPERATION_STATE_FAILED\x10\x06\x12\"\n" +
 	"\x1eUNIT_OPERATION_STATE_CANCELLED\x10\a:\x99\x01\xeaA\x95\x01\n" +
 	",saasservicemgmt.googleapis.com/UnitOperation\x12Fprojects/{project}/locations/{location}/unitOperations/{unitOperation}*\x0eunitOperations2\runitOperationB\x15\n" +
-	"\x13unit_operation_type\"\xc4\x01\n" +
-	"\tProvision\x12H\n" +
-	"\arelease\x18\x01 \x01(\tB.\xe0A\x01\xfaA(\n" +
-	"&saasservicemgmt.googleapis.com/ReleaseR\arelease\x12m\n" +
-	"\x0finput_variables\x18\x03 \x03(\v2?.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitVariableB\x03\xe0A\x01R\x0einputVariables\"\r\n" +
-	"\vDeprovision\"\xc2\x01\n" +
-	"\aUpgrade\x12H\n" +
-	"\arelease\x18\x01 \x01(\tB.\xe0A\x01\xfaA(\n" +
-	"&saasservicemgmt.googleapis.com/ReleaseR\arelease\x12m\n" +
-	"\x0finput_variables\x18\x02 \x03(\v2?.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitVariableB\x03\xe0A\x01R\x0einputVariables\"J\n" +
-	"\bSchedule\x12>\n" +
+	"\x13unit_operation_type\"\xc6\x01\n" +
+	"\tProvision\x12I\n" +
+	"\arelease\x18\x01 \x01(\tB/\xe2A\x01\x01\xfaA(\n" +
+	"&saasservicemgmt.googleapis.com/ReleaseR\arelease\x12n\n" +
+	"\x0finput_variables\x18\x03 \x03(\v2?.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitVariableB\x04\xe2A\x01\x01R\x0einputVariables\"\r\n" +
+	"\vDeprovision\"\xc4\x01\n" +
+	"\aUpgrade\x12I\n" +
+	"\arelease\x18\x01 \x01(\tB/\xe2A\x01\x01\xfaA(\n" +
+	"&saasservicemgmt.googleapis.com/ReleaseR\arelease\x12n\n" +
+	"\x0finput_variables\x18\x02 \x03(\v2?.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitVariableB\x04\xe2A\x01\x01R\x0einputVariables\"K\n" +
+	"\bSchedule\x12?\n" +
 	"\n" +
-	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\tstartTime\"\xe4\f\n" +
-	"\aRelease\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12O\n" +
-	"\tunit_kind\x18\x02 \x01(\tB2\xe0A\x02\xe0A\x05\xfaA)\n" +
-	"'saasservicemgmt.googleapis.com/UnitKindR\bunitKind\x12_\n" +
-	"\tblueprint\x18\x03 \x01(\v2<.google.cloud.saasplatform.saasservicemgmt.v1beta1.BlueprintB\x03\xe0A\x01R\tblueprint\x12\x86\x01\n" +
-	"\x14release_requirements\x18\x04 \x01(\v2N.google.cloud.saasplatform.saasservicemgmt.v1beta1.Release.ReleaseRequirementsB\x03\xe0A\x01R\x13releaseRequirements\x12p\n" +
-	"\x0finput_variables\x18\x05 \x03(\v2?.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitVariableB\x06\xe0A\x01\xe0A\x03R\x0einputVariables\x12r\n" +
-	"\x10output_variables\x18\x06 \x03(\v2?.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitVariableB\x06\xe0A\x01\xe0A\x03R\x0foutputVariables\x12|\n" +
-	"\x17input_variable_defaults\x18\a \x03(\v2?.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitVariableB\x03\xe0A\x01R\x15inputVariableDefaults\x12\x8a\x01\n" +
-	"\x1eapplication_template_component\x18\t \x01(\v2?.google.cloud.saasplatform.saasservicemgmt.v1beta1.ComponentRefB\x03\xe0A\x03R\x1capplicationTemplateComponent\x12d\n" +
-	"\x06labels\x18\xa1Q \x03(\v2F.google.cloud.saasplatform.saasservicemgmt.v1beta1.Release.LabelsEntryB\x03\xe0A\x01R\x06labels\x12s\n" +
-	"\vannotations\x18\xa2Q \x03(\v2K.google.cloud.saasplatform.saasservicemgmt.v1beta1.Release.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12\x1e\n" +
-	"\x03uid\x18\xd9O \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x18\n" +
-	"\x04etag\x18\xdaO \x01(\tB\x03\xe0A\x03R\x04etag\x12A\n" +
-	"\vcreate_time\x18\xbfP \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12A\n" +
-	"\vupdate_time\x18\xc0P \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x1a\x81\x01\n" +
-	"\x13ReleaseRequirements\x12j\n" +
-	"\x19upgradeable_from_releases\x18\x01 \x03(\tB.\xe0A\x01\xfaA(\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\tstartTime\"\xed\f\n" +
+	"\aRelease\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12N\n" +
+	"\tunit_kind\x18\x02 \x01(\tB1\xe2A\x02\x02\x05\xfaA)\n" +
+	"'saasservicemgmt.googleapis.com/UnitKindR\bunitKind\x12`\n" +
+	"\tblueprint\x18\x03 \x01(\v2<.google.cloud.saasplatform.saasservicemgmt.v1beta1.BlueprintB\x04\xe2A\x01\x01R\tblueprint\x12\x87\x01\n" +
+	"\x14release_requirements\x18\x04 \x01(\v2N.google.cloud.saasplatform.saasservicemgmt.v1beta1.Release.ReleaseRequirementsB\x04\xe2A\x01\x01R\x13releaseRequirements\x12o\n" +
+	"\x0finput_variables\x18\x05 \x03(\v2?.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitVariableB\x05\xe2A\x02\x01\x03R\x0einputVariables\x12q\n" +
+	"\x10output_variables\x18\x06 \x03(\v2?.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitVariableB\x05\xe2A\x02\x01\x03R\x0foutputVariables\x12}\n" +
+	"\x17input_variable_defaults\x18\a \x03(\v2?.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitVariableB\x04\xe2A\x01\x01R\x15inputVariableDefaults\x12\x8b\x01\n" +
+	"\x1eapplication_template_component\x18\t \x01(\v2?.google.cloud.saasplatform.saasservicemgmt.v1beta1.ComponentRefB\x04\xe2A\x01\x03R\x1capplicationTemplateComponent\x12e\n" +
+	"\x06labels\x18\xa1Q \x03(\v2F.google.cloud.saasplatform.saasservicemgmt.v1beta1.Release.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12t\n" +
+	"\vannotations\x18\xa2Q \x03(\v2K.google.cloud.saasplatform.saasservicemgmt.v1beta1.Release.AnnotationsEntryB\x04\xe2A\x01\x01R\vannotations\x12\x1f\n" +
+	"\x03uid\x18\xd9O \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12\x19\n" +
+	"\x04etag\x18\xdaO \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12B\n" +
+	"\vcreate_time\x18\xbfP \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12B\n" +
+	"\vupdate_time\x18\xc0P \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x1a\x82\x01\n" +
+	"\x13ReleaseRequirements\x12k\n" +
+	"\x19upgradeable_from_releases\x18\x01 \x03(\tB/\xe2A\x01\x01\xfaA(\n" +
 	"&saasservicemgmt.googleapis.com/ReleaseR\x17upgradeableFromReleases\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -2909,43 +2909,43 @@ const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_deployments_resourc
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:z\xeaAw\n" +
-	"&saasservicemgmt.googleapis.com/Release\x12:projects/{project}/locations/{location}/releases/{release}*\breleases2\arelease\"\xf2\x01\n" +
-	"\x0fVariableMapping\x12Y\n" +
-	"\x04from\x18\x02 \x01(\v2>.google.cloud.saasplatform.saasservicemgmt.v1beta1.FromMappingB\x03\xe0A\x01H\x00R\x04from\x12S\n" +
-	"\x02to\x18\x03 \x01(\v2<.google.cloud.saasplatform.saasservicemgmt.v1beta1.ToMappingB\x03\xe0A\x01H\x00R\x02to\x12\x1f\n" +
-	"\bvariable\x18\x01 \x01(\tB\x03\xe0A\x02R\bvariableB\x0e\n" +
-	"\fmapping_type\"`\n" +
-	"\vFromMapping\x12#\n" +
+	"&saasservicemgmt.googleapis.com/Release\x12:projects/{project}/locations/{location}/releases/{release}*\breleases2\arelease\"\xf5\x01\n" +
+	"\x0fVariableMapping\x12Z\n" +
+	"\x04from\x18\x02 \x01(\v2>.google.cloud.saasplatform.saasservicemgmt.v1beta1.FromMappingB\x04\xe2A\x01\x01H\x00R\x04from\x12T\n" +
+	"\x02to\x18\x03 \x01(\v2<.google.cloud.saasplatform.saasservicemgmt.v1beta1.ToMappingB\x04\xe2A\x01\x01H\x00R\x02to\x12 \n" +
+	"\bvariable\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bvariableB\x0e\n" +
+	"\fmapping_type\"b\n" +
+	"\vFromMapping\x12$\n" +
 	"\n" +
-	"dependency\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"dependency\x12,\n" +
-	"\x0foutput_variable\x18\x02 \x01(\tB\x03\xe0A\x02R\x0eoutputVariable\"\x8d\x01\n" +
-	"\tToMapping\x12#\n" +
+	"dependency\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"dependency\x12-\n" +
+	"\x0foutput_variable\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0eoutputVariable\"\x90\x01\n" +
+	"\tToMapping\x12$\n" +
 	"\n" +
-	"dependency\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"dependency\x12*\n" +
-	"\x0einput_variable\x18\x02 \x01(\tB\x03\xe0A\x02R\rinputVariable\x12/\n" +
-	"\x11ignore_for_lookup\x18\x03 \x01(\bB\x03\xe0A\x01R\x0fignoreForLookup\"x\n" +
+	"dependency\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"dependency\x12+\n" +
+	"\x0einput_variable\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rinputVariable\x120\n" +
+	"\x11ignore_for_lookup\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x0fignoreForLookup\"x\n" +
 	"\n" +
-	"Dependency\x12O\n" +
-	"\tunit_kind\x18\x01 \x01(\tB2\xe0A\x02\xe0A\x05\xfaA)\n" +
-	"'saasservicemgmt.googleapis.com/UnitKindR\bunitKind\x12\x19\n" +
-	"\x05alias\x18\x02 \x01(\tB\x03\xe0A\x02R\x05alias\"\x80\x02\n" +
-	"\fCompositeRef\x12j\n" +
-	"\x14application_template\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
+	"Dependency\x12N\n" +
+	"\tunit_kind\x18\x01 \x01(\tB1\xe2A\x02\x02\x05\xfaA)\n" +
+	"'saasservicemgmt.googleapis.com/UnitKindR\bunitKind\x12\x1a\n" +
+	"\x05alias\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05alias\"\x82\x02\n" +
+	"\fCompositeRef\x12k\n" +
+	"\x14application_template\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
 	"/designcenter.googleapis.com/ApplicationTemplateR\x13applicationTemplate\x12X\n" +
 	"\brevision\x18\x02 \x01(\tB<\xfaA9\n" +
-	"7designcenter.googleapis.com/ApplicationTemplateRevisionR\brevision\x12*\n" +
-	"\x0esync_operation\x18\x03 \x01(\tB\x03\xe0A\x03R\rsyncOperation\"\xae\x01\n" +
+	"7designcenter.googleapis.com/ApplicationTemplateRevisionR\brevision\x12+\n" +
+	"\x0esync_operation\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\rsyncOperation\"\xae\x01\n" +
 	"\fComponentRef\x12d\n" +
 	"\rcomposite_ref\x18\x01 \x01(\v2?.google.cloud.saasplatform.saasservicemgmt.v1beta1.CompositeRefR\fcompositeRef\x12\x1c\n" +
 	"\tcomponent\x18\x02 \x01(\tR\tcomponent\x12\x1a\n" +
-	"\brevision\x18\x03 \x01(\tR\brevision\"\xcf\x02\n" +
+	"\brevision\x18\x03 \x01(\tR\brevision\"\xd0\x02\n" +
 	"\tAppParams\x12\x14\n" +
 	"\x05group\x18\x01 \x01(\tR\x05group\x12X\n" +
-	"\x05scope\x18\x02 \x01(\v2B.google.cloud.saasplatform.saasservicemgmt.v1beta1.AppParams.ScopeR\x05scope\x1a\xd1\x01\n" +
-	"\x05Scope\x12`\n" +
-	"\x04type\x18\x01 \x01(\x0e2G.google.cloud.saasplatform.saasservicemgmt.v1beta1.AppParams.Scope.TypeB\x03\xe0A\x02R\x04type\"f\n" +
+	"\x05scope\x18\x02 \x01(\v2B.google.cloud.saasplatform.saasservicemgmt.v1beta1.AppParams.ScopeR\x05scope\x1a\xd2\x01\n" +
+	"\x05Scope\x12a\n" +
+	"\x04type\x18\x01 \x01(\x0e2G.google.cloud.saasplatform.saasservicemgmt.v1beta1.AppParams.Scope.TypeB\x04\xe2A\x01\x02R\x04type\"f\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rTYPE_REGIONAL\x10\x01\x12\x0f\n" +

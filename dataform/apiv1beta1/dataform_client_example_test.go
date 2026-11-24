@@ -86,6 +86,29 @@ func ExampleClient_CancelWorkflowInvocation() {
 	_ = resp
 }
 
+func ExampleClient_CheckoutWorkspaceBranch() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.CheckoutWorkspaceBranchRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#CheckoutWorkspaceBranchRequest.
+	}
+	err = c.CheckoutWorkspaceBranch(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleClient_CommitRepositoryChanges() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -179,6 +202,36 @@ func ExampleClient_CreateCompilationResult() {
 		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#CreateCompilationResultRequest.
 	}
 	resp, err := c.CreateCompilationResult(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateCompilationResultLongRunning() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.CreateCompilationResultRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#CreateCompilationResultRequest.
+	}
+	op, err := c.CreateCompilationResultLongRunning(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -354,6 +407,31 @@ func ExampleClient_CreateWorkspace() {
 		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#CreateWorkspaceRequest.
 	}
 	resp, err := c.CreateWorkspace(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_DeleteBranch() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.DeleteBranchRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#DeleteBranchRequest.
+	}
+	resp, err := c.DeleteBranch(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -608,6 +686,31 @@ func ExampleClient_DeleteWorkspace() {
 	}
 }
 
+func ExampleClient_FetchCurrentWorkspaceBranch() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.FetchCurrentWorkspaceBranchRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#FetchCurrentWorkspaceBranchRequest.
+	}
+	resp, err := c.FetchCurrentWorkspaceBranch(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_FetchFileDiff() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -742,6 +845,80 @@ func ExampleClient_FetchRepositoryHistory() {
 		// Otherwise, remove this line. Only populated after
 		// first call to Next(). Not safe for concurrent access.
 		_ = it.Response.(*dataformpb.FetchRepositoryHistoryResponse)
+	}
+}
+
+func ExampleClient_FetchWorkspaceBranches() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.FetchWorkspaceBranchesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#FetchWorkspaceBranchesRequest.
+	}
+	it := c.FetchWorkspaceBranches(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dataformpb.FetchWorkspaceBranchesResponse)
+	}
+}
+
+func ExampleClient_FetchWorkspaceHistory() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.FetchWorkspaceHistoryRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#FetchWorkspaceHistoryRequest.
+	}
+	it := c.FetchWorkspaceHistory(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dataformpb.FetchWorkspaceHistoryResponse)
 	}
 }
 
@@ -1899,6 +2076,31 @@ func ExampleClient_SetIamPolicy() {
 		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_SyncWorkspaceRefs() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.SyncWorkspaceRefsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#SyncWorkspaceRefsRequest.
+	}
+	resp, err := c.SyncWorkspaceRefs(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

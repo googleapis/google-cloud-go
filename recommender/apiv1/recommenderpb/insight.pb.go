@@ -490,9 +490,9 @@ var File_google_cloud_recommender_v1_insight_proto protoreflect.FileDescriptor
 
 const file_google_cloud_recommender_v1_insight_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/recommender/v1/insight.proto\x12\x1bgoogle.cloud.recommender.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x92\v\n" +
-	"\aInsight\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12 \n" +
+	")google/cloud/recommender/v1/insight.proto\x12\x1bgoogle.cloud.recommender.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x93\v\n" +
+	"\aInsight\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12)\n" +
 	"\x10target_resources\x18\t \x03(\tR\x0ftargetResources\x12'\n" +
 	"\x0finsight_subtype\x18\n" +

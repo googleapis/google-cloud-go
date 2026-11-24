@@ -55,6 +55,11 @@
                 "DeleteHiveTable"
               ]
             },
+            "FailoverHiveCatalog": {
+              "methods": [
+                "FailoverHiveCatalog"
+              ]
+            },
             "GetHiveCatalog": {
               "methods": [
                 "GetHiveCatalog"
@@ -153,6 +158,11 @@
             "DeleteHiveTable": {
               "methods": [
                 "DeleteHiveTable"
+              ]
+            },
+            "FailoverHiveCatalog": {
+              "methods": [
+                "FailoverHiveCatalog"
               ]
             },
             "GetHiveCatalog": {

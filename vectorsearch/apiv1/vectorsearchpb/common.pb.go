@@ -25,6 +25,7 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
@@ -93,7 +94,7 @@ var File_google_cloud_vectorsearch_v1_common_proto protoreflect.FileDescriptor
 
 const file_google_cloud_vectorsearch_v1_common_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/vectorsearch/v1/common.proto\x12\x1cgoogle.cloud.vectorsearch.v1*W\n" +
+	")google/cloud/vectorsearch/v1/common.proto\x12\x1cgoogle.cloud.vectorsearch.v1\x1a\x1fgoogle/api/field_behavior.proto*W\n" +
 	"\x0eDistanceMetric\x12\x1f\n" +
 	"\x1bDISTANCE_METRIC_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vDOT_PRODUCT\x10\x01\x12\x13\n" +

@@ -38,6 +38,7 @@ const (
 	DataChatService_Chat_FullMethodName               = "/google.cloud.geminidataanalytics.v1beta.DataChatService/Chat"
 	DataChatService_CreateConversation_FullMethodName = "/google.cloud.geminidataanalytics.v1beta.DataChatService/CreateConversation"
 	DataChatService_DeleteConversation_FullMethodName = "/google.cloud.geminidataanalytics.v1beta.DataChatService/DeleteConversation"
+	DataChatService_UpdateConversation_FullMethodName = "/google.cloud.geminidataanalytics.v1beta.DataChatService/UpdateConversation"
 	DataChatService_GetConversation_FullMethodName    = "/google.cloud.geminidataanalytics.v1beta.DataChatService/GetConversation"
 	DataChatService_ListConversations_FullMethodName  = "/google.cloud.geminidataanalytics.v1beta.DataChatService/ListConversations"
 	DataChatService_ListMessages_FullMethodName       = "/google.cloud.geminidataanalytics.v1beta.DataChatService/ListMessages"
@@ -49,13 +50,15 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DataChatServiceClient interface {
 	// Answers a data question by generating a stream of
-	// [Message][google.cloud.geminidataanalytics.v1.Message] objects.
+	// [Message][google.cloud.geminidataanalytics.v1beta.Message] objects.
 	Chat(ctx context.Context, in *ChatRequest, opts ...grpc.CallOption) (DataChatService_ChatClient, error)
 	// Creates a new conversation to persist the conversation history. Each
 	// conversation will have multiple messages associated with it.
 	CreateConversation(ctx context.Context, in *CreateConversationRequest, opts ...grpc.CallOption) (*Conversation, error)
 	// Deletes a conversation.
 	DeleteConversation(ctx context.Context, in *DeleteConversationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Updates a conversation.
+	UpdateConversation(ctx context.Context, in *UpdateConversationRequest, opts ...grpc.CallOption) (*Conversation, error)
 	// Gets details of a single conversation by using conversation id and parent.
 	GetConversation(ctx context.Context, in *GetConversationRequest, opts ...grpc.CallOption) (*Conversation, error)
 	// Lists all conversations for a given parent.
@@ -124,6 +127,15 @@ func (c *dataChatServiceClient) DeleteConversation(ctx context.Context, in *Dele
 	return out, nil
 }
 
+func (c *dataChatServiceClient) UpdateConversation(ctx context.Context, in *UpdateConversationRequest, opts ...grpc.CallOption) (*Conversation, error) {
+	out := new(Conversation)
+	err := c.cc.Invoke(ctx, DataChatService_UpdateConversation_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *dataChatServiceClient) GetConversation(ctx context.Context, in *GetConversationRequest, opts ...grpc.CallOption) (*Conversation, error) {
 	out := new(Conversation)
 	err := c.cc.Invoke(ctx, DataChatService_GetConversation_FullMethodName, in, out, opts...)
@@ -165,13 +177,15 @@ func (c *dataChatServiceClient) QueryData(ctx context.Context, in *QueryDataRequ
 // for forward compatibility
 type DataChatServiceServer interface {
 	// Answers a data question by generating a stream of
-	// [Message][google.cloud.geminidataanalytics.v1.Message] objects.
+	// [Message][google.cloud.geminidataanalytics.v1beta.Message] objects.
 	Chat(*ChatRequest, DataChatService_ChatServer) error
 	// Creates a new conversation to persist the conversation history. Each
 	// conversation will have multiple messages associated with it.
 	CreateConversation(context.Context, *CreateConversationRequest) (*Conversation, error)
 	// Deletes a conversation.
 	DeleteConversation(context.Context, *DeleteConversationRequest) (*emptypb.Empty, error)
+	// Updates a conversation.
+	UpdateConversation(context.Context, *UpdateConversationRequest) (*Conversation, error)
 	// Gets details of a single conversation by using conversation id and parent.
 	GetConversation(context.Context, *GetConversationRequest) (*Conversation, error)
 	// Lists all conversations for a given parent.
@@ -194,6 +208,9 @@ func (UnimplementedDataChatServiceServer) CreateConversation(context.Context, *C
 }
 func (UnimplementedDataChatServiceServer) DeleteConversation(context.Context, *DeleteConversationRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteConversation not implemented")
+}
+func (UnimplementedDataChatServiceServer) UpdateConversation(context.Context, *UpdateConversationRequest) (*Conversation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateConversation not implemented")
 }
 func (UnimplementedDataChatServiceServer) GetConversation(context.Context, *GetConversationRequest) (*Conversation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetConversation not implemented")
@@ -272,6 +289,24 @@ func _DataChatService_DeleteConversation_Handler(srv interface{}, ctx context.Co
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DataChatServiceServer).DeleteConversation(ctx, req.(*DeleteConversationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DataChatService_UpdateConversation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateConversationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataChatServiceServer).UpdateConversation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DataChatService_UpdateConversation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataChatServiceServer).UpdateConversation(ctx, req.(*UpdateConversationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -362,6 +397,10 @@ var DataChatService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteConversation",
 			Handler:    _DataChatService_DeleteConversation_Handler,
+		},
+		{
+			MethodName: "UpdateConversation",
+			Handler:    _DataChatService_UpdateConversation_Handler,
 		},
 		{
 			MethodName: "GetConversation",

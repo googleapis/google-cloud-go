@@ -18,12 +18,14 @@ package workloadmanager
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	workloadmanagerpb "cloud.google.com/go/workloadmanager/apiv1/workloadmanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -326,6 +328,12 @@ func (op *UpdateEvaluationOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EvaluationIterator) All() iter.Seq2[*workloadmanagerpb.Evaluation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EvaluationIterator manages a stream of *workloadmanagerpb.Evaluation.
 type EvaluationIterator struct {
 	items    []*workloadmanagerpb.Evaluation
@@ -371,6 +379,12 @@ func (it *EvaluationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ExecutionIterator) All() iter.Seq2[*workloadmanagerpb.Execution, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ExecutionIterator manages a stream of *workloadmanagerpb.Execution.
@@ -420,6 +434,12 @@ func (it *ExecutionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ExecutionResultIterator) All() iter.Seq2[*workloadmanagerpb.ExecutionResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ExecutionResultIterator manages a stream of *workloadmanagerpb.ExecutionResult.
 type ExecutionResultIterator struct {
 	items    []*workloadmanagerpb.ExecutionResult
@@ -465,6 +485,12 @@ func (it *ExecutionResultIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -514,6 +540,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -559,6 +591,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ScannedResourceIterator) All() iter.Seq2[*workloadmanagerpb.ScannedResource, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ScannedResourceIterator manages a stream of *workloadmanagerpb.ScannedResource.

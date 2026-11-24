@@ -512,37 +512,37 @@ var File_google_cloud_automl_v1_image_proto protoreflect.FileDescriptor
 
 const file_google_cloud_automl_v1_image_proto_rawDesc = "" +
 	"\n" +
-	"\"google/cloud/automl/v1/image.proto\x12\x16google.cloud.automl.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a+google/cloud/automl/v1/classification.proto\"\x86\x01\n" +
-	"\"ImageClassificationDatasetMetadata\x12`\n" +
-	"\x13classification_type\x18\x01 \x01(\x0e2*.google.cloud.automl.v1.ClassificationTypeB\x03\xe0A\x02R\x12classificationType\"%\n" +
-	"#ImageObjectDetectionDatasetMetadata\"\xe3\x02\n" +
-	" ImageClassificationModelMetadata\x12'\n" +
-	"\rbase_model_id\x18\x01 \x01(\tB\x03\xe0A\x01R\vbaseModelId\x12E\n" +
-	"\x1dtrain_budget_milli_node_hours\x18\x10 \x01(\x03B\x03\xe0A\x01R\x19trainBudgetMilliNodeHours\x12A\n" +
-	"\x1btrain_cost_milli_node_hours\x18\x11 \x01(\x03B\x03\xe0A\x03R\x17trainCostMilliNodeHours\x12$\n" +
-	"\vstop_reason\x18\x05 \x01(\tB\x03\xe0A\x03R\n" +
-	"stopReason\x12\"\n" +
+	"\"google/cloud/automl/v1/image.proto\x12\x16google.cloud.automl.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a+google/cloud/automl/v1/classification.proto\"\x87\x01\n" +
+	"\"ImageClassificationDatasetMetadata\x12a\n" +
+	"\x13classification_type\x18\x01 \x01(\x0e2*.google.cloud.automl.v1.ClassificationTypeB\x04\xe2A\x01\x02R\x12classificationType\"%\n" +
+	"#ImageObjectDetectionDatasetMetadata\"\xea\x02\n" +
+	" ImageClassificationModelMetadata\x12(\n" +
+	"\rbase_model_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\vbaseModelId\x12F\n" +
+	"\x1dtrain_budget_milli_node_hours\x18\x10 \x01(\x03B\x04\xe2A\x01\x01R\x19trainBudgetMilliNodeHours\x12B\n" +
+	"\x1btrain_cost_milli_node_hours\x18\x11 \x01(\x03B\x04\xe2A\x01\x03R\x17trainCostMilliNodeHours\x12%\n" +
+	"\vstop_reason\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"stopReason\x12#\n" +
 	"\n" +
-	"model_type\x18\a \x01(\tB\x03\xe0A\x01R\tmodelType\x12\x1e\n" +
-	"\bnode_qps\x18\r \x01(\x01B\x03\xe0A\x03R\anodeQps\x12\"\n" +
+	"model_type\x18\a \x01(\tB\x04\xe2A\x01\x01R\tmodelType\x12\x1f\n" +
+	"\bnode_qps\x18\r \x01(\x01B\x04\xe2A\x01\x03R\anodeQps\x12#\n" +
 	"\n" +
-	"node_count\x18\x0e \x01(\x03B\x03\xe0A\x03R\tnodeCount\"\xbb\x02\n" +
-	"!ImageObjectDetectionModelMetadata\x12\"\n" +
+	"node_count\x18\x0e \x01(\x03B\x04\xe2A\x01\x03R\tnodeCount\"\xc1\x02\n" +
+	"!ImageObjectDetectionModelMetadata\x12#\n" +
 	"\n" +
-	"model_type\x18\x01 \x01(\tB\x03\xe0A\x01R\tmodelType\x12\"\n" +
+	"model_type\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\tmodelType\x12#\n" +
 	"\n" +
-	"node_count\x18\x03 \x01(\x03B\x03\xe0A\x03R\tnodeCount\x12\x1e\n" +
-	"\bnode_qps\x18\x04 \x01(\x01B\x03\xe0A\x03R\anodeQps\x12$\n" +
-	"\vstop_reason\x18\x05 \x01(\tB\x03\xe0A\x03R\n" +
-	"stopReason\x12E\n" +
-	"\x1dtrain_budget_milli_node_hours\x18\x06 \x01(\x03B\x03\xe0A\x01R\x19trainBudgetMilliNodeHours\x12A\n" +
-	"\x1btrain_cost_milli_node_hours\x18\a \x01(\x03B\x03\xe0A\x03R\x17trainCostMilliNodeHours\"P\n" +
-	"*ImageClassificationModelDeploymentMetadata\x12\"\n" +
+	"node_count\x18\x03 \x01(\x03B\x04\xe2A\x01\x03R\tnodeCount\x12\x1f\n" +
+	"\bnode_qps\x18\x04 \x01(\x01B\x04\xe2A\x01\x03R\anodeQps\x12%\n" +
+	"\vstop_reason\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"stopReason\x12F\n" +
+	"\x1dtrain_budget_milli_node_hours\x18\x06 \x01(\x03B\x04\xe2A\x01\x01R\x19trainBudgetMilliNodeHours\x12B\n" +
+	"\x1btrain_cost_milli_node_hours\x18\a \x01(\x03B\x04\xe2A\x01\x03R\x17trainCostMilliNodeHours\"Q\n" +
+	"*ImageClassificationModelDeploymentMetadata\x12#\n" +
 	"\n" +
-	"node_count\x18\x01 \x01(\x03B\x03\xe0A\x04R\tnodeCount\"Q\n" +
-	"+ImageObjectDetectionModelDeploymentMetadata\x12\"\n" +
+	"node_count\x18\x01 \x01(\x03B\x04\xe2A\x01\x04R\tnodeCount\"R\n" +
+	"+ImageObjectDetectionModelDeploymentMetadata\x12#\n" +
 	"\n" +
-	"node_count\x18\x01 \x01(\x03B\x03\xe0A\x04R\tnodeCountB\xac\x01\n" +
+	"node_count\x18\x01 \x01(\x03B\x04\xe2A\x01\x04R\tnodeCountB\xac\x01\n" +
 	"\x1acom.google.cloud.automl.v1B\n" +
 	"ImageProtoP\x01Z2cloud.google.com/go/automl/apiv1/automlpb;automlpb\xaa\x02\x16Google.Cloud.AutoML.V1\xca\x02\x16Google\\Cloud\\AutoMl\\V1\xea\x02\x19Google::Cloud::AutoML::V1b\x06proto3"
 

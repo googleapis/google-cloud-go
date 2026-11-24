@@ -26,13 +26,13 @@ import (
 )
 
 var (
-	typeOfByteSlice     = reflect.TypeOf([]byte(nil))
-	typeOfTime          = reflect.TypeOf(time.Time{})
-	typeOfCivilDate     = reflect.TypeOf(civil.Date{})
-	typeOfCivilDateTime = reflect.TypeOf(civil.DateTime{})
-	typeOfCivilTime     = reflect.TypeOf(civil.Time{})
-	typeOfGeoPoint      = reflect.TypeOf(GeoPoint{})
-	typeOfKeyPtr        = reflect.TypeOf(&Key{})
+	typeOfByteSlice     = reflect.TypeFor[[]byte]()
+	typeOfTime          = reflect.TypeFor[time.Time]()
+	typeOfCivilDate     = reflect.TypeFor[civil.Date]()
+	typeOfCivilDateTime = reflect.TypeFor[civil.DateTime]()
+	typeOfCivilTime     = reflect.TypeFor[civil.Time]()
+	typeOfGeoPoint      = reflect.TypeFor[GeoPoint]()
+	typeOfKeyPtr        = reflect.TypeFor[*Key]()
 )
 
 // typeMismatchReason returns a string explaining why the property p could not

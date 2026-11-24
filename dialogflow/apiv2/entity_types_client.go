@@ -697,6 +697,61 @@ func NewEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*En
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListEntityTypes = append(client.CallOptions.ListEntityTypes, gax.WithClientTracing(tracing))
+		client.CallOptions.GetEntityType = append(client.CallOptions.GetEntityType, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateEntityType = append(client.CallOptions.CreateEntityType, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateEntityType = append(client.CallOptions.UpdateEntityType, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteEntityType = append(client.CallOptions.DeleteEntityType, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchUpdateEntityTypes = append(client.CallOptions.BatchUpdateEntityTypes, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchDeleteEntityTypes = append(client.CallOptions.BatchDeleteEntityTypes, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchCreateEntities = append(client.CallOptions.BatchCreateEntities, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchUpdateEntities = append(client.CallOptions.BatchUpdateEntities, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchDeleteEntities = append(client.CallOptions.BatchDeleteEntities, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListEntityTypes = append(client.CallOptions.ListEntityTypes, gax.WithClientLogging(logging))
+		client.CallOptions.GetEntityType = append(client.CallOptions.GetEntityType, gax.WithClientLogging(logging))
+		client.CallOptions.CreateEntityType = append(client.CallOptions.CreateEntityType, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateEntityType = append(client.CallOptions.UpdateEntityType, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteEntityType = append(client.CallOptions.DeleteEntityType, gax.WithClientLogging(logging))
+		client.CallOptions.BatchUpdateEntityTypes = append(client.CallOptions.BatchUpdateEntityTypes, gax.WithClientLogging(logging))
+		client.CallOptions.BatchDeleteEntityTypes = append(client.CallOptions.BatchDeleteEntityTypes, gax.WithClientLogging(logging))
+		client.CallOptions.BatchCreateEntities = append(client.CallOptions.BatchCreateEntities, gax.WithClientLogging(logging))
+		client.CallOptions.BatchUpdateEntities = append(client.CallOptions.BatchUpdateEntities, gax.WithClientLogging(logging))
+		client.CallOptions.BatchDeleteEntities = append(client.CallOptions.BatchDeleteEntities, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -818,6 +873,61 @@ func NewEntityTypesRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.ListEntityTypes = append(callOpts.ListEntityTypes, gax.WithClientTracing(tracing))
+		callOpts.GetEntityType = append(callOpts.GetEntityType, gax.WithClientTracing(tracing))
+		callOpts.CreateEntityType = append(callOpts.CreateEntityType, gax.WithClientTracing(tracing))
+		callOpts.UpdateEntityType = append(callOpts.UpdateEntityType, gax.WithClientTracing(tracing))
+		callOpts.DeleteEntityType = append(callOpts.DeleteEntityType, gax.WithClientTracing(tracing))
+		callOpts.BatchUpdateEntityTypes = append(callOpts.BatchUpdateEntityTypes, gax.WithClientTracing(tracing))
+		callOpts.BatchDeleteEntityTypes = append(callOpts.BatchDeleteEntityTypes, gax.WithClientTracing(tracing))
+		callOpts.BatchCreateEntities = append(callOpts.BatchCreateEntities, gax.WithClientTracing(tracing))
+		callOpts.BatchUpdateEntities = append(callOpts.BatchUpdateEntities, gax.WithClientTracing(tracing))
+		callOpts.BatchDeleteEntities = append(callOpts.BatchDeleteEntities, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.ListEntityTypes = append(callOpts.ListEntityTypes, gax.WithClientLogging(logging))
+		callOpts.GetEntityType = append(callOpts.GetEntityType, gax.WithClientLogging(logging))
+		callOpts.CreateEntityType = append(callOpts.CreateEntityType, gax.WithClientLogging(logging))
+		callOpts.UpdateEntityType = append(callOpts.UpdateEntityType, gax.WithClientLogging(logging))
+		callOpts.DeleteEntityType = append(callOpts.DeleteEntityType, gax.WithClientLogging(logging))
+		callOpts.BatchUpdateEntityTypes = append(callOpts.BatchUpdateEntityTypes, gax.WithClientLogging(logging))
+		callOpts.BatchDeleteEntityTypes = append(callOpts.BatchDeleteEntityTypes, gax.WithClientLogging(logging))
+		callOpts.BatchCreateEntities = append(callOpts.BatchCreateEntities, gax.WithClientLogging(logging))
+		callOpts.BatchUpdateEntities = append(callOpts.BatchUpdateEntities, gax.WithClientLogging(logging))
+		callOpts.BatchDeleteEntities = append(callOpts.BatchDeleteEntities, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -874,9 +984,6 @@ func (c *entityTypesGRPCClient) ListEntityTypes(ctx context.Context, req *dialog
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.EntityTypes/ListEntityTypes")
 	}
@@ -926,9 +1033,6 @@ func (c *entityTypesGRPCClient) GetEntityType(ctx context.Context, req *dialogfl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.EntityTypes/GetEntityType")
 	}
@@ -950,9 +1054,6 @@ func (c *entityTypesGRPCClient) CreateEntityType(ctx context.Context, req *dialo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.EntityTypes/CreateEntityType")
 	}
@@ -995,9 +1096,6 @@ func (c *entityTypesGRPCClient) DeleteEntityType(ctx context.Context, req *dialo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.EntityTypes/DeleteEntityType")
 	}
@@ -1015,9 +1113,6 @@ func (c *entityTypesGRPCClient) BatchUpdateEntityTypes(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.EntityTypes/BatchUpdateEntityTypes")
 	}
@@ -1045,9 +1140,6 @@ func (c *entityTypesGRPCClient) BatchDeleteEntityTypes(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.EntityTypes/BatchDeleteEntityTypes")
 	}
@@ -1075,9 +1167,6 @@ func (c *entityTypesGRPCClient) BatchCreateEntities(ctx context.Context, req *di
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.EntityTypes/BatchCreateEntities")
 	}
@@ -1105,9 +1194,6 @@ func (c *entityTypesGRPCClient) BatchUpdateEntities(ctx context.Context, req *di
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.EntityTypes/BatchUpdateEntities")
 	}
@@ -1135,9 +1221,6 @@ func (c *entityTypesGRPCClient) BatchDeleteEntities(ctx context.Context, req *di
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.EntityTypes/BatchDeleteEntities")
 	}
@@ -1336,6 +1419,11 @@ func (c *entityTypesRESTClient) ListEntityTypes(ctx context.Context, req *dialog
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/entityTypes", req.GetParent())
 
 		params := url.Values{}
@@ -1404,6 +1492,11 @@ func (c *entityTypesRESTClient) GetEntityType(ctx context.Context, req *dialogfl
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -1420,9 +1513,6 @@ func (c *entityTypesRESTClient) GetEntityType(ctx context.Context, req *dialogfl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.EntityTypes/GetEntityType")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/agent/entityTypes/*}")
@@ -1475,6 +1565,11 @@ func (c *entityTypesRESTClient) CreateEntityType(ctx context.Context, req *dialo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/entityTypes", req.GetParent())
 
 	params := url.Values{}
@@ -1491,9 +1586,6 @@ func (c *entityTypesRESTClient) CreateEntityType(ctx context.Context, req *dialo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.EntityTypes/CreateEntityType")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/agent}/entityTypes")
@@ -1544,6 +1636,11 @@ func (c *entityTypesRESTClient) UpdateEntityType(ctx context.Context, req *dialo
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEntityType().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetEntityType().GetName())
@@ -1614,6 +1711,11 @@ func (c *entityTypesRESTClient) DeleteEntityType(ctx context.Context, req *dialo
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -1627,9 +1729,6 @@ func (c *entityTypesRESTClient) DeleteEntityType(ctx context.Context, req *dialo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.EntityTypes/DeleteEntityType")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/agent/entityTypes/*}")
@@ -1676,6 +1775,11 @@ func (c *entityTypesRESTClient) BatchUpdateEntityTypes(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/entityTypes:batchUpdate", req.GetParent())
 
 	params := url.Values{}
@@ -1689,9 +1793,6 @@ func (c *entityTypesRESTClient) BatchUpdateEntityTypes(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.EntityTypes/BatchUpdateEntityTypes")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/agent}/entityTypes:batchUpdate")
@@ -1760,6 +1861,11 @@ func (c *entityTypesRESTClient) BatchDeleteEntityTypes(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/entityTypes:batchDelete", req.GetParent())
 
 	params := url.Values{}
@@ -1773,9 +1879,6 @@ func (c *entityTypesRESTClient) BatchDeleteEntityTypes(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.EntityTypes/BatchDeleteEntityTypes")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/agent}/entityTypes:batchDelete")
@@ -1844,6 +1947,11 @@ func (c *entityTypesRESTClient) BatchCreateEntities(ctx context.Context, req *di
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/entities:batchCreate", req.GetParent())
 
 	params := url.Values{}
@@ -1857,9 +1965,6 @@ func (c *entityTypesRESTClient) BatchCreateEntities(ctx context.Context, req *di
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.EntityTypes/BatchCreateEntities")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/agent/entityTypes/*}/entities:batchCreate")
@@ -1930,6 +2035,11 @@ func (c *entityTypesRESTClient) BatchUpdateEntities(ctx context.Context, req *di
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/entities:batchUpdate", req.GetParent())
 
 	params := url.Values{}
@@ -1943,9 +2053,6 @@ func (c *entityTypesRESTClient) BatchUpdateEntities(ctx context.Context, req *di
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.EntityTypes/BatchUpdateEntities")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/agent/entityTypes/*}/entities:batchUpdate")
@@ -2014,6 +2121,11 @@ func (c *entityTypesRESTClient) BatchDeleteEntities(ctx context.Context, req *di
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v/entities:batchDelete", req.GetParent())
 
 	params := url.Values{}
@@ -2027,9 +2139,6 @@ func (c *entityTypesRESTClient) BatchDeleteEntities(ctx context.Context, req *di
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.EntityTypes/BatchDeleteEntities")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/agent/entityTypes/*}/entities:batchDelete")
@@ -2076,6 +2185,11 @@ func (c *entityTypesRESTClient) BatchDeleteEntities(ctx context.Context, req *di
 func (c *entityTypesRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -2160,6 +2274,11 @@ func (c *entityTypesRESTClient) ListLocations(ctx context.Context, req *location
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -2228,6 +2347,11 @@ func (c *entityTypesRESTClient) CancelOperation(ctx context.Context, req *longru
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2265,6 +2389,11 @@ func (c *entityTypesRESTClient) CancelOperation(ctx context.Context, req *longru
 func (c *entityTypesRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -2332,6 +2461,11 @@ func (c *entityTypesRESTClient) ListOperations(ctx context.Context, req *longrun
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/operations", req.GetName())

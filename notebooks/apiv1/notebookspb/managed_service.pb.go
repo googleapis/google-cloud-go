@@ -974,77 +974,77 @@ var File_google_cloud_notebooks_v1_managed_service_proto protoreflect.FileDescri
 
 const file_google_cloud_notebooks_v1_managed_service_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/notebooks/v1/managed_service.proto\x12\x19google.cloud.notebooks.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/notebooks/v1/diagnostic_config.proto\x1a%google/cloud/notebooks/v1/event.proto\x1a'google/cloud/notebooks/v1/runtime.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x93\x01\n" +
-	"\x13ListRuntimesRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\x12 notebooks.googleapis.com/RuntimeR\x06parent\x12\x1b\n" +
+	"/google/cloud/notebooks/v1/managed_service.proto\x12\x19google.cloud.notebooks.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/notebooks/v1/diagnostic_config.proto\x1a%google/cloud/notebooks/v1/event.proto\x1a'google/cloud/notebooks/v1/runtime.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x94\x01\n" +
+	"\x13ListRuntimesRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\x12 notebooks.googleapis.com/RuntimeR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa0\x01\n" +
 	"\x14ListRuntimesResponse\x12>\n" +
 	"\bruntimes\x18\x01 \x03(\v2\".google.cloud.notebooks.v1.RuntimeR\bruntimes\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"Q\n" +
-	"\x11GetRuntimeRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" notebooks.googleapis.com/RuntimeR\x04name\"\xde\x01\n" +
-	"\x14CreateRuntimeRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" notebooks.googleapis.com/RuntimeR\x06parent\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"R\n" +
+	"\x11GetRuntimeRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" notebooks.googleapis.com/RuntimeR\x04name\"\xe1\x01\n" +
+	"\x14CreateRuntimeRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" notebooks.googleapis.com/RuntimeR\x06parent\x12#\n" +
 	"\n" +
-	"runtime_id\x18\x02 \x01(\tB\x03\xe0A\x02R\truntimeId\x12A\n" +
-	"\aruntime\x18\x03 \x01(\v2\".google.cloud.notebooks.v1.RuntimeB\x03\xe0A\x02R\aruntime\x12\x1d\n" +
+	"runtime_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\truntimeId\x12B\n" +
+	"\aruntime\x18\x03 \x01(\v2\".google.cloud.notebooks.v1.RuntimeB\x04\xe2A\x01\x02R\aruntime\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tR\trequestId\"s\n" +
-	"\x14DeleteRuntimeRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\"t\n" +
+	"\x14DeleteRuntimeRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
 	" notebooks.googleapis.com/RuntimeR\x04name\x12\x1d\n" +
 	"\n" +
+	"request_id\x18\x02 \x01(\tR\trequestId\"N\n" +
+	"\x13StartRuntimeRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x1d\n" +
+	"\n" +
 	"request_id\x18\x02 \x01(\tR\trequestId\"M\n" +
-	"\x13StartRuntimeRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x1d\n" +
+	"\x12StopRuntimeRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tR\trequestId\"L\n" +
-	"\x12StopRuntimeRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x1d\n" +
-	"\n" +
-	"request_id\x18\x02 \x01(\tR\trequestId\"\xd5\x01\n" +
-	"\x14SwitchRuntimeRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12!\n" +
+	"request_id\x18\x02 \x01(\tR\trequestId\"\xd6\x01\n" +
+	"\x14SwitchRuntimeRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12!\n" +
 	"\fmachine_type\x18\x02 \x01(\tR\vmachineType\x12b\n" +
 	"\x12accelerator_config\x18\x03 \x01(\v23.google.cloud.notebooks.v1.RuntimeAcceleratorConfigR\x11acceleratorConfig\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tR\trequestId\"M\n" +
-	"\x13ResetRuntimeRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x1d\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\"N\n" +
+	"\x13ResetRuntimeRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tR\trequestId\"O\n" +
-	"\x15UpgradeRuntimeRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x1d\n" +
+	"request_id\x18\x02 \x01(\tR\trequestId\"P\n" +
+	"\x15UpgradeRuntimeRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tR\trequestId\"\xb0\x01\n" +
-	"\x19ReportRuntimeEventRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" notebooks.googleapis.com/RuntimeR\x04name\x12\x18\n" +
-	"\x05vm_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x04vmId\x12;\n" +
-	"\x05event\x18\x03 \x01(\v2 .google.cloud.notebooks.v1.EventB\x03\xe0A\x02R\x05event\"\xba\x01\n" +
-	"\x14UpdateRuntimeRequest\x12A\n" +
-	"\aruntime\x18\x01 \x01(\v2\".google.cloud.notebooks.v1.RuntimeB\x03\xe0A\x02R\aruntime\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"request_id\x18\x02 \x01(\tR\trequestId\"\xb3\x01\n" +
+	"\x19ReportRuntimeEventRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" notebooks.googleapis.com/RuntimeR\x04name\x12\x19\n" +
+	"\x05vm_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04vmId\x12<\n" +
+	"\x05event\x18\x03 \x01(\v2 .google.cloud.notebooks.v1.EventB\x04\xe2A\x01\x02R\x05event\"\xbc\x01\n" +
+	"\x14UpdateRuntimeRequest\x12B\n" +
+	"\aruntime\x18\x01 \x01(\v2\".google.cloud.notebooks.v1.RuntimeB\x04\xe2A\x01\x02R\aruntime\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
 	"updateMask\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tR\trequestId\"|\n" +
-	"\"RefreshRuntimeTokenInternalRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" notebooks.googleapis.com/RuntimeR\x04name\x12\x18\n" +
-	"\x05vm_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x04vmId\"\x8a\x01\n" +
+	"request_id\x18\x03 \x01(\tR\trequestId\"~\n" +
+	"\"RefreshRuntimeTokenInternalRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" notebooks.googleapis.com/RuntimeR\x04name\x12\x19\n" +
+	"\x05vm_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04vmId\"\x8b\x01\n" +
 	"#RefreshRuntimeTokenInternalResponse\x12!\n" +
-	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12@\n" +
-	"\vexpire_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\"\xb5\x01\n" +
-	"\x16DiagnoseRuntimeRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" notebooks.googleapis.com/RuntimeR\x04name\x12]\n" +
-	"\x11diagnostic_config\x18\x02 \x01(\v2+.google.cloud.notebooks.v1.DiagnosticConfigB\x03\xe0A\x02R\x10diagnosticConfig2\xd2\x15\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12A\n" +
+	"\vexpire_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\"\xb7\x01\n" +
+	"\x16DiagnoseRuntimeRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" notebooks.googleapis.com/RuntimeR\x04name\x12^\n" +
+	"\x11diagnostic_config\x18\x02 \x01(\v2+.google.cloud.notebooks.v1.DiagnosticConfigB\x04\xe2A\x01\x02R\x10diagnosticConfig2\xd2\x15\n" +
 	"\x16ManagedNotebookService\x12\xae\x01\n" +
 	"\fListRuntimes\x12..google.cloud.notebooks.v1.ListRuntimesRequest\x1a/.google.cloud.notebooks.v1.ListRuntimesResponse\"=\xdaA\x06parent\x82\xd3\xe4\x93\x02.\x12,/v1/{parent=projects/*/locations/*}/runtimes\x12\x9b\x01\n" +
 	"\n" +

@@ -17,9 +17,18 @@
 package websecurityscanner
 
 import (
+	"iter"
+
 	websecurityscannerpb "cloud.google.com/go/websecurityscanner/apiv1/websecurityscannerpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CrawledUrlIterator) All() iter.Seq2[*websecurityscannerpb.CrawledUrl, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // CrawledUrlIterator manages a stream of *websecurityscannerpb.CrawledUrl.
 type CrawledUrlIterator struct {
@@ -66,6 +75,12 @@ func (it *CrawledUrlIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FindingIterator) All() iter.Seq2[*websecurityscannerpb.Finding, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // FindingIterator manages a stream of *websecurityscannerpb.Finding.
@@ -115,6 +130,12 @@ func (it *FindingIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ScanConfigIterator) All() iter.Seq2[*websecurityscannerpb.ScanConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ScanConfigIterator manages a stream of *websecurityscannerpb.ScanConfig.
 type ScanConfigIterator struct {
 	items    []*websecurityscannerpb.ScanConfig
@@ -160,6 +181,12 @@ func (it *ScanConfigIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ScanRunIterator) All() iter.Seq2[*websecurityscannerpb.ScanRun, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ScanRunIterator manages a stream of *websecurityscannerpb.ScanRun.

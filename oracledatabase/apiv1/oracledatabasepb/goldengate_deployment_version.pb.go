@@ -491,22 +491,22 @@ var File_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto prot
 
 const file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_rawDesc = "" +
 	"\n" +
-	"Bgoogle/cloud/oracledatabase/v1/goldengate_deployment_version.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9e\x03\n" +
-	"\x1bGoldengateDeploymentVersion\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x17\n" +
-	"\x04ocid\x18\x02 \x01(\tB\x03\xe0A\x03R\x04ocid\x12j\n" +
+	"Bgoogle/cloud/oracledatabase/v1/goldengate_deployment_version.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa1\x03\n" +
+	"\x1bGoldengateDeploymentVersion\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x18\n" +
+	"\x04ocid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x04ocid\x12k\n" +
 	"\n" +
-	"properties\x18\x03 \x01(\v2E.google.cloud.oracledatabase.v1.GoldengateDeploymentVersionPropertiesB\x03\xe0A\x03R\n" +
+	"properties\x18\x03 \x01(\v2E.google.cloud.oracledatabase.v1.GoldengateDeploymentVersionPropertiesB\x04\xe2A\x01\x03R\n" +
 	"properties:\xe0\x01\xeaA\xdc\x01\n" +
-	"9oracledatabase.googleapis.com/GoldengateDeploymentVersion\x12dprojects/{project}/locations/{location}/goldengateDeploymentVersions/{goldengate_deployment_version}*\x1cgoldengateDeploymentVersions2\x1bgoldengateDeploymentVersion\"\xe8\x06\n" +
-	"%GoldengateDeploymentVersionProperties\x12\x82\x01\n" +
-	"\x0fdeployment_type\x18\x01 \x01(\x0e2T.google.cloud.oracledatabase.v1.GoldengateDeploymentVersionProperties.DeploymentTypeB\x03\xe0A\x03R\x0edeploymentType\x12&\n" +
-	"\fsecurity_fix\x18\x02 \x01(\bB\x03\xe0A\x01R\vsecurityFix\x12$\n" +
-	"\vogg_version\x18\x03 \x01(\tB\x03\xe0A\x03R\n" +
-	"oggVersion\x12\x83\x01\n" +
-	"\frelease_type\x18\x04 \x01(\x0e2[.google.cloud.oracledatabase.v1.GoldengateDeploymentVersionProperties.DeploymentReleaseTypeB\x03\xe0A\x03R\vreleaseType\x12B\n" +
-	"\frelease_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vreleaseTime\x12I\n" +
-	"\x10support_end_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0esupportEndTime\"\xf2\x01\n" +
+	"9oracledatabase.googleapis.com/GoldengateDeploymentVersion\x12dprojects/{project}/locations/{location}/goldengateDeploymentVersions/{goldengate_deployment_version}*\x1cgoldengateDeploymentVersions2\x1bgoldengateDeploymentVersion\"\xee\x06\n" +
+	"%GoldengateDeploymentVersionProperties\x12\x83\x01\n" +
+	"\x0fdeployment_type\x18\x01 \x01(\x0e2T.google.cloud.oracledatabase.v1.GoldengateDeploymentVersionProperties.DeploymentTypeB\x04\xe2A\x01\x03R\x0edeploymentType\x12'\n" +
+	"\fsecurity_fix\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\vsecurityFix\x12%\n" +
+	"\vogg_version\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"oggVersion\x12\x84\x01\n" +
+	"\frelease_type\x18\x04 \x01(\x0e2[.google.cloud.oracledatabase.v1.GoldengateDeploymentVersionProperties.DeploymentReleaseTypeB\x04\xe2A\x01\x03R\vreleaseType\x12C\n" +
+	"\frelease_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\vreleaseTime\x12J\n" +
+	"\x10support_end_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0esupportEndTime\"\xf2\x01\n" +
 	"\x0eDeploymentType\x12\x1f\n" +
 	"\x1bDEPLOYMENT_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03OGG\x10\x01\x12\x13\n" +
@@ -525,17 +525,17 @@ const file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_ra
 	"\x05MAJOR\x10\x01\x12\n" +
 	"\n" +
 	"\x06BUNDLE\x10\x02\x12\t\n" +
-	"\x05MINOR\x10\x03\"\xe7\x01\n" +
-	"'ListGoldengateDeploymentVersionsRequest\x12Y\n" +
-	"\x06parent\x18\x01 \x01(\tBA\xe0A\x02\xfaA;\x129oracledatabase.googleapis.com/GoldengateDeploymentVersionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x05MINOR\x10\x03\"\xeb\x01\n" +
+	"'ListGoldengateDeploymentVersionsRequest\x12Z\n" +
+	"\x06parent\x18\x01 \x01(\tBB\xe2A\x01\x02\xfaA;\x129oracledatabase.googleapis.com/GoldengateDeploymentVersionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xfd\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xfe\x01\n" +
 	"(ListGoldengateDeploymentVersionsResponse\x12\x81\x01\n" +
 	"\x1egoldengate_deployment_versions\x18\x01 \x03(\v2;.google.cloud.oracledatabase.v1.GoldengateDeploymentVersionR\x1cgoldengateDeploymentVersions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachableB\xfa\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x06R\vunreachableB\xfa\x01\n" +
 	"\"com.google.cloud.oracledatabase.v1B GoldengateDeploymentVersionProtoP\x01ZJcloud.google.com/go/oracledatabase/apiv1/oracledatabasepb;oracledatabasepb\xaa\x02\x1eGoogle.Cloud.OracleDatabase.V1\xca\x02\x1eGoogle\\Cloud\\OracleDatabase\\V1\xea\x02!Google::Cloud::OracleDatabase::V1b\x06proto3"
 
 var (

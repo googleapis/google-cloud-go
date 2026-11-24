@@ -270,9 +270,9 @@ const file_google_devtools_artifactregistry_v1_vpcsc_config_proto_rawDesc = "" +
 	"\x18VPCSC_POLICY_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04DENY\x10\x01\x12\t\n" +
 	"\x05ALLOW\x10\x02:e\xeaAb\n" +
-	"+artifactregistry.googleapis.com/VpcscConfig\x123projects/{project}/locations/{location}/vpcscConfig\"`\n" +
-	"\x15GetVPCSCConfigRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"+artifactregistry.googleapis.com/VpcscConfig\x123projects/{project}/locations/{location}/vpcscConfig\"a\n" +
+	"\x15GetVPCSCConfigRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+artifactregistry.googleapis.com/VpcscConfigR\x04name\"\xac\x01\n" +
 	"\x18UpdateVPCSCConfigRequest\x12S\n" +
 	"\fvpcsc_config\x18\x01 \x01(\v20.google.devtools.artifactregistry.v1.VPCSCConfigR\vvpcscConfig\x12;\n" +

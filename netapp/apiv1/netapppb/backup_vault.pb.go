@@ -236,7 +236,7 @@ type BackupVault struct {
 	// Optional. Type of backup vault to be created.
 	// Default is IN_REGION.
 	BackupVaultType BackupVault_BackupVaultType `protobuf:"varint,6,opt,name=backup_vault_type,json=backupVaultType,proto3,enum=google.cloud.netapp.v1.BackupVault_BackupVaultType" json:"backup_vault_type,omitempty"`
-	// Output only. Region in which the backup vault is created.
+	// Optional. Region in which the backup vault is created.
 	// Format: `projects/{project_id}/locations/{location}`
 	SourceRegion string `protobuf:"bytes,7,opt,name=source_region,json=sourceRegion,proto3" json:"source_region,omitempty"`
 	// Optional. Region where the backups are stored.
@@ -861,36 +861,36 @@ var File_google_cloud_netapp_v1_backup_vault_proto protoreflect.FileDescriptor
 
 const file_google_cloud_netapp_v1_backup_vault_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/netapp/v1/backup_vault.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdc\x0f\n" +
-	"\vBackupVault\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12D\n" +
-	"\x05state\x18\x02 \x01(\x0e2).google.cloud.netapp.v1.BackupVault.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	")google/cloud/netapp/v1/backup_vault.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xed\x0f\n" +
+	"\vBackupVault\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12E\n" +
+	"\x05state\x18\x02 \x01(\x0e2).google.cloud.netapp.v1.BackupVault.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\x12 \n" +
 	"\vdescription\x18\x04 \x01(\tR\vdescription\x12G\n" +
-	"\x06labels\x18\x05 \x03(\v2/.google.cloud.netapp.v1.BackupVault.LabelsEntryR\x06labels\x12d\n" +
-	"\x11backup_vault_type\x18\x06 \x01(\x0e23.google.cloud.netapp.v1.BackupVault.BackupVaultTypeB\x03\xe0A\x01R\x0fbackupVaultType\x12N\n" +
-	"\rsource_region\x18\a \x01(\tB)\xe0A\x03\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\fsourceRegion\x12N\n" +
-	"\rbackup_region\x18\b \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\fbackupRegion\x12Y\n" +
-	"\x13source_backup_vault\x18\t \x01(\tB)\xe0A\x03\xfaA#\n" +
-	"!netapp.googleapis.com/BackupVaultR\x11sourceBackupVault\x12c\n" +
+	"\x06labels\x18\x05 \x03(\v2/.google.cloud.netapp.v1.BackupVault.LabelsEntryR\x06labels\x12e\n" +
+	"\x11backup_vault_type\x18\x06 \x01(\x0e23.google.cloud.netapp.v1.BackupVault.BackupVaultTypeB\x04\xe2A\x01\x01R\x0fbackupVaultType\x12O\n" +
+	"\rsource_region\x18\a \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\fsourceRegion\x12O\n" +
+	"\rbackup_region\x18\b \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\fbackupRegion\x12Z\n" +
+	"\x13source_backup_vault\x18\t \x01(\tB*\xe2A\x01\x03\xfaA#\n" +
+	"!netapp.googleapis.com/BackupVaultR\x11sourceBackupVault\x12d\n" +
 	"\x18destination_backup_vault\x18\n" +
-	" \x01(\tB)\xe0A\x03\xfaA#\n" +
-	"!netapp.googleapis.com/BackupVaultR\x16destinationBackupVault\x12v\n" +
-	"\x17backup_retention_policy\x18\v \x01(\v29.google.cloud.netapp.v1.BackupVault.BackupRetentionPolicyB\x03\xe0A\x01R\x15backupRetentionPolicy\x12F\n" +
+	" \x01(\tB*\xe2A\x01\x03\xfaA#\n" +
+	"!netapp.googleapis.com/BackupVaultR\x16destinationBackupVault\x12w\n" +
+	"\x17backup_retention_policy\x18\v \x01(\v29.google.cloud.netapp.v1.BackupVault.BackupRetentionPolicyB\x04\xe2A\x01\x01R\x15backupRetentionPolicy\x12G\n" +
 	"\n" +
-	"kms_config\x18\f \x01(\tB'\xe0A\x01\xfaA!\n" +
-	"\x1fnetapp.googleapis.com/KmsConfigR\tkmsConfig\x12c\n" +
-	"\x10encryption_state\x18\r \x01(\x0e23.google.cloud.netapp.v1.BackupVault.EncryptionStateB\x03\xe0A\x03R\x0fencryptionState\x12@\n" +
-	"\x1abackups_crypto_key_version\x18\x0e \x01(\tB\x03\xe0A\x03R\x17backupsCryptoKeyVersion\x1a\xe4\x02\n" +
-	"\x15BackupRetentionPolicy\x12W\n" +
-	"&backup_minimum_enforced_retention_days\x18\x01 \x01(\x05B\x03\xe0A\x02R\"backupMinimumEnforcedRetentionDays\x129\n" +
-	"\x16daily_backup_immutable\x18\x02 \x01(\bB\x03\xe0A\x01R\x14dailyBackupImmutable\x12;\n" +
-	"\x17weekly_backup_immutable\x18\x03 \x01(\bB\x03\xe0A\x01R\x15weeklyBackupImmutable\x12=\n" +
-	"\x18monthly_backup_immutable\x18\x04 \x01(\bB\x03\xe0A\x01R\x16monthlyBackupImmutable\x12;\n" +
-	"\x17manual_backup_immutable\x18\x05 \x01(\bB\x03\xe0A\x01R\x15manualBackupImmutable\x1a9\n" +
+	"kms_config\x18\f \x01(\tB(\xe2A\x01\x01\xfaA!\n" +
+	"\x1fnetapp.googleapis.com/KmsConfigR\tkmsConfig\x12d\n" +
+	"\x10encryption_state\x18\r \x01(\x0e23.google.cloud.netapp.v1.BackupVault.EncryptionStateB\x04\xe2A\x01\x03R\x0fencryptionState\x12A\n" +
+	"\x1abackups_crypto_key_version\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\x17backupsCryptoKeyVersion\x1a\xe9\x02\n" +
+	"\x15BackupRetentionPolicy\x12X\n" +
+	"&backup_minimum_enforced_retention_days\x18\x01 \x01(\x05B\x04\xe2A\x01\x02R\"backupMinimumEnforcedRetentionDays\x12:\n" +
+	"\x16daily_backup_immutable\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x14dailyBackupImmutable\x12<\n" +
+	"\x17weekly_backup_immutable\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x15weeklyBackupImmutable\x12>\n" +
+	"\x18monthly_backup_immutable\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x16monthlyBackupImmutable\x12<\n" +
+	"\x17manual_backup_immutable\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x15manualBackupImmutable\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"^\n" +
@@ -911,12 +911,12 @@ const file_google_cloud_netapp_v1_backup_vault_proto_rawDesc = "" +
 	"\x1aENCRYPTION_STATE_COMPLETED\x10\x02\x12 \n" +
 	"\x1cENCRYPTION_STATE_IN_PROGRESS\x10\x03\x12\x1b\n" +
 	"\x17ENCRYPTION_STATE_FAILED\x10\x04:\x87\x01\xeaA\x83\x01\n" +
-	"!netapp.googleapis.com/BackupVault\x12Cprojects/{project}/locations/{location}/backupVaults/{backup_vault}*\fbackupVaults2\vbackupVault\"V\n" +
-	"\x15GetBackupVaultRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!netapp.googleapis.com/BackupVaultR\x04name\"\xcb\x01\n" +
-	"\x17ListBackupVaultsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!netapp.googleapis.com/BackupVaultR\x06parent\x12\x1b\n" +
+	"!netapp.googleapis.com/BackupVault\x12Cprojects/{project}/locations/{location}/backupVaults/{backup_vault}*\fbackupVaults2\vbackupVault\"W\n" +
+	"\x15GetBackupVaultRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!netapp.googleapis.com/BackupVaultR\x04name\"\xcc\x01\n" +
+	"\x17ListBackupVaultsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!netapp.googleapis.com/BackupVaultR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x19\n" +
@@ -925,18 +925,18 @@ const file_google_cloud_netapp_v1_backup_vault_proto_rawDesc = "" +
 	"\x18ListBackupVaultsResponse\x12H\n" +
 	"\rbackup_vaults\x18\x01 \x03(\v2#.google.cloud.netapp.v1.BackupVaultR\fbackupVaults\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xd7\x01\n" +
-	"\x18CreateBackupVaultRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!netapp.googleapis.com/BackupVaultR\x06parent\x12+\n" +
-	"\x0fbackup_vault_id\x18\x02 \x01(\tB\x03\xe0A\x02R\rbackupVaultId\x12K\n" +
-	"\fbackup_vault\x18\x03 \x01(\v2#.google.cloud.netapp.v1.BackupVaultB\x03\xe0A\x02R\vbackupVault\"Y\n" +
-	"\x18DeleteBackupVaultRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!netapp.googleapis.com/BackupVaultR\x04name\"\xa9\x01\n" +
-	"\x18UpdateBackupVaultRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12K\n" +
-	"\fbackup_vault\x18\x02 \x01(\v2#.google.cloud.netapp.v1.BackupVaultB\x03\xe0A\x02R\vbackupVaultB\xb2\x01\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xda\x01\n" +
+	"\x18CreateBackupVaultRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!netapp.googleapis.com/BackupVaultR\x06parent\x12,\n" +
+	"\x0fbackup_vault_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rbackupVaultId\x12L\n" +
+	"\fbackup_vault\x18\x03 \x01(\v2#.google.cloud.netapp.v1.BackupVaultB\x04\xe2A\x01\x02R\vbackupVault\"Z\n" +
+	"\x18DeleteBackupVaultRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!netapp.googleapis.com/BackupVaultR\x04name\"\xab\x01\n" +
+	"\x18UpdateBackupVaultRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12L\n" +
+	"\fbackup_vault\x18\x02 \x01(\v2#.google.cloud.netapp.v1.BackupVaultB\x04\xe2A\x01\x02R\vbackupVaultB\xb2\x01\n" +
 	"\x1acom.google.cloud.netapp.v1B\x10BackupVaultProtoP\x01Z2cloud.google.com/go/netapp/apiv1/netapppb;netapppb\xaa\x02\x16Google.Cloud.NetApp.V1\xca\x02\x16Google\\Cloud\\NetApp\\V1\xea\x02\x19Google::Cloud::NetApp::V1b\x06proto3"
 
 var (

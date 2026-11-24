@@ -474,21 +474,21 @@ var File_google_cloud_bigquery_v2_privacy_policy_proto protoreflect.FileDescript
 
 const file_google_cloud_bigquery_v2_privacy_policy_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/bigquery/v2/privacy_policy.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"\x89\x01\n" +
-	"\x1aAggregationThresholdPolicy\x12&\n" +
-	"\tthreshold\x18\x01 \x01(\x03B\x03\xe0A\x01H\x00R\tthreshold\x88\x01\x01\x125\n" +
-	"\x14privacy_unit_columns\x18\x02 \x03(\tB\x03\xe0A\x01R\x12privacyUnitColumnsB\f\n" +
+	"-google/cloud/bigquery/v2/privacy_policy.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"\x8b\x01\n" +
+	"\x1aAggregationThresholdPolicy\x12'\n" +
+	"\tthreshold\x18\x01 \x01(\x03B\x04\xe2A\x01\x01H\x00R\tthreshold\x88\x01\x01\x126\n" +
+	"\x14privacy_unit_columns\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x12privacyUnitColumnsB\f\n" +
 	"\n" +
-	"_threshold\"\xa3\x05\n" +
-	"\x19DifferentialPrivacyPolicy\x12;\n" +
-	"\x15max_epsilon_per_query\x18\x01 \x01(\x01B\x03\xe0A\x01H\x00R\x12maxEpsilonPerQuery\x88\x01\x01\x120\n" +
-	"\x0fdelta_per_query\x18\x02 \x01(\x01B\x03\xe0A\x01H\x01R\rdeltaPerQuery\x88\x01\x01\x12>\n" +
-	"\x16max_groups_contributed\x18\x03 \x01(\x03B\x03\xe0A\x01H\x02R\x14maxGroupsContributed\x88\x01\x01\x128\n" +
-	"\x13privacy_unit_column\x18\x04 \x01(\tB\x03\xe0A\x01H\x03R\x11privacyUnitColumn\x88\x01\x01\x12/\n" +
-	"\x0eepsilon_budget\x18\x05 \x01(\x01B\x03\xe0A\x01H\x04R\repsilonBudget\x88\x01\x01\x12+\n" +
-	"\fdelta_budget\x18\x06 \x01(\x01B\x03\xe0A\x01H\x05R\vdeltaBudget\x88\x01\x01\x12B\n" +
-	"\x18epsilon_budget_remaining\x18\a \x01(\x01B\x03\xe0A\x03H\x06R\x16epsilonBudgetRemaining\x88\x01\x01\x12>\n" +
-	"\x16delta_budget_remaining\x18\b \x01(\x01B\x03\xe0A\x03H\aR\x14deltaBudgetRemaining\x88\x01\x01B\x18\n" +
+	"_threshold\"\xab\x05\n" +
+	"\x19DifferentialPrivacyPolicy\x12<\n" +
+	"\x15max_epsilon_per_query\x18\x01 \x01(\x01B\x04\xe2A\x01\x01H\x00R\x12maxEpsilonPerQuery\x88\x01\x01\x121\n" +
+	"\x0fdelta_per_query\x18\x02 \x01(\x01B\x04\xe2A\x01\x01H\x01R\rdeltaPerQuery\x88\x01\x01\x12?\n" +
+	"\x16max_groups_contributed\x18\x03 \x01(\x03B\x04\xe2A\x01\x01H\x02R\x14maxGroupsContributed\x88\x01\x01\x129\n" +
+	"\x13privacy_unit_column\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x03R\x11privacyUnitColumn\x88\x01\x01\x120\n" +
+	"\x0eepsilon_budget\x18\x05 \x01(\x01B\x04\xe2A\x01\x01H\x04R\repsilonBudget\x88\x01\x01\x12,\n" +
+	"\fdelta_budget\x18\x06 \x01(\x01B\x04\xe2A\x01\x01H\x05R\vdeltaBudget\x88\x01\x01\x12C\n" +
+	"\x18epsilon_budget_remaining\x18\a \x01(\x01B\x04\xe2A\x01\x03H\x06R\x16epsilonBudgetRemaining\x88\x01\x01\x12?\n" +
+	"\x16delta_budget_remaining\x18\b \x01(\x01B\x04\xe2A\x01\x03H\aR\x14deltaBudgetRemaining\x88\x01\x01B\x18\n" +
 	"\x16_max_epsilon_per_queryB\x12\n" +
 	"\x10_delta_per_queryB\x19\n" +
 	"\x17_max_groups_contributedB\x16\n" +
@@ -496,21 +496,21 @@ const file_google_cloud_bigquery_v2_privacy_policy_proto_rawDesc = "" +
 	"\x0f_epsilon_budgetB\x0f\n" +
 	"\r_delta_budgetB\x1b\n" +
 	"\x19_epsilon_budget_remainingB\x19\n" +
-	"\x17_delta_budget_remaining\"\xc7\x02\n" +
-	"\x15JoinRestrictionPolicy\x12n\n" +
-	"\x0ejoin_condition\x18\x01 \x01(\x0e2=.google.cloud.bigquery.v2.JoinRestrictionPolicy.JoinConditionB\x03\xe0A\x01H\x00R\rjoinCondition\x88\x01\x01\x125\n" +
-	"\x14join_allowed_columns\x18\x02 \x03(\tB\x03\xe0A\x01R\x12joinAllowedColumns\"t\n" +
+	"\x17_delta_budget_remaining\"\xc9\x02\n" +
+	"\x15JoinRestrictionPolicy\x12o\n" +
+	"\x0ejoin_condition\x18\x01 \x01(\x0e2=.google.cloud.bigquery.v2.JoinRestrictionPolicy.JoinConditionB\x04\xe2A\x01\x01H\x00R\rjoinCondition\x88\x01\x01\x126\n" +
+	"\x14join_allowed_columns\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x12joinAllowedColumns\"t\n" +
 	"\rJoinCondition\x12\x1e\n" +
 	"\x1aJOIN_CONDITION_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bJOIN_ANY\x10\x01\x12\f\n" +
 	"\bJOIN_ALL\x10\x02\x12\x15\n" +
 	"\x11JOIN_NOT_REQUIRED\x10\x03\x12\x10\n" +
 	"\fJOIN_BLOCKED\x10\x04B\x11\n" +
-	"\x0f_join_condition\"\xab\x03\n" +
-	"\rPrivacyPolicy\x12}\n" +
-	"\x1caggregation_threshold_policy\x18\x02 \x01(\v24.google.cloud.bigquery.v2.AggregationThresholdPolicyB\x03\xe0A\x01H\x00R\x1aaggregationThresholdPolicy\x12z\n" +
-	"\x1bdifferential_privacy_policy\x18\x03 \x01(\v23.google.cloud.bigquery.v2.DifferentialPrivacyPolicyB\x03\xe0A\x01H\x00R\x19differentialPrivacyPolicy\x12q\n" +
-	"\x17join_restriction_policy\x18\x01 \x01(\v2/.google.cloud.bigquery.v2.JoinRestrictionPolicyB\x03\xe0A\x01H\x01R\x15joinRestrictionPolicy\x88\x01\x01B\x10\n" +
+	"\x0f_join_condition\"\xae\x03\n" +
+	"\rPrivacyPolicy\x12~\n" +
+	"\x1caggregation_threshold_policy\x18\x02 \x01(\v24.google.cloud.bigquery.v2.AggregationThresholdPolicyB\x04\xe2A\x01\x01H\x00R\x1aaggregationThresholdPolicy\x12{\n" +
+	"\x1bdifferential_privacy_policy\x18\x03 \x01(\v23.google.cloud.bigquery.v2.DifferentialPrivacyPolicyB\x04\xe2A\x01\x01H\x00R\x19differentialPrivacyPolicy\x12r\n" +
+	"\x17join_restriction_policy\x18\x01 \x01(\v2/.google.cloud.bigquery.v2.JoinRestrictionPolicyB\x04\xe2A\x01\x01H\x01R\x15joinRestrictionPolicy\x88\x01\x01B\x10\n" +
 	"\x0eprivacy_policyB\x1a\n" +
 	"\x18_join_restriction_policyBo\n" +
 	"\x1ccom.google.cloud.bigquery.v2B\x12PrivacyPolicyProtoZ;cloud.google.com/go/bigquery/v2/apiv2/bigquerypb;bigquerypbb\x06proto3"

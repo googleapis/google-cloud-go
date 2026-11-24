@@ -21,6 +21,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"slices"
 	"strings"
 	"time"
 
@@ -123,6 +124,10 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 // large datasets from tables, jobs or queries.
 // Currently out of pagination methods like PageInfo().Token and RowIterator.StartIndex
 // are not supported when the Storage API is enabled.
+//
+// ClientOptions used to configure the main BigQuery client are not propagated when setting
+// up the storage read client.
+//
 // Calling this method twice will return an error.
 func (c *Client) EnableStorageReadClient(ctx context.Context, opts ...option.ClientOption) error {
 	if c.isStorageReadAvailable() {
@@ -293,16 +298,12 @@ func retryableError(err error, allowedReasons []string) bool {
 		var reason string
 		if len(e.Errors) > 0 {
 			reason = e.Errors[0].Reason
-			for _, r := range allowedReasons {
-				if reason == r {
-					return true
-				}
-			}
-		}
-		for _, code := range retry5xxCodes {
-			if e.Code == code {
+			if slices.Contains(allowedReasons, reason) {
 				return true
 			}
+		}
+		if slices.Contains(retry5xxCodes, e.Code) {
+			return true
 		}
 	case *url.Error:
 		retryable := []string{"connection refused", "connection reset"}

@@ -157,18 +157,18 @@ var File_google_cloud_gkebackup_v1_restore_plan_binding_proto protoreflect.FileD
 
 const file_google_cloud_gkebackup_v1_restore_plan_binding_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/gkebackup/v1/restore_plan_binding.proto\x12\x19google.cloud.gkebackup.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdb\x04\n" +
-	"\x12RestorePlanBinding\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\x03uid\x18\x02 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12O\n" +
-	"\frestore_plan\x18\x05 \x01(\tB,\xe0A\x03\xfaA&\n" +
-	"$gkebackup.googleapis.com/RestorePlanR\vrestorePlan\x12\x17\n" +
-	"\x04etag\x18\x06 \x01(\tB\x03\xe0A\x03R\x04etag\x12L\n" +
-	"\vbackup_plan\x18\a \x01(\tB+\xe0A\x03\xfaA%\n" +
+	"4google/cloud/gkebackup/v1/restore_plan_binding.proto\x12\x19google.cloud.gkebackup.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe2\x04\n" +
+	"\x12RestorePlanBinding\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1e\n" +
+	"\x03uid\x18\x02 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12P\n" +
+	"\frestore_plan\x18\x05 \x01(\tB-\xe2A\x01\x03\xfaA&\n" +
+	"$gkebackup.googleapis.com/RestorePlanR\vrestorePlan\x12\x18\n" +
+	"\x04etag\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12M\n" +
+	"\vbackup_plan\x18\a \x01(\tB,\xe2A\x01\x03\xfaA%\n" +
 	"#gkebackup.googleapis.com/BackupPlanR\n" +
 	"backupPlan:\xd0\x01\xeaA\xcc\x01\n" +
 	"+gkebackup.googleapis.com/RestorePlanBinding\x12tprojects/{project}/locations/{location}/restoreChannels/{restore_channel}/restorePlanBindings/{restore_plan_binding}*\x13restorePlanBindings2\x12restorePlanBindingB\xce\x01\n" +

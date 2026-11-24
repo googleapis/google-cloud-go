@@ -18,12 +18,14 @@ package ces
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	cespb "cloud.google.com/go/ces/apiv1beta/cespb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -966,6 +968,12 @@ func (op *RunEvaluationResultMetricsOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AgentIterator) All() iter.Seq2[*cespb.Agent, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AgentIterator manages a stream of *cespb.Agent.
 type AgentIterator struct {
 	items    []*cespb.Agent
@@ -1011,6 +1019,12 @@ func (it *AgentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AppIterator) All() iter.Seq2[*cespb.App, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AppIterator manages a stream of *cespb.App.
@@ -1060,6 +1074,12 @@ func (it *AppIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AppVersionIterator) All() iter.Seq2[*cespb.AppVersion, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AppVersionIterator manages a stream of *cespb.AppVersion.
 type AppVersionIterator struct {
 	items    []*cespb.AppVersion
@@ -1105,6 +1125,65 @@ func (it *AppVersionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AssistantSessionIterator) All() iter.Seq2[*cespb.AssistantSession, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// AssistantSessionIterator manages a stream of *cespb.AssistantSession.
+type AssistantSessionIterator struct {
+	items    []*cespb.AssistantSession
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*cespb.AssistantSession, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *AssistantSessionIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *AssistantSessionIterator) Next() (*cespb.AssistantSession, error) {
+	var item *cespb.AssistantSession
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *AssistantSessionIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *AssistantSessionIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ChangelogIterator) All() iter.Seq2[*cespb.Changelog, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ChangelogIterator manages a stream of *cespb.Changelog.
@@ -1154,6 +1233,12 @@ func (it *ChangelogIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConversationIterator) All() iter.Seq2[*cespb.Conversation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ConversationIterator manages a stream of *cespb.Conversation.
 type ConversationIterator struct {
 	items    []*cespb.Conversation
@@ -1199,6 +1284,12 @@ func (it *ConversationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DeploymentIterator) All() iter.Seq2[*cespb.Deployment, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DeploymentIterator manages a stream of *cespb.Deployment.
@@ -1248,6 +1339,12 @@ func (it *DeploymentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EvaluationDatasetIterator) All() iter.Seq2[*cespb.EvaluationDataset, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EvaluationDatasetIterator manages a stream of *cespb.EvaluationDataset.
 type EvaluationDatasetIterator struct {
 	items    []*cespb.EvaluationDataset
@@ -1293,6 +1390,12 @@ func (it *EvaluationDatasetIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EvaluationExpectationIterator) All() iter.Seq2[*cespb.EvaluationExpectation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // EvaluationExpectationIterator manages a stream of *cespb.EvaluationExpectation.
@@ -1342,6 +1445,12 @@ func (it *EvaluationExpectationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EvaluationIterator) All() iter.Seq2[*cespb.Evaluation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EvaluationIterator manages a stream of *cespb.Evaluation.
 type EvaluationIterator struct {
 	items    []*cespb.Evaluation
@@ -1387,6 +1496,12 @@ func (it *EvaluationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EvaluationResultIterator) All() iter.Seq2[*cespb.EvaluationResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // EvaluationResultIterator manages a stream of *cespb.EvaluationResult.
@@ -1436,6 +1551,12 @@ func (it *EvaluationResultIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EvaluationRunIterator) All() iter.Seq2[*cespb.EvaluationRun, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EvaluationRunIterator manages a stream of *cespb.EvaluationRun.
 type EvaluationRunIterator struct {
 	items    []*cespb.EvaluationRun
@@ -1481,6 +1602,12 @@ func (it *EvaluationRunIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ExampleIterator) All() iter.Seq2[*cespb.Example, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ExampleIterator manages a stream of *cespb.Example.
@@ -1530,6 +1657,12 @@ func (it *ExampleIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GuardrailIterator) All() iter.Seq2[*cespb.Guardrail, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // GuardrailIterator manages a stream of *cespb.Guardrail.
 type GuardrailIterator struct {
 	items    []*cespb.Guardrail
@@ -1575,6 +1708,12 @@ func (it *GuardrailIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -1624,6 +1763,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -1669,6 +1814,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ScheduledEvaluationRunIterator) All() iter.Seq2[*cespb.ScheduledEvaluationRun, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ScheduledEvaluationRunIterator manages a stream of *cespb.ScheduledEvaluationRun.
@@ -1718,6 +1869,12 @@ func (it *ScheduledEvaluationRunIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ToolIterator) All() iter.Seq2[*cespb.Tool, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ToolIterator manages a stream of *cespb.Tool.
 type ToolIterator struct {
 	items    []*cespb.Tool
@@ -1763,6 +1920,12 @@ func (it *ToolIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ToolsetIterator) All() iter.Seq2[*cespb.Toolset, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ToolsetIterator manages a stream of *cespb.Toolset.

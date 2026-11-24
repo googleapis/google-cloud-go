@@ -1394,90 +1394,90 @@ var File_google_cloud_bigquery_v2_external_data_config_proto protoreflect.FileDe
 
 const file_google_cloud_bigquery_v2_external_data_config_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/bigquery/v2/external_data_config.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a3google/cloud/bigquery/v2/decimal_target_types.proto\x1a:google/cloud/bigquery/v2/file_set_specification_type.proto\x1a0google/cloud/bigquery/v2/hive_partitioning.proto\x1a-google/cloud/bigquery/v2/json_extension.proto\x1a.google/cloud/bigquery/v2/map_target_type.proto\x1a+google/cloud/bigquery/v2/table_schema.proto\x1a\x1egoogle/protobuf/wrappers.proto\"c\n" +
-	"\vAvroOptions\x12T\n" +
-	"\x16use_avro_logical_types\x18\x01 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x13useAvroLogicalTypes\"\x82\x02\n" +
-	"\x0eParquetOptions\x12E\n" +
-	"\x0eenum_as_string\x18\x01 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\fenumAsString\x12S\n" +
-	"\x15enable_list_inference\x18\x02 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x13enableListInference\x12T\n" +
-	"\x0fmap_target_type\x18\x03 \x01(\x0e2'.google.cloud.bigquery.v2.MapTargetTypeB\x03\xe0A\x01R\rmapTargetType\"\x91\x05\n" +
+	"3google/cloud/bigquery/v2/external_data_config.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a3google/cloud/bigquery/v2/decimal_target_types.proto\x1a:google/cloud/bigquery/v2/file_set_specification_type.proto\x1a0google/cloud/bigquery/v2/hive_partitioning.proto\x1a-google/cloud/bigquery/v2/json_extension.proto\x1a.google/cloud/bigquery/v2/map_target_type.proto\x1a+google/cloud/bigquery/v2/table_schema.proto\x1a\x1egoogle/protobuf/wrappers.proto\"d\n" +
+	"\vAvroOptions\x12U\n" +
+	"\x16use_avro_logical_types\x18\x01 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x13useAvroLogicalTypes\"\x85\x02\n" +
+	"\x0eParquetOptions\x12F\n" +
+	"\x0eenum_as_string\x18\x01 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\fenumAsString\x12T\n" +
+	"\x15enable_list_inference\x18\x02 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x13enableListInference\x12U\n" +
+	"\x0fmap_target_type\x18\x03 \x01(\x0e2'.google.cloud.bigquery.v2.MapTargetTypeB\x04\xe2A\x01\x01R\rmapTargetType\"\x9b\x05\n" +
 	"\n" +
-	"CsvOptions\x12,\n" +
-	"\x0ffield_delimiter\x18\x01 \x01(\tB\x03\xe0A\x01R\x0efieldDelimiter\x12L\n" +
-	"\x11skip_leading_rows\x18\x02 \x01(\v2\x1b.google.protobuf.Int64ValueB\x03\xe0A\x01R\x0fskipLeadingRows\x127\n" +
-	"\x05quote\x18\x03 \x01(\v2\x1c.google.protobuf.StringValueB\x03\xe0A\x01R\x05quote\x12S\n" +
-	"\x15allow_quoted_newlines\x18\x04 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x13allowQuotedNewlines\x12K\n" +
-	"\x11allow_jagged_rows\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x0fallowJaggedRows\x12\x1f\n" +
-	"\bencoding\x18\x06 \x01(\tB\x03\xe0A\x01R\bencoding\x12j\n" +
-	"!preserve_ascii_control_characters\x18\a \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x1epreserveAsciiControlCharacters\x12B\n" +
-	"\vnull_marker\x18\b \x01(\v2\x1c.google.protobuf.StringValueB\x03\xe0A\x01R\n" +
-	"nullMarker\x12&\n" +
-	"\fnull_markers\x18\t \x03(\tB\x03\xe0A\x01R\vnullMarkers\x123\n" +
+	"CsvOptions\x12-\n" +
+	"\x0ffield_delimiter\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0efieldDelimiter\x12M\n" +
+	"\x11skip_leading_rows\x18\x02 \x01(\v2\x1b.google.protobuf.Int64ValueB\x04\xe2A\x01\x01R\x0fskipLeadingRows\x128\n" +
+	"\x05quote\x18\x03 \x01(\v2\x1c.google.protobuf.StringValueB\x04\xe2A\x01\x01R\x05quote\x12T\n" +
+	"\x15allow_quoted_newlines\x18\x04 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x13allowQuotedNewlines\x12L\n" +
+	"\x11allow_jagged_rows\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x0fallowJaggedRows\x12 \n" +
+	"\bencoding\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\bencoding\x12k\n" +
+	"!preserve_ascii_control_characters\x18\a \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x1epreserveAsciiControlCharacters\x12C\n" +
+	"\vnull_marker\x18\b \x01(\v2\x1c.google.protobuf.StringValueB\x04\xe2A\x01\x01R\n" +
+	"nullMarker\x12'\n" +
+	"\fnull_markers\x18\t \x03(\tB\x04\xe2A\x01\x01R\vnullMarkers\x124\n" +
 	"\x13source_column_match\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x11sourceColumnMatch\".\n" +
-	"\vJsonOptions\x12\x1f\n" +
-	"\bencoding\x18\x01 \x01(\tB\x03\xe0A\x01R\bencoding\"w\n" +
-	"\x13BigtableProtoConfig\x12-\n" +
-	"\x10schema_bundle_id\x18\x03 \x01(\tB\x03\xe0A\x01R\x0eschemaBundleId\x121\n" +
-	"\x12proto_message_name\x18\x02 \x01(\tB\x03\xe0A\x01R\x10protoMessageName\"\xa3\x03\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x11sourceColumnMatch\"/\n" +
+	"\vJsonOptions\x12 \n" +
+	"\bencoding\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\bencoding\"y\n" +
+	"\x13BigtableProtoConfig\x12.\n" +
+	"\x10schema_bundle_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x0eschemaBundleId\x122\n" +
+	"\x12proto_message_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x10protoMessageName\"\xa8\x03\n" +
 	"\x0eBigtableColumn\x12H\n" +
 	"\x11qualifier_encoded\x18\x01 \x01(\v2\x1b.google.protobuf.BytesValueR\x10qualifierEncoded\x12G\n" +
-	"\x10qualifier_string\x18\x02 \x01(\v2\x1c.google.protobuf.StringValueR\x0fqualifierString\x12\"\n" +
+	"\x10qualifier_string\x18\x02 \x01(\v2\x1c.google.protobuf.StringValueR\x0fqualifierString\x12#\n" +
 	"\n" +
-	"field_name\x18\x03 \x01(\tB\x03\xe0A\x01R\tfieldName\x12\x17\n" +
-	"\x04type\x18\x04 \x01(\tB\x03\xe0A\x01R\x04type\x12\x1f\n" +
-	"\bencoding\x18\x05 \x01(\tB\x03\xe0A\x01R\bencoding\x12I\n" +
-	"\x10only_read_latest\x18\x06 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x0eonlyReadLatest\x12U\n" +
-	"\fproto_config\x18\a \x01(\v2-.google.cloud.bigquery.v2.BigtableProtoConfigB\x03\xe0A\x01R\vprotoConfig\"\xd8\x02\n" +
+	"field_name\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tfieldName\x12\x18\n" +
+	"\x04type\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x04type\x12 \n" +
+	"\bencoding\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\bencoding\x12J\n" +
+	"\x10only_read_latest\x18\x06 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x0eonlyReadLatest\x12V\n" +
+	"\fproto_config\x18\a \x01(\v2-.google.cloud.bigquery.v2.BigtableProtoConfigB\x04\xe2A\x01\x01R\vprotoConfig\"\xdd\x02\n" +
 	"\x14BigtableColumnFamily\x12\x1b\n" +
-	"\tfamily_id\x18\x01 \x01(\tR\bfamilyId\x12\x17\n" +
-	"\x04type\x18\x02 \x01(\tB\x03\xe0A\x01R\x04type\x12\x1f\n" +
-	"\bencoding\x18\x03 \x01(\tB\x03\xe0A\x01R\bencoding\x12G\n" +
-	"\acolumns\x18\x04 \x03(\v2(.google.cloud.bigquery.v2.BigtableColumnB\x03\xe0A\x01R\acolumns\x12I\n" +
-	"\x10only_read_latest\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x0eonlyReadLatest\x12U\n" +
-	"\fproto_config\x18\a \x01(\v2-.google.cloud.bigquery.v2.BigtableProtoConfigB\x03\xe0A\x01R\vprotoConfig\"\x96\x03\n" +
-	"\x0fBigtableOptions\x12\\\n" +
-	"\x0fcolumn_families\x18\x01 \x03(\v2..google.cloud.bigquery.v2.BigtableColumnFamilyB\x03\xe0A\x01R\x0ecolumnFamilies\x12l\n" +
-	"\"ignore_unspecified_column_families\x18\x02 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x1fignoreUnspecifiedColumnFamilies\x12R\n" +
-	"\x15read_rowkey_as_string\x18\x03 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x12readRowkeyAsString\x12c\n" +
-	"\x1eoutput_column_families_as_json\x18\x04 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x1aoutputColumnFamiliesAsJson\"~\n" +
-	"\x13GoogleSheetsOptions\x12L\n" +
-	"\x11skip_leading_rows\x18\x01 \x01(\v2\x1b.google.protobuf.Int64ValueB\x03\xe0A\x01R\x0fskipLeadingRows\x12\x19\n" +
-	"\x05range\x18\x02 \x01(\tB\x03\xe0A\x01R\x05range\"\xdd\x11\n" +
+	"\tfamily_id\x18\x01 \x01(\tR\bfamilyId\x12\x18\n" +
+	"\x04type\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04type\x12 \n" +
+	"\bencoding\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\bencoding\x12H\n" +
+	"\acolumns\x18\x04 \x03(\v2(.google.cloud.bigquery.v2.BigtableColumnB\x04\xe2A\x01\x01R\acolumns\x12J\n" +
+	"\x10only_read_latest\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x0eonlyReadLatest\x12V\n" +
+	"\fproto_config\x18\a \x01(\v2-.google.cloud.bigquery.v2.BigtableProtoConfigB\x04\xe2A\x01\x01R\vprotoConfig\"\x9a\x03\n" +
+	"\x0fBigtableOptions\x12]\n" +
+	"\x0fcolumn_families\x18\x01 \x03(\v2..google.cloud.bigquery.v2.BigtableColumnFamilyB\x04\xe2A\x01\x01R\x0ecolumnFamilies\x12m\n" +
+	"\"ignore_unspecified_column_families\x18\x02 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x1fignoreUnspecifiedColumnFamilies\x12S\n" +
+	"\x15read_rowkey_as_string\x18\x03 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x12readRowkeyAsString\x12d\n" +
+	"\x1eoutput_column_families_as_json\x18\x04 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x1aoutputColumnFamiliesAsJson\"\x80\x01\n" +
+	"\x13GoogleSheetsOptions\x12M\n" +
+	"\x11skip_leading_rows\x18\x01 \x01(\v2\x1b.google.protobuf.Int64ValueB\x04\xe2A\x01\x01R\x0fskipLeadingRows\x12\x1a\n" +
+	"\x05range\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05range\"\xf3\x11\n" +
 	"\x19ExternalDataConfiguration\x12\x1f\n" +
 	"\vsource_uris\x18\x01 \x03(\tR\n" +
-	"sourceUris\x12[\n" +
-	"\x12file_set_spec_type\x18\x19 \x01(\x0e2).google.cloud.bigquery.v2.FileSetSpecTypeB\x03\xe0A\x01R\x0ffileSetSpecType\x12B\n" +
-	"\x06schema\x18\x02 \x01(\v2%.google.cloud.bigquery.v2.TableSchemaB\x03\xe0A\x01R\x06schema\x12#\n" +
-	"\rsource_format\x18\x03 \x01(\tR\fsourceFormat\x12H\n" +
-	"\x0fmax_bad_records\x18\x04 \x01(\v2\x1b.google.protobuf.Int32ValueB\x03\xe0A\x01R\rmaxBadRecords\x12:\n" +
+	"sourceUris\x12\\\n" +
+	"\x12file_set_spec_type\x18\x19 \x01(\x0e2).google.cloud.bigquery.v2.FileSetSpecTypeB\x04\xe2A\x01\x01R\x0ffileSetSpecType\x12C\n" +
+	"\x06schema\x18\x02 \x01(\v2%.google.cloud.bigquery.v2.TableSchemaB\x04\xe2A\x01\x01R\x06schema\x12#\n" +
+	"\rsource_format\x18\x03 \x01(\tR\fsourceFormat\x12I\n" +
+	"\x0fmax_bad_records\x18\x04 \x01(\v2\x1b.google.protobuf.Int32ValueB\x04\xe2A\x01\x01R\rmaxBadRecords\x12:\n" +
 	"\n" +
 	"autodetect\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueR\n" +
-	"autodetect\x12S\n" +
-	"\x15ignore_unknown_values\x18\x06 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x13ignoreUnknownValues\x12%\n" +
-	"\vcompression\x18\a \x01(\tB\x03\xe0A\x01R\vcompression\x12J\n" +
-	"\vcsv_options\x18\b \x01(\v2$.google.cloud.bigquery.v2.CsvOptionsB\x03\xe0A\x01R\n" +
-	"csvOptions\x12M\n" +
-	"\fjson_options\x18\x1a \x01(\v2%.google.cloud.bigquery.v2.JsonOptionsB\x03\xe0A\x01R\vjsonOptions\x12Y\n" +
-	"\x10bigtable_options\x18\t \x01(\v2).google.cloud.bigquery.v2.BigtableOptionsB\x03\xe0A\x01R\x0fbigtableOptions\x12f\n" +
+	"autodetect\x12T\n" +
+	"\x15ignore_unknown_values\x18\x06 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x13ignoreUnknownValues\x12&\n" +
+	"\vcompression\x18\a \x01(\tB\x04\xe2A\x01\x01R\vcompression\x12K\n" +
+	"\vcsv_options\x18\b \x01(\v2$.google.cloud.bigquery.v2.CsvOptionsB\x04\xe2A\x01\x01R\n" +
+	"csvOptions\x12N\n" +
+	"\fjson_options\x18\x1a \x01(\v2%.google.cloud.bigquery.v2.JsonOptionsB\x04\xe2A\x01\x01R\vjsonOptions\x12Z\n" +
+	"\x10bigtable_options\x18\t \x01(\v2).google.cloud.bigquery.v2.BigtableOptionsB\x04\xe2A\x01\x01R\x0fbigtableOptions\x12g\n" +
 	"\x15google_sheets_options\x18\n" +
-	" \x01(\v2-.google.cloud.bigquery.v2.GoogleSheetsOptionsB\x03\xe0A\x01R\x13googleSheetsOptions\x12r\n" +
-	"\x19hive_partitioning_options\x18\r \x01(\v21.google.cloud.bigquery.v2.HivePartitioningOptionsB\x03\xe0A\x01R\x17hivePartitioningOptions\x12(\n" +
-	"\rconnection_id\x18\x0e \x01(\tB\x03\xe0A\x01R\fconnectionId\x12]\n" +
-	"\x14decimal_target_types\x18\x10 \x03(\x0e2+.google.cloud.bigquery.v2.DecimalTargetTypeR\x12decimalTargetTypes\x12M\n" +
-	"\favro_options\x18\x11 \x01(\v2%.google.cloud.bigquery.v2.AvroOptionsB\x03\xe0A\x01R\vavroOptions\x12S\n" +
-	"\x0ejson_extension\x18\x12 \x01(\x0e2'.google.cloud.bigquery.v2.JsonExtensionB\x03\xe0A\x01R\rjsonExtension\x12V\n" +
-	"\x0fparquet_options\x18\x13 \x01(\v2(.google.cloud.bigquery.v2.ParquetOptionsB\x03\xe0A\x01R\x0eparquetOptions\x12u\n" +
-	"\x0fobject_metadata\x18\x16 \x01(\x0e2B.google.cloud.bigquery.v2.ExternalDataConfiguration.ObjectMetadataB\x03\xe0A\x01H\x00R\x0eobjectMetadata\x88\x01\x01\x12\\\n" +
-	"\x19reference_file_schema_uri\x18\x17 \x01(\v2\x1c.google.protobuf.StringValueB\x03\xe0A\x01R\x16referenceFileSchemaUri\x12z\n" +
-	"\x13metadata_cache_mode\x18\x18 \x01(\x0e2E.google.cloud.bigquery.v2.ExternalDataConfiguration.MetadataCacheModeB\x03\xe0A\x01R\x11metadataCacheMode\x12%\n" +
-	"\ttime_zone\x18\x1b \x01(\tB\x03\xe0A\x01H\x01R\btimeZone\x88\x01\x01\x12)\n" +
-	"\vdate_format\x18\x1c \x01(\tB\x03\xe0A\x01H\x02R\n" +
-	"dateFormat\x88\x01\x01\x121\n" +
-	"\x0fdatetime_format\x18\x1d \x01(\tB\x03\xe0A\x01H\x03R\x0edatetimeFormat\x88\x01\x01\x12)\n" +
-	"\vtime_format\x18\x1e \x01(\tB\x03\xe0A\x01H\x04R\n" +
-	"timeFormat\x88\x01\x01\x123\n" +
-	"\x10timestamp_format\x18\x1f \x01(\tB\x03\xe0A\x01H\x05R\x0ftimestampFormat\x88\x01\x01\x12<\n" +
+	" \x01(\v2-.google.cloud.bigquery.v2.GoogleSheetsOptionsB\x04\xe2A\x01\x01R\x13googleSheetsOptions\x12s\n" +
+	"\x19hive_partitioning_options\x18\r \x01(\v21.google.cloud.bigquery.v2.HivePartitioningOptionsB\x04\xe2A\x01\x01R\x17hivePartitioningOptions\x12)\n" +
+	"\rconnection_id\x18\x0e \x01(\tB\x04\xe2A\x01\x01R\fconnectionId\x12]\n" +
+	"\x14decimal_target_types\x18\x10 \x03(\x0e2+.google.cloud.bigquery.v2.DecimalTargetTypeR\x12decimalTargetTypes\x12N\n" +
+	"\favro_options\x18\x11 \x01(\v2%.google.cloud.bigquery.v2.AvroOptionsB\x04\xe2A\x01\x01R\vavroOptions\x12T\n" +
+	"\x0ejson_extension\x18\x12 \x01(\x0e2'.google.cloud.bigquery.v2.JsonExtensionB\x04\xe2A\x01\x01R\rjsonExtension\x12W\n" +
+	"\x0fparquet_options\x18\x13 \x01(\v2(.google.cloud.bigquery.v2.ParquetOptionsB\x04\xe2A\x01\x01R\x0eparquetOptions\x12v\n" +
+	"\x0fobject_metadata\x18\x16 \x01(\x0e2B.google.cloud.bigquery.v2.ExternalDataConfiguration.ObjectMetadataB\x04\xe2A\x01\x01H\x00R\x0eobjectMetadata\x88\x01\x01\x12]\n" +
+	"\x19reference_file_schema_uri\x18\x17 \x01(\v2\x1c.google.protobuf.StringValueB\x04\xe2A\x01\x01R\x16referenceFileSchemaUri\x12{\n" +
+	"\x13metadata_cache_mode\x18\x18 \x01(\x0e2E.google.cloud.bigquery.v2.ExternalDataConfiguration.MetadataCacheModeB\x04\xe2A\x01\x01R\x11metadataCacheMode\x12&\n" +
+	"\ttime_zone\x18\x1b \x01(\tB\x04\xe2A\x01\x01H\x01R\btimeZone\x88\x01\x01\x12*\n" +
+	"\vdate_format\x18\x1c \x01(\tB\x04\xe2A\x01\x01H\x02R\n" +
+	"dateFormat\x88\x01\x01\x122\n" +
+	"\x0fdatetime_format\x18\x1d \x01(\tB\x04\xe2A\x01\x01H\x03R\x0edatetimeFormat\x88\x01\x01\x12*\n" +
+	"\vtime_format\x18\x1e \x01(\tB\x04\xe2A\x01\x01H\x04R\n" +
+	"timeFormat\x88\x01\x01\x124\n" +
+	"\x10timestamp_format\x18\x1f \x01(\tB\x04\xe2A\x01\x01H\x05R\x0ftimestampFormat\x88\x01\x01\x12<\n" +
 	"\x1atimestamp_target_precision\x18  \x03(\x05R\x18timestampTargetPrecision\"L\n" +
 	"\x0eObjectMetadata\x12\x1f\n" +
 	"\x1bOBJECT_METADATA_UNSPECIFIED\x10\x00\x12\r\n" +

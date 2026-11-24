@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -409,6 +409,7 @@ type PurgeIdentityMappingsRequest struct {
 	IdentityMappingStore string `protobuf:"bytes,1,opt,name=identity_mapping_store,json=identityMappingStore,proto3" json:"identity_mapping_store,omitempty"`
 	// Filter matching identity mappings to purge.
 	// The eligible field for filtering is:
+	//
 	// * `update_time`: in ISO 8601 "zulu" format.
 	// * `external_id`
 	//
@@ -998,52 +999,52 @@ var File_google_cloud_discoveryengine_v1_identity_mapping_store_service_proto pr
 
 const file_google_cloud_discoveryengine_v1_identity_mapping_store_service_proto_rawDesc = "" +
 	"\n" +
-	"Dgoogle/cloud/discoveryengine/v1/identity_mapping_store_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a<google/cloud/discoveryengine/v1/identity_mapping_store.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xaf\x03\n" +
+	"Dgoogle/cloud/discoveryengine/v1/identity_mapping_store_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a<google/cloud/discoveryengine/v1/identity_mapping_store.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xb2\x03\n" +
 	"!CreateIdentityMappingStoreRequest\x12Z\n" +
 	"\x10cmek_config_name\x18\x05 \x01(\tB.\xfaA+\n" +
 	")discoveryengine.googleapis.com/CmekConfigH\x00R\x0ecmekConfigName\x12#\n" +
-	"\fdisable_cmek\x18\x06 \x01(\bH\x00R\vdisableCmek\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'discoveryengine.googleapis.com/LocationR\x06parent\x12>\n" +
-	"\x19identity_mapping_store_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x16identityMappingStoreId\x12p\n" +
-	"\x16identity_mapping_store\x18\x03 \x01(\v25.google.cloud.discoveryengine.v1.IdentityMappingStoreB\x03\xe0A\x02R\x14identityMappingStoreB\x0e\n" +
-	"\fcmek_options\"q\n" +
-	"\x1eGetIdentityMappingStoreRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3discoveryengine.googleapis.com/IdentityMappingStoreR\x04name\"t\n" +
-	"!DeleteIdentityMappingStoreRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3discoveryengine.googleapis.com/IdentityMappingStoreR\x04name\"\x91\x03\n" +
+	"\fdisable_cmek\x18\x06 \x01(\bH\x00R\vdisableCmek\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'discoveryengine.googleapis.com/LocationR\x06parent\x12?\n" +
+	"\x19identity_mapping_store_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x16identityMappingStoreId\x12q\n" +
+	"\x16identity_mapping_store\x18\x03 \x01(\v25.google.cloud.discoveryengine.v1.IdentityMappingStoreB\x04\xe2A\x01\x02R\x14identityMappingStoreB\x0e\n" +
+	"\fcmek_options\"r\n" +
+	"\x1eGetIdentityMappingStoreRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3discoveryengine.googleapis.com/IdentityMappingStoreR\x04name\"u\n" +
+	"!DeleteIdentityMappingStoreRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3discoveryengine.googleapis.com/IdentityMappingStoreR\x04name\"\x92\x03\n" +
 	"\x1dImportIdentityMappingsRequest\x12r\n" +
-	"\rinline_source\x18\x02 \x01(\v2K.google.cloud.discoveryengine.v1.ImportIdentityMappingsRequest.InlineSourceH\x00R\finlineSource\x12q\n" +
-	"\x16identity_mapping_store\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
+	"\rinline_source\x18\x02 \x01(\v2K.google.cloud.discoveryengine.v1.ImportIdentityMappingsRequest.InlineSourceH\x00R\finlineSource\x12r\n" +
+	"\x16identity_mapping_store\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
 	"3discoveryengine.googleapis.com/IdentityMappingStoreR\x14identityMappingStore\x1a\x7f\n" +
 	"\fInlineSource\x12o\n" +
 	"\x18identity_mapping_entries\x18\x01 \x03(\v25.google.cloud.discoveryengine.v1.IdentityMappingEntryR\x16identityMappingEntriesB\b\n" +
 	"\x06source\"Y\n" +
 	"\x1eImportIdentityMappingsResponse\x127\n" +
-	"\rerror_samples\x18\x01 \x03(\v2\x12.google.rpc.StatusR\ferrorSamples\"\xcc\x03\n" +
+	"\rerror_samples\x18\x01 \x03(\v2\x12.google.rpc.StatusR\ferrorSamples\"\xcd\x03\n" +
 	"\x1cPurgeIdentityMappingsRequest\x12q\n" +
-	"\rinline_source\x18\x02 \x01(\v2J.google.cloud.discoveryengine.v1.PurgeIdentityMappingsRequest.InlineSourceH\x00R\finlineSource\x12q\n" +
-	"\x16identity_mapping_store\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
+	"\rinline_source\x18\x02 \x01(\v2J.google.cloud.discoveryengine.v1.PurgeIdentityMappingsRequest.InlineSourceH\x00R\finlineSource\x12r\n" +
+	"\x16identity_mapping_store\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
 	"3discoveryengine.googleapis.com/IdentityMappingStoreR\x14identityMappingStore\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x19\n" +
 	"\x05force\x18\x04 \x01(\bH\x01R\x05force\x88\x01\x01\x1a\x7f\n" +
 	"\fInlineSource\x12o\n" +
 	"\x18identity_mapping_entries\x18\x01 \x03(\v25.google.cloud.discoveryengine.v1.IdentityMappingEntryR\x16identityMappingEntriesB\b\n" +
 	"\x06sourceB\b\n" +
-	"\x06_force\"\xcc\x01\n" +
-	"\x1bListIdentityMappingsRequest\x12q\n" +
-	"\x16identity_mapping_store\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
+	"\x06_force\"\xcd\x01\n" +
+	"\x1bListIdentityMappingsRequest\x12r\n" +
+	"\x16identity_mapping_store\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
 	"3discoveryengine.googleapis.com/IdentityMappingStoreR\x14identityMappingStore\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xb7\x01\n" +
 	"\x1cListIdentityMappingsResponse\x12o\n" +
 	"\x18identity_mapping_entries\x18\x01 \x03(\v25.google.cloud.discoveryengine.v1.IdentityMappingEntryR\x16identityMappingEntries\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa7\x01\n" +
-	" ListIdentityMappingStoresRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa8\x01\n" +
+	" ListIdentityMappingStoresRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'discoveryengine.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -1060,7 +1061,7 @@ const file_google_cloud_discoveryengine_v1_identity_mapping_store_service_proto_
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime2\xd8\x10\n" +
+	"updateTime2\xd6\x11\n" +
 	"\x1bIdentityMappingStoreService\x12\xad\x02\n" +
 	"\x1aCreateIdentityMappingStore\x12B.google.cloud.discoveryengine.v1.CreateIdentityMappingStoreRequest\x1a5.google.cloud.discoveryengine.v1.IdentityMappingStore\"\x93\x01\xdaA7parent,identity_mapping_store,identity_mapping_store_id\x82\xd3\xe4\x93\x02S:\x16identity_mapping_store\"9/v1/{parent=projects/*/locations/*}/identityMappingStores\x12\xdb\x01\n" +
 	"\x17GetIdentityMappingStore\x12?.google.cloud.discoveryengine.v1.GetIdentityMappingStoreRequest\x1a5.google.cloud.discoveryengine.v1.IdentityMappingStore\"H\xdaA\x04name\x82\xd3\xe4\x93\x02;\x129/v1/{name=projects/*/locations/*/identityMappingStores/*}\x12\xa8\x02\n" +
@@ -1071,7 +1072,7 @@ const file_google_cloud_discoveryengine_v1_identity_mapping_store_service_proto_
 	"\x15PurgeIdentityMappings\x12=.google.cloud.discoveryengine.v1.PurgeIdentityMappingsRequest\x1a\x1d.google.longrunning.Operation\"\xcd\x01\xcaA^\n" +
 	"\x15google.protobuf.Empty\x12Egoogle.cloud.discoveryengine.v1.IdentityMappingEntryOperationMetadata\x82\xd3\xe4\x93\x02f:\x01*\"a/v1/{identity_mapping_store=projects/*/locations/*/identityMappingStores/*}:purgeIdentityMappings\x12\xfd\x01\n" +
 	"\x14ListIdentityMappings\x12<.google.cloud.discoveryengine.v1.ListIdentityMappingsRequest\x1a=.google.cloud.discoveryengine.v1.ListIdentityMappingsResponse\"h\x82\xd3\xe4\x93\x02b\x12`/v1/{identity_mapping_store=projects/*/locations/*/identityMappingStores/*}:listIdentityMappings\x12\xee\x01\n" +
-	"\x19ListIdentityMappingStores\x12A.google.cloud.discoveryengine.v1.ListIdentityMappingStoresRequest\x1aB.google.cloud.discoveryengine.v1.ListIdentityMappingStoresResponse\"J\xdaA\x06parent\x82\xd3\xe4\x93\x02;\x129/v1/{parent=projects/*/locations/*}/identityMappingStores\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x93\x02\n" +
+	"\x19ListIdentityMappingStores\x12A.google.cloud.discoveryengine.v1.ListIdentityMappingStoresRequest\x1aB.google.cloud.discoveryengine.v1.ListIdentityMappingStoresResponse\"J\xdaA\x06parent\x82\xd3\xe4\x93\x02;\x129/v1/{parent=projects/*/locations/*}/identityMappingStores\x1a\xcf\x01\xcaA\x1ediscoveryengine.googleapis.com\xd2A\xaa\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\x93\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B IdentityMappingStoreServiceProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 
 var (

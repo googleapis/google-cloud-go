@@ -2534,11 +2534,11 @@ var File_google_cloud_discoveryengine_v1alpha_conversational_search_service_prot
 
 const file_google_cloud_discoveryengine_v1alpha_conversational_search_service_proto_rawDesc = "" +
 	"\n" +
-	"Hgoogle/cloud/discoveryengine/v1alpha/conversational_search_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/discoveryengine/v1alpha/answer.proto\x1a1google/cloud/discoveryengine/v1alpha/common.proto\x1a7google/cloud/discoveryengine/v1alpha/conversation.proto\x1a9google/cloud/discoveryengine/v1alpha/search_service.proto\x1a2google/cloud/discoveryengine/v1alpha/session.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xa4\x06\n" +
-	"\x1bConverseConversationRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+discoveryengine.googleapis.com/ConversationR\x04name\x12J\n" +
-	"\x05query\x18\x02 \x01(\v2/.google.cloud.discoveryengine.v1alpha.TextInputB\x03\xe0A\x02R\x05query\x12X\n" +
+	"Hgoogle/cloud/discoveryengine/v1alpha/conversational_search_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/discoveryengine/v1alpha/answer.proto\x1a1google/cloud/discoveryengine/v1alpha/common.proto\x1a7google/cloud/discoveryengine/v1alpha/conversation.proto\x1a9google/cloud/discoveryengine/v1alpha/search_service.proto\x1a2google/cloud/discoveryengine/v1alpha/session.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xa6\x06\n" +
+	"\x1bConverseConversationRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+discoveryengine.googleapis.com/ConversationR\x04name\x12K\n" +
+	"\x05query\x18\x02 \x01(\v2/.google.cloud.discoveryengine.v1alpha.TextInputB\x04\xe2A\x01\x02R\x05query\x12X\n" +
 	"\x0eserving_config\x18\x03 \x01(\tB1\xfaA.\n" +
 	",discoveryengine.googleapis.com/ServingConfigR\rservingConfig\x12V\n" +
 	"\fconversation\x18\x05 \x01(\v22.google.cloud.discoveryengine.v1alpha.ConversationR\fconversation\x12\x1f\n" +
@@ -2558,23 +2558,23 @@ const file_google_cloud_discoveryengine_v1alpha_conversational_search_service_pr
 	"\x05reply\x18\x01 \x01(\v2+.google.cloud.discoveryengine.v1alpha.ReplyR\x05reply\x12V\n" +
 	"\fconversation\x18\x02 \x01(\v22.google.cloud.discoveryengine.v1alpha.ConversationR\fconversation\x12+\n" +
 	"\x11related_questions\x18\x06 \x03(\tR\x10relatedQuestions\x12h\n" +
-	"\x0esearch_results\x18\x03 \x03(\v2A.google.cloud.discoveryengine.v1alpha.SearchResponse.SearchResultR\rsearchResults\"\xc2\x01\n" +
-	"\x19CreateConversationRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12[\n" +
-	"\fconversation\x18\x02 \x01(\v22.google.cloud.discoveryengine.v1alpha.ConversationB\x03\xe0A\x02R\fconversation\"\xb5\x01\n" +
-	"\x19UpdateConversationRequest\x12[\n" +
-	"\fconversation\x18\x01 \x01(\v22.google.cloud.discoveryengine.v1alpha.ConversationB\x03\xe0A\x02R\fconversation\x12;\n" +
+	"\x0esearch_results\x18\x03 \x03(\v2A.google.cloud.discoveryengine.v1alpha.SearchResponse.SearchResultR\rsearchResults\"\xc4\x01\n" +
+	"\x19CreateConversationRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12\\\n" +
+	"\fconversation\x18\x02 \x01(\v22.google.cloud.discoveryengine.v1alpha.ConversationB\x04\xe2A\x01\x02R\fconversation\"\xb6\x01\n" +
+	"\x19UpdateConversationRequest\x12\\\n" +
+	"\fconversation\x18\x01 \x01(\v22.google.cloud.discoveryengine.v1alpha.ConversationB\x04\xe2A\x01\x02R\fconversation\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"d\n" +
-	"\x19DeleteConversationRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+discoveryengine.googleapis.com/ConversationR\x04name\"a\n" +
-	"\x16GetConversationRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+discoveryengine.googleapis.com/ConversationR\x04name\"\xd3\x01\n" +
-	"\x18ListConversationsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"updateMask\"e\n" +
+	"\x19DeleteConversationRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+discoveryengine.googleapis.com/ConversationR\x04name\"b\n" +
+	"\x16GetConversationRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+discoveryengine.googleapis.com/ConversationR\x04name\"\xd4\x01\n" +
+	"\x18ListConversationsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -2583,11 +2583,11 @@ const file_google_cloud_discoveryengine_v1alpha_conversational_search_service_pr
 	"\border_by\x18\x05 \x01(\tR\aorderBy\"\x9d\x01\n" +
 	"\x19ListConversationsResponse\x12X\n" +
 	"\rconversations\x18\x01 \x03(\v22.google.cloud.discoveryengine.v1alpha.ConversationR\rconversations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb2'\n" +
-	"\x12AnswerQueryRequest\x12[\n" +
-	"\x0eserving_config\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",discoveryengine.googleapis.com/ServingConfigR\rservingConfig\x12F\n" +
-	"\x05query\x18\x02 \x01(\v2+.google.cloud.discoveryengine.v1alpha.QueryB\x03\xe0A\x02R\x05query\x12E\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb4'\n" +
+	"\x12AnswerQueryRequest\x12\\\n" +
+	"\x0eserving_config\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",discoveryengine.googleapis.com/ServingConfigR\rservingConfig\x12G\n" +
+	"\x05query\x18\x02 \x01(\v2+.google.cloud.discoveryengine.v1alpha.QueryB\x04\xe2A\x01\x02R\x05query\x12E\n" +
 	"\asession\x18\x03 \x01(\tB+\xfaA(\n" +
 	"&discoveryengine.googleapis.com/SessionR\asession\x12d\n" +
 	"\vsafety_spec\x18\x04 \x01(\v2C.google.cloud.discoveryengine.v1alpha.AnswerQueryRequest.SafetySpecR\n" +
@@ -2684,27 +2684,27 @@ const file_google_cloud_discoveryengine_v1alpha_conversational_search_service_pr
 	"\x13AnswerQueryResponse\x12D\n" +
 	"\x06answer\x18\x01 \x01(\v2,.google.cloud.discoveryengine.v1alpha.AnswerR\x06answer\x12G\n" +
 	"\asession\x18\x02 \x01(\v2-.google.cloud.discoveryengine.v1alpha.SessionR\asession\x12,\n" +
-	"\x12answer_query_token\x18\x03 \x01(\tR\x10answerQueryToken\"U\n" +
-	"\x10GetAnswerRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%discoveryengine.googleapis.com/AnswerR\x04name\"\xae\x01\n" +
-	"\x14CreateSessionRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12L\n" +
-	"\asession\x18\x02 \x01(\v2-.google.cloud.discoveryengine.v1alpha.SessionB\x03\xe0A\x02R\asession\"\xa1\x01\n" +
-	"\x14UpdateSessionRequest\x12L\n" +
-	"\asession\x18\x01 \x01(\v2-.google.cloud.discoveryengine.v1alpha.SessionB\x03\xe0A\x02R\asession\x12;\n" +
+	"\x12answer_query_token\x18\x03 \x01(\tR\x10answerQueryToken\"V\n" +
+	"\x10GetAnswerRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%discoveryengine.googleapis.com/AnswerR\x04name\"\xb0\x01\n" +
+	"\x14CreateSessionRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12M\n" +
+	"\asession\x18\x02 \x01(\v2-.google.cloud.discoveryengine.v1alpha.SessionB\x04\xe2A\x01\x02R\asession\"\xa2\x01\n" +
+	"\x14UpdateSessionRequest\x12M\n" +
+	"\asession\x18\x01 \x01(\v2-.google.cloud.discoveryengine.v1alpha.SessionB\x04\xe2A\x01\x02R\asession\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"Z\n" +
-	"\x14DeleteSessionRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&discoveryengine.googleapis.com/SessionR\x04name\"\x92\x01\n" +
-	"\x11GetSessionRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&discoveryengine.googleapis.com/SessionR\x04name\x129\n" +
-	"\x16include_answer_details\x18\x02 \x01(\bB\x03\xe0A\x01R\x14includeAnswerDetails\"\xce\x01\n" +
-	"\x13ListSessionsRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"updateMask\"[\n" +
+	"\x14DeleteSessionRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&discoveryengine.googleapis.com/SessionR\x04name\"\x94\x01\n" +
+	"\x11GetSessionRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&discoveryengine.googleapis.com/SessionR\x04name\x12:\n" +
+	"\x16include_answer_details\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x14includeAnswerDetails\"\xcf\x01\n" +
+	"\x13ListSessionsRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(discoveryengine.googleapis.com/DataStoreR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +

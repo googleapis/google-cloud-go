@@ -623,6 +623,63 @@ func NewToolsClient(ctx context.Context, opts ...option.ClientOption) (*ToolsCli
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateTool = append(client.CallOptions.CreateTool, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTools = append(client.CallOptions.ListTools, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportTools = append(client.CallOptions.ExportTools, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTool = append(client.CallOptions.GetTool, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTool = append(client.CallOptions.UpdateTool, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTool = append(client.CallOptions.DeleteTool, gax.WithClientTracing(tracing))
+		client.CallOptions.ListToolVersions = append(client.CallOptions.ListToolVersions, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateToolVersion = append(client.CallOptions.CreateToolVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.GetToolVersion = append(client.CallOptions.GetToolVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteToolVersion = append(client.CallOptions.DeleteToolVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.RestoreToolVersion = append(client.CallOptions.RestoreToolVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateTool = append(client.CallOptions.CreateTool, gax.WithClientLogging(logging))
+		client.CallOptions.ListTools = append(client.CallOptions.ListTools, gax.WithClientLogging(logging))
+		client.CallOptions.ExportTools = append(client.CallOptions.ExportTools, gax.WithClientLogging(logging))
+		client.CallOptions.GetTool = append(client.CallOptions.GetTool, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTool = append(client.CallOptions.UpdateTool, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTool = append(client.CallOptions.DeleteTool, gax.WithClientLogging(logging))
+		client.CallOptions.ListToolVersions = append(client.CallOptions.ListToolVersions, gax.WithClientLogging(logging))
+		client.CallOptions.CreateToolVersion = append(client.CallOptions.CreateToolVersion, gax.WithClientLogging(logging))
+		client.CallOptions.GetToolVersion = append(client.CallOptions.GetToolVersion, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteToolVersion = append(client.CallOptions.DeleteToolVersion, gax.WithClientLogging(logging))
+		client.CallOptions.RestoreToolVersion = append(client.CallOptions.RestoreToolVersion, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -745,6 +802,63 @@ func NewToolsRESTClient(ctx context.Context, opts ...option.ClientOption) (*Tool
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateTool = append(callOpts.CreateTool, gax.WithClientTracing(tracing))
+		callOpts.ListTools = append(callOpts.ListTools, gax.WithClientTracing(tracing))
+		callOpts.ExportTools = append(callOpts.ExportTools, gax.WithClientTracing(tracing))
+		callOpts.GetTool = append(callOpts.GetTool, gax.WithClientTracing(tracing))
+		callOpts.UpdateTool = append(callOpts.UpdateTool, gax.WithClientTracing(tracing))
+		callOpts.DeleteTool = append(callOpts.DeleteTool, gax.WithClientTracing(tracing))
+		callOpts.ListToolVersions = append(callOpts.ListToolVersions, gax.WithClientTracing(tracing))
+		callOpts.CreateToolVersion = append(callOpts.CreateToolVersion, gax.WithClientTracing(tracing))
+		callOpts.GetToolVersion = append(callOpts.GetToolVersion, gax.WithClientTracing(tracing))
+		callOpts.DeleteToolVersion = append(callOpts.DeleteToolVersion, gax.WithClientTracing(tracing))
+		callOpts.RestoreToolVersion = append(callOpts.RestoreToolVersion, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateTool = append(callOpts.CreateTool, gax.WithClientLogging(logging))
+		callOpts.ListTools = append(callOpts.ListTools, gax.WithClientLogging(logging))
+		callOpts.ExportTools = append(callOpts.ExportTools, gax.WithClientLogging(logging))
+		callOpts.GetTool = append(callOpts.GetTool, gax.WithClientLogging(logging))
+		callOpts.UpdateTool = append(callOpts.UpdateTool, gax.WithClientLogging(logging))
+		callOpts.DeleteTool = append(callOpts.DeleteTool, gax.WithClientLogging(logging))
+		callOpts.ListToolVersions = append(callOpts.ListToolVersions, gax.WithClientLogging(logging))
+		callOpts.CreateToolVersion = append(callOpts.CreateToolVersion, gax.WithClientLogging(logging))
+		callOpts.GetToolVersion = append(callOpts.GetToolVersion, gax.WithClientLogging(logging))
+		callOpts.DeleteToolVersion = append(callOpts.DeleteToolVersion, gax.WithClientLogging(logging))
+		callOpts.RestoreToolVersion = append(callOpts.RestoreToolVersion, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -801,9 +915,6 @@ func (c *toolsGRPCClient) CreateTool(ctx context.Context, req *cxpb.CreateToolRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Tools/CreateTool")
 	}
@@ -825,9 +936,6 @@ func (c *toolsGRPCClient) ListTools(ctx context.Context, req *cxpb.ListToolsRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Tools/ListTools")
 	}
@@ -877,9 +985,6 @@ func (c *toolsGRPCClient) ExportTools(ctx context.Context, req *cxpb.ExportTools
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Tools/ExportTools")
 	}
@@ -907,9 +1012,6 @@ func (c *toolsGRPCClient) GetTool(ctx context.Context, req *cxpb.GetToolRequest,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Tools/GetTool")
 	}
@@ -952,9 +1054,6 @@ func (c *toolsGRPCClient) DeleteTool(ctx context.Context, req *cxpb.DeleteToolRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Tools/DeleteTool")
 	}
@@ -972,9 +1071,6 @@ func (c *toolsGRPCClient) ListToolVersions(ctx context.Context, req *cxpb.ListTo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Tools/ListToolVersions")
 	}
@@ -1024,9 +1120,6 @@ func (c *toolsGRPCClient) CreateToolVersion(ctx context.Context, req *cxpb.Creat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Tools/CreateToolVersion")
 	}
@@ -1048,9 +1141,6 @@ func (c *toolsGRPCClient) GetToolVersion(ctx context.Context, req *cxpb.GetToolV
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Tools/GetToolVersion")
 	}
@@ -1072,9 +1162,6 @@ func (c *toolsGRPCClient) DeleteToolVersion(ctx context.Context, req *cxpb.Delet
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Tools/DeleteToolVersion")
 	}
@@ -1092,9 +1179,6 @@ func (c *toolsGRPCClient) RestoreToolVersion(ctx context.Context, req *cxpb.Rest
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Tools/RestoreToolVersion")
 	}
@@ -1282,6 +1366,11 @@ func (c *toolsRESTClient) CreateTool(ctx context.Context, req *cxpb.CreateToolRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/tools", req.GetParent())
 
 	params := url.Values{}
@@ -1295,9 +1384,6 @@ func (c *toolsRESTClient) CreateTool(ctx context.Context, req *cxpb.CreateToolRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Tools/CreateTool")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{parent=projects/*/locations/*/agents/*}/tools")
@@ -1351,6 +1437,11 @@ func (c *toolsRESTClient) ListTools(ctx context.Context, req *cxpb.ListToolsRequ
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/tools", req.GetParent())
@@ -1424,6 +1515,11 @@ func (c *toolsRESTClient) ExportTools(ctx context.Context, req *cxpb.ExportTools
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/tools:export", req.GetParent())
 
 	params := url.Values{}
@@ -1437,9 +1533,6 @@ func (c *toolsRESTClient) ExportTools(ctx context.Context, req *cxpb.ExportTools
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Tools/ExportTools")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{parent=projects/*/locations/*/agents/*}/tools:export")
@@ -1488,6 +1581,11 @@ func (c *toolsRESTClient) GetTool(ctx context.Context, req *cxpb.GetToolRequest,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1501,9 +1599,6 @@ func (c *toolsRESTClient) GetTool(ctx context.Context, req *cxpb.GetToolRequest,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Tools/GetTool")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/locations/*/agents/*/tools/*}")
@@ -1550,6 +1645,11 @@ func (c *toolsRESTClient) UpdateTool(ctx context.Context, req *cxpb.UpdateToolRe
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTool().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetTool().GetName())
@@ -1613,6 +1713,11 @@ func (c *toolsRESTClient) DeleteTool(ctx context.Context, req *cxpb.DeleteToolRe
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1629,9 +1734,6 @@ func (c *toolsRESTClient) DeleteTool(ctx context.Context, req *cxpb.DeleteToolRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Tools/DeleteTool")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/locations/*/agents/*/tools/*}")
@@ -1670,6 +1772,11 @@ func (c *toolsRESTClient) ListToolVersions(ctx context.Context, req *cxpb.ListTo
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/versions", req.GetParent())
@@ -1745,6 +1852,11 @@ func (c *toolsRESTClient) CreateToolVersion(ctx context.Context, req *cxpb.Creat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/versions", req.GetParent())
 
 	params := url.Values{}
@@ -1758,9 +1870,6 @@ func (c *toolsRESTClient) CreateToolVersion(ctx context.Context, req *cxpb.Creat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Tools/CreateToolVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{parent=projects/*/locations/*/agents/*/tools/*}/versions")
@@ -1803,6 +1912,11 @@ func (c *toolsRESTClient) GetToolVersion(ctx context.Context, req *cxpb.GetToolV
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1816,9 +1930,6 @@ func (c *toolsRESTClient) GetToolVersion(ctx context.Context, req *cxpb.GetToolV
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Tools/GetToolVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/locations/*/agents/*/tools/*/versions/*}")
@@ -1861,6 +1972,11 @@ func (c *toolsRESTClient) DeleteToolVersion(ctx context.Context, req *cxpb.Delet
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1877,9 +1993,6 @@ func (c *toolsRESTClient) DeleteToolVersion(ctx context.Context, req *cxpb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Tools/DeleteToolVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/locations/*/agents/*/tools/*/versions/*}")
@@ -1913,6 +2026,11 @@ func (c *toolsRESTClient) RestoreToolVersion(ctx context.Context, req *cxpb.Rest
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:restore", req.GetName())
 
 	params := url.Values{}
@@ -1926,9 +2044,6 @@ func (c *toolsRESTClient) RestoreToolVersion(ctx context.Context, req *cxpb.Rest
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Tools/RestoreToolVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/locations/*/agents/*/tools/*/versions/*}:restore")
@@ -1968,6 +2083,11 @@ func (c *toolsRESTClient) RestoreToolVersion(ctx context.Context, req *cxpb.Rest
 func (c *toolsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
@@ -2052,6 +2172,11 @@ func (c *toolsRESTClient) ListLocations(ctx context.Context, req *locationpb.Lis
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -2120,6 +2245,11 @@ func (c *toolsRESTClient) CancelOperation(ctx context.Context, req *longrunningp
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2157,6 +2287,11 @@ func (c *toolsRESTClient) CancelOperation(ctx context.Context, req *longrunningp
 func (c *toolsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
@@ -2224,6 +2359,11 @@ func (c *toolsRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/operations", req.GetName())

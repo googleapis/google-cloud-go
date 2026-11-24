@@ -706,67 +706,67 @@ var File_google_cloud_bigquery_v2_row_access_policy_proto protoreflect.FileDescr
 
 const file_google_cloud_bigquery_v2_row_access_policy_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/bigquery/v2/row_access_policy.proto\x12\x18google.cloud.bigquery.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a:google/cloud/bigquery/v2/row_access_policy_reference.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc2\x01\n" +
-	"\x1cListRowAccessPoliciesRequest\x12\"\n" +
+	"0google/cloud/bigquery/v2/row_access_policy.proto\x12\x18google.cloud.bigquery.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a:google/cloud/bigquery/v2/row_access_policy_reference.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc5\x01\n" +
+	"\x1cListRowAccessPoliciesRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12\x1e\n" +
-	"\btable_id\x18\x03 \x01(\tB\x03\xe0A\x02R\atableId\x12\x1d\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12\x1f\n" +
+	"\btable_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\atableId\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x04 \x01(\tR\tpageToken\x12\x1b\n" +
 	"\tpage_size\x18\x05 \x01(\x05R\bpageSize\"\xa2\x01\n" +
 	"\x1dListRowAccessPoliciesResponse\x12Y\n" +
 	"\x13row_access_policies\x18\x01 \x03(\v2).google.cloud.bigquery.v2.RowAccessPolicyR\x11rowAccessPolicies\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa5\x01\n" +
-	"\x19GetRowAccessPolicyRequest\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa9\x01\n" +
+	"\x19GetRowAccessPolicyRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12\x1e\n" +
-	"\btable_id\x18\x03 \x01(\tB\x03\xe0A\x02R\atableId\x12 \n" +
-	"\tpolicy_id\x18\x04 \x01(\tB\x03\xe0A\x02R\bpolicyId\"\xe2\x01\n" +
-	"\x1cCreateRowAccessPolicyRequest\x12\"\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12\x1f\n" +
+	"\btable_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\atableId\x12!\n" +
+	"\tpolicy_id\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\bpolicyId\"\xe6\x01\n" +
+	"\x1cCreateRowAccessPolicyRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12\x1e\n" +
-	"\btable_id\x18\x03 \x01(\tB\x03\xe0A\x02R\atableId\x12Z\n" +
-	"\x11row_access_policy\x18\x04 \x01(\v2).google.cloud.bigquery.v2.RowAccessPolicyB\x03\xe0A\x02R\x0frowAccessPolicy\"\x84\x02\n" +
-	"\x1cUpdateRowAccessPolicyRequest\x12\"\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12\x1f\n" +
+	"\btable_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\atableId\x12[\n" +
+	"\x11row_access_policy\x18\x04 \x01(\v2).google.cloud.bigquery.v2.RowAccessPolicyB\x04\xe2A\x01\x02R\x0frowAccessPolicy\"\x89\x02\n" +
+	"\x1cUpdateRowAccessPolicyRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12\x1e\n" +
-	"\btable_id\x18\x03 \x01(\tB\x03\xe0A\x02R\atableId\x12 \n" +
-	"\tpolicy_id\x18\x04 \x01(\tB\x03\xe0A\x02R\bpolicyId\x12Z\n" +
-	"\x11row_access_policy\x18\x05 \x01(\v2).google.cloud.bigquery.v2.RowAccessPolicyB\x03\xe0A\x02R\x0frowAccessPolicy\"\xcd\x01\n" +
-	"\x1cDeleteRowAccessPolicyRequest\x12\"\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12\x1f\n" +
+	"\btable_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\atableId\x12!\n" +
+	"\tpolicy_id\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\bpolicyId\x12[\n" +
+	"\x11row_access_policy\x18\x05 \x01(\v2).google.cloud.bigquery.v2.RowAccessPolicyB\x04\xe2A\x01\x02R\x0frowAccessPolicy\"\xd1\x01\n" +
+	"\x1cDeleteRowAccessPolicyRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12\x1e\n" +
-	"\btable_id\x18\x03 \x01(\tB\x03\xe0A\x02R\atableId\x12 \n" +
-	"\tpolicy_id\x18\x04 \x01(\tB\x03\xe0A\x02R\bpolicyId\x12\x19\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12\x1f\n" +
+	"\btable_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\atableId\x12!\n" +
+	"\tpolicy_id\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\bpolicyId\x12\x19\n" +
 	"\x05force\x18\x05 \x01(\bH\x00R\x05force\x88\x01\x01B\b\n" +
-	"\x06_force\"\xd6\x01\n" +
-	"#BatchDeleteRowAccessPoliciesRequest\x12\"\n" +
+	"\x06_force\"\xda\x01\n" +
+	"#BatchDeleteRowAccessPoliciesRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12\x1e\n" +
-	"\btable_id\x18\x03 \x01(\tB\x03\xe0A\x02R\atableId\x12\"\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12\x1f\n" +
+	"\btable_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\atableId\x12#\n" +
 	"\n" +
-	"policy_ids\x18\x04 \x03(\tB\x03\xe0A\x02R\tpolicyIds\x12\x19\n" +
+	"policy_ids\x18\x04 \x03(\tB\x04\xe2A\x01\x02R\tpolicyIds\x12\x19\n" +
 	"\x05force\x18\x05 \x01(\bH\x00R\x05force\x88\x01\x01B\b\n" +
-	"\x06_force\"\x8b\x03\n" +
-	"\x0fRowAccessPolicy\x12\x17\n" +
-	"\x04etag\x18\x01 \x01(\tB\x03\xe0A\x03R\x04etag\x12v\n" +
-	"\x1brow_access_policy_reference\x18\x02 \x01(\v22.google.cloud.bigquery.v2.RowAccessPolicyReferenceB\x03\xe0A\x02R\x18rowAccessPolicyReference\x12.\n" +
-	"\x10filter_predicate\x18\x03 \x01(\tB\x03\xe0A\x02R\x0ffilterPredicate\x12D\n" +
-	"\rcreation_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fcreationTime\x12M\n" +
-	"\x12last_modified_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x10lastModifiedTime\x12\"\n" +
-	"\bgrantees\x18\x06 \x03(\tB\x06\xe0A\x04\xe0A\x01R\bgrantees2\x90\r\n" +
+	"\x06_force\"\x8f\x03\n" +
+	"\x0fRowAccessPolicy\x12\x18\n" +
+	"\x04etag\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12w\n" +
+	"\x1brow_access_policy_reference\x18\x02 \x01(\v22.google.cloud.bigquery.v2.RowAccessPolicyReferenceB\x04\xe2A\x01\x02R\x18rowAccessPolicyReference\x12/\n" +
+	"\x10filter_predicate\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0ffilterPredicate\x12E\n" +
+	"\rcreation_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fcreationTime\x12N\n" +
+	"\x12last_modified_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x10lastModifiedTime\x12!\n" +
+	"\bgrantees\x18\x06 \x03(\tB\x05\xe2A\x02\x04\x01R\bgrantees2\x90\r\n" +
 	"\x16RowAccessPolicyService\x12\xf4\x01\n" +
 	"\x15ListRowAccessPolicies\x126.google.cloud.bigquery.v2.ListRowAccessPoliciesRequest\x1a7.google.cloud.bigquery.v2.ListRowAccessPoliciesResponse\"j\x82\xd3\xe4\x93\x02d\x12b/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}/tables/{table_id=*}/rowAccessPolicies\x12\xee\x01\n" +
 	"\x12GetRowAccessPolicy\x123.google.cloud.bigquery.v2.GetRowAccessPolicyRequest\x1a).google.cloud.bigquery.v2.RowAccessPolicy\"x\x82\xd3\xe4\x93\x02r\x12p/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}/tables/{table_id=*}/rowAccessPolicies/{policy_id=*}\x12\xf9\x01\n" +

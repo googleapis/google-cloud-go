@@ -511,15 +511,15 @@ var File_google_cloud_retail_v2alpha_branch_proto protoreflect.FileDescriptor
 
 const file_google_cloud_retail_v2alpha_branch_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/retail/v2alpha/branch.proto\x12\x1bgoogle.cloud.retail.v2alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/retail/v2alpha/product.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe9\t\n" +
-	"\x06Branch\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12\"\n" +
+	"(google/cloud/retail/v2alpha/branch.proto\x12\x1bgoogle.cloud.retail.v2alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/retail/v2alpha/product.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xef\t\n" +
+	"\x06Branch\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12#\n" +
 	"\n" +
-	"is_default\x18\x03 \x01(\bB\x03\xe0A\x03R\tisDefault\x12X\n" +
-	"\x18last_product_import_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x15lastProductImportTime\x12n\n" +
-	"\x13product_count_stats\x18\a \x03(\v29.google.cloud.retail.v2alpha.Branch.ProductCountStatisticB\x03\xe0A\x03R\x11productCountStats\x12_\n" +
-	"\x0fquality_metrics\x18\x06 \x03(\v21.google.cloud.retail.v2alpha.Branch.QualityMetricB\x03\xe0A\x03R\x0equalityMetrics\x1a\xf9\x02\n" +
+	"is_default\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\tisDefault\x12Y\n" +
+	"\x18last_product_import_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x15lastProductImportTime\x12o\n" +
+	"\x13product_count_stats\x18\a \x03(\v29.google.cloud.retail.v2alpha.Branch.ProductCountStatisticB\x04\xe2A\x01\x03R\x11productCountStats\x12`\n" +
+	"\x0fquality_metrics\x18\x06 \x03(\v21.google.cloud.retail.v2alpha.Branch.QualityMetricB\x04\xe2A\x01\x03R\x0equalityMetrics\x1a\xf9\x02\n" +
 	"\x15ProductCountStatistic\x12a\n" +
 	"\x05scope\x18\x01 \x01(\x0e2K.google.cloud.retail.v2alpha.Branch.ProductCountStatistic.ProductCountScopeR\x05scope\x12]\n" +
 	"\x06counts\x18\x02 \x03(\v2E.google.cloud.retail.v2alpha.Branch.ProductCountStatistic.CountsEntryR\x06counts\x1a9\n" +

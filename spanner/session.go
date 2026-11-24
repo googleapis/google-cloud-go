@@ -372,7 +372,7 @@ func (p *sessionManager) finishMultiplexedSessionCreation(creation *multiplexedS
 				s.sm = p
 				p.multiplexedSession = s
 				if p.sc.dynamicPool != nil {
-					p.sc.dynamicPool.setPrimeSession(s.id)
+					p.sc.dynamicPool.SetPrimeSession(s.id)
 				}
 				p.recordStat(context.Background(), OpenSessionCount, int64(1), tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
 				p.recordStat(context.Background(), SessionsCount, 1, tagNumSessions, tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
@@ -443,11 +443,16 @@ var errInvalidSession = spannerErrorf(codes.InvalidArgument, "invalid session")
 func (p *sessionManager) newSessionHandleLocked(ctx context.Context, s *session) (*sessionHandle, error) {
 	sh := &sessionHandle{session: s}
 	if p.sc.dynamicPool != nil && p.locationAwareState == nil {
-		entry, err := p.sc.dynamicPool.pick(ctx)
+		entry, err := p.sc.dynamicPool.Pick(ctx)
 		if err != nil {
 			return nil, err
 		}
-		sh.client = newDCPResolvingSpannerClient(p.sc.dynamicPool, entry.id)
+		if p.sc.dynamicPool.IsFixed() {
+			// Fixed entries never drain, so the handle can keep the client.
+			sh.client = entry.Client
+		} else {
+			sh.client = newDCPResolvingSpannerClient(p.sc.dynamicPool, entry)
+		}
 		return sh, nil
 	}
 	client, idx := p.getRoundRobinClientLocked()

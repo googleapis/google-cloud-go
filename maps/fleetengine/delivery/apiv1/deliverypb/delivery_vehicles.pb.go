@@ -664,11 +664,11 @@ var File_google_maps_fleetengine_delivery_v1_delivery_vehicles_proto protoreflec
 
 const file_google_maps_fleetengine_delivery_v1_delivery_vehicles_proto_rawDesc = "" +
 	"\n" +
-	";google/maps/fleetengine/delivery/v1/delivery_vehicles.proto\x12\x1cmaps.fleetengine.delivery.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/maps/fleetengine/delivery/v1/common.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x18google/type/latlng.proto\"\x8c\t\n" +
+	";google/maps/fleetengine/delivery/v1/delivery_vehicles.proto\x12\x1cmaps.fleetengine.delivery.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/maps/fleetengine/delivery/v1/common.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x18google/type/latlng.proto\"\x8d\t\n" +
 	"\x0fDeliveryVehicle\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12Z\n" +
-	"\rlast_location\x18\x02 \x01(\v25.maps.fleetengine.delivery.v1.DeliveryVehicleLocationR\flastLocation\x12a\n" +
-	"\x0epast_locations\x18\f \x03(\v25.maps.fleetengine.delivery.v1.DeliveryVehicleLocationB\x03\xe0A\x04R\rpastLocations\x12j\n" +
+	"\rlast_location\x18\x02 \x01(\v25.maps.fleetengine.delivery.v1.DeliveryVehicleLocationR\flastLocation\x12b\n" +
+	"\x0epast_locations\x18\f \x03(\v25.maps.fleetengine.delivery.v1.DeliveryVehicleLocationB\x04\xe2A\x01\x04R\rpastLocations\x12j\n" +
 	"\x11navigation_status\x18\x03 \x01(\x0e2=.maps.fleetengine.delivery.v1.DeliveryVehicleNavigationStatusR\x10navigationStatus\x122\n" +
 	"\x15current_route_segment\x18\x04 \x01(\fR\x13currentRouteSegment\x12Y\n" +
 	"\x1fcurrent_route_segment_end_point\x18\x05 \x01(\v2\x13.google.type.LatLngR\x1bcurrentRouteSegmentEndPoint\x12W\n" +
@@ -689,20 +689,20 @@ const file_google_maps_fleetengine_delivery_v1_delivery_vehicles_proto_rawDesc =
 	"PEDESTRIAN\x10\x04:`\xeaA]\n" +
 	"*fleetengine.googleapis.com/DeliveryVehicle\x12/providers/{provider}/deliveryVehicles/{vehicle}\"9\n" +
 	"\fLocationInfo\x12)\n" +
-	"\x05point\x18\x01 \x01(\v2\x13.google.type.LatLngR\x05point\"\xa9\x02\n" +
+	"\x05point\x18\x01 \x01(\v2\x13.google.type.LatLngR\x05point\"\xac\x02\n" +
 	"\x15VehicleJourneySegment\x12=\n" +
-	"\x04stop\x18\x01 \x01(\v2).maps.fleetengine.delivery.v1.VehicleStopR\x04stop\x12X\n" +
-	"\x17driving_distance_meters\x18\x02 \x01(\v2\x1b.google.protobuf.Int32ValueB\x03\xe0A\x03R\x15drivingDistanceMeters\x12I\n" +
-	"\x10driving_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\x0fdrivingDuration\x12,\n" +
-	"\x04path\x18\x05 \x03(\v2\x13.google.type.LatLngB\x03\xe0A\x03R\x04path\"\x85\x04\n" +
-	"\vVehicleStop\x12Z\n" +
-	"\x10planned_location\x18\x01 \x01(\v2*.maps.fleetengine.delivery.v1.LocationInfoB\x03\xe0A\x02R\x0fplannedLocation\x12H\n" +
+	"\x04stop\x18\x01 \x01(\v2).maps.fleetengine.delivery.v1.VehicleStopR\x04stop\x12Y\n" +
+	"\x17driving_distance_meters\x18\x02 \x01(\v2\x1b.google.protobuf.Int32ValueB\x04\xe2A\x01\x03R\x15drivingDistanceMeters\x12J\n" +
+	"\x10driving_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\x0fdrivingDuration\x12-\n" +
+	"\x04path\x18\x05 \x03(\v2\x13.google.type.LatLngB\x04\xe2A\x01\x03R\x04path\"\x88\x04\n" +
+	"\vVehicleStop\x12[\n" +
+	"\x10planned_location\x18\x01 \x01(\v2*.maps.fleetengine.delivery.v1.LocationInfoB\x04\xe2A\x01\x02R\x0fplannedLocation\x12H\n" +
 	"\x05tasks\x18\x02 \x03(\v22.maps.fleetengine.delivery.v1.VehicleStop.TaskInfoR\x05tasks\x12E\n" +
-	"\x05state\x18\x03 \x01(\x0e2/.maps.fleetengine.delivery.v1.VehicleStop.StateR\x05state\x1a\xc5\x01\n" +
+	"\x05state\x18\x03 \x01(\x0e2/.maps.fleetengine.delivery.v1.VehicleStop.StateR\x05state\x1a\xc7\x01\n" +
 	"\bTaskInfo\x12\x17\n" +
-	"\atask_id\x18\x01 \x01(\tR\x06taskId\x12C\n" +
-	"\rtask_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\ftaskDuration\x12[\n" +
-	"\x12target_time_window\x18\x03 \x01(\v2(.maps.fleetengine.delivery.v1.TimeWindowB\x03\xe0A\x03R\x10targetTimeWindow\"A\n" +
+	"\atask_id\x18\x01 \x01(\tR\x06taskId\x12D\n" +
+	"\rtask_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\ftaskDuration\x12\\\n" +
+	"\x12target_time_window\x18\x03 \x01(\v2(.maps.fleetengine.delivery.v1.TimeWindowB\x04\xe2A\x01\x03R\x10targetTimeWindow\"A\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03NEW\x10\x01\x12\v\n" +

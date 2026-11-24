@@ -140,13 +140,13 @@ var File_google_cloud_alloydb_v1_csql_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_alloydb_v1_csql_service_proto_rawDesc = "" +
 	"\n" +
-	"*google/cloud/alloydb/v1/csql_service.proto\x12\x17google.cloud.alloydb.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/alloydb/v1/csql_resources.proto\x1a'google/cloud/alloydb/v1/resources.proto\x1a%google/cloud/alloydb/v1/service.proto\x1a#google/longrunning/operations.proto\"\xbc\x02\n" +
+	"*google/cloud/alloydb/v1/csql_service.proto\x12\x17google.cloud.alloydb.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/alloydb/v1/csql_resources.proto\x1a'google/cloud/alloydb/v1/resources.proto\x1a%google/cloud/alloydb/v1/service.proto\x1a#google/longrunning/operations.proto\"\xbf\x02\n" +
 	"\x1aRestoreFromCloudSQLRequest\x12o\n" +
-	"\x1acloudsql_backup_run_source\x18e \x01(\v20.google.cloud.alloydb.v1.CloudSQLBackupRunSourceH\x00R\x17cloudsqlBackupRunSource\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1ealloydb.googleapis.com/ClusterR\x06parent\x12\"\n" +
+	"\x1acloudsql_backup_run_source\x18e \x01(\v20.google.cloud.alloydb.v1.CloudSQLBackupRunSourceH\x00R\x17cloudsqlBackupRunSource\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1ealloydb.googleapis.com/ClusterR\x06parent\x12#\n" +
 	"\n" +
-	"cluster_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tclusterId\x12?\n" +
-	"\acluster\x18\x03 \x01(\v2 .google.cloud.alloydb.v1.ClusterB\x03\xe0A\x02R\aclusterB\b\n" +
+	"cluster_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tclusterId\x12@\n" +
+	"\acluster\x18\x03 \x01(\v2 .google.cloud.alloydb.v1.ClusterB\x04\xe2A\x01\x02R\aclusterB\b\n" +
 	"\x06source2\xca\x02\n" +
 	"\x10AlloyDBCSQLAdmin\x12\xe9\x01\n" +
 	"\x13RestoreFromCloudSQL\x123.google.cloud.alloydb.v1.RestoreFromCloudSQLRequest\x1a\x1d.google.longrunning.Operation\"~\xcaA\x1c\n" +

@@ -289,11 +289,11 @@ var File_google_cloud_retail_v2alpha_safety_proto protoreflect.FileDescriptor
 
 const file_google_cloud_retail_v2alpha_safety_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/retail/v2alpha/safety.proto\x12\x1bgoogle.cloud.retail.v2alpha\x1a\x1fgoogle/api/field_behavior.proto\"\x81\x04\n" +
+	"(google/cloud/retail/v2alpha/safety.proto\x12\x1bgoogle.cloud.retail.v2alpha\x1a\x1fgoogle/api/field_behavior.proto\"\x82\x04\n" +
 	"\rSafetySetting\x12E\n" +
 	"\bcategory\x18\x01 \x01(\x0e2).google.cloud.retail.v2alpha.HarmCategoryR\bcategory\x12[\n" +
-	"\tthreshold\x18\x02 \x01(\x0e2=.google.cloud.retail.v2alpha.SafetySetting.HarmBlockThresholdR\tthreshold\x12W\n" +
-	"\x06method\x18\x03 \x01(\x0e2:.google.cloud.retail.v2alpha.SafetySetting.HarmBlockMethodB\x03\xe0A\x01R\x06method\"\x9d\x01\n" +
+	"\tthreshold\x18\x02 \x01(\x0e2=.google.cloud.retail.v2alpha.SafetySetting.HarmBlockThresholdR\tthreshold\x12X\n" +
+	"\x06method\x18\x03 \x01(\x0e2:.google.cloud.retail.v2alpha.SafetySetting.HarmBlockMethodB\x04\xe2A\x01\x01R\x06method\"\x9d\x01\n" +
 	"\x12HarmBlockThreshold\x12$\n" +
 	" HARM_BLOCK_THRESHOLD_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13BLOCK_LOW_AND_ABOVE\x10\x01\x12\x1a\n" +

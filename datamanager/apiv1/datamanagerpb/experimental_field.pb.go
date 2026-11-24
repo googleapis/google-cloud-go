@@ -96,10 +96,10 @@ var File_google_ads_datamanager_v1_experimental_field_proto protoreflect.FileDes
 
 const file_google_ads_datamanager_v1_experimental_field_proto_rawDesc = "" +
 	"\n" +
-	"2google/ads/datamanager/v1/experimental_field.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\"I\n" +
-	"\x11ExperimentalField\x12\x19\n" +
-	"\x05field\x18\x01 \x01(\tB\x03\xe0A\x01R\x05field\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x01R\x05valueB\xd3\x01\n" +
+	"2google/ads/datamanager/v1/experimental_field.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\"K\n" +
+	"\x11ExperimentalField\x12\x1a\n" +
+	"\x05field\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05field\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05valueB\xd3\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\x16ExperimentalFieldProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 
 var (

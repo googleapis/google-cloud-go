@@ -116,13 +116,13 @@ var File_google_devtools_artifactregistry_v1_go_proto protoreflect.FileDescripto
 
 const file_google_devtools_artifactregistry_v1_go_proto_rawDesc = "" +
 	"\n" +
-	",google/devtools/artifactregistry/v1/go.proto\x12#google.devtools.artifactregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc6\x02\n" +
+	",google/devtools/artifactregistry/v1/go.proto\x12#google.devtools.artifactregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc8\x02\n" +
 	"\bGoModule\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n" +
-	"\aversion\x18\x02 \x01(\tR\aversion\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\aversion\x18\x02 \x01(\tR\aversion\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:\x87\x01\xeaA\x83\x01\n" +
 	"(artifactregistry.googleapis.com/GoModule\x12Wprojects/{project}/locations/{location}/repositories/{repository}/goModules/{go_module}B\xf2\x01\n" +
 	"'com.google.devtools.artifactregistry.v1B\aGoProtoP\x01ZPcloud.google.com/go/artifactregistry/apiv1/artifactregistrypb;artifactregistrypb\xaa\x02 Google.Cloud.ArtifactRegistry.V1\xca\x02 Google\\Cloud\\ArtifactRegistry\\V1\xea\x02#Google::Cloud::ArtifactRegistry::V1b\x06proto3"

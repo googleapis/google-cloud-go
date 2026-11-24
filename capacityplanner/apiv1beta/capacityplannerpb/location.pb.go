@@ -237,14 +237,14 @@ var File_google_cloud_capacityplanner_v1beta_location_proto protoreflect.FileDes
 
 const file_google_cloud_capacityplanner_v1beta_location_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/capacityplanner/v1beta/location.proto\x12#google.cloud.capacityplanner.v1beta\x1a\x1fgoogle/api/field_behavior.proto\"\xa9\x03\n" +
+	"2google/cloud/capacityplanner/v1beta/location.proto\x12#google.cloud.capacityplanner.v1beta\x1a\x1fgoogle/api/field_behavior.proto\"\xac\x03\n" +
 	"\x12LocationIdentifier\x12Y\n" +
-	"\x0elocation_level\x18\x01 \x01(\x0e22.google.cloud.capacityplanner.v1beta.LocationLevelR\rlocationLevel\x12\x1b\n" +
-	"\x06source\x18\x02 \x01(\tB\x03\xe0A\x02R\x06source\x12v\n" +
-	"\x10linked_locations\x18\x03 \x03(\v2F.google.cloud.capacityplanner.v1beta.LocationIdentifier.LinkedLocationB\x03\xe0A\x01R\x0flinkedLocations\x1a\xa2\x01\n" +
+	"\x0elocation_level\x18\x01 \x01(\x0e22.google.cloud.capacityplanner.v1beta.LocationLevelR\rlocationLevel\x12\x1c\n" +
+	"\x06source\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06source\x12w\n" +
+	"\x10linked_locations\x18\x03 \x03(\v2F.google.cloud.capacityplanner.v1beta.LocationIdentifier.LinkedLocationB\x04\xe2A\x01\x01R\x0flinkedLocations\x1a\xa3\x01\n" +
 	"\x0eLinkedLocation\x12Y\n" +
-	"\x0elocation_level\x18\x01 \x01(\x0e22.google.cloud.capacityplanner.v1beta.LocationLevelR\rlocationLevel\x12\x1f\n" +
-	"\blocation\x18\x02 \x01(\tB\x03\xe0A\x02R\blocation\x12\x14\n" +
+	"\x0elocation_level\x18\x01 \x01(\x0e22.google.cloud.capacityplanner.v1beta.LocationLevelR\rlocationLevel\x12 \n" +
+	"\blocation\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\blocation\x12\x14\n" +
 	"\x05label\x18\x03 \x01(\tR\x05label*\x7f\n" +
 	"\rLocationLevel\x12\x1e\n" +
 	"\x1aLOCATION_LEVEL_UNSPECIFIED\x10\x00\x12\n" +

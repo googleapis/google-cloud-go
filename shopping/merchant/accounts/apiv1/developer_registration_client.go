@@ -310,6 +310,39 @@ func NewDeveloperRegistrationClient(ctx context.Context, opts ...option.ClientOp
 		client.CallOptions.UnregisterGcp = append(client.CallOptions.UnregisterGcp, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetAccountForGcpRegistration = append(client.CallOptions.GetAccountForGcpRegistration, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.RegisterGcp = append(client.CallOptions.RegisterGcp, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDeveloperRegistration = append(client.CallOptions.GetDeveloperRegistration, gax.WithClientTracing(tracing))
+		client.CallOptions.UnregisterGcp = append(client.CallOptions.UnregisterGcp, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAccountForGcpRegistration = append(client.CallOptions.GetAccountForGcpRegistration, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.RegisterGcp = append(client.CallOptions.RegisterGcp, gax.WithClientLogging(logging))
+		client.CallOptions.GetDeveloperRegistration = append(client.CallOptions.GetDeveloperRegistration, gax.WithClientLogging(logging))
+		client.CallOptions.UnregisterGcp = append(client.CallOptions.UnregisterGcp, gax.WithClientLogging(logging))
+		client.CallOptions.GetAccountForGcpRegistration = append(client.CallOptions.GetAccountForGcpRegistration, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -404,6 +437,39 @@ func NewDeveloperRegistrationRESTClient(ctx context.Context, opts ...option.Clie
 		callOpts.UnregisterGcp = append(callOpts.UnregisterGcp, gax.WithClientMetrics(metrics))
 		callOpts.GetAccountForGcpRegistration = append(callOpts.GetAccountForGcpRegistration, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.RegisterGcp = append(callOpts.RegisterGcp, gax.WithClientTracing(tracing))
+		callOpts.GetDeveloperRegistration = append(callOpts.GetDeveloperRegistration, gax.WithClientTracing(tracing))
+		callOpts.UnregisterGcp = append(callOpts.UnregisterGcp, gax.WithClientTracing(tracing))
+		callOpts.GetAccountForGcpRegistration = append(callOpts.GetAccountForGcpRegistration, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.RegisterGcp = append(callOpts.RegisterGcp, gax.WithClientLogging(logging))
+		callOpts.GetDeveloperRegistration = append(callOpts.GetDeveloperRegistration, gax.WithClientLogging(logging))
+		callOpts.UnregisterGcp = append(callOpts.UnregisterGcp, gax.WithClientLogging(logging))
+		callOpts.GetAccountForGcpRegistration = append(callOpts.GetAccountForGcpRegistration, gax.WithClientLogging(logging))
+	}
 
 	return &DeveloperRegistrationClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -450,9 +516,6 @@ func (c *developerRegistrationGRPCClient) RegisterGcp(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.DeveloperRegistrationService/RegisterGcp")
 	}
@@ -474,9 +537,6 @@ func (c *developerRegistrationGRPCClient) GetDeveloperRegistration(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.DeveloperRegistrationService/GetDeveloperRegistration")
 	}
@@ -498,9 +558,6 @@ func (c *developerRegistrationGRPCClient) UnregisterGcp(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.DeveloperRegistrationService/UnregisterGcp")
 	}
@@ -546,6 +603,11 @@ func (c *developerRegistrationRESTClient) RegisterGcp(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v:registerGcp", req.GetName())
 
 	params := url.Values{}
@@ -559,9 +621,6 @@ func (c *developerRegistrationRESTClient) RegisterGcp(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.DeveloperRegistrationService/RegisterGcp")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{name=accounts/*/developerRegistration}:registerGcp")
@@ -603,6 +662,11 @@ func (c *developerRegistrationRESTClient) GetDeveloperRegistration(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -616,9 +680,6 @@ func (c *developerRegistrationRESTClient) GetDeveloperRegistration(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.DeveloperRegistrationService/GetDeveloperRegistration")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{name=accounts/*/developerRegistration}")
@@ -668,6 +729,11 @@ func (c *developerRegistrationRESTClient) UnregisterGcp(ctx context.Context, req
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v:unregisterGcp", req.GetName())
 
 	params := url.Values{}
@@ -681,9 +747,6 @@ func (c *developerRegistrationRESTClient) UnregisterGcp(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.DeveloperRegistrationService/UnregisterGcp")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{name=accounts/*/developerRegistration}:unregisterGcp")

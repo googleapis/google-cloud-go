@@ -721,3 +721,49 @@ func TestComputeTokenProvider_FullyExpiredBlockingRefresh(t *testing.T) {
 		t.Errorf("got %q, want %q", tok2.Value, "2")
 	}
 }
+
+func TestCachedTokenProvider_BlockingRefreshHonorsExpireEarly(t *testing.T) {
+	tests := []struct {
+		name        string
+		expireEarly time.Duration
+		lifetime    time.Duration
+		wantCalls   int
+	}{
+		{
+			name:        "window larger than default",
+			expireEarly: 10 * time.Minute,
+			lifetime:    5 * time.Minute,
+			wantCalls:   2,
+		},
+		{
+			name:        "window smaller than default",
+			expireEarly: 1 * time.Minute,
+			lifetime:    3 * time.Minute,
+			wantCalls:   1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			now := time.Now()
+			timeNow = func() time.Time { return now }
+			defer func() { timeNow = time.Now }()
+			ctp := &controllableTokenProvider{
+				tok: &Token{Value: "token", Expiry: now.Add(tt.lifetime)},
+			}
+			tp := NewCachedTokenProvider(ctp, &CachedTokenProviderOptions{
+				ExpireEarly:         tt.expireEarly,
+				DisableAsyncRefresh: true,
+			})
+			for i := 0; i < 2; i++ {
+				if _, err := tp.Token(context.Background()); err != nil {
+					t.Fatal(err)
+				}
+			}
+			// The token is refreshed again only if it is inside the
+			// configured early refresh window.
+			if got := ctp.getCount(); got != tt.wantCalls {
+				t.Errorf("got %d calls to the underlying provider, want %d", got, tt.wantCalls)
+			}
+		})
+	}
+}

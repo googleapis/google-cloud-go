@@ -1048,28 +1048,28 @@ var File_google_ai_generativelanguage_v1alpha_tuned_model_proto protoreflect.Fil
 
 const file_google_ai_generativelanguage_v1alpha_tuned_model_proto_rawDesc = "" +
 	"\n" +
-	"6google/ai/generativelanguage/v1alpha/tuned_model.proto\x12$google.ai.generativelanguage.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe8\a\n" +
+	"6google/ai/generativelanguage/v1alpha/tuned_model.proto\x12$google.ai.generativelanguage.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf5\a\n" +
 	"\n" +
-	"TunedModel\x12k\n" +
-	"\x12tuned_model_source\x18\x03 \x01(\v26.google.ai.generativelanguage.v1alpha.TunedModelSourceB\x03\xe0A\x01H\x00R\x10tunedModelSource\x12P\n" +
+	"TunedModel\x12l\n" +
+	"\x12tuned_model_source\x18\x03 \x01(\v26.google.ai.generativelanguage.v1alpha.TunedModelSourceB\x04\xe2A\x01\x01H\x00R\x10tunedModelSource\x12Q\n" +
 	"\n" +
-	"base_model\x18\x04 \x01(\tB/\xe0A\x05\xfaA)\n" +
-	"'generativelanguage.googleapis.com/ModelH\x00R\tbaseModel\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x01R\vdescription\x12*\n" +
-	"\vtemperature\x18\v \x01(\x02B\x03\xe0A\x01H\x01R\vtemperature\x88\x01\x01\x12\x1d\n" +
-	"\x05top_p\x18\f \x01(\x02B\x03\xe0A\x01H\x02R\x04topP\x88\x01\x01\x12\x1d\n" +
-	"\x05top_k\x18\r \x01(\x05B\x03\xe0A\x01H\x03R\x04topK\x88\x01\x01\x12Q\n" +
-	"\x05state\x18\a \x01(\x0e26.google.ai.generativelanguage.v1alpha.TunedModel.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12V\n" +
+	"base_model\x18\x04 \x01(\tB0\xe2A\x01\x05\xfaA)\n" +
+	"'generativelanguage.googleapis.com/ModelH\x00R\tbaseModel\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12+\n" +
+	"\vtemperature\x18\v \x01(\x02B\x04\xe2A\x01\x01H\x01R\vtemperature\x88\x01\x01\x12\x1e\n" +
+	"\x05top_p\x18\f \x01(\x02B\x04\xe2A\x01\x01H\x02R\x04topP\x88\x01\x01\x12\x1e\n" +
+	"\x05top_k\x18\r \x01(\x05B\x04\xe2A\x01\x01H\x03R\x04topK\x88\x01\x01\x12R\n" +
+	"\x05state\x18\a \x01(\x0e26.google.ai.generativelanguage.v1alpha.TunedModel.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12W\n" +
 	"\vtuning_task\x18\n" +
-	" \x01(\v20.google.ai.generativelanguage.v1alpha.TuningTaskB\x03\xe0A\x02R\n" +
-	"tuningTask\x129\n" +
-	"\x16reader_project_numbers\x18\x0e \x03(\x03B\x03\xe0A\x01R\x14readerProjectNumbers\"D\n" +
+	" \x01(\v20.google.ai.generativelanguage.v1alpha.TuningTaskB\x04\xe2A\x01\x02R\n" +
+	"tuningTask\x12:\n" +
+	"\x16reader_project_numbers\x18\x0e \x03(\x03B\x04\xe2A\x01\x01R\x14readerProjectNumbers\"D\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\n" +
@@ -1082,34 +1082,34 @@ const file_google_ai_generativelanguage_v1alpha_tuned_model_proto_rawDesc = "" +
 	"\fsource_modelB\x0e\n" +
 	"\f_temperatureB\b\n" +
 	"\x06_top_pB\b\n" +
-	"\x06_top_k\"\xb9\x01\n" +
-	"\x10TunedModelSource\x12U\n" +
-	"\vtuned_model\x18\x01 \x01(\tB4\xe0A\x05\xfaA.\n" +
+	"\x06_top_k\"\xbb\x01\n" +
+	"\x10TunedModelSource\x12V\n" +
+	"\vtuned_model\x18\x01 \x01(\tB5\xe2A\x01\x05\xfaA.\n" +
 	",generativelanguage.googleapis.com/TunedModelR\n" +
-	"tunedModel\x12N\n" +
+	"tunedModel\x12O\n" +
 	"\n" +
-	"base_model\x18\x02 \x01(\tB/\xe0A\x03\xfaA)\n" +
-	"'generativelanguage.googleapis.com/ModelR\tbaseModel\"\xb0\x03\n" +
+	"base_model\x18\x02 \x01(\tB0\xe2A\x01\x03\xfaA)\n" +
+	"'generativelanguage.googleapis.com/ModelR\tbaseModel\"\xb1\x03\n" +
 	"\n" +
-	"TuningTask\x12>\n" +
+	"TuningTask\x12?\n" +
 	"\n" +
-	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12D\n" +
-	"\rcomplete_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fcompleteTime\x12W\n" +
-	"\tsnapshots\x18\x03 \x03(\v24.google.ai.generativelanguage.v1alpha.TuningSnapshotB\x03\xe0A\x03R\tsnapshots\x12]\n" +
-	"\rtraining_data\x18\x04 \x01(\v2-.google.ai.generativelanguage.v1alpha.DatasetB\t\xe0A\x04\xe0A\x02\xe0A\x05R\ftrainingData\x12d\n" +
-	"\x0fhyperparameters\x18\x05 \x01(\v25.google.ai.generativelanguage.v1alpha.HyperparametersB\x03\xe0A\x05R\x0fhyperparameters\"\x8f\x02\n" +
-	"\x0fHyperparameters\x12-\n" +
-	"\rlearning_rate\x18\x10 \x01(\x02B\x06\xe0A\x05\xe0A\x01H\x00R\flearningRate\x12B\n" +
-	"\x18learning_rate_multiplier\x18\x11 \x01(\x02B\x06\xe0A\x05\xe0A\x01H\x00R\x16learningRateMultiplier\x12)\n" +
-	"\vepoch_count\x18\x0e \x01(\x05B\x03\xe0A\x05H\x01R\n" +
-	"epochCount\x88\x01\x01\x12'\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12E\n" +
+	"\rcomplete_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fcompleteTime\x12X\n" +
+	"\tsnapshots\x18\x03 \x03(\v24.google.ai.generativelanguage.v1alpha.TuningSnapshotB\x04\xe2A\x01\x03R\tsnapshots\x12Z\n" +
+	"\rtraining_data\x18\x04 \x01(\v2-.google.ai.generativelanguage.v1alpha.DatasetB\x06\xe2A\x03\x04\x02\x05R\ftrainingData\x12e\n" +
+	"\x0fhyperparameters\x18\x05 \x01(\v25.google.ai.generativelanguage.v1alpha.HyperparametersB\x04\xe2A\x01\x05R\x0fhyperparameters\"\x8f\x02\n" +
+	"\x0fHyperparameters\x12,\n" +
+	"\rlearning_rate\x18\x10 \x01(\x02B\x05\xe2A\x02\x05\x01H\x00R\flearningRate\x12A\n" +
+	"\x18learning_rate_multiplier\x18\x11 \x01(\x02B\x05\xe2A\x02\x05\x01H\x00R\x16learningRateMultiplier\x12*\n" +
+	"\vepoch_count\x18\x0e \x01(\x05B\x04\xe2A\x01\x05H\x01R\n" +
+	"epochCount\x88\x01\x01\x12(\n" +
 	"\n" +
-	"batch_size\x18\x0f \x01(\x05B\x03\xe0A\x05H\x02R\tbatchSize\x88\x01\x01B\x16\n" +
+	"batch_size\x18\x0f \x01(\x05B\x04\xe2A\x01\x05H\x02R\tbatchSize\x88\x01\x01B\x16\n" +
 	"\x14learning_rate_optionB\x0e\n" +
 	"\f_epoch_countB\r\n" +
-	"\v_batch_size\"m\n" +
-	"\aDataset\x12W\n" +
-	"\bexamples\x18\x01 \x01(\v24.google.ai.generativelanguage.v1alpha.TuningExamplesB\x03\xe0A\x01H\x00R\bexamplesB\t\n" +
+	"\v_batch_size\"n\n" +
+	"\aDataset\x12X\n" +
+	"\bexamples\x18\x01 \x01(\v24.google.ai.generativelanguage.v1alpha.TuningExamplesB\x04\xe2A\x01\x01H\x00R\bexamplesB\t\n" +
 	"\adataset\"\xce\x01\n" +
 	"\x0eTuningExamples\x12O\n" +
 	"\bexamples\x18\x01 \x03(\v23.google.ai.generativelanguage.v1alpha.TuningExampleR\bexamples\x12k\n" +
@@ -1117,24 +1117,24 @@ const file_google_ai_generativelanguage_v1alpha_tuned_model_proto_rawDesc = "" +
 	"\n" +
 	"TuningPart\x12\x14\n" +
 	"\x04text\x18\x02 \x01(\tH\x00R\x04textB\x06\n" +
-	"\x04data\"p\n" +
+	"\x04data\"q\n" +
 	"\rTuningContent\x12F\n" +
-	"\x05parts\x18\x01 \x03(\v20.google.ai.generativelanguage.v1alpha.TuningPartR\x05parts\x12\x17\n" +
-	"\x04role\x18\x02 \x01(\tB\x03\xe0A\x01R\x04role\"\xee\x01\n" +
-	"\x16TuningMultiturnExample\x12l\n" +
-	"\x12system_instruction\x18\b \x01(\v23.google.ai.generativelanguage.v1alpha.TuningContentB\x03\xe0A\x01H\x00R\x11systemInstruction\x88\x01\x01\x12O\n" +
+	"\x05parts\x18\x01 \x03(\v20.google.ai.generativelanguage.v1alpha.TuningPartR\x05parts\x12\x18\n" +
+	"\x04role\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04role\"\xef\x01\n" +
+	"\x16TuningMultiturnExample\x12m\n" +
+	"\x12system_instruction\x18\b \x01(\v23.google.ai.generativelanguage.v1alpha.TuningContentB\x04\xe2A\x01\x01H\x00R\x11systemInstruction\x88\x01\x01\x12O\n" +
 	"\bcontents\x18\x01 \x03(\v23.google.ai.generativelanguage.v1alpha.TuningContentR\bcontentsB\x15\n" +
-	"\x13_system_instruction\"a\n" +
-	"\rTuningExample\x12$\n" +
+	"\x13_system_instruction\"c\n" +
+	"\rTuningExample\x12%\n" +
 	"\n" +
-	"text_input\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\ttextInput\x12\x1b\n" +
-	"\x06output\x18\x03 \x01(\tB\x03\xe0A\x02R\x06outputB\r\n" +
-	"\vmodel_input\"\xaa\x01\n" +
-	"\x0eTuningSnapshot\x12\x17\n" +
-	"\x04step\x18\x01 \x01(\x05B\x03\xe0A\x03R\x04step\x12\x19\n" +
-	"\x05epoch\x18\x02 \x01(\x05B\x03\xe0A\x03R\x05epoch\x12 \n" +
-	"\tmean_loss\x18\x03 \x01(\x02B\x03\xe0A\x03R\bmeanLoss\x12B\n" +
-	"\fcompute_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vcomputeTimeB\x9d\x01\n" +
+	"text_input\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\ttextInput\x12\x1c\n" +
+	"\x06output\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06outputB\r\n" +
+	"\vmodel_input\"\xae\x01\n" +
+	"\x0eTuningSnapshot\x12\x18\n" +
+	"\x04step\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\x04step\x12\x1a\n" +
+	"\x05epoch\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\x05epoch\x12!\n" +
+	"\tmean_loss\x18\x03 \x01(\x02B\x04\xe2A\x01\x03R\bmeanLoss\x12C\n" +
+	"\fcompute_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\vcomputeTimeB\x9d\x01\n" +
 	"(com.google.ai.generativelanguage.v1alphaB\x0fTunedModelProtoP\x01Z^cloud.google.com/go/ai/generativelanguage/apiv1alpha/generativelanguagepb;generativelanguagepbb\x06proto3"
 
 var (

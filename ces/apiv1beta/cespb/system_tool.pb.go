@@ -96,11 +96,11 @@ var File_google_cloud_ces_v1beta_system_tool_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_system_tool_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/ces/v1beta/system_tool.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\"L\n" +
+	")google/cloud/ces/v1beta/system_tool.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\"N\n" +
 	"\n" +
-	"SystemTool\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x03R\vdescriptionB_\n" +
+	"SystemTool\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdescriptionB_\n" +
 	"\x1bcom.google.cloud.ces.v1betaB\x0fSystemToolProtoP\x01Z-cloud.google.com/go/ces/apiv1beta/cespb;cespbb\x06proto3"
 
 var (

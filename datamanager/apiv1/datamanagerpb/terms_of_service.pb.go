@@ -145,9 +145,9 @@ var File_google_ads_datamanager_v1_terms_of_service_proto protoreflect.FileDescr
 
 const file_google_ads_datamanager_v1_terms_of_service_proto_rawDesc = "" +
 	"\n" +
-	"0google/ads/datamanager/v1/terms_of_service.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\"\x9a\x01\n" +
-	"\x0eTermsOfService\x12\x87\x01\n" +
-	"&customer_match_terms_of_service_status\x18\x01 \x01(\x0e2/.google.ads.datamanager.v1.TermsOfServiceStatusB\x03\xe0A\x01R!customerMatchTermsOfServiceStatus*[\n" +
+	"0google/ads/datamanager/v1/terms_of_service.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\"\x9b\x01\n" +
+	"\x0eTermsOfService\x12\x88\x01\n" +
+	"&customer_match_terms_of_service_status\x18\x01 \x01(\x0e2/.google.ads.datamanager.v1.TermsOfServiceStatusB\x04\xe2A\x01\x01R!customerMatchTermsOfServiceStatus*[\n" +
 	"\x14TermsOfServiceStatus\x12'\n" +
 	"#TERMS_OF_SERVICE_STATUS_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bACCEPTED\x10\x01\x12\f\n" +

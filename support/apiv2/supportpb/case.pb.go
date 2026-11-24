@@ -459,18 +459,18 @@ var File_google_cloud_support_v2_case_proto protoreflect.FileDescriptor
 
 const file_google_cloud_support_v2_case_proto_rawDesc = "" +
 	"\n" +
-	"\"google/cloud/support/v2/case.proto\x12\x17google.cloud.support.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/support/v2/actor.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9d\b\n" +
-	"\x04Case\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12!\n" +
+	"\"google/cloud/support/v2/case.proto\x12\x17google.cloud.support.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/support/v2/actor.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa1\b\n" +
+	"\x04Case\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12S\n" +
 	"\x0eclassification\x18\x04 \x01(\v2+.google.cloud.support.v2.CaseClassificationR\x0eclassification\x12\x1b\n" +
 	"\ttime_zone\x18\b \x01(\tR\btimeZone\x12<\n" +
-	"\x1asubscriber_email_addresses\x18\t \x03(\tR\x18subscriberEmailAddresses\x12>\n" +
-	"\x05state\x18\f \x01(\x0e2#.google.cloud.support.v2.Case.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vcreate_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x1asubscriber_email_addresses\x18\t \x03(\tR\x18subscriberEmailAddresses\x12?\n" +
+	"\x05state\x18\f \x01(\x0e2#.google.cloud.support.v2.Case.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vcreate_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x128\n" +
 	"\acreator\x18\x0f \x01(\v2\x1e.google.cloud.support.v2.ActorR\acreator\x12#\n" +
 	"\rcontact_email\x18# \x01(\tR\fcontactEmail\x12\x1c\n" +

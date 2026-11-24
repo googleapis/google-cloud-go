@@ -173,16 +173,16 @@ var File_google_cloud_support_v2beta_feed_item_proto protoreflect.FileDescriptor
 
 const file_google_cloud_support_v2beta_feed_item_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/support/v2beta/feed_item.proto\x12\x1bgoogle.cloud.support.v2beta\x1a\x1fgoogle/api/field_behavior.proto\x1a,google/cloud/support/v2beta/attachment.proto\x1a)google/cloud/support/v2beta/comment.proto\x1a/google/cloud/support/v2beta/email_message.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa7\x03\n" +
-	"\bFeedItem\x12E\n" +
-	"\acomment\x18d \x01(\v2$.google.cloud.support.v2beta.CommentB\x03\xe0A\x03H\x00R\acomment\x12N\n" +
+	"+google/cloud/support/v2beta/feed_item.proto\x12\x1bgoogle.cloud.support.v2beta\x1a\x1fgoogle/api/field_behavior.proto\x1a,google/cloud/support/v2beta/attachment.proto\x1a)google/cloud/support/v2beta/comment.proto\x1a/google/cloud/support/v2beta/email_message.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xac\x03\n" +
+	"\bFeedItem\x12F\n" +
+	"\acomment\x18d \x01(\v2$.google.cloud.support.v2beta.CommentB\x04\xe2A\x01\x03H\x00R\acomment\x12O\n" +
 	"\n" +
-	"attachment\x18e \x01(\v2'.google.cloud.support.v2beta.AttachmentB\x03\xe0A\x03H\x00R\n" +
-	"attachment\x12U\n" +
-	"\remail_message\x18f \x01(\v2).google.cloud.support.v2beta.EmailMessageB\x03\xe0A\x03H\x00R\femailMessage\x12]\n" +
-	"\x12deleted_attachment\x18g \x01(\v2'.google.cloud.support.v2beta.AttachmentB\x03\xe0A\x03H\x00R\x11deletedAttachment\x12>\n" +
+	"attachment\x18e \x01(\v2'.google.cloud.support.v2beta.AttachmentB\x04\xe2A\x01\x03H\x00R\n" +
+	"attachment\x12V\n" +
+	"\remail_message\x18f \x01(\v2).google.cloud.support.v2beta.EmailMessageB\x04\xe2A\x01\x03H\x00R\femailMessage\x12^\n" +
+	"\x12deleted_attachment\x18g \x01(\v2'.google.cloud.support.v2beta.AttachmentB\x04\xe2A\x01\x03H\x00R\x11deletedAttachment\x12?\n" +
 	"\n" +
-	"event_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\teventTimeB\x0e\n" +
+	"event_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\teventTimeB\x0e\n" +
 	"\fevent_objectB\xca\x01\n" +
 	"\x1fcom.google.cloud.support.v2betaB\rFeedItemProtoP\x01Z9cloud.google.com/go/support/apiv2beta/supportpb;supportpb\xaa\x02\x1bGoogle.Cloud.Support.V2Beta\xca\x02\x1bGoogle\\Cloud\\Support\\V2beta\xea\x02\x1eGoogle::Cloud::Support::V2betab\x06proto3"
 

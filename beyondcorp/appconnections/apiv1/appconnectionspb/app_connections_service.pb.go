@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -216,8 +217,8 @@ type ListAppConnectionsRequest struct {
 	// If not specified, a default value of 50 will be used by the service.
 	// Regardless of the page_size value, the response may include a partial list
 	// and a caller should only rely on response's
-	// [next_page_token][BeyondCorp.ListAppConnectionsResponse.next_page_token] to
-	// determine if there are more instances left to be queried.
+	// [next_page_token][google.cloud.beyondcorp.appconnections.v1.ListAppConnectionsResponse.next_page_token]
+	// to determine if there are more instances left to be queried.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. The next_page_token value returned from a previous
 	// ListAppConnectionsRequest, if any.
@@ -428,9 +429,9 @@ type CreateAppConnectionRequest struct {
 	// ignore the request if it has already been completed. The server will
 	// guarantee that for at least 60 minutes since the first request.
 	//
-	// For example, consider a situation where you make an initial request and t
-	// he request times out. If you make the request again with the same request
-	// ID, the server can check if original operation with the same request ID
+	// For example, consider a situation where you make an initial request and
+	// the request times out. If you make the request again with the same request
+	// ID, the server can check if the original operation with the same request ID
 	// was received, and if so, will ignore the second request. This prevents
 	// clients from accidentally creating duplicate commitments.
 	//
@@ -528,9 +529,9 @@ type UpdateAppConnectionRequest struct {
 	// ignore the request if it has already been completed. The server will
 	// guarantee that for at least 60 minutes since the first request.
 	//
-	// For example, consider a situation where you make an initial request and t
-	// he request times out. If you make the request again with the same request
-	// ID, the server can check if original operation with the same request ID
+	// For example, consider a situation where you make an initial request and
+	// the request times out. If you make the request again with the same request
+	// ID, the server can check if the original operation with the same request ID
 	// was received, and if so, will ignore the second request. This prevents
 	// clients from accidentally creating duplicate commitments.
 	//
@@ -622,9 +623,9 @@ type DeleteAppConnectionRequest struct {
 	// ignore the request if it has already been completed. The server will
 	// guarantee that for at least 60 minutes after the first request.
 	//
-	// For example, consider a situation where you make an initial request and t
-	// he request times out. If you make the request again with the same request
-	// ID, the server can check if original operation with the same request ID
+	// For example, consider a situation where you make an initial request and
+	// the request times out. If you make the request again with the same request
+	// ID, the server can check if the original operation with the same request ID
 	// was received, and if so, will ignore the second request. This prevents
 	// clients from accidentally creating duplicate commitments.
 	//
@@ -703,7 +704,7 @@ type ResolveAppConnectionsRequest struct {
 	// If not specified, a default value of 50 will be used by the service.
 	// Regardless of the page_size value, the response may include a partial list
 	// and a caller should only rely on response's
-	// [next_page_token][BeyondCorp.ResolveAppConnectionsResponse.next_page_token]
+	// [next_page_token][google.cloud.beyondcorp.appconnections.v1.ResolveAppConnectionsResponse.next_page_token]
 	// to determine if there are more instances left to be queried.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. The next_page_token value returned from a previous
@@ -839,7 +840,7 @@ func (x *ResolveAppConnectionsResponse) GetUnreachable() []string {
 // A BeyondCorp AppConnection resource represents a BeyondCorp protected
 // AppConnection to a remote application. It creates all the necessary GCP
 // components needed for creating a BeyondCorp protected AppConnection. Multiple
-// connectors can be authorised for a single AppConnection.
+// connectors can be authorized for a single AppConnection.
 type AppConnection struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Unique resource name of the AppConnection.
@@ -863,12 +864,16 @@ type AppConnection struct {
 	// AppConnection.
 	ApplicationEndpoint *AppConnection_ApplicationEndpoint `protobuf:"bytes,8,opt,name=application_endpoint,json=applicationEndpoint,proto3" json:"application_endpoint,omitempty"`
 	// Optional. List of [google.cloud.beyondcorp.v1main.Connector.name] that are
-	// authorised to be associated with this AppConnection.
+	// authorized to be associated with this AppConnection.
 	Connectors []string `protobuf:"bytes,9,rep,name=connectors,proto3" json:"connectors,omitempty"`
 	// Output only. The current state of the AppConnection.
 	State AppConnection_State `protobuf:"varint,10,opt,name=state,proto3,enum=google.cloud.beyondcorp.appconnections.v1.AppConnection_State" json:"state,omitempty"`
 	// Optional. Gateway used by the AppConnection.
-	Gateway       *AppConnection_Gateway `protobuf:"bytes,11,opt,name=gateway,proto3" json:"gateway,omitempty"`
+	Gateway *AppConnection_Gateway `protobuf:"bytes,11,opt,name=gateway,proto3" json:"gateway,omitempty"`
+	// Output only. Reserved for future use.
+	SatisfiesPzs *bool `protobuf:"varint,12,opt,name=satisfies_pzs,json=satisfiesPzs,proto3,oneof" json:"satisfies_pzs,omitempty"`
+	// Output only. Reserved for future use.
+	SatisfiesPzi  *bool `protobuf:"varint,13,opt,name=satisfies_pzi,json=satisfiesPzi,proto3,oneof" json:"satisfies_pzi,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -980,6 +985,20 @@ func (x *AppConnection) GetGateway() *AppConnection_Gateway {
 	return nil
 }
 
+func (x *AppConnection) GetSatisfiesPzs() bool {
+	if x != nil && x.SatisfiesPzs != nil {
+		return *x.SatisfiesPzs
+	}
+	return false
+}
+
+func (x *AppConnection) GetSatisfiesPzi() bool {
+	if x != nil && x.SatisfiesPzi != nil {
+		return *x.SatisfiesPzi
+	}
+	return false
+}
+
 // Represents the metadata of the long-running operation.
 type AppConnectionOperationMetadata struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -995,9 +1014,10 @@ type AppConnectionOperationMetadata struct {
 	StatusMessage string `protobuf:"bytes,5,opt,name=status_message,json=statusMessage,proto3" json:"status_message,omitempty"`
 	// Output only. Identifies whether the user has requested cancellation
 	// of the operation. Operations that have successfully been cancelled
-	// have [Operation.error][] value with a
-	// [google.rpc.Status.code][google.rpc.Status.code] of 1, corresponding to
-	// `Code.CANCELLED`.
+	// have
+	// [google.longrunning.Operation.error][google.longrunning.Operation.error]
+	// value with a [google.rpc.Status.code][google.rpc.Status.code] of 1,
+	// corresponding to `Code.CANCELLED`.
 	RequestedCancellation bool `protobuf:"varint,6,opt,name=requested_cancellation,json=requestedCancellation,proto3" json:"requested_cancellation,omitempty"`
 	// Output only. API version used to start the operation.
 	ApiVersion    string `protobuf:"bytes,7,opt,name=api_version,json=apiVersion,proto3" json:"api_version,omitempty"`
@@ -1208,7 +1228,9 @@ type AppConnection_Gateway struct {
 	IngressPort int32 `protobuf:"varint,4,opt,name=ingress_port,json=ingressPort,proto3" json:"ingress_port,omitempty"`
 	// Required. AppGateway name in following format:
 	// `projects/{project_id}/locations/{location_id}/appgateways/{gateway_id}`
-	AppGateway    string `protobuf:"bytes,5,opt,name=app_gateway,json=appGateway,proto3" json:"app_gateway,omitempty"`
+	AppGateway string `protobuf:"bytes,5,opt,name=app_gateway,json=appGateway,proto3" json:"app_gateway,omitempty"`
+	// Output only. L7 private service connection for this resource.
+	L7Psc         string `protobuf:"bytes,6,opt,name=l7psc,proto3" json:"l7psc,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1271,87 +1293,97 @@ func (x *AppConnection_Gateway) GetAppGateway() string {
 	return ""
 }
 
+func (x *AppConnection_Gateway) GetL7Psc() string {
+	if x != nil {
+		return x.L7Psc
+	}
+	return ""
+}
+
 var File_google_cloud_beyondcorp_appconnections_v1_app_connections_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_beyondcorp_appconnections_v1_app_connections_service_proto_rawDesc = "" +
 	"\n" +
-	"Ggoogle/cloud/beyondcorp/appconnections/v1/app_connections_service.proto\x12)google.cloud.beyondcorp.appconnections.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe7\x01\n" +
-	"\x19ListAppConnectionsRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'beyondcorp.googleapis.com/AppConnectionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"Ggoogle/cloud/beyondcorp/appconnections/v1/app_connections_service.proto\x12)google.cloud.beyondcorp.appconnections.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xec\x01\n" +
+	"\x19ListAppConnectionsRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'beyondcorp.googleapis.com/AppConnectionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xc9\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\xc9\x01\n" +
 	"\x1aListAppConnectionsResponse\x12a\n" +
 	"\x0fapp_connections\x18\x01 \x03(\v28.google.cloud.beyondcorp.appconnections.v1.AppConnectionR\x0eappConnections\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"^\n" +
-	"\x17GetAppConnectionRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'beyondcorp.googleapis.com/AppConnectionR\x04name\"\xca\x02\n" +
-	"\x1aCreateAppConnectionRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'beyondcorp.googleapis.com/AppConnectionR\x06parent\x12/\n" +
-	"\x11app_connection_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x0fappConnectionId\x12d\n" +
-	"\x0eapp_connection\x18\x03 \x01(\v28.google.cloud.beyondcorp.appconnections.v1.AppConnectionB\x03\xe0A\x02R\rappConnection\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"_\n" +
+	"\x17GetAppConnectionRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'beyondcorp.googleapis.com/AppConnectionR\x04name\"\xcf\x02\n" +
+	"\x1aCreateAppConnectionRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'beyondcorp.googleapis.com/AppConnectionR\x06parent\x120\n" +
+	"\x11app_connection_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x0fappConnectionId\x12e\n" +
+	"\x0eapp_connection\x18\x03 \x01(\v28.google.cloud.beyondcorp.appconnections.v1.AppConnectionB\x04\xe2A\x01\x02R\rappConnection\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x05 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xbc\x02\n" +
-	"\x1aUpdateAppConnectionRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12d\n" +
-	"\x0eapp_connection\x18\x02 \x01(\v28.google.cloud.beyondcorp.appconnections.v1.AppConnectionB\x03\xe0A\x02R\rappConnection\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xc1\x02\n" +
+	"\x1aUpdateAppConnectionRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12e\n" +
+	"\x0eapp_connection\x18\x02 \x01(\v28.google.cloud.beyondcorp.appconnections.v1.AppConnectionB\x04\xe2A\x01\x02R\rappConnection\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12(\n" +
-	"\rallow_missing\x18\x05 \x01(\bB\x03\xe0A\x01R\fallowMissing\"\xaf\x01\n" +
-	"\x1aDeleteAppConnectionRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'beyondcorp.googleapis.com/AppConnectionR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12)\n" +
+	"\rallow_missing\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\"\xb2\x01\n" +
+	"\x1aDeleteAppConnectionRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'beyondcorp.googleapis.com/AppConnectionR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x87\x02\n" +
-	"\x1cResolveAppConnectionsRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'beyondcorp.googleapis.com/AppConnectionR\x06parent\x12X\n" +
-	"\x10app_connector_id\x18\x02 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&beyondcorp.googleapis.com/AppConnectorR\x0eappConnectorId\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\x8b\x02\n" +
+	"\x1cResolveAppConnectionsRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'beyondcorp.googleapis.com/AppConnectionR\x06parent\x12Y\n" +
+	"\x10app_connector_id\x18\x02 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&beyondcorp.googleapis.com/AppConnectorR\x0eappConnectorId\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x9f\x03\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x9f\x03\n" +
 	"\x1dResolveAppConnectionsResponse\x12\x93\x01\n" +
 	"\x16app_connection_details\x18\x01 \x03(\v2].google.cloud.beyondcorp.appconnections.v1.ResolveAppConnectionsResponse.AppConnectionDetailsR\x14appConnectionDetails\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
 	"\vunreachable\x18\x03 \x03(\tR\vunreachable\x1a\x9d\x01\n" +
 	"\x14AppConnectionDetails\x12_\n" +
 	"\x0eapp_connection\x18\x01 \x01(\v28.google.cloud.beyondcorp.appconnections.v1.AppConnectionR\rappConnection\x12$\n" +
-	"\x0erecent_mig_vms\x18\x02 \x03(\tR\frecentMigVms\"\xc5\v\n" +
-	"\rAppConnection\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12a\n" +
-	"\x06labels\x18\x04 \x03(\v2D.google.cloud.beyondcorp.appconnections.v1.AppConnection.LabelsEntryB\x03\xe0A\x01R\x06labels\x12&\n" +
-	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12\x15\n" +
-	"\x03uid\x18\x06 \x01(\tB\x03\xe0A\x03R\x03uid\x12V\n" +
-	"\x04type\x18\a \x01(\x0e2=.google.cloud.beyondcorp.appconnections.v1.AppConnection.TypeB\x03\xe0A\x02R\x04type\x12\x84\x01\n" +
-	"\x14application_endpoint\x18\b \x01(\v2L.google.cloud.beyondcorp.appconnections.v1.AppConnection.ApplicationEndpointB\x03\xe0A\x02R\x13applicationEndpoint\x12#\n" +
+	"\x0erecent_mig_vms\x18\x02 \x03(\tR\frecentMigVms\"\xf6\f\n" +
+	"\rAppConnection\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12b\n" +
+	"\x06labels\x18\x04 \x03(\v2D.google.cloud.beyondcorp.appconnections.v1.AppConnection.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12'\n" +
+	"\fdisplay_name\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12\x16\n" +
+	"\x03uid\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12W\n" +
+	"\x04type\x18\a \x01(\x0e2=.google.cloud.beyondcorp.appconnections.v1.AppConnection.TypeB\x04\xe2A\x01\x02R\x04type\x12\x85\x01\n" +
+	"\x14application_endpoint\x18\b \x01(\v2L.google.cloud.beyondcorp.appconnections.v1.AppConnection.ApplicationEndpointB\x04\xe2A\x01\x02R\x13applicationEndpoint\x12$\n" +
 	"\n" +
-	"connectors\x18\t \x03(\tB\x03\xe0A\x01R\n" +
-	"connectors\x12Y\n" +
+	"connectors\x18\t \x03(\tB\x04\xe2A\x01\x01R\n" +
+	"connectors\x12Z\n" +
 	"\x05state\x18\n" +
-	" \x01(\x0e2>.google.cloud.beyondcorp.appconnections.v1.AppConnection.StateB\x03\xe0A\x03R\x05state\x12_\n" +
-	"\agateway\x18\v \x01(\v2@.google.cloud.beyondcorp.appconnections.v1.AppConnection.GatewayB\x03\xe0A\x01R\agateway\x1aG\n" +
-	"\x13ApplicationEndpoint\x12\x17\n" +
-	"\x04host\x18\x01 \x01(\tB\x03\xe0A\x02R\x04host\x12\x17\n" +
-	"\x04port\x18\x02 \x01(\x05B\x03\xe0A\x02R\x04port\x1a\xab\x02\n" +
-	"\aGateway\x12^\n" +
-	"\x04type\x18\x02 \x01(\x0e2E.google.cloud.beyondcorp.appconnections.v1.AppConnection.Gateway.TypeB\x03\xe0A\x02R\x04type\x12\x15\n" +
-	"\x03uri\x18\x03 \x01(\tB\x03\xe0A\x03R\x03uri\x12&\n" +
-	"\fingress_port\x18\x04 \x01(\x05B\x03\xe0A\x03R\vingressPort\x12M\n" +
-	"\vapp_gateway\x18\x05 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	" \x01(\x0e2>.google.cloud.beyondcorp.appconnections.v1.AppConnection.StateB\x04\xe2A\x01\x03R\x05state\x12`\n" +
+	"\agateway\x18\v \x01(\v2@.google.cloud.beyondcorp.appconnections.v1.AppConnection.GatewayB\x04\xe2A\x01\x01R\agateway\x12.\n" +
+	"\rsatisfies_pzs\x18\f \x01(\bB\x04\xe2A\x01\x03H\x00R\fsatisfiesPzs\x88\x01\x01\x12.\n" +
+	"\rsatisfies_pzi\x18\r \x01(\bB\x04\xe2A\x01\x03H\x01R\fsatisfiesPzi\x88\x01\x01\x1aI\n" +
+	"\x13ApplicationEndpoint\x12\x18\n" +
+	"\x04host\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04host\x12\x18\n" +
+	"\x04port\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x04port\x1a\xcb\x02\n" +
+	"\aGateway\x12_\n" +
+	"\x04type\x18\x02 \x01(\x0e2E.google.cloud.beyondcorp.appconnections.v1.AppConnection.Gateway.TypeB\x04\xe2A\x01\x02R\x04type\x12\x16\n" +
+	"\x03uri\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x03uri\x12'\n" +
+	"\fingress_port\x18\x04 \x01(\x05B\x04\xe2A\x01\x03R\vingressPort\x12N\n" +
+	"\vapp_gateway\x18\x05 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
 	"$beyondcorp.googleapis.com/AppGatewayR\n" +
-	"appGateway\"2\n" +
+	"appGateway\x12\x1a\n" +
+	"\x05l7psc\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x05l7psc\"2\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10GCP_REGIONAL_MIG\x10\x01\x1a9\n" +
@@ -1368,27 +1400,29 @@ const file_google_cloud_beyondcorp_appconnections_v1_app_connections_service_pro
 	"\bUPDATING\x10\x03\x12\f\n" +
 	"\bDELETING\x10\x04\x12\b\n" +
 	"\x04DOWN\x10\x05:u\xeaAr\n" +
-	"'beyondcorp.googleapis.com/AppConnection\x12Gprojects/{project}/locations/{location}/appConnections/{app_connection}\"\xe2\x02\n" +
-	"\x1eAppConnectionOperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion2\xea\f\n" +
-	"\x15AppConnectionsService\x12\xe6\x01\n" +
-	"\x12ListAppConnections\x12D.google.cloud.beyondcorp.appconnections.v1.ListAppConnectionsRequest\x1aE.google.cloud.beyondcorp.appconnections.v1.ListAppConnectionsResponse\"C\xdaA\x06parent\x82\xd3\xe4\x93\x024\x122/v1/{parent=projects/*/locations/*}/appConnections\x12\xd3\x01\n" +
-	"\x10GetAppConnection\x12B.google.cloud.beyondcorp.appconnections.v1.GetAppConnectionRequest\x1a8.google.cloud.beyondcorp.appconnections.v1.AppConnection\"A\xdaA\x04name\x82\xd3\xe4\x93\x024\x122/v1/{name=projects/*/locations/*/appConnections/*}\x12\xa4\x02\n" +
-	"\x13CreateAppConnection\x12E.google.cloud.beyondcorp.appconnections.v1.CreateAppConnectionRequest\x1a\x1d.google.longrunning.Operation\"\xa6\x01\xcaA/\n" +
-	"\rAppConnection\x12\x1eAppConnectionOperationMetadata\xdaA'parent,app_connection,app_connection_id\x82\xd3\xe4\x93\x02D:\x0eapp_connection\"2/v1/{parent=projects/*/locations/*}/appConnections\x12\xa6\x02\n" +
-	"\x13UpdateAppConnection\x12E.google.cloud.beyondcorp.appconnections.v1.UpdateAppConnectionRequest\x1a\x1d.google.longrunning.Operation\"\xa8\x01\xcaA/\n" +
-	"\rAppConnection\x12\x1eAppConnectionOperationMetadata\xdaA\x1aapp_connection,update_mask\x82\xd3\xe4\x93\x02S:\x0eapp_connection2A/v1/{app_connection.name=projects/*/locations/*/appConnections/*}\x12\xf8\x01\n" +
-	"\x13DeleteAppConnection\x12E.google.cloud.beyondcorp.appconnections.v1.DeleteAppConnectionRequest\x1a\x1d.google.longrunning.Operation\"{\xcaA7\n" +
-	"\x15google.protobuf.Empty\x12\x1eAppConnectionOperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x024*2/v1/{name=projects/*/locations/*/appConnections/*}\x12\xf7\x01\n" +
-	"\x15ResolveAppConnections\x12G.google.cloud.beyondcorp.appconnections.v1.ResolveAppConnectionsRequest\x1aH.google.cloud.beyondcorp.appconnections.v1.ResolveAppConnectionsResponse\"K\xdaA\x06parent\x82\xd3\xe4\x93\x02<\x12:/v1/{parent=projects/*/locations/*}/appConnections:resolve\x1aM\xcaA\x19beyondcorp.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x8a\x04\xeaAo\n" +
+	"'beyondcorp.googleapis.com/AppConnection\x12Gprojects/{project}/locations/{location}/appConnections/{app_connection}B\x10\n" +
+	"\x0e_satisfies_pzsB\x10\n" +
+	"\x0e_satisfies_pzi\"\xe9\x02\n" +
+	"\x1eAppConnectionOperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion2\xff\f\n" +
+	"\x15AppConnectionsService\x12\xe9\x01\n" +
+	"\x12ListAppConnections\x12D.google.cloud.beyondcorp.appconnections.v1.ListAppConnectionsRequest\x1aE.google.cloud.beyondcorp.appconnections.v1.ListAppConnectionsResponse\"F\xdaA\x06parent\x82\xd3\xe4\x93\x024\x122/v1/{parent=projects/*/locations/*}/appConnections\x88\x02\x01\x12\xd6\x01\n" +
+	"\x10GetAppConnection\x12B.google.cloud.beyondcorp.appconnections.v1.GetAppConnectionRequest\x1a8.google.cloud.beyondcorp.appconnections.v1.AppConnection\"D\xdaA\x04name\x82\xd3\xe4\x93\x024\x122/v1/{name=projects/*/locations/*/appConnections/*}\x88\x02\x01\x12\xa7\x02\n" +
+	"\x13CreateAppConnection\x12E.google.cloud.beyondcorp.appconnections.v1.CreateAppConnectionRequest\x1a\x1d.google.longrunning.Operation\"\xa9\x01\xcaA/\n" +
+	"\rAppConnection\x12\x1eAppConnectionOperationMetadata\xdaA'parent,app_connection,app_connection_id\x82\xd3\xe4\x93\x02D:\x0eapp_connection\"2/v1/{parent=projects/*/locations/*}/appConnections\x88\x02\x01\x12\xa9\x02\n" +
+	"\x13UpdateAppConnection\x12E.google.cloud.beyondcorp.appconnections.v1.UpdateAppConnectionRequest\x1a\x1d.google.longrunning.Operation\"\xab\x01\xcaA/\n" +
+	"\rAppConnection\x12\x1eAppConnectionOperationMetadata\xdaA\x1aapp_connection,update_mask\x82\xd3\xe4\x93\x02S:\x0eapp_connection2A/v1/{app_connection.name=projects/*/locations/*/appConnections/*}\x88\x02\x01\x12\xfb\x01\n" +
+	"\x13DeleteAppConnection\x12E.google.cloud.beyondcorp.appconnections.v1.DeleteAppConnectionRequest\x1a\x1d.google.longrunning.Operation\"~\xcaA7\n" +
+	"\x15google.protobuf.Empty\x12\x1eAppConnectionOperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x024*2/v1/{name=projects/*/locations/*/appConnections/*}\x88\x02\x01\x12\xfa\x01\n" +
+	"\x15ResolveAppConnections\x12G.google.cloud.beyondcorp.appconnections.v1.ResolveAppConnectionsRequest\x1aH.google.cloud.beyondcorp.appconnections.v1.ResolveAppConnectionsResponse\"N\xdaA\x06parent\x82\xd3\xe4\x93\x02<\x12:/v1/{parent=projects/*/locations/*}/appConnections:resolve\x88\x02\x01\x1aP\xcaA\x19beyondcorp.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platform\x88\x02\x01B\x8a\x04\xeaAo\n" +
 	"&beyondcorp.googleapis.com/AppConnector\x12Eprojects/{project}/locations/{location}/appConnectors/{app_connector}\xeaAi\n" +
 	"$beyondcorp.googleapis.com/AppGateway\x12Aprojects/{project}/locations/{location}/appGateways/{app_gateway}\n" +
 	"-com.google.cloud.beyondcorp.appconnections.v1B\x1aAppConnectionsServiceProtoP\x01ZUcloud.google.com/go/beyondcorp/appconnections/apiv1/appconnectionspb;appconnectionspb\xaa\x02)Google.Cloud.BeyondCorp.AppConnections.V1\xca\x02)Google\\Cloud\\BeyondCorp\\AppConnections\\V1\xea\x02-Google::Cloud::BeyondCorp::AppConnections::V1b\x06proto3"
@@ -1470,6 +1504,7 @@ func file_google_cloud_beyondcorp_appconnections_v1_app_connections_service_prot
 	if File_google_cloud_beyondcorp_appconnections_v1_app_connections_service_proto != nil {
 		return
 	}
+	file_google_cloud_beyondcorp_appconnections_v1_app_connections_service_proto_msgTypes[8].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

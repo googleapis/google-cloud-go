@@ -617,14 +617,14 @@ var File_google_cloud_securitycenter_settings_v1beta1_component_settings_proto p
 
 const file_google_cloud_securitycenter_settings_v1beta1_component_settings_proto_rawDesc = "" +
 	"\n" +
-	"Egoogle/cloud/securitycenter/settings/v1beta1/component_settings.proto\x12,google.cloud.securitycenter.settings.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x84\x0e\n" +
+	"Egoogle/cloud/securitycenter/settings/v1beta1/component_settings.proto\x12,google.cloud.securitycenter.settings.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x87\x0e\n" +
 	"\x11ComponentSettings\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\\\n" +
-	"\x05state\x18\x02 \x01(\x0e2F.google.cloud.securitycenter.settings.v1beta1.ComponentEnablementStateR\x05state\x12;\n" +
-	"\x17project_service_account\x18\x03 \x01(\tB\x03\xe0A\x03R\x15projectServiceAccount\x12\x82\x01\n" +
-	"\x11detector_settings\x18\x04 \x03(\v2U.google.cloud.securitycenter.settings.v1beta1.ComponentSettings.DetectorSettingsEntryR\x10detectorSettings\x12\x17\n" +
-	"\x04etag\x18\x05 \x01(\tB\x03\xe0A\x03R\x04etag\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x05state\x18\x02 \x01(\x0e2F.google.cloud.securitycenter.settings.v1beta1.ComponentEnablementStateR\x05state\x12<\n" +
+	"\x17project_service_account\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x15projectServiceAccount\x12\x82\x01\n" +
+	"\x11detector_settings\x18\x04 \x03(\v2U.google.cloud.securitycenter.settings.v1beta1.ComponentSettings.DetectorSettingsEntryR\x10detectorSettings\x12\x18\n" +
+	"\x04etag\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12\x9f\x01\n" +
 	"#container_threat_detection_settings\x18) \x01(\v2N.google.cloud.securitycenter.settings.v1beta1.ContainerThreatDetectionSettingsH\x00R containerThreatDetectionSettings\x12\x93\x01\n" +
 	"\x1fevent_threat_detection_settings\x18* \x01(\v2J.google.cloud.securitycenter.settings.v1beta1.EventThreatDetectionSettingsH\x00R\x1ceventThreatDetectionSettings\x12\x9c\x01\n" +

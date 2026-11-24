@@ -163,14 +163,14 @@ var File_google_cloud_bigquery_v2_range_partitioning_proto protoreflect.FileDesc
 
 const file_google_cloud_bigquery_v2_range_partitioning_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/bigquery/v2/range_partitioning.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xd3\x01\n" +
-	"\x11RangePartitioning\x12\x19\n" +
-	"\x05field\x18\x01 \x01(\tB\x03\xe0A\x02R\x05field\x12G\n" +
-	"\x05range\x18\x02 \x01(\v21.google.cloud.bigquery.v2.RangePartitioning.RangeR\x05range\x1aZ\n" +
-	"\x05Range\x12\x19\n" +
-	"\x05start\x18\x01 \x01(\tB\x03\xe0A\x02R\x05start\x12\x15\n" +
-	"\x03end\x18\x02 \x01(\tB\x03\xe0A\x02R\x03end\x12\x1f\n" +
-	"\binterval\x18\x03 \x01(\tB\x03\xe0A\x02R\bintervalBs\n" +
+	"1google/cloud/bigquery/v2/range_partitioning.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xd7\x01\n" +
+	"\x11RangePartitioning\x12\x1a\n" +
+	"\x05field\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05field\x12G\n" +
+	"\x05range\x18\x02 \x01(\v21.google.cloud.bigquery.v2.RangePartitioning.RangeR\x05range\x1a]\n" +
+	"\x05Range\x12\x1a\n" +
+	"\x05start\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05start\x12\x16\n" +
+	"\x03end\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x03end\x12 \n" +
+	"\binterval\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\bintervalBs\n" +
 	"\x1ccom.google.cloud.bigquery.v2B\x16RangePartitioningProtoZ;cloud.google.com/go/bigquery/v2/apiv2/bigquerypb;bigquerypbb\x06proto3"
 
 var (

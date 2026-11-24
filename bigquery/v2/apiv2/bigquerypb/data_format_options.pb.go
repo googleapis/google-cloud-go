@@ -156,10 +156,10 @@ var File_google_cloud_bigquery_v2_data_format_options_proto protoreflect.FileDes
 
 const file_google_cloud_bigquery_v2_data_format_options_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/bigquery/v2/data_format_options.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xb6\x02\n" +
-	"\x11DataFormatOptions\x123\n" +
-	"\x13use_int64_timestamp\x18\x01 \x01(\bB\x03\xe0A\x01R\x11useInt64Timestamp\x12~\n" +
-	"\x17timestamp_output_format\x18\x03 \x01(\x0e2A.google.cloud.bigquery.v2.DataFormatOptions.TimestampOutputFormatB\x03\xe0A\x01R\x15timestampOutputFormat\"l\n" +
+	"2google/cloud/bigquery/v2/data_format_options.proto\x12\x18google.cloud.bigquery.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xb8\x02\n" +
+	"\x11DataFormatOptions\x124\n" +
+	"\x13use_int64_timestamp\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x11useInt64Timestamp\x12\x7f\n" +
+	"\x17timestamp_output_format\x18\x03 \x01(\x0e2A.google.cloud.bigquery.v2.DataFormatOptions.TimestampOutputFormatB\x04\xe2A\x01\x01R\x15timestampOutputFormat\"l\n" +
 	"\x15TimestampOutputFormat\x12'\n" +
 	"#TIMESTAMP_OUTPUT_FORMAT_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aFLOAT64\x10\x01\x12\t\n" +

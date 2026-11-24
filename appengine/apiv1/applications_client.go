@@ -293,6 +293,39 @@ func NewApplicationsClient(ctx context.Context, opts ...option.ClientOption) (*A
 		client.CallOptions.UpdateApplication = append(client.CallOptions.UpdateApplication, gax.WithClientMetrics(metrics))
 		client.CallOptions.RepairApplication = append(client.CallOptions.RepairApplication, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetApplication = append(client.CallOptions.GetApplication, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateApplication = append(client.CallOptions.CreateApplication, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateApplication = append(client.CallOptions.UpdateApplication, gax.WithClientTracing(tracing))
+		client.CallOptions.RepairApplication = append(client.CallOptions.RepairApplication, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetApplication = append(client.CallOptions.GetApplication, gax.WithClientLogging(logging))
+		client.CallOptions.CreateApplication = append(client.CallOptions.CreateApplication, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateApplication = append(client.CallOptions.UpdateApplication, gax.WithClientLogging(logging))
+		client.CallOptions.RepairApplication = append(client.CallOptions.RepairApplication, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -402,6 +435,39 @@ func NewApplicationsRESTClient(ctx context.Context, opts ...option.ClientOption)
 		callOpts.CreateApplication = append(callOpts.CreateApplication, gax.WithClientMetrics(metrics))
 		callOpts.UpdateApplication = append(callOpts.UpdateApplication, gax.WithClientMetrics(metrics))
 		callOpts.RepairApplication = append(callOpts.RepairApplication, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		callOpts.GetApplication = append(callOpts.GetApplication, gax.WithClientTracing(tracing))
+		callOpts.CreateApplication = append(callOpts.CreateApplication, gax.WithClientTracing(tracing))
+		callOpts.UpdateApplication = append(callOpts.UpdateApplication, gax.WithClientTracing(tracing))
+		callOpts.RepairApplication = append(callOpts.RepairApplication, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		callOpts.GetApplication = append(callOpts.GetApplication, gax.WithClientLogging(logging))
+		callOpts.CreateApplication = append(callOpts.CreateApplication, gax.WithClientLogging(logging))
+		callOpts.UpdateApplication = append(callOpts.UpdateApplication, gax.WithClientLogging(logging))
+		callOpts.RepairApplication = append(callOpts.RepairApplication, gax.WithClientLogging(logging))
 	}
 
 	lroOpts := []option.ClientOption{
@@ -559,6 +625,11 @@ func (c *applicationsRESTClient) GetApplication(ctx context.Context, req *appeng
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -699,6 +770,11 @@ func (c *applicationsRESTClient) UpdateApplication(ctx context.Context, req *app
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -780,6 +856,11 @@ func (c *applicationsRESTClient) RepairApplication(ctx context.Context, req *app
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:repair", req.GetName())

@@ -452,11 +452,11 @@ var File_google_cloud_dialogflow_cx_v3_parameter_definition_proto protoreflect.F
 
 const file_google_cloud_dialogflow_cx_v3_parameter_definition_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/dialogflow/cx/v3/parameter_definition.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1fgoogle/api/field_behavior.proto\"\xf1\x02\n" +
-	"\x13ParameterDefinition\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12X\n" +
-	"\x04type\x18\x02 \x01(\x0e2@.google.cloud.dialogflow.cx.v3.ParameterDefinition.ParameterTypeB\x02\x18\x01R\x04type\x12O\n" +
-	"\vtype_schema\x18\x04 \x01(\v2).google.cloud.dialogflow.cx.v3.TypeSchemaB\x03\xe0A\x01R\n" +
+	"8google/cloud/dialogflow/cx/v3/parameter_definition.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1fgoogle/api/field_behavior.proto\"\xf3\x02\n" +
+	"\x13ParameterDefinition\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12X\n" +
+	"\x04type\x18\x02 \x01(\x0e2@.google.cloud.dialogflow.cx.v3.ParameterDefinition.ParameterTypeB\x02\x18\x01R\x04type\x12P\n" +
+	"\vtype_schema\x18\x04 \x01(\v2).google.cloud.dialogflow.cx.v3.TypeSchemaB\x04\xe2A\x01\x01R\n" +
 	"typeSchema\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\"t\n" +
 	"\rParameterType\x12\x1e\n" +

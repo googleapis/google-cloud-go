@@ -293,7 +293,7 @@ func ExampleClient_NewTransaction() {
 
 	key := datastore.NameKey("counter", "CounterA", nil)
 	var tx *datastore.Transaction
-	for i := 0; i < retries; i++ {
+	for range retries {
 		tx, err = client.NewTransaction(ctx)
 		if err != nil {
 			break
@@ -361,7 +361,7 @@ func ExampleClient_AllocateIDs() {
 		// TODO: Handle error.
 	}
 	var keys []*datastore.Key
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		keys = append(keys, datastore.IncompleteKey("Article", nil))
 	}
 	keys, err = client.AllocateIDs(ctx, keys)

@@ -1160,18 +1160,18 @@ var File_google_shopping_merchant_accounts_v1beta_omnichannelsettings_proto prot
 
 const file_google_shopping_merchant_accounts_v1beta_omnichannelsettings_proto_rawDesc = "" +
 	"\n" +
-	"Bgoogle/shopping/merchant/accounts/v1beta/omnichannelsettings.proto\x12(google.shopping.merchant.accounts.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xbb\a\n" +
-	"\x12OmnichannelSetting\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12'\n" +
-	"\vregion_code\x18\x02 \x01(\tB\x06\xe0A\x02\xe0A\x05R\n" +
-	"regionCode\x12d\n" +
-	"\blsf_type\x18\f \x01(\x0e2D.google.shopping.merchant.accounts.v1beta.OmnichannelSetting.LsfTypeB\x03\xe0A\x02R\alsfType\x12Q\n" +
-	"\bin_stock\x18\r \x01(\v21.google.shopping.merchant.accounts.v1beta.InStockB\x03\xe0A\x01R\ainStock\x12M\n" +
-	"\x06pickup\x18\x0e \x01(\v20.google.shopping.merchant.accounts.v1beta.PickupB\x03\xe0A\x01R\x06pickup\x12Q\n" +
-	"\blfp_link\x18\x05 \x01(\v21.google.shopping.merchant.accounts.v1beta.LfpLinkB\x03\xe0A\x03R\alfpLink\x12Q\n" +
-	"\x03odo\x18\x06 \x01(\v2:.google.shopping.merchant.accounts.v1beta.OnDisplayToOrderB\x03\xe0A\x01R\x03odo\x12J\n" +
-	"\x05about\x18\a \x01(\v2/.google.shopping.merchant.accounts.v1beta.AboutB\x03\xe0A\x01R\x05about\x12{\n" +
-	"\x16inventory_verification\x18\b \x01(\v2?.google.shopping.merchant.accounts.v1beta.InventoryVerificationB\x03\xe0A\x01R\x15inventoryVerification\"O\n" +
+	"Bgoogle/shopping/merchant/accounts/v1beta/omnichannelsettings.proto\x12(google.shopping.merchant.accounts.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xc2\a\n" +
+	"\x12OmnichannelSetting\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12&\n" +
+	"\vregion_code\x18\x02 \x01(\tB\x05\xe2A\x02\x02\x05R\n" +
+	"regionCode\x12e\n" +
+	"\blsf_type\x18\f \x01(\x0e2D.google.shopping.merchant.accounts.v1beta.OmnichannelSetting.LsfTypeB\x04\xe2A\x01\x02R\alsfType\x12R\n" +
+	"\bin_stock\x18\r \x01(\v21.google.shopping.merchant.accounts.v1beta.InStockB\x04\xe2A\x01\x01R\ainStock\x12N\n" +
+	"\x06pickup\x18\x0e \x01(\v20.google.shopping.merchant.accounts.v1beta.PickupB\x04\xe2A\x01\x01R\x06pickup\x12R\n" +
+	"\blfp_link\x18\x05 \x01(\v21.google.shopping.merchant.accounts.v1beta.LfpLinkB\x04\xe2A\x01\x03R\alfpLink\x12R\n" +
+	"\x03odo\x18\x06 \x01(\v2:.google.shopping.merchant.accounts.v1beta.OnDisplayToOrderB\x04\xe2A\x01\x01R\x03odo\x12K\n" +
+	"\x05about\x18\a \x01(\v2/.google.shopping.merchant.accounts.v1beta.AboutB\x04\xe2A\x01\x01R\x05about\x12|\n" +
+	"\x16inventory_verification\x18\b \x01(\v2?.google.shopping.merchant.accounts.v1beta.InventoryVerificationB\x04\xe2A\x01\x01R\x15inventoryVerification\"O\n" +
 	"\aLsfType\x12\x18\n" +
 	"\x14LSF_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05GHLSF\x10\x01\x12\x0f\n" +
@@ -1187,57 +1187,57 @@ const file_google_shopping_merchant_accounts_v1beta_omnichannelsettings_proto_ra
 	"\n" +
 	"\x06FAILED\x10\x02\x12\v\n" +
 	"\aRUNNING\x10\x03\x12\x13\n" +
-	"\x0fACTION_REQUIRED\x10\x04\"x\n" +
-	"\aInStock\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x01R\x03uri\x12V\n" +
-	"\x05state\x18\x02 \x01(\x0e2;.google.shopping.merchant.accounts.v1beta.ReviewState.StateB\x03\xe0A\x03R\x05state\"w\n" +
-	"\x06Pickup\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\x12V\n" +
-	"\x05state\x18\x02 \x01(\x0e2;.google.shopping.merchant.accounts.v1beta.ReviewState.StateB\x03\xe0A\x03R\x05state\"\xbe\x01\n" +
-	"\aLfpLink\x12&\n" +
-	"\flfp_provider\x18\x01 \x01(\tB\x03\xe0A\x02R\vlfpProvider\x123\n" +
-	"\x13external_account_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x11externalAccountId\x12V\n" +
-	"\x05state\x18\x03 \x01(\x0e2;.google.shopping.merchant.accounts.v1beta.ReviewState.StateB\x03\xe0A\x03R\x05state\"\x81\x01\n" +
-	"\x10OnDisplayToOrder\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\x12V\n" +
-	"\x05state\x18\x02 \x01(\x0e2;.google.shopping.merchant.accounts.v1beta.ReviewState.StateB\x03\xe0A\x03R\x05state\"v\n" +
-	"\x05About\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x03uri\x12V\n" +
-	"\x05state\x18\x02 \x01(\x0e2;.google.shopping.merchant.accounts.v1beta.ReviewState.StateB\x03\xe0A\x03R\x05state\"\x97\x03\n" +
-	"\x15InventoryVerification\x12`\n" +
-	"\x05state\x18\x01 \x01(\x0e2E.google.shopping.merchant.accounts.v1beta.InventoryVerification.StateB\x03\xe0A\x03R\x05state\x12\x1d\n" +
-	"\acontact\x18\x02 \x01(\tB\x03\xe0A\x02R\acontact\x12(\n" +
-	"\rcontact_email\x18\x03 \x01(\tB\x03\xe0A\x02R\fcontactEmail\x12e\n" +
-	"\rcontact_state\x18\x04 \x01(\x0e2;.google.shopping.merchant.accounts.v1beta.ReviewState.StateB\x03\xe0A\x03R\fcontactState\"l\n" +
+	"\x0fACTION_REQUIRED\x10\x04\"z\n" +
+	"\aInStock\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x03uri\x12W\n" +
+	"\x05state\x18\x02 \x01(\x0e2;.google.shopping.merchant.accounts.v1beta.ReviewState.StateB\x04\xe2A\x01\x03R\x05state\"y\n" +
+	"\x06Pickup\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12W\n" +
+	"\x05state\x18\x02 \x01(\x0e2;.google.shopping.merchant.accounts.v1beta.ReviewState.StateB\x04\xe2A\x01\x03R\x05state\"\xc1\x01\n" +
+	"\aLfpLink\x12'\n" +
+	"\flfp_provider\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vlfpProvider\x124\n" +
+	"\x13external_account_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x11externalAccountId\x12W\n" +
+	"\x05state\x18\x03 \x01(\x0e2;.google.shopping.merchant.accounts.v1beta.ReviewState.StateB\x04\xe2A\x01\x03R\x05state\"\x83\x01\n" +
+	"\x10OnDisplayToOrder\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12W\n" +
+	"\x05state\x18\x02 \x01(\x0e2;.google.shopping.merchant.accounts.v1beta.ReviewState.StateB\x04\xe2A\x01\x03R\x05state\"x\n" +
+	"\x05About\x12\x16\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12W\n" +
+	"\x05state\x18\x02 \x01(\x0e2;.google.shopping.merchant.accounts.v1beta.ReviewState.StateB\x04\xe2A\x01\x03R\x05state\"\x9b\x03\n" +
+	"\x15InventoryVerification\x12a\n" +
+	"\x05state\x18\x01 \x01(\x0e2E.google.shopping.merchant.accounts.v1beta.InventoryVerification.StateB\x04\xe2A\x01\x03R\x05state\x12\x1e\n" +
+	"\acontact\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\acontact\x12)\n" +
+	"\rcontact_email\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\fcontactEmail\x12f\n" +
+	"\rcontact_state\x18\x04 \x01(\x0e2;.google.shopping.merchant.accounts.v1beta.ReviewState.StateB\x04\xe2A\x01\x03R\fcontactState\"l\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fACTION_REQUIRED\x10\x01\x12\f\n" +
 	"\bINACTIVE\x10\x05\x12\v\n" +
 	"\aRUNNING\x10\x02\x12\r\n" +
 	"\tSUCCEEDED\x10\x03\x12\r\n" +
-	"\tSUSPENDED\x10\x04\"i\n" +
-	"\x1cGetOmnichannelSettingRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-merchantapi.googleapis.com/OmnichannelSettingR\x04name\"\xaa\x01\n" +
-	"\x1eListOmnichannelSettingsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/AccountR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\tSUSPENDED\x10\x04\"j\n" +
+	"\x1cGetOmnichannelSettingRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-merchantapi.googleapis.com/OmnichannelSettingR\x04name\"\xad\x01\n" +
+	"\x1eListOmnichannelSettingsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/AccountR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xba\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xba\x01\n" +
 	"\x1fListOmnichannelSettingsResponse\x12o\n" +
 	"\x14omnichannel_settings\x18\x01 \x03(\v2<.google.shopping.merchant.accounts.v1beta.OmnichannelSettingR\x13omnichannelSettings\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd9\x01\n" +
-	"\x1fCreateOmnichannelSettingRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/AccountR\x06parent\x12r\n" +
-	"\x13omnichannel_setting\x18\x02 \x01(\v2<.google.shopping.merchant.accounts.v1beta.OmnichannelSettingB\x03\xe0A\x02R\x12omnichannelSetting\"\xd7\x01\n" +
-	"\x1fUpdateOmnichannelSettingRequest\x12r\n" +
-	"\x13omnichannel_setting\x18\x01 \x01(\v2<.google.shopping.merchant.accounts.v1beta.OmnichannelSettingB\x03\xe0A\x02R\x12omnichannelSetting\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"p\n" +
-	"#RequestInventoryVerificationRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xdb\x01\n" +
+	"\x1fCreateOmnichannelSettingRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/AccountR\x06parent\x12s\n" +
+	"\x13omnichannel_setting\x18\x02 \x01(\v2<.google.shopping.merchant.accounts.v1beta.OmnichannelSettingB\x04\xe2A\x01\x02R\x12omnichannelSetting\"\xd9\x01\n" +
+	"\x1fUpdateOmnichannelSettingRequest\x12s\n" +
+	"\x13omnichannel_setting\x18\x01 \x01(\v2<.google.shopping.merchant.accounts.v1beta.OmnichannelSettingB\x04\xe2A\x01\x02R\x12omnichannelSetting\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"q\n" +
+	"#RequestInventoryVerificationRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
 	"-merchantapi.googleapis.com/OmnichannelSettingR\x04name\"\x95\x01\n" +
 	"$RequestInventoryVerificationResponse\x12m\n" +
 	"\x13omnichannel_setting\x18\x01 \x01(\v2<.google.shopping.merchant.accounts.v1beta.OmnichannelSettingR\x12omnichannelSetting2\xc1\v\n" +

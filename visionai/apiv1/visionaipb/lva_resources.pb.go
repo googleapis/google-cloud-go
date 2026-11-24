@@ -384,12 +384,12 @@ var File_google_cloud_visionai_v1_lva_resources_proto protoreflect.FileDescripto
 
 const file_google_cloud_visionai_v1_lva_resources_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/visionai/v1/lva_resources.proto\x12\x18google.cloud.visionai.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\"google/cloud/visionai/v1/lva.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8c\x04\n" +
+	",google/cloud/visionai/v1/lva_resources.proto\x12\x18google.cloud.visionai.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\"google/cloud/visionai/v1/lva.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8e\x04\n" +
 	"\bOperator\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12F\n" +
 	"\x06labels\x18\x04 \x03(\v2..google.cloud.visionai.v1.Operator.LabelsEntryR\x06labels\x12]\n" +
 	"\x13operator_definition\x18\x05 \x01(\v2,.google.cloud.visionai.v1.OperatorDefinitionR\x12operatorDefinition\x12!\n" +
@@ -397,12 +397,12 @@ const file_google_cloud_visionai_v1_lva_resources_proto_rawDesc = "" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:c\xeaA`\n" +
-	" visionai.googleapis.com/Operator\x12<projects/{project}/locations/{location}/operators/{operator}\"\xa1\a\n" +
+	" visionai.googleapis.com/Operator\x12<projects/{project}/locations/{location}/operators/{operator}\"\xa3\a\n" +
 	"\bAnalysis\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12F\n" +
 	"\x06labels\x18\x04 \x03(\v2..google.cloud.visionai.v1.Analysis.LabelsEntryR\x06labels\x12]\n" +
 	"\x13analysis_definition\x18\x05 \x01(\v2,.google.cloud.visionai.v1.AnalysisDefinitionR\x12analysisDefinition\x12o\n" +
@@ -418,23 +418,23 @@ const file_google_cloud_visionai_v1_lva_resources_proto_rawDesc = "" +
 	"\x19OutputStreamsMappingEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:u\xeaAr\n" +
-	" visionai.googleapis.com/Analysis\x12Nprojects/{project}/locations/{location}/clusters/{cluster}/analyses/{analysis}\"\x85\x05\n" +
+	" visionai.googleapis.com/Analysis\x12Nprojects/{project}/locations/{location}/clusters/{cluster}/analyses/{analysis}\"\x8e\x05\n" +
 	"\aProcess\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12D\n" +
-	"\banalysis\x18\x04 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" visionai.googleapis.com/AnalysisR\banalysis\x124\n" +
-	"\x13attribute_overrides\x18\x05 \x03(\tB\x03\xe0A\x01R\x12attributeOverrides\x12G\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12E\n" +
+	"\banalysis\x18\x04 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" visionai.googleapis.com/AnalysisR\banalysis\x125\n" +
+	"\x13attribute_overrides\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x12attributeOverrides\x12H\n" +
 	"\n" +
-	"run_status\x18\x06 \x01(\v2#.google.cloud.visionai.v1.RunStatusB\x03\xe0A\x01R\trunStatus\x12A\n" +
-	"\brun_mode\x18\a \x01(\x0e2!.google.cloud.visionai.v1.RunModeB\x03\xe0A\x01R\arunMode\x12\x1e\n" +
-	"\bevent_id\x18\b \x01(\tB\x03\xe0A\x01R\aeventId\x12\x1e\n" +
-	"\bbatch_id\x18\t \x01(\tB\x03\xe0A\x01R\abatchId\x12$\n" +
+	"run_status\x18\x06 \x01(\v2#.google.cloud.visionai.v1.RunStatusB\x04\xe2A\x01\x01R\trunStatus\x12B\n" +
+	"\brun_mode\x18\a \x01(\x0e2!.google.cloud.visionai.v1.RunModeB\x04\xe2A\x01\x01R\arunMode\x12\x1f\n" +
+	"\bevent_id\x18\b \x01(\tB\x04\xe2A\x01\x01R\aeventId\x12\x1f\n" +
+	"\bbatch_id\x18\t \x01(\tB\x04\xe2A\x01\x01R\abatchId\x12%\n" +
 	"\vretry_count\x18\n" +
-	" \x01(\x05B\x03\xe0A\x01R\n" +
+	" \x01(\x05B\x04\xe2A\x01\x01R\n" +
 	"retryCount:t\xeaAq\n" +
 	"\x1fvisionai.googleapis.com/Process\x12Nprojects/{project}/locations/{location}/clusters/{cluster}/processes/{process}B\xc1\x01\n" +
 	"\x1ccom.google.cloud.visionai.v1B\x11LvaResourcesProtoP\x01Z8cloud.google.com/go/visionai/apiv1/visionaipb;visionaipb\xaa\x02\x18Google.Cloud.VisionAI.V1\xca\x02\x18Google\\Cloud\\VisionAI\\V1\xea\x02\x1bGoogle::Cloud::VisionAI::V1b\x06proto3"

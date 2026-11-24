@@ -135,8 +135,25 @@ func (cr *chunkReader) Process(cc *btpb.ReadRowsResponse_CellChunk) (Row, error)
 // in an invalid state, in which case the error should be propagated to the caller.
 func (cr *chunkReader) Close() error {
 	if cr.state != newRow {
-		return fmt.Errorf("invalid state for end of stream %q", cr.state)
+		return fmt.Errorf("invalid state for end of stream %d", cr.state)
 	}
+	return nil
+}
+
+// ProcessLastScannedRowKey validates a server-reported last_scanned_row_key
+// and advances lastKey. Empty keys are ignored.
+func (cr *chunkReader) ProcessLastScannedRowKey(key []byte) error {
+	if len(key) == 0 {
+		return nil
+	}
+	if cr.state != newRow {
+		return fmt.Errorf("last_scanned_row_key not allowed mid-row (state %d)", cr.state)
+	}
+	k := string(key)
+	if err := cr.validateKeyOrder(k); err != nil {
+		return err
+	}
+	cr.lastKey = k
 	return nil
 }
 
@@ -207,18 +224,22 @@ func (cr *chunkReader) validateNewRow(cc *btpb.ReadRowsResponse_CellChunk) error
 		return fmt.Errorf("missing key field for new row %v", cc)
 	}
 
-	if cr.lastKey != "" {
-		r := strings.Compare(string(cc.RowKey), cr.lastKey)
-		direction := "increasing"
-		if cr.reversed {
-			r *= -1
-			direction = "decreasing"
-		}
-		if r <= 0 {
-			return fmt.Errorf("out of order row key, must be strictly %s. new key: %q prev row: %q", direction, cc.RowKey, cr.lastKey)
-		}
-	}
+	return cr.validateKeyOrder(string(cc.RowKey))
+}
 
+func (cr *chunkReader) validateKeyOrder(key string) error {
+	if cr.lastKey == "" {
+		return nil
+	}
+	r := strings.Compare(key, cr.lastKey)
+	direction := "increasing"
+	if cr.reversed {
+		r *= -1
+		direction = "decreasing"
+	}
+	if r <= 0 {
+		return fmt.Errorf("out of order row key, must be strictly %s. new key: %q prev row: %q", direction, key, cr.lastKey)
+	}
 	return nil
 }
 

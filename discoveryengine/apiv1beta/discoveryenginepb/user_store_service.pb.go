@@ -150,14 +150,14 @@ var File_google_cloud_discoveryengine_v1beta_user_store_service_proto protorefle
 
 const file_google_cloud_discoveryengine_v1beta_user_store_service_proto_rawDesc = "" +
 	"\n" +
-	"<google/cloud/discoveryengine/v1beta/user_store_service.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/discoveryengine/v1beta/user_store.proto\x1a google/protobuf/field_mask.proto\"[\n" +
-	"\x13GetUserStoreRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/UserStoreR\x04name\"\xae\x01\n" +
-	"\x16UpdateUserStoreRequest\x12R\n" +
+	"<google/cloud/discoveryengine/v1beta/user_store_service.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/discoveryengine/v1beta/user_store.proto\x1a google/protobuf/field_mask.proto\"\\\n" +
+	"\x13GetUserStoreRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/UserStoreR\x04name\"\xb0\x01\n" +
+	"\x16UpdateUserStoreRequest\x12S\n" +
 	"\n" +
-	"user_store\x18\x01 \x01(\v2..google.cloud.discoveryengine.v1beta.UserStoreB\x03\xe0A\x02R\tuserStore\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"user_store\x18\x01 \x01(\v2..google.cloud.discoveryengine.v1beta.UserStoreB\x04\xe2A\x01\x02R\tuserStore\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
 	"updateMask2\x8f\x05\n" +
 	"\x10UserStoreService\x12\xbb\x01\n" +
 	"\fGetUserStore\x128.google.cloud.discoveryengine.v1beta.GetUserStoreRequest\x1a..google.cloud.discoveryengine.v1beta.UserStore\"A\xdaA\x04name\x82\xd3\xe4\x93\x024\x122/v1beta/{name=projects/*/locations/*/userStores/*}\x12\xea\x01\n" +

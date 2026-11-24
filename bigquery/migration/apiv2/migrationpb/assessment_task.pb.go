@@ -172,18 +172,18 @@ var File_google_cloud_bigquery_migration_v2_assessment_task_proto protoreflect.F
 
 const file_google_cloud_bigquery_migration_v2_assessment_task_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/bigquery/migration/v2/assessment_task.proto\x12\"google.cloud.bigquery.migration.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xba\x02\n" +
-	"\x15AssessmentTaskDetails\x12\"\n" +
+	"8google/cloud/bigquery/migration/v2/assessment_task.proto\x12\"google.cloud.bigquery.migration.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xbf\x02\n" +
+	"\x15AssessmentTaskDetails\x12#\n" +
 	"\n" +
-	"input_path\x18\x01 \x01(\tB\x03\xe0A\x02R\tinputPath\x12*\n" +
-	"\x0eoutput_dataset\x18\x02 \x01(\tB\x03\xe0A\x02R\routputDataset\x12*\n" +
-	"\x0equerylogs_path\x18\x03 \x01(\tB\x03\xe0A\x01R\rquerylogsPath\x12$\n" +
-	"\vdata_source\x18\x04 \x01(\tB\x03\xe0A\x02R\n" +
-	"dataSource\x12l\n" +
-	"\x0efeature_handle\x18\x06 \x01(\v2;.google.cloud.bigquery.migration.v2.AssessmentFeatureHandleB\x03\xe0A\x01H\x00R\rfeatureHandle\x88\x01\x01B\x11\n" +
-	"\x0f_feature_handle\"q\n" +
-	"\x17AssessmentFeatureHandle\x12<\n" +
-	"\x15add_shareable_dataset\x18\x01 \x01(\bB\x03\xe0A\x01H\x00R\x13addShareableDataset\x88\x01\x01B\x18\n" +
+	"input_path\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tinputPath\x12+\n" +
+	"\x0eoutput_dataset\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\routputDataset\x12+\n" +
+	"\x0equerylogs_path\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\rquerylogsPath\x12%\n" +
+	"\vdata_source\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"dataSource\x12m\n" +
+	"\x0efeature_handle\x18\x06 \x01(\v2;.google.cloud.bigquery.migration.v2.AssessmentFeatureHandleB\x04\xe2A\x01\x01H\x00R\rfeatureHandle\x88\x01\x01B\x11\n" +
+	"\x0f_feature_handle\"r\n" +
+	"\x17AssessmentFeatureHandle\x12=\n" +
+	"\x15add_shareable_dataset\x18\x01 \x01(\bB\x04\xe2A\x01\x01H\x00R\x13addShareableDataset\x88\x01\x01B\x18\n" +
 	"\x16_add_shareable_datasetB\xcf\x01\n" +
 	"&com.google.cloud.bigquery.migration.v2B\x13AssessmentTaskProtoP\x01ZDcloud.google.com/go/bigquery/migration/apiv2/migrationpb;migrationpb\xaa\x02\"Google.Cloud.BigQuery.Migration.V2\xca\x02\"Google\\Cloud\\BigQuery\\Migration\\V2b\x06proto3"
 

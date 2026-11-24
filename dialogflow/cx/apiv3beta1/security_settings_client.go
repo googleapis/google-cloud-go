@@ -414,6 +414,51 @@ func NewSecuritySettingsClient(ctx context.Context, opts ...option.ClientOption)
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateSecuritySettings = append(client.CallOptions.CreateSecuritySettings, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSecuritySettings = append(client.CallOptions.GetSecuritySettings, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSecuritySettings = append(client.CallOptions.UpdateSecuritySettings, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSecuritySettings = append(client.CallOptions.ListSecuritySettings, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSecuritySettings = append(client.CallOptions.DeleteSecuritySettings, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateSecuritySettings = append(client.CallOptions.CreateSecuritySettings, gax.WithClientLogging(logging))
+		client.CallOptions.GetSecuritySettings = append(client.CallOptions.GetSecuritySettings, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSecuritySettings = append(client.CallOptions.UpdateSecuritySettings, gax.WithClientLogging(logging))
+		client.CallOptions.ListSecuritySettings = append(client.CallOptions.ListSecuritySettings, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSecuritySettings = append(client.CallOptions.DeleteSecuritySettings, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -514,6 +559,51 @@ func NewSecuritySettingsRESTClient(ctx context.Context, opts ...option.ClientOpt
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateSecuritySettings = append(callOpts.CreateSecuritySettings, gax.WithClientTracing(tracing))
+		callOpts.GetSecuritySettings = append(callOpts.GetSecuritySettings, gax.WithClientTracing(tracing))
+		callOpts.UpdateSecuritySettings = append(callOpts.UpdateSecuritySettings, gax.WithClientTracing(tracing))
+		callOpts.ListSecuritySettings = append(callOpts.ListSecuritySettings, gax.WithClientTracing(tracing))
+		callOpts.DeleteSecuritySettings = append(callOpts.DeleteSecuritySettings, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateSecuritySettings = append(callOpts.CreateSecuritySettings, gax.WithClientLogging(logging))
+		callOpts.GetSecuritySettings = append(callOpts.GetSecuritySettings, gax.WithClientLogging(logging))
+		callOpts.UpdateSecuritySettings = append(callOpts.UpdateSecuritySettings, gax.WithClientLogging(logging))
+		callOpts.ListSecuritySettings = append(callOpts.ListSecuritySettings, gax.WithClientLogging(logging))
+		callOpts.DeleteSecuritySettings = append(callOpts.DeleteSecuritySettings, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &SecuritySettingsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -560,9 +650,6 @@ func (c *securitySettingsGRPCClient) CreateSecuritySettings(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.SecuritySettingsService/CreateSecuritySettings")
 	}
@@ -584,9 +671,6 @@ func (c *securitySettingsGRPCClient) GetSecuritySettings(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.SecuritySettingsService/GetSecuritySettings")
 	}
@@ -629,9 +713,6 @@ func (c *securitySettingsGRPCClient) ListSecuritySettings(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.SecuritySettingsService/ListSecuritySettings")
 	}
@@ -681,9 +762,6 @@ func (c *securitySettingsGRPCClient) DeleteSecuritySettings(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.SecuritySettingsService/DeleteSecuritySettings")
 	}
@@ -866,6 +944,11 @@ func (c *securitySettingsRESTClient) CreateSecuritySettings(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/securitySettings", req.GetParent())
 
 	params := url.Values{}
@@ -879,9 +962,6 @@ func (c *securitySettingsRESTClient) CreateSecuritySettings(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.SecuritySettingsService/CreateSecuritySettings")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{parent=projects/*/locations/*}/securitySettings")
@@ -925,6 +1005,11 @@ func (c *securitySettingsRESTClient) GetSecuritySettings(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -938,9 +1023,6 @@ func (c *securitySettingsRESTClient) GetSecuritySettings(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.SecuritySettingsService/GetSecuritySettings")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/locations/*/securitySettings/*}")
@@ -988,6 +1070,11 @@ func (c *securitySettingsRESTClient) UpdateSecuritySettings(ctx context.Context,
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSecuritySettings().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetSecuritySettings().GetName())
@@ -1064,6 +1151,11 @@ func (c *securitySettingsRESTClient) ListSecuritySettings(ctx context.Context, r
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/securitySettings", req.GetParent())
 
 		params := url.Values{}
@@ -1130,6 +1222,11 @@ func (c *securitySettingsRESTClient) DeleteSecuritySettings(ctx context.Context,
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1143,9 +1240,6 @@ func (c *securitySettingsRESTClient) DeleteSecuritySettings(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.SecuritySettingsService/DeleteSecuritySettings")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/locations/*/securitySettings/*}")
@@ -1170,6 +1264,11 @@ func (c *securitySettingsRESTClient) DeleteSecuritySettings(ctx context.Context,
 func (c *securitySettingsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
@@ -1254,6 +1353,11 @@ func (c *securitySettingsRESTClient) ListLocations(ctx context.Context, req *loc
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1322,6 +1426,11 @@ func (c *securitySettingsRESTClient) CancelOperation(ctx context.Context, req *l
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1359,6 +1468,11 @@ func (c *securitySettingsRESTClient) CancelOperation(ctx context.Context, req *l
 func (c *securitySettingsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
@@ -1426,6 +1540,11 @@ func (c *securitySettingsRESTClient) ListOperations(ctx context.Context, req *lo
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/operations", req.GetName())

@@ -2076,66 +2076,66 @@ var File_google_cloud_dialogflow_v2_generator_evaluation_proto protoreflect.File
 
 const file_google_cloud_dialogflow_v2_generator_evaluation_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/dialogflow/v2/generator_evaluation.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/dialogflow/v2/generator.proto\x1a+google/cloud/dialogflow/v2/operations.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xda\x01\n" +
-	" CreateGeneratorEvaluationRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-dialogflow.googleapis.com/GeneratorEvaluationR\x06parent\x12g\n" +
-	"\x14generator_evaluation\x18\x02 \x01(\v2/.google.cloud.dialogflow.v2.GeneratorEvaluationB\x03\xe0A\x02R\x13generatorEvaluation\"j\n" +
-	"\x1dGetGeneratorEvaluationRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-dialogflow.googleapis.com/GeneratorEvaluationR\x04name\"\xb6\x01\n" +
-	"\x1fListGeneratorEvaluationsRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-dialogflow.googleapis.com/GeneratorEvaluationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"5google/cloud/dialogflow/v2/generator_evaluation.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/dialogflow/v2/generator.proto\x1a+google/cloud/dialogflow/v2/operations.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xdc\x01\n" +
+	" CreateGeneratorEvaluationRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-dialogflow.googleapis.com/GeneratorEvaluationR\x06parent\x12h\n" +
+	"\x14generator_evaluation\x18\x02 \x01(\v2/.google.cloud.dialogflow.v2.GeneratorEvaluationB\x04\xe2A\x01\x02R\x13generatorEvaluation\"k\n" +
+	"\x1dGetGeneratorEvaluationRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-dialogflow.googleapis.com/GeneratorEvaluationR\x04name\"\xb9\x01\n" +
+	"\x1fListGeneratorEvaluationsRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-dialogflow.googleapis.com/GeneratorEvaluationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xb0\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xb0\x01\n" +
 	" ListGeneratorEvaluationsResponse\x12d\n" +
 	"\x15generator_evaluations\x18\x01 \x03(\v2/.google.cloud.dialogflow.v2.GeneratorEvaluationR\x14generatorEvaluations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"m\n" +
-	" DeleteGeneratorEvaluationRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-dialogflow.googleapis.com/GeneratorEvaluationR\x04name\"\xd5\a\n" +
-	"\x13GeneratorEvaluation\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x03R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12z\n" +
-	"\x1bgenerator_evaluation_config\x18\x03 \x01(\v25.google.cloud.dialogflow.v2.GeneratorEvaluationConfigB\x03\xe0A\x02R\x19generatorEvaluationConfig\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12D\n" +
-	"\rcomplete_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fcompleteTime\x12W\n" +
-	"\x11initial_generator\x18\x05 \x01(\v2%.google.cloud.dialogflow.v2.GeneratorB\x03\xe0A\x02R\x10initialGenerator\x12v\n" +
-	"\x15summarization_metrics\x18\x06 \x01(\v2:.google.cloud.dialogflow.v2.SummarizationEvaluationMetricsB\x03\xe0A\x03H\x00R\x14summarizationMetrics\x12^\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"n\n" +
+	" DeleteGeneratorEvaluationRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-dialogflow.googleapis.com/GeneratorEvaluationR\x04name\"\xdd\a\n" +
+	"\x13GeneratorEvaluation\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x03R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12{\n" +
+	"\x1bgenerator_evaluation_config\x18\x03 \x01(\v25.google.cloud.dialogflow.v2.GeneratorEvaluationConfigB\x04\xe2A\x01\x02R\x19generatorEvaluationConfig\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12E\n" +
+	"\rcomplete_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fcompleteTime\x12X\n" +
+	"\x11initial_generator\x18\x05 \x01(\v2%.google.cloud.dialogflow.v2.GeneratorB\x04\xe2A\x01\x02R\x10initialGenerator\x12w\n" +
+	"\x15summarization_metrics\x18\x06 \x01(\v2:.google.cloud.dialogflow.v2.SummarizationEvaluationMetricsB\x04\xe2A\x01\x03H\x00R\x14summarizationMetrics\x12_\n" +
 	"\x11evaluation_status\x18\n" +
-	" \x01(\v2,.google.cloud.dialogflow.v2.EvaluationStatusB\x03\xe0A\x03R\x10evaluationStatus\x12-\n" +
-	"\rsatisfies_pzs\x18\v \x01(\bB\x03\xe0A\x03H\x01R\fsatisfiesPzs\x88\x01\x01\x12-\n" +
-	"\rsatisfies_pzi\x18\f \x01(\bB\x03\xe0A\x03H\x02R\fsatisfiesPzi\x88\x01\x01:\xb7\x01\xeaA\xb3\x01\n" +
+	" \x01(\v2,.google.cloud.dialogflow.v2.EvaluationStatusB\x04\xe2A\x01\x03R\x10evaluationStatus\x12.\n" +
+	"\rsatisfies_pzs\x18\v \x01(\bB\x04\xe2A\x01\x03H\x01R\fsatisfiesPzs\x88\x01\x01\x12.\n" +
+	"\rsatisfies_pzi\x18\f \x01(\bB\x04\xe2A\x01\x03H\x02R\fsatisfiesPzi\x88\x01\x01:\xb7\x01\xeaA\xb3\x01\n" +
 	"-dialogflow.googleapis.com/GeneratorEvaluation\x12Wprojects/{project}/locations/{location}/generators/{generator}/evaluations/{evaluation}*\x14generatorEvaluations2\x13generatorEvaluationB\t\n" +
 	"\ametricsB\x10\n" +
 	"\x0e_satisfies_pzsB\x10\n" +
-	"\x0e_satisfies_pzi\"\xa5\x1c\n" +
-	"\x1eSummarizationEvaluationMetrics\x12\xa7\x01\n" +
-	" summarization_evaluation_results\x18\x04 \x03(\v2X.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.SummarizationEvaluationResultB\x03\xe0A\x03R\x1esummarizationEvaluationResults\x12a\n" +
-	"+summarization_evaluation_merged_results_uri\x18\x05 \x01(\tB\x03\xe0A\x03R'summarizationEvaluationMergedResultsUri\x12~\n" +
-	"\x0foverall_metrics\x18\x06 \x03(\v2P.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.OverallScoresByMetricB\x03\xe0A\x03R\x0eoverallMetrics\x12\x82\x01\n" +
-	"\x16overall_section_tokens\x18\a \x03(\v2G.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.SectionTokenB\x03\xe0A\x03R\x14overallSectionTokens\x12\x85\x01\n" +
-	"\x14conversation_details\x18\b \x03(\v2M.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.ConversationDetailB\x03\xe0A\x03R\x13conversationDetails\x1a\xa1\x01\n" +
-	"\x15AccuracyDecomposition\x12\x19\n" +
-	"\x05point\x18\x01 \x01(\tB\x03\xe0A\x03R\x05point\x122\n" +
-	"\x12accuracy_reasoning\x18\x02 \x01(\tB\x03\xe0A\x03R\x11accuracyReasoning\x12)\n" +
-	"\vis_accurate\x18\x03 \x01(\bB\x03\xe0A\x03H\x00R\n" +
+	"\x0e_satisfies_pzi\"\xcc\x1c\n" +
+	"\x1eSummarizationEvaluationMetrics\x12\xa8\x01\n" +
+	" summarization_evaluation_results\x18\x04 \x03(\v2X.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.SummarizationEvaluationResultB\x04\xe2A\x01\x03R\x1esummarizationEvaluationResults\x12b\n" +
+	"+summarization_evaluation_merged_results_uri\x18\x05 \x01(\tB\x04\xe2A\x01\x03R'summarizationEvaluationMergedResultsUri\x12\x7f\n" +
+	"\x0foverall_metrics\x18\x06 \x03(\v2P.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.OverallScoresByMetricB\x04\xe2A\x01\x03R\x0eoverallMetrics\x12\x83\x01\n" +
+	"\x16overall_section_tokens\x18\a \x03(\v2G.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.SectionTokenB\x04\xe2A\x01\x03R\x14overallSectionTokens\x12\x86\x01\n" +
+	"\x14conversation_details\x18\b \x03(\v2M.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.ConversationDetailB\x04\xe2A\x01\x03R\x13conversationDetails\x1a\xa4\x01\n" +
+	"\x15AccuracyDecomposition\x12\x1a\n" +
+	"\x05point\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x05point\x123\n" +
+	"\x12accuracy_reasoning\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x11accuracyReasoning\x12*\n" +
+	"\vis_accurate\x18\x03 \x01(\bB\x04\xe2A\x01\x03H\x00R\n" +
 	"isAccurate\x88\x01\x01B\x0e\n" +
-	"\f_is_accurate\x1a\x93\x01\n" +
-	"\x16AdherenceDecomposition\x12\x19\n" +
-	"\x05point\x18\x01 \x01(\tB\x03\xe0A\x03R\x05point\x124\n" +
-	"\x13adherence_reasoning\x18\x02 \x01(\tB\x03\xe0A\x03R\x12adherenceReasoning\x12$\n" +
-	"\vis_adherent\x18\x03 \x01(\bB\x03\xe0A\x03R\n" +
-	"isAdherent:\x02\x18\x01\x1a\x93\x01\n" +
-	"\x0fAdherenceRubric\x12\x1f\n" +
-	"\bquestion\x18\x01 \x01(\tB\x03\xe0A\x03R\bquestion\x12!\n" +
-	"\treasoning\x18\x02 \x01(\tB\x03\xe0A\x03R\treasoning\x12+\n" +
-	"\fis_addressed\x18\x03 \x01(\bB\x03\xe0A\x03H\x00R\visAddressed\x88\x01\x01B\x0f\n" +
-	"\r_is_addressed\x1as\n" +
-	"\x12CompletenessRubric\x12\x1f\n" +
-	"\bquestion\x18\x01 \x01(\tB\x03\xe0A\x03R\bquestion\x12+\n" +
-	"\fis_addressed\x18\x02 \x01(\bB\x03\xe0A\x03H\x00R\visAddressed\x88\x01\x01B\x0f\n" +
+	"\f_is_accurate\x1a\x96\x01\n" +
+	"\x16AdherenceDecomposition\x12\x1a\n" +
+	"\x05point\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x05point\x125\n" +
+	"\x13adherence_reasoning\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x12adherenceReasoning\x12%\n" +
+	"\vis_adherent\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\n" +
+	"isAdherent:\x02\x18\x01\x1a\x96\x01\n" +
+	"\x0fAdherenceRubric\x12 \n" +
+	"\bquestion\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\bquestion\x12\"\n" +
+	"\treasoning\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\treasoning\x12,\n" +
+	"\fis_addressed\x18\x03 \x01(\bB\x04\xe2A\x01\x03H\x00R\visAddressed\x88\x01\x01B\x0f\n" +
+	"\r_is_addressed\x1au\n" +
+	"\x12CompletenessRubric\x12 \n" +
+	"\bquestion\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\bquestion\x12,\n" +
+	"\fis_addressed\x18\x02 \x01(\bB\x04\xe2A\x01\x03H\x00R\visAddressed\x88\x01\x01B\x0f\n" +
 	"\r_is_addressed\x1a\xbf\x02\n" +
 	"\rDecomposition\x12\x89\x01\n" +
 	"\x16accuracy_decomposition\x18\x01 \x01(\v2P.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.AccuracyDecompositionH\x00R\x15accuracyDecomposition\x12\x8c\x01\n" +
@@ -2145,58 +2145,58 @@ const file_google_cloud_dialogflow_v2_generator_evaluation_proto_rawDesc = "" +
 	"\x16accuracy_decomposition\x18\x01 \x01(\v2P.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.AccuracyDecompositionH\x00R\x15accuracyDecomposition\x12w\n" +
 	"\x10adherence_rubric\x18\x02 \x01(\v2J.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.AdherenceRubricH\x00R\x0fadherenceRubric\x12\x80\x01\n" +
 	"\x13completeness_rubric\x18\x03 \x01(\v2M.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.CompletenessRubricH\x00R\x12completenessRubricB\b\n" +
-	"\x06result\x1a\xc4\x03\n" +
-	"\x1dSummarizationEvaluationResult\x12$\n" +
+	"\x06result\x1a\xcc\x03\n" +
+	"\x1dSummarizationEvaluationResult\x12%\n" +
 	"\n" +
-	"session_id\x18\x01 \x01(\tB\x05\xe0A\x03\x18\x01R\tsessionId\x12\x1b\n" +
-	"\x06metric\x18\x02 \x01(\tB\x03\xe0A\x03R\x06metric\x12\x1d\n" +
-	"\asection\x18\x03 \x01(\tB\x03\xe0A\x03R\asection\x12\x19\n" +
-	"\x05score\x18\x04 \x01(\x02B\x03\xe0A\x03R\x05score\x12,\n" +
-	"\x0fsection_summary\x18\x06 \x01(\tB\x03\xe0A\x03R\x0esectionSummary\x12w\n" +
-	"\x0edecompositions\x18\a \x03(\v2H.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.DecompositionB\x05\xe0A\x03\x18\x01R\x0edecompositions\x12\x7f\n" +
-	"\x12evaluation_results\x18\b \x03(\v2K.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.EvaluationResultB\x03\xe0A\x03R\x11evaluationResults\x1a4\n" +
-	"\x15OverallScoresByMetric\x12\x1b\n" +
-	"\x06metric\x18\x01 \x01(\tB\x03\xe0A\x03R\x06metric\x1ah\n" +
-	"\fSectionToken\x12\x1d\n" +
-	"\asection\x18\x01 \x01(\tB\x03\xe0A\x03R\asection\x12)\n" +
-	"\vtoken_count\x18\x02 \x01(\x03B\x03\xe0A\x03H\x00R\n" +
+	"session_id\x18\x01 \x01(\tB\x06\xe2A\x01\x03\x18\x01R\tsessionId\x12\x1c\n" +
+	"\x06metric\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x06metric\x12\x1e\n" +
+	"\asection\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\asection\x12\x1a\n" +
+	"\x05score\x18\x04 \x01(\x02B\x04\xe2A\x01\x03R\x05score\x12-\n" +
+	"\x0fsection_summary\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x0esectionSummary\x12x\n" +
+	"\x0edecompositions\x18\a \x03(\v2H.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.DecompositionB\x06\xe2A\x01\x03\x18\x01R\x0edecompositions\x12\x80\x01\n" +
+	"\x12evaluation_results\x18\b \x03(\v2K.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.EvaluationResultB\x04\xe2A\x01\x03R\x11evaluationResults\x1a5\n" +
+	"\x15OverallScoresByMetric\x12\x1c\n" +
+	"\x06metric\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06metric\x1aj\n" +
+	"\fSectionToken\x12\x1e\n" +
+	"\asection\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\asection\x12*\n" +
+	"\vtoken_count\x18\x02 \x01(\x03B\x04\xe2A\x01\x03H\x00R\n" +
 	"tokenCount\x88\x01\x01B\x0e\n" +
-	"\f_token_count\x1a\xd3\a\n" +
-	"\x12ConversationDetail\x12V\n" +
-	"\x0fmessage_entries\x18\x01 \x03(\v2(.google.cloud.dialogflow.v2.MessageEntryB\x03\xe0A\x03R\x0emessageEntries\x12l\n" +
-	"\x10summary_sections\x18\x04 \x03(\v2<.google.cloud.dialogflow.v2.SummarySuggestion.SummarySectionB\x03\xe0A\x03R\x0fsummarySections\x12\x86\x01\n" +
-	"\x0emetric_details\x18\x02 \x03(\v2Z.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.ConversationDetail.MetricDetailB\x03\xe0A\x03R\rmetricDetails\x12s\n" +
-	"\x0esection_tokens\x18\x03 \x03(\v2G.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.SectionTokenB\x03\xe0A\x03R\rsectionTokens\x1a\xf8\x03\n" +
-	"\fMetricDetail\x12\x1b\n" +
-	"\x06metric\x18\x01 \x01(\tB\x03\xe0A\x03R\x06metric\x12\x1e\n" +
-	"\x05score\x18\x02 \x01(\x02B\x03\xe0A\x03H\x00R\x05score\x88\x01\x01\x12\x96\x01\n" +
-	"\x0fsection_details\x18\x04 \x03(\v2h.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.ConversationDetail.MetricDetail.SectionDetailB\x03\xe0A\x03R\x0esectionDetails\x1a\x87\x02\n" +
-	"\rSectionDetail\x12\x1d\n" +
-	"\asection\x18\x01 \x01(\tB\x03\xe0A\x03R\asection\x12\x1e\n" +
-	"\x05score\x18\x02 \x01(\x02B\x03\xe0A\x03H\x00R\x05score\x88\x01\x01\x12,\n" +
-	"\x0fsection_summary\x18\x04 \x01(\tB\x03\xe0A\x03R\x0esectionSummary\x12\x7f\n" +
-	"\x12evaluation_results\x18\x05 \x03(\v2K.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.EvaluationResultB\x03\xe0A\x03R\x11evaluationResultsB\b\n" +
+	"\f_token_count\x1a\xdf\a\n" +
+	"\x12ConversationDetail\x12W\n" +
+	"\x0fmessage_entries\x18\x01 \x03(\v2(.google.cloud.dialogflow.v2.MessageEntryB\x04\xe2A\x01\x03R\x0emessageEntries\x12m\n" +
+	"\x10summary_sections\x18\x04 \x03(\v2<.google.cloud.dialogflow.v2.SummarySuggestion.SummarySectionB\x04\xe2A\x01\x03R\x0fsummarySections\x12\x87\x01\n" +
+	"\x0emetric_details\x18\x02 \x03(\v2Z.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.ConversationDetail.MetricDetailB\x04\xe2A\x01\x03R\rmetricDetails\x12t\n" +
+	"\x0esection_tokens\x18\x03 \x03(\v2G.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.SectionTokenB\x04\xe2A\x01\x03R\rsectionTokens\x1a\x80\x04\n" +
+	"\fMetricDetail\x12\x1c\n" +
+	"\x06metric\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06metric\x12\x1f\n" +
+	"\x05score\x18\x02 \x01(\x02B\x04\xe2A\x01\x03H\x00R\x05score\x88\x01\x01\x12\x97\x01\n" +
+	"\x0fsection_details\x18\x04 \x03(\v2h.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.ConversationDetail.MetricDetail.SectionDetailB\x04\xe2A\x01\x03R\x0esectionDetails\x1a\x8c\x02\n" +
+	"\rSectionDetail\x12\x1e\n" +
+	"\asection\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\asection\x12\x1f\n" +
+	"\x05score\x18\x02 \x01(\x02B\x04\xe2A\x01\x03H\x00R\x05score\x88\x01\x01\x12-\n" +
+	"\x0fsection_summary\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x0esectionSummary\x12\x80\x01\n" +
+	"\x12evaluation_results\x18\x05 \x03(\v2K.google.cloud.dialogflow.v2.SummarizationEvaluationMetrics.EvaluationResultB\x04\xe2A\x01\x03R\x11evaluationResultsB\b\n" +
 	"\x06_scoreB\b\n" +
-	"\x06_score\"\xbc\x10\n" +
-	"\x19GeneratorEvaluationConfig\x12v\n" +
-	"\x11input_data_config\x18\x01 \x01(\v2E.google.cloud.dialogflow.v2.GeneratorEvaluationConfig.InputDataConfigB\x03\xe0A\x02R\x0finputDataConfig\x128\n" +
-	"\x16output_gcs_bucket_path\x18\x02 \x01(\tB\x03\xe0A\x02R\x13outputGcsBucketPath\x12~\n" +
-	"\x14summarization_config\x18\x03 \x01(\v2I.google.cloud.dialogflow.v2.GeneratorEvaluationConfig.SummarizationConfigH\x00R\x13summarizationConfig\x1a\x98\x01\n" +
-	"\x1aAgentAssistInputDataConfig\x12>\n" +
+	"\x06_score\"\xcc\x10\n" +
+	"\x19GeneratorEvaluationConfig\x12w\n" +
+	"\x11input_data_config\x18\x01 \x01(\v2E.google.cloud.dialogflow.v2.GeneratorEvaluationConfig.InputDataConfigB\x04\xe2A\x01\x02R\x0finputDataConfig\x129\n" +
+	"\x16output_gcs_bucket_path\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x13outputGcsBucketPath\x12~\n" +
+	"\x14summarization_config\x18\x03 \x01(\v2I.google.cloud.dialogflow.v2.GeneratorEvaluationConfig.SummarizationConfigH\x00R\x13summarizationConfig\x1a\x9a\x01\n" +
+	"\x1aAgentAssistInputDataConfig\x12?\n" +
 	"\n" +
-	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\tstartTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\aendTime\x1a7\n" +
-	"\x16DatasetInputDataConfig\x12\x1d\n" +
-	"\adataset\x18\x01 \x01(\tB\x03\xe0A\x02R\adataset\x1a\xf3\a\n" +
-	"\x0fInputDataConfig\x12\x85\x01\n" +
-	"\x16input_data_source_type\x18\x01 \x01(\x0e2I.google.cloud.dialogflow.v2.GeneratorEvaluationConfig.InputDataSourceTypeB\x05\xe0A\x02\x18\x01R\x13inputDataSourceType\x12@\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\tstartTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\aendTime\x1a8\n" +
+	"\x16DatasetInputDataConfig\x12\x1e\n" +
+	"\adataset\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\adataset\x1a\xf9\a\n" +
+	"\x0fInputDataConfig\x12\x86\x01\n" +
+	"\x16input_data_source_type\x18\x01 \x01(\x0e2I.google.cloud.dialogflow.v2.GeneratorEvaluationConfig.InputDataSourceTypeB\x06\xe2A\x01\x02\x18\x01R\x13inputDataSourceType\x12A\n" +
 	"\n" +
-	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x05\xe0A\x01\x18\x01R\tstartTime\x12<\n" +
-	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x05\xe0A\x01\x18\x01R\aendTime\x12$\n" +
-	"\vsample_size\x18\x04 \x01(\x05B\x03\xe0A\x01R\n" +
-	"sampleSize\x12H\n" +
-	"\x1dis_summary_generation_allowed\x18\x05 \x01(\bB\x05\xe0A\x01\x18\x01R\x1aisSummaryGenerationAllowed\x12\x9e\x01\n" +
-	"\x19summary_generation_option\x18\b \x01(\x0e2].google.cloud.dialogflow.v2.GeneratorEvaluationConfig.InputDataConfig.SummaryGenerationOptionB\x03\xe0A\x01R\x17summaryGenerationOption\x12\x96\x01\n" +
+	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x06\xe2A\x01\x01\x18\x01R\tstartTime\x12=\n" +
+	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x06\xe2A\x01\x01\x18\x01R\aendTime\x12%\n" +
+	"\vsample_size\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\n" +
+	"sampleSize\x12I\n" +
+	"\x1dis_summary_generation_allowed\x18\x05 \x01(\bB\x06\xe2A\x01\x01\x18\x01R\x1aisSummaryGenerationAllowed\x12\x9f\x01\n" +
+	"\x19summary_generation_option\x18\b \x01(\x0e2].google.cloud.dialogflow.v2.GeneratorEvaluationConfig.InputDataConfig.SummaryGenerationOptionB\x04\xe2A\x01\x01R\x17summaryGenerationOption\x12\x96\x01\n" +
 	"\x1eagent_assist_input_data_config\x18\x06 \x01(\v2P.google.cloud.dialogflow.v2.GeneratorEvaluationConfig.AgentAssistInputDataConfigH\x00R\x1aagentAssistInputDataConfig\x12\x89\x01\n" +
 	"\x19dataset_input_data_config\x18\a \x01(\v2L.google.cloud.dialogflow.v2.GeneratorEvaluationConfig.DatasetInputDataConfigH\x00R\x16datasetInputDataConfig\"\x87\x01\n" +
 	"\x17SummaryGenerationOption\x12)\n" +
@@ -2204,22 +2204,22 @@ const file_google_cloud_dialogflow_v2_generator_evaluation_proto_rawDesc = "" +
 	"\x0fALWAYS_GENERATE\x10\x01\x12\x17\n" +
 	"\x13GENERATE_IF_MISSING\x10\x02\x12\x13\n" +
 	"\x0fDO_NOT_GENERATE\x10\x03B\x18\n" +
-	"\x16source_specific_config\x1a\x8a\x03\n" +
-	"\x13SummarizationConfig\x12C\n" +
-	"\x1aenable_accuracy_evaluation\x18\x01 \x01(\bB\x05\xe0A\x01\x18\x01R\x18enableAccuracyEvaluation\x12E\n" +
-	"\x1baccuracy_evaluation_version\x18\x02 \x01(\tB\x05\xe0A\x01\x18\x01R\x19accuracyEvaluationVersion\x12K\n" +
-	"\x1eenable_completeness_evaluation\x18\x03 \x01(\bB\x05\xe0A\x01\x18\x01R\x1cenableCompletenessEvaluation\x12M\n" +
-	"\x1fcompleteness_evaluation_version\x18\x04 \x01(\tB\x05\xe0A\x01\x18\x01R\x1dcompletenessEvaluationVersion\x125\n" +
-	"\x11evaluator_version\x18\x05 \x01(\tB\x03\xe0A\x01H\x00R\x10evaluatorVersion\x88\x01\x01B\x14\n" +
+	"\x16source_specific_config\x1a\x8f\x03\n" +
+	"\x13SummarizationConfig\x12D\n" +
+	"\x1aenable_accuracy_evaluation\x18\x01 \x01(\bB\x06\xe2A\x01\x01\x18\x01R\x18enableAccuracyEvaluation\x12F\n" +
+	"\x1baccuracy_evaluation_version\x18\x02 \x01(\tB\x06\xe2A\x01\x01\x18\x01R\x19accuracyEvaluationVersion\x12L\n" +
+	"\x1eenable_completeness_evaluation\x18\x03 \x01(\bB\x06\xe2A\x01\x01\x18\x01R\x1cenableCompletenessEvaluation\x12N\n" +
+	"\x1fcompleteness_evaluation_version\x18\x04 \x01(\tB\x06\xe2A\x01\x01\x18\x01R\x1dcompletenessEvaluationVersion\x126\n" +
+	"\x11evaluator_version\x18\x05 \x01(\tB\x04\xe2A\x01\x01H\x00R\x10evaluatorVersion\x88\x01\x01B\x14\n" +
 	"\x12_evaluator_version\"y\n" +
 	"\x13InputDataSourceType\x12&\n" +
 	"\"INPUT_DATA_SOURCE_TYPE_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aAGENT_ASSIST_CONVERSATIONS\x10\x01\x12\x1a\n" +
 	"\x16INSIGHTS_CONVERSATIONS\x10\x02B\x1b\n" +
-	"\x19evaluation_feature_config\"{\n" +
-	"\x10EvaluationStatus\x12\x1c\n" +
-	"\x04done\x18\x01 \x01(\bB\x03\xe0A\x03H\x00R\x04done\x88\x01\x01\x12@\n" +
-	"\x0fpipeline_status\x18\x02 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x0epipelineStatusB\a\n" +
+	"\x19evaluation_feature_config\"}\n" +
+	"\x10EvaluationStatus\x12\x1d\n" +
+	"\x04done\x18\x01 \x01(\bB\x04\xe2A\x01\x03H\x00R\x04done\x88\x01\x01\x12A\n" +
+	"\x0fpipeline_status\x18\x02 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x0epipelineStatusB\a\n" +
 	"\x05_done2\xdb\b\n" +
 	"\x14GeneratorEvaluations\x12\xcc\x02\n" +
 	"\x19CreateGeneratorEvaluation\x12<.google.cloud.dialogflow.v2.CreateGeneratorEvaluationRequest\x1a\x1d.google.longrunning.Operation\"\xd1\x01\xcaAV\n" +

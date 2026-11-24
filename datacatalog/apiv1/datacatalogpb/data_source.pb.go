@@ -265,12 +265,12 @@ var File_google_cloud_datacatalog_v1_data_source_proto protoreflect.FileDescript
 
 const file_google_cloud_datacatalog_v1_data_source_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/datacatalog/v1/data_source.proto\x12\x1bgoogle.cloud.datacatalog.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xcf\x02\n" +
+	"-google/cloud/datacatalog/v1/data_source.proto\x12\x1bgoogle.cloud.datacatalog.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xd0\x02\n" +
 	"\n" +
 	"DataSource\x12I\n" +
 	"\aservice\x18\x01 \x01(\x0e2/.google.cloud.datacatalog.v1.DataSource.ServiceR\aservice\x12\x1a\n" +
-	"\bresource\x18\x02 \x01(\tR\bresource\x12&\n" +
-	"\fsource_entry\x18\x03 \x01(\tB\x03\xe0A\x03R\vsourceEntry\x12_\n" +
+	"\bresource\x18\x02 \x01(\tR\bresource\x12'\n" +
+	"\fsource_entry\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vsourceEntry\x12_\n" +
 	"\x12storage_properties\x18\x04 \x01(\v2..google.cloud.datacatalog.v1.StoragePropertiesH\x00R\x11storageProperties\"C\n" +
 	"\aService\x12\x17\n" +
 	"\x13SERVICE_UNSPECIFIED\x10\x00\x12\x11\n" +

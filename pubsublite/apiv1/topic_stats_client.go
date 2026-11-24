@@ -322,6 +322,45 @@ func NewTopicStatsClient(ctx context.Context, opts ...option.ClientOption) (*Top
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "pubsublite",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/pubsublite/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "pubsublite.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ComputeMessageStats = append(client.CallOptions.ComputeMessageStats, gax.WithClientTracing(tracing))
+		client.CallOptions.ComputeHeadCursor = append(client.CallOptions.ComputeHeadCursor, gax.WithClientTracing(tracing))
+		client.CallOptions.ComputeTimeCursor = append(client.CallOptions.ComputeTimeCursor, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "pubsublite",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/pubsublite/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "pubsublite.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ComputeMessageStats = append(client.CallOptions.ComputeMessageStats, gax.WithClientLogging(logging))
+		client.CallOptions.ComputeHeadCursor = append(client.CallOptions.ComputeHeadCursor, gax.WithClientLogging(logging))
+		client.CallOptions.ComputeTimeCursor = append(client.CallOptions.ComputeTimeCursor, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -358,9 +397,6 @@ func (c *topicStatsGRPCClient) ComputeMessageStats(ctx context.Context, req *pub
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsublite.googleapis.com/%v", req.GetTopic()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.pubsublite.v1.TopicStatsService/ComputeMessageStats")
 	}
@@ -382,9 +418,6 @@ func (c *topicStatsGRPCClient) ComputeHeadCursor(ctx context.Context, req *pubsu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsublite.googleapis.com/%v", req.GetTopic()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.pubsublite.v1.TopicStatsService/ComputeHeadCursor")
 	}
@@ -406,9 +439,6 @@ func (c *topicStatsGRPCClient) ComputeTimeCursor(ctx context.Context, req *pubsu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsublite.googleapis.com/%v", req.GetTopic()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.pubsublite.v1.TopicStatsService/ComputeTimeCursor")
 	}

@@ -434,23 +434,23 @@ var File_google_cloud_discoveryengine_v1beta_feedback_proto protoreflect.FileDes
 
 const file_google_cloud_discoveryengine_v1beta_feedback_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/discoveryengine/v1beta/feedback.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a1google/cloud/discoveryengine/v1beta/session.proto\"\x8b\n" +
+	"2google/cloud/discoveryengine/v1beta/feedback.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a1google/cloud/discoveryengine/v1beta/session.proto\"\x94\n" +
 	"\n" +
-	"\bFeedback\x12d\n" +
-	"\rfeedback_type\x18\x01 \x01(\x0e2:.google.cloud.discoveryengine.v1beta.Feedback.FeedbackTypeB\x03\xe0A\x02R\ffeedbackType\x12S\n" +
-	"\areasons\x18\x02 \x03(\x0e24.google.cloud.discoveryengine.v1beta.Feedback.ReasonB\x03\xe0A\x01R\areasons\x12\x1d\n" +
-	"\acomment\x18\x03 \x01(\tB\x03\xe0A\x01R\acomment\x12k\n" +
+	"\bFeedback\x12e\n" +
+	"\rfeedback_type\x18\x01 \x01(\x0e2:.google.cloud.discoveryengine.v1beta.Feedback.FeedbackTypeB\x04\xe2A\x01\x02R\ffeedbackType\x12T\n" +
+	"\areasons\x18\x02 \x03(\x0e24.google.cloud.discoveryengine.v1beta.Feedback.ReasonB\x04\xe2A\x01\x01R\areasons\x12\x1e\n" +
+	"\acomment\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\acomment\x12k\n" +
 	"\x11conversation_info\x18\x04 \x01(\v2>.google.cloud.discoveryengine.v1beta.Feedback.ConversationInfoR\x10conversationInfo\x12*\n" +
-	"\x11llm_model_version\x18\x05 \x01(\tR\x0fllmModelVersion\x12j\n" +
-	"\x0ffeedback_source\x18\x06 \x01(\x0e2<.google.cloud.discoveryengine.v1beta.Feedback.FeedbackSourceB\x03\xe0A\x01R\x0efeedbackSource\x120\n" +
-	"\x11component_version\x18\a \x01(\tB\x03\xe0A\x01R\x10componentVersion\x123\n" +
-	"\x13data_terms_accepted\x18\b \x01(\bB\x03\xe0A\x01R\x11dataTermsAccepted\x1a\xf5\x01\n" +
+	"\x11llm_model_version\x18\x05 \x01(\tR\x0fllmModelVersion\x12k\n" +
+	"\x0ffeedback_source\x18\x06 \x01(\x0e2<.google.cloud.discoveryengine.v1beta.Feedback.FeedbackSourceB\x04\xe2A\x01\x01R\x0efeedbackSource\x121\n" +
+	"\x11component_version\x18\a \x01(\tB\x04\xe2A\x01\x01R\x10componentVersion\x124\n" +
+	"\x13data_terms_accepted\x18\b \x01(\bB\x04\xe2A\x01\x01R\x11dataTermsAccepted\x1a\xf8\x01\n" +
 	"\x10ConversationInfo\x12%\n" +
 	"\x0equestion_index\x18\x01 \x01(\x05R\rquestionIndex\x12\x18\n" +
-	"\asession\x18\x02 \x01(\tR\asession\x12E\n" +
-	"\x05query\x18\x03 \x01(\v2*.google.cloud.discoveryengine.v1beta.QueryB\x03\xe0A\x02R\x05query\x12&\n" +
-	"\fassist_token\x18\x04 \x01(\tB\x03\xe0A\x01R\vassistToken\x121\n" +
-	"\x12answer_query_token\x18\x05 \x01(\tB\x03\xe0A\x01R\x10answerQueryToken\"D\n" +
+	"\asession\x18\x02 \x01(\tR\asession\x12F\n" +
+	"\x05query\x18\x03 \x01(\v2*.google.cloud.discoveryengine.v1beta.QueryB\x04\xe2A\x01\x02R\x05query\x12'\n" +
+	"\fassist_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vassistToken\x122\n" +
+	"\x12answer_query_token\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x10answerQueryToken\"D\n" +
 	"\fFeedbackType\x12\x1d\n" +
 	"\x19FEEDBACK_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04LIKE\x10\x01\x12\v\n" +

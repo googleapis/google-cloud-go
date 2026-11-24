@@ -7,7 +7,6 @@ assign_issues_by:
   - 'api: datastore'
   - 'api: firestore'
   to:
-  - hongalex
   - shollyman
 - labels:
   - 'api: storage'
@@ -16,11 +15,11 @@ assign_issues_by:
 - labels:
   - 'api: pubsub'
   to:
-  - hongalex
+  - shollyman
 - labels:
   - 'api: pubsublite'
   to:
-  - tmdiep
+  - brownsuga918
 - labels:
   - 'api: spanner'
   to:

@@ -1696,99 +1696,99 @@ var File_google_ai_generativelanguage_v1alpha_retriever_service_proto protorefle
 
 const file_google_ai_generativelanguage_v1alpha_retriever_service_proto_rawDesc = "" +
 	"\n" +
-	"<google/ai/generativelanguage/v1alpha/retriever_service.proto\x12$google.ai.generativelanguage.v1alpha\x1a4google/ai/generativelanguage/v1alpha/retriever.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"`\n" +
-	"\x13CreateCorpusRequest\x12I\n" +
-	"\x06corpus\x18\x01 \x01(\v2,.google.ai.generativelanguage.v1alpha.CorpusB\x03\xe0A\x02R\x06corpus\"X\n" +
-	"\x10GetCorpusRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(generativelanguage.googleapis.com/CorpusR\x04name\"\xa2\x01\n" +
-	"\x13UpdateCorpusRequest\x12I\n" +
-	"\x06corpus\x18\x01 \x01(\v2,.google.ai.generativelanguage.v1alpha.CorpusB\x03\xe0A\x02R\x06corpus\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"v\n" +
-	"\x13DeleteCorpusRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(generativelanguage.googleapis.com/CorpusR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"Z\n" +
-	"\x12ListCorporaRequest\x12 \n" +
-	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"<google/ai/generativelanguage/v1alpha/retriever_service.proto\x12$google.ai.generativelanguage.v1alpha\x1a4google/ai/generativelanguage/v1alpha/retriever.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"a\n" +
+	"\x13CreateCorpusRequest\x12J\n" +
+	"\x06corpus\x18\x01 \x01(\v2,.google.ai.generativelanguage.v1alpha.CorpusB\x04\xe2A\x01\x02R\x06corpus\"Y\n" +
+	"\x10GetCorpusRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(generativelanguage.googleapis.com/CorpusR\x04name\"\xa4\x01\n" +
+	"\x13UpdateCorpusRequest\x12J\n" +
+	"\x06corpus\x18\x01 \x01(\v2,.google.ai.generativelanguage.v1alpha.CorpusB\x04\xe2A\x01\x02R\x06corpus\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"x\n" +
+	"\x13DeleteCorpusRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(generativelanguage.googleapis.com/CorpusR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\\\n" +
+	"\x12ListCorporaRequest\x12!\n" +
+	"\tpage_size\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x85\x01\n" +
+	"page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x85\x01\n" +
 	"\x13ListCorporaResponse\x12F\n" +
 	"\acorpora\x18\x01 \x03(\v2,.google.ai.generativelanguage.v1alpha.CorpusR\acorpora\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x85\x02\n" +
-	"\x12QueryCorpusRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(generativelanguage.googleapis.com/CorpusR\x04name\x12\x19\n" +
-	"\x05query\x18\x02 \x01(\tB\x03\xe0A\x02R\x05query\x12d\n" +
-	"\x10metadata_filters\x18\x03 \x03(\v24.google.ai.generativelanguage.v1alpha.MetadataFilterB\x03\xe0A\x01R\x0fmetadataFilters\x12(\n" +
-	"\rresults_count\x18\x04 \x01(\x05B\x03\xe0A\x01R\fresultsCount\"s\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x89\x02\n" +
+	"\x12QueryCorpusRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(generativelanguage.googleapis.com/CorpusR\x04name\x12\x1a\n" +
+	"\x05query\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12e\n" +
+	"\x10metadata_filters\x18\x03 \x03(\v24.google.ai.generativelanguage.v1alpha.MetadataFilterB\x04\xe2A\x01\x01R\x0fmetadataFilters\x12)\n" +
+	"\rresults_count\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\fresultsCount\"s\n" +
 	"\x13QueryCorpusResponse\x12\\\n" +
 	"\x0frelevant_chunks\x18\x01 \x03(\v23.google.ai.generativelanguage.v1alpha.RelevantChunkR\x0erelevantChunks\"\x86\x01\n" +
 	"\rRelevantChunk\x122\n" +
 	"\x15chunk_relevance_score\x18\x01 \x01(\x02R\x13chunkRelevanceScore\x12A\n" +
-	"\x05chunk\x18\x02 \x01(\v2+.google.ai.generativelanguage.v1alpha.ChunkR\x05chunk\"\xb4\x01\n" +
-	"\x15CreateDocumentRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*generativelanguage.googleapis.com/DocumentR\x06parent\x12O\n" +
-	"\bdocument\x18\x02 \x01(\v2..google.ai.generativelanguage.v1alpha.DocumentB\x03\xe0A\x02R\bdocument\"\\\n" +
-	"\x12GetDocumentRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*generativelanguage.googleapis.com/DocumentR\x04name\"\xaa\x01\n" +
-	"\x15UpdateDocumentRequest\x12O\n" +
-	"\bdocument\x18\x01 \x01(\v2..google.ai.generativelanguage.v1alpha.DocumentB\x03\xe0A\x02R\bdocument\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"z\n" +
-	"\x15DeleteDocumentRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*generativelanguage.googleapis.com/DocumentR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\xa8\x01\n" +
-	"\x14ListDocumentsRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*generativelanguage.googleapis.com/DocumentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x05chunk\x18\x02 \x01(\v2+.google.ai.generativelanguage.v1alpha.ChunkR\x05chunk\"\xb6\x01\n" +
+	"\x15CreateDocumentRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*generativelanguage.googleapis.com/DocumentR\x06parent\x12P\n" +
+	"\bdocument\x18\x02 \x01(\v2..google.ai.generativelanguage.v1alpha.DocumentB\x04\xe2A\x01\x02R\bdocument\"]\n" +
+	"\x12GetDocumentRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*generativelanguage.googleapis.com/DocumentR\x04name\"\xac\x01\n" +
+	"\x15UpdateDocumentRequest\x12P\n" +
+	"\bdocument\x18\x01 \x01(\v2..google.ai.generativelanguage.v1alpha.DocumentB\x04\xe2A\x01\x02R\bdocument\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"|\n" +
+	"\x15DeleteDocumentRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*generativelanguage.googleapis.com/DocumentR\x04name\x12\x1a\n" +
+	"\x05force\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xab\x01\n" +
+	"\x14ListDocumentsRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*generativelanguage.googleapis.com/DocumentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x8d\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x8d\x01\n" +
 	"\x15ListDocumentsResponse\x12L\n" +
 	"\tdocuments\x18\x01 \x03(\v2..google.ai.generativelanguage.v1alpha.DocumentR\tdocuments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x89\x02\n" +
-	"\x14QueryDocumentRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*generativelanguage.googleapis.com/DocumentR\x04name\x12\x19\n" +
-	"\x05query\x18\x02 \x01(\tB\x03\xe0A\x02R\x05query\x12(\n" +
-	"\rresults_count\x18\x03 \x01(\x05B\x03\xe0A\x01R\fresultsCount\x12d\n" +
-	"\x10metadata_filters\x18\x04 \x03(\v24.google.ai.generativelanguage.v1alpha.MetadataFilterB\x03\xe0A\x01R\x0fmetadataFilters\"u\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8d\x02\n" +
+	"\x14QueryDocumentRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*generativelanguage.googleapis.com/DocumentR\x04name\x12\x1a\n" +
+	"\x05query\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12)\n" +
+	"\rresults_count\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\fresultsCount\x12e\n" +
+	"\x10metadata_filters\x18\x04 \x03(\v24.google.ai.generativelanguage.v1alpha.MetadataFilterB\x04\xe2A\x01\x01R\x0fmetadataFilters\"u\n" +
 	"\x15QueryDocumentResponse\x12\\\n" +
-	"\x0frelevant_chunks\x18\x01 \x03(\v23.google.ai.generativelanguage.v1alpha.RelevantChunkR\x0erelevantChunks\"\xa5\x01\n" +
-	"\x12CreateChunkRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'generativelanguage.googleapis.com/ChunkR\x06parent\x12F\n" +
-	"\x05chunk\x18\x02 \x01(\v2+.google.ai.generativelanguage.v1alpha.ChunkB\x03\xe0A\x02R\x05chunk\"\xbe\x01\n" +
-	"\x18BatchCreateChunksRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x01\xfaA)\x12'generativelanguage.googleapis.com/ChunkR\x06parent\x12Y\n" +
-	"\brequests\x18\x02 \x03(\v28.google.ai.generativelanguage.v1alpha.CreateChunkRequestB\x03\xe0A\x02R\brequests\"`\n" +
+	"\x0frelevant_chunks\x18\x01 \x03(\v23.google.ai.generativelanguage.v1alpha.RelevantChunkR\x0erelevantChunks\"\xa7\x01\n" +
+	"\x12CreateChunkRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'generativelanguage.googleapis.com/ChunkR\x06parent\x12G\n" +
+	"\x05chunk\x18\x02 \x01(\v2+.google.ai.generativelanguage.v1alpha.ChunkB\x04\xe2A\x01\x02R\x05chunk\"\xc0\x01\n" +
+	"\x18BatchCreateChunksRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x01\xfaA)\x12'generativelanguage.googleapis.com/ChunkR\x06parent\x12Z\n" +
+	"\brequests\x18\x02 \x03(\v28.google.ai.generativelanguage.v1alpha.CreateChunkRequestB\x04\xe2A\x01\x02R\brequests\"`\n" +
 	"\x19BatchCreateChunksResponse\x12C\n" +
-	"\x06chunks\x18\x01 \x03(\v2+.google.ai.generativelanguage.v1alpha.ChunkR\x06chunks\"V\n" +
-	"\x0fGetChunkRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'generativelanguage.googleapis.com/ChunkR\x04name\"\x9e\x01\n" +
-	"\x12UpdateChunkRequest\x12F\n" +
-	"\x05chunk\x18\x01 \x01(\v2+.google.ai.generativelanguage.v1alpha.ChunkB\x03\xe0A\x02R\x05chunk\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xbe\x01\n" +
-	"\x18BatchUpdateChunksRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x01\xfaA)\x12'generativelanguage.googleapis.com/ChunkR\x06parent\x12Y\n" +
-	"\brequests\x18\x02 \x03(\v28.google.ai.generativelanguage.v1alpha.UpdateChunkRequestB\x03\xe0A\x02R\brequests\"`\n" +
+	"\x06chunks\x18\x01 \x03(\v2+.google.ai.generativelanguage.v1alpha.ChunkR\x06chunks\"W\n" +
+	"\x0fGetChunkRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'generativelanguage.googleapis.com/ChunkR\x04name\"\xa0\x01\n" +
+	"\x12UpdateChunkRequest\x12G\n" +
+	"\x05chunk\x18\x01 \x01(\v2+.google.ai.generativelanguage.v1alpha.ChunkB\x04\xe2A\x01\x02R\x05chunk\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xc0\x01\n" +
+	"\x18BatchUpdateChunksRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x01\xfaA)\x12'generativelanguage.googleapis.com/ChunkR\x06parent\x12Z\n" +
+	"\brequests\x18\x02 \x03(\v28.google.ai.generativelanguage.v1alpha.UpdateChunkRequestB\x04\xe2A\x01\x02R\brequests\"`\n" +
 	"\x19BatchUpdateChunksResponse\x12C\n" +
-	"\x06chunks\x18\x01 \x03(\v2+.google.ai.generativelanguage.v1alpha.ChunkR\x06chunks\"Y\n" +
-	"\x12DeleteChunkRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'generativelanguage.googleapis.com/ChunkR\x04name\"\xbe\x01\n" +
-	"\x18BatchDeleteChunksRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x01\xfaA)\x12'generativelanguage.googleapis.com/ChunkR\x06parent\x12Y\n" +
-	"\brequests\x18\x02 \x03(\v28.google.ai.generativelanguage.v1alpha.DeleteChunkRequestB\x03\xe0A\x02R\brequests\"\xa2\x01\n" +
-	"\x11ListChunksRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'generativelanguage.googleapis.com/ChunkR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x06chunks\x18\x01 \x03(\v2+.google.ai.generativelanguage.v1alpha.ChunkR\x06chunks\"Z\n" +
+	"\x12DeleteChunkRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'generativelanguage.googleapis.com/ChunkR\x04name\"\xc0\x01\n" +
+	"\x18BatchDeleteChunksRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x01\xfaA)\x12'generativelanguage.googleapis.com/ChunkR\x06parent\x12Z\n" +
+	"\brequests\x18\x02 \x03(\v28.google.ai.generativelanguage.v1alpha.DeleteChunkRequestB\x04\xe2A\x01\x02R\brequests\"\xa5\x01\n" +
+	"\x11ListChunksRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'generativelanguage.googleapis.com/ChunkR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x81\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x81\x01\n" +
 	"\x12ListChunksResponse\x12C\n" +
 	"\x06chunks\x18\x01 \x03(\v2+.google.ai.generativelanguage.v1alpha.ChunkR\x06chunks\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xac\x1d\n" +

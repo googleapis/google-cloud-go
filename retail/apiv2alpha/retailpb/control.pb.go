@@ -209,15 +209,15 @@ var File_google_cloud_retail_v2alpha_control_proto protoreflect.FileDescriptor
 
 const file_google_cloud_retail_v2alpha_control_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/retail/v2alpha/control.proto\x12\x1bgoogle.cloud.retail.v2alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/retail/v2alpha/common.proto\x1a0google/cloud/retail/v2alpha/search_service.proto\"\xeb\x04\n" +
+	")google/cloud/retail/v2alpha/control.proto\x12\x1bgoogle.cloud.retail.v2alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/retail/v2alpha/common.proto\x1a0google/cloud/retail/v2alpha/search_service.proto\"\xed\x04\n" +
 	"\aControl\x12Y\n" +
 	"\n" +
 	"facet_spec\x18\x03 \x01(\v24.google.cloud.retail.v2alpha.SearchRequest.FacetSpecB\x02\x18\x01H\x00R\tfacetSpec\x127\n" +
-	"\x04rule\x18\x04 \x01(\v2!.google.cloud.retail.v2alpha.RuleH\x00R\x04rule\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12F\n" +
-	"\x1dassociated_serving_config_ids\x18\x05 \x03(\tB\x03\xe0A\x03R\x1aassociatedServingConfigIds\x12X\n" +
-	"\x0esolution_types\x18\x06 \x03(\x0e2).google.cloud.retail.v2alpha.SolutionTypeB\x06\xe0A\x02\xe0A\x05R\rsolutionTypes\x12k\n" +
+	"\x04rule\x18\x04 \x01(\v2!.google.cloud.retail.v2alpha.RuleH\x00R\x04rule\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12G\n" +
+	"\x1dassociated_serving_config_ids\x18\x05 \x03(\tB\x04\xe2A\x01\x03R\x1aassociatedServingConfigIds\x12W\n" +
+	"\x0esolution_types\x18\x06 \x03(\x0e2).google.cloud.retail.v2alpha.SolutionTypeB\x05\xe2A\x02\x02\x05R\rsolutionTypes\x12k\n" +
 	"\x18search_solution_use_case\x18\a \x03(\x0e22.google.cloud.retail.v2alpha.SearchSolutionUseCaseR\x15searchSolutionUseCase:q\xeaAn\n" +
 	"\x1dretail.googleapis.com/Control\x12Mprojects/{project}/locations/{location}/catalogs/{catalog}/controls/{control}B\t\n" +
 	"\acontrolB\xd0\x01\n" +

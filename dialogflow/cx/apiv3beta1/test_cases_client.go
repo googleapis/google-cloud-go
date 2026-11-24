@@ -716,6 +716,65 @@ func NewTestCasesClient(ctx context.Context, opts ...option.ClientOption) (*Test
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListTestCases = append(client.CallOptions.ListTestCases, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchDeleteTestCases = append(client.CallOptions.BatchDeleteTestCases, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTestCase = append(client.CallOptions.GetTestCase, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateTestCase = append(client.CallOptions.CreateTestCase, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTestCase = append(client.CallOptions.UpdateTestCase, gax.WithClientTracing(tracing))
+		client.CallOptions.RunTestCase = append(client.CallOptions.RunTestCase, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchRunTestCases = append(client.CallOptions.BatchRunTestCases, gax.WithClientTracing(tracing))
+		client.CallOptions.CalculateCoverage = append(client.CallOptions.CalculateCoverage, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportTestCases = append(client.CallOptions.ImportTestCases, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportTestCases = append(client.CallOptions.ExportTestCases, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTestCaseResults = append(client.CallOptions.ListTestCaseResults, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTestCaseResult = append(client.CallOptions.GetTestCaseResult, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListTestCases = append(client.CallOptions.ListTestCases, gax.WithClientLogging(logging))
+		client.CallOptions.BatchDeleteTestCases = append(client.CallOptions.BatchDeleteTestCases, gax.WithClientLogging(logging))
+		client.CallOptions.GetTestCase = append(client.CallOptions.GetTestCase, gax.WithClientLogging(logging))
+		client.CallOptions.CreateTestCase = append(client.CallOptions.CreateTestCase, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTestCase = append(client.CallOptions.UpdateTestCase, gax.WithClientLogging(logging))
+		client.CallOptions.RunTestCase = append(client.CallOptions.RunTestCase, gax.WithClientLogging(logging))
+		client.CallOptions.BatchRunTestCases = append(client.CallOptions.BatchRunTestCases, gax.WithClientLogging(logging))
+		client.CallOptions.CalculateCoverage = append(client.CallOptions.CalculateCoverage, gax.WithClientLogging(logging))
+		client.CallOptions.ImportTestCases = append(client.CallOptions.ImportTestCases, gax.WithClientLogging(logging))
+		client.CallOptions.ExportTestCases = append(client.CallOptions.ExportTestCases, gax.WithClientLogging(logging))
+		client.CallOptions.ListTestCaseResults = append(client.CallOptions.ListTestCaseResults, gax.WithClientLogging(logging))
+		client.CallOptions.GetTestCaseResult = append(client.CallOptions.GetTestCaseResult, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -841,6 +900,65 @@ func NewTestCasesRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.ListTestCases = append(callOpts.ListTestCases, gax.WithClientTracing(tracing))
+		callOpts.BatchDeleteTestCases = append(callOpts.BatchDeleteTestCases, gax.WithClientTracing(tracing))
+		callOpts.GetTestCase = append(callOpts.GetTestCase, gax.WithClientTracing(tracing))
+		callOpts.CreateTestCase = append(callOpts.CreateTestCase, gax.WithClientTracing(tracing))
+		callOpts.UpdateTestCase = append(callOpts.UpdateTestCase, gax.WithClientTracing(tracing))
+		callOpts.RunTestCase = append(callOpts.RunTestCase, gax.WithClientTracing(tracing))
+		callOpts.BatchRunTestCases = append(callOpts.BatchRunTestCases, gax.WithClientTracing(tracing))
+		callOpts.CalculateCoverage = append(callOpts.CalculateCoverage, gax.WithClientTracing(tracing))
+		callOpts.ImportTestCases = append(callOpts.ImportTestCases, gax.WithClientTracing(tracing))
+		callOpts.ExportTestCases = append(callOpts.ExportTestCases, gax.WithClientTracing(tracing))
+		callOpts.ListTestCaseResults = append(callOpts.ListTestCaseResults, gax.WithClientTracing(tracing))
+		callOpts.GetTestCaseResult = append(callOpts.GetTestCaseResult, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.ListTestCases = append(callOpts.ListTestCases, gax.WithClientLogging(logging))
+		callOpts.BatchDeleteTestCases = append(callOpts.BatchDeleteTestCases, gax.WithClientLogging(logging))
+		callOpts.GetTestCase = append(callOpts.GetTestCase, gax.WithClientLogging(logging))
+		callOpts.CreateTestCase = append(callOpts.CreateTestCase, gax.WithClientLogging(logging))
+		callOpts.UpdateTestCase = append(callOpts.UpdateTestCase, gax.WithClientLogging(logging))
+		callOpts.RunTestCase = append(callOpts.RunTestCase, gax.WithClientLogging(logging))
+		callOpts.BatchRunTestCases = append(callOpts.BatchRunTestCases, gax.WithClientLogging(logging))
+		callOpts.CalculateCoverage = append(callOpts.CalculateCoverage, gax.WithClientLogging(logging))
+		callOpts.ImportTestCases = append(callOpts.ImportTestCases, gax.WithClientLogging(logging))
+		callOpts.ExportTestCases = append(callOpts.ExportTestCases, gax.WithClientLogging(logging))
+		callOpts.ListTestCaseResults = append(callOpts.ListTestCaseResults, gax.WithClientLogging(logging))
+		callOpts.GetTestCaseResult = append(callOpts.GetTestCaseResult, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -897,9 +1015,6 @@ func (c *testCasesGRPCClient) ListTestCases(ctx context.Context, req *cxpb.ListT
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.TestCases/ListTestCases")
 	}
@@ -949,9 +1064,6 @@ func (c *testCasesGRPCClient) BatchDeleteTestCases(ctx context.Context, req *cxp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.TestCases/BatchDeleteTestCases")
 	}
@@ -969,9 +1081,6 @@ func (c *testCasesGRPCClient) GetTestCase(ctx context.Context, req *cxpb.GetTest
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.TestCases/GetTestCase")
 	}
@@ -993,9 +1102,6 @@ func (c *testCasesGRPCClient) CreateTestCase(ctx context.Context, req *cxpb.Crea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.TestCases/CreateTestCase")
 	}
@@ -1038,9 +1144,6 @@ func (c *testCasesGRPCClient) RunTestCase(ctx context.Context, req *cxpb.RunTest
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.TestCases/RunTestCase")
 	}
@@ -1068,9 +1171,6 @@ func (c *testCasesGRPCClient) BatchRunTestCases(ctx context.Context, req *cxpb.B
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.TestCases/BatchRunTestCases")
 	}
@@ -1098,9 +1198,6 @@ func (c *testCasesGRPCClient) CalculateCoverage(ctx context.Context, req *cxpb.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetAgent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.TestCases/CalculateCoverage")
 	}
@@ -1122,9 +1219,6 @@ func (c *testCasesGRPCClient) ImportTestCases(ctx context.Context, req *cxpb.Imp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.TestCases/ImportTestCases")
 	}
@@ -1152,9 +1246,6 @@ func (c *testCasesGRPCClient) ExportTestCases(ctx context.Context, req *cxpb.Exp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.TestCases/ExportTestCases")
 	}
@@ -1182,9 +1273,6 @@ func (c *testCasesGRPCClient) ListTestCaseResults(ctx context.Context, req *cxpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.TestCases/ListTestCaseResults")
 	}
@@ -1234,9 +1322,6 @@ func (c *testCasesGRPCClient) GetTestCaseResult(ctx context.Context, req *cxpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.TestCases/GetTestCaseResult")
 	}
@@ -1429,6 +1514,11 @@ func (c *testCasesRESTClient) ListTestCases(ctx context.Context, req *cxpb.ListT
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/testCases", req.GetParent())
 
 		params := url.Values{}
@@ -1503,6 +1593,11 @@ func (c *testCasesRESTClient) BatchDeleteTestCases(ctx context.Context, req *cxp
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/testCases:batchDelete", req.GetParent())
 
 	params := url.Values{}
@@ -1516,9 +1611,6 @@ func (c *testCasesRESTClient) BatchDeleteTestCases(ctx context.Context, req *cxp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.TestCases/BatchDeleteTestCases")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{parent=projects/*/locations/*/agents/*}/testCases:batchDelete")
@@ -1545,6 +1637,11 @@ func (c *testCasesRESTClient) GetTestCase(ctx context.Context, req *cxpb.GetTest
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1558,9 +1655,6 @@ func (c *testCasesRESTClient) GetTestCase(ctx context.Context, req *cxpb.GetTest
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.TestCases/GetTestCase")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/locations/*/agents/*/testCases/*}")
@@ -1609,6 +1703,11 @@ func (c *testCasesRESTClient) CreateTestCase(ctx context.Context, req *cxpb.Crea
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/testCases", req.GetParent())
 
 	params := url.Values{}
@@ -1622,9 +1721,6 @@ func (c *testCasesRESTClient) CreateTestCase(ctx context.Context, req *cxpb.Crea
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.TestCases/CreateTestCase")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{parent=projects/*/locations/*/agents/*}/testCases")
@@ -1671,6 +1767,11 @@ func (c *testCasesRESTClient) UpdateTestCase(ctx context.Context, req *cxpb.Upda
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTestCase().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetTestCase().GetName())
@@ -1750,6 +1851,11 @@ func (c *testCasesRESTClient) RunTestCase(ctx context.Context, req *cxpb.RunTest
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:run", req.GetName())
 
 	params := url.Values{}
@@ -1763,9 +1869,6 @@ func (c *testCasesRESTClient) RunTestCase(ctx context.Context, req *cxpb.RunTest
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.TestCases/RunTestCase")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/locations/*/agents/*/testCases/*}:run")
@@ -1830,6 +1933,11 @@ func (c *testCasesRESTClient) BatchRunTestCases(ctx context.Context, req *cxpb.B
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/testCases:batchRun", req.GetParent())
 
 	params := url.Values{}
@@ -1843,9 +1951,6 @@ func (c *testCasesRESTClient) BatchRunTestCases(ctx context.Context, req *cxpb.B
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.TestCases/BatchRunTestCases")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{parent=projects/*/locations/*/agents/*}/testCases:batchRun")
@@ -1894,6 +1999,11 @@ func (c *testCasesRESTClient) CalculateCoverage(ctx context.Context, req *cxpb.C
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetAgent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/testCases:calculateCoverage", req.GetAgent())
 
 	params := url.Values{}
@@ -1908,9 +2018,6 @@ func (c *testCasesRESTClient) CalculateCoverage(ctx context.Context, req *cxpb.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetAgent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.TestCases/CalculateCoverage")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{agent=projects/*/locations/*/agents/*}/testCases:calculateCoverage")
@@ -1970,6 +2077,11 @@ func (c *testCasesRESTClient) ImportTestCases(ctx context.Context, req *cxpb.Imp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/testCases:import", req.GetParent())
 
 	params := url.Values{}
@@ -1983,9 +2095,6 @@ func (c *testCasesRESTClient) ImportTestCases(ctx context.Context, req *cxpb.Imp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.TestCases/ImportTestCases")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{parent=projects/*/locations/*/agents/*}/testCases:import")
@@ -2051,6 +2160,11 @@ func (c *testCasesRESTClient) ExportTestCases(ctx context.Context, req *cxpb.Exp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/testCases:export", req.GetParent())
 
 	params := url.Values{}
@@ -2064,9 +2178,6 @@ func (c *testCasesRESTClient) ExportTestCases(ctx context.Context, req *cxpb.Exp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.TestCases/ExportTestCases")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{parent=projects/*/locations/*/agents/*}/testCases:export")
@@ -2127,6 +2238,11 @@ func (c *testCasesRESTClient) ListTestCaseResults(ctx context.Context, req *cxpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/results", req.GetParent())
@@ -2197,6 +2313,11 @@ func (c *testCasesRESTClient) GetTestCaseResult(ctx context.Context, req *cxpb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2210,9 +2331,6 @@ func (c *testCasesRESTClient) GetTestCaseResult(ctx context.Context, req *cxpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.TestCases/GetTestCaseResult")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/locations/*/agents/*/testCases/*/results/*}")
@@ -2252,6 +2370,11 @@ func (c *testCasesRESTClient) GetTestCaseResult(ctx context.Context, req *cxpb.G
 func (c *testCasesRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
@@ -2336,6 +2459,11 @@ func (c *testCasesRESTClient) ListLocations(ctx context.Context, req *locationpb
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -2404,6 +2532,11 @@ func (c *testCasesRESTClient) CancelOperation(ctx context.Context, req *longrunn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2441,6 +2574,11 @@ func (c *testCasesRESTClient) CancelOperation(ctx context.Context, req *longrunn
 func (c *testCasesRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
@@ -2508,6 +2646,11 @@ func (c *testCasesRESTClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/operations", req.GetName())

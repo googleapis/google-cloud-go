@@ -568,44 +568,44 @@ var File_google_cloud_oslogin_v1_oslogin_proto protoreflect.FileDescriptor
 
 const file_google_cloud_oslogin_v1_oslogin_proto_rawDesc = "" +
 	"\n" +
-	"%google/cloud/oslogin/v1/oslogin.proto\x12\x17google.cloud.oslogin.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/oslogin/common/common.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xc8\x02\n" +
-	"\fLoginProfile\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12P\n" +
+	"%google/cloud/oslogin/v1/oslogin.proto\x12\x17google.cloud.oslogin.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/oslogin/common/common.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xc9\x02\n" +
+	"\fLoginProfile\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12P\n" +
 	"\x0eposix_accounts\x18\x02 \x03(\v2).google.cloud.oslogin.common.PosixAccountR\rposixAccounts\x12`\n" +
 	"\x0fssh_public_keys\x18\x03 \x03(\v28.google.cloud.oslogin.v1.LoginProfile.SshPublicKeysEntryR\rsshPublicKeys\x1ak\n" +
 	"\x12SshPublicKeysEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12?\n" +
-	"\x05value\x18\x02 \x01(\v2).google.cloud.oslogin.common.SshPublicKeyR\x05value:\x028\x01\"\xb6\x01\n" +
-	"\x19CreateSshPublicKeyRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#oslogin.googleapis.com/SshPublicKeyR\x06parent\x12T\n" +
-	"\x0essh_public_key\x18\x02 \x01(\v2).google.cloud.oslogin.common.SshPublicKeyB\x03\xe0A\x02R\fsshPublicKey\"\\\n" +
-	"\x19DeletePosixAccountRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#oslogin.googleapis.com/PosixAccountR\x04name\"\\\n" +
-	"\x19DeleteSshPublicKeyRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#oslogin.googleapis.com/SshPublicKeyR\x04name\"\x95\x01\n" +
-	"\x16GetLoginProfileRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#oslogin.googleapis.com/PosixAccountR\x04name\x12\x1d\n" +
+	"\x05value\x18\x02 \x01(\v2).google.cloud.oslogin.common.SshPublicKeyR\x05value:\x028\x01\"\xb8\x01\n" +
+	"\x19CreateSshPublicKeyRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#oslogin.googleapis.com/SshPublicKeyR\x06parent\x12U\n" +
+	"\x0essh_public_key\x18\x02 \x01(\v2).google.cloud.oslogin.common.SshPublicKeyB\x04\xe2A\x01\x02R\fsshPublicKey\"]\n" +
+	"\x19DeletePosixAccountRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#oslogin.googleapis.com/PosixAccountR\x04name\"]\n" +
+	"\x19DeleteSshPublicKeyRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#oslogin.googleapis.com/SshPublicKeyR\x04name\"\x96\x01\n" +
+	"\x16GetLoginProfileRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#oslogin.googleapis.com/PosixAccountR\x04name\x12\x1d\n" +
 	"\n" +
 	"project_id\x18\x02 \x01(\tR\tprojectId\x12\x1b\n" +
-	"\tsystem_id\x18\x03 \x01(\tR\bsystemId\"Y\n" +
-	"\x16GetSshPublicKeyRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#oslogin.googleapis.com/SshPublicKeyR\x04name\"\xf4\x01\n" +
-	"\x19ImportSshPublicKeyRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#oslogin.googleapis.com/SshPublicKeyR\x06parent\x12T\n" +
-	"\x0essh_public_key\x18\x02 \x01(\v2).google.cloud.oslogin.common.SshPublicKeyB\x03\xe0A\x01R\fsshPublicKey\x12\x1d\n" +
+	"\tsystem_id\x18\x03 \x01(\tR\bsystemId\"Z\n" +
+	"\x16GetSshPublicKeyRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#oslogin.googleapis.com/SshPublicKeyR\x04name\"\xf7\x01\n" +
+	"\x19ImportSshPublicKeyRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#oslogin.googleapis.com/SshPublicKeyR\x06parent\x12U\n" +
+	"\x0essh_public_key\x18\x02 \x01(\v2).google.cloud.oslogin.common.SshPublicKeyB\x04\xe2A\x01\x01R\fsshPublicKey\x12\x1d\n" +
 	"\n" +
-	"project_id\x18\x03 \x01(\tR\tprojectId\x12\x1d\n" +
-	"\aregions\x18\x05 \x03(\tB\x03\xe0A\x01R\aregions\"\x82\x01\n" +
+	"project_id\x18\x03 \x01(\tR\tprojectId\x12\x1e\n" +
+	"\aregions\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\aregions\"\x82\x01\n" +
 	"\x1aImportSshPublicKeyResponse\x12J\n" +
 	"\rlogin_profile\x18\x01 \x01(\v2%.google.cloud.oslogin.v1.LoginProfileR\floginProfile\x12\x18\n" +
-	"\adetails\x18\x02 \x01(\tR\adetails\"\xef\x01\n" +
-	"\x19UpdateSshPublicKeyRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#oslogin.googleapis.com/SshPublicKeyR\x04name\x12T\n" +
-	"\x0essh_public_key\x18\x02 \x01(\v2).google.cloud.oslogin.common.SshPublicKeyB\x03\xe0A\x02R\fsshPublicKey\x12;\n" +
+	"\adetails\x18\x02 \x01(\tR\adetails\"\xf1\x01\n" +
+	"\x19UpdateSshPublicKeyRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#oslogin.googleapis.com/SshPublicKeyR\x04name\x12U\n" +
+	"\x0essh_public_key\x18\x02 \x01(\v2).google.cloud.oslogin.common.SshPublicKeyB\x04\xe2A\x01\x02R\fsshPublicKey\x12;\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask2\x86\f\n" +
 	"\x0eOsLoginService\x12\xc7\x01\n" +

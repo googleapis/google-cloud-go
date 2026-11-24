@@ -728,19 +728,20 @@ var File_google_cloud_dataplex_v1_approval_workflow_proto protoreflect.FileDescr
 
 const file_google_cloud_dataplex_v1_approval_workflow_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/dataplex/v1/approval_workflow.proto\x12\x18google.cloud.dataplex.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/dataplex/v1/business_glossary.proto\x1a&google/cloud/dataplex/v1/catalog.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd2\x16\n" +
-	"\rChangeRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
-	"\x03uid\x18\x02 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12)\n" +
-	"\rjustification\x18\x05 \x01(\tB\x03\xe0A\x01R\rjustification\x12P\n" +
-	"\x06labels\x18\x06 \x03(\v23.google.cloud.dataplex.v1.ChangeRequest.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x1b\n" +
-	"\x06author\x18\a \x01(\tB\x03\xe0A\x03R\x06author\x12H\n" +
-	"\x05state\x18\b \x01(\x0e2-.google.cloud.dataplex.v1.ChangeRequest.StateB\x03\xe0A\x03R\x05state\x12%\n" +
-	"\bresource\x18\t \x01(\tB\t\xe0A\x03\xfaA\x03\n" +
+	"0google/cloud/dataplex/v1/approval_workflow.proto\x12\x18google.cloud.dataplex.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/dataplex/v1/business_glossary.proto\x1a&google/cloud/dataplex/v1/catalog.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdf\x16\n" +
+	"\rChangeRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1e\n" +
+	"\x03uid\x18\x02 \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12*\n" +
+	"\rjustification\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\rjustification\x12Q\n" +
+	"\x06labels\x18\x06 \x03(\v23.google.cloud.dataplex.v1.ChangeRequest.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12\x1c\n" +
+	"\x06author\x18\a \x01(\tB\x04\xe2A\x01\x03R\x06author\x12I\n" +
+	"\x05state\x18\b \x01(\x0e2-.google.cloud.dataplex.v1.ChangeRequest.StateB\x04\xe2A\x01\x03R\x05state\x12&\n" +
+	"\bresource\x18\t \x01(\tB\n" +
+	"\xe2A\x01\x03\xfaA\x03\n" +
 	"\x01*R\bresource\x12Q\n" +
 	"\fcreate_entry\x18\n" +
 	" \x01(\v2,.google.cloud.dataplex.v1.CreateEntryRequestH\x00R\vcreateEntry\x12Q\n" +
@@ -757,12 +758,12 @@ const file_google_cloud_dataplex_v1_approval_workflow_proto_rawDesc = "" +
 	"\x14create_glossary_term\x18\x1b \x01(\v23.google.cloud.dataplex.v1.CreateGlossaryTermRequestH\x00R\x12createGlossaryTerm\x12g\n" +
 	"\x14update_glossary_term\x18\x1c \x01(\v23.google.cloud.dataplex.v1.UpdateGlossaryTermRequestH\x00R\x12updateGlossaryTerm\x12g\n" +
 	"\x14delete_glossary_term\x18\x1e \x01(\v23.google.cloud.dataplex.v1.DeleteGlossaryTermRequestH\x00R\x12deleteGlossaryTerm\x12s\n" +
-	"\x1bdata_product_access_request\x18  \x01(\v22.google.cloud.dataplex.v1.DataProductAccessRequestH\x00R\x18dataProductAccessRequest\x12X\n" +
-	"\vchange_type\x18\x13 \x01(\x0e22.google.cloud.dataplex.v1.ChangeRequest.ChangeTypeB\x03\xe0A\x03R\n" +
-	"changeType\x120\n" +
-	"\x11rejection_comment\x18\x10 \x01(\tB\x03\xe0A\x03R\x10rejectionComment\x12\x1f\n" +
-	"\bapprover\x18\x11 \x01(\tB\x03\xe0A\x03R\bapprover\x12\x17\n" +
-	"\x04etag\x18\x12 \x01(\tB\x03\xe0A\x01R\x04etag\x1a9\n" +
+	"\x1bdata_product_access_request\x18  \x01(\v22.google.cloud.dataplex.v1.DataProductAccessRequestH\x00R\x18dataProductAccessRequest\x12Y\n" +
+	"\vchange_type\x18\x13 \x01(\x0e22.google.cloud.dataplex.v1.ChangeRequest.ChangeTypeB\x04\xe2A\x01\x03R\n" +
+	"changeType\x121\n" +
+	"\x11rejection_comment\x18\x10 \x01(\tB\x04\xe2A\x01\x03R\x10rejectionComment\x12 \n" +
+	"\bapprover\x18\x11 \x01(\tB\x04\xe2A\x01\x03R\bapprover\x12\x18\n" +
+	"\x04etag\x18\x12 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"]\n" +
@@ -793,13 +794,13 @@ const file_google_cloud_dataplex_v1_approval_workflow_proto_rawDesc = "" +
 	"\x14DELETE_GLOSSARY_TERM\x10\x11\x12\x1f\n" +
 	"\x1bREQUEST_DATA_PRODUCT_ACCESS\x10!:\x93\x01\xeaA\x8f\x01\n" +
 	"%dataplex.googleapis.com/ChangeRequest\x12Gprojects/{project}/locations/{location}/changeRequests/{change_request}*\x0echangeRequests2\rchangeRequestB\x10\n" +
-	"\x0echange_payload\"\x9f\x02\n" +
-	"\x18DataProductAccessRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#dataplex.googleapis.com/DataProductR\x06parent\x12+\n" +
-	"\x0faccess_group_id\x18\x02 \x01(\tB\x03\xe0A\x02R\raccessGroupId\x12>\n" +
-	"\x19access_group_display_name\x18\x04 \x01(\tB\x03\xe0A\x03R\x16accessGroupDisplayName\x129\n" +
-	"\x13requested_principal\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\x12requestedPrincipal\x88\x01\x01B\x16\n" +
+	"\x0echange_payload\"\xa3\x02\n" +
+	"\x18DataProductAccessRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#dataplex.googleapis.com/DataProductR\x06parent\x12,\n" +
+	"\x0faccess_group_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\raccessGroupId\x12?\n" +
+	"\x19access_group_display_name\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x16accessGroupDisplayName\x12:\n" +
+	"\x13requested_principal\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\x12requestedPrincipal\x88\x01\x01B\x16\n" +
 	"\x14_requested_principalB\xc5\x01\n" +
 	"\x1ccom.google.cloud.dataplex.v1B\x15ApprovalWorkflowProtoP\x01Z8cloud.google.com/go/dataplex/apiv1/dataplexpb;dataplexpb\xaa\x02\x18Google.Cloud.Dataplex.V1\xca\x02\x18Google\\Cloud\\Dataplex\\V1\xea\x02\x1bGoogle::Cloud::Dataplex::V1b\x06proto3"
 

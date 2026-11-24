@@ -265,6 +265,11 @@
                 "UpdateApp"
               ]
             },
+            "UpdateAppVersion": {
+              "methods": [
+                "UpdateAppVersion"
+              ]
+            },
             "UpdateDeployment": {
               "methods": [
                 "UpdateDeployment"
@@ -555,6 +560,11 @@
                 "UpdateApp"
               ]
             },
+            "UpdateAppVersion": {
+              "methods": [
+                "UpdateAppVersion"
+              ]
+            },
             "UpdateDeployment": {
               "methods": [
                 "UpdateDeployment"
@@ -583,6 +593,140 @@
             "UpdateToolset": {
               "methods": [
                 "UpdateToolset"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "AssistantService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AssistantClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "ChatAiAssistant": {
+              "methods": [
+                "ChatAiAssistant"
+              ]
+            },
+            "CreateAssistantSession": {
+              "methods": [
+                "CreateAssistantSession"
+              ]
+            },
+            "DeleteAssistantSession": {
+              "methods": [
+                "DeleteAssistantSession"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetAssistantSession": {
+              "methods": [
+                "GetAssistantSession"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListAssistantSessions": {
+              "methods": [
+                "ListAssistantSessions"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RunAssistant": {
+              "methods": [
+                "RunAssistant"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AssistantClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "ChatAiAssistant": {
+              "methods": [
+                "ChatAiAssistant"
+              ]
+            },
+            "CreateAssistantSession": {
+              "methods": [
+                "CreateAssistantSession"
+              ]
+            },
+            "DeleteAssistantSession": {
+              "methods": [
+                "DeleteAssistantSession"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetAssistantSession": {
+              "methods": [
+                "GetAssistantSession"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListAssistantSessions": {
+              "methods": [
+                "ListAssistantSessions"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RunAssistant": {
+              "methods": [
+                "RunAssistant"
               ]
             }
           }
@@ -1023,6 +1167,11 @@
                 "BidiRunSession"
               ]
             },
+            "CancelAssistantTurn": {
+              "methods": [
+                "CancelAssistantTurn"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -1031,6 +1180,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "GenerateOnboardingSuggestions": {
+              "methods": [
+                "GenerateOnboardingSuggestions"
               ]
             },
             "GetLocation": {
@@ -1056,6 +1210,11 @@
             "RunSession": {
               "methods": [
                 "RunSession"
+              ]
+            },
+            "StreamChatAiAssistant": {
+              "methods": [
+                "StreamChatAiAssistant"
               ]
             },
             "StreamRunSession": {
@@ -1073,6 +1232,11 @@
                 "BidiRunSession"
               ]
             },
+            "CancelAssistantTurn": {
+              "methods": [
+                "CancelAssistantTurn"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -1081,6 +1245,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "GenerateOnboardingSuggestions": {
+              "methods": [
+                "GenerateOnboardingSuggestions"
               ]
             },
             "GetLocation": {
@@ -1106,6 +1275,11 @@
             "RunSession": {
               "methods": [
                 "RunSession"
+              ]
+            },
+            "StreamChatAiAssistant": {
+              "methods": [
+                "StreamChatAiAssistant"
               ]
             },
             "StreamRunSession": {

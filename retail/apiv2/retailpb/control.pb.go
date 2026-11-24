@@ -185,13 +185,13 @@ var File_google_cloud_retail_v2_control_proto protoreflect.FileDescriptor
 
 const file_google_cloud_retail_v2_control_proto_rawDesc = "" +
 	"\n" +
-	"$google/cloud/retail/v2/control.proto\x12\x16google.cloud.retail.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/retail/v2/common.proto\"\x81\x04\n" +
+	"$google/cloud/retail/v2/control.proto\x12\x16google.cloud.retail.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/cloud/retail/v2/common.proto\"\x83\x04\n" +
 	"\aControl\x122\n" +
-	"\x04rule\x18\x04 \x01(\v2\x1c.google.cloud.retail.v2.RuleH\x00R\x04rule\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12F\n" +
-	"\x1dassociated_serving_config_ids\x18\x05 \x03(\tB\x03\xe0A\x03R\x1aassociatedServingConfigIds\x12S\n" +
-	"\x0esolution_types\x18\x06 \x03(\x0e2$.google.cloud.retail.v2.SolutionTypeB\x06\xe0A\x02\xe0A\x05R\rsolutionTypes\x12f\n" +
+	"\x04rule\x18\x04 \x01(\v2\x1c.google.cloud.retail.v2.RuleH\x00R\x04rule\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12G\n" +
+	"\x1dassociated_serving_config_ids\x18\x05 \x03(\tB\x04\xe2A\x01\x03R\x1aassociatedServingConfigIds\x12R\n" +
+	"\x0esolution_types\x18\x06 \x03(\x0e2$.google.cloud.retail.v2.SolutionTypeB\x05\xe2A\x02\x02\x05R\rsolutionTypes\x12f\n" +
 	"\x18search_solution_use_case\x18\a \x03(\x0e2-.google.cloud.retail.v2.SearchSolutionUseCaseR\x15searchSolutionUseCase:q\xeaAn\n" +
 	"\x1dretail.googleapis.com/Control\x12Mprojects/{project}/locations/{location}/catalogs/{catalog}/controls/{control}B\t\n" +
 	"\acontrolB\xb7\x01\n" +

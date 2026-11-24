@@ -18,11 +18,13 @@ package asset
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	assetpb "cloud.google.com/go/asset/apiv1/assetpb"
 	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -154,6 +156,12 @@ func (op *ExportAssetsOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator) All() iter.Seq2[*assetpb.AnalyzeOrgPoliciesResponse_OrgPolicyResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator manages a stream of *assetpb.AnalyzeOrgPoliciesResponse_OrgPolicyResult.
 type AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator struct {
 	items    []*assetpb.AnalyzeOrgPoliciesResponse_OrgPolicyResult
@@ -199,6 +207,12 @@ func (it *AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator) takeBuf() interfac
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator) All() iter.Seq2[*assetpb.AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAsset, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator manages a stream of *assetpb.AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAsset.
@@ -248,6 +262,12 @@ func (it *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator) takeBuf(
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator) All() iter.Seq2[*assetpb.AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainer, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator manages a stream of *assetpb.AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainer.
 type AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator struct {
 	items    []*assetpb.AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainer
@@ -293,6 +313,12 @@ func (it *AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator) 
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AssetIterator) All() iter.Seq2[*assetpb.Asset, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AssetIterator manages a stream of *assetpb.Asset.
@@ -342,6 +368,12 @@ func (it *AssetIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IamPolicySearchResultIterator) All() iter.Seq2[*assetpb.IamPolicySearchResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // IamPolicySearchResultIterator manages a stream of *assetpb.IamPolicySearchResult.
 type IamPolicySearchResultIterator struct {
 	items    []*assetpb.IamPolicySearchResult
@@ -389,6 +421,12 @@ func (it *IamPolicySearchResultIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ResourceSearchResultIterator) All() iter.Seq2[*assetpb.ResourceSearchResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ResourceSearchResultIterator manages a stream of *assetpb.ResourceSearchResult.
 type ResourceSearchResultIterator struct {
 	items    []*assetpb.ResourceSearchResult
@@ -434,6 +472,12 @@ func (it *ResourceSearchResultIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SavedQueryIterator) All() iter.Seq2[*assetpb.SavedQuery, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SavedQueryIterator manages a stream of *assetpb.SavedQuery.

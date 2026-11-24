@@ -18,12 +18,14 @@ package dataplex
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	dataplexpb "cloud.google.com/go/dataplex/apiv1/dataplexpb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -2988,6 +2990,12 @@ func (op *UpdateZoneOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ActionIterator) All() iter.Seq2[*dataplexpb.Action, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ActionIterator manages a stream of *dataplexpb.Action.
 type ActionIterator struct {
 	items    []*dataplexpb.Action
@@ -3033,6 +3041,12 @@ func (it *ActionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AspectTypeIterator) All() iter.Seq2[*dataplexpb.AspectType, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AspectTypeIterator manages a stream of *dataplexpb.AspectType.
@@ -3082,6 +3096,12 @@ func (it *AspectTypeIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AssetIterator) All() iter.Seq2[*dataplexpb.Asset, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AssetIterator manages a stream of *dataplexpb.Asset.
 type AssetIterator struct {
 	items    []*dataplexpb.Asset
@@ -3127,6 +3147,12 @@ func (it *AssetIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataAssetIterator) All() iter.Seq2[*dataplexpb.DataAsset, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DataAssetIterator manages a stream of *dataplexpb.DataAsset.
@@ -3176,6 +3202,12 @@ func (it *DataAssetIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataAttributeBindingIterator) All() iter.Seq2[*dataplexpb.DataAttributeBinding, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DataAttributeBindingIterator manages a stream of *dataplexpb.DataAttributeBinding.
 type DataAttributeBindingIterator struct {
 	items    []*dataplexpb.DataAttributeBinding
@@ -3221,6 +3253,12 @@ func (it *DataAttributeBindingIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataAttributeIterator) All() iter.Seq2[*dataplexpb.DataAttribute, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DataAttributeIterator manages a stream of *dataplexpb.DataAttribute.
@@ -3270,6 +3308,12 @@ func (it *DataAttributeIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataProductIterator) All() iter.Seq2[*dataplexpb.DataProduct, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DataProductIterator manages a stream of *dataplexpb.DataProduct.
 type DataProductIterator struct {
 	items    []*dataplexpb.DataProduct
@@ -3315,6 +3359,12 @@ func (it *DataProductIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataScanIterator) All() iter.Seq2[*dataplexpb.DataScan, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DataScanIterator manages a stream of *dataplexpb.DataScan.
@@ -3364,6 +3414,12 @@ func (it *DataScanIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataScanJobIterator) All() iter.Seq2[*dataplexpb.DataScanJob, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DataScanJobIterator manages a stream of *dataplexpb.DataScanJob.
 type DataScanJobIterator struct {
 	items    []*dataplexpb.DataScanJob
@@ -3409,6 +3465,12 @@ func (it *DataScanJobIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataTaxonomyIterator) All() iter.Seq2[*dataplexpb.DataTaxonomy, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DataTaxonomyIterator manages a stream of *dataplexpb.DataTaxonomy.
@@ -3458,6 +3520,12 @@ func (it *DataTaxonomyIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EncryptionConfigIterator) All() iter.Seq2[*dataplexpb.EncryptionConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EncryptionConfigIterator manages a stream of *dataplexpb.EncryptionConfig.
 type EncryptionConfigIterator struct {
 	items    []*dataplexpb.EncryptionConfig
@@ -3503,6 +3571,12 @@ func (it *EncryptionConfigIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EntityIterator) All() iter.Seq2[*dataplexpb.Entity, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // EntityIterator manages a stream of *dataplexpb.Entity.
@@ -3552,6 +3626,12 @@ func (it *EntityIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EntryGroupIterator) All() iter.Seq2[*dataplexpb.EntryGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EntryGroupIterator manages a stream of *dataplexpb.EntryGroup.
 type EntryGroupIterator struct {
 	items    []*dataplexpb.EntryGroup
@@ -3597,6 +3677,12 @@ func (it *EntryGroupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EntryIterator) All() iter.Seq2[*dataplexpb.Entry, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // EntryIterator manages a stream of *dataplexpb.Entry.
@@ -3646,6 +3732,12 @@ func (it *EntryIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EntryLinkIterator) All() iter.Seq2[*dataplexpb.EntryLink, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EntryLinkIterator manages a stream of *dataplexpb.EntryLink.
 type EntryLinkIterator struct {
 	items    []*dataplexpb.EntryLink
@@ -3691,6 +3783,12 @@ func (it *EntryLinkIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EntryTypeIterator) All() iter.Seq2[*dataplexpb.EntryType, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // EntryTypeIterator manages a stream of *dataplexpb.EntryType.
@@ -3740,6 +3838,12 @@ func (it *EntryTypeIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GlossaryCategoryIterator) All() iter.Seq2[*dataplexpb.GlossaryCategory, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // GlossaryCategoryIterator manages a stream of *dataplexpb.GlossaryCategory.
 type GlossaryCategoryIterator struct {
 	items    []*dataplexpb.GlossaryCategory
@@ -3785,6 +3889,12 @@ func (it *GlossaryCategoryIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GlossaryIterator) All() iter.Seq2[*dataplexpb.Glossary, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // GlossaryIterator manages a stream of *dataplexpb.Glossary.
@@ -3834,6 +3944,12 @@ func (it *GlossaryIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GlossaryTermIterator) All() iter.Seq2[*dataplexpb.GlossaryTerm, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // GlossaryTermIterator manages a stream of *dataplexpb.GlossaryTerm.
 type GlossaryTermIterator struct {
 	items    []*dataplexpb.GlossaryTerm
@@ -3879,6 +3995,12 @@ func (it *GlossaryTermIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *JobIterator) All() iter.Seq2[*dataplexpb.Job, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // JobIterator manages a stream of *dataplexpb.Job.
@@ -3928,6 +4050,12 @@ func (it *JobIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LakeIterator) All() iter.Seq2[*dataplexpb.Lake, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LakeIterator manages a stream of *dataplexpb.Lake.
 type LakeIterator struct {
 	items    []*dataplexpb.Lake
@@ -3973,6 +4101,12 @@ func (it *LakeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -4022,6 +4156,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MetadataFeedIterator) All() iter.Seq2[*dataplexpb.MetadataFeed, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // MetadataFeedIterator manages a stream of *dataplexpb.MetadataFeed.
 type MetadataFeedIterator struct {
 	items    []*dataplexpb.MetadataFeed
@@ -4067,6 +4207,12 @@ func (it *MetadataFeedIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MetadataJobIterator) All() iter.Seq2[*dataplexpb.MetadataJob, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // MetadataJobIterator manages a stream of *dataplexpb.MetadataJob.
@@ -4116,6 +4262,12 @@ func (it *MetadataJobIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -4161,6 +4313,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PartitionIterator) All() iter.Seq2[*dataplexpb.Partition, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PartitionIterator manages a stream of *dataplexpb.Partition.
@@ -4210,6 +4368,12 @@ func (it *PartitionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SearchEntriesResultIterator) All() iter.Seq2[*dataplexpb.SearchEntriesResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SearchEntriesResultIterator manages a stream of *dataplexpb.SearchEntriesResult.
 type SearchEntriesResultIterator struct {
 	items    []*dataplexpb.SearchEntriesResult
@@ -4257,6 +4421,12 @@ func (it *SearchEntriesResultIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TaskIterator) All() iter.Seq2[*dataplexpb.Task, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TaskIterator manages a stream of *dataplexpb.Task.
 type TaskIterator struct {
 	items    []*dataplexpb.Task
@@ -4302,6 +4472,12 @@ func (it *TaskIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ZoneIterator) All() iter.Seq2[*dataplexpb.Zone, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ZoneIterator manages a stream of *dataplexpb.Zone.

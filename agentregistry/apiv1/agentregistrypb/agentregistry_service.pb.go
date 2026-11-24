@@ -1234,7 +1234,7 @@ func (x *CreateServiceRequest) GetRequestId() string {
 // Message for fetching available Bindings.
 type FetchAvailableBindingsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The reference of the source Agent.
+	// Required. The reference of the source Agent Registry resource.
 	//
 	// Types that are valid to be assigned to Source:
 	//
@@ -2118,148 +2118,148 @@ var File_google_cloud_agentregistry_v1_agentregistry_service_proto protoreflect.
 
 const file_google_cloud_agentregistry_v1_agentregistry_service_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/agentregistry/v1/agentregistry_service.proto\x12\x1dgoogle.cloud.agentregistry.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/agentregistry/v1/agent.proto\x1a+google/cloud/agentregistry/v1/binding.proto\x1a,google/cloud/agentregistry/v1/endpoint.proto\x1a.google/cloud/agentregistry/v1/mcp_server.proto\x1a+google/cloud/agentregistry/v1/service.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xda\x01\n" +
-	"\x11ListAgentsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"agentregistry.googleapis.com/AgentR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"9google/cloud/agentregistry/v1/agentregistry_service.proto\x12\x1dgoogle.cloud.agentregistry.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/agentregistry/v1/agent.proto\x1a+google/cloud/agentregistry/v1/binding.proto\x1a,google/cloud/agentregistry/v1/endpoint.proto\x1a.google/cloud/agentregistry/v1/mcp_server.proto\x1a+google/cloud/agentregistry/v1/service.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdf\x01\n" +
+	"\x11ListAgentsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"agentregistry.googleapis.com/AgentR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"z\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"z\n" +
 	"\x12ListAgentsResponse\x12<\n" +
 	"\x06agents\x18\x01 \x03(\v2$.google.cloud.agentregistry.v1.AgentR\x06agents\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc9\x01\n" +
-	"\x13SearchAgentsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"agentregistry.googleapis.com/AgentR\x06parent\x12(\n" +
-	"\rsearch_string\x18\x03 \x01(\tB\x03\xe0A\x01R\fsearchString\x12 \n" +
-	"\tpage_size\x18\x06 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xcd\x01\n" +
+	"\x13SearchAgentsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"agentregistry.googleapis.com/AgentR\x06parent\x12)\n" +
+	"\rsearch_string\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\fsearchString\x12!\n" +
+	"\tpage_size\x18\x06 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\a \x01(\tB\x03\xe0A\x01R\tpageToken\"|\n" +
+	"page_token\x18\a \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"|\n" +
 	"\x14SearchAgentsResponse\x12<\n" +
 	"\x06agents\x18\x01 \x03(\v2$.google.cloud.agentregistry.v1.AgentR\x06agents\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Q\n" +
-	"\x0fGetAgentRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"agentregistry.googleapis.com/AgentR\x04name\"\xc0\x01\n" +
-	"\x14ListEndpointsRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%agentregistry.googleapis.com/EndpointR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"R\n" +
+	"\x0fGetAgentRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"agentregistry.googleapis.com/AgentR\x04name\"\xc4\x01\n" +
+	"\x14ListEndpointsRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%agentregistry.googleapis.com/EndpointR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x86\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x86\x01\n" +
 	"\x15ListEndpointsResponse\x12E\n" +
 	"\tendpoints\x18\x01 \x03(\v2'.google.cloud.agentregistry.v1.EndpointR\tendpoints\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"W\n" +
-	"\x12GetEndpointRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%agentregistry.googleapis.com/EndpointR\x04name\"\xe2\x01\n" +
-	"\x15ListMcpServersRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&agentregistry.googleapis.com/McpServerR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"X\n" +
+	"\x12GetEndpointRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%agentregistry.googleapis.com/EndpointR\x04name\"\xe7\x01\n" +
+	"\x15ListMcpServersRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&agentregistry.googleapis.com/McpServerR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x8b\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x8b\x01\n" +
 	"\x16ListMcpServersResponse\x12I\n" +
 	"\vmcp_servers\x18\x01 \x03(\v2(.google.cloud.agentregistry.v1.McpServerR\n" +
 	"mcpServers\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd1\x01\n" +
-	"\x17SearchMcpServersRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&agentregistry.googleapis.com/McpServerR\x06parent\x12(\n" +
-	"\rsearch_string\x18\x03 \x01(\tB\x03\xe0A\x01R\fsearchString\x12 \n" +
-	"\tpage_size\x18\x06 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd5\x01\n" +
+	"\x17SearchMcpServersRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\x12&agentregistry.googleapis.com/McpServerR\x06parent\x12)\n" +
+	"\rsearch_string\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\fsearchString\x12!\n" +
+	"\tpage_size\x18\x06 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\a \x01(\tB\x03\xe0A\x01R\tpageToken\"\x8d\x01\n" +
+	"page_token\x18\a \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x8d\x01\n" +
 	"\x18SearchMcpServersResponse\x12I\n" +
 	"\vmcp_servers\x18\x01 \x03(\v2(.google.cloud.agentregistry.v1.McpServerR\n" +
 	"mcpServers\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Y\n" +
-	"\x13GetMcpServerRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&agentregistry.googleapis.com/McpServerR\x04name\"\xbe\x01\n" +
-	"\x13ListServicesRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$agentregistry.googleapis.com/ServiceR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Z\n" +
+	"\x13GetMcpServerRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&agentregistry.googleapis.com/McpServerR\x04name\"\xc2\x01\n" +
+	"\x13ListServicesRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$agentregistry.googleapis.com/ServiceR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x82\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x82\x01\n" +
 	"\x14ListServicesResponse\x12B\n" +
 	"\bservices\x18\x01 \x03(\v2&.google.cloud.agentregistry.v1.ServiceR\bservices\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"U\n" +
-	"\x11GetServiceRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$agentregistry.googleapis.com/ServiceR\x04name\"\xf3\x01\n" +
-	"\x14CreateServiceRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$agentregistry.googleapis.com/ServiceR\x06parent\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"V\n" +
+	"\x11GetServiceRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$agentregistry.googleapis.com/ServiceR\x04name\"\xf7\x01\n" +
+	"\x14CreateServiceRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$agentregistry.googleapis.com/ServiceR\x06parent\x12#\n" +
 	"\n" +
-	"service_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tserviceId\x12E\n" +
-	"\aservice\x18\x03 \x01(\v2&.google.cloud.agentregistry.v1.ServiceB\x03\xe0A\x02R\aservice\x12*\n" +
+	"service_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tserviceId\x12F\n" +
+	"\aservice\x18\x03 \x01(\v2&.google.cloud.agentregistry.v1.ServiceB\x04\xe2A\x01\x02R\aservice\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa2\x02\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa6\x02\n" +
 	"\x1dFetchAvailableBindingsRequest\x12-\n" +
-	"\x11source_identifier\x18\x02 \x01(\tH\x00R\x10sourceIdentifier\x122\n" +
-	"\x11target_identifier\x18\x03 \x01(\tB\x03\xe0A\x01H\x01R\x10targetIdentifier\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$agentregistry.googleapis.com/BindingR\x06parent\x12 \n" +
-	"\tpage_size\x18\x04 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x11source_identifier\x18\x02 \x01(\tH\x00R\x10sourceIdentifier\x123\n" +
+	"\x11target_identifier\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x01R\x10targetIdentifier\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$agentregistry.googleapis.com/BindingR\x06parent\x12!\n" +
+	"\tpage_size\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x05 \x01(\tB\x03\xe0A\x01R\tpageTokenB\b\n" +
+	"page_token\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\tpageTokenB\b\n" +
 	"\x06sourceB\b\n" +
 	"\x06target\"\x8c\x01\n" +
 	"\x1eFetchAvailableBindingsResponse\x12B\n" +
 	"\bbindings\x18\x01 \x03(\v2&.google.cloud.agentregistry.v1.BindingR\bbindings\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xcb\x01\n" +
-	"\x14UpdateServiceRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12E\n" +
-	"\aservice\x18\x02 \x01(\v2&.google.cloud.agentregistry.v1.ServiceB\x03\xe0A\x02R\aservice\x12*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xce\x01\n" +
+	"\x14UpdateServiceRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12F\n" +
+	"\aservice\x18\x02 \x01(\v2&.google.cloud.agentregistry.v1.ServiceB\x04\xe2A\x01\x02R\aservice\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x84\x01\n" +
-	"\x14DeleteServiceRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$agentregistry.googleapis.com/ServiceR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x86\x01\n" +
+	"\x14DeleteServiceRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$agentregistry.googleapis.com/ServiceR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"\xde\x01\n" +
-	"\x13ListBindingsRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$agentregistry.googleapis.com/BindingR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\"\xe3\x01\n" +
+	"\x13ListBindingsRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$agentregistry.googleapis.com/BindingR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x82\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\"\x82\x01\n" +
 	"\x14ListBindingsResponse\x12B\n" +
 	"\bbindings\x18\x01 \x03(\v2&.google.cloud.agentregistry.v1.BindingR\bbindings\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"U\n" +
-	"\x11GetBindingRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$agentregistry.googleapis.com/BindingR\x04name\"\xf3\x01\n" +
-	"\x14CreateBindingRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$agentregistry.googleapis.com/BindingR\x06parent\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"V\n" +
+	"\x11GetBindingRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$agentregistry.googleapis.com/BindingR\x04name\"\xf7\x01\n" +
+	"\x14CreateBindingRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$agentregistry.googleapis.com/BindingR\x06parent\x12#\n" +
 	"\n" +
-	"binding_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tbindingId\x12E\n" +
-	"\abinding\x18\x03 \x01(\v2&.google.cloud.agentregistry.v1.BindingB\x03\xe0A\x02R\abinding\x12*\n" +
+	"binding_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tbindingId\x12F\n" +
+	"\abinding\x18\x03 \x01(\v2&.google.cloud.agentregistry.v1.BindingB\x04\xe2A\x01\x02R\abinding\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xcb\x01\n" +
-	"\x14UpdateBindingRequest\x12E\n" +
-	"\abinding\x18\x01 \x01(\v2&.google.cloud.agentregistry.v1.BindingB\x03\xe0A\x02R\abinding\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xce\x01\n" +
+	"\x14UpdateBindingRequest\x12F\n" +
+	"\abinding\x18\x01 \x01(\v2&.google.cloud.agentregistry.v1.BindingB\x04\xe2A\x01\x02R\abinding\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x84\x01\n" +
-	"\x14DeleteBindingRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$agentregistry.googleapis.com/BindingR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x86\x01\n" +
+	"\x14DeleteBindingRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$agentregistry.googleapis.com/BindingR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId2\x8c\x1f\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId2\x8c\x1f\n" +
 	"\rAgentRegistry\x12\xae\x01\n" +
 	"\n" +
 	"ListAgents\x120.google.cloud.agentregistry.v1.ListAgentsRequest\x1a1.google.cloud.agentregistry.v1.ListAgentsResponse\";\xdaA\x06parent\x82\xd3\xe4\x93\x02,\x12*/v1/{parent=projects/*/locations/*}/agents\x12\xbe\x01\n" +

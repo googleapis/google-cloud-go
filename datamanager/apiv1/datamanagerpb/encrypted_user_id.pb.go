@@ -240,13 +240,13 @@ var File_google_ads_datamanager_v1_encrypted_user_id_proto protoreflect.FileDesc
 
 const file_google_ads_datamanager_v1_encrypted_user_id_proto_rawDesc = "" +
 	"\n" +
-	"1google/ads/datamanager/v1/encrypted_user_id.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xec\x04\n" +
-	"\x0fEncryptedUserId\x12&\n" +
-	"\fencrypted_id\x18\x01 \x01(\tB\x03\xe0A\x02R\vencryptedId\x12e\n" +
-	"\ventity_type\x18\x02 \x01(\x0e2?.google.ads.datamanager.v1.EncryptedUserId.EncryptionEntityTypeB\x03\xe0A\x02R\n" +
-	"entityType\x12 \n" +
-	"\tentity_id\x18\x03 \x01(\x03B\x03\xe0A\x02R\bentityId\x12X\n" +
-	"\x06source\x18\x04 \x01(\x0e2;.google.ads.datamanager.v1.EncryptedUserId.EncryptionSourceB\x03\xe0A\x02R\x06source\"\xf3\x01\n" +
+	"1google/ads/datamanager/v1/encrypted_user_id.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xf0\x04\n" +
+	"\x0fEncryptedUserId\x12'\n" +
+	"\fencrypted_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vencryptedId\x12f\n" +
+	"\ventity_type\x18\x02 \x01(\x0e2?.google.ads.datamanager.v1.EncryptedUserId.EncryptionEntityTypeB\x04\xe2A\x01\x02R\n" +
+	"entityType\x12!\n" +
+	"\tentity_id\x18\x03 \x01(\x03B\x04\xe2A\x01\x02R\bentityId\x12Y\n" +
+	"\x06source\x18\x04 \x01(\x0e2;.google.ads.datamanager.v1.EncryptedUserId.EncryptionSourceB\x04\xe2A\x01\x02R\x06source\"\xf3\x01\n" +
 	"\x14EncryptionEntityType\x12&\n" +
 	"\"ENCRYPTION_ENTITY_TYPE_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18CAMPAIGN_MANAGER_ACCOUNT\x10\x01\x12\x1f\n" +

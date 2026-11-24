@@ -144,9 +144,9 @@ var File_google_shopping_merchant_accounts_v1_verificationmailsettings_proto pro
 
 const file_google_shopping_merchant_accounts_v1_verificationmailsettings_proto_rawDesc = "" +
 	"\n" +
-	"Cgoogle/shopping/merchant/accounts/v1/verificationmailsettings.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xa7\x02\n" +
-	"\x18VerificationMailSettings\x12\x8e\x01\n" +
-	"\x16verification_mail_mode\x18\x01 \x01(\x0e2S.google.shopping.merchant.accounts.v1.VerificationMailSettings.VerificationMailModeB\x03\xe0A\x01R\x14verificationMailMode\"z\n" +
+	"Cgoogle/shopping/merchant/accounts/v1/verificationmailsettings.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xa8\x02\n" +
+	"\x18VerificationMailSettings\x12\x8f\x01\n" +
+	"\x16verification_mail_mode\x18\x01 \x01(\x0e2S.google.shopping.merchant.accounts.v1.VerificationMailSettings.VerificationMailModeB\x04\xe2A\x01\x01R\x14verificationMailMode\"z\n" +
 	"\x14VerificationMailMode\x12&\n" +
 	"\"VERIFICATION_MAIL_MODE_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16SEND_VERIFICATION_MAIL\x10\x01\x12\x1e\n" +

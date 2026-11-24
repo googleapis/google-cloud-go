@@ -266,10 +266,10 @@ var File_google_cloud_automl_v1_translation_proto protoreflect.FileDescriptor
 
 const file_google_cloud_automl_v1_translation_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/automl/v1/translation.proto\x12\x16google.cloud.automl.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a'google/cloud/automl/v1/data_items.proto\"\x8a\x01\n" +
-	"\x1aTranslationDatasetMetadata\x125\n" +
-	"\x14source_language_code\x18\x01 \x01(\tB\x03\xe0A\x02R\x12sourceLanguageCode\x125\n" +
-	"\x14target_language_code\x18\x02 \x01(\tB\x03\xe0A\x02R\x12targetLanguageCode\"e\n" +
+	"(google/cloud/automl/v1/translation.proto\x12\x16google.cloud.automl.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a'google/cloud/automl/v1/data_items.proto\"\x8c\x01\n" +
+	"\x1aTranslationDatasetMetadata\x126\n" +
+	"\x14source_language_code\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x12sourceLanguageCode\x126\n" +
+	"\x14target_language_code\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12targetLanguageCode\"e\n" +
 	"\x1cTranslationEvaluationMetrics\x12\x1d\n" +
 	"\n" +
 	"bleu_score\x18\x01 \x01(\x01R\tbleuScore\x12&\n" +

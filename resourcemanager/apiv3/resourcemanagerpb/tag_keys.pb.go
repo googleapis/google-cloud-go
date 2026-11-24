@@ -788,54 +788,55 @@ var File_google_cloud_resourcemanager_v3_tag_keys_proto protoreflect.FileDescrip
 
 const file_google_cloud_resourcemanager_v3_tag_keys_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/resourcemanager/v3/tag_keys.proto\x12\x1fgoogle.cloud.resourcemanager.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8c\x05\n" +
-	"\x06TagKey\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12\x1b\n" +
-	"\x06parent\x18\x02 \x01(\tB\x03\xe0A\x05R\x06parent\x12%\n" +
+	".google/cloud/resourcemanager/v3/tag_keys.proto\x12\x1fgoogle.cloud.resourcemanager.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x92\x05\n" +
+	"\x06TagKey\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12\x1c\n" +
+	"\x06parent\x18\x02 \x01(\tB\x04\xe2A\x01\x05R\x06parent\x12$\n" +
 	"\n" +
-	"short_name\x18\x03 \x01(\tB\x06\xe0A\x02\xe0A\x05R\tshortName\x12/\n" +
-	"\x0fnamespaced_name\x18\x04 \x01(\tB\x06\xe0A\x03\xe0A\x05R\x0enamespacedName\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04etag\x18\b \x01(\tB\x03\xe0A\x01R\x04etag\x12G\n" +
-	"\apurpose\x18\v \x01(\x0e2(.google.cloud.resourcemanager.v3.PurposeB\x03\xe0A\x01R\apurpose\x12`\n" +
-	"\fpurpose_data\x18\f \x03(\v28.google.cloud.resourcemanager.v3.TagKey.PurposeDataEntryB\x03\xe0A\x01R\vpurposeData\x1a>\n" +
+	"short_name\x18\x03 \x01(\tB\x05\xe2A\x02\x02\x05R\tshortName\x12.\n" +
+	"\x0fnamespaced_name\x18\x04 \x01(\tB\x05\xe2A\x02\x03\x05R\x0enamespacedName\x12&\n" +
+	"\vdescription\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04etag\x18\b \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12H\n" +
+	"\apurpose\x18\v \x01(\x0e2(.google.cloud.resourcemanager.v3.PurposeB\x04\xe2A\x01\x01R\apurpose\x12a\n" +
+	"\fpurpose_data\x18\f \x03(\v28.google.cloud.resourcemanager.v3.TagKey.PurposeDataEntryB\x04\xe2A\x01\x01R\vpurposeData\x1a>\n" +
 	"\x10PurposeDataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:E\xeaAB\n" +
-	"*cloudresourcemanager.googleapis.com/TagKey\x12\x11tagKeys/{tag_key}R\x01\x01\"}\n" +
-	"\x12ListTagKeysRequest\x12!\n" +
-	"\x06parent\x18\x01 \x01(\tB\t\xe0A\x02\xfaA\x03\x12\x01*R\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"*cloudresourcemanager.googleapis.com/TagKey\x12\x11tagKeys/{tag_key}R\x01\x01\"\x80\x01\n" +
+	"\x12ListTagKeysRequest\x12\"\n" +
+	"\x06parent\x18\x01 \x01(\tB\n" +
+	"\xe2A\x01\x02\xfaA\x03\x12\x01*R\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x81\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x81\x01\n" +
 	"\x13ListTagKeysResponse\x12B\n" +
 	"\btag_keys\x18\x01 \x03(\v2'.google.cloud.resourcemanager.v3.TagKeyR\atagKeys\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Z\n" +
-	"\x10GetTagKeyRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*cloudresourcemanager.googleapis.com/TagKeyR\x04name\"d\n" +
-	"\x1aGetNamespacedTagKeyRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*cloudresourcemanager.googleapis.com/TagKeyR\x04name\"\x86\x01\n" +
-	"\x13CreateTagKeyRequest\x12E\n" +
-	"\atag_key\x18\x01 \x01(\v2'.google.cloud.resourcemanager.v3.TagKeyB\x03\xe0A\x02R\x06tagKey\x12(\n" +
-	"\rvalidate_only\x18\x02 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x16\n" +
-	"\x14CreateTagKeyMetadata\"\xbe\x01\n" +
-	"\x13UpdateTagKeyRequest\x12E\n" +
-	"\atag_key\x18\x01 \x01(\v2'.google.cloud.resourcemanager.v3.TagKeyB\x03\xe0A\x02R\x06tagKey\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"[\n" +
+	"\x10GetTagKeyRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*cloudresourcemanager.googleapis.com/TagKeyR\x04name\"e\n" +
+	"\x1aGetNamespacedTagKeyRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*cloudresourcemanager.googleapis.com/TagKeyR\x04name\"\x88\x01\n" +
+	"\x13CreateTagKeyRequest\x12F\n" +
+	"\atag_key\x18\x01 \x01(\v2'.google.cloud.resourcemanager.v3.TagKeyB\x04\xe2A\x01\x02R\x06tagKey\x12)\n" +
+	"\rvalidate_only\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\x16\n" +
+	"\x14CreateTagKeyMetadata\"\xbf\x01\n" +
+	"\x13UpdateTagKeyRequest\x12F\n" +
+	"\atag_key\x18\x01 \x01(\v2'.google.cloud.resourcemanager.v3.TagKeyB\x04\xe2A\x01\x02R\x06tagKey\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\x12#\n" +
 	"\rvalidate_only\x18\x03 \x01(\bR\fvalidateOnly\"\x16\n" +
-	"\x14UpdateTagKeyMetadata\"\xa0\x01\n" +
-	"\x13DeleteTagKeyRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*cloudresourcemanager.googleapis.com/TagKeyR\x04name\x12(\n" +
-	"\rvalidate_only\x18\x02 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\"\x16\n" +
+	"\x14UpdateTagKeyMetadata\"\xa3\x01\n" +
+	"\x13DeleteTagKeyRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*cloudresourcemanager.googleapis.com/TagKeyR\x04name\x12)\n" +
+	"\rvalidate_only\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\x16\n" +
 	"\x14DeleteTagKeyMetadata*4\n" +
 	"\aPurpose\x12\x17\n" +
 	"\x13PURPOSE_UNSPECIFIED\x10\x00\x12\x10\n" +

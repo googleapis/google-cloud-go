@@ -739,7 +739,7 @@ var File_google_shopping_merchant_datasources_v1_datasources_proto protoreflect.
 
 const file_google_shopping_merchant_datasources_v1_datasources_proto_rawDesc = "" +
 	"\n" +
-	"9google/shopping/merchant/datasources/v1/datasources.proto\x12'google.shopping.merchant.datasources.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a=google/shopping/merchant/datasources/v1/datasourcetypes.proto\x1a8google/shopping/merchant/datasources/v1/fileinputs.proto\"\x92\v\n" +
+	"9google/shopping/merchant/datasources/v1/datasources.proto\x12'google.shopping.merchant.datasources.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a=google/shopping/merchant/datasources/v1/datasourcetypes.proto\x1a8google/shopping/merchant/datasources/v1/fileinputs.proto\"\x95\v\n" +
 	"\n" +
 	"DataSource\x12\x82\x01\n" +
 	"\x1bprimary_product_data_source\x18\x04 \x01(\v2A.google.shopping.merchant.datasources.v1.PrimaryProductDataSourceH\x00R\x18primaryProductDataSource\x12\x91\x01\n" +
@@ -748,14 +748,14 @@ const file_google_shopping_merchant_datasources_v1_datasources_proto_rawDesc = "
 	"\x1eregional_inventory_data_source\x18\a \x01(\v2D.google.shopping.merchant.datasources.v1.RegionalInventoryDataSourceH\x00R\x1bregionalInventoryDataSource\x12r\n" +
 	"\x15promotion_data_source\x18\b \x01(\v2<.google.shopping.merchant.datasources.v1.PromotionDataSourceH\x00R\x13promotionDataSource\x12\x7f\n" +
 	"\x1aproduct_review_data_source\x18\t \x01(\v2@.google.shopping.merchant.datasources.v1.ProductReviewDataSourceH\x00R\x17productReviewDataSource\x12\x82\x01\n" +
-	"\x1bmerchant_review_data_source\x18\f \x01(\v2A.google.shopping.merchant.datasources.v1.MerchantReviewDataSourceH\x00R\x18merchantReviewDataSource\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\bR\x04name\x12)\n" +
-	"\x0edata_source_id\x18\x02 \x01(\x03B\x03\xe0A\x03R\fdataSourceId\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12T\n" +
+	"\x1bmerchant_review_data_source\x18\f \x01(\v2A.google.shopping.merchant.datasources.v1.MerchantReviewDataSourceH\x00R\x18merchantReviewDataSource\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x02\bR\x04name\x12*\n" +
+	"\x0edata_source_id\x18\x02 \x01(\x03B\x04\xe2A\x01\x03R\fdataSourceId\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12U\n" +
 	"\x05input\x18\n" +
-	" \x01(\x0e29.google.shopping.merchant.datasources.v1.DataSource.InputB\x03\xe0A\x03R\x05input\x12V\n" +
+	" \x01(\x0e29.google.shopping.merchant.datasources.v1.DataSource.InputB\x04\xe2A\x01\x03R\x05input\x12W\n" +
 	"\n" +
-	"file_input\x18\v \x01(\v22.google.shopping.merchant.datasources.v1.FileInputB\x03\xe0A\x01R\tfileInput\"G\n" +
+	"file_input\x18\v \x01(\v22.google.shopping.merchant.datasources.v1.FileInputB\x04\xe2A\x01\x01R\tfileInput\"G\n" +
 	"\x05Input\x12\x15\n" +
 	"\x11INPUT_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03API\x10\x01\x12\b\n" +
@@ -764,32 +764,32 @@ const file_google_shopping_merchant_datasources_v1_datasources_proto_rawDesc = "
 	"\bAUTOFEED\x10\x04:p\xeaAm\n" +
 	"%merchantapi.googleapis.com/DataSource\x12+accounts/{account}/dataSources/{datasource}*\vdataSources2\n" +
 	"dataSourceB\x06\n" +
-	"\x04Type\"Y\n" +
-	"\x14GetDataSourceRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%merchantapi.googleapis.com/DataSourceR\x04name\"\xa5\x01\n" +
-	"\x16ListDataSourcesRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%merchantapi.googleapis.com/DataSourceR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x04Type\"Z\n" +
+	"\x14GetDataSourceRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%merchantapi.googleapis.com/DataSourceR\x04name\"\xa8\x01\n" +
+	"\x16ListDataSourcesRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%merchantapi.googleapis.com/DataSourceR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x99\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x99\x01\n" +
 	"\x17ListDataSourcesResponse\x12V\n" +
 	"\fdata_sources\x18\x01 \x03(\v23.google.shopping.merchant.datasources.v1.DataSourceR\vdataSources\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbb\x01\n" +
-	"\x17CreateDataSourceRequest\x12E\n" +
-	"\x06parent\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\x12%merchantapi.googleapis.com/DataSourceR\x06parent\x12Y\n" +
-	"\vdata_source\x18\x02 \x01(\v23.google.shopping.merchant.datasources.v1.DataSourceB\x03\xe0A\x02R\n" +
-	"dataSource\"\xb6\x01\n" +
-	"\x17UpdateDataSourceRequest\x12Y\n" +
-	"\vdata_source\x18\x01 \x01(\v23.google.shopping.merchant.datasources.v1.DataSourceB\x03\xe0A\x02R\n" +
-	"dataSource\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"[\n" +
-	"\x16FetchDataSourceRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%merchantapi.googleapis.com/DataSourceR\x04name\"\\\n" +
-	"\x17DeleteDataSourceRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbd\x01\n" +
+	"\x17CreateDataSourceRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\x12%merchantapi.googleapis.com/DataSourceR\x06parent\x12Z\n" +
+	"\vdata_source\x18\x02 \x01(\v23.google.shopping.merchant.datasources.v1.DataSourceB\x04\xe2A\x01\x02R\n" +
+	"dataSource\"\xb8\x01\n" +
+	"\x17UpdateDataSourceRequest\x12Z\n" +
+	"\vdata_source\x18\x01 \x01(\v23.google.shopping.merchant.datasources.v1.DataSourceB\x04\xe2A\x01\x02R\n" +
+	"dataSource\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\\\n" +
+	"\x16FetchDataSourceRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%merchantapi.googleapis.com/DataSourceR\x04name\"]\n" +
+	"\x17DeleteDataSourceRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
 	"%merchantapi.googleapis.com/DataSourceR\x04name2\xb9\n" +
 	"\n" +
 	"\x12DataSourcesService\x12\xc3\x01\n" +

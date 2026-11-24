@@ -3497,28 +3497,28 @@ var File_google_cloud_datacatalog_lineage_v1_lineage_proto protoreflect.FileDesc
 
 const file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/datacatalog/lineage/v1/lineage.proto\x12#google.cloud.datacatalog.lineage.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/interval.proto\"\xc8\x03\n" +
-	"\aProcess\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12a\n" +
+	"1google/cloud/datacatalog/lineage/v1/lineage.proto\x12#google.cloud.datacatalog.lineage.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/interval.proto\"\xcc\x03\n" +
+	"\aProcess\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12b\n" +
 	"\n" +
-	"attributes\x18\x03 \x03(\v2<.google.cloud.datacatalog.lineage.v1.Process.AttributesEntryB\x03\xe0A\x01R\n" +
-	"attributes\x12H\n" +
-	"\x06origin\x18\x04 \x01(\v2+.google.cloud.datacatalog.lineage.v1.OriginB\x03\xe0A\x01R\x06origin\x1aU\n" +
+	"attributes\x18\x03 \x03(\v2<.google.cloud.datacatalog.lineage.v1.Process.AttributesEntryB\x04\xe2A\x01\x01R\n" +
+	"attributes\x12I\n" +
+	"\x06origin\x18\x04 \x01(\v2+.google.cloud.datacatalog.lineage.v1.OriginB\x04\xe2A\x01\x01R\x06origin\x1aU\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12,\n" +
 	"\x05value\x18\x02 \x01(\v2\x16.google.protobuf.ValueR\x05value:\x028\x01:x\xeaAu\n" +
-	"\"datalineage.googleapis.com/Process\x12;projects/{project}/locations/{location}/processes/{process}*\tprocesses2\aprocess\"\x86\x05\n" +
-	"\x03Run\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12]\n" +
+	"\"datalineage.googleapis.com/Process\x12;projects/{project}/locations/{location}/processes/{process}*\tprocesses2\aprocess\"\x8c\x05\n" +
+	"\x03Run\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12^\n" +
 	"\n" +
-	"attributes\x18\x03 \x03(\v28.google.cloud.datacatalog.lineage.v1.Run.AttributesEntryB\x03\xe0A\x01R\n" +
-	"attributes\x12>\n" +
+	"attributes\x18\x03 \x03(\v28.google.cloud.datacatalog.lineage.v1.Run.AttributesEntryB\x04\xe2A\x01\x01R\n" +
+	"attributes\x12?\n" +
 	"\n" +
-	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\tstartTime\x12:\n" +
-	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\aendTime\x12I\n" +
-	"\x05state\x18\x06 \x01(\x0e2..google.cloud.datacatalog.lineage.v1.Run.StateB\x03\xe0A\x02R\x05state\x1aU\n" +
+	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\tstartTime\x12;\n" +
+	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\aendTime\x12J\n" +
+	"\x05state\x18\x06 \x01(\x0e2..google.cloud.datacatalog.lineage.v1.Run.StateB\x04\xe2A\x01\x02R\x05state\x1aU\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12,\n" +
 	"\x05value\x18\x02 \x01(\v2\x16.google.protobuf.ValueR\x05value:\x028\x01\"I\n" +
@@ -3529,31 +3529,31 @@ const file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDesc = "" +
 	"\n" +
 	"\x06FAILED\x10\x03\x12\v\n" +
 	"\aABORTED\x10\x04:v\xeaAs\n" +
-	"\x1edatalineage.googleapis.com/Run\x12Fprojects/{project}/locations/{location}/processes/{process}/runs/{run}*\x04runs2\x03run\"\xa1\x03\n" +
-	"\fLineageEvent\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12I\n" +
-	"\x05links\x18\b \x03(\v2..google.cloud.datacatalog.lineage.v1.EventLinkB\x03\xe0A\x01R\x05links\x12>\n" +
+	"\x1edatalineage.googleapis.com/Run\x12Fprojects/{project}/locations/{location}/processes/{process}/runs/{run}*\x04runs2\x03run\"\xa5\x03\n" +
+	"\fLineageEvent\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12J\n" +
+	"\x05links\x18\b \x03(\v2..google.cloud.datacatalog.lineage.v1.EventLinkB\x04\xe2A\x01\x01R\x05links\x12?\n" +
 	"\n" +
-	"start_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\tstartTime\x12:\n" +
-	"\bend_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\aendTime:\xb0\x01\xeaA\xac\x01\n" +
-	"'datalineage.googleapis.com/LineageEvent\x12dprojects/{project}/locations/{location}/processes/{process}/runs/{run}/lineageEvents/{lineage_event}*\rlineageEvents2\flineageEvent\"\x94\x02\n" +
-	"\tEventLink\x12Q\n" +
-	"\x06source\x18\x01 \x01(\v24.google.cloud.datacatalog.lineage.v1.EntityReferenceB\x03\xe0A\x02R\x06source\x12Q\n" +
-	"\x06target\x18\x02 \x01(\v24.google.cloud.datacatalog.lineage.v1.EntityReferenceB\x03\xe0A\x02R\x06target\x12a\n" +
-	"\x0fdependency_info\x18\x03 \x01(\v23.google.cloud.datacatalog.lineage.v1.DependencyInfoB\x03\xe0A\x01R\x0edependencyInfo\"s\n" +
-	"\x0eDependencyInfo\x12a\n" +
-	"\x0fdependency_type\x18\x01 \x01(\x0e23.google.cloud.datacatalog.lineage.v1.DependencyTypeB\x03\xe0A\x02R\x0edependencyType\"c\n" +
-	"\x0fEntityReference\x125\n" +
-	"\x14fully_qualified_name\x18\x01 \x01(\tB\x03\xe0A\x02R\x12fullyQualifiedName\x12\x19\n" +
-	"\x05field\x18\x03 \x03(\tB\x03\xe0A\x01R\x05field\"\xa9\x04\n" +
-	"\x11OperationMetadata\x12W\n" +
-	"\x05state\x18\x01 \x01(\x0e2<.google.cloud.datacatalog.lineage.v1.OperationMetadata.StateB\x03\xe0A\x03R\x05state\x12g\n" +
-	"\x0eoperation_type\x18\x02 \x01(\x0e2;.google.cloud.datacatalog.lineage.v1.OperationMetadata.TypeB\x03\xe0A\x03R\roperationType\x12\x1f\n" +
-	"\bresource\x18\x03 \x01(\tB\x03\xe0A\x03R\bresource\x12(\n" +
-	"\rresource_uuid\x18\x04 \x01(\tB\x03\xe0A\x03R\fresourceUuid\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\"S\n" +
+	"start_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x02R\tstartTime\x12;\n" +
+	"\bend_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\aendTime:\xb0\x01\xeaA\xac\x01\n" +
+	"'datalineage.googleapis.com/LineageEvent\x12dprojects/{project}/locations/{location}/processes/{process}/runs/{run}/lineageEvents/{lineage_event}*\rlineageEvents2\flineageEvent\"\x97\x02\n" +
+	"\tEventLink\x12R\n" +
+	"\x06source\x18\x01 \x01(\v24.google.cloud.datacatalog.lineage.v1.EntityReferenceB\x04\xe2A\x01\x02R\x06source\x12R\n" +
+	"\x06target\x18\x02 \x01(\v24.google.cloud.datacatalog.lineage.v1.EntityReferenceB\x04\xe2A\x01\x02R\x06target\x12b\n" +
+	"\x0fdependency_info\x18\x03 \x01(\v23.google.cloud.datacatalog.lineage.v1.DependencyInfoB\x04\xe2A\x01\x01R\x0edependencyInfo\"t\n" +
+	"\x0eDependencyInfo\x12b\n" +
+	"\x0fdependency_type\x18\x01 \x01(\x0e23.google.cloud.datacatalog.lineage.v1.DependencyTypeB\x04\xe2A\x01\x02R\x0edependencyType\"e\n" +
+	"\x0fEntityReference\x126\n" +
+	"\x14fully_qualified_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x12fullyQualifiedName\x12\x1a\n" +
+	"\x05field\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x05field\"\xaf\x04\n" +
+	"\x11OperationMetadata\x12X\n" +
+	"\x05state\x18\x01 \x01(\x0e2<.google.cloud.datacatalog.lineage.v1.OperationMetadata.StateB\x04\xe2A\x01\x03R\x05state\x12h\n" +
+	"\x0eoperation_type\x18\x02 \x01(\x0e2;.google.cloud.datacatalog.lineage.v1.OperationMetadata.TypeB\x04\xe2A\x01\x03R\roperationType\x12 \n" +
+	"\bresource\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\bresource\x12)\n" +
+	"\rresource_uuid\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\fresourceUuid\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\"S\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPENDING\x10\x01\x12\v\n" +
@@ -3566,125 +3566,125 @@ const file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDesc = "" +
 	"\n" +
 	"\x06DELETE\x10\x01\x12\n" +
 	"\n" +
-	"\x06CREATE\x10\x02\"\xad\x01\n" +
-	"!ProcessOpenLineageRunEventRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12?\n" +
-	"\fopen_lineage\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x02R\vopenLineage\x12*\n" +
+	"\x06CREATE\x10\x02\"\xb0\x01\n" +
+	"!ProcessOpenLineageRunEventRequest\x12\x1c\n" +
+	"\x06parent\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12@\n" +
+	"\fopen_lineage\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x02R\vopenLineage\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xf3\x01\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xf3\x01\n" +
 	"\"ProcessOpenLineageRunEventResponse\x12A\n" +
 	"\aprocess\x18\x01 \x01(\tB'\xfaA$\n" +
 	"\"datalineage.googleapis.com/ProcessR\aprocess\x125\n" +
 	"\x03run\x18\x02 \x01(\tB#\xfaA \n" +
 	"\x1edatalineage.googleapis.com/RunR\x03run\x12S\n" +
 	"\x0elineage_events\x18\x03 \x03(\tB,\xfaA)\n" +
-	"'datalineage.googleapis.com/LineageEventR\rlineageEvents\"\xd3\x01\n" +
-	"\x14CreateProcessRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"datalineage.googleapis.com/ProcessR\x06parent\x12K\n" +
-	"\aprocess\x18\x02 \x01(\v2,.google.cloud.datacatalog.lineage.v1.ProcessB\x03\xe0A\x02R\aprocess\x12*\n" +
+	"'datalineage.googleapis.com/LineageEventR\rlineageEvents\"\xd6\x01\n" +
+	"\x14CreateProcessRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"datalineage.googleapis.com/ProcessR\x06parent\x12L\n" +
+	"\aprocess\x18\x02 \x01(\v2,.google.cloud.datacatalog.lineage.v1.ProcessB\x04\xe2A\x01\x02R\aprocess\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xfb\x01\n" +
-	"\x14UpdateProcessRequest\x12K\n" +
-	"\aprocess\x18\x01 \x01(\v2,.google.cloud.datacatalog.lineage.v1.ProcessB\x03\xe0A\x02R\aprocess\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12(\n" +
-	"\rallow_missing\x18\x03 \x01(\bB\x03\xe0A\x01R\fallowMissing\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xff\x01\n" +
+	"\x14UpdateProcessRequest\x12L\n" +
+	"\aprocess\x18\x01 \x01(\v2,.google.cloud.datacatalog.lineage.v1.ProcessB\x04\xe2A\x01\x02R\aprocess\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12)\n" +
+	"\rallow_missing\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"S\n" +
-	"\x11GetProcessRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"datalineage.googleapis.com/ProcessR\x04name\"\xa0\x01\n" +
-	"\x14ListProcessesRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"datalineage.googleapis.com/ProcessR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"T\n" +
+	"\x11GetProcessRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"datalineage.googleapis.com/ProcessR\x04name\"\xa3\x01\n" +
+	"\x14ListProcessesRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"datalineage.googleapis.com/ProcessR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x8b\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x8b\x01\n" +
 	"\x15ListProcessesResponse\x12J\n" +
 	"\tprocesses\x18\x01 \x03(\v2,.google.cloud.datacatalog.lineage.v1.ProcessR\tprocesses\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x80\x01\n" +
-	"\x14DeleteProcessRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"datalineage.googleapis.com/ProcessR\x04name\x12(\n" +
-	"\rallow_missing\x18\x02 \x01(\bB\x03\xe0A\x01R\fallowMissing\"\xbf\x01\n" +
-	"\x10CreateRunRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1edatalineage.googleapis.com/RunR\x06parent\x12?\n" +
-	"\x03run\x18\x02 \x01(\v2(.google.cloud.datacatalog.lineage.v1.RunB\x03\xe0A\x02R\x03run\x12*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x82\x01\n" +
+	"\x14DeleteProcessRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"datalineage.googleapis.com/ProcessR\x04name\x12)\n" +
+	"\rallow_missing\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\"\xc2\x01\n" +
+	"\x10CreateRunRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \x12\x1edatalineage.googleapis.com/RunR\x06parent\x12@\n" +
+	"\x03run\x18\x02 \x01(\v2(.google.cloud.datacatalog.lineage.v1.RunB\x04\xe2A\x01\x02R\x03run\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xbf\x01\n" +
-	"\x10UpdateRunRequest\x12?\n" +
-	"\x03run\x18\x01 \x01(\v2(.google.cloud.datacatalog.lineage.v1.RunB\x03\xe0A\x02R\x03run\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12(\n" +
-	"\rallow_missing\x18\x03 \x01(\bB\x03\xe0A\x01R\fallowMissing\"K\n" +
-	"\rGetRunRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edatalineage.googleapis.com/RunR\x04name\"\x9b\x01\n" +
-	"\x0fListRunsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"datalineage.googleapis.com/ProcessR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xc2\x01\n" +
+	"\x10UpdateRunRequest\x12@\n" +
+	"\x03run\x18\x01 \x01(\v2(.google.cloud.datacatalog.lineage.v1.RunB\x04\xe2A\x01\x02R\x03run\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12)\n" +
+	"\rallow_missing\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\"L\n" +
+	"\rGetRunRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edatalineage.googleapis.com/RunR\x04name\"\x9e\x01\n" +
+	"\x0fListRunsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"datalineage.googleapis.com/ProcessR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"x\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"x\n" +
 	"\x10ListRunsResponse\x12<\n" +
 	"\x04runs\x18\x01 \x03(\v2(.google.cloud.datacatalog.lineage.v1.RunR\x04runs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"x\n" +
-	"\x10DeleteRunRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edatalineage.googleapis.com/RunR\x04name\x12(\n" +
-	"\rallow_missing\x18\x02 \x01(\bB\x03\xe0A\x01R\fallowMissing\"\xed\x01\n" +
-	"\x19CreateLineageEventRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'datalineage.googleapis.com/LineageEventR\x06parent\x12[\n" +
-	"\rlineage_event\x18\x02 \x01(\v21.google.cloud.datacatalog.lineage.v1.LineageEventB\x03\xe0A\x02R\flineageEvent\x12*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"z\n" +
+	"\x10DeleteRunRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edatalineage.googleapis.com/RunR\x04name\x12)\n" +
+	"\rallow_missing\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\"\xf0\x01\n" +
+	"\x19CreateLineageEventRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'datalineage.googleapis.com/LineageEventR\x06parent\x12\\\n" +
+	"\rlineage_event\x18\x02 \x01(\v21.google.cloud.datacatalog.lineage.v1.LineageEventB\x04\xe2A\x01\x02R\flineageEvent\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"]\n" +
-	"\x16GetLineageEventRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'datalineage.googleapis.com/LineageEventR\x04name\"\xa0\x01\n" +
-	"\x18ListLineageEventsRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edatalineage.googleapis.com/RunR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"^\n" +
+	"\x16GetLineageEventRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'datalineage.googleapis.com/LineageEventR\x04name\"\xa3\x01\n" +
+	"\x18ListLineageEventsRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1edatalineage.googleapis.com/RunR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x9d\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x9d\x01\n" +
 	"\x19ListLineageEventsResponse\x12X\n" +
 	"\x0elineage_events\x18\x01 \x03(\v21.google.cloud.datacatalog.lineage.v1.LineageEventR\rlineageEvents\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8a\x01\n" +
-	"\x19DeleteLineageEventRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'datalineage.googleapis.com/LineageEventR\x04name\x12(\n" +
-	"\rallow_missing\x18\x02 \x01(\bB\x03\xe0A\x01R\fallowMissing\"\x92\x04\n" +
-	"\x12SearchLinksRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"datalineage.googleapis.com/ProcessR\x06parent\x12S\n" +
-	"\x06source\x18\x04 \x01(\v24.google.cloud.datacatalog.lineage.v1.EntityReferenceB\x03\xe0A\x01H\x00R\x06source\x12S\n" +
-	"\x06target\x18\x05 \x01(\v24.google.cloud.datacatalog.lineage.v1.EntityReferenceB\x03\xe0A\x01H\x00R\x06target\x12]\n" +
-	"\asources\x18\x06 \x01(\v2<.google.cloud.datacatalog.lineage.v1.MultipleEntityReferenceB\x03\xe0A\x01H\x00R\asources\x12]\n" +
-	"\atargets\x18\a \x01(\v2<.google.cloud.datacatalog.lineage.v1.MultipleEntityReferenceB\x03\xe0A\x01H\x00R\atargets\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8c\x01\n" +
+	"\x19DeleteLineageEventRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'datalineage.googleapis.com/LineageEventR\x04name\x12)\n" +
+	"\rallow_missing\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\"\x99\x04\n" +
+	"\x12SearchLinksRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"datalineage.googleapis.com/ProcessR\x06parent\x12T\n" +
+	"\x06source\x18\x04 \x01(\v24.google.cloud.datacatalog.lineage.v1.EntityReferenceB\x04\xe2A\x01\x01H\x00R\x06source\x12T\n" +
+	"\x06target\x18\x05 \x01(\v24.google.cloud.datacatalog.lineage.v1.EntityReferenceB\x04\xe2A\x01\x01H\x00R\x06target\x12^\n" +
+	"\asources\x18\x06 \x01(\v2<.google.cloud.datacatalog.lineage.v1.MultipleEntityReferenceB\x04\xe2A\x01\x01H\x00R\asources\x12^\n" +
+	"\atargets\x18\a \x01(\v2<.google.cloud.datacatalog.lineage.v1.MultipleEntityReferenceB\x04\xe2A\x01\x01H\x00R\atargets\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageTokenB\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageTokenB\n" +
 	"\n" +
-	"\bcriteria\"p\n" +
-	"\x17MultipleEntityReference\x12U\n" +
-	"\bentities\x18\x01 \x03(\v24.google.cloud.datacatalog.lineage.v1.EntityReferenceB\x03\xe0A\x01R\bentities\"~\n" +
+	"\bcriteria\"q\n" +
+	"\x17MultipleEntityReference\x12V\n" +
+	"\bentities\x18\x01 \x03(\v24.google.cloud.datacatalog.lineage.v1.EntityReferenceB\x04\xe2A\x01\x01R\bentities\"~\n" +
 	"\x13SearchLinksResponse\x12?\n" +
 	"\x05links\x18\x01 \x03(\v2).google.cloud.datacatalog.lineage.v1.LinkR\x05links\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x88\x04\n" +
-	"\x04Link\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\x05R\x04name\x12L\n" +
+	"\x04Link\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\x05R\x04name\x12L\n" +
 	"\x06source\x18\x02 \x01(\v24.google.cloud.datacatalog.lineage.v1.EntityReferenceR\x06source\x12L\n" +
 	"\x06target\x18\x03 \x01(\v24.google.cloud.datacatalog.lineage.v1.EntityReferenceR\x06target\x129\n" +
 	"\n" +
 	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +
-	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\x12f\n" +
-	"\x0fdependency_info\x18\x06 \x03(\v28.google.cloud.datacatalog.lineage.v1.Link.DependencyInfoB\x03\xe0A\x01R\x0edependencyInfo\x1an\n" +
+	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\x12g\n" +
+	"\x0fdependency_info\x18\x06 \x03(\v28.google.cloud.datacatalog.lineage.v1.Link.DependencyInfoB\x04\xe2A\x01\x01R\x0edependencyInfo\x1an\n" +
 	"\x0eDependencyInfo\x12\\\n" +
-	"\x0fdependency_type\x18\x01 \x01(\x0e23.google.cloud.datacatalog.lineage.v1.DependencyTypeR\x0edependencyType\"\xc6\x01\n" +
-	"\x1fBatchSearchLinkProcessesRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"datalineage.googleapis.com/ProcessR\x06parent\x12\x19\n" +
-	"\x05links\x18\x02 \x03(\tB\x03\xe0A\x02R\x05links\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fdependency_type\x18\x01 \x01(\x0e23.google.cloud.datacatalog.lineage.v1.DependencyTypeR\x0edependencyType\"\xca\x01\n" +
+	"\x1fBatchSearchLinkProcessesRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"datalineage.googleapis.com/ProcessR\x06parent\x12\x1a\n" +
+	"\x05links\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x05links\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa2\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa2\x01\n" +
 	" BatchSearchLinkProcessesResponse\x12V\n" +
 	"\rprocess_links\x18\x01 \x03(\v21.google.cloud.datacatalog.lineage.v1.ProcessLinksR\fprocessLinks\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9d\x01\n" +
@@ -3724,28 +3724,28 @@ const file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDesc = "" +
 	"\x0eLineageProcess\x12F\n" +
 	"\aprocess\x18\x03 \x01(\v2,.google.cloud.datacatalog.lineage.v1.ProcessR\aprocess\x1an\n" +
 	"\x0eDependencyInfo\x12\\\n" +
-	"\x0fdependency_type\x18\x01 \x01(\x0e23.google.cloud.datacatalog.lineage.v1.DependencyTypeR\x0edependencyType\"\x91\n" +
+	"\x0fdependency_type\x18\x01 \x01(\x0e23.google.cloud.datacatalog.lineage.v1.DependencyTypeR\x0edependencyType\"\x9e\n" +
 	"\n" +
-	"\x1dSearchLineageStreamingRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"datalineage.googleapis.com/ProcessR\x06parent\x12!\n" +
-	"\tlocations\x18\x02 \x03(\tB\x03\xe0A\x02R\tlocations\x12y\n" +
-	"\rroot_criteria\x18\x03 \x01(\v2O.google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.RootCriteriaB\x03\xe0A\x02R\frootCriteria\x12u\n" +
-	"\tdirection\x18\x04 \x01(\x0e2R.google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.SearchDirectionB\x03\xe0A\x02R\tdirection\x12o\n" +
-	"\afilters\x18\x05 \x01(\v2P.google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.SearchFiltersB\x03\xe0A\x01R\afilters\x12l\n" +
-	"\x06limits\x18\x06 \x01(\v2O.google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.SearchLimitsB\x03\xe0A\x01R\x06limits\x1a\xa1\x02\n" +
-	"\rSearchFilters\x12c\n" +
-	"\x10dependency_types\x18\x01 \x03(\x0e23.google.cloud.datacatalog.lineage.v1.DependencyTypeB\x03\xe0A\x01R\x0fdependencyTypes\x12p\n" +
+	"\x1dSearchLineageStreamingRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"datalineage.googleapis.com/ProcessR\x06parent\x12\"\n" +
+	"\tlocations\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\tlocations\x12z\n" +
+	"\rroot_criteria\x18\x03 \x01(\v2O.google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.RootCriteriaB\x04\xe2A\x01\x02R\frootCriteria\x12v\n" +
+	"\tdirection\x18\x04 \x01(\x0e2R.google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.SearchDirectionB\x04\xe2A\x01\x02R\tdirection\x12p\n" +
+	"\afilters\x18\x05 \x01(\v2P.google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.SearchFiltersB\x04\xe2A\x01\x01R\afilters\x12m\n" +
+	"\x06limits\x18\x06 \x01(\v2O.google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.SearchLimitsB\x04\xe2A\x01\x01R\x06limits\x1a\xa4\x02\n" +
+	"\rSearchFilters\x12d\n" +
+	"\x10dependency_types\x18\x01 \x03(\x0e23.google.cloud.datacatalog.lineage.v1.DependencyTypeB\x04\xe2A\x01\x01R\x0fdependencyTypes\x12q\n" +
 	"\n" +
-	"entity_set\x18\x02 \x01(\x0e2L.google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.EntitySetB\x03\xe0A\x01R\tentitySet\x129\n" +
+	"entity_set\x18\x02 \x01(\x0e2L.google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.EntitySetB\x04\xe2A\x01\x01R\tentitySet\x12:\n" +
 	"\n" +
-	"time_range\x18\x03 \x01(\v2\x15.google.type.IntervalB\x03\xe0A\x01R\ttimeRange\x1a\x8c\x01\n" +
-	"\fSearchLimits\x12 \n" +
-	"\tmax_depth\x18\x01 \x01(\x05B\x03\xe0A\x01R\bmaxDepth\x12$\n" +
-	"\vmax_results\x18\x02 \x01(\x05B\x03\xe0A\x01R\n" +
-	"maxResults\x124\n" +
-	"\x14max_process_per_link\x18\x03 \x01(\x05B\x03\xe0A\x01R\x11maxProcessPerLink\x1a{\n" +
-	"\fRootCriteria\x12_\n" +
-	"\bentities\x18\x01 \x01(\v2<.google.cloud.datacatalog.lineage.v1.MultipleEntityReferenceB\x03\xe0A\x01H\x00R\bentitiesB\n" +
+	"time_range\x18\x03 \x01(\v2\x15.google.type.IntervalB\x04\xe2A\x01\x01R\ttimeRange\x1a\x8f\x01\n" +
+	"\fSearchLimits\x12!\n" +
+	"\tmax_depth\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\bmaxDepth\x12%\n" +
+	"\vmax_results\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\n" +
+	"maxResults\x125\n" +
+	"\x14max_process_per_link\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\x11maxProcessPerLink\x1a|\n" +
+	"\fRootCriteria\x12`\n" +
+	"\bentities\x18\x01 \x01(\v2<.google.cloud.datacatalog.lineage.v1.MultipleEntityReferenceB\x04\xe2A\x01\x01H\x00R\bentitiesB\n" +
 	"\n" +
 	"\bcriteria\"Q\n" +
 	"\x0fSearchDirection\x12 \n" +
@@ -3755,10 +3755,10 @@ const file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDesc = "" +
 	"\bUPSTREAM\x10\x02\"5\n" +
 	"\tEntitySet\x12\x1a\n" +
 	"\x16ENTITY_SET_UNSPECIFIED\x10\x00\x12\f\n" +
-	"\bENTITIES\x10\x01\"\x94\x01\n" +
-	"\x1eSearchLineageStreamingResponse\x12K\n" +
-	"\x05links\x18\x01 \x03(\v20.google.cloud.datacatalog.lineage.v1.LineageLinkB\x03\xe0A\x03R\x05links\x12%\n" +
-	"\vunreachable\x18\x02 \x03(\tB\x03\xe0A\x06R\vunreachable*L\n" +
+	"\bENTITIES\x10\x01\"\x96\x01\n" +
+	"\x1eSearchLineageStreamingResponse\x12L\n" +
+	"\x05links\x18\x01 \x03(\v20.google.cloud.datacatalog.lineage.v1.LineageLinkB\x04\xe2A\x01\x03R\x05links\x12&\n" +
+	"\vunreachable\x18\x02 \x03(\tB\x04\xe2A\x01\x06R\vunreachable*L\n" +
 	"\x0eDependencyType\x12\x1f\n" +
 	"\x1bDEPENDENCY_TYPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +

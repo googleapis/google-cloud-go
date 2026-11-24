@@ -130,15 +130,15 @@ var File_google_cloud_servicedirectory_v1beta1_namespace_proto protoreflect.File
 
 const file_google_cloud_servicedirectory_v1beta1_namespace_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/servicedirectory/v1beta1/namespace.proto\x12%google.cloud.servicedirectory.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc5\x03\n" +
-	"\tNamespace\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12Y\n" +
-	"\x06labels\x18\x02 \x03(\v2<.google.cloud.servicedirectory.v1beta1.Namespace.LabelsEntryB\x03\xe0A\x01R\x06labels\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x15\n" +
-	"\x03uid\x18\x06 \x01(\tB\x03\xe0A\x03R\x03uid\x1a9\n" +
+	"5google/cloud/servicedirectory/v1beta1/namespace.proto\x12%google.cloud.servicedirectory.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xca\x03\n" +
+	"\tNamespace\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12Z\n" +
+	"\x06labels\x18\x02 \x03(\v2<.google.cloud.servicedirectory.v1beta1.Namespace.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x16\n" +
+	"\x03uid\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:n\xeaAk\n" +

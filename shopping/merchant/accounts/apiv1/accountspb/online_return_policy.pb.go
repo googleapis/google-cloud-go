@@ -1119,43 +1119,43 @@ var File_google_shopping_merchant_accounts_v1_online_return_policy_proto protore
 
 const file_google_shopping_merchant_accounts_v1_online_return_policy_proto_rawDesc = "" +
 	"\n" +
-	"?google/shopping/merchant/accounts/v1/online_return_policy.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/shopping/type/types.proto\x1a\x16google/type/date.proto\"i\n" +
-	"\x1cGetOnlineReturnPolicyRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-merchantapi.googleapis.com/OnlineReturnPolicyR\x04name\"\xe1\x01\n" +
-	"\x1fCreateOnlineReturnPolicyRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-merchantapi.googleapis.com/OnlineReturnPolicyR\x06parent\x12o\n" +
-	"\x14online_return_policy\x18\x02 \x01(\v28.google.shopping.merchant.accounts.v1.OnlineReturnPolicyB\x03\xe0A\x02R\x12onlineReturnPolicy\"l\n" +
-	"\x1fDeleteOnlineReturnPolicyRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-merchantapi.googleapis.com/OnlineReturnPolicyR\x04name\"\xb6\x01\n" +
-	"\x1fListOnlineReturnPoliciesRequest\x12M\n" +
-	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\x12-merchantapi.googleapis.com/OnlineReturnPolicyR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"?google/shopping/merchant/accounts/v1/online_return_policy.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/shopping/type/types.proto\x1a\x16google/type/date.proto\"j\n" +
+	"\x1cGetOnlineReturnPolicyRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-merchantapi.googleapis.com/OnlineReturnPolicyR\x04name\"\xe3\x01\n" +
+	"\x1fCreateOnlineReturnPolicyRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-merchantapi.googleapis.com/OnlineReturnPolicyR\x06parent\x12p\n" +
+	"\x14online_return_policy\x18\x02 \x01(\v28.google.shopping.merchant.accounts.v1.OnlineReturnPolicyB\x04\xe2A\x01\x02R\x12onlineReturnPolicy\"m\n" +
+	"\x1fDeleteOnlineReturnPolicyRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-merchantapi.googleapis.com/OnlineReturnPolicyR\x04name\"\xb9\x01\n" +
+	"\x1fListOnlineReturnPoliciesRequest\x12N\n" +
+	"\x06parent\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\x12-merchantapi.googleapis.com/OnlineReturnPolicyR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xba\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xba\x01\n" +
 	" ListOnlineReturnPoliciesResponse\x12n\n" +
 	"\x16online_return_policies\x18\x01 \x03(\v28.google.shopping.merchant.accounts.v1.OnlineReturnPolicyR\x14onlineReturnPolicies\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc5\x14\n" +
-	"\x12OnlineReturnPolicy\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12-\n" +
-	"\x10return_policy_id\x18\x02 \x01(\tB\x03\xe0A\x03R\x0ereturnPolicyId\x12\x1c\n" +
-	"\x05label\x18\x03 \x01(\tB\x06\xe0A\x05\xe0A\x01R\x05label\x12$\n" +
-	"\tcountries\x18\x04 \x03(\tB\x06\xe0A\x02\xe0A\x05R\tcountries\x12\\\n" +
-	"\x06policy\x18\x05 \x01(\v2?.google.shopping.merchant.accounts.v1.OnlineReturnPolicy.PolicyB\x03\xe0A\x01R\x06policy\x12}\n" +
-	"\x12seasonal_overrides\x18\x0e \x03(\v2I.google.shopping.merchant.accounts.v1.OnlineReturnPolicy.SeasonalOverrideB\x03\xe0A\x01R\x11seasonalOverrides\x12r\n" +
-	"\x0erestocking_fee\x18\x06 \x01(\v2F.google.shopping.merchant.accounts.v1.OnlineReturnPolicy.RestockingFeeB\x03\xe0A\x01R\rrestockingFee\x12q\n" +
-	"\x0ereturn_methods\x18\a \x03(\x0e2E.google.shopping.merchant.accounts.v1.OnlineReturnPolicy.ReturnMethodB\x03\xe0A\x01R\rreturnMethods\x12t\n" +
-	"\x0fitem_conditions\x18\b \x03(\x0e2F.google.shopping.merchant.accounts.v1.OnlineReturnPolicy.ItemConditionB\x03\xe0A\x01R\x0eitemConditions\x12\x7f\n" +
-	"\x13return_shipping_fee\x18\t \x01(\v2J.google.shopping.merchant.accounts.v1.OnlineReturnPolicy.ReturnShippingFeeB\x03\xe0A\x01R\x11returnShippingFee\x12/\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xd5\x14\n" +
+	"\x12OnlineReturnPolicy\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12.\n" +
+	"\x10return_policy_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x0ereturnPolicyId\x12\x1b\n" +
+	"\x05label\x18\x03 \x01(\tB\x05\xe2A\x02\x05\x01R\x05label\x12#\n" +
+	"\tcountries\x18\x04 \x03(\tB\x05\xe2A\x02\x02\x05R\tcountries\x12]\n" +
+	"\x06policy\x18\x05 \x01(\v2?.google.shopping.merchant.accounts.v1.OnlineReturnPolicy.PolicyB\x04\xe2A\x01\x01R\x06policy\x12~\n" +
+	"\x12seasonal_overrides\x18\x0e \x03(\v2I.google.shopping.merchant.accounts.v1.OnlineReturnPolicy.SeasonalOverrideB\x04\xe2A\x01\x01R\x11seasonalOverrides\x12s\n" +
+	"\x0erestocking_fee\x18\x06 \x01(\v2F.google.shopping.merchant.accounts.v1.OnlineReturnPolicy.RestockingFeeB\x04\xe2A\x01\x01R\rrestockingFee\x12r\n" +
+	"\x0ereturn_methods\x18\a \x03(\x0e2E.google.shopping.merchant.accounts.v1.OnlineReturnPolicy.ReturnMethodB\x04\xe2A\x01\x01R\rreturnMethods\x12u\n" +
+	"\x0fitem_conditions\x18\b \x03(\x0e2F.google.shopping.merchant.accounts.v1.OnlineReturnPolicy.ItemConditionB\x04\xe2A\x01\x01R\x0eitemConditions\x12\x80\x01\n" +
+	"\x13return_shipping_fee\x18\t \x01(\v2J.google.shopping.merchant.accounts.v1.OnlineReturnPolicy.ReturnShippingFeeB\x04\xe2A\x01\x01R\x11returnShippingFee\x120\n" +
 	"\x11return_policy_uri\x18\n" +
-	" \x01(\tB\x03\xe0A\x02R\x0freturnPolicyUri\x12<\n" +
-	"\x15accept_defective_only\x18\v \x01(\bB\x03\xe0A\x01H\x00R\x13acceptDefectiveOnly\x88\x01\x01\x128\n" +
-	"\x13process_refund_days\x18\f \x01(\x05B\x03\xe0A\x01H\x01R\x11processRefundDays\x88\x01\x01\x121\n" +
-	"\x0faccept_exchange\x18\r \x01(\bB\x03\xe0A\x01H\x02R\x0eacceptExchange\x88\x01\x01\x12\x84\x01\n" +
-	"\x13return_label_source\x18\x0f \x01(\x0e2J.google.shopping.merchant.accounts.v1.OnlineReturnPolicy.ReturnLabelSourceB\x03\xe0A\x01H\x03R\x11returnLabelSource\x88\x01\x01\x1a\x80\x02\n" +
-	"\x11ReturnShippingFee\x12h\n" +
-	"\x04type\x18\x01 \x01(\x0e2O.google.shopping.merchant.accounts.v1.OnlineReturnPolicy.ReturnShippingFee.TypeB\x03\xe0A\x02R\x04type\x128\n" +
+	" \x01(\tB\x04\xe2A\x01\x02R\x0freturnPolicyUri\x12=\n" +
+	"\x15accept_defective_only\x18\v \x01(\bB\x04\xe2A\x01\x01H\x00R\x13acceptDefectiveOnly\x88\x01\x01\x129\n" +
+	"\x13process_refund_days\x18\f \x01(\x05B\x04\xe2A\x01\x01H\x01R\x11processRefundDays\x88\x01\x01\x122\n" +
+	"\x0faccept_exchange\x18\r \x01(\bB\x04\xe2A\x01\x01H\x02R\x0eacceptExchange\x88\x01\x01\x12\x85\x01\n" +
+	"\x13return_label_source\x18\x0f \x01(\x0e2J.google.shopping.merchant.accounts.v1.OnlineReturnPolicy.ReturnLabelSourceB\x04\xe2A\x01\x01H\x03R\x11returnLabelSource\x88\x01\x01\x1a\x81\x02\n" +
+	"\x11ReturnShippingFee\x12i\n" +
+	"\x04type\x18\x01 \x01(\x0e2O.google.shopping.merchant.accounts.v1.OnlineReturnPolicy.ReturnShippingFee.TypeB\x04\xe2A\x01\x02R\x04type\x128\n" +
 	"\tfixed_fee\x18\x02 \x01(\v2\x1b.google.shopping.type.PriceR\bfixedFee\"G\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
@@ -1173,15 +1173,15 @@ const file_google_shopping_merchant_accounts_v1_online_return_policy_proto_rawDe
 	"\x1dNUMBER_OF_DAYS_AFTER_DELIVERY\x10\x01\x12\x0e\n" +
 	"\n" +
 	"NO_RETURNS\x10\x02\x12\x14\n" +
-	"\x10LIFETIME_RETURNS\x10\x03\x1a\x8c\x02\n" +
+	"\x10LIFETIME_RETURNS\x10\x03\x1a\x8f\x02\n" +
 	"\x10SeasonalOverride\x12!\n" +
 	"\vreturn_days\x18\x05 \x01(\x05H\x00R\n" +
 	"returnDays\x12?\n" +
-	"\x11return_until_date\x18\x06 \x01(\v2\x11.google.type.DateH\x00R\x0freturnUntilDate\x12\x19\n" +
-	"\x05label\x18\x01 \x01(\tB\x03\xe0A\x02R\x05label\x125\n" +
+	"\x11return_until_date\x18\x06 \x01(\v2\x11.google.type.DateH\x00R\x0freturnUntilDate\x12\x1a\n" +
+	"\x05label\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05label\x126\n" +
 	"\n" +
-	"start_date\x18\x02 \x01(\v2\x11.google.type.DateB\x03\xe0A\x02R\tstartDate\x121\n" +
-	"\bend_date\x18\x03 \x01(\v2\x11.google.type.DateB\x03\xe0A\x02R\aendDateB\x0f\n" +
+	"start_date\x18\x02 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x02R\tstartDate\x122\n" +
+	"\bend_date\x18\x03 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x02R\aendDateB\x0f\n" +
 	"\rreturn_window\"X\n" +
 	"\fReturnMethod\x12\x1d\n" +
 	"\x19RETURN_METHOD_UNSPECIFIED\x10\x00\x12\v\n" +

@@ -1227,18 +1227,18 @@ var File_google_cloud_dialogflow_v2_entity_type_proto protoreflect.FileDescripto
 
 const file_google_cloud_dialogflow_v2_entity_type_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/dialogflow/v2/entity_type.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xa1\x06\n" +
+	",google/cloud/dialogflow/v2/entity_type.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xa8\x06\n" +
 	"\n" +
 	"EntityType\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12D\n" +
-	"\x04kind\x18\x03 \x01(\x0e2+.google.cloud.dialogflow.v2.EntityType.KindB\x03\xe0A\x02R\x04kind\x12m\n" +
-	"\x13auto_expansion_mode\x18\x04 \x01(\x0e28.google.cloud.dialogflow.v2.EntityType.AutoExpansionModeB\x03\xe0A\x01R\x11autoExpansionMode\x12N\n" +
-	"\bentities\x18\x06 \x03(\v2-.google.cloud.dialogflow.v2.EntityType.EntityB\x03\xe0A\x01R\bentities\x12;\n" +
-	"\x17enable_fuzzy_extraction\x18\a \x01(\bB\x03\xe0A\x01R\x15enableFuzzyExtraction\x1aD\n" +
-	"\x06Entity\x12\x19\n" +
-	"\x05value\x18\x01 \x01(\tB\x03\xe0A\x02R\x05value\x12\x1f\n" +
-	"\bsynonyms\x18\x02 \x03(\tB\x03\xe0A\x02R\bsynonyms\"J\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12E\n" +
+	"\x04kind\x18\x03 \x01(\x0e2+.google.cloud.dialogflow.v2.EntityType.KindB\x04\xe2A\x01\x02R\x04kind\x12n\n" +
+	"\x13auto_expansion_mode\x18\x04 \x01(\x0e28.google.cloud.dialogflow.v2.EntityType.AutoExpansionModeB\x04\xe2A\x01\x01R\x11autoExpansionMode\x12O\n" +
+	"\bentities\x18\x06 \x03(\v2-.google.cloud.dialogflow.v2.EntityType.EntityB\x04\xe2A\x01\x01R\bentities\x12<\n" +
+	"\x17enable_fuzzy_extraction\x18\a \x01(\bB\x04\xe2A\x01\x01R\x15enableFuzzyExtraction\x1aF\n" +
+	"\x06Entity\x12\x1a\n" +
+	"\x05value\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05value\x12 \n" +
+	"\bsynonyms\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\bsynonyms\"J\n" +
 	"\x04Kind\x12\x14\n" +
 	"\x10KIND_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bKIND_MAP\x10\x01\x12\r\n" +
@@ -1247,64 +1247,64 @@ const file_google_cloud_dialogflow_v2_entity_type_proto_rawDesc = "" +
 	"\x11AutoExpansionMode\x12#\n" +
 	"\x1fAUTO_EXPANSION_MODE_UNSPECIFIED\x10\x00\x12\x1f\n" +
 	"\x1bAUTO_EXPANSION_MODE_DEFAULT\x10\x01:\xa7\x01\xeaA\xa3\x01\n" +
-	"$dialogflow.googleapis.com/EntityType\x122projects/{project}/agent/entityTypes/{entity_type}\x12Gprojects/{project}/locations/{location}/agent/entityTypes/{entity_type}\"\xce\x01\n" +
-	"\x16ListEntityTypesRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$dialogflow.googleapis.com/EntityTypeR\x06parent\x12(\n" +
-	"\rlanguage_code\x18\x02 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"$dialogflow.googleapis.com/EntityType\x122projects/{project}/agent/entityTypes/{entity_type}\x12Gprojects/{project}/locations/{location}/agent/entityTypes/{entity_type}\"\xd2\x01\n" +
+	"\x16ListEntityTypesRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$dialogflow.googleapis.com/EntityTypeR\x06parent\x12)\n" +
+	"\rlanguage_code\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x8c\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x8c\x01\n" +
 	"\x17ListEntityTypesResponse\x12I\n" +
 	"\fentity_types\x18\x01 \x03(\v2&.google.cloud.dialogflow.v2.EntityTypeR\ventityTypes\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x82\x01\n" +
-	"\x14GetEntityTypeRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$dialogflow.googleapis.com/EntityTypeR\x04name\x12(\n" +
-	"\rlanguage_code\x18\x02 \x01(\tB\x03\xe0A\x01R\flanguageCode\"\xd7\x01\n" +
-	"\x17CreateEntityTypeRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$dialogflow.googleapis.com/EntityTypeR\x06parent\x12L\n" +
-	"\ventity_type\x18\x02 \x01(\v2&.google.cloud.dialogflow.v2.EntityTypeB\x03\xe0A\x02R\n" +
-	"entityType\x12(\n" +
-	"\rlanguage_code\x18\x03 \x01(\tB\x03\xe0A\x01R\flanguageCode\"\xd3\x01\n" +
-	"\x17UpdateEntityTypeRequest\x12L\n" +
-	"\ventity_type\x18\x01 \x01(\v2&.google.cloud.dialogflow.v2.EntityTypeB\x03\xe0A\x02R\n" +
-	"entityType\x12(\n" +
-	"\rlanguage_code\x18\x02 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12@\n" +
-	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"[\n" +
-	"\x17DeleteEntityTypeRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$dialogflow.googleapis.com/EntityTypeR\x04name\"\x83\x03\n" +
-	"\x1dBatchUpdateEntityTypesRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$dialogflow.googleapis.com/EntityTypeR\x06parent\x123\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x84\x01\n" +
+	"\x14GetEntityTypeRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$dialogflow.googleapis.com/EntityTypeR\x04name\x12)\n" +
+	"\rlanguage_code\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\"\xda\x01\n" +
+	"\x17CreateEntityTypeRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$dialogflow.googleapis.com/EntityTypeR\x06parent\x12M\n" +
+	"\ventity_type\x18\x02 \x01(\v2&.google.cloud.dialogflow.v2.EntityTypeB\x04\xe2A\x01\x02R\n" +
+	"entityType\x12)\n" +
+	"\rlanguage_code\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\"\xd6\x01\n" +
+	"\x17UpdateEntityTypeRequest\x12M\n" +
+	"\ventity_type\x18\x01 \x01(\v2&.google.cloud.dialogflow.v2.EntityTypeB\x04\xe2A\x01\x02R\n" +
+	"entityType\x12)\n" +
+	"\rlanguage_code\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12A\n" +
+	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\\\n" +
+	"\x17DeleteEntityTypeRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$dialogflow.googleapis.com/EntityTypeR\x04name\"\x86\x03\n" +
+	"\x1dBatchUpdateEntityTypesRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$dialogflow.googleapis.com/EntityTypeR\x06parent\x123\n" +
 	"\x15entity_type_batch_uri\x18\x02 \x01(\tH\x00R\x12entityTypeBatchUri\x12f\n" +
-	"\x18entity_type_batch_inline\x18\x03 \x01(\v2+.google.cloud.dialogflow.v2.EntityTypeBatchH\x00R\x15entityTypeBatchInline\x12(\n" +
-	"\rlanguage_code\x18\x04 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12@\n" +
-	"\vupdate_mask\x18\x05 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"\x18entity_type_batch_inline\x18\x03 \x01(\v2+.google.cloud.dialogflow.v2.EntityTypeBatchH\x00R\x15entityTypeBatchInline\x12)\n" +
+	"\rlanguage_code\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12A\n" +
+	"\vupdate_mask\x18\x05 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
 	"updateMaskB\x13\n" +
 	"\x11entity_type_batch\"k\n" +
 	"\x1eBatchUpdateEntityTypesResponse\x12I\n" +
-	"\fentity_types\x18\x01 \x03(\v2&.google.cloud.dialogflow.v2.EntityTypeR\ventityTypes\"\x96\x01\n" +
-	"\x1dBatchDeleteEntityTypesRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$dialogflow.googleapis.com/EntityTypeR\x06parent\x12/\n" +
-	"\x11entity_type_names\x18\x02 \x03(\tB\x03\xe0A\x02R\x0fentityTypeNames\"\xdc\x01\n" +
-	"\x1aBatchCreateEntitiesRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$dialogflow.googleapis.com/EntityTypeR\x06parent\x12N\n" +
-	"\bentities\x18\x02 \x03(\v2-.google.cloud.dialogflow.v2.EntityType.EntityB\x03\xe0A\x02R\bentities\x12(\n" +
-	"\rlanguage_code\x18\x03 \x01(\tB\x03\xe0A\x01R\flanguageCode\"\x9e\x02\n" +
-	"\x1aBatchUpdateEntitiesRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$dialogflow.googleapis.com/EntityTypeR\x06parent\x12N\n" +
-	"\bentities\x18\x02 \x03(\v2-.google.cloud.dialogflow.v2.EntityType.EntityB\x03\xe0A\x02R\bentities\x12(\n" +
-	"\rlanguage_code\x18\x03 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12@\n" +
-	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xb6\x01\n" +
-	"\x1aBatchDeleteEntitiesRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$dialogflow.googleapis.com/EntityTypeR\x06parent\x12(\n" +
-	"\rentity_values\x18\x02 \x03(\tB\x03\xe0A\x02R\fentityValues\x12(\n" +
-	"\rlanguage_code\x18\x03 \x01(\tB\x03\xe0A\x01R\flanguageCode\"\\\n" +
+	"\fentity_types\x18\x01 \x03(\v2&.google.cloud.dialogflow.v2.EntityTypeR\ventityTypes\"\x98\x01\n" +
+	"\x1dBatchDeleteEntityTypesRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\x12$dialogflow.googleapis.com/EntityTypeR\x06parent\x120\n" +
+	"\x11entity_type_names\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x0fentityTypeNames\"\xdf\x01\n" +
+	"\x1aBatchCreateEntitiesRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$dialogflow.googleapis.com/EntityTypeR\x06parent\x12O\n" +
+	"\bentities\x18\x02 \x03(\v2-.google.cloud.dialogflow.v2.EntityType.EntityB\x04\xe2A\x01\x02R\bentities\x12)\n" +
+	"\rlanguage_code\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\"\xa2\x02\n" +
+	"\x1aBatchUpdateEntitiesRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$dialogflow.googleapis.com/EntityTypeR\x06parent\x12O\n" +
+	"\bentities\x18\x02 \x03(\v2-.google.cloud.dialogflow.v2.EntityType.EntityB\x04\xe2A\x01\x02R\bentities\x12)\n" +
+	"\rlanguage_code\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12A\n" +
+	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\xb9\x01\n" +
+	"\x1aBatchDeleteEntitiesRequest\x12E\n" +
+	"\x06parent\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$dialogflow.googleapis.com/EntityTypeR\x06parent\x12)\n" +
+	"\rentity_values\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\fentityValues\x12)\n" +
+	"\rlanguage_code\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\"\\\n" +
 	"\x0fEntityTypeBatch\x12I\n" +
 	"\fentity_types\x18\x01 \x03(\v2&.google.cloud.dialogflow.v2.EntityTypeR\ventityTypes2\xd6\x19\n" +
 	"\vEntityTypes\x12\x87\x02\n" +

@@ -548,41 +548,41 @@ var File_google_cloud_agentregistry_v1_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_agentregistry_v1_service_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/agentregistry/v1/service.proto\x12\x1dgoogle.cloud.agentregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/agentregistry/v1/properties.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8a\v\n" +
-	"\aService\x12V\n" +
+	"+google/cloud/agentregistry/v1/service.proto\x12\x1dgoogle.cloud.agentregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/agentregistry/v1/properties.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9a\v\n" +
+	"\aService\x12W\n" +
 	"\n" +
-	"agent_spec\x18\x05 \x01(\v20.google.cloud.agentregistry.v1.Service.AgentSpecB\x03\xe0A\x01H\x00R\tagentSpec\x12c\n" +
-	"\x0fmcp_server_spec\x18\x06 \x01(\v24.google.cloud.agentregistry.v1.Service.McpServerSpecB\x03\xe0A\x01H\x00R\rmcpServerSpec\x12_\n" +
-	"\rendpoint_spec\x18\a \x01(\v23.google.cloud.agentregistry.v1.Service.EndpointSpecB\x03\xe0A\x01H\x00R\fendpointSpec\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12M\n" +
+	"agent_spec\x18\x05 \x01(\v20.google.cloud.agentregistry.v1.Service.AgentSpecB\x04\xe2A\x01\x01H\x00R\tagentSpec\x12d\n" +
+	"\x0fmcp_server_spec\x18\x06 \x01(\v24.google.cloud.agentregistry.v1.Service.McpServerSpecB\x04\xe2A\x01\x01H\x00R\rmcpServerSpec\x12`\n" +
+	"\rendpoint_spec\x18\a \x01(\v23.google.cloud.agentregistry.v1.Service.EndpointSpecB\x04\xe2A\x01\x01H\x00R\fendpointSpec\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12N\n" +
 	"\n" +
-	"interfaces\x18\x04 \x03(\v2(.google.cloud.agentregistry.v1.InterfaceB\x03\xe0A\x01R\n" +
-	"interfaces\x120\n" +
+	"interfaces\x18\x04 \x03(\v2(.google.cloud.agentregistry.v1.InterfaceB\x04\xe2A\x01\x01R\n" +
+	"interfaces\x121\n" +
 	"\x11registry_resource\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x10registryResource\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x1a\xd2\x01\n" +
-	"\tAgentSpec\x12N\n" +
-	"\x04type\x18\x01 \x01(\x0e25.google.cloud.agentregistry.v1.Service.AgentSpec.TypeB\x03\xe0A\x02R\x04type\x126\n" +
-	"\acontent\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\acontent\"=\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x10registryResource\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x1a\xd4\x01\n" +
+	"\tAgentSpec\x12O\n" +
+	"\x04type\x18\x01 \x01(\x0e25.google.cloud.agentregistry.v1.Service.AgentSpec.TypeB\x04\xe2A\x01\x02R\x04type\x127\n" +
+	"\acontent\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\acontent\"=\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aNO_SPEC\x10\x01\x12\x12\n" +
-	"\x0eA2A_AGENT_CARD\x10\x02\x1a\xd5\x01\n" +
-	"\rMcpServerSpec\x12R\n" +
-	"\x04type\x18\x01 \x01(\x0e29.google.cloud.agentregistry.v1.Service.McpServerSpec.TypeB\x03\xe0A\x02R\x04type\x126\n" +
-	"\acontent\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\acontent\"8\n" +
+	"\x0eA2A_AGENT_CARD\x10\x02\x1a\xd7\x01\n" +
+	"\rMcpServerSpec\x12S\n" +
+	"\x04type\x18\x01 \x01(\x0e29.google.cloud.agentregistry.v1.Service.McpServerSpec.TypeB\x04\xe2A\x01\x02R\x04type\x127\n" +
+	"\acontent\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\acontent\"8\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aNO_SPEC\x10\x01\x12\r\n" +
-	"\tTOOL_SPEC\x10\x02\x1a\xc4\x01\n" +
-	"\fEndpointSpec\x12Q\n" +
-	"\x04type\x18\x01 \x01(\x0e28.google.cloud.agentregistry.v1.Service.EndpointSpec.TypeB\x03\xe0A\x02R\x04type\x126\n" +
-	"\acontent\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\acontent\")\n" +
+	"\tTOOL_SPEC\x10\x02\x1a\xc6\x01\n" +
+	"\fEndpointSpec\x12R\n" +
+	"\x04type\x18\x01 \x01(\x0e28.google.cloud.agentregistry.v1.Service.EndpointSpec.TypeB\x04\xe2A\x01\x02R\x04type\x127\n" +
+	"\acontent\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\acontent\")\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aNO_SPEC\x10\x01:x\xeaAu\n" +

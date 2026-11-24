@@ -185,16 +185,16 @@ var File_google_cloud_baremetalsolution_v2_baremetalsolution_proto protoreflect.
 
 const file_google_cloud_baremetalsolution_v2_baremetalsolution_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/baremetalsolution/v2/baremetalsolution.proto\x12!google.cloud.baremetalsolution.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a0google/cloud/baremetalsolution/v2/instance.proto\x1a+google/cloud/baremetalsolution/v2/lun.proto\x1a/google/cloud/baremetalsolution/v2/network.proto\x1a1google/cloud/baremetalsolution/v2/nfs_share.proto\x1a/google/cloud/baremetalsolution/v2/osimage.proto\x1a4google/cloud/baremetalsolution/v2/provisioning.proto\x1a/google/cloud/baremetalsolution/v2/ssh_key.proto\x1a.google/cloud/baremetalsolution/v2/volume.proto\x1a7google/cloud/baremetalsolution/v2/volume_snapshot.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
+	"9google/cloud/baremetalsolution/v2/baremetalsolution.proto\x12!google.cloud.baremetalsolution.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a0google/cloud/baremetalsolution/v2/instance.proto\x1a+google/cloud/baremetalsolution/v2/lun.proto\x1a/google/cloud/baremetalsolution/v2/network.proto\x1a1google/cloud/baremetalsolution/v2/nfs_share.proto\x1a/google/cloud/baremetalsolution/v2/osimage.proto\x1a4google/cloud/baremetalsolution/v2/provisioning.proto\x1a/google/cloud/baremetalsolution/v2/ssh_key.proto\x1a.google/cloud/baremetalsolution/v2/volume.proto\x1a7google/cloud/baremetalsolution/v2/volume_snapshot.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"apiVersion\"\x17\n" +
 	"\x15ResetInstanceResponse2\xbaK\n" +
 	"\x11BareMetalSolution\x12\xc2\x01\n" +

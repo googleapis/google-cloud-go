@@ -462,35 +462,35 @@ var File_google_cloud_ces_v1_conversation_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1_conversation_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/ces/v1/conversation.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/cloud/ces/v1/common.proto\x1a!google/cloud/ces/v1/example.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc4\v\n" +
-	"\fConversation\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12>\n" +
+	"&google/cloud/ces/v1/conversation.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/cloud/ces/v1/common.proto\x1a!google/cloud/ces/v1/example.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd1\v\n" +
+	"\fConversation\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12?\n" +
 	"\n" +
-	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12A\n" +
-	"\x05turns\x18\x06 \x03(\v2&.google.cloud.ces.v1.Conversation.TurnB\x03\xe0A\x02R\x05turns\x12\"\n" +
+	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12B\n" +
+	"\x05turns\x18\x06 \x03(\v2&.google.cloud.ces.v1.Conversation.TurnB\x04\xe2A\x01\x02R\x05turns\x12#\n" +
 	"\n" +
-	"turn_count\x18\a \x01(\x05B\x03\xe0A\x03R\tturnCount\x12T\n" +
-	"\fchannel_type\x18\b \x01(\x0e2-.google.cloud.ces.v1.Conversation.ChannelTypeB\x02\x18\x01R\vchannelType\x12E\n" +
-	"\x06source\x18\t \x01(\x0e2(.google.cloud.ces.v1.Conversation.SourceB\x03\xe0A\x03R\x06source\x12Q\n" +
+	"turn_count\x18\a \x01(\x05B\x04\xe2A\x01\x03R\tturnCount\x12T\n" +
+	"\fchannel_type\x18\b \x01(\x0e2-.google.cloud.ces.v1.Conversation.ChannelTypeB\x02\x18\x01R\vchannelType\x12F\n" +
+	"\x06source\x18\t \x01(\x0e2(.google.cloud.ces.v1.Conversation.SourceB\x04\xe2A\x01\x03R\x06source\x12R\n" +
 	"\vinput_types\x18\n" +
-	" \x03(\x0e2+.google.cloud.ces.v1.Conversation.InputTypeB\x03\xe0A\x03R\n" +
-	"inputTypes\x12A\n" +
-	"\ventry_agent\x18\v \x01(\tB \xe0A\x03\xfaA\x1a\n" +
+	" \x03(\x0e2+.google.cloud.ces.v1.Conversation.InputTypeB\x04\xe2A\x01\x03R\n" +
+	"inputTypes\x12B\n" +
+	"\ventry_agent\x18\v \x01(\tB!\xe2A\x01\x03\xfaA\x1a\n" +
 	"\x18ces.googleapis.com/AgentR\n" +
-	"entryAgent\x12E\n" +
+	"entryAgent\x12F\n" +
 	"\n" +
-	"deployment\x18\f \x01(\tB%\xe0A\x03\xfaA\x1f\n" +
+	"deployment\x18\f \x01(\tB&\xe2A\x01\x03\xfaA\x1f\n" +
 	"\x1dces.googleapis.com/DeploymentR\n" +
-	"deployment\x12F\n" +
-	"\vapp_version\x18\r \x01(\tB%\xe0A\x03\xfaA\x1f\n" +
+	"deployment\x12G\n" +
+	"\vapp_version\x18\r \x01(\tB&\xe2A\x01\x03\xfaA\x1f\n" +
 	"\x1dces.googleapis.com/AppVersionR\n" +
-	"appVersion\x12(\n" +
-	"\rlanguage_code\x18\x0e \x01(\tB\x03\xe0A\x03R\flanguageCode\x12<\n" +
-	"\bmessages\x18\x02 \x03(\v2\x1c.google.cloud.ces.v1.MessageB\x02\x18\x01R\bmessages\x1a\x82\x01\n" +
-	"\x04Turn\x12=\n" +
-	"\bmessages\x18\x01 \x03(\v2\x1c.google.cloud.ces.v1.MessageB\x03\xe0A\x01R\bmessages\x12;\n" +
-	"\troot_span\x18\x02 \x01(\v2\x19.google.cloud.ces.v1.SpanB\x03\xe0A\x01R\brootSpan\"P\n" +
+	"appVersion\x12)\n" +
+	"\rlanguage_code\x18\x0e \x01(\tB\x04\xe2A\x01\x03R\flanguageCode\x12<\n" +
+	"\bmessages\x18\x02 \x03(\v2\x1c.google.cloud.ces.v1.MessageB\x02\x18\x01R\bmessages\x1a\x84\x01\n" +
+	"\x04Turn\x12>\n" +
+	"\bmessages\x18\x01 \x03(\v2\x1c.google.cloud.ces.v1.MessageB\x04\xe2A\x01\x01R\bmessages\x12<\n" +
+	"\troot_span\x18\x02 \x01(\v2\x19.google.cloud.ces.v1.SpanB\x04\xe2A\x01\x01R\brootSpan\"P\n" +
 	"\vChannelType\x12\x1c\n" +
 	"\x18CHANNEL_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04TEXT\x10\x01\x12\t\n" +

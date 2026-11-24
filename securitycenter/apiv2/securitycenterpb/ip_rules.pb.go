@@ -447,18 +447,18 @@ const file_google_cloud_securitycenter_v2_ip_rules_proto_rawDesc = "" +
 	"\aINGRESS\x10\x01\x12\n" +
 	"\n" +
 	"\x06EGRESS\x10\x02B\a\n" +
-	"\x05rules\"\xad\x01\n" +
+	"\x05rules\"\xae\x01\n" +
 	"\x06IpRule\x12\x1a\n" +
-	"\bprotocol\x18\x01 \x01(\tR\bprotocol\x12V\n" +
-	"\vport_ranges\x18\x02 \x03(\v20.google.cloud.securitycenter.v2.IpRule.PortRangeB\x03\xe0A\x01R\n" +
+	"\bprotocol\x18\x01 \x01(\tR\bprotocol\x12W\n" +
+	"\vport_ranges\x18\x02 \x03(\v20.google.cloud.securitycenter.v2.IpRule.PortRangeB\x04\xe2A\x01\x01R\n" +
 	"portRanges\x1a/\n" +
 	"\tPortRange\x12\x10\n" +
 	"\x03min\x18\x01 \x01(\x03R\x03min\x12\x10\n" +
-	"\x03max\x18\x02 \x01(\x03R\x03max\"Q\n" +
-	"\aAllowed\x12F\n" +
-	"\bip_rules\x18\x01 \x03(\v2&.google.cloud.securitycenter.v2.IpRuleB\x03\xe0A\x01R\aipRules\"P\n" +
-	"\x06Denied\x12F\n" +
-	"\bip_rules\x18\x01 \x03(\v2&.google.cloud.securitycenter.v2.IpRuleB\x03\xe0A\x01R\aipRulesB\xe6\x01\n" +
+	"\x03max\x18\x02 \x01(\x03R\x03max\"R\n" +
+	"\aAllowed\x12G\n" +
+	"\bip_rules\x18\x01 \x03(\v2&.google.cloud.securitycenter.v2.IpRuleB\x04\xe2A\x01\x01R\aipRules\"Q\n" +
+	"\x06Denied\x12G\n" +
+	"\bip_rules\x18\x01 \x03(\v2&.google.cloud.securitycenter.v2.IpRuleB\x04\xe2A\x01\x01R\aipRulesB\xe6\x01\n" +
 	"\"com.google.cloud.securitycenter.v2B\fIpRulesProtoP\x01ZJcloud.google.com/go/securitycenter/apiv2/securitycenterpb;securitycenterpb\xaa\x02\x1eGoogle.Cloud.SecurityCenter.V2\xca\x02\x1eGoogle\\Cloud\\SecurityCenter\\V2\xea\x02!Google::Cloud::SecurityCenter::V2b\x06proto3"
 
 var (

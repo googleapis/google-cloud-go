@@ -40,6 +40,56 @@ of interest:
 Remember to close the client after use to free up the sessions in the session
 pool.
 
+# Exporting client metrics to OpenTelemetry
+
+By default, Spanner exports built-in client metrics to Cloud Monitoring. To
+additionally export the same metrics through a caller-owned OpenTelemetry
+pipeline, set [ClientConfig.ClientMetricsProvider]. The provider may use any
+OpenTelemetry-compatible reader or exporter, including OTLP and Prometheus:
+
+	reader := sdkmetric.NewPeriodicReader(exporter)
+	providerOptions := spanner.ClientMetricsMeterProviderOptions()
+	providerOptions = append(providerOptions, sdkmetric.WithReader(reader))
+	provider := sdkmetric.NewMeterProvider(providerOptions...)
+	defer provider.Shutdown(ctx)
+
+	client, err := spanner.NewClientWithConfig(ctx, database, spanner.ClientConfig{
+	    ClientMetricsProvider: provider,
+	})
+	if err != nil {
+	    // TODO: Handle error.
+	}
+	defer client.Close()
+
+The caller owns the meter provider and must shut it down. Spanner application
+instruments use the spanner/client/ prefix. The options returned by
+[ClientMetricsMeterProviderOptions] also rename the gRPC instruments into that
+namespace. Use a meter provider dedicated to Spanner client metrics because
+those views select instrument names shared by other gRPC clients.
+
+The OpenTelemetry Prometheus exporter renders counters as
+spanner_client_<name>_total and millisecond histograms as
+spanner_client_<name>_milliseconds_{bucket,count,sum}. For example, it exports
+spanner_client_operation_count_total and
+spanner_client_operation_latencies_milliseconds_bucket.
+
+The gRPC-layer instruments are included only when gRPC built-in metrics are
+enabled through SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS=false or
+DirectPath. AFE latency instruments are included only when AFE server timing is
+enabled.
+
+This export is independent of the built-in Cloud Monitoring sink.
+[ClientConfig.DisableNativeMetrics] and SPANNER_DISABLE_BUILTIN_METRICS control
+only Cloud Monitoring; they do not disable ClientMetricsProvider. Both sinks
+may be active simultaneously. Client metrics are not recorded for emulator
+clients. [ClientConfig.OpenTelemetryMeterProvider] configures the older Spanner
+OpenTelemetry metrics surface and does not enable this built-in client-metrics
+export.
+
+On Spanner Omni, the Cloud Monitoring export is unavailable and is always off.
+Set [ClientConfig.ClientMetricsProvider] to export client metrics from an Omni
+client.
+
 To use an emulator with this library, you can set the SPANNER_EMULATOR_HOST
 environment variable to the address at which your emulator is running. This will
 send requests to that address instead of to Cloud Spanner. You can then create

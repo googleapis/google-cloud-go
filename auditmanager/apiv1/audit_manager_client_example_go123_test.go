@@ -53,6 +53,32 @@ func ExampleClient_ListAuditReports_all() {
 	}
 }
 
+func ExampleClient_ListAuditSchedules_all() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := auditmanager.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &auditmanagerpb.ListAuditSchedulesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/auditmanager/apiv1/auditmanagerpb#ListAuditSchedulesRequest.
+	}
+	for resp, err := range c.ListAuditSchedules(ctx, req).All() {
+		if err != nil {
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleClient_ListControls_all() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.

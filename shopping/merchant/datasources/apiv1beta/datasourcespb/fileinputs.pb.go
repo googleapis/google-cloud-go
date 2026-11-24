@@ -374,22 +374,22 @@ var File_google_shopping_merchant_datasources_v1beta_fileinputs_proto protorefle
 
 const file_google_shopping_merchant_datasources_v1beta_fileinputs_proto_rawDesc = "" +
 	"\n" +
-	"<google/shopping/merchant/datasources/v1beta/fileinputs.proto\x12+google.shopping.merchant.datasources.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x1bgoogle/type/timeofday.proto\"\xa3\a\n" +
-	"\tFileInput\x12p\n" +
-	"\x0efetch_settings\x18\x01 \x01(\v2D.google.shopping.merchant.datasources.v1beta.FileInput.FetchSettingsB\x03\xe0A\x01R\rfetchSettings\x12 \n" +
-	"\tfile_name\x18\x02 \x01(\tB\x03\xe0A\x01R\bfileName\x12q\n" +
-	"\x0ffile_input_type\x18\x03 \x01(\x0e2D.google.shopping.merchant.datasources.v1beta.FileInput.FileInputTypeB\x03\xe0A\x03R\rfileInputType\x1a\xb2\x04\n" +
-	"\rFetchSettings\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabled\x12%\n" +
-	"\fday_of_month\x18\x02 \x01(\x05B\x03\xe0A\x01R\n" +
-	"dayOfMonth\x12;\n" +
-	"\vtime_of_day\x18\x03 \x01(\v2\x16.google.type.TimeOfDayB\x03\xe0A\x01R\ttimeOfDay\x12;\n" +
-	"\vday_of_week\x18\x04 \x01(\x0e2\x16.google.type.DayOfWeekB\x03\xe0A\x01R\tdayOfWeek\x12 \n" +
-	"\ttime_zone\x18\x05 \x01(\tB\x03\xe0A\x01R\btimeZone\x12q\n" +
-	"\tfrequency\x18\x06 \x01(\x0e2N.google.shopping.merchant.datasources.v1beta.FileInput.FetchSettings.FrequencyB\x03\xe0A\x02R\tfrequency\x12 \n" +
-	"\tfetch_uri\x18\a \x01(\tB\x03\xe0A\x01R\bfetchUri\x12\x1f\n" +
-	"\busername\x18\b \x01(\tB\x03\xe0A\x01R\busername\x12\x1f\n" +
-	"\bpassword\x18\t \x01(\tB\x03\xe0A\x01R\bpassword\"h\n" +
+	"<google/shopping/merchant/datasources/v1beta/fileinputs.proto\x12+google.shopping.merchant.datasources.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x1bgoogle/type/timeofday.proto\"\xaf\a\n" +
+	"\tFileInput\x12q\n" +
+	"\x0efetch_settings\x18\x01 \x01(\v2D.google.shopping.merchant.datasources.v1beta.FileInput.FetchSettingsB\x04\xe2A\x01\x01R\rfetchSettings\x12!\n" +
+	"\tfile_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\bfileName\x12r\n" +
+	"\x0ffile_input_type\x18\x03 \x01(\x0e2D.google.shopping.merchant.datasources.v1beta.FileInput.FileInputTypeB\x04\xe2A\x01\x03R\rfileInputType\x1a\xbb\x04\n" +
+	"\rFetchSettings\x12\x1e\n" +
+	"\aenabled\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\aenabled\x12&\n" +
+	"\fday_of_month\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\n" +
+	"dayOfMonth\x12<\n" +
+	"\vtime_of_day\x18\x03 \x01(\v2\x16.google.type.TimeOfDayB\x04\xe2A\x01\x01R\ttimeOfDay\x12<\n" +
+	"\vday_of_week\x18\x04 \x01(\x0e2\x16.google.type.DayOfWeekB\x04\xe2A\x01\x01R\tdayOfWeek\x12!\n" +
+	"\ttime_zone\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\btimeZone\x12r\n" +
+	"\tfrequency\x18\x06 \x01(\x0e2N.google.shopping.merchant.datasources.v1beta.FileInput.FetchSettings.FrequencyB\x04\xe2A\x01\x02R\tfrequency\x12!\n" +
+	"\tfetch_uri\x18\a \x01(\tB\x04\xe2A\x01\x01R\bfetchUri\x12 \n" +
+	"\busername\x18\b \x01(\tB\x04\xe2A\x01\x01R\busername\x12 \n" +
+	"\bpassword\x18\t \x01(\tB\x04\xe2A\x01\x01R\bpassword\"h\n" +
 	"\tFrequency\x12\x19\n" +
 	"\x15FREQUENCY_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fFREQUENCY_DAILY\x10\x01\x12\x14\n" +

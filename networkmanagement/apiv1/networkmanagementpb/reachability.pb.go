@@ -584,9 +584,9 @@ var File_google_cloud_networkmanagement_v1_reachability_proto protoreflect.FileD
 
 const file_google_cloud_networkmanagement_v1_reachability_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/networkmanagement/v1/reachability.proto\x12!google.cloud.networkmanagement.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a9google/cloud/networkmanagement/v1/connectivity_test.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xda\x01\n" +
-	"\x1cListConnectivityTestsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"4google/cloud/networkmanagement/v1/reachability.proto\x12!google.cloud.networkmanagement.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a9google/cloud/networkmanagement/v1/connectivity_test.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdb\x01\n" +
+	"\x1cListConnectivityTestsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -596,24 +596,24 @@ const file_google_cloud_networkmanagement_v1_reachability_proto_rawDesc = "" +
 	"\x1dListConnectivityTestsResponse\x12Q\n" +
 	"\tresources\x18\x01 \x03(\v23.google.cloud.networkmanagement.v1.ConnectivityTestR\tresources\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"k\n" +
-	"\x1aGetConnectivityTestRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1networkmanagement.googleapis.com/ConnectivityTestR\x04name\"\xe0\x01\n" +
-	"\x1dCreateConnectivityTestRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12\x1c\n" +
-	"\atest_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x06testId\x12T\n" +
-	"\bresource\x18\x03 \x01(\v23.google.cloud.networkmanagement.v1.ConnectivityTestB\x03\xe0A\x02R\bresource\"\xb7\x01\n" +
-	"\x1dUpdateConnectivityTestRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12T\n" +
-	"\bresource\x18\x02 \x01(\v23.google.cloud.networkmanagement.v1.ConnectivityTestB\x03\xe0A\x02R\bresource\"n\n" +
-	"\x1dDeleteConnectivityTestRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1networkmanagement.googleapis.com/ConnectivityTestR\x04name\"m\n" +
-	"\x1cRerunConnectivityTestRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"l\n" +
+	"\x1aGetConnectivityTestRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1networkmanagement.googleapis.com/ConnectivityTestR\x04name\"\xe3\x01\n" +
+	"\x1dCreateConnectivityTestRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12\x1d\n" +
+	"\atest_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06testId\x12U\n" +
+	"\bresource\x18\x03 \x01(\v23.google.cloud.networkmanagement.v1.ConnectivityTestB\x04\xe2A\x01\x02R\bresource\"\xb9\x01\n" +
+	"\x1dUpdateConnectivityTestRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12U\n" +
+	"\bresource\x18\x02 \x01(\v23.google.cloud.networkmanagement.v1.ConnectivityTestB\x04\xe2A\x01\x02R\bresource\"o\n" +
+	"\x1dDeleteConnectivityTestRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1networkmanagement.googleapis.com/ConnectivityTestR\x04name\"n\n" +
+	"\x1cRerunConnectivityTestRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
 	"1networkmanagement.googleapis.com/ConnectivityTestR\x04name\"\xa4\x02\n" +
 	"\x11OperationMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +

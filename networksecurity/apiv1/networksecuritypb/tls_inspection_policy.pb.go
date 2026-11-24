@@ -703,23 +703,23 @@ var File_google_cloud_networksecurity_v1_tls_inspection_policy_proto protoreflec
 
 const file_google_cloud_networksecurity_v1_tls_inspection_policy_proto_rawDesc = "" +
 	"\n" +
-	";google/cloud/networksecurity/v1/tls_inspection_policy.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcf\b\n" +
-	"\x13TlsInspectionPolicy\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12@\n" +
-	"\aca_pool\x18\x05 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fprivateca.googleapis.com/CaPoolR\x06caPool\x12X\n" +
-	"\ftrust_config\x18\x06 \x01(\tB5\xe0A\x01\xfaA/\n" +
-	"-certificatemanager.googleapis.com/TrustConfigR\vtrustConfig\x12;\n" +
-	"\x15exclude_public_ca_set\x18\a \x01(\bB\x03\xe0A\x01H\x00R\x12excludePublicCaSet\x88\x01\x01\x12l\n" +
-	"\x0fmin_tls_version\x18\b \x01(\x0e2?.google.cloud.networksecurity.v1.TlsInspectionPolicy.TlsVersionB\x03\xe0A\x01R\rminTlsVersion\x12q\n" +
-	"\x13tls_feature_profile\x18\t \x01(\x0e2<.google.cloud.networksecurity.v1.TlsInspectionPolicy.ProfileB\x03\xe0A\x01R\x11tlsFeatureProfile\x123\n" +
+	";google/cloud/networksecurity/v1/tls_inspection_policy.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd9\b\n" +
+	"\x13TlsInspectionPolicy\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12A\n" +
+	"\aca_pool\x18\x05 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fprivateca.googleapis.com/CaPoolR\x06caPool\x12Y\n" +
+	"\ftrust_config\x18\x06 \x01(\tB6\xe2A\x01\x01\xfaA/\n" +
+	"-certificatemanager.googleapis.com/TrustConfigR\vtrustConfig\x12<\n" +
+	"\x15exclude_public_ca_set\x18\a \x01(\bB\x04\xe2A\x01\x01H\x00R\x12excludePublicCaSet\x88\x01\x01\x12m\n" +
+	"\x0fmin_tls_version\x18\b \x01(\x0e2?.google.cloud.networksecurity.v1.TlsInspectionPolicy.TlsVersionB\x04\xe2A\x01\x01R\rminTlsVersion\x12r\n" +
+	"\x13tls_feature_profile\x18\t \x01(\x0e2<.google.cloud.networksecurity.v1.TlsInspectionPolicy.ProfileB\x04\xe2A\x01\x01R\x11tlsFeatureProfile\x124\n" +
 	"\x13custom_tls_features\x18\n" +
-	" \x03(\tB\x03\xe0A\x01R\x11customTlsFeatures\"]\n" +
+	" \x03(\tB\x04\xe2A\x01\x01R\x11customTlsFeatures\"]\n" +
 	"\n" +
 	"TlsVersion\x12\x1b\n" +
 	"\x17TLS_VERSION_UNSPECIFIED\x10\x00\x12\v\n" +
@@ -734,13 +734,13 @@ const file_google_cloud_networksecurity_v1_tls_inspection_policy_proto_rawDesc =
 	"\x12PROFILE_RESTRICTED\x10\x03\x12\x12\n" +
 	"\x0ePROFILE_CUSTOM\x10\x04:\x8f\x01\xeaA\x8b\x01\n" +
 	"2networksecurity.googleapis.com/TlsInspectionPolicy\x12Uprojects/{project}/locations/{location}/tlsInspectionPolicies/{tls_inspection_policy}B\x18\n" +
-	"\x16_exclude_public_ca_set\"\xa3\x02\n" +
-	" CreateTlsInspectionPolicyRequest\x12R\n" +
-	"\x06parent\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\x122networksecurity.googleapis.com/TlsInspectionPolicyR\x06parent\x12<\n" +
-	"\x18tls_inspection_policy_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x15tlsInspectionPolicyId\x12m\n" +
-	"\x15tls_inspection_policy\x18\x03 \x01(\v24.google.cloud.networksecurity.v1.TlsInspectionPolicyB\x03\xe0A\x02R\x13tlsInspectionPolicy\"\xa1\x01\n" +
-	" ListTlsInspectionPoliciesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x16_exclude_public_ca_set\"\xa6\x02\n" +
+	" CreateTlsInspectionPolicyRequest\x12S\n" +
+	"\x06parent\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\x122networksecurity.googleapis.com/TlsInspectionPolicyR\x06parent\x12=\n" +
+	"\x18tls_inspection_policy_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x15tlsInspectionPolicyId\x12n\n" +
+	"\x15tls_inspection_policy\x18\x03 \x01(\v24.google.cloud.networksecurity.v1.TlsInspectionPolicyB\x04\xe2A\x01\x02R\x13tlsInspectionPolicy\"\xa2\x01\n" +
+	" ListTlsInspectionPoliciesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -748,18 +748,18 @@ const file_google_cloud_networksecurity_v1_tls_inspection_policy_proto_rawDesc =
 	"!ListTlsInspectionPoliciesResponse\x12l\n" +
 	"\x17tls_inspection_policies\x18\x01 \x03(\v24.google.cloud.networksecurity.v1.TlsInspectionPolicyR\x15tlsInspectionPolicies\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"o\n" +
-	"\x1dGetTlsInspectionPolicyRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2networksecurity.googleapis.com/TlsInspectionPolicyR\x04name\"\x88\x01\n" +
-	" DeleteTlsInspectionPolicyRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"p\n" +
+	"\x1dGetTlsInspectionPolicyRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2networksecurity.googleapis.com/TlsInspectionPolicyR\x04name\"\x89\x01\n" +
+	" DeleteTlsInspectionPolicyRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
 	"2networksecurity.googleapis.com/TlsInspectionPolicyR\x04name\x12\x14\n" +
-	"\x05force\x18\x02 \x01(\bR\x05force\"\xd3\x01\n" +
-	" UpdateTlsInspectionPolicyRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12m\n" +
-	"\x15tls_inspection_policy\x18\x02 \x01(\v24.google.cloud.networksecurity.v1.TlsInspectionPolicyB\x03\xe0A\x02R\x13tlsInspectionPolicyB\xd8\x02\xeaA\\\n" +
+	"\x05force\x18\x02 \x01(\bR\x05force\"\xd5\x01\n" +
+	" UpdateTlsInspectionPolicyRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12n\n" +
+	"\x15tls_inspection_policy\x18\x02 \x01(\v24.google.cloud.networksecurity.v1.TlsInspectionPolicyB\x04\xe2A\x01\x02R\x13tlsInspectionPolicyB\xd8\x02\xeaA\\\n" +
 	"\x1fprivateca.googleapis.com/CaPool\x129projects/{project}/locations/{location}/caPools/{ca_pool}\n" +
 	"#com.google.cloud.networksecurity.v1B\x18TlsInspectionPolicyProtoP\x01ZMcloud.google.com/go/networksecurity/apiv1/networksecuritypb;networksecuritypb\xaa\x02\x1fGoogle.Cloud.NetworkSecurity.V1\xca\x02\x1fGoogle\\Cloud\\NetworkSecurity\\V1\xea\x02\"Google::Cloud::NetworkSecurity::V1b\x06proto3"
 

@@ -264,23 +264,23 @@ var File_google_cloud_discoveryengine_v1beta_license_config_proto protoreflect.F
 
 const file_google_cloud_discoveryengine_v1beta_license_config_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/discoveryengine/v1beta/license_config.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1beta/common.proto\x1a\x16google/type/date.proto\"\xde\a\n" +
-	"\rLicenseConfig\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x05\xe0A\bR\x04name\x12(\n" +
-	"\rlicense_count\x18\x02 \x01(\x03B\x03\xe0A\x02R\flicenseCount\x12g\n" +
-	"\x11subscription_tier\x18\x03 \x01(\x0e25.google.cloud.discoveryengine.v1beta.SubscriptionTierB\x03\xe0A\x02R\x10subscriptionTier\x12S\n" +
-	"\x05state\x18\x04 \x01(\x0e28.google.cloud.discoveryengine.v1beta.LicenseConfig.StateB\x03\xe0A\x03R\x05state\x12\"\n" +
+	"8google/cloud/discoveryengine/v1beta/license_config.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1beta/common.proto\x1a\x16google/type/date.proto\"\xe8\a\n" +
+	"\rLicenseConfig\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x05\bR\x04name\x12)\n" +
+	"\rlicense_count\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\flicenseCount\x12h\n" +
+	"\x11subscription_tier\x18\x03 \x01(\x0e25.google.cloud.discoveryengine.v1beta.SubscriptionTierB\x04\xe2A\x01\x02R\x10subscriptionTier\x12T\n" +
+	"\x05state\x18\x04 \x01(\x0e28.google.cloud.discoveryengine.v1beta.LicenseConfig.StateB\x04\xe2A\x01\x03R\x05state\x12#\n" +
 	"\n" +
-	"auto_renew\x18\x05 \x01(\bB\x03\xe0A\x01R\tautoRenew\x125\n" +
+	"auto_renew\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\tautoRenew\x126\n" +
 	"\n" +
-	"start_date\x18\x06 \x01(\v2\x11.google.type.DateB\x03\xe0A\x02R\tstartDate\x121\n" +
-	"\bend_date\x18\a \x01(\v2\x11.google.type.DateB\x03\xe0A\x01R\aendDate\x12g\n" +
-	"\x11subscription_term\x18\b \x01(\x0e25.google.cloud.discoveryengine.v1beta.SubscriptionTermB\x03\xe0A\x02R\x10subscriptionTerm\x12\"\n" +
+	"start_date\x18\x06 \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x02R\tstartDate\x122\n" +
+	"\bend_date\x18\a \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x01R\aendDate\x12h\n" +
+	"\x11subscription_term\x18\b \x01(\x0e25.google.cloud.discoveryengine.v1beta.SubscriptionTermB\x04\xe2A\x01\x02R\x10subscriptionTerm\x12#\n" +
 	"\n" +
-	"free_trial\x18\t \x01(\bB\x03\xe0A\x01R\tfreeTrial\x12(\n" +
-	"\rgemini_bundle\x18\v \x01(\bB\x03\xe0A\x03R\fgeminiBundle\x12.\n" +
-	"\x10early_terminated\x18\f \x01(\bB\x03\xe0A\x03R\x0fearlyTerminated\x12L\n" +
-	"\x16early_termination_date\x18\r \x01(\v2\x11.google.type.DateB\x03\xe0A\x03R\x14earlyTerminationDate\"i\n" +
+	"free_trial\x18\t \x01(\bB\x04\xe2A\x01\x01R\tfreeTrial\x12)\n" +
+	"\rgemini_bundle\x18\v \x01(\bB\x04\xe2A\x01\x03R\fgeminiBundle\x12/\n" +
+	"\x10early_terminated\x18\f \x01(\bB\x04\xe2A\x01\x03R\x0fearlyTerminated\x12M\n" +
+	"\x16early_termination_date\x18\r \x01(\v2\x11.google.type.DateB\x04\xe2A\x01\x03R\x14earlyTerminationDate\"i\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +

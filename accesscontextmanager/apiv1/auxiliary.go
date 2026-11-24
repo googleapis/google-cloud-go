@@ -18,11 +18,13 @@ package accesscontextmanager
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	accesscontextmanagerpb "cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb"
 	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -942,6 +944,12 @@ func (op *UpdateServicePerimeterOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AccessLevelIterator) All() iter.Seq2[*accesscontextmanagerpb.AccessLevel, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AccessLevelIterator manages a stream of *accesscontextmanagerpb.AccessLevel.
 type AccessLevelIterator struct {
 	items    []*accesscontextmanagerpb.AccessLevel
@@ -987,6 +995,12 @@ func (it *AccessLevelIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AccessPolicyIterator) All() iter.Seq2[*accesscontextmanagerpb.AccessPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AccessPolicyIterator manages a stream of *accesscontextmanagerpb.AccessPolicy.
@@ -1036,6 +1050,12 @@ func (it *AccessPolicyIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GcpUserAccessBindingIterator) All() iter.Seq2[*accesscontextmanagerpb.GcpUserAccessBinding, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // GcpUserAccessBindingIterator manages a stream of *accesscontextmanagerpb.GcpUserAccessBinding.
 type GcpUserAccessBindingIterator struct {
 	items    []*accesscontextmanagerpb.GcpUserAccessBinding
@@ -1081,6 +1101,12 @@ func (it *GcpUserAccessBindingIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServicePerimeterIterator) All() iter.Seq2[*accesscontextmanagerpb.ServicePerimeter, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ServicePerimeterIterator manages a stream of *accesscontextmanagerpb.ServicePerimeter.

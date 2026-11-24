@@ -1880,35 +1880,36 @@ var File_google_dataflow_v1beta3_environment_proto protoreflect.FileDescriptor
 
 const file_google_dataflow_v1beta3_environment_proto_rawDesc = "" +
 	"\n" +
-	")google/dataflow/v1beta3/environment.proto\x12\x17google.dataflow.v1beta3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/protobuf/any.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xf3\t\n" +
+	")google/dataflow/v1beta3/environment.proto\x12\x17google.dataflow.v1beta3\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/protobuf/any.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x80\n" +
+	"\n" +
 	"\vEnvironment\x12.\n" +
 	"\x13temp_storage_prefix\x18\x01 \x01(\tR\x11tempStoragePrefix\x12=\n" +
 	"\x1bcluster_manager_api_service\x18\x02 \x01(\tR\x18clusterManagerApiService\x12 \n" +
-	"\vexperiments\x18\x03 \x03(\tR\vexperiments\x12,\n" +
-	"\x0fservice_options\x18\x10 \x03(\tB\x03\xe0A\x01R\x0eserviceOptions\x124\n" +
-	"\x14service_kms_key_name\x18\f \x01(\tB\x03\xe0A\x01R\x11serviceKmsKeyName\x12F\n" +
-	"\fworker_pools\x18\x04 \x03(\v2#.google.dataflow.v1beta3.WorkerPoolR\vworkerPools\x12;\n" +
+	"\vexperiments\x18\x03 \x03(\tR\vexperiments\x12-\n" +
+	"\x0fservice_options\x18\x10 \x03(\tB\x04\xe2A\x01\x01R\x0eserviceOptions\x125\n" +
+	"\x14service_kms_key_name\x18\f \x01(\tB\x04\xe2A\x01\x01R\x11serviceKmsKeyName\x12F\n" +
+	"\fworker_pools\x18\x04 \x03(\v2#.google.dataflow.v1beta3.WorkerPoolR\vworkerPools\x12<\n" +
 	"\n" +
-	"user_agent\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\tuserAgent\x121\n" +
-	"\aversion\x18\x06 \x01(\v2\x17.google.protobuf.StructR\aversion\x12\x1d\n" +
-	"\adataset\x18\a \x01(\tB\x03\xe0A\x01R\adataset\x12I\n" +
+	"user_agent\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\tuserAgent\x121\n" +
+	"\aversion\x18\x06 \x01(\v2\x17.google.protobuf.StructR\aversion\x12\x1e\n" +
+	"\adataset\x18\a \x01(\tB\x04\xe2A\x01\x01R\adataset\x12I\n" +
 	"\x14sdk_pipeline_options\x18\b \x01(\v2\x17.google.protobuf.StructR\x12sdkPipelineOptions\x12G\n" +
-	"\x14internal_experiments\x18\t \x01(\v2\x14.google.protobuf.AnyR\x13internalExperiments\x127\n" +
+	"\x14internal_experiments\x18\t \x01(\v2\x14.google.protobuf.AnyR\x13internalExperiments\x128\n" +
 	"\x15service_account_email\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x13serviceAccountEmail\x12{\n" +
-	"\x1dflex_resource_scheduling_goal\x18\v \x01(\x0e23.google.dataflow.v1beta3.FlexResourceSchedulingGoalB\x03\xe0A\x01R\x1aflexResourceSchedulingGoal\x12(\n" +
-	"\rworker_region\x18\r \x01(\tB\x03\xe0A\x01R\fworkerRegion\x12$\n" +
-	"\vworker_zone\x18\x0e \x01(\tB\x03\xe0A\x01R\n" +
-	"workerZone\x12L\n" +
-	"\fshuffle_mode\x18\x0f \x01(\x0e2$.google.dataflow.v1beta3.ShuffleModeB\x03\xe0A\x03R\vshuffleMode\x12O\n" +
-	"\rdebug_options\x18\x11 \x01(\v2%.google.dataflow.v1beta3.DebugOptionsB\x03\xe0A\x01R\fdebugOptions\x12`\n" +
-	"+use_streaming_engine_resource_based_billing\x18\x12 \x01(\bB\x03\xe0A\x03R&useStreamingEngineResourceBasedBilling\x12R\n" +
-	"\x0estreaming_mode\x18\x13 \x01(\x0e2&.google.dataflow.v1beta3.StreamingModeB\x03\xe0A\x01R\rstreamingMode\x12)\n" +
-	"\x0euse_public_ips\x18\x14 \x01(\bB\x03\xe0A\x01R\fusePublicIps\"V\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x13serviceAccountEmail\x12|\n" +
+	"\x1dflex_resource_scheduling_goal\x18\v \x01(\x0e23.google.dataflow.v1beta3.FlexResourceSchedulingGoalB\x04\xe2A\x01\x01R\x1aflexResourceSchedulingGoal\x12)\n" +
+	"\rworker_region\x18\r \x01(\tB\x04\xe2A\x01\x01R\fworkerRegion\x12%\n" +
+	"\vworker_zone\x18\x0e \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"workerZone\x12M\n" +
+	"\fshuffle_mode\x18\x0f \x01(\x0e2$.google.dataflow.v1beta3.ShuffleModeB\x04\xe2A\x01\x03R\vshuffleMode\x12P\n" +
+	"\rdebug_options\x18\x11 \x01(\v2%.google.dataflow.v1beta3.DebugOptionsB\x04\xe2A\x01\x01R\fdebugOptions\x12a\n" +
+	"+use_streaming_engine_resource_based_billing\x18\x12 \x01(\bB\x04\xe2A\x01\x03R&useStreamingEngineResourceBasedBilling\x12S\n" +
+	"\x0estreaming_mode\x18\x13 \x01(\x0e2&.google.dataflow.v1beta3.StreamingModeB\x04\xe2A\x01\x01R\rstreamingMode\x12*\n" +
+	"\x0euse_public_ips\x18\x14 \x01(\bB\x04\xe2A\x01\x01R\fusePublicIps\"W\n" +
 	"\aPackage\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1a\n" +
-	"\blocation\x18\x02 \x01(\tR\blocation\x12\x1b\n" +
-	"\x06sha256\x18\x03 \x01(\tB\x03\xe0A\x01R\x06sha256\"]\n" +
+	"\blocation\x18\x02 \x01(\tR\blocation\x12\x1c\n" +
+	"\x06sha256\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x06sha256\"]\n" +
 	"\x04Disk\x12\x17\n" +
 	"\asize_gb\x18\x01 \x01(\x05R\x06sizeGb\x12\x1b\n" +
 	"\tdisk_type\x18\x02 \x01(\tR\bdiskType\x12\x1f\n" +
@@ -1950,7 +1951,7 @@ const file_google_dataflow_v1beta3_environment_proto_rawDesc = "" +
 	"\x0fcontainer_image\x18\x01 \x01(\tR\x0econtainerImage\x12@\n" +
 	"\x1duse_single_core_per_container\x18\x02 \x01(\bR\x19useSingleCorePerContainer\x12%\n" +
 	"\x0eenvironment_id\x18\x03 \x01(\tR\renvironmentId\x12\"\n" +
-	"\fcapabilities\x18\x04 \x03(\tR\fcapabilities\"\xce\v\n" +
+	"\fcapabilities\x18\x04 \x03(\tR\fcapabilities\"\xd0\v\n" +
 	"\n" +
 	"WorkerPool\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x1f\n" +
@@ -1962,9 +1963,9 @@ const file_google_dataflow_v1beta3_environment_proto_rawDesc = "" +
 	"\x0fteardown_policy\x18\x06 \x01(\x0e2'.google.dataflow.v1beta3.TeardownPolicyR\x0eteardownPolicy\x12 \n" +
 	"\fdisk_size_gb\x18\a \x01(\x05R\n" +
 	"diskSizeGb\x12\x1b\n" +
-	"\tdisk_type\x18\x10 \x01(\tR\bdiskType\x127\n" +
-	"\x15disk_provisioned_iops\x18\x17 \x01(\x03B\x03\xe0A\x01R\x13diskProvisionedIops\x12N\n" +
-	"!disk_provisioned_throughput_mibps\x18\x18 \x01(\x03B\x03\xe0A\x01R\x1ediskProvisionedThroughputMibps\x12*\n" +
+	"\tdisk_type\x18\x10 \x01(\tR\bdiskType\x128\n" +
+	"\x15disk_provisioned_iops\x18\x17 \x01(\x03B\x04\xe2A\x01\x01R\x13diskProvisionedIops\x12O\n" +
+	"!disk_provisioned_throughput_mibps\x18\x18 \x01(\x03B\x04\xe2A\x01\x01R\x1ediskProvisionedThroughputMibps\x12*\n" +
 	"\x11disk_source_image\x18\b \x01(\tR\x0fdiskSourceImage\x12\x12\n" +
 	"\x04zone\x18\t \x01(\tR\x04zone\x12\\\n" +
 	"\x13taskrunner_settings\x18\n" +
@@ -1993,9 +1994,9 @@ const file_google_dataflow_v1beta3_environment_proto_rawDesc = "" +
 	"\bDISABLED\x10\x01\x12\r\n" +
 	"\tALWAYS_ON\x10\x02\x12\x0e\n" +
 	"\n" +
-	"EXCEPTIONS\x10\x03\"\x9a\x01\n" +
-	"\fDebugOptions\x128\n" +
-	"\x16enable_hot_key_logging\x18\x01 \x01(\bB\x03\xe0A\x01R\x13enableHotKeyLogging\x12P\n" +
+	"EXCEPTIONS\x10\x03\"\x9b\x01\n" +
+	"\fDebugOptions\x129\n" +
+	"\x16enable_hot_key_logging\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x13enableHotKeyLogging\x12P\n" +
 	"\rdata_sampling\x18\x02 \x01(\v2+.google.dataflow.v1beta3.DataSamplingConfigR\fdataSampling*K\n" +
 	"\aJobType\x12\x14\n" +
 	"\x10JOB_TYPE_UNKNOWN\x10\x00\x12\x12\n" +

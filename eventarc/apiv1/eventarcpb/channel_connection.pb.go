@@ -151,18 +151,18 @@ var File_google_cloud_eventarc_v1_channel_connection_proto protoreflect.FileDesc
 
 const file_google_cloud_eventarc_v1_channel_connection_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/eventarc/v1/channel_connection.proto\x12\x18google.cloud.eventarc.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf5\x04\n" +
-	"\x11ChannelConnection\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12A\n" +
-	"\achannel\x18\x05 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1feventarc.googleapis.com/ChannelR\achannel\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12.\n" +
-	"\x10activation_token\x18\b \x01(\tB\x03\xe0A\x04R\x0factivationToken\x12T\n" +
-	"\x06labels\x18\t \x03(\v27.google.cloud.eventarc.v1.ChannelConnection.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a9\n" +
+	"1google/cloud/eventarc/v1/channel_connection.proto\x12\x18google.cloud.eventarc.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfc\x04\n" +
+	"\x11ChannelConnection\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12B\n" +
+	"\achannel\x18\x05 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1feventarc.googleapis.com/ChannelR\achannel\x12A\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12/\n" +
+	"\x10activation_token\x18\b \x01(\tB\x04\xe2A\x01\x04R\x0factivationToken\x12U\n" +
+	"\x06labels\x18\t \x03(\v27.google.cloud.eventarc.v1.ChannelConnection.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xa7\x01\xeaA\xa3\x01\n" +

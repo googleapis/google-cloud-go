@@ -18,18 +18,19 @@ package spanner
 
 import (
 	"context"
-	"strings"
+	"sync"
 	"sync/atomic"
 	"time"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
-	"cloud.google.com/go/spanner/internal"
+	"cloud.google.com/go/spanner/internal/transport"
 	"github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel/attribute"
 	oteltrace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 )
@@ -85,32 +86,35 @@ var (
 // newGRPCSpannerClient initializes a new spannerClient that uses the gRPC
 // Spanner API.
 func newGRPCSpannerClient(ctx context.Context, sc *sessionClient, channelID uint64, opts ...option.ClientOption) (spannerClient, error) {
-	raw, err := vkit.NewClient(ctx, opts...)
+	raw, err := transport.NewGAPICClient(ctx, sc.userAgent, opts...)
 	if err != nil {
 		return nil, err
 	}
-
-	g := &grpcSpannerClient{raw: raw, metricsTracerFactory: sc.metricsTracerFactory}
-	clientID := sc.nthClient
-	g.prepareRequestIDTrackers(clientID, channelID, sc.nthRequest)
-
-	clientInfo := []string{"gccl", internal.Version}
-	if sc.userAgent != "" {
-		agentWithVersion := strings.SplitN(sc.userAgent, "/", 2)
-		if len(agentWithVersion) == 2 {
-			clientInfo = append(clientInfo, agentWithVersion[0], agentWithVersion[1])
-		}
-	}
-	raw.SetGoogleClientInfo(clientInfo...)
 	if sc.callOptions != nil {
 		raw.CallOptions = mergeCallOptions(raw.CallOptions, sc.callOptions)
 	}
+
+	g := &grpcSpannerClient{raw: raw, metricsTracerFactory: sc.metricsTracerFactory}
+	g.prepareRequestIDTrackers(sc.nthClient, channelID, sc.nthRequest)
 	return g, nil
 }
 
 func (g *grpcSpannerClient) newBuiltinMetricsTracer(ctx context.Context) *builtinMetricsTracer {
-	mt := g.metricsTracerFactory.createBuiltinMetricsTracer(ctx)
-	return &mt
+	return g.metricsTracerFactory.newBuiltinMetricsTracer(ctx)
+}
+
+func contextWithBuiltinMetricsTracer(ctx context.Context, mt *builtinMetricsTracer) context.Context {
+	if mt == nil {
+		return ctx
+	}
+	return context.WithValue(ctx, metricsTracerKey, mt)
+}
+
+func setBuiltinMetricsOperationStatus(mt *builtinMetricsTracer, err error) {
+	if mt == nil {
+		return
+	}
+	mt.currOp.setStatus(status.Code(err).String())
 }
 
 func (g *grpcSpannerClient) CallOptions() *vkit.CallOptions {
@@ -128,30 +132,27 @@ func (g *grpcSpannerClient) Connection() *grpc.ClientConn {
 func (g *grpcSpannerClient) CreateSession(ctx context.Context, req *spannerpb.CreateSessionRequest, opts ...gax.CallOption) (*spannerpb.Session, error) {
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	resp, err := g.raw.CreateSession(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return resp, err
 }
 
 func (g *grpcSpannerClient) BatchCreateSessions(ctx context.Context, req *spannerpb.BatchCreateSessionsRequest, opts ...gax.CallOption) (*spannerpb.BatchCreateSessionsResponse, error) {
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	resp, err := g.raw.BatchCreateSessions(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return resp, err
 }
 
 func (g *grpcSpannerClient) GetSession(ctx context.Context, req *spannerpb.GetSessionRequest, opts ...gax.CallOption) (*spannerpb.Session, error) {
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	resp, err := g.raw.GetSession(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return resp, err
 }
 
@@ -162,10 +163,9 @@ func (g *grpcSpannerClient) ListSessions(ctx context.Context, req *spannerpb.Lis
 func (g *grpcSpannerClient) DeleteSession(ctx context.Context, req *spannerpb.DeleteSessionRequest, opts ...gax.CallOption) error {
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	err := g.raw.DeleteSession(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return err
 }
 
@@ -226,36 +226,78 @@ func setGFEAndAFESpanAttributes(span oteltrace.Span, latencyMap map[string]time.
 	}
 }
 
+type cachedExecuteStreamingSQLClient = transport.CachedExecuteStreamingSQLClient
+
+// cachedStreamingReadClient caches the response headers of the stream,
+// so that server-timing capture and GFE latency sinks share a single Header call.
+type cachedStreamingReadClient struct {
+	spannerpb.Spanner_StreamingReadClient
+	once sync.Once
+	md   metadata.MD
+	err  error
+}
+
+func (c *cachedStreamingReadClient) Header() (metadata.MD, error) {
+	c.once.Do(func() { c.md, c.err = c.Spanner_StreamingReadClient.Header() })
+	return c.md, c.err
+}
+
+type cachedBatchWriteClient struct {
+	spannerpb.Spanner_BatchWriteClient
+	once sync.Once
+	md   metadata.MD
+	err  error
+}
+
+func (c *cachedBatchWriteClient) Header() (metadata.MD, error) {
+	c.once.Do(func() { c.md, c.err = c.Spanner_BatchWriteClient.Header() })
+	return c.md, c.err
+}
+
+// captureStreamServerTiming records the server-timing header of a streaming
+// call on the span and on the current metrics attempt. It does not wait for
+// the response headers when neither built-in metrics nor the span use them.
+func captureStreamServerTiming(span oteltrace.Span, mt *builtinMetricsTracer, client grpc.ClientStream) {
+	hasAttempt := mt != nil && mt.currOp.currAttempt != nil
+	builtInEnabled := hasAttempt && mt.builtInEnabled
+	recording := span.IsRecording()
+	if !builtInEnabled && !recording {
+		return
+	}
+	md, _ := client.Header()
+	latencyMap := parseServerTimingHeader(md)
+	if recording {
+		setGFEAndAFESpanAttributes(span, latencyMap)
+	}
+	if hasAttempt {
+		mt.currOp.currAttempt.setServerTimingMetrics(latencyMap)
+		mt.currOp.currAttempt.setDirectPathUsed(client.Context())
+	}
+}
+
 func (g *grpcSpannerClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
 	span := oteltrace.SpanFromContext(ctx)
 	setSpanAttributes(span, req)
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	resp, err := g.raw.ExecuteSql(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return resp, err
 }
 
 func (g *grpcSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (spannerpb.Spanner_ExecuteStreamingSqlClient, error) {
 	span := oteltrace.SpanFromContext(ctx)
 	setSpanAttributes(span, req)
-	// Note: This method does not add g.optsWithNextRequestID to inject x-goog-spanner-request-id
-	// as it is already manually added when creating Stream iterators for ExecuteStreamingSql.
-	client, err := g.raw.ExecuteStreamingSql(peer.NewContext(ctx, &peer.Peer{}), req, opts...)
-	mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
-	if !ok {
-		return client, err
+	// Note: This method does not add g.optsWithNextRequestID, as it is already
+	// manually added when creating Stream iterators for ExecuteStreamingSql.
+	cached, err := transport.ExecuteStreamingSQL(ctx, g.raw, req, opts...)
+	if err != nil {
+		return nil, err
 	}
-	if mt != nil && client != nil && mt.currOp.currAttempt != nil {
-		md, _ := client.Header()
-		latencyMap := parseServerTimingHeader(md)
-		setGFEAndAFESpanAttributes(span, latencyMap)
-		mt.currOp.currAttempt.setServerTimingMetrics(latencyMap)
-		mt.currOp.currAttempt.setDirectPathUsed(client.Context())
-	}
-	return client, err
+	mt, _ := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
+	captureStreamServerTiming(span, mt, cached)
+	return cached, nil
 }
 
 func (g *grpcSpannerClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.ExecuteBatchDmlRequest, opts ...gax.CallOption) (*spannerpb.ExecuteBatchDmlResponse, error) {
@@ -263,10 +305,9 @@ func (g *grpcSpannerClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.
 	setSpanAttributes(span, req)
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	resp, err := g.raw.ExecuteBatchDml(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return resp, err
 }
 
@@ -275,10 +316,9 @@ func (g *grpcSpannerClient) Read(ctx context.Context, req *spannerpb.ReadRequest
 	setSpanAttributes(span, req)
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	resp, err := g.raw.Read(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return resp, err
 }
 
@@ -288,27 +328,21 @@ func (g *grpcSpannerClient) StreamingRead(ctx context.Context, req *spannerpb.Re
 	span := oteltrace.SpanFromContext(ctx)
 	setSpanAttributes(span, req)
 	client, err := g.raw.StreamingRead(peer.NewContext(ctx, &peer.Peer{}), req, opts...)
-	mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
-	if !ok {
-		return client, err
+	if err != nil {
+		return nil, err
 	}
-	if mt != nil && client != nil && mt.currOp.currAttempt != nil {
-		md, _ := client.Header()
-		latencyMap := parseServerTimingHeader(md)
-		setGFEAndAFESpanAttributes(span, latencyMap)
-		mt.currOp.currAttempt.setServerTimingMetrics(latencyMap)
-		mt.currOp.currAttempt.setDirectPathUsed(client.Context())
-	}
-	return client, err
+	cached := &cachedStreamingReadClient{Spanner_StreamingReadClient: client}
+	mt, _ := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
+	captureStreamServerTiming(span, mt, cached)
+	return cached, nil
 }
 
 func (g *grpcSpannerClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest, opts ...gax.CallOption) (*spannerpb.Transaction, error) {
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	resp, err := g.raw.BeginTransaction(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return resp, err
 }
 
@@ -317,20 +351,18 @@ func (g *grpcSpannerClient) Commit(ctx context.Context, req *spannerpb.CommitReq
 	setSpanAttributes(span, req)
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	resp, err := g.raw.Commit(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return resp, err
 }
 
 func (g *grpcSpannerClient) Rollback(ctx context.Context, req *spannerpb.RollbackRequest, opts ...gax.CallOption) error {
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	err := g.raw.Rollback(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return err
 }
 
@@ -339,10 +371,9 @@ func (g *grpcSpannerClient) PartitionQuery(ctx context.Context, req *spannerpb.P
 	setSpanAttributes(span, req)
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	resp, err := g.raw.PartitionQuery(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return resp, err
 }
 
@@ -351,10 +382,9 @@ func (g *grpcSpannerClient) PartitionRead(ctx context.Context, req *spannerpb.Pa
 	setSpanAttributes(span, req)
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	resp, err := g.raw.PartitionRead(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return resp, err
 }
 
@@ -362,16 +392,11 @@ func (g *grpcSpannerClient) BatchWrite(ctx context.Context, req *spannerpb.Batch
 	span := oteltrace.SpanFromContext(ctx)
 	setSpanAttributes(span, req)
 	client, err := g.raw.BatchWrite(peer.NewContext(ctx, &peer.Peer{}), req, g.optsWithNextRequestID(opts)...)
-	mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
-	if !ok {
-		return client, err
+	if err != nil {
+		return nil, err
 	}
-	if mt != nil && client != nil && mt.currOp.currAttempt != nil {
-		md, _ := client.Header()
-		latencyMap := parseServerTimingHeader(md)
-		setGFEAndAFESpanAttributes(span, latencyMap)
-		mt.currOp.currAttempt.setServerTimingMetrics(latencyMap)
-		mt.currOp.currAttempt.setDirectPathUsed(client.Context())
-	}
-	return client, err
+	cached := &cachedBatchWriteClient{Spanner_BatchWriteClient: client}
+	mt, _ := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
+	captureStreamServerTiming(span, mt, cached)
+	return cached, nil
 }

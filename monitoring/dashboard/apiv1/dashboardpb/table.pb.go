@@ -296,19 +296,19 @@ var File_google_monitoring_dashboard_v1_table_proto protoreflect.FileDescriptor
 
 const file_google_monitoring_dashboard_v1_table_proto_rawDesc = "" +
 	"\n" +
-	"*google/monitoring/dashboard/v1/table.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a,google/monitoring/dashboard/v1/metrics.proto\x1a:google/monitoring/dashboard/v1/table_display_options.proto\x1a\x1egoogle/protobuf/duration.proto\"\xdb\x06\n" +
-	"\x0fTimeSeriesTable\x12^\n" +
-	"\tdata_sets\x18\x01 \x03(\v2<.google.monitoring.dashboard.v1.TimeSeriesTable.TableDataSetB\x03\xe0A\x02R\bdataSets\x12{\n" +
-	"\x14metric_visualization\x18\x02 \x01(\x0e2C.google.monitoring.dashboard.v1.TimeSeriesTable.MetricVisualizationB\x03\xe0A\x01R\x13metricVisualization\x12l\n" +
-	"\x0fcolumn_settings\x18\x04 \x03(\v2>.google.monitoring.dashboard.v1.TimeSeriesTable.ColumnSettingsB\x03\xe0A\x01R\x0ecolumnSettings\x1a\xdc\x02\n" +
-	"\fTableDataSet\x12`\n" +
-	"\x11time_series_query\x18\x01 \x01(\v2/.google.monitoring.dashboard.v1.TimeSeriesQueryB\x03\xe0A\x02R\x0ftimeSeriesQuery\x12*\n" +
-	"\x0etable_template\x18\x02 \x01(\tB\x03\xe0A\x01R\rtableTemplate\x12P\n" +
-	"\x14min_alignment_period\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x12minAlignmentPeriod\x12l\n" +
-	"\x15table_display_options\x18\x04 \x01(\v23.google.monitoring.dashboard.v1.TableDisplayOptionsB\x03\xe0A\x01R\x13tableDisplayOptions\x1aL\n" +
-	"\x0eColumnSettings\x12\x1b\n" +
-	"\x06column\x18\x01 \x01(\tB\x03\xe0A\x02R\x06column\x12\x1d\n" +
-	"\avisible\x18\x02 \x01(\bB\x03\xe0A\x02R\avisible\"P\n" +
+	"*google/monitoring/dashboard/v1/table.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a,google/monitoring/dashboard/v1/metrics.proto\x1a:google/monitoring/dashboard/v1/table_display_options.proto\x1a\x1egoogle/protobuf/duration.proto\"\xe4\x06\n" +
+	"\x0fTimeSeriesTable\x12_\n" +
+	"\tdata_sets\x18\x01 \x03(\v2<.google.monitoring.dashboard.v1.TimeSeriesTable.TableDataSetB\x04\xe2A\x01\x02R\bdataSets\x12|\n" +
+	"\x14metric_visualization\x18\x02 \x01(\x0e2C.google.monitoring.dashboard.v1.TimeSeriesTable.MetricVisualizationB\x04\xe2A\x01\x01R\x13metricVisualization\x12m\n" +
+	"\x0fcolumn_settings\x18\x04 \x03(\v2>.google.monitoring.dashboard.v1.TimeSeriesTable.ColumnSettingsB\x04\xe2A\x01\x01R\x0ecolumnSettings\x1a\xe0\x02\n" +
+	"\fTableDataSet\x12a\n" +
+	"\x11time_series_query\x18\x01 \x01(\v2/.google.monitoring.dashboard.v1.TimeSeriesQueryB\x04\xe2A\x01\x02R\x0ftimeSeriesQuery\x12+\n" +
+	"\x0etable_template\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rtableTemplate\x12Q\n" +
+	"\x14min_alignment_period\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\x12minAlignmentPeriod\x12m\n" +
+	"\x15table_display_options\x18\x04 \x01(\v23.google.monitoring.dashboard.v1.TableDisplayOptionsB\x04\xe2A\x01\x01R\x13tableDisplayOptions\x1aN\n" +
+	"\x0eColumnSettings\x12\x1c\n" +
+	"\x06column\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06column\x12\x1e\n" +
+	"\avisible\x18\x02 \x01(\bB\x04\xe2A\x01\x02R\avisible\"P\n" +
 	"\x13MetricVisualization\x12$\n" +
 	" METRIC_VISUALIZATION_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +

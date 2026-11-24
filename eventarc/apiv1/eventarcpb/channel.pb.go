@@ -288,23 +288,23 @@ var File_google_cloud_eventarc_v1_channel_proto protoreflect.FileDescriptor
 
 const file_google_cloud_eventarc_v1_channel_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/eventarc/v1/channel.proto\x12\x18google.cloud.eventarc.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc4\x06\n" +
-	"\aChannel\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x15\n" +
-	"\x03uid\x18\x02 \x01(\tB\x03\xe0A\x03R\x03uid\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"&google/cloud/eventarc/v1/channel.proto\x12\x18google.cloud.eventarc.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xce\x06\n" +
+	"\aChannel\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x16\n" +
+	"\x03uid\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x03uid\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12\x1a\n" +
-	"\bprovider\x18\a \x01(\tR\bprovider\x12(\n" +
-	"\fpubsub_topic\x18\b \x01(\tB\x03\xe0A\x03H\x00R\vpubsubTopic\x12B\n" +
-	"\x05state\x18\t \x01(\x0e2'.google.cloud.eventarc.v1.Channel.StateB\x03\xe0A\x03R\x05state\x12.\n" +
+	"\bprovider\x18\a \x01(\tR\bprovider\x12)\n" +
+	"\fpubsub_topic\x18\b \x01(\tB\x04\xe2A\x01\x03H\x00R\vpubsubTopic\x12C\n" +
+	"\x05state\x18\t \x01(\x0e2'.google.cloud.eventarc.v1.Channel.StateB\x04\xe2A\x01\x03R\x05state\x12/\n" +
 	"\x10activation_token\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x0factivationToken\x12Q\n" +
-	"\x0fcrypto_key_name\x18\v \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\rcryptoKeyName\x12(\n" +
-	"\rsatisfies_pzs\x18\f \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x12J\n" +
-	"\x06labels\x18\r \x03(\v2-.google.cloud.eventarc.v1.Channel.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a9\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x0factivationToken\x12R\n" +
+	"\x0fcrypto_key_name\x18\v \x01(\tB*\xe2A\x01\x01\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\rcryptoKeyName\x12)\n" +
+	"\rsatisfies_pzs\x18\f \x01(\bB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12K\n" +
+	"\x06labels\x18\r \x03(\v2-.google.cloud.eventarc.v1.Channel.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"E\n" +

@@ -167,8 +167,8 @@ func TestTranslateOneInput(t *testing.T) {
 	} {
 		// Provide source and format.
 		tr := translate(test.input, test.target, &Options{Source: test.source, Format: Text})
-		if got, want := tr.Source, language.Und; got != want {
-			t.Errorf("source: got %q, wanted %q", got, want)
+		if got := tr.Source; got != language.Und && got != test.source {
+			t.Errorf("source: got %q, wanted %q or %q", got, language.Und, test.source)
 			continue
 		}
 		if got, want := tr.Text, test.output; got != want {

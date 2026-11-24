@@ -2338,23 +2338,23 @@ var File_google_cloud_networkservices_v1_http_route_proto protoreflect.FileDescr
 
 const file_google_cloud_networkservices_v1_http_route_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/networkservices/v1/http_route.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe9,\n" +
-	"\tHttpRoute\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12 \n" +
-	"\tself_link\x18\v \x01(\tB\x03\xe0A\x03R\bselfLink\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12!\n" +
-	"\thostnames\x18\x05 \x03(\tB\x03\xe0A\x02R\thostnames\x12C\n" +
-	"\x06meshes\x18\b \x03(\tB+\xe0A\x01\xfaA%\n" +
-	"#networkservices.googleapis.com/MeshR\x06meshes\x12J\n" +
-	"\bgateways\x18\t \x03(\tB.\xe0A\x01\xfaA(\n" +
-	"&networkservices.googleapis.com/GatewayR\bgateways\x12S\n" +
+	"0google/cloud/networkservices/v1/http_route.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfd,\n" +
+	"\tHttpRoute\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12!\n" +
+	"\tself_link\x18\v \x01(\tB\x04\xe2A\x01\x03R\bselfLink\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\"\n" +
+	"\thostnames\x18\x05 \x03(\tB\x04\xe2A\x01\x02R\thostnames\x12D\n" +
+	"\x06meshes\x18\b \x03(\tB,\xe2A\x01\x01\xfaA%\n" +
+	"#networkservices.googleapis.com/MeshR\x06meshes\x12K\n" +
+	"\bgateways\x18\t \x03(\tB/\xe2A\x01\x01\xfaA(\n" +
+	"&networkservices.googleapis.com/GatewayR\bgateways\x12T\n" +
 	"\x06labels\x18\n" +
-	" \x03(\v26.google.cloud.networkservices.v1.HttpRoute.LabelsEntryB\x03\xe0A\x01R\x06labels\x12O\n" +
-	"\x05rules\x18\x06 \x03(\v24.google.cloud.networkservices.v1.HttpRoute.RouteRuleB\x03\xe0A\x02R\x05rules\x1a\xac\x03\n" +
+	" \x03(\v26.google.cloud.networkservices.v1.HttpRoute.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12P\n" +
+	"\x05rules\x18\x06 \x03(\v24.google.cloud.networkservices.v1.HttpRoute.RouteRuleB\x04\xe2A\x01\x02R\x05rules\x1a\xac\x03\n" +
 	"\vHeaderMatch\x12!\n" +
 	"\vexact_match\x18\x02 \x01(\tH\x00R\n" +
 	"exactMatch\x12!\n" +
@@ -2389,13 +2389,13 @@ const file_google_cloud_networkservices_v1_http_route_proto_rawDesc = "" +
 	"ignoreCase\x12P\n" +
 	"\aheaders\x18\x05 \x03(\v26.google.cloud.networkservices.v1.HttpRoute.HeaderMatchR\aheaders\x12i\n" +
 	"\x10query_parameters\x18\x06 \x03(\v2>.google.cloud.networkservices.v1.HttpRoute.QueryParameterMatchR\x0fqueryParametersB\v\n" +
-	"\tPathMatch\x1a\xe6\x02\n" +
+	"\tPathMatch\x1a\xe8\x02\n" +
 	"\vDestination\x12M\n" +
 	"\fservice_name\x18\x01 \x01(\tB*\xfaA'\n" +
 	"%compute.googleapis.com/BackendServiceR\vserviceName\x12\x16\n" +
-	"\x06weight\x18\x02 \x01(\x05R\x06weight\x12v\n" +
-	"\x17request_header_modifier\x18\x03 \x01(\v29.google.cloud.networkservices.v1.HttpRoute.HeaderModifierB\x03\xe0A\x01R\x15requestHeaderModifier\x12x\n" +
-	"\x18response_header_modifier\x18\x04 \x01(\v29.google.cloud.networkservices.v1.HttpRoute.HeaderModifierB\x03\xe0A\x01R\x16responseHeaderModifier\x1a\xe8\x03\n" +
+	"\x06weight\x18\x02 \x01(\x05R\x06weight\x12w\n" +
+	"\x17request_header_modifier\x18\x03 \x01(\v29.google.cloud.networkservices.v1.HttpRoute.HeaderModifierB\x04\xe2A\x01\x01R\x15requestHeaderModifier\x12y\n" +
+	"\x18response_header_modifier\x18\x04 \x01(\v29.google.cloud.networkservices.v1.HttpRoute.HeaderModifierB\x04\xe2A\x01\x01R\x16responseHeaderModifier\x1a\xe8\x03\n" +
 	"\bRedirect\x12#\n" +
 	"\rhost_redirect\x18\x01 \x01(\tR\fhostRedirect\x12#\n" +
 	"\rpath_redirect\x18\x02 \x01(\tR\fpathRedirect\x12%\n" +
@@ -2426,10 +2426,10 @@ const file_google_cloud_networkservices_v1_http_route_proto_rawDesc = "" +
 	"httpStatus\x12\x1e\n" +
 	"\n" +
 	"percentage\x18\x02 \x01(\x05R\n" +
-	"percentage\x1a^\n" +
-	"\x1dStatefulSessionAffinityPolicy\x12=\n" +
+	"percentage\x1a_\n" +
+	"\x1dStatefulSessionAffinityPolicy\x12>\n" +
 	"\n" +
-	"cookie_ttl\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\tcookieTtl\x1a\xc4\x02\n" +
+	"cookie_ttl\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\tcookieTtl\x1a\xc4\x02\n" +
 	"\x0eHeaderModifier\x12T\n" +
 	"\x03set\x18\x01 \x03(\v2B.google.cloud.networkservices.v1.HttpRoute.HeaderModifier.SetEntryR\x03set\x12T\n" +
 	"\x03add\x18\x02 \x03(\v2B.google.cloud.networkservices.v1.HttpRoute.HeaderModifier.AddEntryR\x03add\x12\x16\n" +
@@ -2448,10 +2448,10 @@ const file_google_cloud_networkservices_v1_http_route_proto_rawDesc = "" +
 	"\x10retry_conditions\x18\x01 \x03(\tR\x0fretryConditions\x12\x1f\n" +
 	"\vnum_retries\x18\x02 \x01(\x05R\n" +
 	"numRetries\x12A\n" +
-	"\x0fper_try_timeout\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\rperTryTimeout\x1a\x9b\x01\n" +
+	"\x0fper_try_timeout\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\rperTryTimeout\x1a\x9c\x01\n" +
 	"\x13RequestMirrorPolicy\x12X\n" +
-	"\vdestination\x18\x01 \x01(\v26.google.cloud.networkservices.v1.HttpRoute.DestinationR\vdestination\x12*\n" +
-	"\x0emirror_percent\x18\x02 \x01(\x02B\x03\xe0A\x01R\rmirrorPercent\x1a\xb6\x02\n" +
+	"\vdestination\x18\x01 \x01(\v26.google.cloud.networkservices.v1.HttpRoute.DestinationR\vdestination\x12+\n" +
+	"\x0emirror_percent\x18\x02 \x01(\x02B\x04\xe2A\x01\x01R\rmirrorPercent\x1a\xb6\x02\n" +
 	"\n" +
 	"CorsPolicy\x12#\n" +
 	"\rallow_origins\x18\x01 \x03(\tR\fallowOrigins\x120\n" +
@@ -2461,15 +2461,15 @@ const file_google_cloud_networkservices_v1_http_route_proto_rawDesc = "" +
 	"\x0eexpose_headers\x18\x05 \x03(\tR\rexposeHeaders\x12\x17\n" +
 	"\amax_age\x18\x06 \x01(\tR\x06maxAge\x12+\n" +
 	"\x11allow_credentials\x18\a \x01(\bR\x10allowCredentials\x12\x1a\n" +
-	"\bdisabled\x18\b \x01(\bR\bdisabled\x1a\x8b\x01\n" +
-	"\x12HttpDirectResponse\x12&\n" +
-	"\vstring_body\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\n" +
-	"stringBody\x12$\n" +
+	"\bdisabled\x18\b \x01(\bR\bdisabled\x1a\x8e\x01\n" +
+	"\x12HttpDirectResponse\x12'\n" +
+	"\vstring_body\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\n" +
+	"stringBody\x12%\n" +
 	"\n" +
-	"bytes_body\x18\x03 \x01(\fB\x03\xe0A\x01H\x00R\tbytesBody\x12\x1b\n" +
-	"\x06status\x18\x01 \x01(\x05B\x03\xe0A\x02R\x06statusB\n" +
+	"bytes_body\x18\x03 \x01(\fB\x04\xe2A\x01\x01H\x00R\tbytesBody\x12\x1c\n" +
+	"\x06status\x18\x01 \x01(\x05B\x04\xe2A\x01\x02R\x06statusB\n" +
 	"\n" +
-	"\bHttpBody\x1a\x89\n" +
+	"\bHttpBody\x1a\x8c\n" +
 	"\n" +
 	"\vRouteAction\x12Z\n" +
 	"\fdestinations\x18\x01 \x03(\v26.google.cloud.networkservices.v1.HttpRoute.DestinationR\fdestinations\x12O\n" +
@@ -2484,46 +2484,46 @@ const file_google_cloud_networkservices_v1_http_route_proto_rawDesc = "" +
 	"\x15request_mirror_policy\x18\n" +
 	" \x01(\v2>.google.cloud.networkservices.v1.HttpRoute.RequestMirrorPolicyR\x13requestMirrorPolicy\x12V\n" +
 	"\vcors_policy\x18\v \x01(\v25.google.cloud.networkservices.v1.HttpRoute.CorsPolicyR\n" +
-	"corsPolicy\x12\x89\x01\n" +
-	"\x19stateful_session_affinity\x18\f \x01(\v2H.google.cloud.networkservices.v1.HttpRoute.StatefulSessionAffinityPolicyB\x03\xe0A\x01R\x17statefulSessionAffinity\x12k\n" +
-	"\x0fdirect_response\x18\r \x01(\v2=.google.cloud.networkservices.v1.HttpRoute.HttpDirectResponseB\x03\xe0A\x01R\x0edirectResponse\x12A\n" +
-	"\fidle_timeout\x18\x0e \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\vidleTimeout\x1a\xac\x01\n" +
+	"corsPolicy\x12\x8a\x01\n" +
+	"\x19stateful_session_affinity\x18\f \x01(\v2H.google.cloud.networkservices.v1.HttpRoute.StatefulSessionAffinityPolicyB\x04\xe2A\x01\x01R\x17statefulSessionAffinity\x12l\n" +
+	"\x0fdirect_response\x18\r \x01(\v2=.google.cloud.networkservices.v1.HttpRoute.HttpDirectResponseB\x04\xe2A\x01\x01R\x0edirectResponse\x12B\n" +
+	"\fidle_timeout\x18\x0e \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\vidleTimeout\x1a\xac\x01\n" +
 	"\tRouteRule\x12O\n" +
 	"\amatches\x18\x01 \x03(\v25.google.cloud.networkservices.v1.HttpRoute.RouteMatchR\amatches\x12N\n" +
 	"\x06action\x18\x02 \x01(\v26.google.cloud.networkservices.v1.HttpRoute.RouteActionR\x06action\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:n\xeaAk\n" +
-	"(networkservices.googleapis.com/HttpRoute\x12?projects/{project}/locations/{location}/httpRoutes/{http_route}\"\xf5\x01\n" +
-	"\x15ListHttpRoutesRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(networkservices.googleapis.com/HttpRouteR\x06parent\x12\x1b\n" +
+	"(networkservices.googleapis.com/HttpRoute\x12?projects/{project}/locations/{location}/httpRoutes/{http_route}\"\xf8\x01\n" +
+	"\x15ListHttpRoutesRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(networkservices.googleapis.com/HttpRouteR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x129\n" +
-	"\x16return_partial_success\x18\x04 \x01(\bB\x03\xe0A\x01R\x14returnPartialSuccess\x12\x1b\n" +
-	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\"\xaf\x01\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12:\n" +
+	"\x16return_partial_success\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x14returnPartialSuccess\x12\x1c\n" +
+	"\x06filter\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xaf\x01\n" +
 	"\x16ListHttpRoutesResponse\x12K\n" +
 	"\vhttp_routes\x18\x01 \x03(\v2*.google.cloud.networkservices.v1.HttpRouteR\n" +
 	"httpRoutes\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"[\n" +
-	"\x13GetHttpRouteRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(networkservices.googleapis.com/HttpRouteR\x04name\"\x87\x02\n" +
-	"\x16CreateHttpRouteRequest\x12H\n" +
-	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(networkservices.googleapis.com/HttpRouteR\x06parent\x12'\n" +
-	"\rhttp_route_id\x18\x02 \x01(\tB\x03\xe0A\x02R\vhttpRouteId\x12N\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\\\n" +
+	"\x13GetHttpRouteRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(networkservices.googleapis.com/HttpRouteR\x04name\"\x8b\x02\n" +
+	"\x16CreateHttpRouteRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\x12(networkservices.googleapis.com/HttpRouteR\x06parent\x12(\n" +
+	"\rhttp_route_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vhttpRouteId\x12O\n" +
 	"\n" +
-	"http_route\x18\x03 \x01(\v2*.google.cloud.networkservices.v1.HttpRouteB\x03\xe0A\x02R\thttpRoute\x12*\n" +
+	"http_route\x18\x03 \x01(\v2*.google.cloud.networkservices.v1.HttpRouteB\x04\xe2A\x01\x02R\thttpRoute\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xaa\x01\n" +
-	"\x16UpdateHttpRouteRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12N\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xac\x01\n" +
+	"\x16UpdateHttpRouteRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12O\n" +
 	"\n" +
-	"http_route\x18\x02 \x01(\v2*.google.cloud.networkservices.v1.HttpRouteB\x03\xe0A\x02R\thttpRoute\"^\n" +
-	"\x16DeleteHttpRouteRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"http_route\x18\x02 \x01(\v2*.google.cloud.networkservices.v1.HttpRouteB\x04\xe2A\x01\x02R\thttpRoute\"_\n" +
+	"\x16DeleteHttpRouteRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(networkservices.googleapis.com/HttpRouteR\x04nameB\xef\x01\n" +
 	"#com.google.cloud.networkservices.v1B\x0eHttpRouteProtoP\x01ZMcloud.google.com/go/networkservices/apiv1/networkservicespb;networkservicespb\xaa\x02\x1fGoogle.Cloud.NetworkServices.V1\xca\x02\x1fGoogle\\Cloud\\NetworkServices\\V1\xea\x02\"Google::Cloud::NetworkServices::V1b\x06proto3"
 

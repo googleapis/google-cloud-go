@@ -187,14 +187,14 @@ const file_google_cloud_video_stitcher_v1_stitch_details_proto_rawDesc = "" +
 	"\x0fVodStitchDetail\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12Z\n" +
 	"\x11ad_stitch_details\x18\x03 \x03(\v2..google.cloud.video.stitcher.v1.AdStitchDetailR\x0fadStitchDetails:\x9a\x01\xeaA\x96\x01\n" +
-	",videostitcher.googleapis.com/VodStitchDetail\x12fprojects/{project}/locations/{location}/vodSessions/{vod_session}/vodStitchDetails/{vod_stitch_detail}\"\xe3\x02\n" +
-	"\x0eAdStitchDetail\x12#\n" +
-	"\vad_break_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tadBreakId\x12\x18\n" +
-	"\x05ad_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x04adId\x12D\n" +
-	"\x0ead_time_offset\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\fadTimeOffset\x12$\n" +
-	"\vskip_reason\x18\x04 \x01(\tB\x03\xe0A\x01R\n" +
-	"skipReason\x12T\n" +
-	"\x05media\x18\x05 \x03(\v29.google.cloud.video.stitcher.v1.AdStitchDetail.MediaEntryB\x03\xe0A\x01R\x05media\x1aP\n" +
+	",videostitcher.googleapis.com/VodStitchDetail\x12fprojects/{project}/locations/{location}/vodSessions/{vod_session}/vodStitchDetails/{vod_stitch_detail}\"\xe8\x02\n" +
+	"\x0eAdStitchDetail\x12$\n" +
+	"\vad_break_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tadBreakId\x12\x19\n" +
+	"\x05ad_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04adId\x12E\n" +
+	"\x0ead_time_offset\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x02R\fadTimeOffset\x12%\n" +
+	"\vskip_reason\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"skipReason\x12U\n" +
+	"\x05media\x18\x05 \x03(\v29.google.cloud.video.stitcher.v1.AdStitchDetail.MediaEntryB\x04\xe2A\x01\x01R\x05media\x1aP\n" +
 	"\n" +
 	"MediaEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12,\n" +

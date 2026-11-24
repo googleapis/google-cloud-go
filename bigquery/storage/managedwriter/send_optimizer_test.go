@@ -44,7 +44,7 @@ func TestSendOptimizer(t *testing.T) {
 	exampleReqFull := proto.CloneOf(exampleReq)
 	exampleReqFull.WriteStream = exampleStreamID
 	exampleReqFull.TraceId = buildTraceID(&streamSettings{TraceID: exampleTraceID})
-	exampleDP := &descriptorpb.DescriptorProto{Name: proto.String("schema")}
+	exampleDP := &descriptorpb.DescriptorProto{Name: new("schema")}
 	exampleReqFull.GetProtoRows().WriterSchema = &storagepb.ProtoSchema{
 		ProtoDescriptor: proto.CloneOf(exampleDP),
 	}
@@ -271,7 +271,7 @@ func TestSendOptimizer(t *testing.T) {
 			optimizer:   &multiplexOptimizer{},
 			reqs: func() []*pendingWrite {
 				tmplOld := newVersionedTemplate().revise(reviseProtoSchema(exampleDP))
-				tmplNew := tmplOld.revise(reviseProtoSchema(&descriptorpb.DescriptorProto{Name: proto.String("new")}))
+				tmplNew := tmplOld.revise(reviseProtoSchema(&descriptorpb.DescriptorProto{Name: new("new")}))
 
 				example := proto.CloneOf(exampleReq)
 
@@ -300,7 +300,7 @@ func TestSendOptimizer(t *testing.T) {
 
 				wantEvolved := proto.CloneOf(wantBaseReqOpt)
 				wantEvolved.GetProtoRows().WriterSchema = &storagepb.ProtoSchema{
-					ProtoDescriptor: &descriptorpb.DescriptorProto{Name: proto.String("new")},
+					ProtoDescriptor: &descriptorpb.DescriptorProto{Name: new("new")},
 				}
 
 				want[0] = wantBaseReqFull

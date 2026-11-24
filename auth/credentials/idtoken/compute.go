@@ -22,6 +22,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
+	"cloud.google.com/go/auth/internal/jwt"
 	"cloud.google.com/go/compute/metadata"
 	"github.com/googleapis/gax-go/v2/internallog"
 )
@@ -79,11 +80,13 @@ func (c *computeIDTokenProvider) Token(ctx context.Context) (*auth.Token, error)
 	if res == "" {
 		return nil, fmt.Errorf("idtoken: invalid empty response from metadata service")
 	}
+	claimSet, err := jwt.DecodeJWS(res)
+	if err != nil {
+		return nil, fmt.Errorf("idtoken: error decoding JWT token: %w", err)
+	}
 	return &auth.Token{
-		Value: res,
-		Type:  internal.TokenTypeBearer,
-		// Compute tokens are valid for one hour:
-		// https://cloud.google.com/iam/docs/create-short-lived-credentials-direct#create-id
-		Expiry: time.Now().Add(1 * time.Hour),
+		Value:  res,
+		Type:   internal.TokenTypeBearer,
+		Expiry: claimSet.Expiry(),
 	}, nil
 }

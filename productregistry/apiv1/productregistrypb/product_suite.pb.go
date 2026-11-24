@@ -132,14 +132,15 @@ var File_google_cloud_productregistry_v1_product_suite_proto protoreflect.FileDe
 
 const file_google_cloud_productregistry_v1_product_suite_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/productregistry/v1/product_suite.proto\x12\x1fgoogle.cloud.productregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xe5\x02\n" +
-	"\fProductSuite\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12e\n" +
-	"\x10logical_products\x18\x03 \x03(\tB:\xe0A\x03\xfaA4\n" +
-	"2cloudproductregistry.googleapis.com/LogicalProductR\x0flogicalProducts\x12\x1f\n" +
-	"\breplaced\x18\x04 \x01(\bB\x03\xe0A\x03R\breplaced\x12+\n" +
-	"\vreplacement\x18\x05 \x01(\tB\t\xe0A\x03\xfaA\x03\n" +
+	"3google/cloud/productregistry/v1/product_suite.proto\x12\x1fgoogle.cloud.productregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xe9\x02\n" +
+	"\fProductSuite\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x14\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12f\n" +
+	"\x10logical_products\x18\x03 \x03(\tB;\xe2A\x01\x03\xfaA4\n" +
+	"2cloudproductregistry.googleapis.com/LogicalProductR\x0flogicalProducts\x12 \n" +
+	"\breplaced\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\breplaced\x12,\n" +
+	"\vreplacement\x18\x05 \x01(\tB\n" +
+	"\xe2A\x01\x03\xfaA\x03\n" +
 	"\x01*R\vreplacement:q\xeaAn\n" +
 	"0cloudproductregistry.googleapis.com/ProductSuite\x12\x1dproductSuites/{product_suite}*\rproductSuites2\fproductSuiteB\xf2\x01\n" +
 	"#com.google.cloud.productregistry.v1B\x11ProductSuiteProtoP\x01ZMcloud.google.com/go/productregistry/apiv1/productregistrypb;productregistrypb\xaa\x02\x1fGoogle.Cloud.ProductRegistry.V1\xca\x02\x1fGoogle\\Cloud\\ProductRegistry\\V1\xea\x02\"Google::Cloud::ProductRegistry::V1b\x06proto3"

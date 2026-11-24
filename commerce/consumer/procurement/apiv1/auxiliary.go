@@ -18,11 +18,13 @@ package procurement
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	procurementpb "cloud.google.com/go/commerce/consumer/procurement/apiv1/procurementpb"
 	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -218,6 +220,12 @@ func (op *PlaceOrderOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LicensedUserIterator) All() iter.Seq2[*procurementpb.LicensedUser, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LicensedUserIterator manages a stream of *procurementpb.LicensedUser.
 type LicensedUserIterator struct {
 	items    []*procurementpb.LicensedUser
@@ -263,6 +271,12 @@ func (it *LicensedUserIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OrderIterator) All() iter.Seq2[*procurementpb.Order, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OrderIterator manages a stream of *procurementpb.Order.

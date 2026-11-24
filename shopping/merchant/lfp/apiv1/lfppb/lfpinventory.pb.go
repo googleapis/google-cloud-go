@@ -286,36 +286,36 @@ var File_google_shopping_merchant_lfp_v1_lfpinventory_proto protoreflect.FileDes
 
 const file_google_shopping_merchant_lfp_v1_lfpinventory_proto_rawDesc = "" +
 	"\n" +
-	"2google/shopping/merchant/lfp/v1/lfpinventory.proto\x12\x1fgoogle.shopping.merchant.lfp.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/shopping/type/types.proto\"\xc1\x06\n" +
-	"\fLfpInventory\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12*\n" +
-	"\x0etarget_account\x18\x02 \x01(\x03B\x03\xe0A\x02R\rtargetAccount\x12\"\n" +
+	"2google/shopping/merchant/lfp/v1/lfpinventory.proto\x12\x1fgoogle.shopping.merchant.lfp.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/shopping/type/types.proto\"\xcb\x06\n" +
+	"\fLfpInventory\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12+\n" +
+	"\x0etarget_account\x18\x02 \x01(\x03B\x04\xe2A\x01\x02R\rtargetAccount\x12#\n" +
 	"\n" +
-	"store_code\x18\x03 \x01(\tB\x03\xe0A\x02R\tstoreCode\x12!\n" +
-	"\boffer_id\x18\x04 \x01(\tB\x06\xe0A\x02\xe0A\x05R\aofferId\x12$\n" +
-	"\vregion_code\x18\x05 \x01(\tB\x03\xe0A\x02R\n" +
-	"regionCode\x12.\n" +
-	"\x10content_language\x18\x06 \x01(\tB\x03\xe0A\x02R\x0fcontentLanguage\x12\x1c\n" +
-	"\x04gtin\x18\a \x01(\tB\x03\xe0A\x01H\x00R\x04gtin\x88\x01\x01\x126\n" +
-	"\x05price\x18\b \x01(\v2\x1b.google.shopping.type.PriceB\x03\xe0A\x01R\x05price\x12'\n" +
-	"\favailability\x18\t \x01(\tB\x03\xe0A\x02R\favailability\x12$\n" +
+	"store_code\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tstoreCode\x12 \n" +
+	"\boffer_id\x18\x04 \x01(\tB\x05\xe2A\x02\x02\x05R\aofferId\x12%\n" +
+	"\vregion_code\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"regionCode\x12/\n" +
+	"\x10content_language\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\x0fcontentLanguage\x12\x1d\n" +
+	"\x04gtin\x18\a \x01(\tB\x04\xe2A\x01\x01H\x00R\x04gtin\x88\x01\x01\x127\n" +
+	"\x05price\x18\b \x01(\v2\x1b.google.shopping.type.PriceB\x04\xe2A\x01\x01R\x05price\x12(\n" +
+	"\favailability\x18\t \x01(\tB\x04\xe2A\x01\x02R\favailability\x12%\n" +
 	"\bquantity\x18\n" +
-	" \x01(\x03B\x03\xe0A\x01H\x01R\bquantity\x88\x01\x01\x12H\n" +
-	"\x0fcollection_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x0ecollectionTime\x12-\n" +
-	"\rpickup_method\x18\f \x01(\tB\x03\xe0A\x01H\x02R\fpickupMethod\x88\x01\x01\x12'\n" +
+	" \x01(\x03B\x04\xe2A\x01\x01H\x01R\bquantity\x88\x01\x01\x12I\n" +
+	"\x0fcollection_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x0ecollectionTime\x12.\n" +
+	"\rpickup_method\x18\f \x01(\tB\x04\xe2A\x01\x01H\x02R\fpickupMethod\x88\x01\x01\x12(\n" +
 	"\n" +
-	"pickup_sla\x18\r \x01(\tB\x03\xe0A\x01H\x03R\tpickupSla\x88\x01\x01\x12'\n" +
+	"pickup_sla\x18\r \x01(\tB\x04\xe2A\x01\x01H\x03R\tpickupSla\x88\x01\x01\x12(\n" +
 	"\n" +
-	"feed_label\x18\x0e \x01(\tB\x03\xe0A\x01H\x04R\tfeedLabel\x88\x01\x01:\x95\x01\xeaA\x91\x01\n" +
+	"feed_label\x18\x0e \x01(\tB\x04\xe2A\x01\x01H\x04R\tfeedLabel\x88\x01\x01:\x95\x01\xeaA\x91\x01\n" +
 	"'merchantapi.googleapis.com/LfpInventory\x12Haccounts/{account}/lfpInventories/{target_merchant}~{store_code}~{offer}*\x0elfpInventories2\flfpInventoryB\a\n" +
 	"\x05_gtinB\v\n" +
 	"\t_quantityB\x10\n" +
 	"\x0e_pickup_methodB\r\n" +
 	"\v_pickup_slaB\r\n" +
-	"\v_feed_label\"\xbd\x01\n" +
-	"\x19InsertLfpInventoryRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'merchantapi.googleapis.com/LfpInventoryR\x06parent\x12W\n" +
-	"\rlfp_inventory\x18\x02 \x01(\v2-.google.shopping.merchant.lfp.v1.LfpInventoryB\x03\xe0A\x02R\flfpInventory2\xaa\x02\n" +
+	"\v_feed_label\"\xbf\x01\n" +
+	"\x19InsertLfpInventoryRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'merchantapi.googleapis.com/LfpInventoryR\x06parent\x12X\n" +
+	"\rlfp_inventory\x18\x02 \x01(\v2-.google.shopping.merchant.lfp.v1.LfpInventoryB\x04\xe2A\x01\x02R\flfpInventory2\xaa\x02\n" +
 	"\x13LfpInventoryService\x12\xc9\x01\n" +
 	"\x12InsertLfpInventory\x12:.google.shopping.merchant.lfp.v1.InsertLfpInventoryRequest\x1a-.google.shopping.merchant.lfp.v1.LfpInventory\"H\x82\xd3\xe4\x93\x02B:\rlfp_inventory\"1/lfp/v1/{parent=accounts/*}/lfpInventories:insert\x1aG\xcaA\x1amerchantapi.googleapis.com\xd2A'https://www.googleapis.com/auth/contentB\x9c\x02\xeaA8\n" +
 	"\"merchantapi.googleapis.com/Account\x12\x12accounts/{account}\n" +

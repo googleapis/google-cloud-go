@@ -15,6 +15,8 @@
 package storage
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"math"
 	"sync"
@@ -234,4 +236,72 @@ func (b *bucketDelayManager) update(bucketName string, latency time.Duration) {
 // getValue returns the desired delay to wait before retrying the operation for the given bucket.
 func (b *bucketDelayManager) getValue(bucketName string) time.Duration {
 	return b.getDelay(bucketName).getValue()
+}
+
+// errReadStallTimeout is the context cancellation cause used when a read
+// attempt is aborted because the initial server response exceeded the dynamic
+// stall timeout.
+var errReadStallTimeout = errors.New("storage: read stall timeout")
+
+// executeWithReadStallTimeout executes openStream with dynamic delay stall retry tracking.
+func executeWithReadStallTimeout(
+	ctx context.Context,
+	dm *bucketDelayManager,
+	bucket string,
+	openStream func(ctx context.Context) error,
+	onStall func(stallTimeout time.Duration),
+) error {
+	if dm == nil {
+		return openStream(ctx)
+	}
+
+	cancelCtx, cancel := context.WithCancelCause(ctx)
+	defer func() {
+		if cancel != nil {
+			cancel(nil)
+		}
+	}()
+	var (
+		innerErr error
+		done     = make(chan struct{}, 1)
+	)
+
+	go func() {
+		reqStartTime := time.Now()
+		innerErr = openStream(cancelCtx)
+		if innerErr == nil {
+			reqLatency := time.Since(reqStartTime)
+			dm.update(bucket, reqLatency)
+		} else if ctx.Err() == nil && cancelCtx.Err() != nil {
+			dm.increase(bucket)
+		}
+		done <- struct{}{}
+	}()
+
+	stallTimeout := dm.getValue(bucket)
+	timer := time.NewTimer(stallTimeout)
+	defer timer.Stop()
+
+	select {
+	case <-timer.C:
+		// If openStream completed at the same time the timer fired, select may
+		// pick either case. Prefer the real result over reporting a stall.
+		select {
+		case <-done:
+		default:
+			cancel(errReadStallTimeout)
+			<-done
+			if onStall != nil {
+				onStall(stallTimeout)
+			}
+			return context.DeadlineExceeded
+		}
+	case <-done:
+	}
+	if innerErr == nil {
+		// Keep the stream context alive for the caller; it is released when
+		// the parent context is cancelled.
+		cancel = nil
+	}
+	return innerErr
 }

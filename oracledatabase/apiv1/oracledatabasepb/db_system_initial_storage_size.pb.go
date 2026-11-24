@@ -455,34 +455,34 @@ var File_google_cloud_oracledatabase_v1_db_system_initial_storage_size_proto pro
 
 const file_google_cloud_oracledatabase_v1_db_system_initial_storage_size_proto_rawDesc = "" +
 	"\n" +
-	"Cgoogle/cloud/oracledatabase/v1/db_system_initial_storage_size.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x80\x03\n" +
-	"\x1aDbSystemInitialStorageSize\x12\x17\n" +
-	"\x04name\x18\x02 \x01(\tB\x03\xe0A\x03R\x04name\x12i\n" +
+	"Cgoogle/cloud/oracledatabase/v1/db_system_initial_storage_size.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x82\x03\n" +
+	"\x1aDbSystemInitialStorageSize\x12\x18\n" +
+	"\x04name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12j\n" +
 	"\n" +
-	"properties\x18\x03 \x01(\v2D.google.cloud.oracledatabase.v1.DbSystemInitialStorageSizePropertiesB\x03\xe0A\x03R\n" +
+	"properties\x18\x03 \x01(\v2D.google.cloud.oracledatabase.v1.DbSystemInitialStorageSizePropertiesB\x04\xe2A\x01\x03R\n" +
 	"properties:\xdd\x01\xeaA\xd9\x01\n" +
-	"8oracledatabase.googleapis.com/DbSystemInitialStorageSize\x12dprojects/{project}/locations/{location}/dbSystemInitialStorageSizes/{db_system_initial_storage_size}*\x1bdbSystemInitialStorageSizes2\x1adbSystemInitialStorageSize\"\xa7\x05\n" +
-	"$DbSystemInitialStorageSizeProperties\x12\x8a\x01\n" +
-	"\x12storage_management\x18\x01 \x01(\x0e2V.google.cloud.oracledatabase.v1.DbSystemInitialStorageSizeProperties.StorageManagementB\x03\xe0A\x03R\x11storageManagement\x12r\n" +
+	"8oracledatabase.googleapis.com/DbSystemInitialStorageSize\x12dprojects/{project}/locations/{location}/dbSystemInitialStorageSizes/{db_system_initial_storage_size}*\x1bdbSystemInitialStorageSizes2\x1adbSystemInitialStorageSize\"\xab\x05\n" +
+	"$DbSystemInitialStorageSizeProperties\x12\x8b\x01\n" +
+	"\x12storage_management\x18\x01 \x01(\x0e2V.google.cloud.oracledatabase.v1.DbSystemInitialStorageSizeProperties.StorageManagementB\x04\xe2A\x01\x03R\x11storageManagement\x12s\n" +
 	"\n" +
-	"shape_type\x18\x02 \x01(\x0e2N.google.cloud.oracledatabase.v1.DbSystemInitialStorageSizeProperties.ShapeTypeB\x03\xe0A\x03R\tshapeType\x12i\n" +
-	"\x14storage_size_details\x18\x03 \x03(\v22.google.cloud.oracledatabase.v1.StorageSizeDetailsB\x03\xe0A\x03R\x12storageSizeDetails\x12\x8c\x01\n" +
-	"'launch_from_backup_storage_size_details\x18\x04 \x03(\v22.google.cloud.oracledatabase.v1.StorageSizeDetailsB\x03\xe0A\x03R\"launchFromBackupStorageSizeDetails\"I\n" +
+	"shape_type\x18\x02 \x01(\x0e2N.google.cloud.oracledatabase.v1.DbSystemInitialStorageSizeProperties.ShapeTypeB\x04\xe2A\x01\x03R\tshapeType\x12j\n" +
+	"\x14storage_size_details\x18\x03 \x03(\v22.google.cloud.oracledatabase.v1.StorageSizeDetailsB\x04\xe2A\x01\x03R\x12storageSizeDetails\x12\x8d\x01\n" +
+	"'launch_from_backup_storage_size_details\x18\x04 \x03(\v22.google.cloud.oracledatabase.v1.StorageSizeDetailsB\x04\xe2A\x01\x03R\"launchFromBackupStorageSizeDetails\"I\n" +
 	"\x11StorageManagement\x12\"\n" +
 	"\x1eSTORAGE_MANAGEMENT_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03ASM\x10\x01\x12\a\n" +
 	"\x03LVM\x10\x02\"9\n" +
 	"\tShapeType\x12\x1a\n" +
 	"\x16SHAPE_TYPE_UNSPECIFIED\x10\x00\x12\x10\n" +
-	"\fSTANDARD_X86\x10\x01\"\x8e\x01\n" +
-	"\x12StorageSizeDetails\x12;\n" +
-	"\x18data_storage_size_in_gbs\x18\x01 \x01(\x05B\x03\xe0A\x03R\x14dataStorageSizeInGbs\x12;\n" +
-	"\x18reco_storage_size_in_gbs\x18\x02 \x01(\x05B\x03\xe0A\x03R\x14recoStorageSizeInGbs\"\xc8\x01\n" +
-	"&ListDbSystemInitialStorageSizesRequest\x12X\n" +
-	"\x06parent\x18\x01 \x01(\tB@\xe0A\x02\xfaA:\x128oracledatabase.googleapis.com/DbSystemInitialStorageSizeR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\fSTANDARD_X86\x10\x01\"\x90\x01\n" +
+	"\x12StorageSizeDetails\x12<\n" +
+	"\x18data_storage_size_in_gbs\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\x14dataStorageSizeInGbs\x12<\n" +
+	"\x18reco_storage_size_in_gbs\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\x14recoStorageSizeInGbs\"\xcb\x01\n" +
+	"&ListDbSystemInitialStorageSizesRequest\x12Y\n" +
+	"\x06parent\x18\x01 \x01(\tBA\xe2A\x01\x02\xfaA:\x128oracledatabase.googleapis.com/DbSystemInitialStorageSizeR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xd4\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xd4\x01\n" +
 	"'ListDbSystemInitialStorageSizesResponse\x12\x80\x01\n" +
 	"\x1fdb_system_initial_storage_sizes\x18\x01 \x03(\v2:.google.cloud.oracledatabase.v1.DbSystemInitialStorageSizeR\x1bdbSystemInitialStorageSizes\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageTokenB\xf9\x01\n" +

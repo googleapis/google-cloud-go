@@ -538,6 +538,69 @@ func NewDataTableClient(ctx context.Context, opts ...option.ClientOption) (*Data
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDataTable = append(client.CallOptions.CreateDataTable, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDataTables = append(client.CallOptions.ListDataTables, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDataTable = append(client.CallOptions.GetDataTable, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDataTable = append(client.CallOptions.UpdateDataTable, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDataTable = append(client.CallOptions.DeleteDataTable, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateDataTableRow = append(client.CallOptions.CreateDataTableRow, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDataTableRow = append(client.CallOptions.UpdateDataTableRow, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDataTableRows = append(client.CallOptions.ListDataTableRows, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDataTableRow = append(client.CallOptions.GetDataTableRow, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDataTableRow = append(client.CallOptions.DeleteDataTableRow, gax.WithClientTracing(tracing))
+		client.CallOptions.BulkCreateDataTableRows = append(client.CallOptions.BulkCreateDataTableRows, gax.WithClientTracing(tracing))
+		client.CallOptions.BulkGetDataTableRows = append(client.CallOptions.BulkGetDataTableRows, gax.WithClientTracing(tracing))
+		client.CallOptions.BulkReplaceDataTableRows = append(client.CallOptions.BulkReplaceDataTableRows, gax.WithClientTracing(tracing))
+		client.CallOptions.BulkUpdateDataTableRows = append(client.CallOptions.BulkUpdateDataTableRows, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDataTableOperationErrors = append(client.CallOptions.GetDataTableOperationErrors, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDataTable = append(client.CallOptions.CreateDataTable, gax.WithClientLogging(logging))
+		client.CallOptions.ListDataTables = append(client.CallOptions.ListDataTables, gax.WithClientLogging(logging))
+		client.CallOptions.GetDataTable = append(client.CallOptions.GetDataTable, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDataTable = append(client.CallOptions.UpdateDataTable, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDataTable = append(client.CallOptions.DeleteDataTable, gax.WithClientLogging(logging))
+		client.CallOptions.CreateDataTableRow = append(client.CallOptions.CreateDataTableRow, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDataTableRow = append(client.CallOptions.UpdateDataTableRow, gax.WithClientLogging(logging))
+		client.CallOptions.ListDataTableRows = append(client.CallOptions.ListDataTableRows, gax.WithClientLogging(logging))
+		client.CallOptions.GetDataTableRow = append(client.CallOptions.GetDataTableRow, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDataTableRow = append(client.CallOptions.DeleteDataTableRow, gax.WithClientLogging(logging))
+		client.CallOptions.BulkCreateDataTableRows = append(client.CallOptions.BulkCreateDataTableRows, gax.WithClientLogging(logging))
+		client.CallOptions.BulkGetDataTableRows = append(client.CallOptions.BulkGetDataTableRows, gax.WithClientLogging(logging))
+		client.CallOptions.BulkReplaceDataTableRows = append(client.CallOptions.BulkReplaceDataTableRows, gax.WithClientLogging(logging))
+		client.CallOptions.BulkUpdateDataTableRows = append(client.CallOptions.BulkUpdateDataTableRows, gax.WithClientLogging(logging))
+		client.CallOptions.GetDataTableOperationErrors = append(client.CallOptions.GetDataTableOperationErrors, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -647,6 +710,69 @@ func NewDataTableRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDataTable = append(callOpts.CreateDataTable, gax.WithClientTracing(tracing))
+		callOpts.ListDataTables = append(callOpts.ListDataTables, gax.WithClientTracing(tracing))
+		callOpts.GetDataTable = append(callOpts.GetDataTable, gax.WithClientTracing(tracing))
+		callOpts.UpdateDataTable = append(callOpts.UpdateDataTable, gax.WithClientTracing(tracing))
+		callOpts.DeleteDataTable = append(callOpts.DeleteDataTable, gax.WithClientTracing(tracing))
+		callOpts.CreateDataTableRow = append(callOpts.CreateDataTableRow, gax.WithClientTracing(tracing))
+		callOpts.UpdateDataTableRow = append(callOpts.UpdateDataTableRow, gax.WithClientTracing(tracing))
+		callOpts.ListDataTableRows = append(callOpts.ListDataTableRows, gax.WithClientTracing(tracing))
+		callOpts.GetDataTableRow = append(callOpts.GetDataTableRow, gax.WithClientTracing(tracing))
+		callOpts.DeleteDataTableRow = append(callOpts.DeleteDataTableRow, gax.WithClientTracing(tracing))
+		callOpts.BulkCreateDataTableRows = append(callOpts.BulkCreateDataTableRows, gax.WithClientTracing(tracing))
+		callOpts.BulkGetDataTableRows = append(callOpts.BulkGetDataTableRows, gax.WithClientTracing(tracing))
+		callOpts.BulkReplaceDataTableRows = append(callOpts.BulkReplaceDataTableRows, gax.WithClientTracing(tracing))
+		callOpts.BulkUpdateDataTableRows = append(callOpts.BulkUpdateDataTableRows, gax.WithClientTracing(tracing))
+		callOpts.GetDataTableOperationErrors = append(callOpts.GetDataTableOperationErrors, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDataTable = append(callOpts.CreateDataTable, gax.WithClientLogging(logging))
+		callOpts.ListDataTables = append(callOpts.ListDataTables, gax.WithClientLogging(logging))
+		callOpts.GetDataTable = append(callOpts.GetDataTable, gax.WithClientLogging(logging))
+		callOpts.UpdateDataTable = append(callOpts.UpdateDataTable, gax.WithClientLogging(logging))
+		callOpts.DeleteDataTable = append(callOpts.DeleteDataTable, gax.WithClientLogging(logging))
+		callOpts.CreateDataTableRow = append(callOpts.CreateDataTableRow, gax.WithClientLogging(logging))
+		callOpts.UpdateDataTableRow = append(callOpts.UpdateDataTableRow, gax.WithClientLogging(logging))
+		callOpts.ListDataTableRows = append(callOpts.ListDataTableRows, gax.WithClientLogging(logging))
+		callOpts.GetDataTableRow = append(callOpts.GetDataTableRow, gax.WithClientLogging(logging))
+		callOpts.DeleteDataTableRow = append(callOpts.DeleteDataTableRow, gax.WithClientLogging(logging))
+		callOpts.BulkCreateDataTableRows = append(callOpts.BulkCreateDataTableRows, gax.WithClientLogging(logging))
+		callOpts.BulkGetDataTableRows = append(callOpts.BulkGetDataTableRows, gax.WithClientLogging(logging))
+		callOpts.BulkReplaceDataTableRows = append(callOpts.BulkReplaceDataTableRows, gax.WithClientLogging(logging))
+		callOpts.BulkUpdateDataTableRows = append(callOpts.BulkUpdateDataTableRows, gax.WithClientLogging(logging))
+		callOpts.GetDataTableOperationErrors = append(callOpts.GetDataTableOperationErrors, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &DataTableClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -693,9 +819,6 @@ func (c *dataTableGRPCClient) CreateDataTable(ctx context.Context, req *chronicl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/CreateDataTable")
 	}
@@ -717,9 +840,6 @@ func (c *dataTableGRPCClient) ListDataTables(ctx context.Context, req *chronicle
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/ListDataTables")
 	}
@@ -769,9 +889,6 @@ func (c *dataTableGRPCClient) GetDataTable(ctx context.Context, req *chroniclepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/GetDataTable")
 	}
@@ -814,9 +931,6 @@ func (c *dataTableGRPCClient) DeleteDataTable(ctx context.Context, req *chronicl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/DeleteDataTable")
 	}
@@ -834,9 +948,6 @@ func (c *dataTableGRPCClient) CreateDataTableRow(ctx context.Context, req *chron
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/CreateDataTableRow")
 	}
@@ -879,9 +990,6 @@ func (c *dataTableGRPCClient) ListDataTableRows(ctx context.Context, req *chroni
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/ListDataTableRows")
 	}
@@ -931,9 +1039,6 @@ func (c *dataTableGRPCClient) GetDataTableRow(ctx context.Context, req *chronicl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/GetDataTableRow")
 	}
@@ -955,9 +1060,6 @@ func (c *dataTableGRPCClient) DeleteDataTableRow(ctx context.Context, req *chron
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/DeleteDataTableRow")
 	}
@@ -975,9 +1077,6 @@ func (c *dataTableGRPCClient) BulkCreateDataTableRows(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/BulkCreateDataTableRows")
 	}
@@ -999,9 +1098,6 @@ func (c *dataTableGRPCClient) BulkGetDataTableRows(ctx context.Context, req *chr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/BulkGetDataTableRows")
 	}
@@ -1023,9 +1119,6 @@ func (c *dataTableGRPCClient) BulkReplaceDataTableRows(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/BulkReplaceDataTableRows")
 	}
@@ -1047,9 +1140,6 @@ func (c *dataTableGRPCClient) BulkUpdateDataTableRows(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/BulkUpdateDataTableRows")
 	}
@@ -1071,9 +1161,6 @@ func (c *dataTableGRPCClient) GetDataTableOperationErrors(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/GetDataTableOperationErrors")
 	}
@@ -1207,6 +1294,11 @@ func (c *dataTableRESTClient) CreateDataTable(ctx context.Context, req *chronicl
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataTables", req.GetParent())
 
 	params := url.Values{}
@@ -1221,9 +1313,6 @@ func (c *dataTableRESTClient) CreateDataTable(ctx context.Context, req *chronicl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/CreateDataTable")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*}/dataTables")
@@ -1276,6 +1365,11 @@ func (c *dataTableRESTClient) ListDataTables(ctx context.Context, req *chronicle
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dataTables", req.GetParent())
@@ -1346,6 +1440,11 @@ func (c *dataTableRESTClient) GetDataTable(ctx context.Context, req *chroniclepb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1359,9 +1458,6 @@ func (c *dataTableRESTClient) GetDataTable(ctx context.Context, req *chroniclepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/GetDataTable")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/dataTables/*}")
@@ -1408,6 +1504,11 @@ func (c *dataTableRESTClient) UpdateDataTable(ctx context.Context, req *chronicl
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataTable().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDataTable().GetName())
@@ -1471,6 +1572,11 @@ func (c *dataTableRESTClient) DeleteDataTable(ctx context.Context, req *chronicl
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1487,9 +1593,6 @@ func (c *dataTableRESTClient) DeleteDataTable(ctx context.Context, req *chronicl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/DeleteDataTable")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/dataTables/*}")
@@ -1523,6 +1626,11 @@ func (c *dataTableRESTClient) CreateDataTableRow(ctx context.Context, req *chron
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataTableRows", req.GetParent())
 
 	params := url.Values{}
@@ -1536,9 +1644,6 @@ func (c *dataTableRESTClient) CreateDataTableRow(ctx context.Context, req *chron
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/CreateDataTableRow")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*/dataTables/*}/dataTableRows")
@@ -1585,6 +1690,11 @@ func (c *dataTableRESTClient) UpdateDataTableRow(ctx context.Context, req *chron
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetDataTableRow().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDataTableRow().GetName())
@@ -1661,6 +1771,11 @@ func (c *dataTableRESTClient) ListDataTableRows(ctx context.Context, req *chroni
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/dataTableRows", req.GetParent())
 
 		params := url.Values{}
@@ -1732,6 +1847,11 @@ func (c *dataTableRESTClient) GetDataTableRow(ctx context.Context, req *chronicl
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1745,9 +1865,6 @@ func (c *dataTableRESTClient) GetDataTableRow(ctx context.Context, req *chronicl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/GetDataTableRow")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/dataTables/*/dataTableRows/*}")
@@ -1789,6 +1906,11 @@ func (c *dataTableRESTClient) DeleteDataTableRow(ctx context.Context, req *chron
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1802,9 +1924,6 @@ func (c *dataTableRESTClient) DeleteDataTableRow(ctx context.Context, req *chron
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/DeleteDataTableRow")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/dataTables/*/dataTableRows/*}")
@@ -1837,6 +1956,11 @@ func (c *dataTableRESTClient) BulkCreateDataTableRows(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataTableRows:bulkCreate", req.GetParent())
 
 	params := url.Values{}
@@ -1850,9 +1974,6 @@ func (c *dataTableRESTClient) BulkCreateDataTableRows(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/BulkCreateDataTableRows")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*/dataTables/*}/dataTableRows:bulkCreate")
@@ -1900,6 +2021,11 @@ func (c *dataTableRESTClient) BulkGetDataTableRows(ctx context.Context, req *chr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataTableRows:bulkGet", req.GetParent())
 
 	params := url.Values{}
@@ -1913,9 +2039,6 @@ func (c *dataTableRESTClient) BulkGetDataTableRows(ctx context.Context, req *chr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/BulkGetDataTableRows")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*/dataTables/*}/dataTableRows:bulkGet")
@@ -1963,6 +2086,11 @@ func (c *dataTableRESTClient) BulkReplaceDataTableRows(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataTableRows:bulkReplace", req.GetParent())
 
 	params := url.Values{}
@@ -1976,9 +2104,6 @@ func (c *dataTableRESTClient) BulkReplaceDataTableRows(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/BulkReplaceDataTableRows")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*/dataTables/*}/dataTableRows:bulkReplace")
@@ -2026,6 +2151,11 @@ func (c *dataTableRESTClient) BulkUpdateDataTableRows(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/dataTableRows:bulkUpdate", req.GetParent())
 
 	params := url.Values{}
@@ -2039,9 +2169,6 @@ func (c *dataTableRESTClient) BulkUpdateDataTableRows(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/BulkUpdateDataTableRows")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*/dataTables/*}/dataTableRows:bulkUpdate")
@@ -2083,6 +2210,11 @@ func (c *dataTableRESTClient) GetDataTableOperationErrors(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2096,9 +2228,6 @@ func (c *dataTableRESTClient) GetDataTableOperationErrors(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.DataTableService/GetDataTableOperationErrors")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/dataTableOperationErrors/*}")
@@ -2146,6 +2275,11 @@ func (c *dataTableRESTClient) CancelOperation(ctx context.Context, req *longrunn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2185,6 +2319,11 @@ func (c *dataTableRESTClient) DeleteOperation(ctx context.Context, req *longrunn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2222,6 +2361,11 @@ func (c *dataTableRESTClient) DeleteOperation(ctx context.Context, req *longrunn
 func (c *dataTableRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2289,6 +2433,11 @@ func (c *dataTableRESTClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

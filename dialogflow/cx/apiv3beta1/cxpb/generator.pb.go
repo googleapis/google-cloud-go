@@ -722,13 +722,13 @@ var File_google_cloud_dialogflow_cx_v3beta1_generator_proto protoreflect.FileDes
 
 const file_google_cloud_dialogflow_cx_v3beta1_generator_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/dialogflow/cx/v3beta1/generator.proto\x12\"google.cloud.dialogflow.cx.v3beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a<google/cloud/dialogflow/cx/v3beta1/generative_settings.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xca\x06\n" +
+	"2google/cloud/dialogflow/cx/v3beta1/generator.proto\x12\"google.cloud.dialogflow.cx.v3beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a<google/cloud/dialogflow/cx/v3beta1/generative_settings.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xcd\x06\n" +
 	"\tGenerator\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12P\n" +
-	"\vprompt_text\x18\x03 \x01(\v2*.google.cloud.dialogflow.cx.v3beta1.PhraseB\x03\xe0A\x02R\n" +
-	"promptText\x12b\n" +
-	"\fplaceholders\x18\x05 \x03(\v29.google.cloud.dialogflow.cx.v3beta1.Generator.PlaceholderB\x03\xe0A\x01R\fplaceholders\x12b\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12Q\n" +
+	"\vprompt_text\x18\x03 \x01(\v2*.google.cloud.dialogflow.cx.v3beta1.PhraseB\x04\xe2A\x01\x02R\n" +
+	"promptText\x12c\n" +
+	"\fplaceholders\x18\x05 \x03(\v29.google.cloud.dialogflow.cx.v3beta1.Generator.PlaceholderB\x04\xe2A\x01\x01R\fplaceholders\x12b\n" +
 	"\x12llm_model_settings\x18\t \x01(\v24.google.cloud.dialogflow.cx.v3beta1.LlmModelSettingsR\x10llmModelSettings\x12e\n" +
 	"\x0fmodel_parameter\x18\b \x01(\v2<.google.cloud.dialogflow.cx.v3beta1.Generator.ModelParameterR\x0emodelParameter\x1a1\n" +
 	"\vPlaceholder\x12\x0e\n" +
@@ -743,11 +743,11 @@ const file_google_cloud_dialogflow_cx_v3beta1_generator_proto_rawDesc = "" +
 	"\x11_max_decode_stepsB\b\n" +
 	"\x06_top_pB\b\n" +
 	"\x06_top_k:w\xeaAt\n" +
-	"#dialogflow.googleapis.com/Generator\x12Mprojects/{project}/locations/{location}/agents/{agent}/generators/{generator}\"!\n" +
-	"\x06Phrase\x12\x17\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x02R\x04text\"\xbd\x01\n" +
-	"\x15ListGeneratorsRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#dialogflow.googleapis.com/GeneratorR\x06parent\x12#\n" +
+	"#dialogflow.googleapis.com/Generator\x12Mprojects/{project}/locations/{location}/agents/{agent}/generators/{generator}\"\"\n" +
+	"\x06Phrase\x12\x18\n" +
+	"\x04text\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04text\"\xbe\x01\n" +
+	"\x15ListGeneratorsRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#dialogflow.googleapis.com/GeneratorR\x06parent\x12#\n" +
 	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -756,22 +756,22 @@ const file_google_cloud_dialogflow_cx_v3beta1_generator_proto_rawDesc = "" +
 	"\n" +
 	"generators\x18\x01 \x03(\v2-.google.cloud.dialogflow.cx.v3beta1.GeneratorR\n" +
 	"generators\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"{\n" +
-	"\x13GetGeneratorRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"|\n" +
+	"\x13GetGeneratorRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#dialogflow.googleapis.com/GeneratorR\x04name\x12#\n" +
-	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\"\xd4\x01\n" +
-	"\x16CreateGeneratorRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#dialogflow.googleapis.com/GeneratorR\x06parent\x12P\n" +
-	"\tgenerator\x18\x02 \x01(\v2-.google.cloud.dialogflow.cx.v3beta1.GeneratorB\x03\xe0A\x02R\tgenerator\x12#\n" +
-	"\rlanguage_code\x18\x03 \x01(\tR\flanguageCode\"\xcc\x01\n" +
-	"\x16UpdateGeneratorRequest\x12P\n" +
-	"\tgenerator\x18\x01 \x01(\v2-.google.cloud.dialogflow.cx.v3beta1.GeneratorB\x03\xe0A\x02R\tgenerator\x12#\n" +
+	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\"\xd6\x01\n" +
+	"\x16CreateGeneratorRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#dialogflow.googleapis.com/GeneratorR\x06parent\x12Q\n" +
+	"\tgenerator\x18\x02 \x01(\v2-.google.cloud.dialogflow.cx.v3beta1.GeneratorB\x04\xe2A\x01\x02R\tgenerator\x12#\n" +
+	"\rlanguage_code\x18\x03 \x01(\tR\flanguageCode\"\xcd\x01\n" +
+	"\x16UpdateGeneratorRequest\x12Q\n" +
+	"\tgenerator\x18\x01 \x01(\v2-.google.cloud.dialogflow.cx.v3beta1.GeneratorB\x04\xe2A\x01\x02R\tgenerator\x12#\n" +
 	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\x12;\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"o\n" +
-	"\x16DeleteGeneratorRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"updateMask\"p\n" +
+	"\x16DeleteGeneratorRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#dialogflow.googleapis.com/GeneratorR\x04name\x12\x14\n" +
 	"\x05force\x18\x02 \x01(\bR\x05force2\xaf\t\n" +
 	"\n" +

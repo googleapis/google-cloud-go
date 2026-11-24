@@ -839,29 +839,29 @@ var File_google_cloud_video_stitcher_v1_sessions_proto protoreflect.FileDescript
 
 const file_google_cloud_video_stitcher_v1_sessions_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/video/stitcher/v1/sessions.proto\x12\x1egoogle.cloud.video.stitcher.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a/google/cloud/video/stitcher/v1/companions.proto\x1a+google/cloud/video/stitcher/v1/events.proto\x1a1google/cloud/video/stitcher/v1/live_configs.proto\x1a\x1egoogle/protobuf/duration.proto\"\xc5\a\n" +
+	"-google/cloud/video/stitcher/v1/sessions.proto\x12\x1egoogle.cloud.video.stitcher.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a/google/cloud/video/stitcher/v1/companions.proto\x1a+google/cloud/video/stitcher/v1/events.proto\x1a1google/cloud/video/stitcher/v1/live_configs.proto\x1a\x1egoogle/protobuf/duration.proto\"\xcc\a\n" +
 	"\n" +
-	"VodSession\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12X\n" +
-	"\rinterstitials\x18\x02 \x01(\v2-.google.cloud.video.stitcher.v1.InterstitialsB\x03\xe0A\x03R\rinterstitials\x12\x1e\n" +
-	"\bplay_uri\x18\x04 \x01(\tB\x03\xe0A\x03R\aplayUri\x12\x1d\n" +
+	"VodSession\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12Y\n" +
+	"\rinterstitials\x18\x02 \x01(\v2-.google.cloud.video.stitcher.v1.InterstitialsB\x04\xe2A\x01\x03R\rinterstitials\x12\x1f\n" +
+	"\bplay_uri\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\aplayUri\x12\x1d\n" +
 	"\n" +
 	"source_uri\x18\x05 \x01(\tR\tsourceUri\x12\x1c\n" +
 	"\n" +
 	"ad_tag_uri\x18\x06 \x01(\tR\badTagUri\x12f\n" +
 	"\x10ad_tag_macro_map\x18\a \x03(\v2=.google.cloud.video.stitcher.v1.VodSession.AdTagMacroMapEntryR\radTagMacroMap\x12Z\n" +
-	"\x10manifest_options\x18\t \x01(\v2/.google.cloud.video.stitcher.v1.ManifestOptionsR\x0fmanifestOptions\x12\x1e\n" +
+	"\x10manifest_options\x18\t \x01(\v2/.google.cloud.video.stitcher.v1.ManifestOptionsR\x0fmanifestOptions\x12\x1f\n" +
 	"\basset_id\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\aassetId\x12P\n" +
-	"\vad_tracking\x18\v \x01(\x0e2*.google.cloud.video.stitcher.v1.AdTrackingB\x03\xe0A\x02R\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\aassetId\x12Q\n" +
+	"\vad_tracking\x18\v \x01(\x0e2*.google.cloud.video.stitcher.v1.AdTrackingB\x04\xe2A\x01\x02R\n" +
 	"adTracking\x12Y\n" +
 	"\fgam_settings\x18\r \x01(\v26.google.cloud.video.stitcher.v1.VodSession.GamSettingsR\vgamSettings\x12J\n" +
 	"\n" +
 	"vod_config\x18\x0e \x01(\tB+\xfaA(\n" +
-	"&videostitcher.googleapis.com/VodConfigR\tvodConfig\x1aW\n" +
-	"\vGamSettings\x12&\n" +
-	"\fnetwork_code\x18\x01 \x01(\tB\x03\xe0A\x02R\vnetworkCode\x12 \n" +
-	"\tstream_id\x18\x02 \x01(\tB\x03\xe0A\x02R\bstreamId\x1a@\n" +
+	"&videostitcher.googleapis.com/VodConfigR\tvodConfig\x1aY\n" +
+	"\vGamSettings\x12'\n" +
+	"\fnetwork_code\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vnetworkCode\x12!\n" +
+	"\tstream_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bstreamId\x1a@\n" +
 	"\x12AdTagMacroMapEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:o\xeaAl\n" +
@@ -879,21 +879,21 @@ const file_google_cloud_video_stitcher_v1_sessions_proto_rawDesc = "" +
 	"\x0fprogress_events\x18\x01 \x03(\v2-.google.cloud.video.stitcher.v1.ProgressEventR\x0eprogressEvents\x12>\n" +
 	"\x03ads\x18\x02 \x03(\v2,.google.cloud.video.stitcher.v1.VodSessionAdR\x03ads\x12A\n" +
 	"\x0fend_time_offset\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\rendTimeOffset\x12E\n" +
-	"\x11start_time_offset\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\x0fstartTimeOffset\"\xb3\a\n" +
-	"\vLiveSession\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1e\n" +
-	"\bplay_uri\x18\x02 \x01(\tB\x03\xe0A\x03R\aplayUri\x12`\n" +
+	"\x11start_time_offset\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\x0fstartTimeOffset\"\xb7\a\n" +
+	"\vLiveSession\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x1f\n" +
+	"\bplay_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\aplayUri\x12`\n" +
 	"\rad_tag_macros\x18\x06 \x03(\v2<.google.cloud.video.stitcher.v1.LiveSession.AdTagMacrosEntryR\vadTagMacros\x12Z\n" +
 	"\x10manifest_options\x18\n" +
 	" \x01(\v2/.google.cloud.video.stitcher.v1.ManifestOptionsR\x0fmanifestOptions\x12Z\n" +
-	"\fgam_settings\x18\x0f \x01(\v27.google.cloud.video.stitcher.v1.LiveSession.GamSettingsR\vgamSettings\x12P\n" +
-	"\vlive_config\x18\x10 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"\fgam_settings\x18\x0f \x01(\v27.google.cloud.video.stitcher.v1.LiveSession.GamSettingsR\vgamSettings\x12Q\n" +
+	"\vlive_config\x18\x10 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'videostitcher.googleapis.com/LiveConfigR\n" +
 	"liveConfig\x12K\n" +
 	"\vad_tracking\x18\x11 \x01(\x0e2*.google.cloud.video.stitcher.v1.AdTrackingR\n" +
-	"adTracking\x1a\xfd\x01\n" +
-	"\vGamSettings\x12 \n" +
-	"\tstream_id\x18\x01 \x01(\tB\x03\xe0A\x02R\bstreamId\x12\x83\x01\n" +
+	"adTracking\x1a\xfe\x01\n" +
+	"\vGamSettings\x12!\n" +
+	"\tstream_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bstreamId\x12\x83\x01\n" +
 	"\x14targeting_parameters\x18\x04 \x03(\v2P.google.cloud.video.stitcher.v1.LiveSession.GamSettings.TargetingParametersEntryR\x13targetingParameters\x1aF\n" +
 	"\x18TargetingParametersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +

@@ -1225,9 +1225,9 @@ var File_google_cloud_dialogflow_v2beta1_agent_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dialogflow_v2beta1_agent_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/dialogflow/v2beta1/agent.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a7google/cloud/dialogflow/v2beta1/validation_result.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xa8\b\n" +
-	"\x05Agent\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"+google/cloud/dialogflow/v2beta1/agent.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a7google/cloud/dialogflow/v2beta1/validation_result.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xa9\b\n" +
+	"\x05Agent\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x122\n" +
 	"\x15default_language_code\x18\x03 \x01(\tR\x13defaultLanguageCode\x128\n" +
@@ -1259,48 +1259,48 @@ const file_google_cloud_dialogflow_v2beta1_agent_proto_rawDesc = "" +
 	"\rTIER_STANDARD\x10\x01\x12\x13\n" +
 	"\x0fTIER_ENTERPRISE\x10\x02\x12\x1c\n" +
 	"\x14TIER_ENTERPRISE_PLUS\x10\x03\x1a\x02\b\x01:m\xeaAj\n" +
-	"\x1fdialogflow.googleapis.com/Agent\x12\x18projects/{project}/agent\x12-projects/{project}/locations/{location}/agent\"R\n" +
-	"\x0fGetAgentRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fdialogflow.googleapis.com/AgentR\x06parent\"\x91\x01\n" +
-	"\x0fSetAgentRequest\x12A\n" +
-	"\x05agent\x18\x01 \x01(\v2&.google.cloud.dialogflow.v2beta1.AgentB\x03\xe0A\x02R\x05agent\x12;\n" +
+	"\x1fdialogflow.googleapis.com/Agent\x12\x18projects/{project}/agent\x12-projects/{project}/locations/{location}/agent\"S\n" +
+	"\x0fGetAgentRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fdialogflow.googleapis.com/AgentR\x06parent\"\x92\x01\n" +
+	"\x0fSetAgentRequest\x12B\n" +
+	"\x05agent\x18\x01 \x01(\v2&.google.cloud.dialogflow.v2beta1.AgentB\x04\xe2A\x01\x02R\x05agent\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"U\n" +
-	"\x12DeleteAgentRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fdialogflow.googleapis.com/AgentR\x06parent\"F\n" +
+	"updateMask\"V\n" +
+	"\x12DeleteAgentRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fdialogflow.googleapis.com/AgentR\x06parent\"F\n" +
 	"\bSubAgent\x12\x18\n" +
 	"\aproject\x18\x01 \x01(\tR\aproject\x12 \n" +
-	"\venvironment\x18\x02 \x01(\tR\venvironment\"\x92\x01\n" +
-	"\x13SearchAgentsRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fdialogflow.googleapis.com/AgentR\x06parent\x12\x1b\n" +
+	"\venvironment\x18\x02 \x01(\tR\venvironment\"\x93\x01\n" +
+	"\x13SearchAgentsRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fdialogflow.googleapis.com/AgentR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"~\n" +
 	"\x14SearchAgentsResponse\x12>\n" +
 	"\x06agents\x18\x01 \x03(\v2&.google.cloud.dialogflow.v2beta1.AgentR\x06agents\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"T\n" +
-	"\x11TrainAgentRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fdialogflow.googleapis.com/AgentR\x06parent\"r\n" +
-	"\x12ExportAgentRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fdialogflow.googleapis.com/AgentR\x06parent\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"U\n" +
+	"\x11TrainAgentRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fdialogflow.googleapis.com/AgentR\x06parent\"s\n" +
+	"\x12ExportAgentRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fdialogflow.googleapis.com/AgentR\x06parent\x12\x1b\n" +
 	"\tagent_uri\x18\x02 \x01(\tR\bagentUri\"d\n" +
 	"\x13ExportAgentResponse\x12\x1d\n" +
 	"\tagent_uri\x18\x01 \x01(\tH\x00R\bagentUri\x12%\n" +
 	"\ragent_content\x18\x02 \x01(\fH\x00R\fagentContentB\a\n" +
-	"\x05agent\"\xa4\x01\n" +
-	"\x12ImportAgentRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fdialogflow.googleapis.com/AgentR\x06parent\x12\x1d\n" +
-	"\tagent_uri\x18\x02 \x01(\tH\x00R\bagentUri\x12%\n" +
-	"\ragent_content\x18\x03 \x01(\fH\x00R\fagentContentB\a\n" +
 	"\x05agent\"\xa5\x01\n" +
-	"\x13RestoreAgentRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fdialogflow.googleapis.com/AgentR\x06parent\x12\x1d\n" +
+	"\x12ImportAgentRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fdialogflow.googleapis.com/AgentR\x06parent\x12\x1d\n" +
 	"\tagent_uri\x18\x02 \x01(\tH\x00R\bagentUri\x12%\n" +
 	"\ragent_content\x18\x03 \x01(\fH\x00R\fagentContentB\a\n" +
-	"\x05agent\"\x87\x01\n" +
-	"\x1aGetValidationResultRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fdialogflow.googleapis.com/AgentR\x06parent\x12(\n" +
-	"\rlanguage_code\x18\x03 \x01(\tB\x03\xe0A\x01R\flanguageCode2\xca\x12\n" +
+	"\x05agent\"\xa6\x01\n" +
+	"\x13RestoreAgentRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fdialogflow.googleapis.com/AgentR\x06parent\x12\x1d\n" +
+	"\tagent_uri\x18\x02 \x01(\tH\x00R\bagentUri\x12%\n" +
+	"\ragent_content\x18\x03 \x01(\fH\x00R\fagentContentB\a\n" +
+	"\x05agent\"\x89\x01\n" +
+	"\x1aGetValidationResultRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fdialogflow.googleapis.com/AgentR\x06parent\x12)\n" +
+	"\rlanguage_code\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode2\xca\x12\n" +
 	"\x06Agents\x12\xcb\x01\n" +
 	"\bGetAgent\x120.google.cloud.dialogflow.v2beta1.GetAgentRequest\x1a&.google.cloud.dialogflow.v2beta1.Agent\"e\xdaA\x06parent\x82\xd3\xe4\x93\x02VZ0\x12./v2beta1/{parent=projects/*/locations/*}/agent\x12\"/v2beta1/{parent=projects/*}/agent\x12\xe4\x01\n" +
 	"\bSetAgent\x120.google.cloud.dialogflow.v2beta1.SetAgentRequest\x1a&.google.cloud.dialogflow.v2beta1.Agent\"~\xdaA\x05agent\x82\xd3\xe4\x93\x02p:\x05agentZ=:\x05agent\"4/v2beta1/{agent.parent=projects/*/locations/*}/agent\"(/v2beta1/{agent.parent=projects/*}/agent\x12\xc1\x01\n" +

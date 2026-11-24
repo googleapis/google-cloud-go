@@ -201,6 +201,35 @@ func NewShippingSettingsClient(ctx context.Context, opts ...option.ClientOption)
 		client.CallOptions.GetShippingSettings = append(client.CallOptions.GetShippingSettings, gax.WithClientMetrics(metrics))
 		client.CallOptions.InsertShippingSettings = append(client.CallOptions.InsertShippingSettings, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetShippingSettings = append(client.CallOptions.GetShippingSettings, gax.WithClientTracing(tracing))
+		client.CallOptions.InsertShippingSettings = append(client.CallOptions.InsertShippingSettings, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetShippingSettings = append(client.CallOptions.GetShippingSettings, gax.WithClientLogging(logging))
+		client.CallOptions.InsertShippingSettings = append(client.CallOptions.InsertShippingSettings, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -294,6 +323,35 @@ func NewShippingSettingsRESTClient(ctx context.Context, opts ...option.ClientOpt
 		callOpts.GetShippingSettings = append(callOpts.GetShippingSettings, gax.WithClientMetrics(metrics))
 		callOpts.InsertShippingSettings = append(callOpts.InsertShippingSettings, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetShippingSettings = append(callOpts.GetShippingSettings, gax.WithClientTracing(tracing))
+		callOpts.InsertShippingSettings = append(callOpts.InsertShippingSettings, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetShippingSettings = append(callOpts.GetShippingSettings, gax.WithClientLogging(logging))
+		callOpts.InsertShippingSettings = append(callOpts.InsertShippingSettings, gax.WithClientLogging(logging))
+	}
 
 	return &ShippingSettingsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -340,9 +398,6 @@ func (c *shippingSettingsGRPCClient) GetShippingSettings(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.ShippingSettingsService/GetShippingSettings")
 	}
@@ -386,6 +441,11 @@ func (c *shippingSettingsRESTClient) GetShippingSettings(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v", req.GetName())
 
 	params := url.Values{}
@@ -399,9 +459,6 @@ func (c *shippingSettingsRESTClient) GetShippingSettings(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.ShippingSettingsService/GetShippingSettings")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{name=accounts/*/shippingSettings}")
@@ -449,6 +506,11 @@ func (c *shippingSettingsRESTClient) InsertShippingSettings(ctx context.Context,
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/accounts/v1beta/%v/shippingSettings:insert", req.GetParent())

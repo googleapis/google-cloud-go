@@ -555,41 +555,41 @@ var File_google_cloud_dialogflow_v2beta1_version_proto protoreflect.FileDescript
 
 const file_google_cloud_dialogflow_v2beta1_version_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/dialogflow/v2beta1/version.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfe\x03\n" +
-	"\aVersion\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12*\n" +
-	"\x0eversion_number\x18\x03 \x01(\x05B\x03\xe0A\x03R\rversionNumber\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12S\n" +
-	"\x06status\x18\x06 \x01(\x0e26.google.cloud.dialogflow.v2beta1.Version.VersionStatusB\x03\xe0A\x03R\x06status\"W\n" +
+	"-google/cloud/dialogflow/v2beta1/version.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x83\x04\n" +
+	"\aVersion\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12+\n" +
+	"\x0eversion_number\x18\x03 \x01(\x05B\x04\xe2A\x01\x03R\rversionNumber\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12T\n" +
+	"\x06status\x18\x06 \x01(\x0e26.google.cloud.dialogflow.v2beta1.Version.VersionStatusB\x04\xe2A\x01\x03R\x06status\"W\n" +
 	"\rVersionStatus\x12\x1e\n" +
 	"\x1aVERSION_STATUS_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vIN_PROGRESS\x10\x01\x12\t\n" +
 	"\x05READY\x10\x02\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x03:\x96\x01\xeaA\x92\x01\n" +
-	"!dialogflow.googleapis.com/Version\x12+projects/{project}/agent/versions/{version}\x12@projects/{project}/locations/{location}/agent/versions/{version}\"\x9e\x01\n" +
-	"\x13ListVersionsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!dialogflow.googleapis.com/VersionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"!dialogflow.googleapis.com/Version\x12+projects/{project}/agent/versions/{version}\x12@projects/{project}/locations/{location}/agent/versions/{version}\"\xa1\x01\n" +
+	"\x13ListVersionsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!dialogflow.googleapis.com/VersionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x84\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x84\x01\n" +
 	"\x14ListVersionsResponse\x12D\n" +
 	"\bversions\x18\x01 \x03(\v2(.google.cloud.dialogflow.v2beta1.VersionR\bversions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"R\n" +
-	"\x11GetVersionRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!dialogflow.googleapis.com/VersionR\x04name\"\xa2\x01\n" +
-	"\x14CreateVersionRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!dialogflow.googleapis.com/VersionR\x06parent\x12G\n" +
-	"\aversion\x18\x02 \x01(\v2(.google.cloud.dialogflow.v2beta1.VersionB\x03\xe0A\x02R\aversion\"\xa1\x01\n" +
-	"\x14UpdateVersionRequest\x12G\n" +
-	"\aversion\x18\x01 \x01(\v2(.google.cloud.dialogflow.v2beta1.VersionB\x03\xe0A\x02R\aversion\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"U\n" +
-	"\x14DeleteVersionRequest\x12=\n" +
-	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"S\n" +
+	"\x11GetVersionRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!dialogflow.googleapis.com/VersionR\x04name\"\xa4\x01\n" +
+	"\x14CreateVersionRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\x12!dialogflow.googleapis.com/VersionR\x06parent\x12H\n" +
+	"\aversion\x18\x02 \x01(\v2(.google.cloud.dialogflow.v2beta1.VersionB\x04\xe2A\x01\x02R\aversion\"\xa3\x01\n" +
+	"\x14UpdateVersionRequest\x12H\n" +
+	"\aversion\x18\x01 \x01(\v2(.google.cloud.dialogflow.v2beta1.VersionB\x04\xe2A\x01\x02R\aversion\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"V\n" +
+	"\x14DeleteVersionRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!dialogflow.googleapis.com/VersionR\x04name2\xdb\n" +
 	"\n" +
 	"\bVersions\x12\xf4\x01\n" +

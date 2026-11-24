@@ -680,21 +680,21 @@ var File_google_cloud_policysimulator_v1_explanations_proto protoreflect.FileDes
 
 const file_google_cloud_policysimulator_v1_explanations_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/policysimulator/v1/explanations.proto\x12\x1fgoogle.cloud.policysimulator.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x16google/type/expr.proto\"\x88\x01\n" +
-	"\vAccessTuple\x12!\n" +
-	"\tprincipal\x18\x01 \x01(\tB\x03\xe0A\x02R\tprincipal\x121\n" +
-	"\x12full_resource_name\x18\x02 \x01(\tB\x03\xe0A\x02R\x10fullResourceName\x12#\n" +
+	"2google/cloud/policysimulator/v1/explanations.proto\x12\x1fgoogle.cloud.policysimulator.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x16google/type/expr.proto\"\x8b\x01\n" +
+	"\vAccessTuple\x12\"\n" +
+	"\tprincipal\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprincipal\x122\n" +
+	"\x12full_resource_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x10fullResourceName\x12$\n" +
 	"\n" +
-	"permission\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
+	"permission\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"permission\"\xef\x02\n" +
 	"\x0fExplainedPolicy\x12D\n" +
 	"\x06access\x18\x01 \x01(\x0e2,.google.cloud.policysimulator.v1.AccessStateR\x06access\x12,\n" +
 	"\x12full_resource_name\x18\x02 \x01(\tR\x10fullResourceName\x12-\n" +
 	"\x06policy\x18\x03 \x01(\v2\x15.google.iam.v1.PolicyR\x06policy\x12f\n" +
 	"\x14binding_explanations\x18\x04 \x03(\v23.google.cloud.policysimulator.v1.BindingExplanationR\x13bindingExplanations\x12Q\n" +
-	"\trelevance\x18\x05 \x01(\x0e23.google.cloud.policysimulator.v1.HeuristicRelevanceR\trelevance\"\xd8\t\n" +
-	"\x12BindingExplanation\x12I\n" +
-	"\x06access\x18\x01 \x01(\x0e2,.google.cloud.policysimulator.v1.AccessStateB\x03\xe0A\x02R\x06access\x12\x12\n" +
+	"\trelevance\x18\x05 \x01(\x0e23.google.cloud.policysimulator.v1.HeuristicRelevanceR\trelevance\"\xd9\t\n" +
+	"\x12BindingExplanation\x12J\n" +
+	"\x06access\x18\x01 \x01(\x0e2,.google.cloud.policysimulator.v1.AccessStateB\x04\xe2A\x01\x02R\x06access\x12\x12\n" +
 	"\x04role\x18\x02 \x01(\tR\x04role\x12k\n" +
 	"\x0frole_permission\x18\x03 \x01(\x0e2B.google.cloud.policysimulator.v1.BindingExplanation.RolePermissionR\x0erolePermission\x12o\n" +
 	"\x19role_permission_relevance\x18\x04 \x01(\x0e23.google.cloud.policysimulator.v1.HeuristicRelevanceR\x17rolePermissionRelevance\x12f\n" +

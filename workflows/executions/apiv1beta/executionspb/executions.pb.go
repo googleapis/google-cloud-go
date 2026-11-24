@@ -641,17 +641,17 @@ var File_google_cloud_workflows_executions_v1beta_executions_proto protoreflect.
 
 const file_google_cloud_workflows_executions_v1beta_executions_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/workflows/executions/v1beta/executions.proto\x12(google.cloud.workflows.executions.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd8\x05\n" +
-	"\tExecution\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12>\n" +
+	"9google/cloud/workflows/executions/v1beta/executions.proto\x12(google.cloud.workflows.executions.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdf\x05\n" +
+	"\tExecution\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12?\n" +
 	"\n" +
-	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12T\n" +
-	"\x05state\x18\x04 \x01(\x0e29.google.cloud.workflows.executions.v1beta.Execution.StateB\x03\xe0A\x03R\x05state\x12\x1a\n" +
-	"\bargument\x18\x05 \x01(\tR\bargument\x12\x1b\n" +
-	"\x06result\x18\x06 \x01(\tB\x03\xe0A\x03R\x06result\x12T\n" +
-	"\x05error\x18\a \x01(\v29.google.cloud.workflows.executions.v1beta.Execution.ErrorB\x03\xe0A\x03R\x05error\x125\n" +
-	"\x14workflow_revision_id\x18\b \x01(\tB\x03\xe0A\x03R\x12workflowRevisionId\x1a;\n" +
+	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12U\n" +
+	"\x05state\x18\x04 \x01(\x0e29.google.cloud.workflows.executions.v1beta.Execution.StateB\x04\xe2A\x01\x03R\x05state\x12\x1a\n" +
+	"\bargument\x18\x05 \x01(\tR\bargument\x12\x1c\n" +
+	"\x06result\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x06result\x12U\n" +
+	"\x05error\x18\a \x01(\v29.google.cloud.workflows.executions.v1beta.Execution.ErrorB\x04\xe2A\x01\x03R\x05error\x126\n" +
+	"\x14workflow_revision_id\x18\b \x01(\tB\x04\xe2A\x01\x03R\x12workflowRevisionId\x1a;\n" +
 	"\x05Error\x12\x18\n" +
 	"\apayload\x18\x01 \x01(\tR\apayload\x12\x18\n" +
 	"\acontext\x18\x02 \x01(\tR\acontext\"T\n" +
@@ -663,29 +663,29 @@ const file_google_cloud_workflows_executions_v1beta_executions_proto_rawDesc = "
 	"\n" +
 	"\x06FAILED\x10\x03\x12\r\n" +
 	"\tCANCELLED\x10\x04:\x86\x01\xeaA\x82\x01\n" +
-	"+workflowexecutions.googleapis.com/Execution\x12Sprojects/{project}/locations/{location}/workflows/{workflow}/executions/{execution}\"\xe8\x01\n" +
-	"\x15ListExecutionsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"+workflowexecutions.googleapis.com/Execution\x12Sprojects/{project}/locations/{location}/workflows/{workflow}/executions/{execution}\"\xea\x01\n" +
+	"\x15ListExecutionsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!workflows.googleapis.com/WorkflowR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12P\n" +
-	"\x04view\x18\x04 \x01(\x0e27.google.cloud.workflows.executions.v1beta.ExecutionViewB\x03\xe0A\x01R\x04view\"\x95\x01\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12Q\n" +
+	"\x04view\x18\x04 \x01(\x0e27.google.cloud.workflows.executions.v1beta.ExecutionViewB\x04\xe2A\x01\x01R\x04view\"\x95\x01\n" +
 	"\x16ListExecutionsResponse\x12S\n" +
 	"\n" +
 	"executions\x18\x01 \x03(\v23.google.cloud.workflows.executions.v1beta.ExecutionR\n" +
 	"executions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb3\x01\n" +
-	"\x16CreateExecutionRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!workflows.googleapis.com/WorkflowR\x06parent\x12V\n" +
-	"\texecution\x18\x02 \x01(\v23.google.cloud.workflows.executions.v1beta.ExecutionB\x03\xe0A\x02R\texecution\"\xb0\x01\n" +
-	"\x13GetExecutionRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+workflowexecutions.googleapis.com/ExecutionR\x04name\x12P\n" +
-	"\x04view\x18\x02 \x01(\x0e27.google.cloud.workflows.executions.v1beta.ExecutionViewB\x03\xe0A\x01R\x04view\"a\n" +
-	"\x16CancelExecutionRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb5\x01\n" +
+	"\x16CreateExecutionRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!workflows.googleapis.com/WorkflowR\x06parent\x12W\n" +
+	"\texecution\x18\x02 \x01(\v23.google.cloud.workflows.executions.v1beta.ExecutionB\x04\xe2A\x01\x02R\texecution\"\xb2\x01\n" +
+	"\x13GetExecutionRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+workflowexecutions.googleapis.com/ExecutionR\x04name\x12Q\n" +
+	"\x04view\x18\x02 \x01(\x0e27.google.cloud.workflows.executions.v1beta.ExecutionViewB\x04\xe2A\x01\x01R\x04view\"b\n" +
+	"\x16CancelExecutionRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+workflowexecutions.googleapis.com/ExecutionR\x04name*D\n" +
 	"\rExecutionView\x12\x1e\n" +
 	"\x1aEXECUTION_VIEW_UNSPECIFIED\x10\x00\x12\t\n" +

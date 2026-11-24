@@ -244,6 +244,43 @@ func NewTasksClient(ctx context.Context, opts ...option.ClientOption) (*TasksCli
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 		client.CallOptions.WaitOperation = append(client.CallOptions.WaitOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "run",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/run/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "run.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetTask = append(client.CallOptions.GetTask, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTasks = append(client.CallOptions.ListTasks, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+		client.CallOptions.WaitOperation = append(client.CallOptions.WaitOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "run",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/run/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "run.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetTask = append(client.CallOptions.GetTask, gax.WithClientLogging(logging))
+		client.CallOptions.ListTasks = append(client.CallOptions.ListTasks, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+		client.CallOptions.WaitOperation = append(client.CallOptions.WaitOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -340,6 +377,43 @@ func NewTasksRESTClient(ctx context.Context, opts ...option.ClientOption) (*Task
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 		callOpts.WaitOperation = append(callOpts.WaitOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "run",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/run/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "run.googleapis.com",
+			}),
+		)
+
+		callOpts.GetTask = append(callOpts.GetTask, gax.WithClientTracing(tracing))
+		callOpts.ListTasks = append(callOpts.ListTasks, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+		callOpts.WaitOperation = append(callOpts.WaitOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "run",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/run/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "run.googleapis.com",
+			}),
+		)
+
+		callOpts.GetTask = append(callOpts.GetTask, gax.WithClientLogging(logging))
+		callOpts.ListTasks = append(callOpts.ListTasks, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+		callOpts.WaitOperation = append(callOpts.WaitOperation, gax.WithClientLogging(logging))
+	}
 
 	return &TasksClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -386,9 +460,6 @@ func (c *tasksGRPCClient) GetTask(ctx context.Context, req *runpb.GetTaskRequest
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//run.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.run.v2.Tasks/GetTask")
 	}
@@ -410,9 +481,6 @@ func (c *tasksGRPCClient) ListTasks(ctx context.Context, req *runpb.ListTasksReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//run.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.run.v2.Tasks/ListTasks")
 	}
@@ -571,6 +639,11 @@ func (c *tasksRESTClient) GetTask(ctx context.Context, req *runpb.GetTaskRequest
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -584,9 +657,6 @@ func (c *tasksRESTClient) GetTask(ctx context.Context, req *runpb.GetTaskRequest
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//run.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.run.v2.Tasks/GetTask")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/jobs/*/executions/*/tasks/*}")
@@ -639,6 +709,11 @@ func (c *tasksRESTClient) ListTasks(ctx context.Context, req *runpb.ListTasksReq
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/tasks", req.GetParent())
@@ -709,6 +784,11 @@ func (c *tasksRESTClient) DeleteOperation(ctx context.Context, req *longrunningp
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
@@ -746,6 +826,11 @@ func (c *tasksRESTClient) DeleteOperation(ctx context.Context, req *longrunningp
 func (c *tasksRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
@@ -813,6 +898,11 @@ func (c *tasksRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2/%v/operations", req.GetName())
@@ -890,6 +980,11 @@ func (c *tasksRESTClient) WaitOperation(ctx context.Context, req *longrunningpb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2/%v:wait", req.GetName())

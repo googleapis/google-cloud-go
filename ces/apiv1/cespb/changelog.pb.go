@@ -193,22 +193,22 @@ var File_google_cloud_ces_v1_changelog_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1_changelog_proto_rawDesc = "" +
 	"\n" +
-	"#google/cloud/ces/v1/changelog.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xca\x05\n" +
-	"\tChangelog\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1b\n" +
-	"\x06author\x18\x02 \x01(\tB\x03\xe0A\x03R\x06author\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12%\n" +
-	"\vdescription\x18\v \x01(\tB\x03\xe0A\x03R\vdescription\x12\x1f\n" +
-	"\bresource\x18\x04 \x01(\tB\x03\xe0A\x03R\bresource\x12(\n" +
-	"\rresource_type\x18\x05 \x01(\tB\x03\xe0A\x03R\fresourceType\x12\x1b\n" +
-	"\x06action\x18\x06 \x01(\tB\x03\xe0A\x03R\x06action\x12I\n" +
-	"\x11original_resource\x18\a \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x03R\x10originalResource\x12?\n" +
-	"\fnew_resource\x18\b \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x03R\vnewResource\x12M\n" +
-	"\x13dependent_resources\x18\t \x03(\v2\x17.google.protobuf.StructB\x03\xe0A\x03R\x12dependentResources\x12@\n" +
+	"#google/cloud/ces/v1/changelog.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd6\x05\n" +
+	"\tChangelog\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x1c\n" +
+	"\x06author\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x06author\x12'\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12&\n" +
+	"\vdescription\x18\v \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12 \n" +
+	"\bresource\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\bresource\x12)\n" +
+	"\rresource_type\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\fresourceType\x12\x1c\n" +
+	"\x06action\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\x06action\x12J\n" +
+	"\x11original_resource\x18\a \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x03R\x10originalResource\x12@\n" +
+	"\fnew_resource\x18\b \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x03R\vnewResource\x12N\n" +
+	"\x13dependent_resources\x18\t \x03(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x03R\x12dependentResources\x12A\n" +
 	"\vcreate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12,\n" +
-	"\x0fsequence_number\x18\f \x01(\x03B\x03\xe0A\x03R\x0esequenceNumber:\x84\x01\xeaA\x80\x01\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12-\n" +
+	"\x0fsequence_number\x18\f \x01(\x03B\x04\xe2A\x01\x03R\x0esequenceNumber:\x84\x01\xeaA\x80\x01\n" +
 	"\x1cces.googleapis.com/Changelog\x12Iprojects/{project}/locations/{location}/apps/{app}/changelogs/{changelog}*\n" +
 	"changelogs2\tchangelogBV\n" +
 	"\x17com.google.cloud.ces.v1B\x0eChangelogProtoP\x01Z)cloud.google.com/go/ces/apiv1/cespb;cespbb\x06proto3"

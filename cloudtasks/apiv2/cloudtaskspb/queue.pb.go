@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -156,6 +156,8 @@ type Queue struct {
 	// queue, no matter what the setting is for the [task-level
 	// app_engine_routing][google.cloud.tasks.v2.AppEngineHttpRequest.app_engine_routing].
 	AppEngineRoutingOverride *AppEngineRouting `protobuf:"bytes,2,opt,name=app_engine_routing_override,json=appEngineRoutingOverride,proto3" json:"app_engine_routing_override,omitempty"`
+	// Modifies HTTP target for HTTP tasks.
+	HttpTarget *HttpTarget `protobuf:"bytes,10,opt,name=http_target,json=httpTarget,proto3" json:"http_target,omitempty"`
 	// Rate limits for task dispatches.
 	//
 	// [rate_limits][google.cloud.tasks.v2.Queue.rate_limits] and
@@ -171,9 +173,9 @@ type Queue struct {
 	//	attempt or a retry).
 	//
 	// * [retry_config][google.cloud.tasks.v2.Queue.retry_config] controls what
-	// happens to
+	// happens to a
 	//
-	//	particular a task after its first attempt fails. That is,
+	//	particular task after its first attempt fails. That is,
 	//	[retry_config][google.cloud.tasks.v2.Queue.retry_config] controls task
 	//	retries (the second attempt, third attempt, etc).
 	//
@@ -274,6 +276,13 @@ func (x *Queue) GetAppEngineRoutingOverride() *AppEngineRouting {
 	return nil
 }
 
+func (x *Queue) GetHttpTarget() *HttpTarget {
+	if x != nil {
+		return x.HttpTarget
+	}
+	return nil
+}
+
 func (x *Queue) GetRateLimits() *RateLimits {
 	if x != nil {
 		return x.RateLimits
@@ -324,7 +333,7 @@ type RateLimits struct {
 	// If unspecified when the queue is created, Cloud Tasks will pick the
 	// default.
 	//
-	// * The maximum allowed value is 500.
+	// The maximum allowed value is 500.
 	//
 	// This field has the same meaning as
 	// [rate in
@@ -345,11 +354,13 @@ type RateLimits struct {
 	// token is removed from the bucket. Tasks will be dispatched until
 	// the queue's bucket runs out of tokens. The bucket will be
 	// continuously refilled with new tokens based on
-	// [max_dispatches_per_second][google.cloud.tasks.v2.RateLimits.max_dispatches_per_second].
+	// `max_dispatches_per_second`.
 	//
-	// Cloud Tasks will pick the value of `max_burst_size` based on the
-	// value of
-	// [max_dispatches_per_second][google.cloud.tasks.v2.RateLimits.max_dispatches_per_second].
+	// Cloud Tasks automatically sets an appropriate `max_burst_size` based
+	// on the value of `max_dispatches_per_second`. The value is dynamically
+	// optimized to ensure queue stability and throughput. It is generally at
+	// least equal to `max_dispatches_per_second` but might be higher to
+	// accommodate bursts of traffic.
 	//
 	// For queues that were created or updated using
 	// `queue.yaml/xml`, `max_burst_size` is equal to
@@ -357,11 +368,8 @@ type RateLimits struct {
 	// Since `max_burst_size` is output only, if
 	// [UpdateQueue][google.cloud.tasks.v2.CloudTasks.UpdateQueue] is called on a
 	// queue created by `queue.yaml/xml`, `max_burst_size` will be reset based on
-	// the value of
-	// [max_dispatches_per_second][google.cloud.tasks.v2.RateLimits.max_dispatches_per_second],
-	// regardless of whether
-	// [max_dispatches_per_second][google.cloud.tasks.v2.RateLimits.max_dispatches_per_second]
-	// is updated.
+	// the value of `max_dispatches_per_second`, regardless of whether
+	// `max_dispatches_per_second` is updated.
 	MaxBurstSize int32 `protobuf:"varint,2,opt,name=max_burst_size,json=maxBurstSize,proto3" json:"max_burst_size,omitempty"`
 	// The maximum number of concurrent tasks that Cloud Tasks allows
 	// to be dispatched for this queue. After this threshold has been
@@ -437,16 +445,23 @@ func (x *RateLimits) GetMaxConcurrentDispatches() int32 {
 // These settings determine when a failed task attempt is retried.
 type RetryConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Number of attempts per task.
+	// Number of attempts per task, including the first attempt. (If the
+	// first attempt fails, there will be `max_attempts - 1` retries.)
 	//
-	// Cloud Tasks will attempt the task `max_attempts` times (that is, if the
-	// first attempt fails, then there will be `max_attempts - 1` retries). Must
-	// be >= -1.
+	// Must be greater than or equal to -1, which indicates unlimited attempts.
+	//
+	// Cloud Tasks stops retrying only when `max_attempts` and
+	// `max_retry_duration` are both satisfied, or when the task is successfully
+	// executed. When the task has been attempted
+	// `max_attempts` times and when the `max_retry_duration` time has passed, no
+	// further attempts are made, and the task is deleted. If `max_attempts` is
+	// set to -1 and `max_retry_duration` is set to 0, the task is retried
+	// until the [maximum task
+	// retention](https://docs.cloud.google.com/tasks/docs/quotas#limits) limit is
+	// reached.
 	//
 	// If unspecified when the queue is created, Cloud Tasks will pick the
 	// default.
-	//
-	// -1 indicates unlimited attempts.
 	//
 	// This field has the same meaning as
 	// [task_retry_limit in
@@ -457,14 +472,20 @@ type RetryConfig struct {
 	// attempted. Once `max_retry_duration` time has passed *and* the
 	// task has been attempted
 	// [max_attempts][google.cloud.tasks.v2.RetryConfig.max_attempts] times, no
-	// further attempts will be made and the task will be deleted.
+	// further attempts are made and the task is deleted.
 	//
-	// If zero, then the task age is unlimited.
+	// A zero (0) indicates an unlimited duration, up to the
+	// [maximum task
+	// retention](https://docs.cloud.google.com/tasks/docs/quotas#limits) limit.
+	//
+	// The value must be given as a string that indicates the length of time
+	// (in seconds) followed by `s` (for "seconds"). For the maximum possible
+	// value or the format, see the documentation for
+	// [Duration](https://protobuf.dev/reference/protobuf/google.protobuf/#duration).
+	// `max_retry_duration` will be truncated to the nearest second.
 	//
 	// If unspecified when the queue is created, Cloud Tasks will pick the
 	// default.
-	//
-	// `max_retry_duration` will be truncated to the nearest second.
 	//
 	// This field has the same meaning as
 	// [task_age_limit in
@@ -477,10 +498,14 @@ type RetryConfig struct {
 	// [RetryConfig][google.cloud.tasks.v2.RetryConfig] specifies that the task
 	// should be retried.
 	//
+	// The value must be given as a string that indicates the length of time
+	// (in seconds) followed by `s` (for "seconds"). For more information on the
+	// format, see the documentation for
+	// [Duration](https://protobuf.dev/reference/protobuf/google.protobuf/#duration).
+	// `min_backoff` will be truncated to the nearest second.
+	//
 	// If unspecified when the queue is created, Cloud Tasks will pick the
 	// default.
-	//
-	// `min_backoff` will be truncated to the nearest second.
 	//
 	// This field has the same meaning as
 	// [min_backoff_seconds in
@@ -493,10 +518,14 @@ type RetryConfig struct {
 	// [RetryConfig][google.cloud.tasks.v2.RetryConfig] specifies that the task
 	// should be retried.
 	//
+	// The value must be given as a string that indicates the length of time
+	// (in seconds) followed by `s` (for "seconds"). For more information on the
+	// format, see the documentation for
+	// [Duration](https://protobuf.dev/reference/protobuf/google.protobuf/#duration).
+	// `max_backoff` will be truncated to the nearest second.
+	//
 	// If unspecified when the queue is created, Cloud Tasks will pick the
 	// default.
-	//
-	// `max_backoff` will be truncated to the nearest second.
 	//
 	// This field has the same meaning as
 	// [max_backoff_seconds in
@@ -652,10 +681,13 @@ var File_google_cloud_tasks_v2_queue_proto protoreflect.FileDescriptor
 
 const file_google_cloud_tasks_v2_queue_proto_rawDesc = "" +
 	"\n" +
-	"!google/cloud/tasks/v2/queue.proto\x12\x15google.cloud.tasks.v2\x1a\x19google/api/resource.proto\x1a\"google/cloud/tasks/v2/target.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x97\x05\n" +
+	"!google/cloud/tasks/v2/queue.proto\x12\x15google.cloud.tasks.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\"google/cloud/tasks/v2/target.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdb\x05\n" +
 	"\x05Queue\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12f\n" +
 	"\x1bapp_engine_routing_override\x18\x02 \x01(\v2'.google.cloud.tasks.v2.AppEngineRoutingR\x18appEngineRoutingOverride\x12B\n" +
+	"\vhttp_target\x18\n" +
+	" \x01(\v2!.google.cloud.tasks.v2.HttpTargetR\n" +
+	"httpTarget\x12B\n" +
 	"\vrate_limits\x18\x03 \x01(\v2!.google.cloud.tasks.v2.RateLimitsR\n" +
 	"rateLimits\x12E\n" +
 	"\fretry_config\x18\x04 \x01(\v2\".google.cloud.tasks.v2.RetryConfigR\vretryConfig\x128\n" +
@@ -709,24 +741,26 @@ var file_google_cloud_tasks_v2_queue_proto_goTypes = []any{
 	(*RetryConfig)(nil),              // 3: google.cloud.tasks.v2.RetryConfig
 	(*StackdriverLoggingConfig)(nil), // 4: google.cloud.tasks.v2.StackdriverLoggingConfig
 	(*AppEngineRouting)(nil),         // 5: google.cloud.tasks.v2.AppEngineRouting
-	(*timestamppb.Timestamp)(nil),    // 6: google.protobuf.Timestamp
-	(*durationpb.Duration)(nil),      // 7: google.protobuf.Duration
+	(*HttpTarget)(nil),               // 6: google.cloud.tasks.v2.HttpTarget
+	(*timestamppb.Timestamp)(nil),    // 7: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),      // 8: google.protobuf.Duration
 }
 var file_google_cloud_tasks_v2_queue_proto_depIdxs = []int32{
-	5, // 0: google.cloud.tasks.v2.Queue.app_engine_routing_override:type_name -> google.cloud.tasks.v2.AppEngineRouting
-	2, // 1: google.cloud.tasks.v2.Queue.rate_limits:type_name -> google.cloud.tasks.v2.RateLimits
-	3, // 2: google.cloud.tasks.v2.Queue.retry_config:type_name -> google.cloud.tasks.v2.RetryConfig
-	0, // 3: google.cloud.tasks.v2.Queue.state:type_name -> google.cloud.tasks.v2.Queue.State
-	6, // 4: google.cloud.tasks.v2.Queue.purge_time:type_name -> google.protobuf.Timestamp
-	4, // 5: google.cloud.tasks.v2.Queue.stackdriver_logging_config:type_name -> google.cloud.tasks.v2.StackdriverLoggingConfig
-	7, // 6: google.cloud.tasks.v2.RetryConfig.max_retry_duration:type_name -> google.protobuf.Duration
-	7, // 7: google.cloud.tasks.v2.RetryConfig.min_backoff:type_name -> google.protobuf.Duration
-	7, // 8: google.cloud.tasks.v2.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
-	9, // [9:9] is the sub-list for method output_type
-	9, // [9:9] is the sub-list for method input_type
-	9, // [9:9] is the sub-list for extension type_name
-	9, // [9:9] is the sub-list for extension extendee
-	0, // [0:9] is the sub-list for field type_name
+	5,  // 0: google.cloud.tasks.v2.Queue.app_engine_routing_override:type_name -> google.cloud.tasks.v2.AppEngineRouting
+	6,  // 1: google.cloud.tasks.v2.Queue.http_target:type_name -> google.cloud.tasks.v2.HttpTarget
+	2,  // 2: google.cloud.tasks.v2.Queue.rate_limits:type_name -> google.cloud.tasks.v2.RateLimits
+	3,  // 3: google.cloud.tasks.v2.Queue.retry_config:type_name -> google.cloud.tasks.v2.RetryConfig
+	0,  // 4: google.cloud.tasks.v2.Queue.state:type_name -> google.cloud.tasks.v2.Queue.State
+	7,  // 5: google.cloud.tasks.v2.Queue.purge_time:type_name -> google.protobuf.Timestamp
+	4,  // 6: google.cloud.tasks.v2.Queue.stackdriver_logging_config:type_name -> google.cloud.tasks.v2.StackdriverLoggingConfig
+	8,  // 7: google.cloud.tasks.v2.RetryConfig.max_retry_duration:type_name -> google.protobuf.Duration
+	8,  // 8: google.cloud.tasks.v2.RetryConfig.min_backoff:type_name -> google.protobuf.Duration
+	8,  // 9: google.cloud.tasks.v2.RetryConfig.max_backoff:type_name -> google.protobuf.Duration
+	10, // [10:10] is the sub-list for method output_type
+	10, // [10:10] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_tasks_v2_queue_proto_init() }

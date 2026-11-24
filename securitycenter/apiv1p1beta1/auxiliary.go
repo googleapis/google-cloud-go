@@ -18,11 +18,13 @@ package securitycenter
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	securitycenterpb "cloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
@@ -91,6 +93,12 @@ func (op *RunAssetDiscoveryOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GroupResultIterator) All() iter.Seq2[*securitycenterpb.GroupResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // GroupResultIterator manages a stream of *securitycenterpb.GroupResult.
 type GroupResultIterator struct {
 	items    []*securitycenterpb.GroupResult
@@ -136,6 +144,12 @@ func (it *GroupResultIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ListAssetsResponse_ListAssetsResultIterator) All() iter.Seq2[*securitycenterpb.ListAssetsResponse_ListAssetsResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ListAssetsResponse_ListAssetsResultIterator manages a stream of *securitycenterpb.ListAssetsResponse_ListAssetsResult.
@@ -185,6 +199,12 @@ func (it *ListAssetsResponse_ListAssetsResultIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ListFindingsResponse_ListFindingsResultIterator) All() iter.Seq2[*securitycenterpb.ListFindingsResponse_ListFindingsResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ListFindingsResponse_ListFindingsResultIterator manages a stream of *securitycenterpb.ListFindingsResponse_ListFindingsResult.
 type ListFindingsResponse_ListFindingsResultIterator struct {
 	items    []*securitycenterpb.ListFindingsResponse_ListFindingsResult
@@ -232,6 +252,12 @@ func (it *ListFindingsResponse_ListFindingsResultIterator) takeBuf() interface{}
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NotificationConfigIterator) All() iter.Seq2[*securitycenterpb.NotificationConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // NotificationConfigIterator manages a stream of *securitycenterpb.NotificationConfig.
 type NotificationConfigIterator struct {
 	items    []*securitycenterpb.NotificationConfig
@@ -277,6 +303,12 @@ func (it *NotificationConfigIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SourceIterator) All() iter.Seq2[*securitycenterpb.Source, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SourceIterator manages a stream of *securitycenterpb.Source.

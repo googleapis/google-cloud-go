@@ -711,9 +711,9 @@ const file_google_cloud_pubsublite_v1_cursor_proto_rawDesc = "" +
 	"\fsubscription\x18\x01 \x01(\tR\fsubscription\x12\x1c\n" +
 	"\tpartition\x18\x02 \x01(\x03R\tpartition\x12:\n" +
 	"\x06cursor\x18\x03 \x01(\v2\".google.cloud.pubsublite.v1.CursorR\x06cursor\"\x16\n" +
-	"\x14CommitCursorResponse\"\xa1\x01\n" +
-	"\x1bListPartitionCursorsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"\x14CommitCursorResponse\"\xa2\x01\n" +
+	"\x1bListPartitionCursorsRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&pubsublite.googleapis.com/SubscriptionR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +

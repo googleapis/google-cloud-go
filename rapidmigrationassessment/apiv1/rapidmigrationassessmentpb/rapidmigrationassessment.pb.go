@@ -872,27 +872,27 @@ var File_google_cloud_rapidmigrationassessment_v1_rapidmigrationassessment_proto
 
 const file_google_cloud_rapidmigrationassessment_v1_rapidmigrationassessment_proto_rawDesc = "" +
 	"\n" +
-	"Ggoogle/cloud/rapidmigrationassessment/v1/rapidmigrationassessment.proto\x12(google.cloud.rapidmigrationassessment.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a;google/cloud/rapidmigrationassessment/v1/api_entities.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdb\x01\n" +
-	"\x17CreateAnnotationRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12Y\n" +
+	"Ggoogle/cloud/rapidmigrationassessment/v1/rapidmigrationassessment.proto\x12(google.cloud.rapidmigrationassessment.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a;google/cloud/rapidmigrationassessment/v1/api_entities.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xde\x01\n" +
+	"\x17CreateAnnotationRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12Z\n" +
 	"\n" +
-	"annotation\x18\x02 \x01(\v24.google.cloud.rapidmigrationassessment.v1.AnnotationB\x03\xe0A\x02R\n" +
-	"annotation\x12\"\n" +
+	"annotation\x18\x02 \x01(\v24.google.cloud.rapidmigrationassessment.v1.AnnotationB\x04\xe2A\x01\x02R\n" +
+	"annotation\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"f\n" +
-	"\x14GetAnnotationRequest\x12N\n" +
-	"\x04name\x18\x01 \x01(\tB:\xe0A\x02\xfaA4\n" +
-	"2rapidmigrationassessment.googleapis.com/AnnotationR\x04name\"\xff\x01\n" +
-	"\x16CreateCollectorRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12&\n" +
-	"\fcollector_id\x18\x02 \x01(\tB\x03\xe0A\x02R\vcollectorId\x12V\n" +
-	"\tcollector\x18\x03 \x01(\v23.google.cloud.rapidmigrationassessment.v1.CollectorB\x03\xe0A\x02R\tcollector\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"g\n" +
+	"\x14GetAnnotationRequest\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB;\xe2A\x01\x02\xfaA4\n" +
+	"2rapidmigrationassessment.googleapis.com/AnnotationR\x04name\"\x83\x02\n" +
+	"\x16CreateCollectorRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12'\n" +
+	"\fcollector_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vcollectorId\x12W\n" +
+	"\tcollector\x18\x03 \x01(\v23.google.cloud.rapidmigrationassessment.v1.CollectorB\x04\xe2A\x01\x02R\tcollector\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xc9\x01\n" +
-	"\x15ListCollectorsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xca\x01\n" +
+	"\x15ListCollectorsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -904,45 +904,45 @@ const file_google_cloud_rapidmigrationassessment_v1_rapidmigrationassessment_pro
 	"collectors\x18\x01 \x03(\v23.google.cloud.rapidmigrationassessment.v1.CollectorR\n" +
 	"collectors\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"d\n" +
-	"\x13GetCollectorRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1rapidmigrationassessment.googleapis.com/CollectorR\x04name\"\x8b\x01\n" +
-	"\x16DeleteCollectorRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1rapidmigrationassessment.googleapis.com/CollectorR\x04name\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"e\n" +
+	"\x13GetCollectorRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1rapidmigrationassessment.googleapis.com/CollectorR\x04name\"\x8d\x01\n" +
+	"\x16DeleteCollectorRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1rapidmigrationassessment.googleapis.com/CollectorR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xd6\x01\n" +
-	"\x16UpdateCollectorRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\x12V\n" +
-	"\tcollector\x18\x02 \x01(\v23.google.cloud.rapidmigrationassessment.v1.CollectorB\x03\xe0A\x02R\tcollector\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xd9\x01\n" +
+	"\x16UpdateCollectorRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\x12W\n" +
+	"\tcollector\x18\x02 \x01(\v23.google.cloud.rapidmigrationassessment.v1.CollectorB\x04\xe2A\x01\x02R\tcollector\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\x8b\x01\n" +
-	"\x16ResumeCollectorRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1rapidmigrationassessment.googleapis.com/CollectorR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x8d\x01\n" +
+	"\x16ResumeCollectorRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1rapidmigrationassessment.googleapis.com/CollectorR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\x8d\x01\n" +
-	"\x18RegisterCollectorRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1rapidmigrationassessment.googleapis.com/CollectorR\x04name\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x8f\x01\n" +
+	"\x18RegisterCollectorRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1rapidmigrationassessment.googleapis.com/CollectorR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\x8a\x01\n" +
-	"\x15PauseCollectorRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1rapidmigrationassessment.googleapis.com/CollectorR\x04name\x12\"\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x8c\x01\n" +
+	"\x15PauseCollectorRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1rapidmigrationassessment.googleapis.com/CollectorR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xd5\x02\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12*\n" +
-	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
-	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xdc\x02\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12+\n" +
+	"\x0estatus_message\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\rstatusMessage\x12;\n" +
+	"\x16requested_cancellation\x18\x06 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\a \x01(\tB\x04\xe2A\x01\x03R\n" +
 	"apiVersion2\xb7\x12\n" +
 	"\x18RapidMigrationAssessment\x12\xf7\x01\n" +
 	"\x0fCreateCollector\x12@.google.cloud.rapidmigrationassessment.v1.CreateCollectorRequest\x1a\x1d.google.longrunning.Operation\"\x82\x01\xcaA\x1e\n" +

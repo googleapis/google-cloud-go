@@ -520,17 +520,17 @@ const file_google_cloud_securityposture_v1_org_policy_config_proto_rawDesc = "" 
 	"\fStringValues\x12%\n" +
 	"\x0eallowed_values\x18\x01 \x03(\tR\rallowedValues\x12#\n" +
 	"\rdenied_values\x18\x02 \x03(\tR\fdeniedValuesB\x06\n" +
-	"\x04kind\"\xcb\x04\n" +
-	"\x10CustomConstraint\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12*\n" +
-	"\x0eresource_types\x18\x02 \x03(\tB\x03\xe0A\x05R\rresourceTypes\x12_\n" +
+	"\x04kind\"\xce\x04\n" +
+	"\x10CustomConstraint\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12+\n" +
+	"\x0eresource_types\x18\x02 \x03(\tB\x04\xe2A\x01\x05R\rresourceTypes\x12_\n" +
 	"\fmethod_types\x18\x03 \x03(\x0e2<.google.cloud.securityposture.v1.CustomConstraint.MethodTypeR\vmethodTypes\x12\x1c\n" +
 	"\tcondition\x18\x04 \x01(\tR\tcondition\x12]\n" +
 	"\vaction_type\x18\x05 \x01(\x0e2<.google.cloud.securityposture.v1.CustomConstraint.ActionTypeR\n" +
 	"actionType\x12!\n" +
 	"\fdisplay_name\x18\x06 \x01(\tR\vdisplayName\x12 \n" +
-	"\vdescription\x18\a \x01(\tR\vdescription\x12@\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\vdescription\x18\a \x01(\tR\vdescription\x12A\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\"M\n" +
 	"\n" +
 	"MethodType\x12\x1b\n" +

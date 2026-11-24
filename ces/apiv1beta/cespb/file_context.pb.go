@@ -175,14 +175,14 @@ var File_google_cloud_ces_v1beta_file_context_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_file_context_proto_rawDesc = "" +
 	"\n" +
-	"*google/cloud/ces/v1beta/file_context.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\"\xd5\x01\n" +
-	"\vFileContext\x12T\n" +
+	"*google/cloud/ces/v1beta/file_context.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\"\xd9\x01\n" +
+	"\vFileContext\x12U\n" +
 	"\n" +
-	"file_bytes\x18\x01 \x01(\v2..google.cloud.ces.v1beta.FileContext.FileBytesB\x03\xe0A\x01H\x00R\tfileBytes\x1ah\n" +
-	"\tFileBytes\x12 \n" +
-	"\tfile_name\x18\x01 \x01(\tB\x03\xe0A\x02R\bfileName\x12 \n" +
-	"\tmime_type\x18\x02 \x01(\tB\x03\xe0A\x02R\bmimeType\x12\x17\n" +
-	"\x04data\x18\x03 \x01(\fB\x03\xe0A\x02R\x04dataB\x06\n" +
+	"file_bytes\x18\x01 \x01(\v2..google.cloud.ces.v1beta.FileContext.FileBytesB\x04\xe2A\x01\x01H\x00R\tfileBytes\x1ak\n" +
+	"\tFileBytes\x12!\n" +
+	"\tfile_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bfileName\x12!\n" +
+	"\tmime_type\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\bmimeType\x12\x18\n" +
+	"\x04data\x18\x03 \x01(\fB\x04\xe2A\x01\x02R\x04dataB\x06\n" +
 	"\x04fileB`\n" +
 	"\x1bcom.google.cloud.ces.v1betaB\x10FileContextProtoP\x01Z-cloud.google.com/go/ces/apiv1beta/cespb;cespbb\x06proto3"
 

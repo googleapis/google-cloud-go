@@ -3513,11 +3513,11 @@ const file_google_cloud_vision_v1_image_annotator_proto_rawDesc = "" +
 	"\rweb_detection\x18\r \x01(\v2$.google.cloud.vision.v1.WebDetectionR\fwebDetection\x12b\n" +
 	"\x16product_search_results\x18\x0e \x01(\v2,.google.cloud.vision.v1.ProductSearchResultsR\x14productSearchResults\x12(\n" +
 	"\x05error\x18\t \x01(\v2\x12.google.rpc.StatusR\x05error\x12H\n" +
-	"\acontext\x18\x15 \x01(\v2..google.cloud.vision.v1.ImageAnnotationContextR\acontext\"\x9b\x02\n" +
-	"\x1aBatchAnnotateImagesRequest\x12M\n" +
-	"\brequests\x18\x01 \x03(\v2,.google.cloud.vision.v1.AnnotateImageRequestB\x03\xe0A\x02R\brequests\x12\x16\n" +
-	"\x06parent\x18\x04 \x01(\tR\x06parent\x12[\n" +
-	"\x06labels\x18\x05 \x03(\v2>.google.cloud.vision.v1.BatchAnnotateImagesRequest.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a9\n" +
+	"\acontext\x18\x15 \x01(\v2..google.cloud.vision.v1.ImageAnnotationContextR\acontext\"\x9d\x02\n" +
+	"\x1aBatchAnnotateImagesRequest\x12N\n" +
+	"\brequests\x18\x01 \x03(\v2,.google.cloud.vision.v1.AnnotateImageRequestB\x04\xe2A\x01\x02R\brequests\x12\x16\n" +
+	"\x06parent\x18\x04 \x01(\tR\x06parent\x12\\\n" +
+	"\x06labels\x18\x05 \x03(\v2>.google.cloud.vision.v1.BatchAnnotateImagesRequest.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"j\n" +
@@ -3533,11 +3533,11 @@ const file_google_cloud_vision_v1_image_annotator_proto_rawDesc = "" +
 	"\tresponses\x18\x02 \x03(\v2-.google.cloud.vision.v1.AnnotateImageResponseR\tresponses\x12\x1f\n" +
 	"\vtotal_pages\x18\x03 \x01(\x05R\n" +
 	"totalPages\x12(\n" +
-	"\x05error\x18\x04 \x01(\v2\x12.google.rpc.StatusR\x05error\"\x98\x02\n" +
-	"\x19BatchAnnotateFilesRequest\x12L\n" +
-	"\brequests\x18\x01 \x03(\v2+.google.cloud.vision.v1.AnnotateFileRequestB\x03\xe0A\x02R\brequests\x12\x16\n" +
-	"\x06parent\x18\x03 \x01(\tR\x06parent\x12Z\n" +
-	"\x06labels\x18\x05 \x03(\v2=.google.cloud.vision.v1.BatchAnnotateFilesRequest.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a9\n" +
+	"\x05error\x18\x04 \x01(\v2\x12.google.rpc.StatusR\x05error\"\x9a\x02\n" +
+	"\x19BatchAnnotateFilesRequest\x12M\n" +
+	"\brequests\x18\x01 \x03(\v2+.google.cloud.vision.v1.AnnotateFileRequestB\x04\xe2A\x01\x02R\brequests\x12\x16\n" +
+	"\x06parent\x18\x03 \x01(\tR\x06parent\x12[\n" +
+	"\x06labels\x18\x05 \x03(\v2=.google.cloud.vision.v1.BatchAnnotateFilesRequest.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"h\n" +
@@ -3549,21 +3549,21 @@ const file_google_cloud_vision_v1_image_annotator_proto_rawDesc = "" +
 	"\rimage_context\x18\x03 \x01(\v2$.google.cloud.vision.v1.ImageContextR\fimageContext\x12I\n" +
 	"\routput_config\x18\x04 \x01(\v2$.google.cloud.vision.v1.OutputConfigR\foutputConfig\"f\n" +
 	"\x19AsyncAnnotateFileResponse\x12I\n" +
-	"\routput_config\x18\x01 \x01(\v2$.google.cloud.vision.v1.OutputConfigR\foutputConfig\"\xf5\x02\n" +
-	"\x1fAsyncBatchAnnotateImagesRequest\x12M\n" +
-	"\brequests\x18\x01 \x03(\v2,.google.cloud.vision.v1.AnnotateImageRequestB\x03\xe0A\x02R\brequests\x12N\n" +
-	"\routput_config\x18\x02 \x01(\v2$.google.cloud.vision.v1.OutputConfigB\x03\xe0A\x02R\foutputConfig\x12\x16\n" +
-	"\x06parent\x18\x04 \x01(\tR\x06parent\x12`\n" +
-	"\x06labels\x18\x05 \x03(\v2C.google.cloud.vision.v1.AsyncBatchAnnotateImagesRequest.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a9\n" +
+	"\routput_config\x18\x01 \x01(\v2$.google.cloud.vision.v1.OutputConfigR\foutputConfig\"\xf8\x02\n" +
+	"\x1fAsyncBatchAnnotateImagesRequest\x12N\n" +
+	"\brequests\x18\x01 \x03(\v2,.google.cloud.vision.v1.AnnotateImageRequestB\x04\xe2A\x01\x02R\brequests\x12O\n" +
+	"\routput_config\x18\x02 \x01(\v2$.google.cloud.vision.v1.OutputConfigB\x04\xe2A\x01\x02R\foutputConfig\x12\x16\n" +
+	"\x06parent\x18\x04 \x01(\tR\x06parent\x12a\n" +
+	"\x06labels\x18\x05 \x03(\v2C.google.cloud.vision.v1.AsyncBatchAnnotateImagesRequest.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"m\n" +
 	" AsyncBatchAnnotateImagesResponse\x12I\n" +
-	"\routput_config\x18\x01 \x01(\v2$.google.cloud.vision.v1.OutputConfigR\foutputConfig\"\xa7\x02\n" +
-	"\x1eAsyncBatchAnnotateFilesRequest\x12Q\n" +
-	"\brequests\x18\x01 \x03(\v20.google.cloud.vision.v1.AsyncAnnotateFileRequestB\x03\xe0A\x02R\brequests\x12\x16\n" +
-	"\x06parent\x18\x04 \x01(\tR\x06parent\x12_\n" +
-	"\x06labels\x18\x05 \x03(\v2B.google.cloud.vision.v1.AsyncBatchAnnotateFilesRequest.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a9\n" +
+	"\routput_config\x18\x01 \x01(\v2$.google.cloud.vision.v1.OutputConfigR\foutputConfig\"\xa9\x02\n" +
+	"\x1eAsyncBatchAnnotateFilesRequest\x12R\n" +
+	"\brequests\x18\x01 \x03(\v20.google.cloud.vision.v1.AsyncAnnotateFileRequestB\x04\xe2A\x01\x02R\brequests\x12\x16\n" +
+	"\x06parent\x18\x04 \x01(\tR\x06parent\x12`\n" +
+	"\x06labels\x18\x05 \x03(\v2B.google.cloud.vision.v1.AsyncBatchAnnotateFilesRequest.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"r\n" +

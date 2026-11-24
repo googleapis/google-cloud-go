@@ -390,9 +390,9 @@ var File_google_cloud_identitytoolkit_v2_authentication_service_proto protorefle
 
 const file_google_cloud_identitytoolkit_v2_authentication_service_proto_rawDesc = "" +
 	"\n" +
-	"<google/cloud/identitytoolkit/v2/authentication_service.proto\x12\x1fgoogle.cloud.identitytoolkit.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a.google/cloud/identitytoolkit/v2/mfa_info.proto\"\xff\x01\n" +
-	"\x18FinalizeMfaSignInRequest\x129\n" +
-	"\x16mfa_pending_credential\x18\x02 \x01(\tB\x03\xe0A\x02R\x14mfaPendingCredential\x12v\n" +
+	"<google/cloud/identitytoolkit/v2/authentication_service.proto\x12\x1fgoogle.cloud.identitytoolkit.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a.google/cloud/identitytoolkit/v2/mfa_info.proto\"\x80\x02\n" +
+	"\x18FinalizeMfaSignInRequest\x12:\n" +
+	"\x16mfa_pending_credential\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x14mfaPendingCredential\x12v\n" +
 	"\x17phone_verification_info\x18\x03 \x01(\v2<.google.cloud.identitytoolkit.v2.FinalizeMfaPhoneRequestInfoH\x00R\x15phoneVerificationInfo\x12\x1b\n" +
 	"\ttenant_id\x18\x04 \x01(\tR\btenantIdB\x13\n" +
 	"\x11verification_info\"\xdb\x01\n" +
@@ -400,10 +400,10 @@ const file_google_cloud_identitytoolkit_v2_authentication_service_proto_rawDesc 
 	"\bid_token\x18\x01 \x01(\tR\aidToken\x12#\n" +
 	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken\x12g\n" +
 	"\x0fphone_auth_info\x18\x03 \x01(\v2=.google.cloud.identitytoolkit.v2.FinalizeMfaPhoneResponseInfoH\x00R\rphoneAuthInfoB\x15\n" +
-	"\x13auxiliary_auth_info\"\x9a\x02\n" +
-	"\x15StartMfaSignInRequest\x129\n" +
-	"\x16mfa_pending_credential\x18\x02 \x01(\tB\x03\xe0A\x02R\x14mfaPendingCredential\x12/\n" +
-	"\x11mfa_enrollment_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x0fmfaEnrollmentId\x12h\n" +
+	"\x13auxiliary_auth_info\"\x9c\x02\n" +
+	"\x15StartMfaSignInRequest\x12:\n" +
+	"\x16mfa_pending_credential\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x14mfaPendingCredential\x120\n" +
+	"\x11mfa_enrollment_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0fmfaEnrollmentId\x12h\n" +
 	"\x12phone_sign_in_info\x18\x04 \x01(\v29.google.cloud.identitytoolkit.v2.StartMfaPhoneRequestInfoH\x00R\x0fphoneSignInInfo\x12\x1b\n" +
 	"\ttenant_id\x18\x05 \x01(\tR\btenantIdB\x0e\n" +
 	"\fsign_in_info\"\x97\x01\n" +

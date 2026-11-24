@@ -192,10 +192,10 @@ var File_google_cloud_talent_v4beta1_tenant_proto protoreflect.FileDescriptor
 
 const file_google_cloud_talent_v4beta1_tenant_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/talent/v4beta1/tenant.proto\x12\x1bgoogle.cloud.talent.v4beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x8a\x03\n" +
+	"(google/cloud/talent/v4beta1/tenant.proto\x12\x1bgoogle.cloud.talent.v4beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x8b\x03\n" +
 	"\x06Tenant\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12$\n" +
-	"\vexternal_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12%\n" +
+	"\vexternal_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"externalId\x12P\n" +
 	"\n" +
 	"usage_type\x18\x03 \x01(\x0e21.google.cloud.talent.v4beta1.Tenant.DataUsageTypeR\tusageType\x12^\n" +

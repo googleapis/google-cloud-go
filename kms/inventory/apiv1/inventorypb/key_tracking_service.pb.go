@@ -696,11 +696,11 @@ var File_google_cloud_kms_inventory_v1_key_tracking_service_proto protoreflect.F
 
 const file_google_cloud_kms_inventory_v1_key_tracking_service_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/kms/inventory/v1/key_tracking_service.proto\x12\x1dgoogle.cloud.kms.inventory.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd2\x01\n" +
-	"#GetProtectedResourcesSummaryRequest\x12Q\n" +
-	"\x04name\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\n" +
-	"5kmsinventory.googleapis.com/ProtectedResourcesSummaryR\x04name\x12X\n" +
-	"\x0efallback_scope\x18\x02 \x01(\x0e2,.google.cloud.kms.inventory.v1.FallbackScopeB\x03\xe0A\x01R\rfallbackScope\"\x94\b\n" +
+	"8google/cloud/kms/inventory/v1/key_tracking_service.proto\x12\x1dgoogle.cloud.kms.inventory.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd4\x01\n" +
+	"#GetProtectedResourcesSummaryRequest\x12R\n" +
+	"\x04name\x18\x01 \x01(\tB>\xe2A\x01\x02\xfaA7\n" +
+	"5kmsinventory.googleapis.com/ProtectedResourcesSummaryR\x04name\x12Y\n" +
+	"\x0efallback_scope\x18\x02 \x01(\x0e2,.google.cloud.kms.inventory.v1.FallbackScopeB\x04\xe2A\x01\x01R\rfallbackScope\"\x94\b\n" +
 	"\x19ProtectedResourcesSummary\x12\x12\n" +
 	"\x04name\x18\x05 \x01(\tR\x04name\x12%\n" +
 	"\x0eresource_count\x18\x01 \x01(\x03R\rresourceCount\x12#\n" +
@@ -718,19 +718,20 @@ const file_google_cloud_kms_inventory_v1_key_tracking_service_proto_rawDesc = ""
 	"\x0eLocationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x01:\xc1\x02\xeaA\xbd\x02\n" +
-	"5kmsinventory.googleapis.com/ProtectedResourcesSummary\x12mprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}/protectedResourcesSummary\x12\x94\x01projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}/cryptoKeyVersions/{crypto_key_version}/protectedResourcesSummary\"\x85\x02\n" +
-	"\x1fSearchProtectedResourcesRequest\x12P\n" +
-	"\x05scope\x18\x02 \x01(\tB:\xe0A\x02\xfaA4\x122kmsinventory.googleapis.com/ProtectedResourceScopeR\x05scope\x12(\n" +
+	"5kmsinventory.googleapis.com/ProtectedResourcesSummary\x12mprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}/protectedResourcesSummary\x12\x94\x01projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}/cryptoKeyVersions/{crypto_key_version}/protectedResourcesSummary\"\x88\x02\n" +
+	"\x1fSearchProtectedResourcesRequest\x12Q\n" +
+	"\x05scope\x18\x02 \x01(\tB;\xe2A\x01\x02\xfaA4\x122kmsinventory.googleapis.com/ProtectedResourceScopeR\x05scope\x12)\n" +
 	"\n" +
-	"crypto_key\x18\x01 \x01(\tB\t\xe0A\x02\xfaA\x03\n" +
+	"crypto_key\x18\x01 \x01(\tB\n" +
+	"\xe2A\x01\x02\xfaA\x03\n" +
 	"\x01*R\tcryptoKey\x12\x1b\n" +
 	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tR\tpageToken\x12*\n" +
-	"\x0eresource_types\x18\x05 \x03(\tB\x03\xe0A\x01R\rresourceTypes\"\xad\x01\n" +
+	"page_token\x18\x04 \x01(\tR\tpageToken\x12+\n" +
+	"\x0eresource_types\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\rresourceTypes\"\xad\x01\n" +
 	" SearchProtectedResourcesResponse\x12a\n" +
 	"\x13protected_resources\x18\x01 \x03(\v20.google.cloud.kms.inventory.v1.ProtectedResourceR\x12protectedResources\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xfe\x04\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xff\x04\n" +
 	"\x11ProtectedResource\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1d\n" +
@@ -744,8 +745,8 @@ const file_google_cloud_kms_inventory_v1_key_tracking_service_proto_rawDesc = ""
 	"(cloudkms.googleapis.com/CryptoKeyVersionR\x10cryptoKeyVersion\x12]\n" +
 	"\x13crypto_key_versions\x18\n" +
 	" \x03(\tB-\xfaA*\n" +
-	"(cloudkms.googleapis.com/CryptoKeyVersionR\x11cryptoKeyVersions\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"(cloudkms.googleapis.com/CryptoKeyVersionR\x11cryptoKeyVersions\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +

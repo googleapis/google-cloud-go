@@ -17,6 +17,7 @@ package storage
 import (
 	"context"
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -30,7 +31,7 @@ import (
 
 const (
 	defaultPartSize      = 16 * 1024 * 1024 // 16 MiB
-	minPartSize          = 5 * 1024 * 1024  // 5 MiB
+	minPartSize          = 8 * 1024 * 1024  // 8 MiB
 	baseWorkers          = 4
 	maxWorkers           = 16
 	tmpObjectPrefix      = "gcs-go-sdk-pu-tmp/"
@@ -47,14 +48,12 @@ const (
 //
 // **Note:** This feature is currently experimental and its API surface may change
 // in future releases. It is not yet recommended for production use.
-//
-// TODO(b/521239530): Add option to delete source parts after compose operation and remove cleanup logic.
 type ParallelUploadConfig struct {
 
-	// PartSize is the size of each part to be uploaded in parallel.
-	// Defaults to 16MiB. If a value less than 5MiB is provided, it will be
-	// automatically increased to 5MiB. The value is automatically rounded up
-	// to the nearest multiple of 256KiB.
+	// PartSize is the requested size of each part to be uploaded in parallel.
+	// The server may determine an actual part size closer to the requested one.
+	// Defaults to 16MiB. If a value less than 8MiB is provided, it will be
+	// automatically increased to 8MiB.
 	PartSize int
 
 	// MaxConcurrency is the number of goroutines to use for uploading parts in parallel.
@@ -92,10 +91,28 @@ func newPCUSettings(maxConcurrency int) *pcuSettings {
 	return c
 }
 
+const partNameDigestBytes = 8
+
+// objectNameDigest returns a short hex SHA-256 digest of name so temporary
+// part keys remain under the 1024-byte object-name limit and never interpret
+// slashes or dot segments in name.
+func objectNameDigest(name string) string {
+	sum := sha256.Sum256([]byte(name))
+	return hex.EncodeToString(sum[:partNameDigestBytes])
+}
+
 // newPartName creates a unique name for a temporary part to avoid hotspotting.
-func newPartName(bucket, prefix, finalName string, partNumber int) string {
+func newPartName(prefix, finalName string, partNumber int) string {
 	rnd := generateRandomBytes(4)
-	return path.Join(prefix, fmt.Sprintf("%x-%s-part-%d", rnd, finalName, partNumber))
+	return path.Join(prefix, fmt.Sprintf("%x-%s-part-%d", rnd, objectNameDigest(finalName), partNumber))
+}
+
+// pinGeneration pins h to attrs.Generation so compose and cleanup touch only this upload's object.
+func pinGeneration(h *ObjectHandle, attrs *ObjectAttrs) *ObjectHandle {
+	if attrs == nil || attrs.Generation <= 0 {
+		return h
+	}
+	return h.Generation(attrs.Generation)
 }
 
 type pcuState struct {
@@ -118,13 +135,14 @@ type pcuState struct {
 	bytesBuffered   int64
 	buffersAlloc    int
 
-	bufferCh    chan []byte
-	uploadCh    chan uploadTask
-	resultCh    chan uploadResult
-	workerWG    sync.WaitGroup
-	collectorWG sync.WaitGroup
-	started     bool
-	closeOnce   sync.Once
+	bufferCh              chan []byte
+	uploadCh              chan uploadTask
+	resultCh              chan uploadResult
+	workerWG              sync.WaitGroup
+	collectorWG           sync.WaitGroup
+	started               bool
+	closeOnce             sync.Once
+	finalComposeSucceeded bool
 
 	// Function to upload a part; can be overridden for testing.
 	uploadPartFn func(s *pcuState, task uploadTask) (*ObjectHandle, *ObjectAttrs, error)
@@ -157,6 +175,13 @@ func (w *Writer) initPCU(ctx context.Context) error {
 		return nil
 	}
 
+	cfg := &w.ParallelUploadConfig
+	cfg.defaults()
+
+	// Ensure PartSize is a multiple of googleapi.MinUploadChunkSize.
+	cfg.PartSize = gRPCChunkSize(cfg.PartSize)
+	recordWriterTraceAttributes(ctx, w)
+
 	if len(w.MD5) > 0 {
 		return errors.New("storage: MD5 checksums are not supported with parallel uploads")
 	}
@@ -172,12 +197,6 @@ func (w *Writer) initPCU(ctx context.Context) error {
 	if w.o.gen != defaultGen {
 		return fmt.Errorf("storage: generation supported on Writer for appendable objects only, got %v", w.o.gen)
 	}
-
-	cfg := &w.ParallelUploadConfig
-	cfg.defaults()
-
-	// Ensure PartSize is a multiple of googleapi.MinUploadChunkSize.
-	cfg.PartSize = gRPCChunkSize(cfg.PartSize)
 
 	s := newPCUSettings(cfg.MaxConcurrency)
 
@@ -270,12 +289,14 @@ func (s *pcuState) worker() {
 }
 
 func (s *pcuState) uploadPart(task uploadTask) (*ObjectHandle, *ObjectAttrs, error) {
-	partName := newPartName(s.w.o.bucket, tmpObjectPrefix, s.w.o.object, task.partNumber)
+	partName := newPartName(tmpObjectPrefix, s.w.o.object, task.partNumber)
 	partHandle := s.w.o.c.Bucket(s.w.o.bucket).Object(partName)
 
-	pw := partHandle.NewWriter(s.ctx)
+	// Compose sources must not carry a key, so only the write handle is keyed.
+	pw := partHandle.Key(s.w.o.encryptionKey).NewWriter(s.ctx)
 	pw.ObjectAttrs.Name = partName
 	pw.ObjectAttrs.Size = task.size
+	pw.ObjectAttrs.KMSKeyName = s.w.ObjectAttrs.KMSKeyName
 	pw.DisableAutoChecksum = s.w.DisableAutoChecksum
 	pw.ChunkSize = 0 // Force single-shot upload for parts.
 
@@ -297,8 +318,9 @@ func (s *pcuState) resultCollector() {
 		if result.err != nil {
 			s.setError(result.err)
 		} else if result.handle != nil {
+			h := pinGeneration(result.handle, result.obj)
 			s.mu.Lock()
-			s.partMap[result.partNumber] = result.handle
+			s.partMap[result.partNumber] = h
 			s.mu.Unlock()
 
 			cumulativeSize += result.size
@@ -442,9 +464,19 @@ func (s *pcuState) close() error {
 		close(s.resultCh)
 		s.collectorWG.Wait()
 
-		// Cleanup is always attempted. We do it in the background to not block returning.
+		// Manual cleanup is attempted unless the final compose succeeded. On success,
+		// the compose operations delete the source parts automatically (via
+		// DeleteSourceObjects = true). The check must not depend on firstErr, since
+		// setError ignores context.Canceled and a cancelled upload would otherwise
+		// leak its temporary parts. doCleanup uses a context detached from
+		// cancellation. We do it in the background to not block returning.
 		defer func() {
-			go s.doCleanupFn(s)
+			s.mu.Lock()
+			finalSucceeded := s.finalComposeSucceeded
+			s.mu.Unlock()
+			if !finalSucceeded {
+				go s.doCleanupFn(s)
+			}
 		}()
 
 		s.mu.Lock()
@@ -524,14 +556,20 @@ func (s *pcuState) composeParts() error {
 				compName := path.Join(tmpObjectPrefix, fmt.Sprintf("int-%s-lv%d-%d", h, level, idx))
 
 				interHandle := s.w.o.c.Bucket(s.w.o.bucket).Object(compName)
-				composer := interHandle.ComposerFrom(finalComps[start:end]...)
+				// DoesNotExist makes the compose idempotent so transient errors are retried.
+				// It's set on a copy so interHandle (later used as a compose source and
+				// cleanup target) carries no precondition.
+				dst := interHandle.If(Conditions{DoesNotExist: true}).Key(s.w.o.encryptionKey)
+				composer := dst.ComposerFrom(finalComps[start:end]...)
+				composer.KMSKeyName = s.w.ObjectAttrs.KMSKeyName
+				composer.DeleteSourceObjects = true
 
-				_, err := s.composeFn(s.ctx, composer)
+				interAttrs, err := s.composeFn(s.ctx, composer)
 				if err != nil {
 					errOnce.Do(func() { levelErr = err })
 					return
 				}
-				nextLevel[idx] = interHandle
+				nextLevel[idx] = pinGeneration(interHandle, interAttrs)
 			}(i)
 		}
 		wg.Wait()
@@ -555,15 +593,20 @@ func (s *pcuState) composeParts() error {
 	composer.ObjectAttrs = s.w.ObjectAttrs
 	composer.KMSKeyName = s.w.ObjectAttrs.KMSKeyName
 	composer.SendCRC32C = s.w.SendCRC32C
+	composer.DeleteSourceObjects = true
 
 	attrs, err := s.composeFn(s.ctx, composer)
 	if err != nil {
 		return err
 	}
 
+	s.mu.Lock()
+	s.finalComposeSucceeded = true
+	s.mu.Unlock()
+
 	// Perform client-side CRC32C validation if a user-provided checksum was specified.
 	if s.w.SendCRC32C && s.w.CRC32C != 0 && attrs.CRC32C != s.w.CRC32C {
-		return fmt.Errorf("storage: object was uploaded, but its CRC32C (%d) does not match the expected CRC32C (%d)", attrs.CRC32C, s.w.CRC32C)
+		return fmt.Errorf("storage: object was uploaded, but its CRC32C (%d) does not match the expected CRC32C (%d): %w", attrs.CRC32C, s.w.CRC32C, errChecksumMismatch)
 	}
 
 	s.w.obj = attrs
@@ -590,8 +633,10 @@ func (s *pcuState) doCleanup() {
 		cleanupCtx, cancel := context.WithTimeout(context.WithoutCancel(s.ctx), 5*time.Minute)
 		defer cancel()
 		// Only log cleanup errors here since its best effort and will rely on bucket
-		// lifecycle policies if cleanup fails.
-		if err := s.deleteFn(cleanupCtx, h); err != nil {
+		// lifecycle policies if cleanup fails. Objects that no longer exist were
+		// already removed by a successful compose with DeleteSourceObjects, so
+		// they are not reported.
+		if err := s.deleteFn(cleanupCtx, h); err != nil && !errors.Is(err, ErrObjectNotExist) {
 			log.Printf("storage: failed to delete temporary part %q during parallel upload cleanup: %v", h.object, err)
 		}
 	}

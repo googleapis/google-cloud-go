@@ -946,50 +946,50 @@ var File_google_cloud_notebooks_v1beta1_instance_proto protoreflect.FileDescript
 
 const file_google_cloud_notebooks_v1beta1_instance_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/notebooks/v1beta1/instance.proto\x12\x1egoogle.cloud.notebooks.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/notebooks/v1beta1/environment.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa3\x02\n" +
-	"\x13ReservationAffinity\x12w\n" +
-	"\x18consume_reservation_type\x18\x01 \x01(\x0e28.google.cloud.notebooks.v1beta1.ReservationAffinity.TypeB\x03\xe0A\x01R\x16consumeReservationType\x12\x15\n" +
-	"\x03key\x18\x02 \x01(\tB\x03\xe0A\x01R\x03key\x12\x1b\n" +
-	"\x06values\x18\x03 \x03(\tB\x03\xe0A\x01R\x06values\"_\n" +
+	"-google/cloud/notebooks/v1beta1/instance.proto\x12\x1egoogle.cloud.notebooks.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/notebooks/v1beta1/environment.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa6\x02\n" +
+	"\x13ReservationAffinity\x12x\n" +
+	"\x18consume_reservation_type\x18\x01 \x01(\x0e28.google.cloud.notebooks.v1beta1.ReservationAffinity.TypeB\x04\xe2A\x01\x01R\x16consumeReservationType\x12\x16\n" +
+	"\x03key\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x03key\x12\x1c\n" +
+	"\x06values\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\x06values\"_\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eNO_RESERVATION\x10\x01\x12\x13\n" +
 	"\x0fANY_RESERVATION\x10\x02\x12\x18\n" +
-	"\x14SPECIFIC_RESERVATION\x10\x03\"\x95\x16\n" +
-	"\bInstance\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12D\n" +
+	"\x14SPECIFIC_RESERVATION\x10\x03\"\xa6\x16\n" +
+	"\bInstance\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12D\n" +
 	"\bvm_image\x18\x02 \x01(\v2'.google.cloud.notebooks.v1beta1.VmImageH\x00R\avmImage\x12Y\n" +
 	"\x0fcontainer_image\x18\x03 \x01(\v2..google.cloud.notebooks.v1beta1.ContainerImageH\x00R\x0econtainerImage\x12.\n" +
-	"\x13post_startup_script\x18\x04 \x01(\tR\x11postStartupScript\x12 \n" +
-	"\tproxy_uri\x18\x05 \x01(\tB\x03\xe0A\x03R\bproxyUri\x12,\n" +
-	"\x0finstance_owners\x18\x06 \x03(\tB\x03\xe0A\x04R\x0einstanceOwners\x12'\n" +
-	"\x0fservice_account\x18\a \x01(\tR\x0eserviceAccount\x12&\n" +
-	"\fmachine_type\x18\b \x01(\tB\x03\xe0A\x02R\vmachineType\x12i\n" +
-	"\x12accelerator_config\x18\t \x01(\v2:.google.cloud.notebooks.v1beta1.Instance.AcceleratorConfigR\x11acceleratorConfig\x12I\n" +
+	"\x13post_startup_script\x18\x04 \x01(\tR\x11postStartupScript\x12!\n" +
+	"\tproxy_uri\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\bproxyUri\x12-\n" +
+	"\x0finstance_owners\x18\x06 \x03(\tB\x04\xe2A\x01\x04R\x0einstanceOwners\x12'\n" +
+	"\x0fservice_account\x18\a \x01(\tR\x0eserviceAccount\x12'\n" +
+	"\fmachine_type\x18\b \x01(\tB\x04\xe2A\x01\x02R\vmachineType\x12i\n" +
+	"\x12accelerator_config\x18\t \x01(\v2:.google.cloud.notebooks.v1beta1.Instance.AcceleratorConfigR\x11acceleratorConfig\x12J\n" +
 	"\x05state\x18\n" +
-	" \x01(\x0e2..google.cloud.notebooks.v1beta1.Instance.StateB\x03\xe0A\x03R\x05state\x12,\n" +
+	" \x01(\x0e2..google.cloud.notebooks.v1beta1.Instance.StateB\x04\xe2A\x01\x03R\x05state\x12,\n" +
 	"\x12install_gpu_driver\x18\v \x01(\bR\x10installGpuDriver\x123\n" +
-	"\x16custom_gpu_driver_path\x18\f \x01(\tR\x13customGpuDriverPath\x12\\\n" +
-	"\x0eboot_disk_type\x18\r \x01(\x0e21.google.cloud.notebooks.v1beta1.Instance.DiskTypeB\x03\xe0A\x04R\fbootDiskType\x12.\n" +
-	"\x11boot_disk_size_gb\x18\x0e \x01(\x03B\x03\xe0A\x04R\x0ebootDiskSizeGb\x12\\\n" +
-	"\x0edata_disk_type\x18\x19 \x01(\x0e21.google.cloud.notebooks.v1beta1.Instance.DiskTypeB\x03\xe0A\x04R\fdataDiskType\x12.\n" +
-	"\x11data_disk_size_gb\x18\x1a \x01(\x03B\x03\xe0A\x04R\x0edataDiskSizeGb\x122\n" +
-	"\x13no_remove_data_disk\x18\x1b \x01(\bB\x03\xe0A\x04R\x10noRemoveDataDisk\x12e\n" +
-	"\x0fdisk_encryption\x18\x0f \x01(\x0e27.google.cloud.notebooks.v1beta1.Instance.DiskEncryptionB\x03\xe0A\x04R\x0ediskEncryption\x12\x1c\n" +
-	"\akms_key\x18\x10 \x01(\tB\x03\xe0A\x04R\x06kmsKey\x12 \n" +
+	"\x16custom_gpu_driver_path\x18\f \x01(\tR\x13customGpuDriverPath\x12]\n" +
+	"\x0eboot_disk_type\x18\r \x01(\x0e21.google.cloud.notebooks.v1beta1.Instance.DiskTypeB\x04\xe2A\x01\x04R\fbootDiskType\x12/\n" +
+	"\x11boot_disk_size_gb\x18\x0e \x01(\x03B\x04\xe2A\x01\x04R\x0ebootDiskSizeGb\x12]\n" +
+	"\x0edata_disk_type\x18\x19 \x01(\x0e21.google.cloud.notebooks.v1beta1.Instance.DiskTypeB\x04\xe2A\x01\x04R\fdataDiskType\x12/\n" +
+	"\x11data_disk_size_gb\x18\x1a \x01(\x03B\x04\xe2A\x01\x04R\x0edataDiskSizeGb\x123\n" +
+	"\x13no_remove_data_disk\x18\x1b \x01(\bB\x04\xe2A\x01\x04R\x10noRemoveDataDisk\x12f\n" +
+	"\x0fdisk_encryption\x18\x0f \x01(\x0e27.google.cloud.notebooks.v1beta1.Instance.DiskEncryptionB\x04\xe2A\x01\x04R\x0ediskEncryption\x12\x1d\n" +
+	"\akms_key\x18\x10 \x01(\tB\x04\xe2A\x01\x04R\x06kmsKey\x12 \n" +
 	"\fno_public_ip\x18\x11 \x01(\bR\n" +
 	"noPublicIp\x12&\n" +
 	"\x0fno_proxy_access\x18\x12 \x01(\bR\rnoProxyAccess\x12\x18\n" +
 	"\anetwork\x18\x13 \x01(\tR\anetwork\x12\x16\n" +
 	"\x06subnet\x18\x14 \x01(\tR\x06subnet\x12L\n" +
 	"\x06labels\x18\x15 \x03(\v24.google.cloud.notebooks.v1beta1.Instance.LabelsEntryR\x06labels\x12R\n" +
-	"\bmetadata\x18\x16 \x03(\v26.google.cloud.notebooks.v1beta1.Instance.MetadataEntryR\bmetadata\x12P\n" +
-	"\bnic_type\x18\x1c \x01(\x0e20.google.cloud.notebooks.v1beta1.Instance.NicTypeB\x03\xe0A\x01R\anicType\x12k\n" +
-	"\x14reservation_affinity\x18\x1d \x01(\v23.google.cloud.notebooks.v1beta1.ReservationAffinityB\x03\xe0A\x01R\x13reservationAffinity\x12)\n" +
-	"\x0ecan_ip_forward\x18\x1f \x01(\bB\x03\xe0A\x01R\fcanIpForward\x12@\n" +
-	"\vcreate_time\x18\x17 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x18 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\bmetadata\x18\x16 \x03(\v26.google.cloud.notebooks.v1beta1.Instance.MetadataEntryR\bmetadata\x12Q\n" +
+	"\bnic_type\x18\x1c \x01(\x0e20.google.cloud.notebooks.v1beta1.Instance.NicTypeB\x04\xe2A\x01\x01R\anicType\x12l\n" +
+	"\x14reservation_affinity\x18\x1d \x01(\v23.google.cloud.notebooks.v1beta1.ReservationAffinityB\x04\xe2A\x01\x01R\x13reservationAffinity\x12*\n" +
+	"\x0ecan_ip_forward\x18\x1f \x01(\bB\x04\xe2A\x01\x01R\fcanIpForward\x12A\n" +
+	"\vcreate_time\x18\x17 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x18 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x1a\x80\x01\n" +
 	"\x11AcceleratorConfig\x12L\n" +
 	"\x04type\x18\x01 \x01(\x0e28.google.cloud.notebooks.v1beta1.Instance.AcceleratorTypeR\x04type\x12\x1d\n" +

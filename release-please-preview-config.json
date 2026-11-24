@@ -1,0 +1,18 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "draft-pull-request": true,
+  "include-component-in-tag": true,
+  "packages": {
+    "preview/internal/compute": {
+      "component": "compute",
+      "prerelease": true,
+      "prerelease-type": "preview"
+    }
+  },
+  "plugins": [
+    "sentence-case"
+  ],
+  "release-type": "go-librarian",
+  "separate-pull-requests": true,
+  "tag-separator": "/"
+}

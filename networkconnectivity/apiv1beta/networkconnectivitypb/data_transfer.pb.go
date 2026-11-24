@@ -1900,82 +1900,82 @@ var File_google_cloud_networkconnectivity_v1beta_data_transfer_proto protoreflec
 
 const file_google_cloud_networkconnectivity_v1beta_data_transfer_proto_rawDesc = "" +
 	"\n" +
-	";google/cloud/networkconnectivity/v1beta/data_transfer.proto\x12'google.cloud.networkconnectivity.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/networkconnectivity/v1beta/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8e\b\n" +
-	"\x1cMulticloudDataTransferConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12n\n" +
-	"\x06labels\x18\x04 \x03(\v2Q.google.cloud.networkconnectivity.v1beta.MulticloudDataTransferConfig.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x12\n" +
-	"\x04etag\x18\x05 \x01(\tR\x04etag\x12%\n" +
-	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x01R\vdescription\x122\n" +
-	"\x12destinations_count\x18\a \x01(\x05B\x03\xe0A\x03R\x11destinationsCount\x12?\n" +
-	"\x19destinations_active_count\x18\b \x01(\x05B\x03\xe0A\x03R\x17destinationsActiveCount\x12t\n" +
-	"\bservices\x18\t \x03(\v2S.google.cloud.networkconnectivity.v1beta.MulticloudDataTransferConfig.ServicesEntryB\x03\xe0A\x01R\bservices\x12\x1d\n" +
+	";google/cloud/networkconnectivity/v1beta/data_transfer.proto\x12'google.cloud.networkconnectivity.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/networkconnectivity/v1beta/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x97\b\n" +
+	"\x1cMulticloudDataTransferConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12o\n" +
+	"\x06labels\x18\x04 \x03(\v2Q.google.cloud.networkconnectivity.v1beta.MulticloudDataTransferConfig.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12\x12\n" +
+	"\x04etag\x18\x05 \x01(\tR\x04etag\x12&\n" +
+	"\vdescription\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x123\n" +
+	"\x12destinations_count\x18\a \x01(\x05B\x04\xe2A\x01\x03R\x11destinationsCount\x12@\n" +
+	"\x19destinations_active_count\x18\b \x01(\x05B\x04\xe2A\x01\x03R\x17destinationsActiveCount\x12u\n" +
+	"\bservices\x18\t \x03(\v2S.google.cloud.networkconnectivity.v1beta.MulticloudDataTransferConfig.ServicesEntryB\x04\xe2A\x01\x01R\bservices\x12\x1e\n" +
 	"\x03uid\x18\n" +
-	" \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x1a9\n" +
+	" \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1as\n" +
 	"\rServicesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12L\n" +
 	"\x05value\x18\x02 \x01(\v26.google.cloud.networkconnectivity.v1beta.StateTimelineR\x05value:\x028\x01:\xeb\x01\xeaA\xe7\x01\n" +
-	"?networkconnectivity.googleapis.com/MulticloudDataTransferConfig\x12gprojects/{project}/locations/{location}/multicloudDataTransferConfigs/{multicloud_data_transfer_config}*\x1dmulticloudDataTransferConfigs2\x1cmulticloudDataTransferConfig\"\xab\x02\n" +
-	"(ListMulticloudDataTransferConfigsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"?networkconnectivity.googleapis.com/MulticloudDataTransferConfig\x12gprojects/{project}/locations/{location}/multicloudDataTransferConfigs/{multicloud_data_transfer_config}*\x1dmulticloudDataTransferConfigs2\x1cmulticloudDataTransferConfig\"\xb1\x02\n" +
+	"(ListMulticloudDataTransferConfigsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\x129\n" +
-	"\x16return_partial_success\x18\x06 \x01(\bB\x03\xe0A\x01R\x14returnPartialSuccess\"\x86\x02\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12:\n" +
+	"\x16return_partial_success\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x14returnPartialSuccess\"\x86\x02\n" +
 	")ListMulticloudDataTransferConfigsResponse\x12\x8e\x01\n" +
 	" multicloud_data_transfer_configs\x18\x01 \x03(\v2E.google.cloud.networkconnectivity.v1beta.MulticloudDataTransferConfigR\x1dmulticloudDataTransferConfigs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x85\x01\n" +
-	"&GetMulticloudDataTransferConfigRequest\x12[\n" +
-	"\x04name\x18\x01 \x01(\tBG\xe0A\x02\xfaAA\n" +
-	"?networkconnectivity.googleapis.com/MulticloudDataTransferConfigR\x04name\"\xff\x02\n" +
-	")CreateMulticloudDataTransferConfigRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12O\n" +
-	"\"multicloud_data_transfer_config_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x1emulticloudDataTransferConfigId\x12\x91\x01\n" +
-	"\x1fmulticloud_data_transfer_config\x18\x03 \x01(\v2E.google.cloud.networkconnectivity.v1beta.MulticloudDataTransferConfigB\x03\xe0A\x02R\x1cmulticloudDataTransferConfig\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x86\x01\n" +
+	"&GetMulticloudDataTransferConfigRequest\x12\\\n" +
+	"\x04name\x18\x01 \x01(\tBH\xe2A\x01\x02\xfaAA\n" +
+	"?networkconnectivity.googleapis.com/MulticloudDataTransferConfigR\x04name\"\x83\x03\n" +
+	")CreateMulticloudDataTransferConfigRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12P\n" +
+	"\"multicloud_data_transfer_config_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x1emulticloudDataTransferConfigId\x12\x92\x01\n" +
+	"\x1fmulticloud_data_transfer_config\x18\x03 \x01(\v2E.google.cloud.networkconnectivity.v1beta.MulticloudDataTransferConfigB\x04\xe2A\x01\x02R\x1cmulticloudDataTransferConfig\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xad\x02\n" +
-	")UpdateMulticloudDataTransferConfigRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12\x91\x01\n" +
-	"\x1fmulticloud_data_transfer_config\x18\x02 \x01(\v2E.google.cloud.networkconnectivity.v1beta.MulticloudDataTransferConfigB\x03\xe0A\x02R\x1cmulticloudDataTransferConfig\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xb0\x02\n" +
+	")UpdateMulticloudDataTransferConfigRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12\x92\x01\n" +
+	"\x1fmulticloud_data_transfer_config\x18\x02 \x01(\v2E.google.cloud.networkconnectivity.v1beta.MulticloudDataTransferConfigB\x04\xe2A\x01\x02R\x1cmulticloudDataTransferConfig\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xcd\x01\n" +
-	")DeleteMulticloudDataTransferConfigRequest\x12[\n" +
-	"\x04name\x18\x01 \x01(\tBG\xe0A\x02\xfaAA\n" +
-	"?networkconnectivity.googleapis.com/MulticloudDataTransferConfigR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd0\x01\n" +
+	")DeleteMulticloudDataTransferConfigRequest\x12\\\n" +
+	"\x04name\x18\x01 \x01(\tBH\xe2A\x01\x02\xfaAA\n" +
+	"?networkconnectivity.googleapis.com/MulticloudDataTransferConfigR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\"\x99\t\n" +
-	"\vDestination\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12]\n" +
-	"\x06labels\x18\x04 \x03(\v2@.google.cloud.networkconnectivity.v1beta.Destination.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x12\n" +
-	"\x04etag\x18\x05 \x01(\tR\x04etag\x12%\n" +
-	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x01R\vdescription\x12#\n" +
-	"\tip_prefix\x18\a \x01(\tB\x06\xe0A\x02\xe0A\x05R\bipPrefix\x12n\n" +
-	"\tendpoints\x18\b \x03(\v2H.google.cloud.networkconnectivity.v1beta.Destination.DestinationEndpointB\x06\xe0A\x06\xe0A\x02R\tendpoints\x12b\n" +
-	"\x0estate_timeline\x18\t \x01(\v26.google.cloud.networkconnectivity.v1beta.StateTimelineB\x03\xe0A\x03R\rstateTimeline\x12\x1d\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\xa2\t\n" +
+	"\vDestination\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12^\n" +
+	"\x06labels\x18\x04 \x03(\v2@.google.cloud.networkconnectivity.v1beta.Destination.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12\x12\n" +
+	"\x04etag\x18\x05 \x01(\tR\x04etag\x12&\n" +
+	"\vdescription\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\"\n" +
+	"\tip_prefix\x18\a \x01(\tB\x05\xe2A\x02\x02\x05R\bipPrefix\x12m\n" +
+	"\tendpoints\x18\b \x03(\v2H.google.cloud.networkconnectivity.v1beta.Destination.DestinationEndpointB\x05\xe2A\x02\x06\x02R\tendpoints\x12c\n" +
+	"\x0estate_timeline\x18\t \x01(\v26.google.cloud.networkconnectivity.v1beta.StateTimelineB\x04\xe2A\x01\x03R\rstateTimeline\x12\x1e\n" +
 	"\x03uid\x18\n" +
-	" \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x1a\xa8\x02\n" +
-	"\x13DestinationEndpoint\x12\x15\n" +
-	"\x03asn\x18\x01 \x01(\x03B\x03\xe0A\x02R\x03asn\x12\x15\n" +
-	"\x03csp\x18\x02 \x01(\tB\x03\xe0A\x02R\x03csp\x12i\n" +
-	"\x05state\x18\x03 \x01(\x0e2N.google.cloud.networkconnectivity.v1beta.Destination.DestinationEndpoint.StateB\x03\xe0A\x03R\x05state\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" \x01(\tB\f\xe2A\x01\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x1a\xac\x02\n" +
+	"\x13DestinationEndpoint\x12\x16\n" +
+	"\x03asn\x18\x01 \x01(\x03B\x04\xe2A\x01\x02R\x03asn\x12\x16\n" +
+	"\x03csp\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x03csp\x12j\n" +
+	"\x05state\x18\x03 \x01(\x0e2N.google.cloud.networkconnectivity.v1beta.Destination.DestinationEndpoint.StateB\x04\xe2A\x01\x03R\x05state\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\"6\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\t\n" +
@@ -1984,47 +1984,47 @@ const file_google_cloud_networkconnectivity_v1beta_data_transfer_proto_rawDesc =
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xd4\x01\xeaA\xd0\x01\n" +
-	".networkconnectivity.googleapis.com/Destination\x12\x82\x01projects/{project}/locations/{location}/multicloudDataTransferConfigs/{multicloud_data_transfer_config}/destinations/{destination}*\fdestinations2\vdestination\"\xb8\x02\n" +
-	"\x17ListDestinationsRequest\x12_\n" +
-	"\x06parent\x18\x01 \x01(\tBG\xe0A\x02\xfaAA\n" +
-	"?networkconnectivity.googleapis.com/MulticloudDataTransferConfigR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	".networkconnectivity.googleapis.com/Destination\x12\x82\x01projects/{project}/locations/{location}/multicloudDataTransferConfigs/{multicloud_data_transfer_config}/destinations/{destination}*\fdestinations2\vdestination\"\xbe\x02\n" +
+	"\x17ListDestinationsRequest\x12`\n" +
+	"\x06parent\x18\x01 \x01(\tBH\xe2A\x01\x02\xfaAA\n" +
+	"?networkconnectivity.googleapis.com/MulticloudDataTransferConfigR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\x129\n" +
-	"\x16return_partial_success\x18\x06 \x01(\bB\x03\xe0A\x01R\x14returnPartialSuccess\"\xbe\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12:\n" +
+	"\x16return_partial_success\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x14returnPartialSuccess\"\xbe\x01\n" +
 	"\x18ListDestinationsResponse\x12X\n" +
 	"\fdestinations\x18\x01 \x03(\v24.google.cloud.networkconnectivity.v1beta.DestinationR\fdestinations\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"c\n" +
-	"\x15GetDestinationRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".networkconnectivity.googleapis.com/DestinationR\x04name\"\xb0\x02\n" +
-	"\x18CreateDestinationRequest\x12_\n" +
-	"\x06parent\x18\x01 \x01(\tBG\xe0A\x02\xfaAA\n" +
-	"?networkconnectivity.googleapis.com/MulticloudDataTransferConfigR\x06parent\x12*\n" +
-	"\x0edestination_id\x18\x02 \x01(\tB\x03\xe0A\x02R\rdestinationId\x12[\n" +
-	"\vdestination\x18\x03 \x01(\v24.google.cloud.networkconnectivity.v1beta.DestinationB\x03\xe0A\x02R\vdestination\x12*\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"d\n" +
+	"\x15GetDestinationRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".networkconnectivity.googleapis.com/DestinationR\x04name\"\xb4\x02\n" +
+	"\x18CreateDestinationRequest\x12`\n" +
+	"\x06parent\x18\x01 \x01(\tBH\xe2A\x01\x02\xfaAA\n" +
+	"?networkconnectivity.googleapis.com/MulticloudDataTransferConfigR\x06parent\x12+\n" +
+	"\x0edestination_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rdestinationId\x12\\\n" +
+	"\vdestination\x18\x03 \x01(\v24.google.cloud.networkconnectivity.v1beta.DestinationB\x04\xe2A\x01\x02R\vdestination\x12+\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe5\x01\n" +
-	"\x18UpdateDestinationRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12[\n" +
-	"\vdestination\x18\x02 \x01(\v24.google.cloud.networkconnectivity.v1beta.DestinationB\x03\xe0A\x02R\vdestination\x12*\n" +
+	"request_id\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe8\x01\n" +
+	"\x18UpdateDestinationRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12\\\n" +
+	"\vdestination\x18\x02 \x01(\v24.google.cloud.networkconnectivity.v1beta.DestinationB\x04\xe2A\x01\x02R\vdestination\x12+\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xab\x01\n" +
-	"\x18DeleteDestinationRequest\x12J\n" +
-	"\x04name\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".networkconnectivity.googleapis.com/DestinationR\x04name\x12*\n" +
+	"request_id\x18\x03 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xae\x01\n" +
+	"\x18DeleteDestinationRequest\x12K\n" +
+	"\x04name\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".networkconnectivity.googleapis.com/DestinationR\x04name\x12+\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\"\x98\x03\n" +
-	"\rStateTimeline\x12a\n" +
-	"\x06states\x18\x01 \x03(\v2D.google.cloud.networkconnectivity.v1beta.StateTimeline.StateMetadataB\x03\xe0A\x03R\x06states\x1a\xa3\x02\n" +
-	"\rStateMetadata\x12e\n" +
-	"\x05state\x18\x01 \x01(\x0e2J.google.cloud.networkconnectivity.v1beta.StateTimeline.StateMetadata.StateB\x03\xe0A\x03R\x05state\x12F\n" +
-	"\x0eeffective_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\reffectiveTime\"c\n" +
+	"request_id\x18\x02 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04etag\"\x9b\x03\n" +
+	"\rStateTimeline\x12b\n" +
+	"\x06states\x18\x01 \x03(\v2D.google.cloud.networkconnectivity.v1beta.StateTimeline.StateMetadataB\x04\xe2A\x01\x03R\x06states\x1a\xa5\x02\n" +
+	"\rStateMetadata\x12f\n" +
+	"\x05state\x18\x01 \x01(\x0e2J.google.cloud.networkconnectivity.v1beta.StateTimeline.StateMetadata.StateB\x04\xe2A\x01\x03R\x05state\x12G\n" +
+	"\x0eeffective_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\reffectiveTime\"c\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -2034,28 +2034,28 @@ const file_google_cloud_networkconnectivity_v1beta_data_transfer_proto_rawDesc =
 	"\bDELETING\x10\x03\x12\x0e\n" +
 	"\n" +
 	"SUSPENDING\x10\x04\x12\r\n" +
-	"\tSUSPENDED\x10\x05\"\xc8\x03\n" +
-	"&MulticloudDataTransferSupportedService\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12d\n" +
-	"\x0fservice_configs\x18\x02 \x03(\v26.google.cloud.networkconnectivity.v1beta.ServiceConfigB\x03\xe0A\x03R\x0eserviceConfigs:\x9e\x02\xeaA\x9a\x02\n" +
-	"Inetworkconnectivity.googleapis.com/MulticloudDataTransferSupportedService\x12|projects/{project}/locations/{location}/multicloudDataTransferSupportedServices/{multicloud_data_transfer_supported_service}*'multicloudDataTransferSupportedServices2&multicloudDataTransferSupportedService\"\x99\x03\n" +
-	"\rServiceConfig\x12\x82\x01\n" +
-	"\x14eligibility_criteria\x18\x01 \x01(\x0e2J.google.cloud.networkconnectivity.v1beta.ServiceConfig.EligibilityCriteriaB\x03\xe0A\x03R\x13eligibilityCriteria\x12I\n" +
-	"\x10support_end_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0esupportEndTime\"\xb7\x01\n" +
+	"\tSUSPENDED\x10\x05\"\xca\x03\n" +
+	"&MulticloudDataTransferSupportedService\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12e\n" +
+	"\x0fservice_configs\x18\x02 \x03(\v26.google.cloud.networkconnectivity.v1beta.ServiceConfigB\x04\xe2A\x01\x03R\x0eserviceConfigs:\x9e\x02\xeaA\x9a\x02\n" +
+	"Inetworkconnectivity.googleapis.com/MulticloudDataTransferSupportedService\x12|projects/{project}/locations/{location}/multicloudDataTransferSupportedServices/{multicloud_data_transfer_supported_service}*'multicloudDataTransferSupportedServices2&multicloudDataTransferSupportedService\"\x9b\x03\n" +
+	"\rServiceConfig\x12\x83\x01\n" +
+	"\x14eligibility_criteria\x18\x01 \x01(\x0e2J.google.cloud.networkconnectivity.v1beta.ServiceConfig.EligibilityCriteriaB\x04\xe2A\x01\x03R\x13eligibilityCriteria\x12J\n" +
+	"\x10support_end_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0esupportEndTime\"\xb7\x01\n" +
 	"\x13EligibilityCriteria\x12$\n" +
 	" ELIGIBILITY_CRITERIA_UNSPECIFIED\x10\x00\x12%\n" +
 	"!NETWORK_SERVICE_TIER_PREMIUM_ONLY\x10\x01\x12&\n" +
 	"\"NETWORK_SERVICE_TIER_STANDARD_ONLY\x10\x02\x12+\n" +
-	"'REQUEST_ENDPOINT_REGIONAL_ENDPOINT_ONLY\x10\x03\"\x99\x01\n" +
-	"0GetMulticloudDataTransferSupportedServiceRequest\x12e\n" +
-	"\x04name\x18\x01 \x01(\tBQ\xe0A\x02\xfaAK\n" +
-	"Inetworkconnectivity.googleapis.com/MulticloudDataTransferSupportedServiceR\x04name\"\xbd\x01\n" +
-	"2ListMulticloudDataTransferSupportedServicesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"'REQUEST_ENDPOINT_REGIONAL_ENDPOINT_ONLY\x10\x03\"\x9a\x01\n" +
+	"0GetMulticloudDataTransferSupportedServiceRequest\x12f\n" +
+	"\x04name\x18\x01 \x01(\tBR\xe2A\x01\x02\xfaAK\n" +
+	"Inetworkconnectivity.googleapis.com/MulticloudDataTransferSupportedServiceR\x04name\"\xc0\x01\n" +
+	"2ListMulticloudDataTransferSupportedServicesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x8d\x02\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x8d\x02\n" +
 	"3ListMulticloudDataTransferSupportedServicesResponse\x12\xad\x01\n" +
 	"+multicloud_data_transfer_supported_services\x18\x01 \x03(\v2O.google.cloud.networkconnectivity.v1beta.MulticloudDataTransferSupportedServiceR'multicloudDataTransferSupportedServices\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xb4\x1d\n" +

@@ -455,9 +455,9 @@ var File_google_shopping_merchant_accounts_v1beta_accountissue_proto protoreflec
 
 const file_google_shopping_merchant_accounts_v1beta_accountissue_proto_rawDesc = "" +
 	"\n" +
-	";google/shopping/merchant/accounts/v1beta/accountissue.proto\x12(google.shopping.merchant.accounts.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/shopping/type/types.proto\"\xb0\a\n" +
-	"\fAccountIssue\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x14\n" +
+	";google/shopping/merchant/accounts/v1beta/accountissue.proto\x12(google.shopping.merchant.accounts.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/shopping/type/types.proto\"\xb1\a\n" +
+	"\fAccountIssue\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12[\n" +
 	"\bseverity\x18\x03 \x01(\x0e2?.google.shopping.merchant.accounts.v1beta.AccountIssue.SeverityR\bseverity\x12\x7f\n" +
 	"\x15impacted_destinations\x18\x04 \x03(\v2J.google.shopping.merchant.accounts.v1beta.AccountIssue.ImpactedDestinationR\x14impactedDestinations\x12\x16\n" +
@@ -477,15 +477,15 @@ const file_google_shopping_merchant_accounts_v1beta_accountissue_proto_rawDesc =
 	"\x05ERROR\x10\x02\x12\x0e\n" +
 	"\n" +
 	"SUGGESTION\x10\x03:l\xeaAi\n" +
-	"'merchantapi.googleapis.com/AccountIssue\x12!accounts/{account}/issues/{issue}*\raccountIssues2\faccountIssue\"\xf0\x01\n" +
-	"\x18ListAccountIssuesRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"merchantapi.googleapis.com/AccountR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"'merchantapi.googleapis.com/AccountIssue\x12!accounts/{account}/issues/{issue}*\raccountIssues2\faccountIssue\"\xf5\x01\n" +
+	"\x18ListAccountIssuesRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"merchantapi.googleapis.com/AccountR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12(\n" +
-	"\rlanguage_code\x18\x04 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12 \n" +
-	"\ttime_zone\x18\x05 \x01(\tB\x03\xe0A\x01R\btimeZone\"\xa2\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12)\n" +
+	"\rlanguage_code\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12!\n" +
+	"\ttime_zone\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\btimeZone\"\xa2\x01\n" +
 	"\x19ListAccountIssuesResponse\x12]\n" +
 	"\x0eaccount_issues\x18\x01 \x03(\v26.google.shopping.merchant.accounts.v1beta.AccountIssueR\raccountIssues\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xbb\x02\n" +

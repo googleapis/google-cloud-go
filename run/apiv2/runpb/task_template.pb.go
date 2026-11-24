@@ -45,6 +45,8 @@ type TaskTemplate struct {
 	// Holds the single container that defines the unit of execution for this
 	// task.
 	Containers []*Container `protobuf:"bytes,1,rep,name=containers,proto3" json:"containers,omitempty"`
+	// Optional. Configuration for sandboxes.
+	Sandboxes *SandboxConfiguration `protobuf:"bytes,15,opt,name=sandboxes,proto3" json:"sandboxes,omitempty"`
 	// Optional. A list of Volumes to make available to containers.
 	Volumes []*Volume `protobuf:"bytes,2,rep,name=volumes,proto3" json:"volumes,omitempty"`
 	// Types that are valid to be assigned to Retries:
@@ -75,8 +77,10 @@ type TaskTemplate struct {
 	NodeSelector *NodeSelector `protobuf:"bytes,11,opt,name=node_selector,json=nodeSelector,proto3" json:"node_selector,omitempty"`
 	// Optional. True if GPU zonal redundancy is disabled on this task template.
 	GpuZonalRedundancyDisabled *bool `protobuf:"varint,12,opt,name=gpu_zonal_redundancy_disabled,json=gpuZonalRedundancyDisabled,proto3,oneof" json:"gpu_zonal_redundancy_disabled,omitempty"`
-	unknownFields              protoimpl.UnknownFields
-	sizeCache                  protoimpl.SizeCache
+	// Optional. The Task's workload identity settings.
+	WorkloadIdentityConfig *WorkloadIdentityConfig `protobuf:"bytes,13,opt,name=workload_identity_config,json=workloadIdentityConfig,proto3" json:"workload_identity_config,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *TaskTemplate) Reset() {
@@ -112,6 +116,13 @@ func (*TaskTemplate) Descriptor() ([]byte, []int) {
 func (x *TaskTemplate) GetContainers() []*Container {
 	if x != nil {
 		return x.Containers
+	}
+	return nil
+}
+
+func (x *TaskTemplate) GetSandboxes() *SandboxConfiguration {
+	if x != nil {
+		return x.Sandboxes
 	}
 	return nil
 }
@@ -188,6 +199,13 @@ func (x *TaskTemplate) GetGpuZonalRedundancyDisabled() bool {
 	return false
 }
 
+func (x *TaskTemplate) GetWorkloadIdentityConfig() *WorkloadIdentityConfig {
+	if x != nil {
+		return x.WorkloadIdentityConfig
+	}
+	return nil
+}
+
 type isTaskTemplate_Retries interface {
 	isTaskTemplate_Retries()
 }
@@ -204,23 +222,25 @@ var File_google_cloud_run_v2_task_template_proto protoreflect.FileDescriptor
 
 const file_google_cloud_run_v2_task_template_proto_rawDesc = "" +
 	"\n" +
-	"'google/cloud/run/v2/task_template.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a!google/cloud/run/v2/k8s.min.proto\x1a)google/cloud/run/v2/vendor_settings.proto\x1a\x1egoogle/protobuf/duration.proto\"\xd4\x05\n" +
+	"'google/cloud/run/v2/task_template.proto\x12\x13google.cloud.run.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a!google/cloud/run/v2/k8s.min.proto\x1a!google/cloud/run/v2/sandbox.proto\x1a)google/cloud/run/v2/vendor_settings.proto\x1a\x1egoogle/protobuf/duration.proto\"\x97\a\n" +
 	"\fTaskTemplate\x12>\n" +
 	"\n" +
 	"containers\x18\x01 \x03(\v2\x1e.google.cloud.run.v2.ContainerR\n" +
-	"containers\x12:\n" +
-	"\avolumes\x18\x02 \x03(\v2\x1b.google.cloud.run.v2.VolumeB\x03\xe0A\x01R\avolumes\x12!\n" +
+	"containers\x12M\n" +
+	"\tsandboxes\x18\x0f \x01(\v2).google.cloud.run.v2.SandboxConfigurationB\x04\xe2A\x01\x01R\tsandboxes\x12;\n" +
+	"\avolumes\x18\x02 \x03(\v2\x1b.google.cloud.run.v2.VolumeB\x04\xe2A\x01\x01R\avolumes\x12!\n" +
 	"\vmax_retries\x18\x03 \x01(\x05H\x00R\n" +
-	"maxRetries\x128\n" +
-	"\atimeout\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\atimeout\x12,\n" +
-	"\x0fservice_account\x18\x05 \x01(\tB\x03\xe0A\x01R\x0eserviceAccount\x12c\n" +
-	"\x15execution_environment\x18\x06 \x01(\x0e2).google.cloud.run.v2.ExecutionEnvironmentB\x03\xe0A\x01R\x14executionEnvironment\x12M\n" +
+	"maxRetries\x129\n" +
+	"\atimeout\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x01R\atimeout\x12-\n" +
+	"\x0fservice_account\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x0eserviceAccount\x12d\n" +
+	"\x15execution_environment\x18\x06 \x01(\x0e2).google.cloud.run.v2.ExecutionEnvironmentB\x04\xe2A\x01\x01R\x14executionEnvironment\x12M\n" +
 	"\x0eencryption_key\x18\a \x01(\tB&\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\rencryptionKey\x12B\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\rencryptionKey\x12C\n" +
 	"\n" +
-	"vpc_access\x18\b \x01(\v2\x1e.google.cloud.run.v2.VpcAccessB\x03\xe0A\x01R\tvpcAccess\x12K\n" +
-	"\rnode_selector\x18\v \x01(\v2!.google.cloud.run.v2.NodeSelectorB\x03\xe0A\x01R\fnodeSelector\x12K\n" +
-	"\x1dgpu_zonal_redundancy_disabled\x18\f \x01(\bB\x03\xe0A\x01H\x01R\x1agpuZonalRedundancyDisabled\x88\x01\x01B\t\n" +
+	"vpc_access\x18\b \x01(\v2\x1e.google.cloud.run.v2.VpcAccessB\x04\xe2A\x01\x01R\tvpcAccess\x12L\n" +
+	"\rnode_selector\x18\v \x01(\v2!.google.cloud.run.v2.NodeSelectorB\x04\xe2A\x01\x01R\fnodeSelector\x12L\n" +
+	"\x1dgpu_zonal_redundancy_disabled\x18\f \x01(\bB\x04\xe2A\x01\x01H\x01R\x1agpuZonalRedundancyDisabled\x88\x01\x01\x12k\n" +
+	"\x18workload_identity_config\x18\r \x01(\v2+.google.cloud.run.v2.WorkloadIdentityConfigB\x04\xe2A\x01\x01R\x16workloadIdentityConfigB\t\n" +
 	"\aretriesB \n" +
 	"\x1e_gpu_zonal_redundancy_disabledBY\n" +
 	"\x17com.google.cloud.run.v2B\x11TaskTemplateProtoP\x01Z)cloud.google.com/go/run/apiv2/runpb;runpbb\x06proto3"
@@ -239,26 +259,30 @@ func file_google_cloud_run_v2_task_template_proto_rawDescGZIP() []byte {
 
 var file_google_cloud_run_v2_task_template_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_google_cloud_run_v2_task_template_proto_goTypes = []any{
-	(*TaskTemplate)(nil),        // 0: google.cloud.run.v2.TaskTemplate
-	(*Container)(nil),           // 1: google.cloud.run.v2.Container
-	(*Volume)(nil),              // 2: google.cloud.run.v2.Volume
-	(*durationpb.Duration)(nil), // 3: google.protobuf.Duration
-	(ExecutionEnvironment)(0),   // 4: google.cloud.run.v2.ExecutionEnvironment
-	(*VpcAccess)(nil),           // 5: google.cloud.run.v2.VpcAccess
-	(*NodeSelector)(nil),        // 6: google.cloud.run.v2.NodeSelector
+	(*TaskTemplate)(nil),           // 0: google.cloud.run.v2.TaskTemplate
+	(*Container)(nil),              // 1: google.cloud.run.v2.Container
+	(*SandboxConfiguration)(nil),   // 2: google.cloud.run.v2.SandboxConfiguration
+	(*Volume)(nil),                 // 3: google.cloud.run.v2.Volume
+	(*durationpb.Duration)(nil),    // 4: google.protobuf.Duration
+	(ExecutionEnvironment)(0),      // 5: google.cloud.run.v2.ExecutionEnvironment
+	(*VpcAccess)(nil),              // 6: google.cloud.run.v2.VpcAccess
+	(*NodeSelector)(nil),           // 7: google.cloud.run.v2.NodeSelector
+	(*WorkloadIdentityConfig)(nil), // 8: google.cloud.run.v2.WorkloadIdentityConfig
 }
 var file_google_cloud_run_v2_task_template_proto_depIdxs = []int32{
 	1, // 0: google.cloud.run.v2.TaskTemplate.containers:type_name -> google.cloud.run.v2.Container
-	2, // 1: google.cloud.run.v2.TaskTemplate.volumes:type_name -> google.cloud.run.v2.Volume
-	3, // 2: google.cloud.run.v2.TaskTemplate.timeout:type_name -> google.protobuf.Duration
-	4, // 3: google.cloud.run.v2.TaskTemplate.execution_environment:type_name -> google.cloud.run.v2.ExecutionEnvironment
-	5, // 4: google.cloud.run.v2.TaskTemplate.vpc_access:type_name -> google.cloud.run.v2.VpcAccess
-	6, // 5: google.cloud.run.v2.TaskTemplate.node_selector:type_name -> google.cloud.run.v2.NodeSelector
-	6, // [6:6] is the sub-list for method output_type
-	6, // [6:6] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	2, // 1: google.cloud.run.v2.TaskTemplate.sandboxes:type_name -> google.cloud.run.v2.SandboxConfiguration
+	3, // 2: google.cloud.run.v2.TaskTemplate.volumes:type_name -> google.cloud.run.v2.Volume
+	4, // 3: google.cloud.run.v2.TaskTemplate.timeout:type_name -> google.protobuf.Duration
+	5, // 4: google.cloud.run.v2.TaskTemplate.execution_environment:type_name -> google.cloud.run.v2.ExecutionEnvironment
+	6, // 5: google.cloud.run.v2.TaskTemplate.vpc_access:type_name -> google.cloud.run.v2.VpcAccess
+	7, // 6: google.cloud.run.v2.TaskTemplate.node_selector:type_name -> google.cloud.run.v2.NodeSelector
+	8, // 7: google.cloud.run.v2.TaskTemplate.workload_identity_config:type_name -> google.cloud.run.v2.WorkloadIdentityConfig
+	8, // [8:8] is the sub-list for method output_type
+	8, // [8:8] is the sub-list for method input_type
+	8, // [8:8] is the sub-list for extension type_name
+	8, // [8:8] is the sub-list for extension extendee
+	0, // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_run_v2_task_template_proto_init() }
@@ -267,6 +291,7 @@ func file_google_cloud_run_v2_task_template_proto_init() {
 		return
 	}
 	file_google_cloud_run_v2_k8s_min_proto_init()
+	file_google_cloud_run_v2_sandbox_proto_init()
 	file_google_cloud_run_v2_vendor_settings_proto_init()
 	file_google_cloud_run_v2_task_template_proto_msgTypes[0].OneofWrappers = []any{
 		(*TaskTemplate_MaxRetries)(nil),

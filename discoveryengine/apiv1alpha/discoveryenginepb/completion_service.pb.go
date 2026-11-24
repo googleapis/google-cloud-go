@@ -280,12 +280,12 @@ var File_google_cloud_discoveryengine_v1alpha_completion_service_proto protorefl
 
 const file_google_cloud_discoveryengine_v1alpha_completion_service_proto_rawDesc = "" +
 	"\n" +
-	"=google/cloud/discoveryengine/v1alpha/completion_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/discoveryengine/v1alpha/import_config.proto\x1a7google/cloud/discoveryengine/v1alpha/purge_config.proto\x1a#google/longrunning/operations.proto\"\x83\x02\n" +
-	"\x14CompleteQueryRequest\x12O\n" +
+	"=google/cloud/discoveryengine/v1alpha/completion_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/discoveryengine/v1alpha/import_config.proto\x1a7google/cloud/discoveryengine/v1alpha/purge_config.proto\x1a#google/longrunning/operations.proto\"\x85\x02\n" +
+	"\x14CompleteQueryRequest\x12P\n" +
 	"\n" +
-	"data_store\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\x12\x19\n" +
-	"\x05query\x18\x02 \x01(\tB\x03\xe0A\x02R\x05query\x12\x1f\n" +
+	"data_store\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\x12\x1a\n" +
+	"\x05query\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05query\x12\x1f\n" +
 	"\vquery_model\x18\x03 \x01(\tR\n" +
 	"queryModel\x12$\n" +
 	"\x0euser_pseudo_id\x18\x04 \x01(\tR\fuserPseudoId\x128\n" +

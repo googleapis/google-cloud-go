@@ -499,17 +499,17 @@ var File_google_cloud_discoveryengine_v1alpha_search_tuning_service_proto protor
 
 const file_google_cloud_discoveryengine_v1alpha_search_tuning_service_proto_rawDesc = "" +
 	"\n" +
-	"@google/cloud/discoveryengine/v1alpha/search_tuning_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a>google/cloud/discoveryengine/v1alpha/custom_tuning_model.proto\x1a8google/cloud/discoveryengine/v1alpha/import_config.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"j\n" +
-	"\x17ListCustomModelsRequest\x12O\n" +
+	"@google/cloud/discoveryengine/v1alpha/search_tuning_service.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a>google/cloud/discoveryengine/v1alpha/custom_tuning_model.proto\x1a8google/cloud/discoveryengine/v1alpha/import_config.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"k\n" +
+	"\x17ListCustomModelsRequest\x12P\n" +
 	"\n" +
-	"data_store\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"data_store\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\"k\n" +
 	"\x18ListCustomModelsResponse\x12O\n" +
-	"\x06models\x18\x01 \x03(\v27.google.cloud.discoveryengine.v1alpha.CustomTuningModelR\x06models\"\xc7\x04\n" +
+	"\x06models\x18\x01 \x03(\v27.google.cloud.discoveryengine.v1alpha.CustomTuningModelR\x06models\"\xc8\x04\n" +
 	"\x17TrainCustomModelRequest\x12~\n" +
-	"\x12gcs_training_input\x18\x02 \x01(\v2N.google.cloud.discoveryengine.v1alpha.TrainCustomModelRequest.GcsTrainingInputH\x00R\x10gcsTrainingInput\x12O\n" +
+	"\x12gcs_training_input\x18\x02 \x01(\v2N.google.cloud.discoveryengine.v1alpha.TrainCustomModelRequest.GcsTrainingInputH\x00R\x10gcsTrainingInput\x12P\n" +
 	"\n" +
-	"data_store\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"data_store\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
 	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\x12\x1d\n" +
 	"\n" +
 	"model_type\x18\x03 \x01(\tR\tmodelType\x12Z\n" +

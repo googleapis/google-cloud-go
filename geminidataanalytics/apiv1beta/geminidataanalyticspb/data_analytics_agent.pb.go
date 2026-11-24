@@ -110,11 +110,11 @@ var File_google_cloud_geminidataanalytics_v1beta_data_analytics_agent_proto prot
 
 const file_google_cloud_geminidataanalytics_v1beta_data_analytics_agent_proto_rawDesc = "" +
 	"\n" +
-	"Bgoogle/cloud/geminidataanalytics/v1beta/data_analytics_agent.proto\x12'google.cloud.geminidataanalytics.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a5google/cloud/geminidataanalytics/v1beta/context.proto\"\xc5\x02\n" +
-	"\x12DataAnalyticsAgent\x12^\n" +
-	"\x0fstaging_context\x18\x05 \x01(\v20.google.cloud.geminidataanalytics.v1beta.ContextB\x03\xe0A\x01R\x0estagingContext\x12b\n" +
-	"\x11published_context\x18\x06 \x01(\v20.google.cloud.geminidataanalytics.v1beta.ContextB\x03\xe0A\x01R\x10publishedContext\x12k\n" +
-	"\x16last_published_context\x18\a \x01(\v20.google.cloud.geminidataanalytics.v1beta.ContextB\x03\xe0A\x03R\x14lastPublishedContextB\xa8\x02\n" +
+	"Bgoogle/cloud/geminidataanalytics/v1beta/data_analytics_agent.proto\x12'google.cloud.geminidataanalytics.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a5google/cloud/geminidataanalytics/v1beta/context.proto\"\xc8\x02\n" +
+	"\x12DataAnalyticsAgent\x12_\n" +
+	"\x0fstaging_context\x18\x05 \x01(\v20.google.cloud.geminidataanalytics.v1beta.ContextB\x04\xe2A\x01\x01R\x0estagingContext\x12c\n" +
+	"\x11published_context\x18\x06 \x01(\v20.google.cloud.geminidataanalytics.v1beta.ContextB\x04\xe2A\x01\x01R\x10publishedContext\x12l\n" +
+	"\x16last_published_context\x18\a \x01(\v20.google.cloud.geminidataanalytics.v1beta.ContextB\x04\xe2A\x01\x03R\x14lastPublishedContextB\xa8\x02\n" +
 	"+com.google.cloud.geminidataanalytics.v1betaB\x17DataAnalyticsAgentProtoP\x01Z]cloud.google.com/go/geminidataanalytics/apiv1beta/geminidataanalyticspb;geminidataanalyticspb\xaa\x02'Google.Cloud.GeminiDataAnalytics.V1Beta\xca\x02'Google\\Cloud\\GeminiDataAnalytics\\V1beta\xea\x02*Google::Cloud::GeminiDataAnalytics::V1betab\x06proto3"
 
 var (

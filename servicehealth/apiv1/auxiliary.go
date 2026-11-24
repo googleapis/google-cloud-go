@@ -17,10 +17,19 @@
 package servicehealth
 
 import (
+	"iter"
+
 	servicehealthpb "cloud.google.com/go/servicehealth/apiv1/servicehealthpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EventIterator) All() iter.Seq2[*servicehealthpb.Event, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // EventIterator manages a stream of *servicehealthpb.Event.
 type EventIterator struct {
@@ -67,6 +76,12 @@ func (it *EventIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -116,6 +131,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OrganizationEventIterator) All() iter.Seq2[*servicehealthpb.OrganizationEvent, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OrganizationEventIterator manages a stream of *servicehealthpb.OrganizationEvent.
 type OrganizationEventIterator struct {
 	items    []*servicehealthpb.OrganizationEvent
@@ -161,6 +182,12 @@ func (it *OrganizationEventIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OrganizationImpactIterator) All() iter.Seq2[*servicehealthpb.OrganizationImpact, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OrganizationImpactIterator manages a stream of *servicehealthpb.OrganizationImpact.

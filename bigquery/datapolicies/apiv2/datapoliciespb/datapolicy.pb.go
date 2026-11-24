@@ -1030,55 +1030,55 @@ var File_google_cloud_bigquery_datapolicies_v2_datapolicy_proto protoreflect.Fil
 
 const file_google_cloud_bigquery_datapolicies_v2_datapolicy_proto_rawDesc = "" +
 	"\n" +
-	"6google/cloud/bigquery/datapolicies/v2/datapolicy.proto\x12%google.cloud.bigquery.datapolicies.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xeb\x01\n" +
-	"\x17CreateDataPolicyRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,bigquerydatapolicy.googleapis.com/DataPolicyR\x06parent\x12)\n" +
-	"\x0edata_policy_id\x18\x02 \x01(\tB\x03\xe0A\x02R\fdataPolicyId\x12W\n" +
-	"\vdata_policy\x18\x03 \x01(\v21.google.cloud.bigquery.datapolicies.v2.DataPolicyB\x03\xe0A\x02R\n" +
-	"dataPolicy\"\xde\x01\n" +
-	"\x17UpdateDataPolicyRequest\x12W\n" +
-	"\vdata_policy\x18\x01 \x01(\v21.google.cloud.bigquery.datapolicies.v2.DataPolicyB\x03\xe0A\x02R\n" +
-	"dataPolicy\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12(\n" +
-	"\rallow_missing\x18\x03 \x01(\bB\x03\xe0A\x01R\fallowMissing\"\x8c\x01\n" +
-	"\x12AddGranteesRequest\x12U\n" +
-	"\vdata_policy\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
+	"6google/cloud/bigquery/datapolicies/v2/datapolicy.proto\x12%google.cloud.bigquery.datapolicies.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xee\x01\n" +
+	"\x17CreateDataPolicyRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,bigquerydatapolicy.googleapis.com/DataPolicyR\x06parent\x12*\n" +
+	"\x0edata_policy_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fdataPolicyId\x12X\n" +
+	"\vdata_policy\x18\x03 \x01(\v21.google.cloud.bigquery.datapolicies.v2.DataPolicyB\x04\xe2A\x01\x02R\n" +
+	"dataPolicy\"\xe1\x01\n" +
+	"\x17UpdateDataPolicyRequest\x12X\n" +
+	"\vdata_policy\x18\x01 \x01(\v21.google.cloud.bigquery.datapolicies.v2.DataPolicyB\x04\xe2A\x01\x02R\n" +
+	"dataPolicy\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12)\n" +
+	"\rallow_missing\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fallowMissing\"\x8e\x01\n" +
+	"\x12AddGranteesRequest\x12V\n" +
+	"\vdata_policy\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
 	",bigquerydatapolicy.googleapis.com/DataPolicyR\n" +
-	"dataPolicy\x12\x1f\n" +
-	"\bgrantees\x18\x02 \x03(\tB\x03\xe0A\x02R\bgrantees\"\x8f\x01\n" +
-	"\x15RemoveGranteesRequest\x12U\n" +
-	"\vdata_policy\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
+	"dataPolicy\x12 \n" +
+	"\bgrantees\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\bgrantees\"\x91\x01\n" +
+	"\x15RemoveGranteesRequest\x12V\n" +
+	"\vdata_policy\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
 	",bigquerydatapolicy.googleapis.com/DataPolicyR\n" +
-	"dataPolicy\x12\x1f\n" +
-	"\bgrantees\x18\x02 \x03(\tB\x03\xe0A\x02R\bgrantees\"c\n" +
-	"\x17DeleteDataPolicyRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",bigquerydatapolicy.googleapis.com/DataPolicyR\x04name\"`\n" +
-	"\x14GetDataPolicyRequest\x12H\n" +
-	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",bigquerydatapolicy.googleapis.com/DataPolicyR\x04name\"\xca\x01\n" +
-	"\x17ListDataPoliciesRequest\x12L\n" +
-	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,bigquerydatapolicy.googleapis.com/DataPolicyR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"dataPolicy\x12 \n" +
+	"\bgrantees\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\bgrantees\"d\n" +
+	"\x17DeleteDataPolicyRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",bigquerydatapolicy.googleapis.com/DataPolicyR\x04name\"a\n" +
+	"\x14GetDataPolicyRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\n" +
+	",bigquerydatapolicy.googleapis.com/DataPolicyR\x04name\"\xce\x01\n" +
+	"\x17ListDataPoliciesRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe2A\x01\x02\xfaA.\x12,bigquerydatapolicy.googleapis.com/DataPolicyR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x9a\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x9a\x01\n" +
 	"\x18ListDataPoliciesResponse\x12V\n" +
 	"\rdata_policies\x18\x01 \x03(\v21.google.cloud.bigquery.datapolicies.v2.DataPolicyR\fdataPolicies\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xf9\x06\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x80\a\n" +
 	"\n" +
-	"DataPolicy\x12o\n" +
-	"\x13data_masking_policy\x18\a \x01(\v28.google.cloud.bigquery.datapolicies.v2.DataMaskingPolicyB\x03\xe0A\x01H\x00R\x11dataMaskingPolicy\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12)\n" +
-	"\x0edata_policy_id\x18\x02 \x01(\tB\x03\xe0A\x03R\fdataPolicyId\x12\x17\n" +
-	"\x04etag\x18\v \x01(\tH\x01R\x04etag\x88\x01\x01\x12o\n" +
-	"\x10data_policy_type\x18\x03 \x01(\x0e2@.google.cloud.bigquery.datapolicies.v2.DataPolicy.DataPolicyTypeB\x03\xe0A\x02R\x0edataPolicyType\x12K\n" +
+	"DataPolicy\x12p\n" +
+	"\x13data_masking_policy\x18\a \x01(\v28.google.cloud.bigquery.datapolicies.v2.DataMaskingPolicyB\x04\xe2A\x01\x01H\x00R\x11dataMaskingPolicy\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12*\n" +
+	"\x0edata_policy_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\fdataPolicyId\x12\x17\n" +
+	"\x04etag\x18\v \x01(\tH\x01R\x04etag\x88\x01\x01\x12p\n" +
+	"\x10data_policy_type\x18\x03 \x01(\x0e2@.google.cloud.bigquery.datapolicies.v2.DataPolicy.DataPolicyTypeB\x04\xe2A\x01\x02R\x0edataPolicyType\x12L\n" +
 	"\n" +
-	"policy_tag\x18\x04 \x01(\tB,\xe0A\x03\xfaA&\n" +
-	"$datacatalog.googleapis.com/PolicyTagR\tpolicyTag\x12\x1f\n" +
-	"\bgrantees\x18\b \x03(\tB\x03\xe0A\x01R\bgrantees\x12X\n" +
-	"\aversion\x18\t \x01(\x0e29.google.cloud.bigquery.datapolicies.v2.DataPolicy.VersionB\x03\xe0A\x03R\aversion\"\x89\x01\n" +
+	"policy_tag\x18\x04 \x01(\tB-\xe2A\x01\x03\xfaA&\n" +
+	"$datacatalog.googleapis.com/PolicyTagR\tpolicyTag\x12 \n" +
+	"\bgrantees\x18\b \x03(\tB\x04\xe2A\x01\x01R\bgrantees\x12Y\n" +
+	"\aversion\x18\t \x01(\x0e29.google.cloud.bigquery.datapolicies.v2.DataPolicy.VersionB\x04\xe2A\x01\x03R\aversion\"\x89\x01\n" +
 	"\x0eDataPolicyType\x12 \n" +
 	"\x1cDATA_POLICY_TYPE_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13DATA_MASKING_POLICY\x10\x01\x12\x1a\n" +
@@ -1091,10 +1091,10 @@ const file_google_cloud_bigquery_datapolicies_v2_datapolicy_proto_rawDesc = "" +
 	",bigquerydatapolicy.googleapis.com/DataPolicy\x12Bprojects/{project}/locations/{location}/dataPolicies/{data_policy}*\fdataPolicies2\n" +
 	"dataPolicyB\b\n" +
 	"\x06policyB\a\n" +
-	"\x05_etag\"\xdc\x03\n" +
-	"\x11DataMaskingPolicy\x12\x89\x01\n" +
-	"\x15predefined_expression\x18\x01 \x01(\x0e2M.google.cloud.bigquery.datapolicies.v2.DataMaskingPolicy.PredefinedExpressionB\x03\xe0A\x01H\x00R\x14predefinedExpression\x12C\n" +
-	"\aroutine\x18\x02 \x01(\tB'\xe0A\x01\xfaA!\n" +
+	"\x05_etag\"\xde\x03\n" +
+	"\x11DataMaskingPolicy\x12\x8a\x01\n" +
+	"\x15predefined_expression\x18\x01 \x01(\x0e2M.google.cloud.bigquery.datapolicies.v2.DataMaskingPolicy.PredefinedExpressionB\x04\xe2A\x01\x01H\x00R\x14predefinedExpression\x12D\n" +
+	"\aroutine\x18\x02 \x01(\tB(\xe2A\x01\x01\xfaA!\n" +
 	"\x1fbigquery.googleapis.com/RoutineH\x00R\aroutine\"\xdf\x01\n" +
 	"\x14PredefinedExpression\x12%\n" +
 	"!PREDEFINED_EXPRESSION_UNSPECIFIED\x10\x00\x12\n" +

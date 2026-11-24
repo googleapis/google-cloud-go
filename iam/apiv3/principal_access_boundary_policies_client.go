@@ -391,6 +391,45 @@ func NewPrincipalAccessBoundaryPoliciesClient(ctx context.Context, opts ...optio
 		client.CallOptions.SearchPrincipalAccessBoundaryPolicyBindings = append(client.CallOptions.SearchPrincipalAccessBoundaryPolicyBindings, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "iam",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iam/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "iam.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreatePrincipalAccessBoundaryPolicy = append(client.CallOptions.CreatePrincipalAccessBoundaryPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPrincipalAccessBoundaryPolicy = append(client.CallOptions.GetPrincipalAccessBoundaryPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePrincipalAccessBoundaryPolicy = append(client.CallOptions.UpdatePrincipalAccessBoundaryPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePrincipalAccessBoundaryPolicy = append(client.CallOptions.DeletePrincipalAccessBoundaryPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPrincipalAccessBoundaryPolicies = append(client.CallOptions.ListPrincipalAccessBoundaryPolicies, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchPrincipalAccessBoundaryPolicyBindings = append(client.CallOptions.SearchPrincipalAccessBoundaryPolicyBindings, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "iam",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iam/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "iam.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreatePrincipalAccessBoundaryPolicy = append(client.CallOptions.CreatePrincipalAccessBoundaryPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.GetPrincipalAccessBoundaryPolicy = append(client.CallOptions.GetPrincipalAccessBoundaryPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePrincipalAccessBoundaryPolicy = append(client.CallOptions.UpdatePrincipalAccessBoundaryPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePrincipalAccessBoundaryPolicy = append(client.CallOptions.DeletePrincipalAccessBoundaryPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.ListPrincipalAccessBoundaryPolicies = append(client.CallOptions.ListPrincipalAccessBoundaryPolicies, gax.WithClientLogging(logging))
+		client.CallOptions.SearchPrincipalAccessBoundaryPolicyBindings = append(client.CallOptions.SearchPrincipalAccessBoundaryPolicyBindings, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -505,6 +544,45 @@ func NewPrincipalAccessBoundaryPoliciesRESTClient(ctx context.Context, opts ...o
 		callOpts.SearchPrincipalAccessBoundaryPolicyBindings = append(callOpts.SearchPrincipalAccessBoundaryPolicyBindings, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "iam",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iam/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "iam.googleapis.com",
+			}),
+		)
+
+		callOpts.CreatePrincipalAccessBoundaryPolicy = append(callOpts.CreatePrincipalAccessBoundaryPolicy, gax.WithClientTracing(tracing))
+		callOpts.GetPrincipalAccessBoundaryPolicy = append(callOpts.GetPrincipalAccessBoundaryPolicy, gax.WithClientTracing(tracing))
+		callOpts.UpdatePrincipalAccessBoundaryPolicy = append(callOpts.UpdatePrincipalAccessBoundaryPolicy, gax.WithClientTracing(tracing))
+		callOpts.DeletePrincipalAccessBoundaryPolicy = append(callOpts.DeletePrincipalAccessBoundaryPolicy, gax.WithClientTracing(tracing))
+		callOpts.ListPrincipalAccessBoundaryPolicies = append(callOpts.ListPrincipalAccessBoundaryPolicies, gax.WithClientTracing(tracing))
+		callOpts.SearchPrincipalAccessBoundaryPolicyBindings = append(callOpts.SearchPrincipalAccessBoundaryPolicyBindings, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "iam",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iam/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "iam.googleapis.com",
+			}),
+		)
+
+		callOpts.CreatePrincipalAccessBoundaryPolicy = append(callOpts.CreatePrincipalAccessBoundaryPolicy, gax.WithClientLogging(logging))
+		callOpts.GetPrincipalAccessBoundaryPolicy = append(callOpts.GetPrincipalAccessBoundaryPolicy, gax.WithClientLogging(logging))
+		callOpts.UpdatePrincipalAccessBoundaryPolicy = append(callOpts.UpdatePrincipalAccessBoundaryPolicy, gax.WithClientLogging(logging))
+		callOpts.DeletePrincipalAccessBoundaryPolicy = append(callOpts.DeletePrincipalAccessBoundaryPolicy, gax.WithClientLogging(logging))
+		callOpts.ListPrincipalAccessBoundaryPolicies = append(callOpts.ListPrincipalAccessBoundaryPolicies, gax.WithClientLogging(logging))
+		callOpts.SearchPrincipalAccessBoundaryPolicyBindings = append(callOpts.SearchPrincipalAccessBoundaryPolicyBindings, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -561,9 +639,6 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) CreatePrincipalAccessBoundar
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PrincipalAccessBoundaryPolicies/CreatePrincipalAccessBoundaryPolicy")
 	}
@@ -591,9 +666,6 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) GetPrincipalAccessBoundaryPo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PrincipalAccessBoundaryPolicies/GetPrincipalAccessBoundaryPolicy")
 	}
@@ -642,9 +714,6 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) DeletePrincipalAccessBoundar
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PrincipalAccessBoundaryPolicies/DeletePrincipalAccessBoundaryPolicy")
 	}
@@ -672,9 +741,6 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) ListPrincipalAccessBoundaryP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PrincipalAccessBoundaryPolicies/ListPrincipalAccessBoundaryPolicies")
 	}
@@ -724,9 +790,6 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) SearchPrincipalAccessBoundar
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PrincipalAccessBoundaryPolicies/SearchPrincipalAccessBoundaryPolicyBindings")
 	}
@@ -806,6 +869,11 @@ func (c *principalAccessBoundaryPoliciesRESTClient) CreatePrincipalAccessBoundar
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v/principalAccessBoundaryPolicies", req.GetParent())
 
 	params := url.Values{}
@@ -823,9 +891,6 @@ func (c *principalAccessBoundaryPoliciesRESTClient) CreatePrincipalAccessBoundar
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PrincipalAccessBoundaryPolicies/CreatePrincipalAccessBoundaryPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{parent=organizations/*/locations/*}/principalAccessBoundaryPolicies")
@@ -874,6 +939,11 @@ func (c *principalAccessBoundaryPoliciesRESTClient) GetPrincipalAccessBoundaryPo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
 
 	params := url.Values{}
@@ -887,9 +957,6 @@ func (c *principalAccessBoundaryPoliciesRESTClient) GetPrincipalAccessBoundaryPo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PrincipalAccessBoundaryPolicies/GetPrincipalAccessBoundaryPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=organizations/*/locations/*/principalAccessBoundaryPolicies/*}")
@@ -936,6 +1003,11 @@ func (c *principalAccessBoundaryPoliciesRESTClient) UpdatePrincipalAccessBoundar
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPrincipalAccessBoundaryPolicy().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetPrincipalAccessBoundaryPolicy().GetName())
@@ -1009,6 +1081,11 @@ func (c *principalAccessBoundaryPoliciesRESTClient) DeletePrincipalAccessBoundar
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
 
 	params := url.Values{}
@@ -1031,9 +1108,6 @@ func (c *principalAccessBoundaryPoliciesRESTClient) DeletePrincipalAccessBoundar
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PrincipalAccessBoundaryPolicies/DeletePrincipalAccessBoundaryPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=organizations/*/locations/*/principalAccessBoundaryPolicies/*}")
@@ -1093,6 +1167,11 @@ func (c *principalAccessBoundaryPoliciesRESTClient) ListPrincipalAccessBoundaryP
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v3/%v/principalAccessBoundaryPolicies", req.GetParent())
@@ -1174,6 +1253,11 @@ func (c *principalAccessBoundaryPoliciesRESTClient) SearchPrincipalAccessBoundar
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3/%v:searchPolicyBindings", req.GetName())
 
 		params := url.Values{}
@@ -1237,6 +1321,11 @@ func (c *principalAccessBoundaryPoliciesRESTClient) SearchPrincipalAccessBoundar
 func (c *principalAccessBoundaryPoliciesRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())

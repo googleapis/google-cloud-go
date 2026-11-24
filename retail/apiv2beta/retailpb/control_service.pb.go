@@ -403,30 +403,30 @@ var File_google_cloud_retail_v2beta_control_service_proto protoreflect.FileDescr
 
 const file_google_cloud_retail_v2beta_control_service_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/retail/v2beta/control_service.proto\x12\x1agoogle.cloud.retail.v2beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/retail/v2beta/control.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xbd\x01\n" +
-	"\x14CreateControlRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dretail.googleapis.com/CatalogR\x06parent\x12B\n" +
-	"\acontrol\x18\x02 \x01(\v2#.google.cloud.retail.v2beta.ControlB\x03\xe0A\x02R\acontrol\x12\"\n" +
+	"0google/cloud/retail/v2beta/control_service.proto\x12\x1agoogle.cloud.retail.v2beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/retail/v2beta/control.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xc0\x01\n" +
+	"\x14CreateControlRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dretail.googleapis.com/CatalogR\x06parent\x12C\n" +
+	"\acontrol\x18\x02 \x01(\v2#.google.cloud.retail.v2beta.ControlB\x04\xe2A\x01\x02R\acontrol\x12#\n" +
 	"\n" +
-	"control_id\x18\x03 \x01(\tB\x03\xe0A\x02R\tcontrolId\"\x97\x01\n" +
-	"\x14UpdateControlRequest\x12B\n" +
-	"\acontrol\x18\x01 \x01(\v2#.google.cloud.retail.v2beta.ControlB\x03\xe0A\x02R\acontrol\x12;\n" +
+	"control_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\tcontrolId\"\x98\x01\n" +
+	"\x14UpdateControlRequest\x12C\n" +
+	"\acontrol\x18\x01 \x01(\v2#.google.cloud.retail.v2beta.ControlB\x04\xe2A\x01\x02R\acontrol\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"Q\n" +
-	"\x14DeleteControlRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dretail.googleapis.com/ControlR\x04name\"N\n" +
-	"\x11GetControlRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dretail.googleapis.com/ControlR\x04name\"\xb7\x01\n" +
-	"\x13ListControlsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dretail.googleapis.com/CatalogR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"updateMask\"R\n" +
+	"\x14DeleteControlRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dretail.googleapis.com/ControlR\x04name\"O\n" +
+	"\x11GetControlRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dretail.googleapis.com/ControlR\x04name\"\xbb\x01\n" +
+	"\x13ListControlsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dretail.googleapis.com/CatalogR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x7f\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x7f\n" +
 	"\x14ListControlsResponse\x12?\n" +
 	"\bcontrols\x18\x01 \x03(\v2#.google.cloud.retail.v2beta.ControlR\bcontrols\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\x9c\b\n" +

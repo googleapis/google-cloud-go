@@ -315,6 +315,55 @@ func NewStreamingClient(ctx context.Context, opts ...option.ClientOption) (*Stre
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "visionai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/visionai/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "visionai.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.SendPackets = append(client.CallOptions.SendPackets, gax.WithClientTracing(tracing))
+		client.CallOptions.ReceivePackets = append(client.CallOptions.ReceivePackets, gax.WithClientTracing(tracing))
+		client.CallOptions.ReceiveEvents = append(client.CallOptions.ReceiveEvents, gax.WithClientTracing(tracing))
+		client.CallOptions.AcquireLease = append(client.CallOptions.AcquireLease, gax.WithClientTracing(tracing))
+		client.CallOptions.RenewLease = append(client.CallOptions.RenewLease, gax.WithClientTracing(tracing))
+		client.CallOptions.ReleaseLease = append(client.CallOptions.ReleaseLease, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "visionai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/visionai/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "visionai.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.SendPackets = append(client.CallOptions.SendPackets, gax.WithClientLogging(logging))
+		client.CallOptions.ReceivePackets = append(client.CallOptions.ReceivePackets, gax.WithClientLogging(logging))
+		client.CallOptions.ReceiveEvents = append(client.CallOptions.ReceiveEvents, gax.WithClientLogging(logging))
+		client.CallOptions.AcquireLease = append(client.CallOptions.AcquireLease, gax.WithClientLogging(logging))
+		client.CallOptions.RenewLease = append(client.CallOptions.RenewLease, gax.WithClientLogging(logging))
+		client.CallOptions.ReleaseLease = append(client.CallOptions.ReleaseLease, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -416,6 +465,55 @@ func NewStreamingRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "visionai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/visionai/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "visionai.googleapis.com",
+			}),
+		)
+
+		callOpts.SendPackets = append(callOpts.SendPackets, gax.WithClientTracing(tracing))
+		callOpts.ReceivePackets = append(callOpts.ReceivePackets, gax.WithClientTracing(tracing))
+		callOpts.ReceiveEvents = append(callOpts.ReceiveEvents, gax.WithClientTracing(tracing))
+		callOpts.AcquireLease = append(callOpts.AcquireLease, gax.WithClientTracing(tracing))
+		callOpts.RenewLease = append(callOpts.RenewLease, gax.WithClientTracing(tracing))
+		callOpts.ReleaseLease = append(callOpts.ReleaseLease, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "visionai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/visionai/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "visionai.googleapis.com",
+			}),
+		)
+
+		callOpts.SendPackets = append(callOpts.SendPackets, gax.WithClientLogging(logging))
+		callOpts.ReceivePackets = append(callOpts.ReceivePackets, gax.WithClientLogging(logging))
+		callOpts.ReceiveEvents = append(callOpts.ReceiveEvents, gax.WithClientLogging(logging))
+		callOpts.AcquireLease = append(callOpts.AcquireLease, gax.WithClientLogging(logging))
+		callOpts.RenewLease = append(callOpts.RenewLease, gax.WithClientLogging(logging))
+		callOpts.ReleaseLease = append(callOpts.ReleaseLease, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
 	}
 
 	return &StreamingClient{internalClient: c, CallOptions: callOpts}, nil
@@ -788,6 +886,11 @@ func (c *streamingRESTClient) AcquireLease(ctx context.Context, req *visionaipb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSeries(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:acquireLease", req.GetSeries())
 
 	params := url.Values{}
@@ -846,6 +949,11 @@ func (c *streamingRESTClient) RenewLease(ctx context.Context, req *visionaipb.Re
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSeries(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:renewLease", req.GetSeries())
@@ -908,6 +1016,11 @@ func (c *streamingRESTClient) ReleaseLease(ctx context.Context, req *visionaipb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetSeries(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:releaseLease", req.GetSeries())
 
 	params := url.Values{}
@@ -960,6 +1073,11 @@ func (c *streamingRESTClient) ReleaseLease(ctx context.Context, req *visionaipb.
 func (c *streamingRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1027,6 +1145,11 @@ func (c *streamingRESTClient) ListLocations(ctx context.Context, req *locationpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -1103,6 +1226,11 @@ func (c *streamingRESTClient) CancelOperation(ctx context.Context, req *longrunn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1142,6 +1270,11 @@ func (c *streamingRESTClient) DeleteOperation(ctx context.Context, req *longrunn
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1179,6 +1312,11 @@ func (c *streamingRESTClient) DeleteOperation(ctx context.Context, req *longrunn
 func (c *streamingRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -1246,6 +1384,11 @@ func (c *streamingRESTClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

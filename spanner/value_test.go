@@ -2135,6 +2135,8 @@ func TestDecodeValueErrors(t *testing.T) {
 		{nullProto(), stringType(), nil},
 		{nullProto(), stringType(), 1},
 		{timeProto(t1), timeType(), &s},
+		{listProto(listProto(intProto(1))), listType(&sppb.Type{Code: sppb.TypeCode_STRUCT}), &[]NullRow{}},
+		{listProto(), listType(&sppb.Type{Code: sppb.TypeCode_STRUCT}), &[]NullRow{}},
 	} {
 		err := decodeValue(test.in, test.t, test.v)
 		if err == nil {
@@ -2699,6 +2701,61 @@ func TestDecodeStructArray(t *testing.T) {
 			}
 		}
 	}
+
+	t.Run("field count mismatches value count", func(t *testing.T) {
+		type S3 struct {
+			A int64 `spanner:"A"`
+			B int64 `spanner:"B"`
+		}
+		innerType := &sppb.StructType{Fields: []*sppb.StructType_Field{
+			{Name: "A", Type: intType()},
+			{Name: "B", Type: intType()},
+		}}
+		shortLV := listValueProto(intProto(1))
+		longLV := listValueProto(intProto(1), intProto(2), intProto(3))
+		for _, tc := range []struct {
+			desc    string
+			lv      *proto3.ListValue
+			lenient bool
+			wantErr error
+		}{
+			{
+				desc:    "fewer values than fields (strict)",
+				lv:      shortLV,
+				lenient: false,
+				wantErr: errStructFieldsMismatchVals(innerType, shortLV),
+			},
+			{
+				desc:    "fewer values than fields (lenient)",
+				lv:      shortLV,
+				lenient: true,
+				wantErr: errStructFieldsMismatchVals(innerType, shortLV),
+			},
+			{
+				desc:    "more values than fields (strict)",
+				lv:      longLV,
+				lenient: false,
+				wantErr: errStructFieldsMismatchVals(innerType, longLV),
+			},
+			{
+				desc:    "more values than fields (lenient)",
+				lv:      longLV,
+				lenient: true,
+				wantErr: errStructFieldsMismatchVals(innerType, longLV),
+			},
+			{
+				desc:    "nil ListValue",
+				lv:      nil,
+				lenient: false,
+				wantErr: errNilListValue("STRUCT"),
+			},
+		} {
+			var dst S3
+			if gotErr := decodeStruct(innerType, tc.lv, &dst, tc.lenient); !testEqual(gotErr, tc.wantErr) {
+				t.Errorf("%s: decodeStruct got error %v, want %v", tc.desc, gotErr, tc.wantErr)
+			}
+		}
+	})
 }
 
 func TestEncodeStructValueDynamicStructs(t *testing.T) {

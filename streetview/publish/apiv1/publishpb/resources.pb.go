@@ -1850,10 +1850,10 @@ const file_google_streetview_publish_v1_resources_proto_rawDesc = "" +
 	"upload_url\x18\x01 \x01(\tH\x00R\tuploadUrlB\r\n" +
 	"\vfile_source\"\x19\n" +
 	"\aPhotoId\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"=\n" +
-	"\x05Level\x12\x1b\n" +
-	"\x06number\x18\x01 \x01(\x01B\x03\xe0A\x01R\x06number\x12\x17\n" +
-	"\x04name\x18\x02 \x01(\tB\x03\xe0A\x02R\x04name\"\xe3\x02\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"?\n" +
+	"\x05Level\x12\x1c\n" +
+	"\x06number\x18\x01 \x01(\x01B\x04\xe2A\x01\x01R\x06number\x12\x18\n" +
+	"\x04name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04name\"\xe3\x02\n" +
 	"\x04Pose\x125\n" +
 	"\flat_lng_pair\x18\x01 \x01(\v2\x13.google.type.LatLngR\n" +
 	"latLngPair\x12\x1a\n" +
@@ -1873,32 +1873,32 @@ const file_google_streetview_publish_v1_resources_proto_rawDesc = "" +
 	"\fcapture_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\vcaptureTime\x12\f\n" +
 	"\x01x\x18\x02 \x01(\x02R\x01x\x12\f\n" +
 	"\x01y\x18\x03 \x01(\x02R\x01y\x12\f\n" +
-	"\x01z\x18\x04 \x01(\x02R\x01z\"e\n" +
+	"\x01z\x18\x04 \x01(\x02R\x01z\"g\n" +
 	"\x05Place\x12\x19\n" +
-	"\bplace_id\x18\x01 \x01(\tR\aplaceId\x12\x17\n" +
-	"\x04name\x18\x02 \x01(\tB\x03\xe0A\x03R\x04name\x12(\n" +
-	"\rlanguage_code\x18\x03 \x01(\tB\x03\xe0A\x03R\flanguageCode\"P\n" +
+	"\bplace_id\x18\x01 \x01(\tR\aplaceId\x12\x18\n" +
+	"\x04name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12)\n" +
+	"\rlanguage_code\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\flanguageCode\"Q\n" +
 	"\n" +
-	"Connection\x12B\n" +
-	"\x06target\x18\x01 \x01(\v2%.google.streetview.publish.v1.PhotoIdB\x03\xe0A\x02R\x06target\"\xef\b\n" +
-	"\x05Photo\x12H\n" +
-	"\bphoto_id\x18\x01 \x01(\v2%.google.streetview.publish.v1.PhotoIdB\x06\xe0A\x02\xe0A\x03R\aphotoId\x12W\n" +
-	"\x10upload_reference\x18\x02 \x01(\v2'.google.streetview.publish.v1.UploadRefB\x03\xe0A\x04R\x0fuploadReference\x12&\n" +
-	"\fdownload_url\x18\x03 \x01(\tB\x03\xe0A\x03R\vdownloadUrl\x12(\n" +
-	"\rthumbnail_url\x18\t \x01(\tB\x03\xe0A\x03R\fthumbnailUrl\x12\"\n" +
+	"Connection\x12C\n" +
+	"\x06target\x18\x01 \x01(\v2%.google.streetview.publish.v1.PhotoIdB\x04\xe2A\x01\x02R\x06target\"\xfa\b\n" +
+	"\x05Photo\x12G\n" +
+	"\bphoto_id\x18\x01 \x01(\v2%.google.streetview.publish.v1.PhotoIdB\x05\xe2A\x02\x02\x03R\aphotoId\x12X\n" +
+	"\x10upload_reference\x18\x02 \x01(\v2'.google.streetview.publish.v1.UploadRefB\x04\xe2A\x01\x04R\x0fuploadReference\x12'\n" +
+	"\fdownload_url\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdownloadUrl\x12)\n" +
+	"\rthumbnail_url\x18\t \x01(\tB\x04\xe2A\x01\x03R\fthumbnailUrl\x12#\n" +
 	"\n" +
-	"share_link\x18\v \x01(\tB\x03\xe0A\x03R\tshareLink\x12;\n" +
-	"\x04pose\x18\x04 \x01(\v2\".google.streetview.publish.v1.PoseB\x03\xe0A\x01R\x04pose\x12O\n" +
-	"\vconnections\x18\x05 \x03(\v2(.google.streetview.publish.v1.ConnectionB\x03\xe0A\x01R\vconnections\x12B\n" +
-	"\fcapture_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\vcaptureTime\x12@\n" +
-	"\vupload_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"uploadTime\x12@\n" +
-	"\x06places\x18\a \x03(\v2#.google.streetview.publish.v1.PlaceB\x03\xe0A\x01R\x06places\x12\"\n" +
+	"share_link\x18\v \x01(\tB\x04\xe2A\x01\x03R\tshareLink\x12<\n" +
+	"\x04pose\x18\x04 \x01(\v2\".google.streetview.publish.v1.PoseB\x04\xe2A\x01\x01R\x04pose\x12P\n" +
+	"\vconnections\x18\x05 \x03(\v2(.google.streetview.publish.v1.ConnectionB\x04\xe2A\x01\x01R\vconnections\x12C\n" +
+	"\fcapture_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\vcaptureTime\x12A\n" +
+	"\vupload_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"uploadTime\x12A\n" +
+	"\x06places\x18\a \x03(\v2#.google.streetview.publish.v1.PlaceB\x04\xe2A\x01\x01R\x06places\x12#\n" +
 	"\n" +
 	"view_count\x18\n" +
-	" \x01(\x03B\x03\xe0A\x03R\tviewCount\x12`\n" +
-	"\x0ftransfer_status\x18\f \x01(\x0e22.google.streetview.publish.v1.Photo.TransferStatusB\x03\xe0A\x03R\x0etransferStatus\x12j\n" +
-	"\x13maps_publish_status\x18\r \x01(\x0e25.google.streetview.publish.v1.Photo.MapsPublishStatusB\x03\xe0A\x03R\x11mapsPublishStatus\"\xa5\x01\n" +
+	" \x01(\x03B\x04\xe2A\x01\x03R\tviewCount\x12a\n" +
+	"\x0ftransfer_status\x18\f \x01(\x0e22.google.streetview.publish.v1.Photo.TransferStatusB\x04\xe2A\x01\x03R\x0etransferStatus\x12k\n" +
+	"\x13maps_publish_status\x18\r \x01(\x0e25.google.streetview.publish.v1.Photo.MapsPublishStatusB\x04\xe2A\x01\x03R\x11mapsPublishStatus\"\xa5\x01\n" +
 	"\x0eTransferStatus\x12\x1b\n" +
 	"\x17TRANSFER_STATUS_UNKNOWN\x10\x00\x12\x15\n" +
 	"\x11NEVER_TRANSFERRED\x10\x01\x12\v\n" +
@@ -1911,26 +1911,26 @@ const file_google_streetview_publish_v1_resources_proto_rawDesc = "" +
 	"\x11MapsPublishStatus\x12#\n" +
 	"\x1fUNSPECIFIED_MAPS_PUBLISH_STATUS\x10\x00\x12\r\n" +
 	"\tPUBLISHED\x10\x01\x12\x14\n" +
-	"\x10REJECTED_UNKNOWN\x10\x02\"\xf6\b\n" +
-	"\rPhotoSequence\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x03R\x02id\x12@\n" +
-	"\x06photos\x18\x02 \x03(\v2#.google.streetview.publish.v1.PhotoB\x03\xe0A\x03R\x06photos\x12W\n" +
-	"\x10upload_reference\x18\x03 \x01(\v2'.google.streetview.publish.v1.UploadRefB\x03\xe0A\x04R\x0fuploadReference\x12S\n" +
-	"\x15capture_time_override\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x13captureTimeOverride\x12@\n" +
-	"\vupload_time\x18\x12 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"uploadTime\x12Q\n" +
-	"\x10raw_gps_timeline\x18\a \x03(\v2\".google.streetview.publish.v1.PoseB\x03\xe0A\x04R\x0erawGpsTimeline\x12Y\n" +
+	"\x10REJECTED_UNKNOWN\x10\x02\"\x85\t\n" +
+	"\rPhotoSequence\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x02id\x12A\n" +
+	"\x06photos\x18\x02 \x03(\v2#.google.streetview.publish.v1.PhotoB\x04\xe2A\x01\x03R\x06photos\x12X\n" +
+	"\x10upload_reference\x18\x03 \x01(\v2'.google.streetview.publish.v1.UploadRefB\x04\xe2A\x01\x04R\x0fuploadReference\x12T\n" +
+	"\x15capture_time_override\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x13captureTimeOverride\x12A\n" +
+	"\vupload_time\x18\x12 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"uploadTime\x12R\n" +
+	"\x10raw_gps_timeline\x18\a \x03(\v2\".google.streetview.publish.v1.PoseB\x04\xe2A\x01\x04R\x0erawGpsTimeline\x12Z\n" +
 	"\n" +
-	"gps_source\x18\b \x01(\x0e25.google.streetview.publish.v1.PhotoSequence.GpsSourceB\x03\xe0A\x04R\tgpsSource\x128\n" +
-	"\x03imu\x18\v \x01(\v2!.google.streetview.publish.v1.ImuB\x03\xe0A\x04R\x03imu\x12]\n" +
-	"\x10processing_state\x18\f \x01(\x0e2-.google.streetview.publish.v1.ProcessingStateB\x03\xe0A\x03R\x0fprocessingState\x12a\n" +
-	"\x0efailure_reason\x18\r \x01(\x0e25.google.streetview.publish.v1.ProcessingFailureReasonB\x03\xe0A\x03R\rfailureReason\x12d\n" +
-	"\x0ffailure_details\x18\x17 \x01(\v26.google.streetview.publish.v1.ProcessingFailureDetailsB\x03\xe0A\x03R\x0efailureDetails\x12,\n" +
-	"\x0fdistance_meters\x18\x10 \x01(\x01B\x03\xe0A\x03R\x0edistanceMeters\x12X\n" +
-	"\x0fsequence_bounds\x18\x14 \x01(\v2*.google.streetview.publish.v1.LatLngBoundsB\x03\xe0A\x03R\x0esequenceBounds\x12\"\n" +
+	"gps_source\x18\b \x01(\x0e25.google.streetview.publish.v1.PhotoSequence.GpsSourceB\x04\xe2A\x01\x04R\tgpsSource\x129\n" +
+	"\x03imu\x18\v \x01(\v2!.google.streetview.publish.v1.ImuB\x04\xe2A\x01\x04R\x03imu\x12^\n" +
+	"\x10processing_state\x18\f \x01(\x0e2-.google.streetview.publish.v1.ProcessingStateB\x04\xe2A\x01\x03R\x0fprocessingState\x12b\n" +
+	"\x0efailure_reason\x18\r \x01(\x0e25.google.streetview.publish.v1.ProcessingFailureReasonB\x04\xe2A\x01\x03R\rfailureReason\x12e\n" +
+	"\x0ffailure_details\x18\x17 \x01(\v26.google.streetview.publish.v1.ProcessingFailureDetailsB\x04\xe2A\x01\x03R\x0efailureDetails\x12-\n" +
+	"\x0fdistance_meters\x18\x10 \x01(\x01B\x04\xe2A\x01\x03R\x0edistanceMeters\x12Y\n" +
+	"\x0fsequence_bounds\x18\x14 \x01(\v2*.google.streetview.publish.v1.LatLngBoundsB\x04\xe2A\x01\x03R\x0esequenceBounds\x12#\n" +
 	"\n" +
-	"view_count\x18\x15 \x01(\x03B\x03\xe0A\x03R\tviewCount\x12\x1f\n" +
-	"\bfilename\x18\x16 \x01(\tB\x03\xe0A\x03R\bfilename\"A\n" +
+	"view_count\x18\x15 \x01(\x03B\x04\xe2A\x01\x03R\tviewCount\x12 \n" +
+	"\bfilename\x18\x16 \x01(\tB\x04\xe2A\x01\x03R\bfilename\"A\n" +
 	"\tGpsSource\x12\x12\n" +
 	"\x0ePHOTO_SEQUENCE\x10\x00\x12 \n" +
 	"\x1cCAMERA_MOTION_METADATA_TRACK\x10\x01\"t\n" +

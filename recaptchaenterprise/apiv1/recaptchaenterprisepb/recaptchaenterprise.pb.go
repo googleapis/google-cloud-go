@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,6 +40,61 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
+
+// Enum of challenge types for Universal, `POLICY_BASED_CHALLENGE` and
+// `INVISIBLE` keys. Ensure that applications can handle values not explicitly
+// listed.
+type ChallengeType int32
+
+const (
+	// Default unspecified type.
+	ChallengeType_CHALLENGE_TYPE_UNSPECIFIED ChallengeType = 0
+	// A visual challenge.
+	ChallengeType_CHALLENGE_TYPE_VISUAL ChallengeType = 1
+	// An audio challenge.
+	ChallengeType_CHALLENGE_TYPE_AUDIO ChallengeType = 2
+)
+
+// Enum value maps for ChallengeType.
+var (
+	ChallengeType_name = map[int32]string{
+		0: "CHALLENGE_TYPE_UNSPECIFIED",
+		1: "CHALLENGE_TYPE_VISUAL",
+		2: "CHALLENGE_TYPE_AUDIO",
+	}
+	ChallengeType_value = map[string]int32{
+		"CHALLENGE_TYPE_UNSPECIFIED": 0,
+		"CHALLENGE_TYPE_VISUAL":      1,
+		"CHALLENGE_TYPE_AUDIO":       2,
+	}
+)
+
+func (x ChallengeType) Enum() *ChallengeType {
+	p := new(ChallengeType)
+	*p = x
+	return p
+}
+
+func (x ChallengeType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ChallengeType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[0].Descriptor()
+}
+
+func (ChallengeType) Type() protoreflect.EnumType {
+	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[0]
+}
+
+func (x ChallengeType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ChallengeType.Descriptor instead.
+func (ChallengeType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{0}
+}
 
 // Enum that represents an event in the payment transaction lifecycle.
 // Ensure that applications can handle values not explicitly listed.
@@ -181,11 +236,11 @@ func (x TransactionEvent_TransactionEventType) String() string {
 }
 
 func (TransactionEvent_TransactionEventType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[0].Descriptor()
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[1].Descriptor()
 }
 
 func (TransactionEvent_TransactionEventType) Type() protoreflect.EnumType {
-	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[0]
+	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[1]
 }
 
 func (x TransactionEvent_TransactionEventType) Number() protoreflect.EnumNumber {
@@ -250,11 +305,11 @@ func (x AnnotateAssessmentRequest_Annotation) String() string {
 }
 
 func (AnnotateAssessmentRequest_Annotation) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[1].Descriptor()
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[2].Descriptor()
 }
 
 func (AnnotateAssessmentRequest_Annotation) Type() protoreflect.EnumType {
-	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[1]
+	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[2]
 }
 
 func (x AnnotateAssessmentRequest_Annotation) Number() protoreflect.EnumNumber {
@@ -368,11 +423,11 @@ func (x AnnotateAssessmentRequest_Reason) String() string {
 }
 
 func (AnnotateAssessmentRequest_Reason) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[2].Descriptor()
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[3].Descriptor()
 }
 
 func (AnnotateAssessmentRequest_Reason) Type() protoreflect.EnumType {
-	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[2]
+	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[3]
 }
 
 func (x AnnotateAssessmentRequest_Reason) Number() protoreflect.EnumNumber {
@@ -460,11 +515,11 @@ func (x AccountVerificationInfo_Result) String() string {
 }
 
 func (AccountVerificationInfo_Result) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[3].Descriptor()
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[4].Descriptor()
 }
 
 func (AccountVerificationInfo_Result) Type() protoreflect.EnumType {
-	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[3]
+	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[4]
 }
 
 func (x AccountVerificationInfo_Result) Number() protoreflect.EnumNumber {
@@ -518,11 +573,11 @@ func (x Event_FraudPrevention) String() string {
 }
 
 func (Event_FraudPrevention) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[4].Descriptor()
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[5].Descriptor()
 }
 
 func (Event_FraudPrevention) Type() protoreflect.EnumType {
-	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[4]
+	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[5]
 }
 
 func (x Event_FraudPrevention) Number() protoreflect.EnumNumber {
@@ -553,9 +608,21 @@ const (
 	// Too little traffic has been received from this site thus far to generate
 	// quality risk analysis.
 	RiskAnalysis_LOW_CONFIDENCE_SCORE RiskAnalysis_ClassificationReason = 5
-	// The request matches behavioral characteristics of a carding attack.
+	// Deprecated: Use
+	// [FraudPreventionAssessment.transaction_risk][google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.transaction_risk]
+	// and
+	// [FraudPreventionAssessment.RiskReason.Reason.EXCESSIVE_ENUMERATION_PATTERN][google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.RiskReason.Reason.EXCESSIVE_ENUMERATION_PATTERN]
+	// instead.
+	//
+	// Deprecated: Marked as deprecated in google/cloud/recaptchaenterprise/v1/recaptchaenterprise.proto.
 	RiskAnalysis_SUSPECTED_CARDING RiskAnalysis_ClassificationReason = 6
-	// The request matches behavioral characteristics of chargebacks for fraud.
+	// Deprecated: Use
+	// [FraudPreventionAssessment.transaction_risk][google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.transaction_risk]
+	// and
+	// [FraudPreventionAssessment.RiskReason.Reason.ASSOCIATED_WITH_FRAUD_CLUSTER][google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.RiskReason.Reason.ASSOCIATED_WITH_FRAUD_CLUSTER]
+	// instead.
+	//
+	// Deprecated: Marked as deprecated in google/cloud/recaptchaenterprise/v1/recaptchaenterprise.proto.
 	RiskAnalysis_SUSPECTED_CHARGEBACK RiskAnalysis_ClassificationReason = 7
 )
 
@@ -594,11 +661,11 @@ func (x RiskAnalysis_ClassificationReason) String() string {
 }
 
 func (RiskAnalysis_ClassificationReason) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[5].Descriptor()
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[6].Descriptor()
 }
 
 func (RiskAnalysis_ClassificationReason) Type() protoreflect.EnumType {
-	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[5]
+	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[6]
 }
 
 func (x RiskAnalysis_ClassificationReason) Number() protoreflect.EnumNumber {
@@ -610,8 +677,9 @@ func (RiskAnalysis_ClassificationReason) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{13, 0}
 }
 
-// Challenge information for POLICY_BASED_CHALLENGE and INVISIBLE keys.
-// Ensure that applications can handle values not explicitly listed.
+// Challenge information for Universal, `POLICY_BASED_CHALLENGE` and
+// `INVISIBLE` keys. Ensure that applications can handle values not explicitly
+// listed.
 type RiskAnalysis_Challenge int32
 
 const (
@@ -653,11 +721,11 @@ func (x RiskAnalysis_Challenge) String() string {
 }
 
 func (RiskAnalysis_Challenge) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[6].Descriptor()
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[7].Descriptor()
 }
 
 func (RiskAnalysis_Challenge) Type() protoreflect.EnumType {
-	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[6]
+	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[7]
 }
 
 func (x RiskAnalysis_Challenge) Number() protoreflect.EnumNumber {
@@ -713,11 +781,11 @@ func (x Bot_BotType) String() string {
 }
 
 func (Bot_BotType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[7].Descriptor()
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[8].Descriptor()
 }
 
 func (Bot_BotType) Type() protoreflect.EnumType {
-	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[7]
+	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[8]
 }
 
 func (x Bot_BotType) Number() protoreflect.EnumNumber {
@@ -758,6 +826,11 @@ const (
 	//   - you set an action score threshold higher than 0.0
 	//   - you provided a non-empty `expected_action`
 	TokenProperties_UNEXPECTED_ACTION TokenProperties_InvalidReason = 7
+	// The key used to generate the token does not match the `site_key`.
+	TokenProperties_KEY_MISMATCH TokenProperties_InvalidReason = 8
+	// The domain of the page on which the token was generated does not match
+	// the `allowed_domains` configured in the `site_key`.
+	TokenProperties_DOMAIN_MISMATCH TokenProperties_InvalidReason = 9
 )
 
 // Enum value maps for TokenProperties_InvalidReason.
@@ -771,6 +844,8 @@ var (
 		5: "MISSING",
 		6: "BROWSER_ERROR",
 		7: "UNEXPECTED_ACTION",
+		8: "KEY_MISMATCH",
+		9: "DOMAIN_MISMATCH",
 	}
 	TokenProperties_InvalidReason_value = map[string]int32{
 		"INVALID_REASON_UNSPECIFIED": 0,
@@ -781,6 +856,8 @@ var (
 		"MISSING":                    5,
 		"BROWSER_ERROR":              6,
 		"UNEXPECTED_ACTION":          7,
+		"KEY_MISMATCH":               8,
+		"DOMAIN_MISMATCH":            9,
 	}
 )
 
@@ -795,11 +872,11 @@ func (x TokenProperties_InvalidReason) String() string {
 }
 
 func (TokenProperties_InvalidReason) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[8].Descriptor()
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[9].Descriptor()
 }
 
 func (TokenProperties_InvalidReason) Type() protoreflect.EnumType {
-	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[8]
+	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[9]
 }
 
 func (x TokenProperties_InvalidReason) Number() protoreflect.EnumNumber {
@@ -866,11 +943,11 @@ func (x FraudPreventionAssessment_RiskReason_Reason) String() string {
 }
 
 func (FraudPreventionAssessment_RiskReason_Reason) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[9].Descriptor()
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[10].Descriptor()
 }
 
 func (FraudPreventionAssessment_RiskReason_Reason) Type() protoreflect.EnumType {
-	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[9]
+	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[10]
 }
 
 func (x FraudPreventionAssessment_RiskReason_Reason) Number() protoreflect.EnumNumber {
@@ -927,11 +1004,11 @@ func (x FraudSignals_CardSignals_CardLabel) String() string {
 }
 
 func (FraudSignals_CardSignals_CardLabel) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[10].Descriptor()
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[11].Descriptor()
 }
 
 func (FraudSignals_CardSignals_CardLabel) Type() protoreflect.EnumType {
-	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[10]
+	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[11]
 }
 
 func (x FraudSignals_CardSignals_CardLabel) Number() protoreflect.EnumNumber {
@@ -977,11 +1054,11 @@ func (x SmsTollFraudVerdict_SmsTollFraudReason) String() string {
 }
 
 func (SmsTollFraudVerdict_SmsTollFraudReason) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[11].Descriptor()
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[12].Descriptor()
 }
 
 func (SmsTollFraudVerdict_SmsTollFraudReason) Type() protoreflect.EnumType {
-	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[11]
+	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[12]
 }
 
 func (x SmsTollFraudVerdict_SmsTollFraudReason) Number() protoreflect.EnumNumber {
@@ -993,14 +1070,14 @@ func (SmsTollFraudVerdict_SmsTollFraudReason) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{18, 0}
 }
 
-// Labels returned by account defender for this request.
+// Labels returned by Account defense for this request.
 // Ensure that applications can handle values not explicitly listed.
 type AccountDefenderAssessment_AccountDefenderLabel int32
 
 const (
 	// Default unspecified type.
 	AccountDefenderAssessment_ACCOUNT_DEFENDER_LABEL_UNSPECIFIED AccountDefenderAssessment_AccountDefenderLabel = 0
-	// The request matches a known good profile for the user.
+	// The request matches a trusted profile associated with this account.
 	AccountDefenderAssessment_PROFILE_MATCH AccountDefenderAssessment_AccountDefenderLabel = 1
 	// The request is potentially a suspicious login event and must be further
 	// verified either through multi-factor authentication or another system.
@@ -1043,11 +1120,11 @@ func (x AccountDefenderAssessment_AccountDefenderLabel) String() string {
 }
 
 func (AccountDefenderAssessment_AccountDefenderLabel) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[12].Descriptor()
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[13].Descriptor()
 }
 
 func (AccountDefenderAssessment_AccountDefenderLabel) Type() protoreflect.EnumType {
-	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[12]
+	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[13]
 }
 
 func (x AccountDefenderAssessment_AccountDefenderLabel) Number() protoreflect.EnumNumber {
@@ -1057,6 +1134,141 @@ func (x AccountDefenderAssessment_AccountDefenderLabel) Number() protoreflect.En
 // Deprecated: Use AccountDefenderAssessment_AccountDefenderLabel.Descriptor instead.
 func (AccountDefenderAssessment_AccountDefenderLabel) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{20, 0}
+}
+
+// Risk explainability reasons for Account defense.
+// Ensure that applications can handle values not explicitly listed.
+type AccountDefenderAssessment_AccountRiskReason_RiskReason int32
+
+const (
+	// Default unspecified type.
+	AccountDefenderAssessment_AccountRiskReason_RISK_REASON_UNSPECIFIED AccountDefenderAssessment_AccountRiskReason_RiskReason = 0
+	// The client has been observed sending bot-like traffic to this site in
+	// the past. This reason incorporates historical reputation and indicates
+	// that the client is known to use bots, even if the current request is
+	// being made by a human.
+	AccountDefenderAssessment_AccountRiskReason_CLIENT_HISTORICAL_BOT_ACTIVITY AccountDefenderAssessment_AccountRiskReason_RiskReason = 1
+	// The account is part of a large group of related accounts, indicating
+	// that it may be part of a fraudulent network. Related accounts are
+	// identified based on having similar traffic patterns and request
+	// characteristics.
+	AccountDefenderAssessment_AccountRiskReason_ACCOUNT_IN_LARGE_RELATED_GROUP AccountDefenderAssessment_AccountRiskReason_RiskReason = 2
+	// The client has been observed accessing many accounts on this site.
+	AccountDefenderAssessment_AccountRiskReason_CLIENT_ACCESSED_MANY_ACCOUNTS AccountDefenderAssessment_AccountRiskReason_RiskReason = 3
+	// This email domain is a suspected provider of disposable email
+	// addresses.
+	AccountDefenderAssessment_AccountRiskReason_DISPOSABLE_EMAIL_DOMAIN AccountDefenderAssessment_AccountRiskReason_RiskReason = 4
+)
+
+// Enum value maps for AccountDefenderAssessment_AccountRiskReason_RiskReason.
+var (
+	AccountDefenderAssessment_AccountRiskReason_RiskReason_name = map[int32]string{
+		0: "RISK_REASON_UNSPECIFIED",
+		1: "CLIENT_HISTORICAL_BOT_ACTIVITY",
+		2: "ACCOUNT_IN_LARGE_RELATED_GROUP",
+		3: "CLIENT_ACCESSED_MANY_ACCOUNTS",
+		4: "DISPOSABLE_EMAIL_DOMAIN",
+	}
+	AccountDefenderAssessment_AccountRiskReason_RiskReason_value = map[string]int32{
+		"RISK_REASON_UNSPECIFIED":        0,
+		"CLIENT_HISTORICAL_BOT_ACTIVITY": 1,
+		"ACCOUNT_IN_LARGE_RELATED_GROUP": 2,
+		"CLIENT_ACCESSED_MANY_ACCOUNTS":  3,
+		"DISPOSABLE_EMAIL_DOMAIN":        4,
+	}
+)
+
+func (x AccountDefenderAssessment_AccountRiskReason_RiskReason) Enum() *AccountDefenderAssessment_AccountRiskReason_RiskReason {
+	p := new(AccountDefenderAssessment_AccountRiskReason_RiskReason)
+	*p = x
+	return p
+}
+
+func (x AccountDefenderAssessment_AccountRiskReason_RiskReason) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AccountDefenderAssessment_AccountRiskReason_RiskReason) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[14].Descriptor()
+}
+
+func (AccountDefenderAssessment_AccountRiskReason_RiskReason) Type() protoreflect.EnumType {
+	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[14]
+}
+
+func (x AccountDefenderAssessment_AccountRiskReason_RiskReason) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AccountDefenderAssessment_AccountRiskReason_RiskReason.Descriptor instead.
+func (AccountDefenderAssessment_AccountRiskReason_RiskReason) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{20, 1, 0}
+}
+
+// Trust explainability reasons for Account defense.
+// Ensure that applications can handle values not explicitly listed.
+type AccountDefenderAssessment_AccountTrustReason_TrustReason int32
+
+const (
+	// Default unspecified type.
+	AccountDefenderAssessment_AccountTrustReason_TRUST_REASON_UNSPECIFIED AccountDefenderAssessment_AccountTrustReason_TrustReason = 0
+	// The request matches a trusted profile associated with this account.
+	// Equivalent to `AccountDefenderLabel.PROFILE_MATCH`.
+	AccountDefenderAssessment_AccountTrustReason_PROFILE_MATCH AccountDefenderAssessment_AccountTrustReason_TrustReason = 1
+	// The account's historical activity is reputable. It is unlikely that the
+	// account has been compromised in the past.
+	AccountDefenderAssessment_AccountTrustReason_ACCOUNT_HISTORY_REPUTABLE AccountDefenderAssessment_AccountTrustReason_TrustReason = 2
+	// The identity shows a global pattern of reputable activity based on
+	// `userInfo` and associated identifiers.
+	AccountDefenderAssessment_AccountTrustReason_IDENTITY_GLOBAL_ACTIVITY_REPUTABLE AccountDefenderAssessment_AccountTrustReason_TrustReason = 3
+	// The identity shows a long-standing history of reputable activity based
+	// on `userInfo` and associated identifiers.
+	AccountDefenderAssessment_AccountTrustReason_IDENTITY_HISTORY_REPUTABLE AccountDefenderAssessment_AccountTrustReason_TrustReason = 4
+)
+
+// Enum value maps for AccountDefenderAssessment_AccountTrustReason_TrustReason.
+var (
+	AccountDefenderAssessment_AccountTrustReason_TrustReason_name = map[int32]string{
+		0: "TRUST_REASON_UNSPECIFIED",
+		1: "PROFILE_MATCH",
+		2: "ACCOUNT_HISTORY_REPUTABLE",
+		3: "IDENTITY_GLOBAL_ACTIVITY_REPUTABLE",
+		4: "IDENTITY_HISTORY_REPUTABLE",
+	}
+	AccountDefenderAssessment_AccountTrustReason_TrustReason_value = map[string]int32{
+		"TRUST_REASON_UNSPECIFIED":           0,
+		"PROFILE_MATCH":                      1,
+		"ACCOUNT_HISTORY_REPUTABLE":          2,
+		"IDENTITY_GLOBAL_ACTIVITY_REPUTABLE": 3,
+		"IDENTITY_HISTORY_REPUTABLE":         4,
+	}
+)
+
+func (x AccountDefenderAssessment_AccountTrustReason_TrustReason) Enum() *AccountDefenderAssessment_AccountTrustReason_TrustReason {
+	p := new(AccountDefenderAssessment_AccountTrustReason_TrustReason)
+	*p = x
+	return p
+}
+
+func (x AccountDefenderAssessment_AccountTrustReason_TrustReason) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AccountDefenderAssessment_AccountTrustReason_TrustReason) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[15].Descriptor()
+}
+
+func (AccountDefenderAssessment_AccountTrustReason_TrustReason) Type() protoreflect.EnumType {
+	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[15]
+}
+
+func (x AccountDefenderAssessment_AccountTrustReason_TrustReason) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AccountDefenderAssessment_AccountTrustReason_TrustReason.Descriptor instead.
+func (AccountDefenderAssessment_AccountTrustReason_TrustReason) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{20, 2, 0}
 }
 
 // Enum that represents the challenge option for challenge-based (for example,
@@ -1101,11 +1313,11 @@ func (x TestingOptions_TestingChallenge) String() string {
 }
 
 func (TestingOptions_TestingChallenge) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[13].Descriptor()
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[16].Descriptor()
 }
 
 func (TestingOptions_TestingChallenge) Type() protoreflect.EnumType {
-	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[13]
+	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[16]
 }
 
 func (x TestingOptions_TestingChallenge) Number() protoreflect.EnumNumber {
@@ -1169,11 +1381,11 @@ func (x WebKeySettings_IntegrationType) String() string {
 }
 
 func (WebKeySettings_IntegrationType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[14].Descriptor()
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[17].Descriptor()
 }
 
 func (WebKeySettings_IntegrationType) Type() protoreflect.EnumType {
-	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[14]
+	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[17]
 }
 
 func (x WebKeySettings_IntegrationType) Number() protoreflect.EnumNumber {
@@ -1228,11 +1440,11 @@ func (x WebKeySettings_ChallengeSecurityPreference) String() string {
 }
 
 func (WebKeySettings_ChallengeSecurityPreference) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[15].Descriptor()
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[18].Descriptor()
 }
 
 func (WebKeySettings_ChallengeSecurityPreference) Type() protoreflect.EnumType {
-	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[15]
+	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[18]
 }
 
 func (x WebKeySettings_ChallengeSecurityPreference) Number() protoreflect.EnumNumber {
@@ -1294,11 +1506,11 @@ func (x WafSettings_WafFeature) String() string {
 }
 
 func (WafSettings_WafFeature) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[16].Descriptor()
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[19].Descriptor()
 }
 
 func (WafSettings_WafFeature) Type() protoreflect.EnumType {
-	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[16]
+	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[19]
 }
 
 func (x WafSettings_WafFeature) Number() protoreflect.EnumNumber {
@@ -1307,7 +1519,7 @@ func (x WafSettings_WafFeature) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use WafSettings_WafFeature.Descriptor instead.
 func (WafSettings_WafFeature) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{67, 0}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{68, 0}
 }
 
 // Web Application Firewalls that reCAPTCHA supports.
@@ -1356,11 +1568,11 @@ func (x WafSettings_WafService) String() string {
 }
 
 func (WafSettings_WafService) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[17].Descriptor()
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[20].Descriptor()
 }
 
 func (WafSettings_WafService) Type() protoreflect.EnumType {
-	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[17]
+	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[20]
 }
 
 func (x WafSettings_WafService) Number() protoreflect.EnumNumber {
@@ -1369,7 +1581,7 @@ func (x WafSettings_WafService) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use WafSettings_WafService.Descriptor instead.
 func (WafSettings_WafService) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{67, 1}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{68, 1}
 }
 
 // Enum that represents the type of IP override.
@@ -1407,11 +1619,11 @@ func (x IpOverrideData_OverrideType) String() string {
 }
 
 func (IpOverrideData_OverrideType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[18].Descriptor()
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[21].Descriptor()
 }
 
 func (IpOverrideData_OverrideType) Type() protoreflect.EnumType {
-	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[18]
+	return &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes[21]
 }
 
 func (x IpOverrideData_OverrideType) Number() protoreflect.EnumNumber {
@@ -1420,7 +1632,7 @@ func (x IpOverrideData_OverrideType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use IpOverrideData_OverrideType.Descriptor instead.
 func (IpOverrideData_OverrideType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{69, 0}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{72, 0}
 }
 
 // The create assessment request message.
@@ -2041,7 +2253,7 @@ type Assessment struct {
 	// Optional. Account verification information for identity verification. The
 	// assessment event must include a token and site key to use this feature.
 	AccountVerification *AccountVerificationInfo `protobuf:"bytes,5,opt,name=account_verification,json=accountVerification,proto3" json:"account_verification,omitempty"`
-	// Output only. Assessment returned by account defender when an account
+	// Output only. Assessment returned by Account defense when an account
 	// identifier is provided.
 	AccountDefenderAssessment *AccountDefenderAssessment `protobuf:"bytes,6,opt,name=account_defender_assessment,json=accountDefenderAssessment,proto3" json:"account_defender_assessment,omitempty"`
 	// Optional. The private password leak verification field contains the
@@ -2058,15 +2270,17 @@ type Assessment struct {
 	// transaction.
 	FraudSignals *FraudSignals `protobuf:"bytes,13,opt,name=fraud_signals,json=fraudSignals,proto3" json:"fraud_signals,omitempty"`
 	// Output only. Assessment returned when a site key, a token, and a phone
-	// number as `user_id` are provided. Account defender and SMS toll fraud
-	// protection need to be enabled.
+	// number as `user_id` are provided. SMS defense needs to be enabled.
 	PhoneFraudAssessment *PhoneFraudAssessment `protobuf:"bytes,12,opt,name=phone_fraud_assessment,json=phoneFraudAssessment,proto3" json:"phone_fraud_assessment,omitempty"`
 	// Optional. The environment creating the assessment. This describes your
 	// environment (the system invoking CreateAssessment), NOT the environment of
 	// your user.
 	AssessmentEnvironment *AssessmentEnvironment `protobuf:"bytes,14,opt,name=assessment_environment,json=assessmentEnvironment,proto3" json:"assessment_environment,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	// Output only. Provides information about the policy evaluation for this
+	// assessment.
+	PolicyEvaluation *PolicyEvaluation `protobuf:"bytes,16,opt,name=policy_evaluation,json=policyEvaluation,proto3" json:"policy_evaluation,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *Assessment) Reset() {
@@ -2183,6 +2397,13 @@ func (x *Assessment) GetAssessmentEnvironment() *AssessmentEnvironment {
 	return nil
 }
 
+func (x *Assessment) GetPolicyEvaluation() *PolicyEvaluation {
+	if x != nil {
+		return x.PolicyEvaluation
+	}
+	return nil
+}
+
 // The event being assessed.
 type Event struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2200,7 +2421,7 @@ type Event struct {
 	UserIpAddress string `protobuf:"bytes,4,opt,name=user_ip_address,json=userIpAddress,proto3" json:"user_ip_address,omitempty"`
 	// Optional. The expected action for this type of event. This should be the
 	// same action provided at token generation time on client-side platforms
-	// already integrated with recaptcha enterprise.
+	// already integrated with recaptcha enterprise. Required for Universal keys.
 	ExpectedAction string `protobuf:"bytes,5,opt,name=expected_action,json=expectedAction,proto3" json:"expected_action,omitempty"`
 	// Optional. Deprecated: use `user_info.account_id` instead.
 	// Unique stable hashed user identifier for the request. The identifier must
@@ -2739,11 +2960,17 @@ type RiskAnalysis struct {
 	Score float32 `protobuf:"fixed32,1,opt,name=score,proto3" json:"score,omitempty"`
 	// Output only. Reasons contributing to the risk analysis verdict.
 	Reasons []RiskAnalysis_ClassificationReason `protobuf:"varint,2,rep,packed,name=reasons,proto3,enum=google.cloud.recaptchaenterprise.v1.RiskAnalysis_ClassificationReason" json:"reasons,omitempty"`
-	// Output only. Extended verdict reasons to be used for experimentation only.
-	// The set of possible reasons is subject to change.
+	// Output only. Additional reasons contributing to the risk analysis verdict.
+	// These reasons are available to Enterprise tier projects only. Contact sales
+	// for more information.
+	// The set of reasons is subject to change.
 	ExtendedVerdictReasons []string `protobuf:"bytes,3,rep,name=extended_verdict_reasons,json=extendedVerdictReasons,proto3" json:"extended_verdict_reasons,omitempty"`
-	// Output only. Challenge information for POLICY_BASED_CHALLENGE and INVISIBLE
-	// keys.
+	// Output only. Type of the last challenge presented to the user for
+	// Universal, `POLICY_BASED_CHALLENGE` and `INVISIBLE` keys. The field is only
+	// set when a challenge was presented to the user.
+	LastChallengeType ChallengeType `protobuf:"varint,6,opt,name=last_challenge_type,json=lastChallengeType,proto3,enum=google.cloud.recaptchaenterprise.v1.ChallengeType" json:"last_challenge_type,omitempty"`
+	// Output only. Challenge information for Universal, `POLICY_BASED_CHALLENGE`
+	// and `INVISIBLE` keys.
 	Challenge RiskAnalysis_Challenge `protobuf:"varint,4,opt,name=challenge,proto3,enum=google.cloud.recaptchaenterprise.v1.RiskAnalysis_Challenge" json:"challenge,omitempty"`
 	// Output only. Bots with identities that have been verified by reCAPTCHA and
 	// detected in the event.
@@ -2803,6 +3030,13 @@ func (x *RiskAnalysis) GetExtendedVerdictReasons() []string {
 	return nil
 }
 
+func (x *RiskAnalysis) GetLastChallengeType() ChallengeType {
+	if x != nil {
+		return x.LastChallengeType
+	}
+	return ChallengeType_CHALLENGE_TYPE_UNSPECIFIED
+}
+
 func (x *RiskAnalysis) GetChallenge() RiskAnalysis_Challenge {
 	if x != nil {
 		return x.Challenge
@@ -2821,7 +3055,30 @@ func (x *RiskAnalysis) GetVerifiedBots() []*Bot {
 type Bot struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Optional. Enumerated string value that indicates the identity of the bot,
-	// formatted in kebab-case.
+	// formatted in kebab-case. Current example values include the following:
+	//
+	// * google-agent - AI_AGENT
+	// * browser-base - AI_AGENT
+	// * chat-gpt - AI_AGENT
+	// * aws-bedrock - AI_AGENT
+	// * cybaa-bot - AI_AGENT
+	// * cloudflare - AI_AGENT
+	// * payhawk - AI_AGENT
+	// * duck-duck-go - SEARCH_INDEXER
+	// * mediaboard - CONTENT_SCRAPER
+	// * marker-io - AI_AGENT
+	// * broadcom - AI_AGENT
+	// * anchor-browser - AI_AGENT
+	// * shopify - AI_AGENT
+	// * stackscope - CONTENT_SCRAPER
+	// * manus - AI_AGENT
+	// * kernel-sh - AI_AGENT
+	// * zvelo - SEARCH_INDEXER
+	//
+	// Ensure that your applications can handle identifier values not explicitly
+	// listed here. Deprecated values might take some time to stop showing
+	// up in responses. New values can be pushed so this list should be taken
+	// as non exhaustive.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. Enumerated field representing the type of bot.
 	BotType       Bot_BotType `protobuf:"varint,2,opt,name=bot_type,json=botType,proto3,enum=google.cloud.recaptchaenterprise.v1.Bot_BotType" json:"bot_type,omitempty"`
@@ -2876,11 +3133,9 @@ func (x *Bot) GetBotType() Bot_BotType {
 // Properties of the provided event token.
 type TokenProperties struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. Whether the provided user response token is valid. When valid
-	// = false, the reason could be specified in invalid_reason or it could also
-	// be due to a user failing to solve a challenge or a sitekey mismatch (i.e
-	// the sitekey used to generate the token was different than the one specified
-	// in the assessment).
+	// Output only. Indicates whether the provided user response token is valid.
+	// If `false`, the token is invalid, either because the user failed the
+	// challenge or for a reason provided in the `invalid_reason` field.
 	Valid bool `protobuf:"varint,1,opt,name=valid,proto3" json:"valid,omitempty"`
 	// Output only. Reason associated with the response when valid = false.
 	InvalidReason TokenProperties_InvalidReason `protobuf:"varint,2,opt,name=invalid_reason,json=invalidReason,proto3,enum=google.cloud.recaptchaenterprise.v1.TokenProperties_InvalidReason" json:"invalid_reason,omitempty"`
@@ -3225,13 +3480,15 @@ func (x *PhoneFraudAssessment) GetSmsTollFraudVerdict() *SmsTollFraudVerdict {
 	return nil
 }
 
-// Account defender risk assessment.
+// Account defense risk assessment.
 type AccountDefenderAssessment struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Output only. Labels for this request.
-	Labels        []AccountDefenderAssessment_AccountDefenderLabel `protobuf:"varint,1,rep,packed,name=labels,proto3,enum=google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment_AccountDefenderLabel" json:"labels,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Labels []AccountDefenderAssessment_AccountDefenderLabel `protobuf:"varint,1,rep,packed,name=labels,proto3,enum=google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment_AccountDefenderLabel" json:"labels,omitempty"`
+	// Output only. Account takeover risk assessment for this request.
+	AccountTakeoverVerdict *AccountDefenderAssessment_AccountTakeoverVerdict `protobuf:"bytes,4,opt,name=account_takeover_verdict,json=accountTakeoverVerdict,proto3" json:"account_takeover_verdict,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *AccountDefenderAssessment) Reset() {
@@ -3267,6 +3524,13 @@ func (*AccountDefenderAssessment) Descriptor() ([]byte, []int) {
 func (x *AccountDefenderAssessment) GetLabels() []AccountDefenderAssessment_AccountDefenderLabel {
 	if x != nil {
 		return x.Labels
+	}
+	return nil
+}
+
+func (x *AccountDefenderAssessment) GetAccountTakeoverVerdict() *AccountDefenderAssessment_AccountTakeoverVerdict {
+	if x != nil {
+		return x.AccountTakeoverVerdict
 	}
 	return nil
 }
@@ -4326,6 +4590,7 @@ type Key struct {
 	//	*Key_AndroidSettings
 	//	*Key_IosSettings
 	//	*Key_ExpressSettings
+	//	*Key_UniversalSettings
 	PlatformSettings isKey_PlatformSettings `protobuf_oneof:"platform_settings"`
 	// Optional. See [Creating and managing labels]
 	// (https://cloud.google.com/recaptcha/docs/labels).
@@ -4427,6 +4692,15 @@ func (x *Key) GetExpressSettings() *ExpressKeySettings {
 	return nil
 }
 
+func (x *Key) GetUniversalSettings() *UniversalKeySettings {
+	if x != nil {
+		if x, ok := x.PlatformSettings.(*Key_UniversalSettings); ok {
+			return x.UniversalSettings
+		}
+	}
+	return nil
+}
+
 func (x *Key) GetLabels() map[string]string {
 	if x != nil {
 		return x.Labels
@@ -4479,6 +4753,11 @@ type Key_ExpressSettings struct {
 	ExpressSettings *ExpressKeySettings `protobuf:"bytes,11,opt,name=express_settings,json=expressSettings,proto3,oneof"`
 }
 
+type Key_UniversalSettings struct {
+	// Settings for keys that are configured through their Policy.
+	UniversalSettings *UniversalKeySettings `protobuf:"bytes,13,opt,name=universal_settings,json=universalSettings,proto3,oneof"`
+}
+
 func (*Key_WebSettings) isKey_PlatformSettings() {}
 
 func (*Key_AndroidSettings) isKey_PlatformSettings() {}
@@ -4486,6 +4765,8 @@ func (*Key_AndroidSettings) isKey_PlatformSettings() {}
 func (*Key_IosSettings) isKey_PlatformSettings() {}
 
 func (*Key_ExpressSettings) isKey_PlatformSettings() {}
+
+func (*Key_UniversalSettings) isKey_PlatformSettings() {}
 
 // Options for user acceptance testing.
 type TestingOptions struct {
@@ -4829,6 +5110,43 @@ func (*ExpressKeySettings) Descriptor() ([]byte, []int) {
 	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{45}
 }
 
+// Settings for keys that are configured through their Policy.
+type UniversalKeySettings struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UniversalKeySettings) Reset() {
+	*x = UniversalKeySettings{}
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[46]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UniversalKeySettings) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UniversalKeySettings) ProtoMessage() {}
+
+func (x *UniversalKeySettings) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[46]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UniversalKeySettings.ProtoReflect.Descriptor instead.
+func (*UniversalKeySettings) Descriptor() ([]byte, []int) {
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{46}
+}
+
 // Contains fields that are required to perform Apple-specific integrity checks.
 type AppleDeveloperId struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -4847,7 +5165,7 @@ type AppleDeveloperId struct {
 
 func (x *AppleDeveloperId) Reset() {
 	*x = AppleDeveloperId{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[46]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4859,7 +5177,7 @@ func (x *AppleDeveloperId) String() string {
 func (*AppleDeveloperId) ProtoMessage() {}
 
 func (x *AppleDeveloperId) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[46]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4872,7 +5190,7 @@ func (x *AppleDeveloperId) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AppleDeveloperId.ProtoReflect.Descriptor instead.
 func (*AppleDeveloperId) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{46}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *AppleDeveloperId) GetPrivateKey() string {
@@ -4909,7 +5227,7 @@ type ScoreDistribution struct {
 
 func (x *ScoreDistribution) Reset() {
 	*x = ScoreDistribution{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[47]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4921,7 +5239,7 @@ func (x *ScoreDistribution) String() string {
 func (*ScoreDistribution) ProtoMessage() {}
 
 func (x *ScoreDistribution) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[47]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4934,7 +5252,7 @@ func (x *ScoreDistribution) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ScoreDistribution.ProtoReflect.Descriptor instead.
 func (*ScoreDistribution) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{47}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *ScoreDistribution) GetScoreBuckets() map[int32]int64 {
@@ -4958,7 +5276,7 @@ type ScoreMetrics struct {
 
 func (x *ScoreMetrics) Reset() {
 	*x = ScoreMetrics{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[48]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4970,7 +5288,7 @@ func (x *ScoreMetrics) String() string {
 func (*ScoreMetrics) ProtoMessage() {}
 
 func (x *ScoreMetrics) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[48]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4983,7 +5301,7 @@ func (x *ScoreMetrics) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ScoreMetrics.ProtoReflect.Descriptor instead.
 func (*ScoreMetrics) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{48}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *ScoreMetrics) GetOverallMetrics() *ScoreDistribution {
@@ -5021,7 +5339,7 @@ type ChallengeMetrics struct {
 
 func (x *ChallengeMetrics) Reset() {
 	*x = ChallengeMetrics{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[49]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5033,7 +5351,7 @@ func (x *ChallengeMetrics) String() string {
 func (*ChallengeMetrics) ProtoMessage() {}
 
 func (x *ChallengeMetrics) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[49]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5046,7 +5364,7 @@ func (x *ChallengeMetrics) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChallengeMetrics.ProtoReflect.Descriptor instead.
 func (*ChallengeMetrics) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{49}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *ChallengeMetrics) GetPageloadCount() int64 {
@@ -5093,7 +5411,7 @@ type FirewallPolicyAssessment struct {
 
 func (x *FirewallPolicyAssessment) Reset() {
 	*x = FirewallPolicyAssessment{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[50]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5105,7 +5423,7 @@ func (x *FirewallPolicyAssessment) String() string {
 func (*FirewallPolicyAssessment) ProtoMessage() {}
 
 func (x *FirewallPolicyAssessment) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[50]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5118,7 +5436,7 @@ func (x *FirewallPolicyAssessment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FirewallPolicyAssessment.ProtoReflect.Descriptor instead.
 func (*FirewallPolicyAssessment) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{50}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *FirewallPolicyAssessment) GetError() *status.Status {
@@ -5154,7 +5472,7 @@ type FirewallAction struct {
 
 func (x *FirewallAction) Reset() {
 	*x = FirewallAction{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[51]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5166,7 +5484,7 @@ func (x *FirewallAction) String() string {
 func (*FirewallAction) ProtoMessage() {}
 
 func (x *FirewallAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[51]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5179,7 +5497,7 @@ func (x *FirewallAction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FirewallAction.ProtoReflect.Descriptor instead.
 func (*FirewallAction) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{51}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *FirewallAction) GetFirewallActionOneof() isFirewallAction_FirewallActionOneof {
@@ -5334,7 +5652,7 @@ type FirewallPolicy struct {
 
 func (x *FirewallPolicy) Reset() {
 	*x = FirewallPolicy{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[52]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5346,7 +5664,7 @@ func (x *FirewallPolicy) String() string {
 func (*FirewallPolicy) ProtoMessage() {}
 
 func (x *FirewallPolicy) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[52]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5359,7 +5677,7 @@ func (x *FirewallPolicy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FirewallPolicy.ProtoReflect.Descriptor instead.
 func (*FirewallPolicy) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{52}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *FirewallPolicy) GetName() string {
@@ -5420,7 +5738,7 @@ type ListRelatedAccountGroupMembershipsRequest struct {
 
 func (x *ListRelatedAccountGroupMembershipsRequest) Reset() {
 	*x = ListRelatedAccountGroupMembershipsRequest{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[53]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5432,7 +5750,7 @@ func (x *ListRelatedAccountGroupMembershipsRequest) String() string {
 func (*ListRelatedAccountGroupMembershipsRequest) ProtoMessage() {}
 
 func (x *ListRelatedAccountGroupMembershipsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[53]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5445,7 +5763,7 @@ func (x *ListRelatedAccountGroupMembershipsRequest) ProtoReflect() protoreflect.
 
 // Deprecated: Use ListRelatedAccountGroupMembershipsRequest.ProtoReflect.Descriptor instead.
 func (*ListRelatedAccountGroupMembershipsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{53}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *ListRelatedAccountGroupMembershipsRequest) GetParent() string {
@@ -5483,7 +5801,7 @@ type ListRelatedAccountGroupMembershipsResponse struct {
 
 func (x *ListRelatedAccountGroupMembershipsResponse) Reset() {
 	*x = ListRelatedAccountGroupMembershipsResponse{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[54]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5495,7 +5813,7 @@ func (x *ListRelatedAccountGroupMembershipsResponse) String() string {
 func (*ListRelatedAccountGroupMembershipsResponse) ProtoMessage() {}
 
 func (x *ListRelatedAccountGroupMembershipsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[54]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5508,7 +5826,7 @@ func (x *ListRelatedAccountGroupMembershipsResponse) ProtoReflect() protoreflect
 
 // Deprecated: Use ListRelatedAccountGroupMembershipsResponse.ProtoReflect.Descriptor instead.
 func (*ListRelatedAccountGroupMembershipsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{54}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *ListRelatedAccountGroupMembershipsResponse) GetRelatedAccountGroupMemberships() []*RelatedAccountGroupMembership {
@@ -5548,7 +5866,7 @@ type ListRelatedAccountGroupsRequest struct {
 
 func (x *ListRelatedAccountGroupsRequest) Reset() {
 	*x = ListRelatedAccountGroupsRequest{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[55]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5560,7 +5878,7 @@ func (x *ListRelatedAccountGroupsRequest) String() string {
 func (*ListRelatedAccountGroupsRequest) ProtoMessage() {}
 
 func (x *ListRelatedAccountGroupsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[55]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5573,7 +5891,7 @@ func (x *ListRelatedAccountGroupsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRelatedAccountGroupsRequest.ProtoReflect.Descriptor instead.
 func (*ListRelatedAccountGroupsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{55}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *ListRelatedAccountGroupsRequest) GetParent() string {
@@ -5611,7 +5929,7 @@ type ListRelatedAccountGroupsResponse struct {
 
 func (x *ListRelatedAccountGroupsResponse) Reset() {
 	*x = ListRelatedAccountGroupsResponse{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[56]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5623,7 +5941,7 @@ func (x *ListRelatedAccountGroupsResponse) String() string {
 func (*ListRelatedAccountGroupsResponse) ProtoMessage() {}
 
 func (x *ListRelatedAccountGroupsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[56]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5636,7 +5954,7 @@ func (x *ListRelatedAccountGroupsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRelatedAccountGroupsResponse.ProtoReflect.Descriptor instead.
 func (*ListRelatedAccountGroupsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{56}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *ListRelatedAccountGroupsResponse) GetRelatedAccountGroups() []*RelatedAccountGroup {
@@ -5691,7 +6009,7 @@ type SearchRelatedAccountGroupMembershipsRequest struct {
 
 func (x *SearchRelatedAccountGroupMembershipsRequest) Reset() {
 	*x = SearchRelatedAccountGroupMembershipsRequest{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[57]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5703,7 +6021,7 @@ func (x *SearchRelatedAccountGroupMembershipsRequest) String() string {
 func (*SearchRelatedAccountGroupMembershipsRequest) ProtoMessage() {}
 
 func (x *SearchRelatedAccountGroupMembershipsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[57]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5716,7 +6034,7 @@ func (x *SearchRelatedAccountGroupMembershipsRequest) ProtoReflect() protoreflec
 
 // Deprecated: Use SearchRelatedAccountGroupMembershipsRequest.ProtoReflect.Descriptor instead.
 func (*SearchRelatedAccountGroupMembershipsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{57}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *SearchRelatedAccountGroupMembershipsRequest) GetProject() string {
@@ -5769,7 +6087,7 @@ type SearchRelatedAccountGroupMembershipsResponse struct {
 
 func (x *SearchRelatedAccountGroupMembershipsResponse) Reset() {
 	*x = SearchRelatedAccountGroupMembershipsResponse{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[58]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5781,7 +6099,7 @@ func (x *SearchRelatedAccountGroupMembershipsResponse) String() string {
 func (*SearchRelatedAccountGroupMembershipsResponse) ProtoMessage() {}
 
 func (x *SearchRelatedAccountGroupMembershipsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[58]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5794,7 +6112,7 @@ func (x *SearchRelatedAccountGroupMembershipsResponse) ProtoReflect() protorefle
 
 // Deprecated: Use SearchRelatedAccountGroupMembershipsResponse.ProtoReflect.Descriptor instead.
 func (*SearchRelatedAccountGroupMembershipsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{58}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *SearchRelatedAccountGroupMembershipsResponse) GetRelatedAccountGroupMemberships() []*RelatedAccountGroupMembership {
@@ -5825,7 +6143,7 @@ type AddIpOverrideRequest struct {
 
 func (x *AddIpOverrideRequest) Reset() {
 	*x = AddIpOverrideRequest{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[59]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5837,7 +6155,7 @@ func (x *AddIpOverrideRequest) String() string {
 func (*AddIpOverrideRequest) ProtoMessage() {}
 
 func (x *AddIpOverrideRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[59]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5850,7 +6168,7 @@ func (x *AddIpOverrideRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddIpOverrideRequest.ProtoReflect.Descriptor instead.
 func (*AddIpOverrideRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{59}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *AddIpOverrideRequest) GetName() string {
@@ -5876,7 +6194,7 @@ type AddIpOverrideResponse struct {
 
 func (x *AddIpOverrideResponse) Reset() {
 	*x = AddIpOverrideResponse{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[60]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5888,7 +6206,7 @@ func (x *AddIpOverrideResponse) String() string {
 func (*AddIpOverrideResponse) ProtoMessage() {}
 
 func (x *AddIpOverrideResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[60]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5901,7 +6219,7 @@ func (x *AddIpOverrideResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddIpOverrideResponse.ProtoReflect.Descriptor instead.
 func (*AddIpOverrideResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{60}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{61}
 }
 
 // The RemoveIpOverride request message.
@@ -5918,7 +6236,7 @@ type RemoveIpOverrideRequest struct {
 
 func (x *RemoveIpOverrideRequest) Reset() {
 	*x = RemoveIpOverrideRequest{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[61]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5930,7 +6248,7 @@ func (x *RemoveIpOverrideRequest) String() string {
 func (*RemoveIpOverrideRequest) ProtoMessage() {}
 
 func (x *RemoveIpOverrideRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[61]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5943,7 +6261,7 @@ func (x *RemoveIpOverrideRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RemoveIpOverrideRequest.ProtoReflect.Descriptor instead.
 func (*RemoveIpOverrideRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{61}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *RemoveIpOverrideRequest) GetName() string {
@@ -5969,7 +6287,7 @@ type RemoveIpOverrideResponse struct {
 
 func (x *RemoveIpOverrideResponse) Reset() {
 	*x = RemoveIpOverrideResponse{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[62]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5981,7 +6299,7 @@ func (x *RemoveIpOverrideResponse) String() string {
 func (*RemoveIpOverrideResponse) ProtoMessage() {}
 
 func (x *RemoveIpOverrideResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[62]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5994,7 +6312,7 @@ func (x *RemoveIpOverrideResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RemoveIpOverrideResponse.ProtoReflect.Descriptor instead.
 func (*RemoveIpOverrideResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{62}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{63}
 }
 
 // The ListIpOverrides request message.
@@ -6017,7 +6335,7 @@ type ListIpOverridesRequest struct {
 
 func (x *ListIpOverridesRequest) Reset() {
 	*x = ListIpOverridesRequest{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[63]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6029,7 +6347,7 @@ func (x *ListIpOverridesRequest) String() string {
 func (*ListIpOverridesRequest) ProtoMessage() {}
 
 func (x *ListIpOverridesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[63]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6042,7 +6360,7 @@ func (x *ListIpOverridesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListIpOverridesRequest.ProtoReflect.Descriptor instead.
 func (*ListIpOverridesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{63}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *ListIpOverridesRequest) GetParent() string {
@@ -6080,7 +6398,7 @@ type ListIpOverridesResponse struct {
 
 func (x *ListIpOverridesResponse) Reset() {
 	*x = ListIpOverridesResponse{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[64]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6092,7 +6410,7 @@ func (x *ListIpOverridesResponse) String() string {
 func (*ListIpOverridesResponse) ProtoMessage() {}
 
 func (x *ListIpOverridesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[64]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6105,7 +6423,7 @@ func (x *ListIpOverridesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListIpOverridesResponse.ProtoReflect.Descriptor instead.
 func (*ListIpOverridesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{64}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *ListIpOverridesResponse) GetIpOverrides() []*IpOverrideData {
@@ -6145,7 +6463,7 @@ type RelatedAccountGroupMembership struct {
 
 func (x *RelatedAccountGroupMembership) Reset() {
 	*x = RelatedAccountGroupMembership{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[65]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6157,7 +6475,7 @@ func (x *RelatedAccountGroupMembership) String() string {
 func (*RelatedAccountGroupMembership) ProtoMessage() {}
 
 func (x *RelatedAccountGroupMembership) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[65]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6170,7 +6488,7 @@ func (x *RelatedAccountGroupMembership) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RelatedAccountGroupMembership.ProtoReflect.Descriptor instead.
 func (*RelatedAccountGroupMembership) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{65}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *RelatedAccountGroupMembership) GetName() string {
@@ -6208,7 +6526,7 @@ type RelatedAccountGroup struct {
 
 func (x *RelatedAccountGroup) Reset() {
 	*x = RelatedAccountGroup{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[66]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6220,7 +6538,7 @@ func (x *RelatedAccountGroup) String() string {
 func (*RelatedAccountGroup) ProtoMessage() {}
 
 func (x *RelatedAccountGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[66]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6233,7 +6551,7 @@ func (x *RelatedAccountGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RelatedAccountGroup.ProtoReflect.Descriptor instead.
 func (*RelatedAccountGroup) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{66}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{67}
 }
 
 func (x *RelatedAccountGroup) GetName() string {
@@ -6258,7 +6576,7 @@ type WafSettings struct {
 
 func (x *WafSettings) Reset() {
 	*x = WafSettings{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[67]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6270,7 +6588,7 @@ func (x *WafSettings) String() string {
 func (*WafSettings) ProtoMessage() {}
 
 func (x *WafSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[67]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6283,7 +6601,7 @@ func (x *WafSettings) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WafSettings.ProtoReflect.Descriptor instead.
 func (*WafSettings) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{67}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *WafSettings) GetWafService() WafSettings_WafService {
@@ -6320,7 +6638,7 @@ type AssessmentEnvironment struct {
 
 func (x *AssessmentEnvironment) Reset() {
 	*x = AssessmentEnvironment{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[68]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6332,7 +6650,7 @@ func (x *AssessmentEnvironment) String() string {
 func (*AssessmentEnvironment) ProtoMessage() {}
 
 func (x *AssessmentEnvironment) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[68]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6345,7 +6663,7 @@ func (x *AssessmentEnvironment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssessmentEnvironment.ProtoReflect.Descriptor instead.
 func (*AssessmentEnvironment) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{68}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{69}
 }
 
 func (x *AssessmentEnvironment) GetClient() string {
@@ -6360,6 +6678,91 @@ func (x *AssessmentEnvironment) GetVersion() string {
 		return x.Version
 	}
 	return ""
+}
+
+// Information about the policy evaluation.
+type PolicyEvaluation struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. Populated if one or more Challenge rules were matched.
+	// Its presence in the assessment indicates that at least one challenge rule
+	// was matched and determined whether a challenge was presented to the user.
+	ChallengeRuleEvaluation *ChallengeRuleEvaluation `protobuf:"bytes,1,opt,name=challenge_rule_evaluation,json=challengeRuleEvaluation,proto3" json:"challenge_rule_evaluation,omitempty"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
+}
+
+func (x *PolicyEvaluation) Reset() {
+	*x = PolicyEvaluation{}
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[70]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PolicyEvaluation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PolicyEvaluation) ProtoMessage() {}
+
+func (x *PolicyEvaluation) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[70]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PolicyEvaluation.ProtoReflect.Descriptor instead.
+func (*PolicyEvaluation) Descriptor() ([]byte, []int) {
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{70}
+}
+
+func (x *PolicyEvaluation) GetChallengeRuleEvaluation() *ChallengeRuleEvaluation {
+	if x != nil {
+		return x.ChallengeRuleEvaluation
+	}
+	return nil
+}
+
+// Information about the evaluation of a `ChallengeRule`.
+type ChallengeRuleEvaluation struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ChallengeRuleEvaluation) Reset() {
+	*x = ChallengeRuleEvaluation{}
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[71]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ChallengeRuleEvaluation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ChallengeRuleEvaluation) ProtoMessage() {}
+
+func (x *ChallengeRuleEvaluation) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[71]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ChallengeRuleEvaluation.ProtoReflect.Descriptor instead.
+func (*ChallengeRuleEvaluation) Descriptor() ([]byte, []int) {
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{71}
 }
 
 // Information about the IP or IP range override.
@@ -6381,7 +6784,7 @@ type IpOverrideData struct {
 
 func (x *IpOverrideData) Reset() {
 	*x = IpOverrideData{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[69]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6393,7 +6796,7 @@ func (x *IpOverrideData) String() string {
 func (*IpOverrideData) ProtoMessage() {}
 
 func (x *IpOverrideData) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[69]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6406,7 +6809,7 @@ func (x *IpOverrideData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IpOverrideData.ProtoReflect.Descriptor instead.
 func (*IpOverrideData) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{69}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *IpOverrideData) GetIp() string {
@@ -6421,6 +6824,544 @@ func (x *IpOverrideData) GetOverrideType() IpOverrideData_OverrideType {
 		return x.OverrideType
 	}
 	return IpOverrideData_OVERRIDE_TYPE_UNSPECIFIED
+}
+
+// The request message to get a policy.
+type GetPolicyRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the policy to get, in the format
+	// `projects/{project}/keys/{key}/policy`.
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPolicyRequest) Reset() {
+	*x = GetPolicyRequest{}
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[73]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPolicyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPolicyRequest) ProtoMessage() {}
+
+func (x *GetPolicyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[73]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPolicyRequest.ProtoReflect.Descriptor instead.
+func (*GetPolicyRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{73}
+}
+
+func (x *GetPolicyRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+// The request message to update a policy.
+type UpdatePolicyRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The Policy's name is used to identify the policy to update, in
+	// the format `projects/{project}/keys/{key}/policy`.
+	Policy *Policy `protobuf:"bytes,1,opt,name=policy,proto3" json:"policy,omitempty"`
+	// Optional. The mask to control which fields of the policy get updated. If
+	// the mask is not present, all fields are updated.
+	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdatePolicyRequest) Reset() {
+	*x = UpdatePolicyRequest{}
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[74]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdatePolicyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdatePolicyRequest) ProtoMessage() {}
+
+func (x *UpdatePolicyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[74]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdatePolicyRequest.ProtoReflect.Descriptor instead.
+func (*UpdatePolicyRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{74}
+}
+
+func (x *UpdatePolicyRequest) GetPolicy() *Policy {
+	if x != nil {
+		return x.Policy
+	}
+	return nil
+}
+
+func (x *UpdatePolicyRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
+	}
+	return nil
+}
+
+// A complete configuration set containing multiple grouped rules defining the
+// behavior of reCAPTCHA for fraud detection and prevention.
+type Policy struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Identifier. Resource name for this policy.
+	// Format: "projects/{project}/keys/{key}/policy" for a policy under a key.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Required. Configuration for clients protected by this policy.
+	ClientSettings *ClientSettings `protobuf:"bytes,4,opt,name=client_settings,json=clientSettings,proto3" json:"client_settings,omitempty"`
+	// Optional. Rules to configure the behavior of reCAPTCHA for showing a
+	// challenge. Rule groups are evaluated in order. Evaluation stops when the
+	// first matching rule group is found.
+	ChallengeRuleGroups []*ChallengeRuleGroup `protobuf:"bytes,2,rep,name=challenge_rule_groups,json=challengeRuleGroups,proto3" json:"challenge_rule_groups,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *Policy) Reset() {
+	*x = Policy{}
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[75]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Policy) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Policy) ProtoMessage() {}
+
+func (x *Policy) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[75]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Policy.ProtoReflect.Descriptor instead.
+func (*Policy) Descriptor() ([]byte, []int) {
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{75}
+}
+
+func (x *Policy) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Policy) GetClientSettings() *ClientSettings {
+	if x != nil {
+		return x.ClientSettings
+	}
+	return nil
+}
+
+func (x *Policy) GetChallengeRuleGroups() []*ChallengeRuleGroup {
+	if x != nil {
+		return x.ChallengeRuleGroups
+	}
+	return nil
+}
+
+// A collection of challenge rules that applies to one or more actions.
+type ChallengeRuleGroup struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Action name provided at token generation. The action name is not
+	// case-sensitive and can only contain alphanumeric characters, slashes, and
+	// underscores. If "*" is provided, the rule group applies to all actions. If
+	// multiple actions are provided, the rule group is applied to all of
+	// them. This field is required.
+	Actions []string `protobuf:"bytes,1,rep,name=actions,proto3" json:"actions,omitempty"`
+	// Required. A list of rules that configure when and how reCAPTCHA presents a
+	// challenge. reCAPTCHA evaluates these rules in order and applies the first
+	// one that matches.
+	ChallengeRules []*ChallengeRule `protobuf:"bytes,2,rep,name=challenge_rules,json=challengeRules,proto3" json:"challenge_rules,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *ChallengeRuleGroup) Reset() {
+	*x = ChallengeRuleGroup{}
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[76]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ChallengeRuleGroup) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ChallengeRuleGroup) ProtoMessage() {}
+
+func (x *ChallengeRuleGroup) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[76]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ChallengeRuleGroup.ProtoReflect.Descriptor instead.
+func (*ChallengeRuleGroup) Descriptor() ([]byte, []int) {
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{76}
+}
+
+func (x *ChallengeRuleGroup) GetActions() []string {
+	if x != nil {
+		return x.Actions
+	}
+	return nil
+}
+
+func (x *ChallengeRuleGroup) GetChallengeRules() []*ChallengeRule {
+	if x != nil {
+		return x.ChallengeRules
+	}
+	return nil
+}
+
+// A rule to configure the behavior of reCAPTCHA for conditionally presenting a
+// challenge.
+type ChallengeRule struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. A CEL condition that must be met for this rule to apply.
+	// If unspecified, the rule applies unconditionally.
+	// The following fields can be referenced in the condition:
+	// * `score`
+	// * `user_ip_address`
+	// * `user_asn`
+	// * `user_agent`
+	// * `verified_bots.name`
+	// * `verified_bots.bot_type`
+	//
+	// Examples:
+	// * `score < 0.5`
+	// * `user_ip_address == "123.45.67.89"`
+	// * `user_agent.contains("Chrome")`
+	// * `score < 0.5 && user_ip_address == "123.45.67.89"`
+	Condition string `protobuf:"bytes,1,opt,name=condition,proto3" json:"condition,omitempty"`
+	// Required. The outcome to apply when this challenge rule matches.
+	//
+	// Types that are valid to be assigned to Outcome:
+	//
+	//	*ChallengeRule_NoChallenge
+	//	*ChallengeRule_Challenge
+	Outcome       isChallengeRule_Outcome `protobuf_oneof:"outcome"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ChallengeRule) Reset() {
+	*x = ChallengeRule{}
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[77]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ChallengeRule) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ChallengeRule) ProtoMessage() {}
+
+func (x *ChallengeRule) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[77]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ChallengeRule.ProtoReflect.Descriptor instead.
+func (*ChallengeRule) Descriptor() ([]byte, []int) {
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{77}
+}
+
+func (x *ChallengeRule) GetCondition() string {
+	if x != nil {
+		return x.Condition
+	}
+	return ""
+}
+
+func (x *ChallengeRule) GetOutcome() isChallengeRule_Outcome {
+	if x != nil {
+		return x.Outcome
+	}
+	return nil
+}
+
+func (x *ChallengeRule) GetNoChallenge() *ChallengeRule_NoChallengeOutcome {
+	if x != nil {
+		if x, ok := x.Outcome.(*ChallengeRule_NoChallenge); ok {
+			return x.NoChallenge
+		}
+	}
+	return nil
+}
+
+func (x *ChallengeRule) GetChallenge() *ChallengeRule_ChallengeOutcome {
+	if x != nil {
+		if x, ok := x.Outcome.(*ChallengeRule_Challenge); ok {
+			return x.Challenge
+		}
+	}
+	return nil
+}
+
+type isChallengeRule_Outcome interface {
+	isChallengeRule_Outcome()
+}
+
+type ChallengeRule_NoChallenge struct {
+	// Do not present a challenge to the user.
+	NoChallenge *ChallengeRule_NoChallengeOutcome `protobuf:"bytes,2,opt,name=no_challenge,json=noChallenge,proto3,oneof"`
+}
+
+type ChallengeRule_Challenge struct {
+	// Present a challenge to the user.
+	Challenge *ChallengeRule_ChallengeOutcome `protobuf:"bytes,3,opt,name=challenge,proto3,oneof"`
+}
+
+func (*ChallengeRule_NoChallenge) isChallengeRule_Outcome() {}
+
+func (*ChallengeRule_Challenge) isChallengeRule_Outcome() {}
+
+// Configuration for clients to protect with reCAPTCHA.
+type ClientSettings struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Domains or subdomains of websites allowed to use the policy. All
+	// subdomains of an allowed domain are automatically allowed. A valid domain
+	// requires a host and must not include any path, port, query or fragment.
+	// Examples: 'example.com' or 'subdomain.example.com'
+	// Each policy supports a maximum of 250 domains. To use a policy on more
+	// domains, set `allow_all_domains` to true. When this is set, you are
+	// responsible for validating the hostname by checking the
+	// `token_properties.hostname` field in each assessment response against your
+	// list of allowed domains.
+	AllowedDomains []string `protobuf:"bytes,1,rep,name=allowed_domains,json=allowedDomains,proto3" json:"allowed_domains,omitempty"`
+	// Optional. If set to true, it means allowed_domains are not enforced.
+	AllowAllDomains bool `protobuf:"varint,2,opt,name=allow_all_domains,json=allowAllDomains,proto3" json:"allow_all_domains,omitempty"`
+	// Optional. Configuration for all API endpoints to protect with reCAPTCHA. If
+	// this field is not set, reCAPTCHA will not automatically request tokens on
+	// any API endpoints.
+	ProtectedEndpointGroup *ProtectedEndpointGroup `protobuf:"bytes,3,opt,name=protected_endpoint_group,json=protectedEndpointGroup,proto3" json:"protected_endpoint_group,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *ClientSettings) Reset() {
+	*x = ClientSettings{}
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[78]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ClientSettings) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ClientSettings) ProtoMessage() {}
+
+func (x *ClientSettings) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[78]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ClientSettings.ProtoReflect.Descriptor instead.
+func (*ClientSettings) Descriptor() ([]byte, []int) {
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{78}
+}
+
+func (x *ClientSettings) GetAllowedDomains() []string {
+	if x != nil {
+		return x.AllowedDomains
+	}
+	return nil
+}
+
+func (x *ClientSettings) GetAllowAllDomains() bool {
+	if x != nil {
+		return x.AllowAllDomains
+	}
+	return false
+}
+
+func (x *ClientSettings) GetProtectedEndpointGroup() *ProtectedEndpointGroup {
+	if x != nil {
+		return x.ProtectedEndpointGroup
+	}
+	return nil
+}
+
+// Configuration for API endpoints to protect with reCAPTCHA.
+type ProtectedEndpointGroup struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. List of API endpoints to automatically protect with reCAPTCHA. If
+	// any of these endpoints is invoked from a page where a key bound to this
+	// policy is installed, a reCAPTCHA token is automatically generated and
+	// attached to the request. If multiple protected endpoints match a given API
+	// endpoint, the first one in the list is used.
+	ProtectedEndpoints []*ProtectedEndpoint `protobuf:"bytes,1,rep,name=protected_endpoints,json=protectedEndpoints,proto3" json:"protected_endpoints,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *ProtectedEndpointGroup) Reset() {
+	*x = ProtectedEndpointGroup{}
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[79]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProtectedEndpointGroup) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProtectedEndpointGroup) ProtoMessage() {}
+
+func (x *ProtectedEndpointGroup) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[79]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProtectedEndpointGroup.ProtoReflect.Descriptor instead.
+func (*ProtectedEndpointGroup) Descriptor() ([]byte, []int) {
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{79}
+}
+
+func (x *ProtectedEndpointGroup) GetProtectedEndpoints() []*ProtectedEndpoint {
+	if x != nil {
+		return x.ProtectedEndpoints
+	}
+	return nil
+}
+
+// Configuration for an API endpoint to protect with reCAPTCHA.
+type ProtectedEndpoint struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. URI path of the API endpoint to protect. Must start with '/'.
+	// Supports glob characters '*' to match a single path segment and '**' to
+	// match multiple path segments. Standalone root catch-alls ('/*' and '/**')
+	// are invalid because it can negatively impact performance to trigger
+	// reCAPTCHA on every single request to your backend.
+	//
+	// Matching is evaluated against the URL path only (domain, scheme, and query
+	// parameters are ignored).
+	//
+	// Examples:
+	// - `/login` matches `/login`, `https://example.com/login`, and
+	// `/login?query=1`, but not `/login/step1`.
+	// - `/products/*` matches `/products/123`, but not `/products/123/456`.
+	// - `/content/**` matches `/content/articles/2024/01/01`.
+	Path string `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
+	// Required. Action name to be used for token generation for this endpoint.
+	// The action name can only contain alphanumeric characters, slashes, and
+	// underscores.
+	Action        string `protobuf:"bytes,2,opt,name=action,proto3" json:"action,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ProtectedEndpoint) Reset() {
+	*x = ProtectedEndpoint{}
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[80]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProtectedEndpoint) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProtectedEndpoint) ProtoMessage() {}
+
+func (x *ProtectedEndpoint) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[80]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProtectedEndpoint.ProtoReflect.Descriptor instead.
+func (*ProtectedEndpoint) Descriptor() ([]byte, []int) {
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{80}
+}
+
+func (x *ProtectedEndpoint) GetPath() string {
+	if x != nil {
+		return x.Path
+	}
+	return ""
+}
+
+func (x *ProtectedEndpoint) GetAction() string {
+	if x != nil {
+		return x.Action
+	}
+	return ""
 }
 
 // Structured address format for billing and shipping addresses.
@@ -6448,7 +7389,7 @@ type TransactionData_Address struct {
 
 func (x *TransactionData_Address) Reset() {
 	*x = TransactionData_Address{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[70]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[81]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6460,7 +7401,7 @@ func (x *TransactionData_Address) String() string {
 func (*TransactionData_Address) ProtoMessage() {}
 
 func (x *TransactionData_Address) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[70]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[81]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6521,8 +7462,8 @@ func (x *TransactionData_Address) GetPostalCode() string {
 // Details about a user's account involved in the transaction.
 type TransactionData_User struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Optional. Unique account identifier for this user. If using account
-	// defender, this should match the hashed_account_id field. Otherwise, a
+	// Optional. Unique account identifier for this user. If using Account
+	// defense, this should match the hashed_account_id field. Otherwise, a
 	// unique and persistent identifier for this account.
 	AccountId string `protobuf:"bytes,6,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
 	// Optional. The epoch milliseconds of the user's account creation.
@@ -6543,7 +7484,7 @@ type TransactionData_User struct {
 
 func (x *TransactionData_User) Reset() {
 	*x = TransactionData_User{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[71]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[82]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6555,7 +7496,7 @@ func (x *TransactionData_User) String() string {
 func (*TransactionData_User) ProtoMessage() {}
 
 func (x *TransactionData_User) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[71]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[82]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6632,7 +7573,7 @@ type TransactionData_Item struct {
 
 func (x *TransactionData_Item) Reset() {
 	*x = TransactionData_Item{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[72]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[83]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6644,7 +7585,7 @@ func (x *TransactionData_Item) String() string {
 func (*TransactionData_Item) ProtoMessage() {}
 
 func (x *TransactionData_Item) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[72]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[83]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6708,7 +7649,7 @@ type TransactionData_GatewayInfo struct {
 
 func (x *TransactionData_GatewayInfo) Reset() {
 	*x = TransactionData_GatewayInfo{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[73]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[84]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6720,7 +7661,7 @@ func (x *TransactionData_GatewayInfo) String() string {
 func (*TransactionData_GatewayInfo) ProtoMessage() {}
 
 func (x *TransactionData_GatewayInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[73]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[84]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6775,7 +7716,7 @@ type FraudPreventionAssessment_RiskReason struct {
 
 func (x *FraudPreventionAssessment_RiskReason) Reset() {
 	*x = FraudPreventionAssessment_RiskReason{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[74]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6787,7 +7728,7 @@ func (x *FraudPreventionAssessment_RiskReason) String() string {
 func (*FraudPreventionAssessment_RiskReason) ProtoMessage() {}
 
 func (x *FraudPreventionAssessment_RiskReason) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[74]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6823,7 +7764,7 @@ type FraudPreventionAssessment_StolenInstrumentVerdict struct {
 
 func (x *FraudPreventionAssessment_StolenInstrumentVerdict) Reset() {
 	*x = FraudPreventionAssessment_StolenInstrumentVerdict{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[75]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[86]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6835,7 +7776,7 @@ func (x *FraudPreventionAssessment_StolenInstrumentVerdict) String() string {
 func (*FraudPreventionAssessment_StolenInstrumentVerdict) ProtoMessage() {}
 
 func (x *FraudPreventionAssessment_StolenInstrumentVerdict) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[75]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[86]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6871,7 +7812,7 @@ type FraudPreventionAssessment_CardTestingVerdict struct {
 
 func (x *FraudPreventionAssessment_CardTestingVerdict) Reset() {
 	*x = FraudPreventionAssessment_CardTestingVerdict{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[76]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[87]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6883,7 +7824,7 @@ func (x *FraudPreventionAssessment_CardTestingVerdict) String() string {
 func (*FraudPreventionAssessment_CardTestingVerdict) ProtoMessage() {}
 
 func (x *FraudPreventionAssessment_CardTestingVerdict) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[76]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[87]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6919,7 +7860,7 @@ type FraudPreventionAssessment_BehavioralTrustVerdict struct {
 
 func (x *FraudPreventionAssessment_BehavioralTrustVerdict) Reset() {
 	*x = FraudPreventionAssessment_BehavioralTrustVerdict{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[77]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[88]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6931,7 +7872,7 @@ func (x *FraudPreventionAssessment_BehavioralTrustVerdict) String() string {
 func (*FraudPreventionAssessment_BehavioralTrustVerdict) ProtoMessage() {}
 
 func (x *FraudPreventionAssessment_BehavioralTrustVerdict) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[77]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[88]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6970,7 +7911,7 @@ type FraudSignals_UserSignals struct {
 
 func (x *FraudSignals_UserSignals) Reset() {
 	*x = FraudSignals_UserSignals{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[78]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[89]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6982,7 +7923,7 @@ func (x *FraudSignals_UserSignals) String() string {
 func (*FraudSignals_UserSignals) ProtoMessage() {}
 
 func (x *FraudSignals_UserSignals) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[78]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[89]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7023,7 +7964,7 @@ type FraudSignals_CardSignals struct {
 
 func (x *FraudSignals_CardSignals) Reset() {
 	*x = FraudSignals_CardSignals{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[79]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[90]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7035,7 +7976,7 @@ func (x *FraudSignals_CardSignals) String() string {
 func (*FraudSignals_CardSignals) ProtoMessage() {}
 
 func (x *FraudSignals_CardSignals) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[79]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[90]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7058,6 +7999,167 @@ func (x *FraudSignals_CardSignals) GetCardLabels() []FraudSignals_CardSignals_Ca
 	return nil
 }
 
+// Account takeover risk assessment.
+type AccountDefenderAssessment_AccountTakeoverVerdict struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. Account takeover attempt probability.
+	// Values are from 0.0 (lowest risk) to 1.0 (highest risk).
+	Risk float32 `protobuf:"fixed32,1,opt,name=risk,proto3" json:"risk,omitempty"`
+	// Output only. Unordered list. Reasons why the request appears risky. Risk
+	// reasons can be returned even if the risk is low, as trustworthy requests
+	// can still have some risk signals.
+	RiskReasons []*AccountDefenderAssessment_AccountRiskReason `protobuf:"bytes,4,rep,name=risk_reasons,json=riskReasons,proto3" json:"risk_reasons,omitempty"`
+	// Output only. Unordered list. Reasons why the request appears trustworthy.
+	// Trust reasons can be returned even if the risk is high, as risky requests
+	// can still have some trust signals.
+	TrustReasons  []*AccountDefenderAssessment_AccountTrustReason `protobuf:"bytes,5,rep,name=trust_reasons,json=trustReasons,proto3" json:"trust_reasons,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AccountDefenderAssessment_AccountTakeoverVerdict) Reset() {
+	*x = AccountDefenderAssessment_AccountTakeoverVerdict{}
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[91]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AccountDefenderAssessment_AccountTakeoverVerdict) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AccountDefenderAssessment_AccountTakeoverVerdict) ProtoMessage() {}
+
+func (x *AccountDefenderAssessment_AccountTakeoverVerdict) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[91]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AccountDefenderAssessment_AccountTakeoverVerdict.ProtoReflect.Descriptor instead.
+func (*AccountDefenderAssessment_AccountTakeoverVerdict) Descriptor() ([]byte, []int) {
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{20, 0}
+}
+
+func (x *AccountDefenderAssessment_AccountTakeoverVerdict) GetRisk() float32 {
+	if x != nil {
+		return x.Risk
+	}
+	return 0
+}
+
+func (x *AccountDefenderAssessment_AccountTakeoverVerdict) GetRiskReasons() []*AccountDefenderAssessment_AccountRiskReason {
+	if x != nil {
+		return x.RiskReasons
+	}
+	return nil
+}
+
+func (x *AccountDefenderAssessment_AccountTakeoverVerdict) GetTrustReasons() []*AccountDefenderAssessment_AccountTrustReason {
+	if x != nil {
+		return x.TrustReasons
+	}
+	return nil
+}
+
+// Risk explainability reasons for Account defense.
+type AccountDefenderAssessment_AccountRiskReason struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. A risk reason associated with this request.
+	Reason        AccountDefenderAssessment_AccountRiskReason_RiskReason `protobuf:"varint,1,opt,name=reason,proto3,enum=google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment_AccountRiskReason_RiskReason" json:"reason,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AccountDefenderAssessment_AccountRiskReason) Reset() {
+	*x = AccountDefenderAssessment_AccountRiskReason{}
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[92]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AccountDefenderAssessment_AccountRiskReason) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AccountDefenderAssessment_AccountRiskReason) ProtoMessage() {}
+
+func (x *AccountDefenderAssessment_AccountRiskReason) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[92]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AccountDefenderAssessment_AccountRiskReason.ProtoReflect.Descriptor instead.
+func (*AccountDefenderAssessment_AccountRiskReason) Descriptor() ([]byte, []int) {
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{20, 1}
+}
+
+func (x *AccountDefenderAssessment_AccountRiskReason) GetReason() AccountDefenderAssessment_AccountRiskReason_RiskReason {
+	if x != nil {
+		return x.Reason
+	}
+	return AccountDefenderAssessment_AccountRiskReason_RISK_REASON_UNSPECIFIED
+}
+
+// Trust explainability reasons for Account defense.
+type AccountDefenderAssessment_AccountTrustReason struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. A trust reason associated with this request.
+	Reason        AccountDefenderAssessment_AccountTrustReason_TrustReason `protobuf:"varint,1,opt,name=reason,proto3,enum=google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment_AccountTrustReason_TrustReason" json:"reason,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AccountDefenderAssessment_AccountTrustReason) Reset() {
+	*x = AccountDefenderAssessment_AccountTrustReason{}
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[93]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AccountDefenderAssessment_AccountTrustReason) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AccountDefenderAssessment_AccountTrustReason) ProtoMessage() {}
+
+func (x *AccountDefenderAssessment_AccountTrustReason) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[93]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AccountDefenderAssessment_AccountTrustReason.ProtoReflect.Descriptor instead.
+func (*AccountDefenderAssessment_AccountTrustReason) Descriptor() ([]byte, []int) {
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{20, 2}
+}
+
+func (x *AccountDefenderAssessment_AccountTrustReason) GetReason() AccountDefenderAssessment_AccountTrustReason_TrustReason {
+	if x != nil {
+		return x.Reason
+	}
+	return AccountDefenderAssessment_AccountTrustReason_TRUST_REASON_UNSPECIFIED
+}
+
 // Per-action challenge settings.
 type WebKeySettings_ActionSettings struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -7070,7 +8172,7 @@ type WebKeySettings_ActionSettings struct {
 
 func (x *WebKeySettings_ActionSettings) Reset() {
 	*x = WebKeySettings_ActionSettings{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[81]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[95]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7082,7 +8184,7 @@ func (x *WebKeySettings_ActionSettings) String() string {
 func (*WebKeySettings_ActionSettings) ProtoMessage() {}
 
 func (x *WebKeySettings_ActionSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[81]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[95]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7126,7 +8228,7 @@ type WebKeySettings_ChallengeSettings struct {
 
 func (x *WebKeySettings_ChallengeSettings) Reset() {
 	*x = WebKeySettings_ChallengeSettings{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[82]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[96]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7138,7 +8240,7 @@ func (x *WebKeySettings_ChallengeSettings) String() string {
 func (*WebKeySettings_ChallengeSettings) ProtoMessage() {}
 
 func (x *WebKeySettings_ChallengeSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[82]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[96]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7177,7 +8279,7 @@ type FirewallAction_AllowAction struct {
 
 func (x *FirewallAction_AllowAction) Reset() {
 	*x = FirewallAction_AllowAction{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[86]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[100]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7189,7 +8291,7 @@ func (x *FirewallAction_AllowAction) String() string {
 func (*FirewallAction_AllowAction) ProtoMessage() {}
 
 func (x *FirewallAction_AllowAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[86]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[100]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7202,7 +8304,7 @@ func (x *FirewallAction_AllowAction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FirewallAction_AllowAction.ProtoReflect.Descriptor instead.
 func (*FirewallAction_AllowAction) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{51, 0}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{52, 0}
 }
 
 // A block action serves an HTTP error code a prevents the request from
@@ -7215,7 +8317,7 @@ type FirewallAction_BlockAction struct {
 
 func (x *FirewallAction_BlockAction) Reset() {
 	*x = FirewallAction_BlockAction{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[87]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[101]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7227,7 +8329,7 @@ func (x *FirewallAction_BlockAction) String() string {
 func (*FirewallAction_BlockAction) ProtoMessage() {}
 
 func (x *FirewallAction_BlockAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[87]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[101]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7240,7 +8342,7 @@ func (x *FirewallAction_BlockAction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FirewallAction_BlockAction.ProtoReflect.Descriptor instead.
 func (*FirewallAction_BlockAction) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{51, 1}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{52, 1}
 }
 
 // An include reCAPTCHA script action involves injecting reCAPTCHA JavaScript
@@ -7256,7 +8358,7 @@ type FirewallAction_IncludeRecaptchaScriptAction struct {
 
 func (x *FirewallAction_IncludeRecaptchaScriptAction) Reset() {
 	*x = FirewallAction_IncludeRecaptchaScriptAction{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[88]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[102]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7268,7 +8370,7 @@ func (x *FirewallAction_IncludeRecaptchaScriptAction) String() string {
 func (*FirewallAction_IncludeRecaptchaScriptAction) ProtoMessage() {}
 
 func (x *FirewallAction_IncludeRecaptchaScriptAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[88]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[102]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7281,7 +8383,7 @@ func (x *FirewallAction_IncludeRecaptchaScriptAction) ProtoReflect() protoreflec
 
 // Deprecated: Use FirewallAction_IncludeRecaptchaScriptAction.ProtoReflect.Descriptor instead.
 func (*FirewallAction_IncludeRecaptchaScriptAction) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{51, 2}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{52, 2}
 }
 
 // A redirect action returns a 307 (temporary redirect) response, pointing
@@ -7294,7 +8396,7 @@ type FirewallAction_RedirectAction struct {
 
 func (x *FirewallAction_RedirectAction) Reset() {
 	*x = FirewallAction_RedirectAction{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[89]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[103]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7306,7 +8408,7 @@ func (x *FirewallAction_RedirectAction) String() string {
 func (*FirewallAction_RedirectAction) ProtoMessage() {}
 
 func (x *FirewallAction_RedirectAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[89]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[103]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7319,7 +8421,7 @@ func (x *FirewallAction_RedirectAction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FirewallAction_RedirectAction.ProtoReflect.Descriptor instead.
 func (*FirewallAction_RedirectAction) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{51, 3}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{52, 3}
 }
 
 // A substitute action transparently serves a different page than the one
@@ -7335,7 +8437,7 @@ type FirewallAction_SubstituteAction struct {
 
 func (x *FirewallAction_SubstituteAction) Reset() {
 	*x = FirewallAction_SubstituteAction{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[90]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[104]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7347,7 +8449,7 @@ func (x *FirewallAction_SubstituteAction) String() string {
 func (*FirewallAction_SubstituteAction) ProtoMessage() {}
 
 func (x *FirewallAction_SubstituteAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[90]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[104]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7360,7 +8462,7 @@ func (x *FirewallAction_SubstituteAction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FirewallAction_SubstituteAction.ProtoReflect.Descriptor instead.
 func (*FirewallAction_SubstituteAction) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{51, 4}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{52, 4}
 }
 
 func (x *FirewallAction_SubstituteAction) GetPath() string {
@@ -7385,7 +8487,7 @@ type FirewallAction_SetHeaderAction struct {
 
 func (x *FirewallAction_SetHeaderAction) Reset() {
 	*x = FirewallAction_SetHeaderAction{}
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[91]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[105]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7397,7 +8499,7 @@ func (x *FirewallAction_SetHeaderAction) String() string {
 func (*FirewallAction_SetHeaderAction) ProtoMessage() {}
 
 func (x *FirewallAction_SetHeaderAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[91]
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[105]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7410,7 +8512,7 @@ func (x *FirewallAction_SetHeaderAction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FirewallAction_SetHeaderAction.ProtoReflect.Descriptor instead.
 func (*FirewallAction_SetHeaderAction) Descriptor() ([]byte, []int) {
-	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{51, 5}
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{52, 5}
 }
 
 func (x *FirewallAction_SetHeaderAction) GetKey() string {
@@ -7427,24 +8529,110 @@ func (x *FirewallAction_SetHeaderAction) GetValue() string {
 	return ""
 }
 
+// An outcome that indicates that no challenge should be presented to the
+// user.
+type ChallengeRule_NoChallengeOutcome struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ChallengeRule_NoChallengeOutcome) Reset() {
+	*x = ChallengeRule_NoChallengeOutcome{}
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[106]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ChallengeRule_NoChallengeOutcome) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ChallengeRule_NoChallengeOutcome) ProtoMessage() {}
+
+func (x *ChallengeRule_NoChallengeOutcome) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[106]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ChallengeRule_NoChallengeOutcome.ProtoReflect.Descriptor instead.
+func (*ChallengeRule_NoChallengeOutcome) Descriptor() ([]byte, []int) {
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{77, 0}
+}
+
+// An outcome that indicates that a challenge of a specified difficulty should
+// be presented to the user.
+type ChallengeRule_ChallengeOutcome struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The difficulty of the challenge to present to the user.
+	// If unspecified, `BALANCE` is used.
+	Difficulty    WebKeySettings_ChallengeSecurityPreference `protobuf:"varint,1,opt,name=difficulty,proto3,enum=google.cloud.recaptchaenterprise.v1.WebKeySettings_ChallengeSecurityPreference" json:"difficulty,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ChallengeRule_ChallengeOutcome) Reset() {
+	*x = ChallengeRule_ChallengeOutcome{}
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[107]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ChallengeRule_ChallengeOutcome) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ChallengeRule_ChallengeOutcome) ProtoMessage() {}
+
+func (x *ChallengeRule_ChallengeOutcome) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[107]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ChallengeRule_ChallengeOutcome.ProtoReflect.Descriptor instead.
+func (*ChallengeRule_ChallengeOutcome) Descriptor() ([]byte, []int) {
+	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{77, 1}
+}
+
+func (x *ChallengeRule_ChallengeOutcome) GetDifficulty() WebKeySettings_ChallengeSecurityPreference {
+	if x != nil {
+		return x.Difficulty
+	}
+	return WebKeySettings_CHALLENGE_SECURITY_PREFERENCE_UNSPECIFIED
+}
+
 var File_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto protoreflect.FileDescriptor
 
 const file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDesc = "" +
 	"\n" +
-	"=google/cloud/recaptchaenterprise/v1/recaptchaenterprise.proto\x12#google.cloud.recaptchaenterprise.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xbc\x01\n" +
-	"\x17CreateAssessmentRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12T\n" +
+	"=google/cloud/recaptchaenterprise/v1/recaptchaenterprise.proto\x12#google.cloud.recaptchaenterprise.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xbe\x01\n" +
+	"\x17CreateAssessmentRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12U\n" +
 	"\n" +
-	"assessment\x18\x02 \x01(\v2/.google.cloud.recaptchaenterprise.v1.AssessmentB\x03\xe0A\x02R\n" +
-	"assessment\"\xb7\x05\n" +
-	"\x10TransactionEvent\x12n\n" +
+	"assessment\x18\x02 \x01(\v2/.google.cloud.recaptchaenterprise.v1.AssessmentB\x04\xe2A\x01\x02R\n" +
+	"assessment\"\xbb\x05\n" +
+	"\x10TransactionEvent\x12o\n" +
 	"\n" +
-	"event_type\x18\x01 \x01(\x0e2J.google.cloud.recaptchaenterprise.v1.TransactionEvent.TransactionEventTypeB\x03\xe0A\x01R\teventType\x12\x1b\n" +
-	"\x06reason\x18\x02 \x01(\tB\x03\xe0A\x01R\x06reason\x12\x19\n" +
-	"\x05value\x18\x03 \x01(\x01B\x03\xe0A\x01R\x05value\x12>\n" +
+	"event_type\x18\x01 \x01(\x0e2J.google.cloud.recaptchaenterprise.v1.TransactionEvent.TransactionEventTypeB\x04\xe2A\x01\x01R\teventType\x12\x1c\n" +
+	"\x06reason\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06reason\x12\x1a\n" +
+	"\x05value\x18\x03 \x01(\x01B\x04\xe2A\x01\x01R\x05value\x12?\n" +
 	"\n" +
-	"event_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\teventTime\"\xba\x03\n" +
+	"event_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\teventTime\"\xba\x03\n" +
 	"\x14TransactionEventType\x12&\n" +
 	"\"TRANSACTION_EVENT_TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10MERCHANT_APPROVE\x10\x01\x12\x11\n" +
@@ -7468,23 +8656,23 @@ const file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDesc
 	"\x0eREFUND_DECLINE\x10\x10\x12\n" +
 	"\n" +
 	"\x06REFUND\x10\x11\x12\x12\n" +
-	"\x0eREFUND_REVERSE\x10\x12\"\x82\x01\n" +
-	"\x18PhoneAuthenticationEvent\x12&\n" +
-	"\fphone_number\x18\x01 \x01(\tB\x03\xe0A\x02R\vphoneNumber\x12>\n" +
+	"\x0eREFUND_REVERSE\x10\x12\"\x84\x01\n" +
+	"\x18PhoneAuthenticationEvent\x12'\n" +
+	"\fphone_number\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vphoneNumber\x12?\n" +
 	"\n" +
-	"event_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\teventTime\"\xcf\b\n" +
-	"\x19AnnotateAssessmentRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-recaptchaenterprise.googleapis.com/AssessmentR\x04name\x12n\n" +
+	"event_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\teventTime\"\xd6\b\n" +
+	"\x19AnnotateAssessmentRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-recaptchaenterprise.googleapis.com/AssessmentR\x04name\x12o\n" +
 	"\n" +
-	"annotation\x18\x02 \x01(\x0e2I.google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest.AnnotationB\x03\xe0A\x01R\n" +
-	"annotation\x12d\n" +
-	"\areasons\x18\x03 \x03(\x0e2E.google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest.ReasonB\x03\xe0A\x01R\areasons\x12\"\n" +
+	"annotation\x18\x02 \x01(\x0e2I.google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest.AnnotationB\x04\xe2A\x01\x01R\n" +
+	"annotation\x12e\n" +
+	"\areasons\x18\x03 \x03(\x0e2E.google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest.ReasonB\x04\xe2A\x01\x01R\areasons\x12#\n" +
 	"\n" +
-	"account_id\x18\a \x01(\tB\x03\xe0A\x01R\taccountId\x12/\n" +
-	"\x11hashed_account_id\x18\x04 \x01(\fB\x03\xe0A\x01R\x0fhashedAccountId\x12g\n" +
-	"\x11transaction_event\x18\x05 \x01(\v25.google.cloud.recaptchaenterprise.v1.TransactionEventB\x03\xe0A\x01R\x10transactionEvent\x12\x80\x01\n" +
-	"\x1aphone_authentication_event\x18\x06 \x01(\v2=.google.cloud.recaptchaenterprise.v1.PhoneAuthenticationEventB\x03\xe0A\x01R\x18phoneAuthenticationEvent\"~\n" +
+	"account_id\x18\a \x01(\tB\x04\xe2A\x01\x01R\taccountId\x120\n" +
+	"\x11hashed_account_id\x18\x04 \x01(\fB\x04\xe2A\x01\x01R\x0fhashedAccountId\x12h\n" +
+	"\x11transaction_event\x18\x05 \x01(\v25.google.cloud.recaptchaenterprise.v1.TransactionEventB\x04\xe2A\x01\x01R\x10transactionEvent\x12\x81\x01\n" +
+	"\x1aphone_authentication_event\x18\x06 \x01(\v2=.google.cloud.recaptchaenterprise.v1.PhoneAuthenticationEventB\x04\xe2A\x01\x01R\x18phoneAuthenticationEvent\"~\n" +
 	"\n" +
 	"Annotation\x12\x1a\n" +
 	"\x16ANNOTATION_UNSPECIFIED\x10\x00\x12\x0e\n" +
@@ -7513,18 +8701,18 @@ const file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDesc
 	"\x10CORRECT_PASSWORD\x10\x05\x12\x16\n" +
 	"\x12INCORRECT_PASSWORD\x10\x06\x12\x0f\n" +
 	"\vSOCIAL_SPAM\x10\x0e\"\x1c\n" +
-	"\x1aAnnotateAssessmentResponse\"\xf3\x01\n" +
+	"\x1aAnnotateAssessmentResponse\"\xf5\x01\n" +
 	"\x18EndpointVerificationInfo\x12%\n" +
 	"\remail_address\x18\x01 \x01(\tH\x00R\femailAddress\x12#\n" +
-	"\fphone_number\x18\x02 \x01(\tH\x00R\vphoneNumber\x12(\n" +
-	"\rrequest_token\x18\x03 \x01(\tB\x03\xe0A\x03R\frequestToken\x12U\n" +
-	"\x16last_verification_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x14lastVerificationTimeB\n" +
+	"\fphone_number\x18\x02 \x01(\tH\x00R\vphoneNumber\x12)\n" +
+	"\rrequest_token\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\frequestToken\x12V\n" +
+	"\x16last_verification_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x14lastVerificationTimeB\n" +
 	"\n" +
-	"\bendpoint\"\x99\x05\n" +
-	"\x17AccountVerificationInfo\x12`\n" +
-	"\tendpoints\x18\x01 \x03(\v2=.google.cloud.recaptchaenterprise.v1.EndpointVerificationInfoB\x03\xe0A\x01R\tendpoints\x12(\n" +
-	"\rlanguage_code\x18\x03 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12\x86\x01\n" +
-	"\x1alatest_verification_result\x18\a \x01(\x0e2C.google.cloud.recaptchaenterprise.v1.AccountVerificationInfo.ResultB\x03\xe0A\x03R\x18latestVerificationResult\x12\x1e\n" +
+	"\bendpoint\"\x9c\x05\n" +
+	"\x17AccountVerificationInfo\x12a\n" +
+	"\tendpoints\x18\x01 \x03(\v2=.google.cloud.recaptchaenterprise.v1.EndpointVerificationInfoB\x04\xe2A\x01\x01R\tendpoints\x12)\n" +
+	"\rlanguage_code\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12\x87\x01\n" +
+	"\x1alatest_verification_result\x18\a \x01(\x0e2C.google.cloud.recaptchaenterprise.v1.AccountVerificationInfo.ResultB\x04\xe2A\x01\x03R\x18latestVerificationResult\x12\x1e\n" +
 	"\busername\x18\x02 \x01(\tB\x02\x18\x01R\busername\"\xc8\x02\n" +
 	"\x06Result\x12\x16\n" +
 	"\x12RESULT_UNSPECIFIED\x10\x00\x12\x19\n" +
@@ -7536,113 +8724,115 @@ const file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDesc
 	"\x17ERROR_CRITICAL_INTERNAL\x10\x06\x12\"\n" +
 	"\x1eERROR_CUSTOMER_QUOTA_EXHAUSTED\x10\a\x12\x1f\n" +
 	"\x1bERROR_VERIFICATION_BYPASSED\x10\b\x12\x1a\n" +
-	"\x16ERROR_VERDICT_MISMATCH\x10\t\"\xb8\x02\n" +
-	"\x1fPrivatePasswordLeakVerification\x121\n" +
-	"\x12lookup_hash_prefix\x18\x01 \x01(\fB\x03\xe0A\x02R\x10lookupHashPrefix\x12J\n" +
-	"\x1fencrypted_user_credentials_hash\x18\x02 \x01(\fB\x03\xe0A\x01R\x1cencryptedUserCredentialsHash\x12F\n" +
-	"\x1dencrypted_leak_match_prefixes\x18\x03 \x03(\fB\x03\xe0A\x03R\x1aencryptedLeakMatchPrefixes\x12N\n" +
-	"!reencrypted_user_credentials_hash\x18\x04 \x01(\fB\x03\xe0A\x03R\x1ereencryptedUserCredentialsHash\"\x95\v\n" +
+	"\x16ERROR_VERDICT_MISMATCH\x10\t\"\xbc\x02\n" +
+	"\x1fPrivatePasswordLeakVerification\x122\n" +
+	"\x12lookup_hash_prefix\x18\x01 \x01(\fB\x04\xe2A\x01\x02R\x10lookupHashPrefix\x12K\n" +
+	"\x1fencrypted_user_credentials_hash\x18\x02 \x01(\fB\x04\xe2A\x01\x01R\x1cencryptedUserCredentialsHash\x12G\n" +
+	"\x1dencrypted_leak_match_prefixes\x18\x03 \x03(\fB\x04\xe2A\x01\x03R\x1aencryptedLeakMatchPrefixes\x12O\n" +
+	"!reencrypted_user_credentials_hash\x18\x04 \x01(\fB\x04\xe2A\x01\x03R\x1ereencryptedUserCredentialsHash\"\x89\f\n" +
 	"\n" +
-	"Assessment\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12E\n" +
-	"\x05event\x18\x02 \x01(\v2*.google.cloud.recaptchaenterprise.v1.EventB\x03\xe0A\x01R\x05event\x12[\n" +
-	"\rrisk_analysis\x18\x03 \x01(\v21.google.cloud.recaptchaenterprise.v1.RiskAnalysisB\x03\xe0A\x03R\friskAnalysis\x12d\n" +
-	"\x10token_properties\x18\x04 \x01(\v24.google.cloud.recaptchaenterprise.v1.TokenPropertiesB\x03\xe0A\x03R\x0ftokenProperties\x12t\n" +
-	"\x14account_verification\x18\x05 \x01(\v2<.google.cloud.recaptchaenterprise.v1.AccountVerificationInfoB\x03\xe0A\x01R\x13accountVerification\x12\x83\x01\n" +
-	"\x1baccount_defender_assessment\x18\x06 \x01(\v2>.google.cloud.recaptchaenterprise.v1.AccountDefenderAssessmentB\x03\xe0A\x03R\x19accountDefenderAssessment\x12\x96\x01\n" +
-	"\"private_password_leak_verification\x18\b \x01(\v2D.google.cloud.recaptchaenterprise.v1.PrivatePasswordLeakVerificationB\x03\xe0A\x01R\x1fprivatePasswordLeakVerification\x12\x80\x01\n" +
+	"Assessment\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x03\bR\x04name\x12F\n" +
+	"\x05event\x18\x02 \x01(\v2*.google.cloud.recaptchaenterprise.v1.EventB\x04\xe2A\x01\x01R\x05event\x12\\\n" +
+	"\rrisk_analysis\x18\x03 \x01(\v21.google.cloud.recaptchaenterprise.v1.RiskAnalysisB\x04\xe2A\x01\x03R\friskAnalysis\x12e\n" +
+	"\x10token_properties\x18\x04 \x01(\v24.google.cloud.recaptchaenterprise.v1.TokenPropertiesB\x04\xe2A\x01\x03R\x0ftokenProperties\x12u\n" +
+	"\x14account_verification\x18\x05 \x01(\v2<.google.cloud.recaptchaenterprise.v1.AccountVerificationInfoB\x04\xe2A\x01\x01R\x13accountVerification\x12\x84\x01\n" +
+	"\x1baccount_defender_assessment\x18\x06 \x01(\v2>.google.cloud.recaptchaenterprise.v1.AccountDefenderAssessmentB\x04\xe2A\x01\x03R\x19accountDefenderAssessment\x12\x97\x01\n" +
+	"\"private_password_leak_verification\x18\b \x01(\v2D.google.cloud.recaptchaenterprise.v1.PrivatePasswordLeakVerificationB\x04\xe2A\x01\x01R\x1fprivatePasswordLeakVerification\x12\x81\x01\n" +
 	"\x1afirewall_policy_assessment\x18\n" +
-	" \x01(\v2=.google.cloud.recaptchaenterprise.v1.FirewallPolicyAssessmentB\x03\xe0A\x03R\x18firewallPolicyAssessment\x12\x83\x01\n" +
-	"\x1bfraud_prevention_assessment\x18\v \x01(\v2>.google.cloud.recaptchaenterprise.v1.FraudPreventionAssessmentB\x03\xe0A\x03R\x19fraudPreventionAssessment\x12[\n" +
-	"\rfraud_signals\x18\r \x01(\v21.google.cloud.recaptchaenterprise.v1.FraudSignalsB\x03\xe0A\x03R\ffraudSignals\x12t\n" +
-	"\x16phone_fraud_assessment\x18\f \x01(\v29.google.cloud.recaptchaenterprise.v1.PhoneFraudAssessmentB\x03\xe0A\x03R\x14phoneFraudAssessment\x12v\n" +
-	"\x16assessment_environment\x18\x0e \x01(\v2:.google.cloud.recaptchaenterprise.v1.AssessmentEnvironmentB\x03\xe0A\x01R\x15assessmentEnvironment:x\xeaAu\n" +
+	" \x01(\v2=.google.cloud.recaptchaenterprise.v1.FirewallPolicyAssessmentB\x04\xe2A\x01\x03R\x18firewallPolicyAssessment\x12\x84\x01\n" +
+	"\x1bfraud_prevention_assessment\x18\v \x01(\v2>.google.cloud.recaptchaenterprise.v1.FraudPreventionAssessmentB\x04\xe2A\x01\x03R\x19fraudPreventionAssessment\x12\\\n" +
+	"\rfraud_signals\x18\r \x01(\v21.google.cloud.recaptchaenterprise.v1.FraudSignalsB\x04\xe2A\x01\x03R\ffraudSignals\x12u\n" +
+	"\x16phone_fraud_assessment\x18\f \x01(\v29.google.cloud.recaptchaenterprise.v1.PhoneFraudAssessmentB\x04\xe2A\x01\x03R\x14phoneFraudAssessment\x12w\n" +
+	"\x16assessment_environment\x18\x0e \x01(\v2:.google.cloud.recaptchaenterprise.v1.AssessmentEnvironmentB\x04\xe2A\x01\x01R\x15assessmentEnvironment\x12h\n" +
+	"\x11policy_evaluation\x18\x10 \x01(\v25.google.cloud.recaptchaenterprise.v1.PolicyEvaluationB\x04\xe2A\x01\x03R\x10policyEvaluation:x\xeaAu\n" +
 	"-recaptchaenterprise.googleapis.com/Assessment\x12+projects/{project}/assessments/{assessment}*\vassessments2\n" +
-	"assessment\"\xff\x06\n" +
-	"\x05Event\x12\x19\n" +
-	"\x05token\x18\x01 \x01(\tB\x03\xe0A\x01R\x05token\x12\x1e\n" +
-	"\bsite_key\x18\x02 \x01(\tB\x03\xe0A\x01R\asiteKey\x12\"\n" +
+	"assessment\"\x8f\a\n" +
+	"\x05Event\x12\x1a\n" +
+	"\x05token\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05token\x12\x1f\n" +
+	"\bsite_key\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\asiteKey\x12#\n" +
 	"\n" +
-	"user_agent\x18\x03 \x01(\tB\x03\xe0A\x01R\tuserAgent\x123\n" +
-	"\x0fuser_ip_address\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x04R\ruserIpAddress\x12,\n" +
-	"\x0fexpected_action\x18\x05 \x01(\tB\x03\xe0A\x01R\x0eexpectedAction\x121\n" +
-	"\x11hashed_account_id\x18\x06 \x01(\fB\x05\xe0A\x01\x18\x01R\x0fhashedAccountId\x12\x1d\n" +
-	"\aexpress\x18\x0e \x01(\bB\x03\xe0A\x01R\aexpress\x12(\n" +
-	"\rrequested_uri\x18\b \x01(\tB\x03\xe0A\x01R\frequestedUri\x125\n" +
-	"\x14waf_token_assessment\x18\t \x01(\bB\x03\xe0A\x01R\x12wafTokenAssessment\x12\x15\n" +
+	"user_agent\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tuserAgent\x124\n" +
+	"\x0fuser_ip_address\x18\x04 \x01(\tB\f\xe2A\x01\x01\xe2\x8c\xcf\xd7\b\x02\b\x04R\ruserIpAddress\x12-\n" +
+	"\x0fexpected_action\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x0eexpectedAction\x122\n" +
+	"\x11hashed_account_id\x18\x06 \x01(\fB\x06\xe2A\x01\x01\x18\x01R\x0fhashedAccountId\x12\x1e\n" +
+	"\aexpress\x18\x0e \x01(\bB\x04\xe2A\x01\x01R\aexpress\x12)\n" +
+	"\rrequested_uri\x18\b \x01(\tB\x04\xe2A\x01\x01R\frequestedUri\x126\n" +
+	"\x14waf_token_assessment\x18\t \x01(\bB\x04\xe2A\x01\x01R\x12wafTokenAssessment\x12\x16\n" +
 	"\x03ja3\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x03ja3\x12\x15\n" +
-	"\x03ja4\x18\x12 \x01(\tB\x03\xe0A\x01R\x03ja4\x12\x1d\n" +
-	"\aheaders\x18\v \x03(\tB\x03\xe0A\x01R\aheaders\x12A\n" +
-	"\x1afirewall_policy_evaluation\x18\f \x01(\bB\x03\xe0A\x01R\x18firewallPolicyEvaluation\x12d\n" +
-	"\x10transaction_data\x18\r \x01(\v24.google.cloud.recaptchaenterprise.v1.TransactionDataB\x03\xe0A\x01R\x0ftransactionData\x12O\n" +
-	"\tuser_info\x18\x0f \x01(\v2-.google.cloud.recaptchaenterprise.v1.UserInfoB\x03\xe0A\x01R\buserInfo\x12j\n" +
-	"\x10fraud_prevention\x18\x11 \x01(\x0e2:.google.cloud.recaptchaenterprise.v1.Event.FraudPreventionB\x03\xe0A\x01R\x0ffraudPrevention\"N\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x03ja3\x12\x16\n" +
+	"\x03ja4\x18\x12 \x01(\tB\x04\xe2A\x01\x01R\x03ja4\x12\x1e\n" +
+	"\aheaders\x18\v \x03(\tB\x04\xe2A\x01\x01R\aheaders\x12B\n" +
+	"\x1afirewall_policy_evaluation\x18\f \x01(\bB\x04\xe2A\x01\x01R\x18firewallPolicyEvaluation\x12e\n" +
+	"\x10transaction_data\x18\r \x01(\v24.google.cloud.recaptchaenterprise.v1.TransactionDataB\x04\xe2A\x01\x01R\x0ftransactionData\x12P\n" +
+	"\tuser_info\x18\x0f \x01(\v2-.google.cloud.recaptchaenterprise.v1.UserInfoB\x04\xe2A\x01\x01R\buserInfo\x12k\n" +
+	"\x10fraud_prevention\x18\x11 \x01(\x0e2:.google.cloud.recaptchaenterprise.v1.Event.FraudPreventionB\x04\xe2A\x01\x01R\x0ffraudPrevention\"N\n" +
 	"\x0fFraudPrevention\x12 \n" +
 	"\x1cFRAUD_PREVENTION_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aENABLED\x10\x01\x12\f\n" +
-	"\bDISABLED\x10\x02\"\xba\r\n" +
+	"\bDISABLED\x10\x02\"\xda\r\n" +
 	"\x0fTransactionData\x12*\n" +
-	"\x0etransaction_id\x18\v \x01(\tH\x00R\rtransactionId\x88\x01\x01\x12*\n" +
-	"\x0epayment_method\x18\x01 \x01(\tB\x03\xe0A\x01R\rpaymentMethod\x12\x1e\n" +
-	"\bcard_bin\x18\x02 \x01(\tB\x03\xe0A\x01R\acardBin\x12)\n" +
-	"\x0ecard_last_four\x18\x03 \x01(\tB\x03\xe0A\x01R\fcardLastFour\x12(\n" +
-	"\rcurrency_code\x18\x04 \x01(\tB\x03\xe0A\x01R\fcurrencyCode\x12\x19\n" +
-	"\x05value\x18\x05 \x01(\x01B\x03\xe0A\x01R\x05value\x12*\n" +
-	"\x0eshipping_value\x18\f \x01(\x01B\x03\xe0A\x01R\rshippingValue\x12l\n" +
-	"\x10shipping_address\x18\x06 \x01(\v2<.google.cloud.recaptchaenterprise.v1.TransactionData.AddressB\x03\xe0A\x01R\x0fshippingAddress\x12j\n" +
-	"\x0fbilling_address\x18\a \x01(\v2<.google.cloud.recaptchaenterprise.v1.TransactionData.AddressB\x03\xe0A\x01R\x0ebillingAddress\x12R\n" +
-	"\x04user\x18\b \x01(\v29.google.cloud.recaptchaenterprise.v1.TransactionData.UserB\x03\xe0A\x01R\x04user\x12\\\n" +
-	"\tmerchants\x18\r \x03(\v29.google.cloud.recaptchaenterprise.v1.TransactionData.UserB\x03\xe0A\x01R\tmerchants\x12T\n" +
-	"\x05items\x18\x0e \x03(\v29.google.cloud.recaptchaenterprise.v1.TransactionData.ItemB\x03\xe0A\x01R\x05items\x12h\n" +
+	"\x0etransaction_id\x18\v \x01(\tH\x00R\rtransactionId\x88\x01\x01\x12+\n" +
+	"\x0epayment_method\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\rpaymentMethod\x12\x1f\n" +
+	"\bcard_bin\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\acardBin\x12*\n" +
+	"\x0ecard_last_four\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\fcardLastFour\x12)\n" +
+	"\rcurrency_code\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\fcurrencyCode\x12\x1a\n" +
+	"\x05value\x18\x05 \x01(\x01B\x04\xe2A\x01\x01R\x05value\x12+\n" +
+	"\x0eshipping_value\x18\f \x01(\x01B\x04\xe2A\x01\x01R\rshippingValue\x12m\n" +
+	"\x10shipping_address\x18\x06 \x01(\v2<.google.cloud.recaptchaenterprise.v1.TransactionData.AddressB\x04\xe2A\x01\x01R\x0fshippingAddress\x12k\n" +
+	"\x0fbilling_address\x18\a \x01(\v2<.google.cloud.recaptchaenterprise.v1.TransactionData.AddressB\x04\xe2A\x01\x01R\x0ebillingAddress\x12S\n" +
+	"\x04user\x18\b \x01(\v29.google.cloud.recaptchaenterprise.v1.TransactionData.UserB\x04\xe2A\x01\x01R\x04user\x12]\n" +
+	"\tmerchants\x18\r \x03(\v29.google.cloud.recaptchaenterprise.v1.TransactionData.UserB\x04\xe2A\x01\x01R\tmerchants\x12U\n" +
+	"\x05items\x18\x0e \x03(\v29.google.cloud.recaptchaenterprise.v1.TransactionData.ItemB\x04\xe2A\x01\x01R\x05items\x12i\n" +
 	"\fgateway_info\x18\n" +
-	" \x01(\v2@.google.cloud.recaptchaenterprise.v1.TransactionData.GatewayInfoB\x03\xe0A\x01R\vgatewayInfo\x1a\xee\x01\n" +
-	"\aAddress\x12!\n" +
-	"\trecipient\x18\x01 \x01(\tB\x03\xe0A\x01R\trecipient\x12\x1d\n" +
-	"\aaddress\x18\x02 \x03(\tB\x03\xe0A\x01R\aaddress\x12\x1f\n" +
-	"\blocality\x18\x03 \x01(\tB\x03\xe0A\x01R\blocality\x124\n" +
-	"\x13administrative_area\x18\x04 \x01(\tB\x03\xe0A\x01R\x12administrativeArea\x12$\n" +
-	"\vregion_code\x18\x05 \x01(\tB\x03\xe0A\x01R\n" +
-	"regionCode\x12$\n" +
-	"\vpostal_code\x18\x06 \x01(\tB\x03\xe0A\x01R\n" +
-	"postalCode\x1a\xeb\x01\n" +
-	"\x04User\x12\"\n" +
+	" \x01(\v2@.google.cloud.recaptchaenterprise.v1.TransactionData.GatewayInfoB\x04\xe2A\x01\x01R\vgatewayInfo\x1a\xf4\x01\n" +
+	"\aAddress\x12\"\n" +
+	"\trecipient\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\trecipient\x12\x1e\n" +
+	"\aaddress\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\aaddress\x12 \n" +
+	"\blocality\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\blocality\x125\n" +
+	"\x13administrative_area\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x12administrativeArea\x12%\n" +
+	"\vregion_code\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"regionCode\x12%\n" +
+	"\vpostal_code\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"postalCode\x1a\xf1\x01\n" +
+	"\x04User\x12#\n" +
 	"\n" +
-	"account_id\x18\x06 \x01(\tB\x03\xe0A\x01R\taccountId\x12$\n" +
-	"\vcreation_ms\x18\x01 \x01(\x03B\x03\xe0A\x01R\n" +
-	"creationMs\x12\x19\n" +
-	"\x05email\x18\x02 \x01(\tB\x03\xe0A\x01R\x05email\x12*\n" +
-	"\x0eemail_verified\x18\x03 \x01(\bB\x03\xe0A\x01R\remailVerified\x12&\n" +
-	"\fphone_number\x18\x04 \x01(\tB\x03\xe0A\x01R\vphoneNumber\x12*\n" +
-	"\x0ephone_verified\x18\x05 \x01(\bB\x03\xe0A\x01R\rphoneVerified\x1a\x90\x01\n" +
-	"\x04Item\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\x01B\x03\xe0A\x01R\x05value\x12\x1f\n" +
-	"\bquantity\x18\x03 \x01(\x03B\x03\xe0A\x01R\bquantity\x123\n" +
-	"\x13merchant_account_id\x18\x04 \x01(\tB\x03\xe0A\x01R\x11merchantAccountId\x1a\xc1\x01\n" +
-	"\vGatewayInfo\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x127\n" +
-	"\x15gateway_response_code\x18\x02 \x01(\tB\x03\xe0A\x01R\x13gatewayResponseCode\x12/\n" +
-	"\x11avs_response_code\x18\x03 \x01(\tB\x03\xe0A\x01R\x0favsResponseCode\x12/\n" +
-	"\x11cvv_response_code\x18\x04 \x01(\tB\x03\xe0A\x01R\x0fcvvResponseCodeB\x11\n" +
-	"\x0f_transaction_id\"\xcc\x01\n" +
-	"\bUserInfo\x12O\n" +
-	"\x13create_account_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x11createAccountTime\x12\"\n" +
+	"account_id\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\taccountId\x12%\n" +
+	"\vcreation_ms\x18\x01 \x01(\x03B\x04\xe2A\x01\x01R\n" +
+	"creationMs\x12\x1a\n" +
+	"\x05email\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05email\x12+\n" +
+	"\x0eemail_verified\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\remailVerified\x12'\n" +
+	"\fphone_number\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\vphoneNumber\x12+\n" +
+	"\x0ephone_verified\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\rphoneVerified\x1a\x94\x01\n" +
+	"\x04Item\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\x01B\x04\xe2A\x01\x01R\x05value\x12 \n" +
+	"\bquantity\x18\x03 \x01(\x03B\x04\xe2A\x01\x01R\bquantity\x124\n" +
+	"\x13merchant_account_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x11merchantAccountId\x1a\xc5\x01\n" +
+	"\vGatewayInfo\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x128\n" +
+	"\x15gateway_response_code\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x13gatewayResponseCode\x120\n" +
+	"\x11avs_response_code\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x0favsResponseCode\x120\n" +
+	"\x11cvv_response_code\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x0fcvvResponseCodeB\x11\n" +
+	"\x0f_transaction_id\"\xcf\x01\n" +
+	"\bUserInfo\x12P\n" +
+	"\x13create_account_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\x11createAccountTime\x12#\n" +
 	"\n" +
-	"account_id\x18\x02 \x01(\tB\x03\xe0A\x01R\taccountId\x12K\n" +
-	"\buser_ids\x18\x03 \x03(\v2+.google.cloud.recaptchaenterprise.v1.UserIdB\x03\xe0A\x01R\auserIds\"~\n" +
-	"\x06UserId\x12\x1b\n" +
-	"\x05email\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\x05email\x12(\n" +
-	"\fphone_number\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\vphoneNumber\x12!\n" +
-	"\busername\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\busernameB\n" +
+	"account_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\taccountId\x12L\n" +
+	"\buser_ids\x18\x03 \x03(\v2+.google.cloud.recaptchaenterprise.v1.UserIdB\x04\xe2A\x01\x01R\auserIds\"\x81\x01\n" +
+	"\x06UserId\x12\x1c\n" +
+	"\x05email\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\x05email\x12)\n" +
+	"\fphone_number\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\vphoneNumber\x12\"\n" +
+	"\busername\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\busernameB\n" +
 	"\n" +
-	"\bid_oneof\"\xbe\x05\n" +
-	"\fRiskAnalysis\x12\x19\n" +
-	"\x05score\x18\x01 \x01(\x02B\x03\xe0A\x03R\x05score\x12e\n" +
-	"\areasons\x18\x02 \x03(\x0e2F.google.cloud.recaptchaenterprise.v1.RiskAnalysis.ClassificationReasonB\x03\xe0A\x03R\areasons\x12=\n" +
-	"\x18extended_verdict_reasons\x18\x03 \x03(\tB\x03\xe0A\x03R\x16extendedVerdictReasons\x12^\n" +
-	"\tchallenge\x18\x04 \x01(\x0e2;.google.cloud.recaptchaenterprise.v1.RiskAnalysis.ChallengeB\x03\xe0A\x03R\tchallenge\x12R\n" +
-	"\rverified_bots\x18\x05 \x03(\v2(.google.cloud.recaptchaenterprise.v1.BotB\x03\xe0A\x03R\fverifiedBots\"\xe9\x01\n" +
+	"\bid_oneof\"\xb5\x06\n" +
+	"\fRiskAnalysis\x12\x1a\n" +
+	"\x05score\x18\x01 \x01(\x02B\x04\xe2A\x01\x03R\x05score\x12f\n" +
+	"\areasons\x18\x02 \x03(\x0e2F.google.cloud.recaptchaenterprise.v1.RiskAnalysis.ClassificationReasonB\x04\xe2A\x01\x03R\areasons\x12>\n" +
+	"\x18extended_verdict_reasons\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\x16extendedVerdictReasons\x12h\n" +
+	"\x13last_challenge_type\x18\x06 \x01(\x0e22.google.cloud.recaptchaenterprise.v1.ChallengeTypeB\x04\xe2A\x01\x03R\x11lastChallengeType\x12_\n" +
+	"\tchallenge\x18\x04 \x01(\x0e2;.google.cloud.recaptchaenterprise.v1.RiskAnalysis.ChallengeB\x04\xe2A\x01\x03R\tchallenge\x12S\n" +
+	"\rverified_bots\x18\x05 \x03(\v2(.google.cloud.recaptchaenterprise.v1.BotB\x04\xe2A\x01\x03R\fverifiedBots\"\xf1\x01\n" +
 	"\x14ClassificationReason\x12%\n" +
 	"!CLASSIFICATION_REASON_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
@@ -7650,33 +8840,33 @@ const file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDesc
 	"\x16UNEXPECTED_ENVIRONMENT\x10\x02\x12\x14\n" +
 	"\x10TOO_MUCH_TRAFFIC\x10\x03\x12\x1d\n" +
 	"\x19UNEXPECTED_USAGE_PATTERNS\x10\x04\x12\x18\n" +
-	"\x14LOW_CONFIDENCE_SCORE\x10\x05\x12\x15\n" +
-	"\x11SUSPECTED_CARDING\x10\x06\x12\x18\n" +
-	"\x14SUSPECTED_CHARGEBACK\x10\a\"M\n" +
+	"\x14LOW_CONFIDENCE_SCORE\x10\x05\x12\x19\n" +
+	"\x11SUSPECTED_CARDING\x10\x06\x1a\x02\b\x01\x12\x1c\n" +
+	"\x14SUSPECTED_CHARGEBACK\x10\a\x1a\x02\b\x01\"M\n" +
 	"\tChallenge\x12\x19\n" +
 	"\x15CHALLENGE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tNOCAPTCHA\x10\x01\x12\n" +
 	"\n" +
 	"\x06PASSED\x10\x02\x12\n" +
 	"\n" +
-	"\x06FAILED\x10\x03\"\xcc\x01\n" +
-	"\x03Bot\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12P\n" +
-	"\bbot_type\x18\x02 \x01(\x0e20.google.cloud.recaptchaenterprise.v1.Bot.BotTypeB\x03\xe0A\x01R\abotType\"Z\n" +
+	"\x06FAILED\x10\x03\"\xce\x01\n" +
+	"\x03Bot\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12Q\n" +
+	"\bbot_type\x18\x02 \x01(\x0e20.google.cloud.recaptchaenterprise.v1.Bot.BotTypeB\x04\xe2A\x01\x01R\abotType\"Z\n" +
 	"\aBotType\x12\x18\n" +
 	"\x14BOT_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bAI_AGENT\x10\x01\x12\x13\n" +
 	"\x0fCONTENT_SCRAPER\x10\x02\x12\x12\n" +
-	"\x0eSEARCH_INDEXER\x10\x03\"\xa7\x04\n" +
-	"\x0fTokenProperties\x12\x19\n" +
-	"\x05valid\x18\x01 \x01(\bB\x03\xe0A\x03R\x05valid\x12n\n" +
-	"\x0einvalid_reason\x18\x02 \x01(\x0e2B.google.cloud.recaptchaenterprise.v1.TokenProperties.InvalidReasonB\x03\xe0A\x03R\rinvalidReason\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12\x1f\n" +
-	"\bhostname\x18\x04 \x01(\tB\x03\xe0A\x03R\bhostname\x125\n" +
-	"\x14android_package_name\x18\b \x01(\tB\x03\xe0A\x03R\x12androidPackageName\x12'\n" +
-	"\rios_bundle_id\x18\t \x01(\tB\x03\xe0A\x03R\viosBundleId\x12\x1b\n" +
-	"\x06action\x18\x05 \x01(\tB\x03\xe0A\x03R\x06action\"\xa8\x01\n" +
+	"\x0eSEARCH_INDEXER\x10\x03\"\xd5\x04\n" +
+	"\x0fTokenProperties\x12\x1a\n" +
+	"\x05valid\x18\x01 \x01(\bB\x04\xe2A\x01\x03R\x05valid\x12o\n" +
+	"\x0einvalid_reason\x18\x02 \x01(\x0e2B.google.cloud.recaptchaenterprise.v1.TokenProperties.InvalidReasonB\x04\xe2A\x01\x03R\rinvalidReason\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12 \n" +
+	"\bhostname\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\bhostname\x126\n" +
+	"\x14android_package_name\x18\b \x01(\tB\x04\xe2A\x01\x03R\x12androidPackageName\x12(\n" +
+	"\rios_bundle_id\x18\t \x01(\tB\x04\xe2A\x01\x03R\viosBundleId\x12\x1c\n" +
+	"\x06action\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\x06action\"\xcf\x01\n" +
 	"\rInvalidReason\x12\x1e\n" +
 	"\x1aINVALID_REASON_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16UNKNOWN_INVALID_REASON\x10\x01\x12\r\n" +
@@ -7685,167 +8875,193 @@ const file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDesc
 	"\x04DUPE\x10\x04\x12\v\n" +
 	"\aMISSING\x10\x05\x12\x11\n" +
 	"\rBROWSER_ERROR\x10\x06\x12\x15\n" +
-	"\x11UNEXPECTED_ACTION\x10\a\"\xd1\b\n" +
-	"\x19FraudPreventionAssessment\x12.\n" +
-	"\x10transaction_risk\x18\x01 \x01(\x02B\x03\xe0A\x03R\x0ftransactionRisk\x12q\n" +
-	"\frisk_reasons\x18\x06 \x03(\v2I.google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.RiskReasonB\x03\xe0A\x03R\vriskReasons\x12\x97\x01\n" +
-	"\x19stolen_instrument_verdict\x18\x02 \x01(\v2V.google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.StolenInstrumentVerdictB\x03\xe0A\x03R\x17stolenInstrumentVerdict\x12\x88\x01\n" +
-	"\x14card_testing_verdict\x18\x03 \x01(\v2Q.google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.CardTestingVerdictB\x03\xe0A\x03R\x12cardTestingVerdict\x12\x94\x01\n" +
-	"\x18behavioral_trust_verdict\x18\x04 \x01(\v2U.google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.BehavioralTrustVerdictB\x03\xe0A\x03R\x16behavioralTrustVerdict\x1a\xbc\x02\n" +
+	"\x11UNEXPECTED_ACTION\x10\a\x12\x10\n" +
+	"\fKEY_MISMATCH\x10\b\x12\x13\n" +
+	"\x0fDOMAIN_MISMATCH\x10\t\"\xda\b\n" +
+	"\x19FraudPreventionAssessment\x12/\n" +
+	"\x10transaction_risk\x18\x01 \x01(\x02B\x04\xe2A\x01\x03R\x0ftransactionRisk\x12r\n" +
+	"\frisk_reasons\x18\x06 \x03(\v2I.google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.RiskReasonB\x04\xe2A\x01\x03R\vriskReasons\x12\x98\x01\n" +
+	"\x19stolen_instrument_verdict\x18\x02 \x01(\v2V.google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.StolenInstrumentVerdictB\x04\xe2A\x01\x03R\x17stolenInstrumentVerdict\x12\x89\x01\n" +
+	"\x14card_testing_verdict\x18\x03 \x01(\v2Q.google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.CardTestingVerdictB\x04\xe2A\x01\x03R\x12cardTestingVerdict\x12\x95\x01\n" +
+	"\x18behavioral_trust_verdict\x18\x04 \x01(\v2U.google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.BehavioralTrustVerdictB\x04\xe2A\x01\x03R\x16behavioralTrustVerdict\x1a\xbd\x02\n" +
 	"\n" +
-	"RiskReason\x12m\n" +
-	"\x06reason\x18\x01 \x01(\x0e2P.google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.RiskReason.ReasonB\x03\xe0A\x03R\x06reason\"\xbe\x01\n" +
+	"RiskReason\x12n\n" +
+	"\x06reason\x18\x01 \x01(\x0e2P.google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.RiskReason.ReasonB\x04\xe2A\x01\x03R\x06reason\"\xbe\x01\n" +
 	"\x06Reason\x12\x16\n" +
 	"\x12REASON_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19HIGH_TRANSACTION_VELOCITY\x10\x01\x12!\n" +
 	"\x1dEXCESSIVE_ENUMERATION_PATTERN\x10\x02\x12\x1a\n" +
 	"\x16SHORT_IDENTITY_HISTORY\x10\x03\x12\x1b\n" +
 	"\x17GEOLOCATION_DISCREPANCY\x10\x04\x12!\n" +
-	"\x1dASSOCIATED_WITH_FRAUD_CLUSTER\x10\x05\x1a2\n" +
-	"\x17StolenInstrumentVerdict\x12\x17\n" +
-	"\x04risk\x18\x01 \x01(\x02B\x03\xe0A\x03R\x04risk\x1a-\n" +
-	"\x12CardTestingVerdict\x12\x17\n" +
-	"\x04risk\x18\x01 \x01(\x02B\x03\xe0A\x03R\x04risk\x1a3\n" +
-	"\x16BehavioralTrustVerdict\x12\x19\n" +
-	"\x05trust\x18\x01 \x01(\x02B\x03\xe0A\x03R\x05trust\"\xae\x04\n" +
-	"\fFraudSignals\x12e\n" +
-	"\fuser_signals\x18\x01 \x01(\v2=.google.cloud.recaptchaenterprise.v1.FraudSignals.UserSignalsB\x03\xe0A\x03R\vuserSignals\x12e\n" +
-	"\fcard_signals\x18\x02 \x01(\v2=.google.cloud.recaptchaenterprise.v1.FraudSignals.CardSignalsB\x03\xe0A\x03R\vcardSignals\x1au\n" +
-	"\vUserSignals\x12:\n" +
-	"\x17active_days_lower_bound\x18\x01 \x01(\x05B\x03\xe0A\x03R\x14activeDaysLowerBound\x12*\n" +
-	"\x0esynthetic_risk\x18\x02 \x01(\x02B\x03\xe0A\x03R\rsyntheticRisk\x1a\xd8\x01\n" +
-	"\vCardSignals\x12m\n" +
-	"\vcard_labels\x18\x01 \x03(\x0e2G.google.cloud.recaptchaenterprise.v1.FraudSignals.CardSignals.CardLabelB\x03\xe0A\x03R\n" +
+	"\x1dASSOCIATED_WITH_FRAUD_CLUSTER\x10\x05\x1a3\n" +
+	"\x17StolenInstrumentVerdict\x12\x18\n" +
+	"\x04risk\x18\x01 \x01(\x02B\x04\xe2A\x01\x03R\x04risk\x1a.\n" +
+	"\x12CardTestingVerdict\x12\x18\n" +
+	"\x04risk\x18\x01 \x01(\x02B\x04\xe2A\x01\x03R\x04risk\x1a4\n" +
+	"\x16BehavioralTrustVerdict\x12\x1a\n" +
+	"\x05trust\x18\x01 \x01(\x02B\x04\xe2A\x01\x03R\x05trust\"\xb3\x04\n" +
+	"\fFraudSignals\x12f\n" +
+	"\fuser_signals\x18\x01 \x01(\v2=.google.cloud.recaptchaenterprise.v1.FraudSignals.UserSignalsB\x04\xe2A\x01\x03R\vuserSignals\x12f\n" +
+	"\fcard_signals\x18\x02 \x01(\v2=.google.cloud.recaptchaenterprise.v1.FraudSignals.CardSignalsB\x04\xe2A\x01\x03R\vcardSignals\x1aw\n" +
+	"\vUserSignals\x12;\n" +
+	"\x17active_days_lower_bound\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\x14activeDaysLowerBound\x12+\n" +
+	"\x0esynthetic_risk\x18\x02 \x01(\x02B\x04\xe2A\x01\x03R\rsyntheticRisk\x1a\xd9\x01\n" +
+	"\vCardSignals\x12n\n" +
+	"\vcard_labels\x18\x01 \x03(\x0e2G.google.cloud.recaptchaenterprise.v1.FraudSignals.CardSignals.CardLabelB\x04\xe2A\x01\x03R\n" +
 	"cardLabels\"Z\n" +
 	"\tCardLabel\x12\x1a\n" +
 	"\x16CARD_LABEL_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPREPAID\x10\x01\x12\v\n" +
 	"\aVIRTUAL\x10\x02\x12\x17\n" +
-	"\x13UNEXPECTED_LOCATION\x10\x03\"\xf1\x01\n" +
-	"\x13SmsTollFraudVerdict\x12\x17\n" +
-	"\x04risk\x18\x01 \x01(\x02B\x03\xe0A\x03R\x04risk\x12j\n" +
-	"\areasons\x18\x02 \x03(\x0e2K.google.cloud.recaptchaenterprise.v1.SmsTollFraudVerdict.SmsTollFraudReasonB\x03\xe0A\x03R\areasons\"U\n" +
+	"\x13UNEXPECTED_LOCATION\x10\x03\"\xf3\x01\n" +
+	"\x13SmsTollFraudVerdict\x12\x18\n" +
+	"\x04risk\x18\x01 \x01(\x02B\x04\xe2A\x01\x03R\x04risk\x12k\n" +
+	"\areasons\x18\x02 \x03(\x0e2K.google.cloud.recaptchaenterprise.v1.SmsTollFraudVerdict.SmsTollFraudReasonB\x04\xe2A\x01\x03R\areasons\"U\n" +
 	"\x12SmsTollFraudReason\x12%\n" +
 	"!SMS_TOLL_FRAUD_REASON_UNSPECIFIED\x10\x00\x12\x18\n" +
-	"\x14INVALID_PHONE_NUMBER\x10\x01\"\x8a\x01\n" +
-	"\x14PhoneFraudAssessment\x12r\n" +
-	"\x16sms_toll_fraud_verdict\x18\x01 \x01(\v28.google.cloud.recaptchaenterprise.v1.SmsTollFraudVerdictB\x03\xe0A\x03R\x13smsTollFraudVerdict\"\xc3\x02\n" +
-	"\x19AccountDefenderAssessment\x12p\n" +
-	"\x06labels\x18\x01 \x03(\x0e2S.google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountDefenderLabelB\x03\xe0A\x03R\x06labels\"\xb3\x01\n" +
+	"\x14INVALID_PHONE_NUMBER\x10\x01\"\x8b\x01\n" +
+	"\x14PhoneFraudAssessment\x12s\n" +
+	"\x16sms_toll_fraud_verdict\x18\x01 \x01(\v28.google.cloud.recaptchaenterprise.v1.SmsTollFraudVerdictB\x04\xe2A\x01\x03R\x13smsTollFraudVerdict\"\x8d\v\n" +
+	"\x19AccountDefenderAssessment\x12q\n" +
+	"\x06labels\x18\x01 \x03(\x0e2S.google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountDefenderLabelB\x04\xe2A\x01\x03R\x06labels\x12\x95\x01\n" +
+	"\x18account_takeover_verdict\x18\x04 \x01(\v2U.google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountTakeoverVerdictB\x04\xe2A\x01\x03R\x16accountTakeoverVerdict\x1a\xad\x02\n" +
+	"\x16AccountTakeoverVerdict\x12\x18\n" +
+	"\x04risk\x18\x01 \x01(\x02B\x04\xe2A\x01\x03R\x04risk\x12z\n" +
+	"\frisk_reasons\x18\x04 \x03(\v2P.google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountRiskReasonB\x05\xe2A\x02\x03\x06R\vriskReasons\x12}\n" +
+	"\rtrust_reasons\x18\x05 \x03(\v2Q.google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountTrustReasonB\x05\xe2A\x02\x03\x06R\ftrustReasons\x1a\xc2\x02\n" +
+	"\x11AccountRiskReason\x12y\n" +
+	"\x06reason\x18\x01 \x01(\x0e2[.google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountRiskReason.RiskReasonB\x04\xe2A\x01\x03R\x06reason\"\xb1\x01\n" +
+	"\n" +
+	"RiskReason\x12\x1b\n" +
+	"\x17RISK_REASON_UNSPECIFIED\x10\x00\x12\"\n" +
+	"\x1eCLIENT_HISTORICAL_BOT_ACTIVITY\x10\x01\x12\"\n" +
+	"\x1eACCOUNT_IN_LARGE_RELATED_GROUP\x10\x02\x12!\n" +
+	"\x1dCLIENT_ACCESSED_MANY_ACCOUNTS\x10\x03\x12\x1b\n" +
+	"\x17DISPOSABLE_EMAIL_DOMAIN\x10\x04\x1a\xb9\x02\n" +
+	"\x12AccountTrustReason\x12{\n" +
+	"\x06reason\x18\x01 \x01(\x0e2].google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountTrustReason.TrustReasonB\x04\xe2A\x01\x03R\x06reason\"\xa5\x01\n" +
+	"\vTrustReason\x12\x1c\n" +
+	"\x18TRUST_REASON_UNSPECIFIED\x10\x00\x12\x11\n" +
+	"\rPROFILE_MATCH\x10\x01\x12\x1d\n" +
+	"\x19ACCOUNT_HISTORY_REPUTABLE\x10\x02\x12&\n" +
+	"\"IDENTITY_GLOBAL_ACTIVITY_REPUTABLE\x10\x03\x12\x1e\n" +
+	"\x1aIDENTITY_HISTORY_REPUTABLE\x10\x04\"\xb3\x01\n" +
 	"\x14AccountDefenderLabel\x12&\n" +
 	"\"ACCOUNT_DEFENDER_LABEL_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rPROFILE_MATCH\x10\x01\x12\x1d\n" +
 	"\x19SUSPICIOUS_LOGIN_ACTIVITY\x10\x02\x12\x1f\n" +
 	"\x1bSUSPICIOUS_ACCOUNT_CREATION\x10\x03\x12 \n" +
-	"\x1cRELATED_ACCOUNTS_NUMBER_HIGH\x10\x04\"\xa0\x01\n" +
-	"\x10CreateKeyRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12?\n" +
-	"\x03key\x18\x02 \x01(\v2(.google.cloud.recaptchaenterprise.v1.KeyB\x03\xe0A\x02R\x03key\"\xa4\x01\n" +
-	"\x0fListKeysRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x1cRELATED_ACCOUNTS_NUMBER_HIGH\x10\x04\"\xa2\x01\n" +
+	"\x10CreateKeyRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12@\n" +
+	"\x03key\x18\x02 \x01(\v2(.google.cloud.recaptchaenterprise.v1.KeyB\x04\xe2A\x01\x02R\x03key\"\xa7\x01\n" +
+	"\x0fListKeysRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"x\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"x\n" +
 	"\x10ListKeysResponse\x12<\n" +
 	"\x04keys\x18\x01 \x03(\v2(.google.cloud.recaptchaenterprise.v1.KeyR\x04keys\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"b\n" +
-	"\x1eRetrieveLegacySecretKeyRequest\x12@\n" +
-	"\x03key\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&recaptchaenterprise.googleapis.com/KeyR\x03key\"S\n" +
-	"\rGetKeyRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&recaptchaenterprise.googleapis.com/KeyR\x04name\"\x95\x01\n" +
-	"\x10UpdateKeyRequest\x12?\n" +
-	"\x03key\x18\x01 \x01(\v2(.google.cloud.recaptchaenterprise.v1.KeyB\x03\xe0A\x02R\x03key\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"V\n" +
-	"\x10DeleteKeyRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&recaptchaenterprise.googleapis.com/KeyR\x04name\"\xcd\x01\n" +
-	"\x1bCreateFirewallPolicyRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12a\n" +
-	"\x0ffirewall_policy\x18\x02 \x01(\v23.google.cloud.recaptchaenterprise.v1.FirewallPolicyB\x03\xe0A\x02R\x0efirewallPolicy\"\xb0\x01\n" +
-	"\x1bListFirewallPoliciesRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"c\n" +
+	"\x1eRetrieveLegacySecretKeyRequest\x12A\n" +
+	"\x03key\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&recaptchaenterprise.googleapis.com/KeyR\x03key\"T\n" +
+	"\rGetKeyRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&recaptchaenterprise.googleapis.com/KeyR\x04name\"\x97\x01\n" +
+	"\x10UpdateKeyRequest\x12@\n" +
+	"\x03key\x18\x01 \x01(\v2(.google.cloud.recaptchaenterprise.v1.KeyB\x04\xe2A\x01\x02R\x03key\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"W\n" +
+	"\x10DeleteKeyRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&recaptchaenterprise.googleapis.com/KeyR\x04name\"\xcf\x01\n" +
+	"\x1bCreateFirewallPolicyRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12b\n" +
+	"\x0ffirewall_policy\x18\x02 \x01(\v23.google.cloud.recaptchaenterprise.v1.FirewallPolicyB\x04\xe2A\x01\x02R\x0efirewallPolicy\"\xb3\x01\n" +
+	"\x1bListFirewallPoliciesRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa8\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa8\x01\n" +
 	"\x1cListFirewallPoliciesResponse\x12`\n" +
 	"\x11firewall_policies\x18\x01 \x03(\v23.google.cloud.recaptchaenterprise.v1.FirewallPolicyR\x10firewallPolicies\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"i\n" +
-	"\x18GetFirewallPolicyRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1recaptchaenterprise.googleapis.com/FirewallPolicyR\x04name\"\xc2\x01\n" +
-	"\x1bUpdateFirewallPolicyRequest\x12a\n" +
-	"\x0ffirewall_policy\x18\x01 \x01(\v23.google.cloud.recaptchaenterprise.v1.FirewallPolicyB\x03\xe0A\x02R\x0efirewallPolicy\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"l\n" +
-	"\x1bDeleteFirewallPolicyRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
-	"1recaptchaenterprise.googleapis.com/FirewallPolicyR\x04name\"\xbe\x01\n" +
-	"\x1eReorderFirewallPoliciesRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12O\n" +
-	"\x05names\x18\x02 \x03(\tB9\xe0A\x02\xfaA3\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"j\n" +
+	"\x18GetFirewallPolicyRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1recaptchaenterprise.googleapis.com/FirewallPolicyR\x04name\"\xc4\x01\n" +
+	"\x1bUpdateFirewallPolicyRequest\x12b\n" +
+	"\x0ffirewall_policy\x18\x01 \x01(\v23.google.cloud.recaptchaenterprise.v1.FirewallPolicyB\x04\xe2A\x01\x02R\x0efirewallPolicy\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"m\n" +
+	"\x1bDeleteFirewallPolicyRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
+	"1recaptchaenterprise.googleapis.com/FirewallPolicyR\x04name\"\xc0\x01\n" +
+	"\x1eReorderFirewallPoliciesRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12P\n" +
+	"\x05names\x18\x02 \x03(\tB:\xe2A\x01\x02\xfaA3\n" +
 	"1recaptchaenterprise.googleapis.com/FirewallPolicyR\x05names\"!\n" +
-	"\x1fReorderFirewallPoliciesResponse\"\x8a\x01\n" +
-	"\x11MigrateKeyRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&recaptchaenterprise.googleapis.com/KeyR\x04name\x121\n" +
-	"\x12skip_billing_check\x18\x02 \x01(\bB\x03\xe0A\x01R\x10skipBillingCheck\"[\n" +
-	"\x11GetMetricsRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*recaptchaenterprise.googleapis.com/MetricsR\x04name\"\x86\x03\n" +
-	"\aMetrics\x12\x1a\n" +
-	"\x04name\x18\x04 \x01(\tB\x06\xe0A\b\xe0A\x03R\x04name\x129\n" +
+	"\x1fReorderFirewallPoliciesResponse\"\x8c\x01\n" +
+	"\x11MigrateKeyRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&recaptchaenterprise.googleapis.com/KeyR\x04name\x122\n" +
+	"\x12skip_billing_check\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x10skipBillingCheck\"\\\n" +
+	"\x11GetMetricsRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*recaptchaenterprise.googleapis.com/MetricsR\x04name\"\x85\x03\n" +
+	"\aMetrics\x12\x19\n" +
+	"\x04name\x18\x04 \x01(\tB\x05\xe2A\x02\b\x03R\x04name\x129\n" +
 	"\n" +
 	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x12V\n" +
 	"\rscore_metrics\x18\x02 \x03(\v21.google.cloud.recaptchaenterprise.v1.ScoreMetricsR\fscoreMetrics\x12b\n" +
 	"\x11challenge_metrics\x18\x03 \x03(\v25.google.cloud.recaptchaenterprise.v1.ChallengeMetricsR\x10challengeMetrics:h\xeaAe\n" +
 	"*recaptchaenterprise.googleapis.com/Metrics\x12%projects/{project}/keys/{key}/metrics*\ametrics2\ametrics\"M\n" +
 	"\x1fRetrieveLegacySecretKeyResponse\x12*\n" +
-	"\x11legacy_secret_key\x18\x01 \x01(\tR\x0flegacySecretKey\"\xbf\a\n" +
-	"\x03Key\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12X\n" +
+	"\x11legacy_secret_key\x18\x01 \x01(\tR\x0flegacySecretKey\"\xb1\b\n" +
+	"\x03Key\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12X\n" +
 	"\fweb_settings\x18\x03 \x01(\v23.google.cloud.recaptchaenterprise.v1.WebKeySettingsH\x00R\vwebSettings\x12d\n" +
 	"\x10android_settings\x18\x04 \x01(\v27.google.cloud.recaptchaenterprise.v1.AndroidKeySettingsH\x00R\x0fandroidSettings\x12X\n" +
 	"\fios_settings\x18\x05 \x01(\v23.google.cloud.recaptchaenterprise.v1.IOSKeySettingsH\x00R\viosSettings\x12d\n" +
-	"\x10express_settings\x18\v \x01(\v27.google.cloud.recaptchaenterprise.v1.ExpressKeySettingsH\x00R\x0fexpressSettings\x12Q\n" +
-	"\x06labels\x18\x06 \x03(\v24.google.cloud.recaptchaenterprise.v1.Key.LabelsEntryB\x03\xe0A\x01R\x06labels\x12@\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12a\n" +
-	"\x0ftesting_options\x18\t \x01(\v23.google.cloud.recaptchaenterprise.v1.TestingOptionsB\x03\xe0A\x01R\x0etestingOptions\x12X\n" +
+	"\x10express_settings\x18\v \x01(\v27.google.cloud.recaptchaenterprise.v1.ExpressKeySettingsH\x00R\x0fexpressSettings\x12j\n" +
+	"\x12universal_settings\x18\r \x01(\v29.google.cloud.recaptchaenterprise.v1.UniversalKeySettingsH\x00R\x11universalSettings\x12R\n" +
+	"\x06labels\x18\x06 \x03(\v24.google.cloud.recaptchaenterprise.v1.Key.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12A\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12b\n" +
+	"\x0ftesting_options\x18\t \x01(\v23.google.cloud.recaptchaenterprise.v1.TestingOptionsB\x04\xe2A\x01\x01R\x0etestingOptions\x12Y\n" +
 	"\fwaf_settings\x18\n" +
-	" \x01(\v20.google.cloud.recaptchaenterprise.v1.WafSettingsB\x03\xe0A\x01R\vwafSettings\x1a9\n" +
+	" \x01(\v20.google.cloud.recaptchaenterprise.v1.WafSettingsB\x04\xe2A\x01\x01R\vwafSettings\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:U\xeaAR\n" +
 	"&recaptchaenterprise.googleapis.com/Key\x12\x1dprojects/{project}/keys/{key}*\x04keys2\x03keyB\x13\n" +
-	"\x11platform_settings\"\x92\x02\n" +
-	"\x0eTestingOptions\x12(\n" +
-	"\rtesting_score\x18\x01 \x01(\x02B\x03\xe0A\x01R\ftestingScore\x12v\n" +
-	"\x11testing_challenge\x18\x02 \x01(\x0e2D.google.cloud.recaptchaenterprise.v1.TestingOptions.TestingChallengeB\x03\xe0A\x01R\x10testingChallenge\"^\n" +
+	"\x11platform_settings\"\x94\x02\n" +
+	"\x0eTestingOptions\x12)\n" +
+	"\rtesting_score\x18\x01 \x01(\x02B\x04\xe2A\x01\x01R\ftestingScore\x12w\n" +
+	"\x11testing_challenge\x18\x02 \x01(\x0e2D.google.cloud.recaptchaenterprise.v1.TestingOptions.TestingChallengeB\x04\xe2A\x01\x01R\x10testingChallenge\"^\n" +
 	"\x10TestingChallenge\x12!\n" +
 	"\x1dTESTING_CHALLENGE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tNOCAPTCHA\x10\x01\x12\x18\n" +
-	"\x14UNSOLVABLE_CHALLENGE\x10\x02\"\xf8\t\n" +
-	"\x0eWebKeySettings\x12/\n" +
-	"\x11allow_all_domains\x18\x03 \x01(\bB\x03\xe0A\x01R\x0fallowAllDomains\x12,\n" +
-	"\x0fallowed_domains\x18\x01 \x03(\tB\x03\xe0A\x01R\x0eallowedDomains\x12/\n" +
-	"\x11allow_amp_traffic\x18\x02 \x01(\bB\x03\xe0A\x01R\x0fallowAmpTraffic\x12s\n" +
-	"\x10integration_type\x18\x04 \x01(\x0e2C.google.cloud.recaptchaenterprise.v1.WebKeySettings.IntegrationTypeB\x03\xe0A\x02R\x0fintegrationType\x12\x98\x01\n" +
-	"\x1dchallenge_security_preference\x18\x05 \x01(\x0e2O.google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSecurityPreferenceB\x03\xe0A\x01R\x1bchallengeSecurityPreference\x12y\n" +
-	"\x12challenge_settings\x18\x06 \x01(\v2E.google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSettingsB\x03\xe0A\x01R\x11challengeSettings\x1a>\n" +
-	"\x0eActionSettings\x12,\n" +
-	"\x0fscore_threshold\x18\x01 \x01(\x02B\x03\xe0A\x02R\x0escoreThreshold\x1a\x99\x03\n" +
-	"\x11ChallengeSettings\x12r\n" +
-	"\x10default_settings\x18\x01 \x01(\v2B.google.cloud.recaptchaenterprise.v1.WebKeySettings.ActionSettingsB\x03\xe0A\x02R\x0fdefaultSettings\x12\x87\x01\n" +
-	"\x0faction_settings\x18\x02 \x03(\v2Y.google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSettings.ActionSettingsEntryB\x03\xe0A\x01R\x0eactionSettings\x1a\x85\x01\n" +
+	"\x14UNSOLVABLE_CHALLENGE\x10\x02\"\x81\n" +
+	"\n" +
+	"\x0eWebKeySettings\x120\n" +
+	"\x11allow_all_domains\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x0fallowAllDomains\x12-\n" +
+	"\x0fallowed_domains\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x0eallowedDomains\x120\n" +
+	"\x11allow_amp_traffic\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x0fallowAmpTraffic\x12t\n" +
+	"\x10integration_type\x18\x04 \x01(\x0e2C.google.cloud.recaptchaenterprise.v1.WebKeySettings.IntegrationTypeB\x04\xe2A\x01\x02R\x0fintegrationType\x12\x99\x01\n" +
+	"\x1dchallenge_security_preference\x18\x05 \x01(\x0e2O.google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSecurityPreferenceB\x04\xe2A\x01\x01R\x1bchallengeSecurityPreference\x12z\n" +
+	"\x12challenge_settings\x18\x06 \x01(\v2E.google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSettingsB\x04\xe2A\x01\x01R\x11challengeSettings\x1a?\n" +
+	"\x0eActionSettings\x12-\n" +
+	"\x0fscore_threshold\x18\x01 \x01(\x02B\x04\xe2A\x01\x02R\x0escoreThreshold\x1a\x9b\x03\n" +
+	"\x11ChallengeSettings\x12s\n" +
+	"\x10default_settings\x18\x01 \x01(\v2B.google.cloud.recaptchaenterprise.v1.WebKeySettings.ActionSettingsB\x04\xe2A\x01\x02R\x0fdefaultSettings\x12\x88\x01\n" +
+	"\x0faction_settings\x18\x02 \x03(\v2Y.google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSettings.ActionSettingsEntryB\x04\xe2A\x01\x01R\x0eactionSettings\x1a\x85\x01\n" +
 	"\x13ActionSettingsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12X\n" +
 	"\x05value\x18\x02 \x01(\v2B.google.cloud.recaptchaenterprise.v1.WebKeySettings.ActionSettingsR\x05value:\x028\x01\"w\n" +
@@ -7859,21 +9075,22 @@ const file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDesc
 	")CHALLENGE_SECURITY_PREFERENCE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tUSABILITY\x10\x01\x12\v\n" +
 	"\aBALANCE\x10\x02\x12\f\n" +
-	"\bSECURITY\x10\x03\"\xe7\x01\n" +
-	"\x12AndroidKeySettings\x12:\n" +
-	"\x17allow_all_package_names\x18\x02 \x01(\bB\x03\xe0A\x01R\x14allowAllPackageNames\x127\n" +
-	"\x15allowed_package_names\x18\x01 \x03(\tB\x03\xe0A\x01R\x13allowedPackageNames\x12\\\n" +
-	")support_non_google_app_store_distribution\x18\x03 \x01(\bB\x03\xe0A\x01R$supportNonGoogleAppStoreDistribution\"\xe3\x01\n" +
-	"\x0eIOSKeySettings\x124\n" +
-	"\x14allow_all_bundle_ids\x18\x02 \x01(\bB\x03\xe0A\x01R\x11allowAllBundleIds\x121\n" +
-	"\x12allowed_bundle_ids\x18\x01 \x03(\tB\x03\xe0A\x01R\x10allowedBundleIds\x12h\n" +
-	"\x12apple_developer_id\x18\x03 \x01(\v25.google.cloud.recaptchaenterprise.v1.AppleDeveloperIdB\x03\xe0A\x01R\x10appleDeveloperId\"\x14\n" +
-	"\x12ExpressKeySettings\"u\n" +
-	"\x10AppleDeveloperId\x12'\n" +
-	"\vprivate_key\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x04R\n" +
-	"privateKey\x12\x1a\n" +
-	"\x06key_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x05keyId\x12\x1c\n" +
-	"\ateam_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x06teamId\"\xc3\x01\n" +
+	"\bSECURITY\x10\x03\"\xea\x01\n" +
+	"\x12AndroidKeySettings\x12;\n" +
+	"\x17allow_all_package_names\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x14allowAllPackageNames\x128\n" +
+	"\x15allowed_package_names\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x13allowedPackageNames\x12]\n" +
+	")support_non_google_app_store_distribution\x18\x03 \x01(\bB\x04\xe2A\x01\x01R$supportNonGoogleAppStoreDistribution\"\xe6\x01\n" +
+	"\x0eIOSKeySettings\x125\n" +
+	"\x14allow_all_bundle_ids\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x11allowAllBundleIds\x122\n" +
+	"\x12allowed_bundle_ids\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x10allowedBundleIds\x12i\n" +
+	"\x12apple_developer_id\x18\x03 \x01(\v25.google.cloud.recaptchaenterprise.v1.AppleDeveloperIdB\x04\xe2A\x01\x01R\x10appleDeveloperId\"\x14\n" +
+	"\x12ExpressKeySettings\"\x16\n" +
+	"\x14UniversalKeySettings\"v\n" +
+	"\x10AppleDeveloperId\x12&\n" +
+	"\vprivate_key\x18\x01 \x01(\tB\x05\xe2A\x02\x02\x04R\n" +
+	"privateKey\x12\x1b\n" +
+	"\x06key_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x05keyId\x12\x1d\n" +
+	"\ateam_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06teamId\"\xc3\x01\n" +
 	"\x11ScoreDistribution\x12m\n" +
 	"\rscore_buckets\x18\x01 \x03(\v2H.google.cloud.recaptchaenterprise.v1.ScoreDistribution.ScoreBucketsEntryR\fscoreBuckets\x1a?\n" +
 	"\x11ScoreBucketsEntry\x12\x10\n" +
@@ -7889,10 +9106,10 @@ const file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDesc
 	"\x0epageload_count\x18\x01 \x01(\x03R\rpageloadCount\x12'\n" +
 	"\x0fnocaptcha_count\x18\x02 \x01(\x03R\x0enocaptchaCount\x12!\n" +
 	"\ffailed_count\x18\x03 \x01(\x03R\vfailedCount\x12!\n" +
-	"\fpassed_count\x18\x04 \x01(\x03R\vpassedCount\"\xac\x01\n" +
-	"\x18FirewallPolicyAssessment\x12-\n" +
-	"\x05error\x18\x05 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x12a\n" +
-	"\x0ffirewall_policy\x18\b \x01(\v23.google.cloud.recaptchaenterprise.v1.FirewallPolicyB\x03\xe0A\x03R\x0efirewallPolicy\"\xdc\x06\n" +
+	"\fpassed_count\x18\x04 \x01(\x03R\vpassedCount\"\xae\x01\n" +
+	"\x18FirewallPolicyAssessment\x12.\n" +
+	"\x05error\x18\x05 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x12b\n" +
+	"\x0ffirewall_policy\x18\b \x01(\v23.google.cloud.recaptchaenterprise.v1.FirewallPolicyB\x04\xe2A\x01\x03R\x0efirewallPolicy\"\xdf\x06\n" +
 	"\x0eFirewallAction\x12W\n" +
 	"\x05allow\x18\x01 \x01(\v2?.google.cloud.recaptchaenterprise.v1.FirewallAction.AllowActionH\x00R\x05allow\x12W\n" +
 	"\x05block\x18\x02 \x01(\v2?.google.cloud.recaptchaenterprise.v1.FirewallAction.BlockActionH\x00R\x05block\x12\x8c\x01\n" +
@@ -7906,80 +9123,80 @@ const file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDesc
 	"\vAllowAction\x1a\r\n" +
 	"\vBlockAction\x1a\x1e\n" +
 	"\x1cIncludeRecaptchaScriptAction\x1a\x10\n" +
-	"\x0eRedirectAction\x1a+\n" +
-	"\x10SubstituteAction\x12\x17\n" +
-	"\x04path\x18\x01 \x01(\tB\x03\xe0A\x01R\x04path\x1aC\n" +
-	"\x0fSetHeaderAction\x12\x15\n" +
-	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x01R\x03key\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x01R\x05valueB\x17\n" +
-	"\x15firewall_action_oneof\"\xf2\x02\n" +
-	"\x0eFirewallPolicy\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x17\n" +
-	"\x04path\x18\x04 \x01(\tB\x03\xe0A\x01R\x04path\x12!\n" +
-	"\tcondition\x18\x05 \x01(\tB\x03\xe0A\x01R\tcondition\x12R\n" +
-	"\aactions\x18\x06 \x03(\v23.google.cloud.recaptchaenterprise.v1.FirewallActionB\x03\xe0A\x01R\aactions:\x8f\x01\xeaA\x8b\x01\n" +
-	"1recaptchaenterprise.googleapis.com/FirewallPolicy\x124projects/{project}/firewallpolicies/{firewallpolicy}*\x10firewallPolicies2\x0efirewallPolicy\"\xd3\x01\n" +
-	")ListRelatedAccountGroupMembershipsRequest\x12`\n" +
-	"\x06parent\x18\x01 \x01(\tBH\xe0A\x02\xfaAB\x12@recaptchaenterprise.googleapis.com/RelatedAccountGroupMembershipR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0eRedirectAction\x1a,\n" +
+	"\x10SubstituteAction\x12\x18\n" +
+	"\x04path\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04path\x1aE\n" +
+	"\x0fSetHeaderAction\x12\x16\n" +
+	"\x03key\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x03key\x12\x1a\n" +
+	"\x05value\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x05valueB\x17\n" +
+	"\x15firewall_action_oneof\"\xf7\x02\n" +
+	"\x0eFirewallPolicy\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x18\n" +
+	"\x04path\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x04path\x12\"\n" +
+	"\tcondition\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\tcondition\x12S\n" +
+	"\aactions\x18\x06 \x03(\v23.google.cloud.recaptchaenterprise.v1.FirewallActionB\x04\xe2A\x01\x01R\aactions:\x8f\x01\xeaA\x8b\x01\n" +
+	"1recaptchaenterprise.googleapis.com/FirewallPolicy\x124projects/{project}/firewallpolicies/{firewallpolicy}*\x10firewallPolicies2\x0efirewallPolicy\"\xd6\x01\n" +
+	")ListRelatedAccountGroupMembershipsRequest\x12a\n" +
+	"\x06parent\x18\x01 \x01(\tBI\xe2A\x01\x02\xfaAB\x12@recaptchaenterprise.googleapis.com/RelatedAccountGroupMembershipR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xe4\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xe4\x01\n" +
 	"*ListRelatedAccountGroupMembershipsResponse\x12\x8d\x01\n" +
 	"!related_account_group_memberships\x18\x01 \x03(\v2B.google.cloud.recaptchaenterprise.v1.RelatedAccountGroupMembershipR\x1erelatedAccountGroupMemberships\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbf\x01\n" +
-	"\x1fListRelatedAccountGroupsRequest\x12V\n" +
-	"\x06parent\x18\x01 \x01(\tB>\xe0A\x02\xfaA8\x126recaptchaenterprise.googleapis.com/RelatedAccountGroupR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc2\x01\n" +
+	"\x1fListRelatedAccountGroupsRequest\x12W\n" +
+	"\x06parent\x18\x01 \x01(\tB?\xe2A\x01\x02\xfaA8\x126recaptchaenterprise.googleapis.com/RelatedAccountGroupR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xba\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xba\x01\n" +
 	" ListRelatedAccountGroupsResponse\x12n\n" +
 	"\x16related_account_groups\x18\x01 \x03(\v28.google.cloud.recaptchaenterprise.v1.RelatedAccountGroupR\x14relatedAccountGroups\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x99\x02\n" +
-	"+SearchRelatedAccountGroupMembershipsRequest\x12M\n" +
-	"\aproject\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\aproject\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9e\x02\n" +
+	"+SearchRelatedAccountGroupMembershipsRequest\x12N\n" +
+	"\aproject\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\aproject\x12#\n" +
 	"\n" +
-	"account_id\x18\x05 \x01(\tB\x03\xe0A\x01R\taccountId\x121\n" +
-	"\x11hashed_account_id\x18\x02 \x01(\fB\x05\xe0A\x01\x18\x01R\x0fhashedAccountId\x12 \n" +
-	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"account_id\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\taccountId\x122\n" +
+	"\x11hashed_account_id\x18\x02 \x01(\fB\x06\xe2A\x01\x01\x18\x01R\x0fhashedAccountId\x12!\n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xe6\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xe6\x01\n" +
 	",SearchRelatedAccountGroupMembershipsResponse\x12\x8d\x01\n" +
 	"!related_account_group_memberships\x18\x01 \x03(\v2B.google.cloud.recaptchaenterprise.v1.RelatedAccountGroupMembershipR\x1erelatedAccountGroupMemberships\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbe\x01\n" +
-	"\x14AddIpOverrideRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&recaptchaenterprise.googleapis.com/KeyR\x04name\x12b\n" +
-	"\x10ip_override_data\x18\x02 \x01(\v23.google.cloud.recaptchaenterprise.v1.IpOverrideDataB\x03\xe0A\x02R\x0eipOverrideData\"\x17\n" +
-	"\x15AddIpOverrideResponse\"\xc1\x01\n" +
-	"\x17RemoveIpOverrideRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&recaptchaenterprise.googleapis.com/KeyR\x04name\x12b\n" +
-	"\x10ip_override_data\x18\x02 \x01(\v23.google.cloud.recaptchaenterprise.v1.IpOverrideDataB\x03\xe0A\x02R\x0eipOverrideData\"\x1a\n" +
-	"\x18RemoveIpOverrideResponse\"\xa6\x01\n" +
-	"\x16ListIpOverridesRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&recaptchaenterprise.googleapis.com/KeyR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc0\x01\n" +
+	"\x14AddIpOverrideRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&recaptchaenterprise.googleapis.com/KeyR\x04name\x12c\n" +
+	"\x10ip_override_data\x18\x02 \x01(\v23.google.cloud.recaptchaenterprise.v1.IpOverrideDataB\x04\xe2A\x01\x02R\x0eipOverrideData\"\x17\n" +
+	"\x15AddIpOverrideResponse\"\xc3\x01\n" +
+	"\x17RemoveIpOverrideRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&recaptchaenterprise.googleapis.com/KeyR\x04name\x12c\n" +
+	"\x10ip_override_data\x18\x02 \x01(\v23.google.cloud.recaptchaenterprise.v1.IpOverrideDataB\x04\xe2A\x01\x02R\x0eipOverrideData\"\x1a\n" +
+	"\x18RemoveIpOverrideResponse\"\xa9\x01\n" +
+	"\x16ListIpOverridesRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&recaptchaenterprise.googleapis.com/KeyR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x99\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x99\x01\n" +
 	"\x17ListIpOverridesResponse\x12V\n" +
 	"\fip_overrides\x18\x01 \x03(\v23.google.cloud.recaptchaenterprise.v1.IpOverrideDataR\vipOverrides\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xea\x02\n" +
-	"\x1dRelatedAccountGroupMembership\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x02R\x04name\x12\x1d\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe9\x02\n" +
+	"\x1dRelatedAccountGroupMembership\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x02R\x04name\x12\x1d\n" +
 	"\n" +
 	"account_id\x18\x04 \x01(\tR\taccountId\x12.\n" +
 	"\x11hashed_account_id\x18\x02 \x01(\fB\x02\x18\x01R\x0fhashedAccountId:\xdd\x01\xeaA\xd9\x01\n" +
-	"@recaptchaenterprise.googleapis.com/RelatedAccountGroupMembership\x12Vprojects/{project}/relatedaccountgroups/{relatedaccountgroup}/memberships/{membership}*\x1erelatedAccountGroupMemberships2\x1drelatedAccountGroupMembership\"\xda\x01\n" +
-	"\x13RelatedAccountGroup\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x02R\x04name:\xa6\x01\xeaA\xa2\x01\n" +
-	"6recaptchaenterprise.googleapis.com/RelatedAccountGroup\x12=projects/{project}/relatedaccountgroups/{relatedaccountgroup}*\x14relatedAccountGroups2\x13relatedAccountGroup\"\xa3\x03\n" +
-	"\vWafSettings\x12a\n" +
-	"\vwaf_service\x18\x01 \x01(\x0e2;.google.cloud.recaptchaenterprise.v1.WafSettings.WafServiceB\x03\xe0A\x02R\n" +
-	"wafService\x12a\n" +
-	"\vwaf_feature\x18\x02 \x01(\x0e2;.google.cloud.recaptchaenterprise.v1.WafSettings.WafFeatureB\x03\xe0A\x02R\n" +
+	"@recaptchaenterprise.googleapis.com/RelatedAccountGroupMembership\x12Vprojects/{project}/relatedaccountgroups/{relatedaccountgroup}/memberships/{membership}*\x1erelatedAccountGroupMemberships2\x1drelatedAccountGroupMembership\"\xd9\x01\n" +
+	"\x13RelatedAccountGroup\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\b\x02R\x04name:\xa6\x01\xeaA\xa2\x01\n" +
+	"6recaptchaenterprise.googleapis.com/RelatedAccountGroup\x12=projects/{project}/relatedaccountgroups/{relatedaccountgroup}*\x14relatedAccountGroups2\x13relatedAccountGroup\"\xa5\x03\n" +
+	"\vWafSettings\x12b\n" +
+	"\vwaf_service\x18\x01 \x01(\x0e2;.google.cloud.recaptchaenterprise.v1.WafSettings.WafServiceB\x04\xe2A\x01\x02R\n" +
+	"wafService\x12b\n" +
+	"\vwaf_feature\x18\x02 \x01(\x0e2;.google.cloud.recaptchaenterprise.v1.WafSettings.WafFeatureB\x04\xe2A\x01\x02R\n" +
 	"wafFeature\"s\n" +
 	"\n" +
 	"WafFeature\x12\x1b\n" +
@@ -7997,16 +9214,57 @@ const file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDesc
 	"\n" +
 	"CLOUDFLARE\x10\x04\x12\n" +
 	"\n" +
-	"\x06AKAMAI\x10\x05\"S\n" +
-	"\x15AssessmentEnvironment\x12\x1b\n" +
-	"\x06client\x18\x01 \x01(\tB\x03\xe0A\x01R\x06client\x12\x1d\n" +
-	"\aversion\x18\x02 \x01(\tB\x03\xe0A\x01R\aversion\"\xd3\x01\n" +
-	"\x0eIpOverrideData\x12\x1b\n" +
-	"\x02ip\x18\x01 \x01(\tB\v\xe0A\x02\xe2\x8c\xcf\xd7\b\x02\b\x04R\x02ip\x12j\n" +
-	"\roverride_type\x18\x03 \x01(\x0e2@.google.cloud.recaptchaenterprise.v1.IpOverrideData.OverrideTypeB\x03\xe0A\x02R\foverrideType\"8\n" +
+	"\x06AKAMAI\x10\x05\"U\n" +
+	"\x15AssessmentEnvironment\x12\x1c\n" +
+	"\x06client\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x06client\x12\x1e\n" +
+	"\aversion\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\aversion\"\x92\x01\n" +
+	"\x10PolicyEvaluation\x12~\n" +
+	"\x19challenge_rule_evaluation\x18\x01 \x01(\v2<.google.cloud.recaptchaenterprise.v1.ChallengeRuleEvaluationB\x04\xe2A\x01\x03R\x17challengeRuleEvaluation\"\x19\n" +
+	"\x17ChallengeRuleEvaluation\"\xd5\x01\n" +
+	"\x0eIpOverrideData\x12\x1c\n" +
+	"\x02ip\x18\x01 \x01(\tB\f\xe2A\x01\x02\xe2\x8c\xcf\xd7\b\x02\b\x04R\x02ip\x12k\n" +
+	"\roverride_type\x18\x03 \x01(\x0e2@.google.cloud.recaptchaenterprise.v1.IpOverrideData.OverrideTypeB\x04\xe2A\x01\x02R\foverrideType\"8\n" +
 	"\fOverrideType\x12\x1d\n" +
 	"\x19OVERRIDE_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
-	"\x05ALLOW\x10\x012\xe5$\n" +
+	"\x05ALLOW\x10\x01\"Z\n" +
+	"\x10GetPolicyRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")recaptchaenterprise.googleapis.com/PolicyR\x04name\"\xa3\x01\n" +
+	"\x13UpdatePolicyRequest\x12I\n" +
+	"\x06policy\x18\x01 \x01(\v2+.google.cloud.recaptchaenterprise.v1.PolicyB\x04\xe2A\x01\x02R\x06policy\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\xe3\x02\n" +
+	"\x06Policy\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12b\n" +
+	"\x0fclient_settings\x18\x04 \x01(\v23.google.cloud.recaptchaenterprise.v1.ClientSettingsB\x04\xe2A\x01\x02R\x0eclientSettings\x12q\n" +
+	"\x15challenge_rule_groups\x18\x02 \x03(\v27.google.cloud.recaptchaenterprise.v1.ChallengeRuleGroupB\x04\xe2A\x01\x01R\x13challengeRuleGroups:h\xeaAe\n" +
+	")recaptchaenterprise.googleapis.com/Policy\x12$projects/{project}/keys/{key}/policy \x02*\bpolicies2\x06policy\"\x97\x01\n" +
+	"\x12ChallengeRuleGroup\x12\x1e\n" +
+	"\aactions\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\aactions\x12a\n" +
+	"\x0fchallenge_rules\x18\x02 \x03(\v22.google.cloud.recaptchaenterprise.v1.ChallengeRuleB\x04\xe2A\x01\x02R\x0echallengeRules\"\xb1\x03\n" +
+	"\rChallengeRule\x12\"\n" +
+	"\tcondition\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\tcondition\x12j\n" +
+	"\fno_challenge\x18\x02 \x01(\v2E.google.cloud.recaptchaenterprise.v1.ChallengeRule.NoChallengeOutcomeH\x00R\vnoChallenge\x12c\n" +
+	"\tchallenge\x18\x03 \x01(\v2C.google.cloud.recaptchaenterprise.v1.ChallengeRule.ChallengeOutcomeH\x00R\tchallenge\x1a\x14\n" +
+	"\x12NoChallengeOutcome\x1a\x89\x01\n" +
+	"\x10ChallengeOutcome\x12u\n" +
+	"\n" +
+	"difficulty\x18\x01 \x01(\x0e2O.google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSecurityPreferenceB\x04\xe2A\x01\x01R\n" +
+	"difficultyB\t\n" +
+	"\aoutcome\"\xee\x01\n" +
+	"\x0eClientSettings\x12-\n" +
+	"\x0fallowed_domains\x18\x01 \x03(\tB\x04\xe2A\x01\x01R\x0eallowedDomains\x120\n" +
+	"\x11allow_all_domains\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x0fallowAllDomains\x12{\n" +
+	"\x18protected_endpoint_group\x18\x03 \x01(\v2;.google.cloud.recaptchaenterprise.v1.ProtectedEndpointGroupB\x04\xe2A\x01\x01R\x16protectedEndpointGroup\"\x87\x01\n" +
+	"\x16ProtectedEndpointGroup\x12m\n" +
+	"\x13protected_endpoints\x18\x01 \x03(\v26.google.cloud.recaptchaenterprise.v1.ProtectedEndpointB\x04\xe2A\x01\x01R\x12protectedEndpoints\"K\n" +
+	"\x11ProtectedEndpoint\x12\x18\n" +
+	"\x04path\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04path\x12\x1c\n" +
+	"\x06action\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06action*d\n" +
+	"\rChallengeType\x12\x1e\n" +
+	"\x1aCHALLENGE_TYPE_UNSPECIFIED\x10\x00\x12\x19\n" +
+	"\x15CHALLENGE_TYPE_VISUAL\x10\x01\x12\x18\n" +
+	"\x14CHALLENGE_TYPE_AUDIO\x10\x022\xd4'\n" +
 	"\x1aRecaptchaEnterpriseService\x12\xce\x01\n" +
 	"\x10CreateAssessment\x12<.google.cloud.recaptchaenterprise.v1.CreateAssessmentRequest\x1a/.google.cloud.recaptchaenterprise.v1.Assessment\"K\xdaA\x11parent,assessment\x82\xd3\xe4\x93\x021:\n" +
 	"assessment\"#/v1/{parent=projects/*}/assessments\x12\xe0\x01\n" +
@@ -8024,7 +9282,9 @@ const file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDesc
 	"\x10RemoveIpOverride\x12<.google.cloud.recaptchaenterprise.v1.RemoveIpOverrideRequest\x1a=.google.cloud.recaptchaenterprise.v1.RemoveIpOverrideResponse\"P\xdaA\x15name,ip_override_data\x82\xd3\xe4\x93\x022:\x01*\"-/v1/{name=projects/*/keys/*}:removeIpOverride\x12\xcd\x01\n" +
 	"\x0fListIpOverrides\x12;.google.cloud.recaptchaenterprise.v1.ListIpOverridesRequest\x1a<.google.cloud.recaptchaenterprise.v1.ListIpOverridesResponse\"?\xdaA\x06parent\x82\xd3\xe4\x93\x020\x12./v1/{parent=projects/*/keys/*}:listIpOverrides\x12\xa7\x01\n" +
 	"\n" +
-	"GetMetrics\x126.google.cloud.recaptchaenterprise.v1.GetMetricsRequest\x1a,.google.cloud.recaptchaenterprise.v1.Metrics\"3\xdaA\x04name\x82\xd3\xe4\x93\x02&\x12$/v1/{name=projects/*/keys/*/metrics}\x12\xe9\x01\n" +
+	"GetMetrics\x126.google.cloud.recaptchaenterprise.v1.GetMetricsRequest\x1a,.google.cloud.recaptchaenterprise.v1.Metrics\"3\xdaA\x04name\x82\xd3\xe4\x93\x02&\x12$/v1/{name=projects/*/keys/*/metrics}\x12\xa3\x01\n" +
+	"\tGetPolicy\x125.google.cloud.recaptchaenterprise.v1.GetPolicyRequest\x1a+.google.cloud.recaptchaenterprise.v1.Policy\"2\xdaA\x04name\x82\xd3\xe4\x93\x02%\x12#/v1/{name=projects/*/keys/*/policy}\x12\xc6\x01\n" +
+	"\fUpdatePolicy\x128.google.cloud.recaptchaenterprise.v1.UpdatePolicyRequest\x1a+.google.cloud.recaptchaenterprise.v1.Policy\"O\xdaA\x12policy,update_mask\x82\xd3\xe4\x93\x024:\x06policy2*/v1/{policy.name=projects/*/keys/*/policy}\x12\xe9\x01\n" +
 	"\x14CreateFirewallPolicy\x12@.google.cloud.recaptchaenterprise.v1.CreateFirewallPolicyRequest\x1a3.google.cloud.recaptchaenterprise.v1.FirewallPolicy\"Z\xdaA\x16parent,firewall_policy\x82\xd3\xe4\x93\x02;:\x0ffirewall_policy\"(/v1/{parent=projects/*}/firewallpolicies\x12\xd6\x01\n" +
 	"\x14ListFirewallPolicies\x12@.google.cloud.recaptchaenterprise.v1.ListFirewallPoliciesRequest\x1aA.google.cloud.recaptchaenterprise.v1.ListFirewallPoliciesResponse\"9\xdaA\x06parent\x82\xd3\xe4\x93\x02*\x12(/v1/{parent=projects/*}/firewallpolicies\x12\xc0\x01\n" +
 	"\x11GetFirewallPolicy\x12=.google.cloud.recaptchaenterprise.v1.GetFirewallPolicyRequest\x1a3.google.cloud.recaptchaenterprise.v1.FirewallPolicy\"7\xdaA\x04name\x82\xd3\xe4\x93\x02*\x12(/v1/{name=projects/*/firewallpolicies/*}\x12\xfe\x01\n" +
@@ -8048,274 +9308,316 @@ func file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescG
 	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescData
 }
 
-var file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes = make([]protoimpl.EnumInfo, 19)
-var file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes = make([]protoimpl.MessageInfo, 92)
+var file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_enumTypes = make([]protoimpl.EnumInfo, 22)
+var file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes = make([]protoimpl.MessageInfo, 108)
 var file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_goTypes = []any{
-	(TransactionEvent_TransactionEventType)(0),                // 0: google.cloud.recaptchaenterprise.v1.TransactionEvent.TransactionEventType
-	(AnnotateAssessmentRequest_Annotation)(0),                 // 1: google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest.Annotation
-	(AnnotateAssessmentRequest_Reason)(0),                     // 2: google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest.Reason
-	(AccountVerificationInfo_Result)(0),                       // 3: google.cloud.recaptchaenterprise.v1.AccountVerificationInfo.Result
-	(Event_FraudPrevention)(0),                                // 4: google.cloud.recaptchaenterprise.v1.Event.FraudPrevention
-	(RiskAnalysis_ClassificationReason)(0),                    // 5: google.cloud.recaptchaenterprise.v1.RiskAnalysis.ClassificationReason
-	(RiskAnalysis_Challenge)(0),                               // 6: google.cloud.recaptchaenterprise.v1.RiskAnalysis.Challenge
-	(Bot_BotType)(0),                                          // 7: google.cloud.recaptchaenterprise.v1.Bot.BotType
-	(TokenProperties_InvalidReason)(0),                        // 8: google.cloud.recaptchaenterprise.v1.TokenProperties.InvalidReason
-	(FraudPreventionAssessment_RiskReason_Reason)(0),          // 9: google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.RiskReason.Reason
-	(FraudSignals_CardSignals_CardLabel)(0),                   // 10: google.cloud.recaptchaenterprise.v1.FraudSignals.CardSignals.CardLabel
-	(SmsTollFraudVerdict_SmsTollFraudReason)(0),               // 11: google.cloud.recaptchaenterprise.v1.SmsTollFraudVerdict.SmsTollFraudReason
-	(AccountDefenderAssessment_AccountDefenderLabel)(0),       // 12: google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountDefenderLabel
-	(TestingOptions_TestingChallenge)(0),                      // 13: google.cloud.recaptchaenterprise.v1.TestingOptions.TestingChallenge
-	(WebKeySettings_IntegrationType)(0),                       // 14: google.cloud.recaptchaenterprise.v1.WebKeySettings.IntegrationType
-	(WebKeySettings_ChallengeSecurityPreference)(0),           // 15: google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSecurityPreference
-	(WafSettings_WafFeature)(0),                               // 16: google.cloud.recaptchaenterprise.v1.WafSettings.WafFeature
-	(WafSettings_WafService)(0),                               // 17: google.cloud.recaptchaenterprise.v1.WafSettings.WafService
-	(IpOverrideData_OverrideType)(0),                          // 18: google.cloud.recaptchaenterprise.v1.IpOverrideData.OverrideType
-	(*CreateAssessmentRequest)(nil),                           // 19: google.cloud.recaptchaenterprise.v1.CreateAssessmentRequest
-	(*TransactionEvent)(nil),                                  // 20: google.cloud.recaptchaenterprise.v1.TransactionEvent
-	(*PhoneAuthenticationEvent)(nil),                          // 21: google.cloud.recaptchaenterprise.v1.PhoneAuthenticationEvent
-	(*AnnotateAssessmentRequest)(nil),                         // 22: google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest
-	(*AnnotateAssessmentResponse)(nil),                        // 23: google.cloud.recaptchaenterprise.v1.AnnotateAssessmentResponse
-	(*EndpointVerificationInfo)(nil),                          // 24: google.cloud.recaptchaenterprise.v1.EndpointVerificationInfo
-	(*AccountVerificationInfo)(nil),                           // 25: google.cloud.recaptchaenterprise.v1.AccountVerificationInfo
-	(*PrivatePasswordLeakVerification)(nil),                   // 26: google.cloud.recaptchaenterprise.v1.PrivatePasswordLeakVerification
-	(*Assessment)(nil),                                        // 27: google.cloud.recaptchaenterprise.v1.Assessment
-	(*Event)(nil),                                             // 28: google.cloud.recaptchaenterprise.v1.Event
-	(*TransactionData)(nil),                                   // 29: google.cloud.recaptchaenterprise.v1.TransactionData
-	(*UserInfo)(nil),                                          // 30: google.cloud.recaptchaenterprise.v1.UserInfo
-	(*UserId)(nil),                                            // 31: google.cloud.recaptchaenterprise.v1.UserId
-	(*RiskAnalysis)(nil),                                      // 32: google.cloud.recaptchaenterprise.v1.RiskAnalysis
-	(*Bot)(nil),                                               // 33: google.cloud.recaptchaenterprise.v1.Bot
-	(*TokenProperties)(nil),                                   // 34: google.cloud.recaptchaenterprise.v1.TokenProperties
-	(*FraudPreventionAssessment)(nil),                         // 35: google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment
-	(*FraudSignals)(nil),                                      // 36: google.cloud.recaptchaenterprise.v1.FraudSignals
-	(*SmsTollFraudVerdict)(nil),                               // 37: google.cloud.recaptchaenterprise.v1.SmsTollFraudVerdict
-	(*PhoneFraudAssessment)(nil),                              // 38: google.cloud.recaptchaenterprise.v1.PhoneFraudAssessment
-	(*AccountDefenderAssessment)(nil),                         // 39: google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment
-	(*CreateKeyRequest)(nil),                                  // 40: google.cloud.recaptchaenterprise.v1.CreateKeyRequest
-	(*ListKeysRequest)(nil),                                   // 41: google.cloud.recaptchaenterprise.v1.ListKeysRequest
-	(*ListKeysResponse)(nil),                                  // 42: google.cloud.recaptchaenterprise.v1.ListKeysResponse
-	(*RetrieveLegacySecretKeyRequest)(nil),                    // 43: google.cloud.recaptchaenterprise.v1.RetrieveLegacySecretKeyRequest
-	(*GetKeyRequest)(nil),                                     // 44: google.cloud.recaptchaenterprise.v1.GetKeyRequest
-	(*UpdateKeyRequest)(nil),                                  // 45: google.cloud.recaptchaenterprise.v1.UpdateKeyRequest
-	(*DeleteKeyRequest)(nil),                                  // 46: google.cloud.recaptchaenterprise.v1.DeleteKeyRequest
-	(*CreateFirewallPolicyRequest)(nil),                       // 47: google.cloud.recaptchaenterprise.v1.CreateFirewallPolicyRequest
-	(*ListFirewallPoliciesRequest)(nil),                       // 48: google.cloud.recaptchaenterprise.v1.ListFirewallPoliciesRequest
-	(*ListFirewallPoliciesResponse)(nil),                      // 49: google.cloud.recaptchaenterprise.v1.ListFirewallPoliciesResponse
-	(*GetFirewallPolicyRequest)(nil),                          // 50: google.cloud.recaptchaenterprise.v1.GetFirewallPolicyRequest
-	(*UpdateFirewallPolicyRequest)(nil),                       // 51: google.cloud.recaptchaenterprise.v1.UpdateFirewallPolicyRequest
-	(*DeleteFirewallPolicyRequest)(nil),                       // 52: google.cloud.recaptchaenterprise.v1.DeleteFirewallPolicyRequest
-	(*ReorderFirewallPoliciesRequest)(nil),                    // 53: google.cloud.recaptchaenterprise.v1.ReorderFirewallPoliciesRequest
-	(*ReorderFirewallPoliciesResponse)(nil),                   // 54: google.cloud.recaptchaenterprise.v1.ReorderFirewallPoliciesResponse
-	(*MigrateKeyRequest)(nil),                                 // 55: google.cloud.recaptchaenterprise.v1.MigrateKeyRequest
-	(*GetMetricsRequest)(nil),                                 // 56: google.cloud.recaptchaenterprise.v1.GetMetricsRequest
-	(*Metrics)(nil),                                           // 57: google.cloud.recaptchaenterprise.v1.Metrics
-	(*RetrieveLegacySecretKeyResponse)(nil),                   // 58: google.cloud.recaptchaenterprise.v1.RetrieveLegacySecretKeyResponse
-	(*Key)(nil),                                               // 59: google.cloud.recaptchaenterprise.v1.Key
-	(*TestingOptions)(nil),                                    // 60: google.cloud.recaptchaenterprise.v1.TestingOptions
-	(*WebKeySettings)(nil),                                    // 61: google.cloud.recaptchaenterprise.v1.WebKeySettings
-	(*AndroidKeySettings)(nil),                                // 62: google.cloud.recaptchaenterprise.v1.AndroidKeySettings
-	(*IOSKeySettings)(nil),                                    // 63: google.cloud.recaptchaenterprise.v1.IOSKeySettings
-	(*ExpressKeySettings)(nil),                                // 64: google.cloud.recaptchaenterprise.v1.ExpressKeySettings
-	(*AppleDeveloperId)(nil),                                  // 65: google.cloud.recaptchaenterprise.v1.AppleDeveloperId
-	(*ScoreDistribution)(nil),                                 // 66: google.cloud.recaptchaenterprise.v1.ScoreDistribution
-	(*ScoreMetrics)(nil),                                      // 67: google.cloud.recaptchaenterprise.v1.ScoreMetrics
-	(*ChallengeMetrics)(nil),                                  // 68: google.cloud.recaptchaenterprise.v1.ChallengeMetrics
-	(*FirewallPolicyAssessment)(nil),                          // 69: google.cloud.recaptchaenterprise.v1.FirewallPolicyAssessment
-	(*FirewallAction)(nil),                                    // 70: google.cloud.recaptchaenterprise.v1.FirewallAction
-	(*FirewallPolicy)(nil),                                    // 71: google.cloud.recaptchaenterprise.v1.FirewallPolicy
-	(*ListRelatedAccountGroupMembershipsRequest)(nil),         // 72: google.cloud.recaptchaenterprise.v1.ListRelatedAccountGroupMembershipsRequest
-	(*ListRelatedAccountGroupMembershipsResponse)(nil),        // 73: google.cloud.recaptchaenterprise.v1.ListRelatedAccountGroupMembershipsResponse
-	(*ListRelatedAccountGroupsRequest)(nil),                   // 74: google.cloud.recaptchaenterprise.v1.ListRelatedAccountGroupsRequest
-	(*ListRelatedAccountGroupsResponse)(nil),                  // 75: google.cloud.recaptchaenterprise.v1.ListRelatedAccountGroupsResponse
-	(*SearchRelatedAccountGroupMembershipsRequest)(nil),       // 76: google.cloud.recaptchaenterprise.v1.SearchRelatedAccountGroupMembershipsRequest
-	(*SearchRelatedAccountGroupMembershipsResponse)(nil),      // 77: google.cloud.recaptchaenterprise.v1.SearchRelatedAccountGroupMembershipsResponse
-	(*AddIpOverrideRequest)(nil),                              // 78: google.cloud.recaptchaenterprise.v1.AddIpOverrideRequest
-	(*AddIpOverrideResponse)(nil),                             // 79: google.cloud.recaptchaenterprise.v1.AddIpOverrideResponse
-	(*RemoveIpOverrideRequest)(nil),                           // 80: google.cloud.recaptchaenterprise.v1.RemoveIpOverrideRequest
-	(*RemoveIpOverrideResponse)(nil),                          // 81: google.cloud.recaptchaenterprise.v1.RemoveIpOverrideResponse
-	(*ListIpOverridesRequest)(nil),                            // 82: google.cloud.recaptchaenterprise.v1.ListIpOverridesRequest
-	(*ListIpOverridesResponse)(nil),                           // 83: google.cloud.recaptchaenterprise.v1.ListIpOverridesResponse
-	(*RelatedAccountGroupMembership)(nil),                     // 84: google.cloud.recaptchaenterprise.v1.RelatedAccountGroupMembership
-	(*RelatedAccountGroup)(nil),                               // 85: google.cloud.recaptchaenterprise.v1.RelatedAccountGroup
-	(*WafSettings)(nil),                                       // 86: google.cloud.recaptchaenterprise.v1.WafSettings
-	(*AssessmentEnvironment)(nil),                             // 87: google.cloud.recaptchaenterprise.v1.AssessmentEnvironment
-	(*IpOverrideData)(nil),                                    // 88: google.cloud.recaptchaenterprise.v1.IpOverrideData
-	(*TransactionData_Address)(nil),                           // 89: google.cloud.recaptchaenterprise.v1.TransactionData.Address
-	(*TransactionData_User)(nil),                              // 90: google.cloud.recaptchaenterprise.v1.TransactionData.User
-	(*TransactionData_Item)(nil),                              // 91: google.cloud.recaptchaenterprise.v1.TransactionData.Item
-	(*TransactionData_GatewayInfo)(nil),                       // 92: google.cloud.recaptchaenterprise.v1.TransactionData.GatewayInfo
-	(*FraudPreventionAssessment_RiskReason)(nil),              // 93: google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.RiskReason
-	(*FraudPreventionAssessment_StolenInstrumentVerdict)(nil), // 94: google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.StolenInstrumentVerdict
-	(*FraudPreventionAssessment_CardTestingVerdict)(nil),      // 95: google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.CardTestingVerdict
-	(*FraudPreventionAssessment_BehavioralTrustVerdict)(nil),  // 96: google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.BehavioralTrustVerdict
-	(*FraudSignals_UserSignals)(nil),                          // 97: google.cloud.recaptchaenterprise.v1.FraudSignals.UserSignals
-	(*FraudSignals_CardSignals)(nil),                          // 98: google.cloud.recaptchaenterprise.v1.FraudSignals.CardSignals
-	nil,                                                       // 99: google.cloud.recaptchaenterprise.v1.Key.LabelsEntry
-	(*WebKeySettings_ActionSettings)(nil),                     // 100: google.cloud.recaptchaenterprise.v1.WebKeySettings.ActionSettings
-	(*WebKeySettings_ChallengeSettings)(nil),                  // 101: google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSettings
-	nil,                                                       // 102: google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSettings.ActionSettingsEntry
-	nil,                                                       // 103: google.cloud.recaptchaenterprise.v1.ScoreDistribution.ScoreBucketsEntry
-	nil,                                                       // 104: google.cloud.recaptchaenterprise.v1.ScoreMetrics.ActionMetricsEntry
-	(*FirewallAction_AllowAction)(nil),                        // 105: google.cloud.recaptchaenterprise.v1.FirewallAction.AllowAction
-	(*FirewallAction_BlockAction)(nil),                        // 106: google.cloud.recaptchaenterprise.v1.FirewallAction.BlockAction
-	(*FirewallAction_IncludeRecaptchaScriptAction)(nil),       // 107: google.cloud.recaptchaenterprise.v1.FirewallAction.IncludeRecaptchaScriptAction
-	(*FirewallAction_RedirectAction)(nil),                     // 108: google.cloud.recaptchaenterprise.v1.FirewallAction.RedirectAction
-	(*FirewallAction_SubstituteAction)(nil),                   // 109: google.cloud.recaptchaenterprise.v1.FirewallAction.SubstituteAction
-	(*FirewallAction_SetHeaderAction)(nil),                    // 110: google.cloud.recaptchaenterprise.v1.FirewallAction.SetHeaderAction
-	(*timestamppb.Timestamp)(nil),                             // 111: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),                             // 112: google.protobuf.FieldMask
-	(*status.Status)(nil),                                     // 113: google.rpc.Status
-	(*emptypb.Empty)(nil),                                     // 114: google.protobuf.Empty
+	(ChallengeType)(0),                                            // 0: google.cloud.recaptchaenterprise.v1.ChallengeType
+	(TransactionEvent_TransactionEventType)(0),                    // 1: google.cloud.recaptchaenterprise.v1.TransactionEvent.TransactionEventType
+	(AnnotateAssessmentRequest_Annotation)(0),                     // 2: google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest.Annotation
+	(AnnotateAssessmentRequest_Reason)(0),                         // 3: google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest.Reason
+	(AccountVerificationInfo_Result)(0),                           // 4: google.cloud.recaptchaenterprise.v1.AccountVerificationInfo.Result
+	(Event_FraudPrevention)(0),                                    // 5: google.cloud.recaptchaenterprise.v1.Event.FraudPrevention
+	(RiskAnalysis_ClassificationReason)(0),                        // 6: google.cloud.recaptchaenterprise.v1.RiskAnalysis.ClassificationReason
+	(RiskAnalysis_Challenge)(0),                                   // 7: google.cloud.recaptchaenterprise.v1.RiskAnalysis.Challenge
+	(Bot_BotType)(0),                                              // 8: google.cloud.recaptchaenterprise.v1.Bot.BotType
+	(TokenProperties_InvalidReason)(0),                            // 9: google.cloud.recaptchaenterprise.v1.TokenProperties.InvalidReason
+	(FraudPreventionAssessment_RiskReason_Reason)(0),              // 10: google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.RiskReason.Reason
+	(FraudSignals_CardSignals_CardLabel)(0),                       // 11: google.cloud.recaptchaenterprise.v1.FraudSignals.CardSignals.CardLabel
+	(SmsTollFraudVerdict_SmsTollFraudReason)(0),                   // 12: google.cloud.recaptchaenterprise.v1.SmsTollFraudVerdict.SmsTollFraudReason
+	(AccountDefenderAssessment_AccountDefenderLabel)(0),           // 13: google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountDefenderLabel
+	(AccountDefenderAssessment_AccountRiskReason_RiskReason)(0),   // 14: google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountRiskReason.RiskReason
+	(AccountDefenderAssessment_AccountTrustReason_TrustReason)(0), // 15: google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountTrustReason.TrustReason
+	(TestingOptions_TestingChallenge)(0),                          // 16: google.cloud.recaptchaenterprise.v1.TestingOptions.TestingChallenge
+	(WebKeySettings_IntegrationType)(0),                           // 17: google.cloud.recaptchaenterprise.v1.WebKeySettings.IntegrationType
+	(WebKeySettings_ChallengeSecurityPreference)(0),               // 18: google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSecurityPreference
+	(WafSettings_WafFeature)(0),                                   // 19: google.cloud.recaptchaenterprise.v1.WafSettings.WafFeature
+	(WafSettings_WafService)(0),                                   // 20: google.cloud.recaptchaenterprise.v1.WafSettings.WafService
+	(IpOverrideData_OverrideType)(0),                              // 21: google.cloud.recaptchaenterprise.v1.IpOverrideData.OverrideType
+	(*CreateAssessmentRequest)(nil),                               // 22: google.cloud.recaptchaenterprise.v1.CreateAssessmentRequest
+	(*TransactionEvent)(nil),                                      // 23: google.cloud.recaptchaenterprise.v1.TransactionEvent
+	(*PhoneAuthenticationEvent)(nil),                              // 24: google.cloud.recaptchaenterprise.v1.PhoneAuthenticationEvent
+	(*AnnotateAssessmentRequest)(nil),                             // 25: google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest
+	(*AnnotateAssessmentResponse)(nil),                            // 26: google.cloud.recaptchaenterprise.v1.AnnotateAssessmentResponse
+	(*EndpointVerificationInfo)(nil),                              // 27: google.cloud.recaptchaenterprise.v1.EndpointVerificationInfo
+	(*AccountVerificationInfo)(nil),                               // 28: google.cloud.recaptchaenterprise.v1.AccountVerificationInfo
+	(*PrivatePasswordLeakVerification)(nil),                       // 29: google.cloud.recaptchaenterprise.v1.PrivatePasswordLeakVerification
+	(*Assessment)(nil),                                            // 30: google.cloud.recaptchaenterprise.v1.Assessment
+	(*Event)(nil),                                                 // 31: google.cloud.recaptchaenterprise.v1.Event
+	(*TransactionData)(nil),                                       // 32: google.cloud.recaptchaenterprise.v1.TransactionData
+	(*UserInfo)(nil),                                              // 33: google.cloud.recaptchaenterprise.v1.UserInfo
+	(*UserId)(nil),                                                // 34: google.cloud.recaptchaenterprise.v1.UserId
+	(*RiskAnalysis)(nil),                                          // 35: google.cloud.recaptchaenterprise.v1.RiskAnalysis
+	(*Bot)(nil),                                                   // 36: google.cloud.recaptchaenterprise.v1.Bot
+	(*TokenProperties)(nil),                                       // 37: google.cloud.recaptchaenterprise.v1.TokenProperties
+	(*FraudPreventionAssessment)(nil),                             // 38: google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment
+	(*FraudSignals)(nil),                                          // 39: google.cloud.recaptchaenterprise.v1.FraudSignals
+	(*SmsTollFraudVerdict)(nil),                                   // 40: google.cloud.recaptchaenterprise.v1.SmsTollFraudVerdict
+	(*PhoneFraudAssessment)(nil),                                  // 41: google.cloud.recaptchaenterprise.v1.PhoneFraudAssessment
+	(*AccountDefenderAssessment)(nil),                             // 42: google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment
+	(*CreateKeyRequest)(nil),                                      // 43: google.cloud.recaptchaenterprise.v1.CreateKeyRequest
+	(*ListKeysRequest)(nil),                                       // 44: google.cloud.recaptchaenterprise.v1.ListKeysRequest
+	(*ListKeysResponse)(nil),                                      // 45: google.cloud.recaptchaenterprise.v1.ListKeysResponse
+	(*RetrieveLegacySecretKeyRequest)(nil),                        // 46: google.cloud.recaptchaenterprise.v1.RetrieveLegacySecretKeyRequest
+	(*GetKeyRequest)(nil),                                         // 47: google.cloud.recaptchaenterprise.v1.GetKeyRequest
+	(*UpdateKeyRequest)(nil),                                      // 48: google.cloud.recaptchaenterprise.v1.UpdateKeyRequest
+	(*DeleteKeyRequest)(nil),                                      // 49: google.cloud.recaptchaenterprise.v1.DeleteKeyRequest
+	(*CreateFirewallPolicyRequest)(nil),                           // 50: google.cloud.recaptchaenterprise.v1.CreateFirewallPolicyRequest
+	(*ListFirewallPoliciesRequest)(nil),                           // 51: google.cloud.recaptchaenterprise.v1.ListFirewallPoliciesRequest
+	(*ListFirewallPoliciesResponse)(nil),                          // 52: google.cloud.recaptchaenterprise.v1.ListFirewallPoliciesResponse
+	(*GetFirewallPolicyRequest)(nil),                              // 53: google.cloud.recaptchaenterprise.v1.GetFirewallPolicyRequest
+	(*UpdateFirewallPolicyRequest)(nil),                           // 54: google.cloud.recaptchaenterprise.v1.UpdateFirewallPolicyRequest
+	(*DeleteFirewallPolicyRequest)(nil),                           // 55: google.cloud.recaptchaenterprise.v1.DeleteFirewallPolicyRequest
+	(*ReorderFirewallPoliciesRequest)(nil),                        // 56: google.cloud.recaptchaenterprise.v1.ReorderFirewallPoliciesRequest
+	(*ReorderFirewallPoliciesResponse)(nil),                       // 57: google.cloud.recaptchaenterprise.v1.ReorderFirewallPoliciesResponse
+	(*MigrateKeyRequest)(nil),                                     // 58: google.cloud.recaptchaenterprise.v1.MigrateKeyRequest
+	(*GetMetricsRequest)(nil),                                     // 59: google.cloud.recaptchaenterprise.v1.GetMetricsRequest
+	(*Metrics)(nil),                                               // 60: google.cloud.recaptchaenterprise.v1.Metrics
+	(*RetrieveLegacySecretKeyResponse)(nil),                       // 61: google.cloud.recaptchaenterprise.v1.RetrieveLegacySecretKeyResponse
+	(*Key)(nil),                                                   // 62: google.cloud.recaptchaenterprise.v1.Key
+	(*TestingOptions)(nil),                                        // 63: google.cloud.recaptchaenterprise.v1.TestingOptions
+	(*WebKeySettings)(nil),                                        // 64: google.cloud.recaptchaenterprise.v1.WebKeySettings
+	(*AndroidKeySettings)(nil),                                    // 65: google.cloud.recaptchaenterprise.v1.AndroidKeySettings
+	(*IOSKeySettings)(nil),                                        // 66: google.cloud.recaptchaenterprise.v1.IOSKeySettings
+	(*ExpressKeySettings)(nil),                                    // 67: google.cloud.recaptchaenterprise.v1.ExpressKeySettings
+	(*UniversalKeySettings)(nil),                                  // 68: google.cloud.recaptchaenterprise.v1.UniversalKeySettings
+	(*AppleDeveloperId)(nil),                                      // 69: google.cloud.recaptchaenterprise.v1.AppleDeveloperId
+	(*ScoreDistribution)(nil),                                     // 70: google.cloud.recaptchaenterprise.v1.ScoreDistribution
+	(*ScoreMetrics)(nil),                                          // 71: google.cloud.recaptchaenterprise.v1.ScoreMetrics
+	(*ChallengeMetrics)(nil),                                      // 72: google.cloud.recaptchaenterprise.v1.ChallengeMetrics
+	(*FirewallPolicyAssessment)(nil),                              // 73: google.cloud.recaptchaenterprise.v1.FirewallPolicyAssessment
+	(*FirewallAction)(nil),                                        // 74: google.cloud.recaptchaenterprise.v1.FirewallAction
+	(*FirewallPolicy)(nil),                                        // 75: google.cloud.recaptchaenterprise.v1.FirewallPolicy
+	(*ListRelatedAccountGroupMembershipsRequest)(nil),             // 76: google.cloud.recaptchaenterprise.v1.ListRelatedAccountGroupMembershipsRequest
+	(*ListRelatedAccountGroupMembershipsResponse)(nil),            // 77: google.cloud.recaptchaenterprise.v1.ListRelatedAccountGroupMembershipsResponse
+	(*ListRelatedAccountGroupsRequest)(nil),                       // 78: google.cloud.recaptchaenterprise.v1.ListRelatedAccountGroupsRequest
+	(*ListRelatedAccountGroupsResponse)(nil),                      // 79: google.cloud.recaptchaenterprise.v1.ListRelatedAccountGroupsResponse
+	(*SearchRelatedAccountGroupMembershipsRequest)(nil),           // 80: google.cloud.recaptchaenterprise.v1.SearchRelatedAccountGroupMembershipsRequest
+	(*SearchRelatedAccountGroupMembershipsResponse)(nil),          // 81: google.cloud.recaptchaenterprise.v1.SearchRelatedAccountGroupMembershipsResponse
+	(*AddIpOverrideRequest)(nil),                                  // 82: google.cloud.recaptchaenterprise.v1.AddIpOverrideRequest
+	(*AddIpOverrideResponse)(nil),                                 // 83: google.cloud.recaptchaenterprise.v1.AddIpOverrideResponse
+	(*RemoveIpOverrideRequest)(nil),                               // 84: google.cloud.recaptchaenterprise.v1.RemoveIpOverrideRequest
+	(*RemoveIpOverrideResponse)(nil),                              // 85: google.cloud.recaptchaenterprise.v1.RemoveIpOverrideResponse
+	(*ListIpOverridesRequest)(nil),                                // 86: google.cloud.recaptchaenterprise.v1.ListIpOverridesRequest
+	(*ListIpOverridesResponse)(nil),                               // 87: google.cloud.recaptchaenterprise.v1.ListIpOverridesResponse
+	(*RelatedAccountGroupMembership)(nil),                         // 88: google.cloud.recaptchaenterprise.v1.RelatedAccountGroupMembership
+	(*RelatedAccountGroup)(nil),                                   // 89: google.cloud.recaptchaenterprise.v1.RelatedAccountGroup
+	(*WafSettings)(nil),                                           // 90: google.cloud.recaptchaenterprise.v1.WafSettings
+	(*AssessmentEnvironment)(nil),                                 // 91: google.cloud.recaptchaenterprise.v1.AssessmentEnvironment
+	(*PolicyEvaluation)(nil),                                      // 92: google.cloud.recaptchaenterprise.v1.PolicyEvaluation
+	(*ChallengeRuleEvaluation)(nil),                               // 93: google.cloud.recaptchaenterprise.v1.ChallengeRuleEvaluation
+	(*IpOverrideData)(nil),                                        // 94: google.cloud.recaptchaenterprise.v1.IpOverrideData
+	(*GetPolicyRequest)(nil),                                      // 95: google.cloud.recaptchaenterprise.v1.GetPolicyRequest
+	(*UpdatePolicyRequest)(nil),                                   // 96: google.cloud.recaptchaenterprise.v1.UpdatePolicyRequest
+	(*Policy)(nil),                                                // 97: google.cloud.recaptchaenterprise.v1.Policy
+	(*ChallengeRuleGroup)(nil),                                    // 98: google.cloud.recaptchaenterprise.v1.ChallengeRuleGroup
+	(*ChallengeRule)(nil),                                         // 99: google.cloud.recaptchaenterprise.v1.ChallengeRule
+	(*ClientSettings)(nil),                                        // 100: google.cloud.recaptchaenterprise.v1.ClientSettings
+	(*ProtectedEndpointGroup)(nil),                                // 101: google.cloud.recaptchaenterprise.v1.ProtectedEndpointGroup
+	(*ProtectedEndpoint)(nil),                                     // 102: google.cloud.recaptchaenterprise.v1.ProtectedEndpoint
+	(*TransactionData_Address)(nil),                               // 103: google.cloud.recaptchaenterprise.v1.TransactionData.Address
+	(*TransactionData_User)(nil),                                  // 104: google.cloud.recaptchaenterprise.v1.TransactionData.User
+	(*TransactionData_Item)(nil),                                  // 105: google.cloud.recaptchaenterprise.v1.TransactionData.Item
+	(*TransactionData_GatewayInfo)(nil),                           // 106: google.cloud.recaptchaenterprise.v1.TransactionData.GatewayInfo
+	(*FraudPreventionAssessment_RiskReason)(nil),                  // 107: google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.RiskReason
+	(*FraudPreventionAssessment_StolenInstrumentVerdict)(nil),     // 108: google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.StolenInstrumentVerdict
+	(*FraudPreventionAssessment_CardTestingVerdict)(nil),          // 109: google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.CardTestingVerdict
+	(*FraudPreventionAssessment_BehavioralTrustVerdict)(nil),      // 110: google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.BehavioralTrustVerdict
+	(*FraudSignals_UserSignals)(nil),                              // 111: google.cloud.recaptchaenterprise.v1.FraudSignals.UserSignals
+	(*FraudSignals_CardSignals)(nil),                              // 112: google.cloud.recaptchaenterprise.v1.FraudSignals.CardSignals
+	(*AccountDefenderAssessment_AccountTakeoverVerdict)(nil),      // 113: google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountTakeoverVerdict
+	(*AccountDefenderAssessment_AccountRiskReason)(nil),           // 114: google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountRiskReason
+	(*AccountDefenderAssessment_AccountTrustReason)(nil),          // 115: google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountTrustReason
+	nil,                                      // 116: google.cloud.recaptchaenterprise.v1.Key.LabelsEntry
+	(*WebKeySettings_ActionSettings)(nil),    // 117: google.cloud.recaptchaenterprise.v1.WebKeySettings.ActionSettings
+	(*WebKeySettings_ChallengeSettings)(nil), // 118: google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSettings
+	nil,                                      // 119: google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSettings.ActionSettingsEntry
+	nil,                                      // 120: google.cloud.recaptchaenterprise.v1.ScoreDistribution.ScoreBucketsEntry
+	nil,                                      // 121: google.cloud.recaptchaenterprise.v1.ScoreMetrics.ActionMetricsEntry
+	(*FirewallAction_AllowAction)(nil),       // 122: google.cloud.recaptchaenterprise.v1.FirewallAction.AllowAction
+	(*FirewallAction_BlockAction)(nil),       // 123: google.cloud.recaptchaenterprise.v1.FirewallAction.BlockAction
+	(*FirewallAction_IncludeRecaptchaScriptAction)(nil), // 124: google.cloud.recaptchaenterprise.v1.FirewallAction.IncludeRecaptchaScriptAction
+	(*FirewallAction_RedirectAction)(nil),               // 125: google.cloud.recaptchaenterprise.v1.FirewallAction.RedirectAction
+	(*FirewallAction_SubstituteAction)(nil),             // 126: google.cloud.recaptchaenterprise.v1.FirewallAction.SubstituteAction
+	(*FirewallAction_SetHeaderAction)(nil),              // 127: google.cloud.recaptchaenterprise.v1.FirewallAction.SetHeaderAction
+	(*ChallengeRule_NoChallengeOutcome)(nil),            // 128: google.cloud.recaptchaenterprise.v1.ChallengeRule.NoChallengeOutcome
+	(*ChallengeRule_ChallengeOutcome)(nil),              // 129: google.cloud.recaptchaenterprise.v1.ChallengeRule.ChallengeOutcome
+	(*timestamppb.Timestamp)(nil),                       // 130: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),                       // 131: google.protobuf.FieldMask
+	(*status.Status)(nil),                               // 132: google.rpc.Status
+	(*emptypb.Empty)(nil),                               // 133: google.protobuf.Empty
 }
 var file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_depIdxs = []int32{
-	27,  // 0: google.cloud.recaptchaenterprise.v1.CreateAssessmentRequest.assessment:type_name -> google.cloud.recaptchaenterprise.v1.Assessment
-	0,   // 1: google.cloud.recaptchaenterprise.v1.TransactionEvent.event_type:type_name -> google.cloud.recaptchaenterprise.v1.TransactionEvent.TransactionEventType
-	111, // 2: google.cloud.recaptchaenterprise.v1.TransactionEvent.event_time:type_name -> google.protobuf.Timestamp
-	111, // 3: google.cloud.recaptchaenterprise.v1.PhoneAuthenticationEvent.event_time:type_name -> google.protobuf.Timestamp
-	1,   // 4: google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest.annotation:type_name -> google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest.Annotation
-	2,   // 5: google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest.reasons:type_name -> google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest.Reason
-	20,  // 6: google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest.transaction_event:type_name -> google.cloud.recaptchaenterprise.v1.TransactionEvent
-	21,  // 7: google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest.phone_authentication_event:type_name -> google.cloud.recaptchaenterprise.v1.PhoneAuthenticationEvent
-	111, // 8: google.cloud.recaptchaenterprise.v1.EndpointVerificationInfo.last_verification_time:type_name -> google.protobuf.Timestamp
-	24,  // 9: google.cloud.recaptchaenterprise.v1.AccountVerificationInfo.endpoints:type_name -> google.cloud.recaptchaenterprise.v1.EndpointVerificationInfo
-	3,   // 10: google.cloud.recaptchaenterprise.v1.AccountVerificationInfo.latest_verification_result:type_name -> google.cloud.recaptchaenterprise.v1.AccountVerificationInfo.Result
-	28,  // 11: google.cloud.recaptchaenterprise.v1.Assessment.event:type_name -> google.cloud.recaptchaenterprise.v1.Event
-	32,  // 12: google.cloud.recaptchaenterprise.v1.Assessment.risk_analysis:type_name -> google.cloud.recaptchaenterprise.v1.RiskAnalysis
-	34,  // 13: google.cloud.recaptchaenterprise.v1.Assessment.token_properties:type_name -> google.cloud.recaptchaenterprise.v1.TokenProperties
-	25,  // 14: google.cloud.recaptchaenterprise.v1.Assessment.account_verification:type_name -> google.cloud.recaptchaenterprise.v1.AccountVerificationInfo
-	39,  // 15: google.cloud.recaptchaenterprise.v1.Assessment.account_defender_assessment:type_name -> google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment
-	26,  // 16: google.cloud.recaptchaenterprise.v1.Assessment.private_password_leak_verification:type_name -> google.cloud.recaptchaenterprise.v1.PrivatePasswordLeakVerification
-	69,  // 17: google.cloud.recaptchaenterprise.v1.Assessment.firewall_policy_assessment:type_name -> google.cloud.recaptchaenterprise.v1.FirewallPolicyAssessment
-	35,  // 18: google.cloud.recaptchaenterprise.v1.Assessment.fraud_prevention_assessment:type_name -> google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment
-	36,  // 19: google.cloud.recaptchaenterprise.v1.Assessment.fraud_signals:type_name -> google.cloud.recaptchaenterprise.v1.FraudSignals
-	38,  // 20: google.cloud.recaptchaenterprise.v1.Assessment.phone_fraud_assessment:type_name -> google.cloud.recaptchaenterprise.v1.PhoneFraudAssessment
-	87,  // 21: google.cloud.recaptchaenterprise.v1.Assessment.assessment_environment:type_name -> google.cloud.recaptchaenterprise.v1.AssessmentEnvironment
-	29,  // 22: google.cloud.recaptchaenterprise.v1.Event.transaction_data:type_name -> google.cloud.recaptchaenterprise.v1.TransactionData
-	30,  // 23: google.cloud.recaptchaenterprise.v1.Event.user_info:type_name -> google.cloud.recaptchaenterprise.v1.UserInfo
-	4,   // 24: google.cloud.recaptchaenterprise.v1.Event.fraud_prevention:type_name -> google.cloud.recaptchaenterprise.v1.Event.FraudPrevention
-	89,  // 25: google.cloud.recaptchaenterprise.v1.TransactionData.shipping_address:type_name -> google.cloud.recaptchaenterprise.v1.TransactionData.Address
-	89,  // 26: google.cloud.recaptchaenterprise.v1.TransactionData.billing_address:type_name -> google.cloud.recaptchaenterprise.v1.TransactionData.Address
-	90,  // 27: google.cloud.recaptchaenterprise.v1.TransactionData.user:type_name -> google.cloud.recaptchaenterprise.v1.TransactionData.User
-	90,  // 28: google.cloud.recaptchaenterprise.v1.TransactionData.merchants:type_name -> google.cloud.recaptchaenterprise.v1.TransactionData.User
-	91,  // 29: google.cloud.recaptchaenterprise.v1.TransactionData.items:type_name -> google.cloud.recaptchaenterprise.v1.TransactionData.Item
-	92,  // 30: google.cloud.recaptchaenterprise.v1.TransactionData.gateway_info:type_name -> google.cloud.recaptchaenterprise.v1.TransactionData.GatewayInfo
-	111, // 31: google.cloud.recaptchaenterprise.v1.UserInfo.create_account_time:type_name -> google.protobuf.Timestamp
-	31,  // 32: google.cloud.recaptchaenterprise.v1.UserInfo.user_ids:type_name -> google.cloud.recaptchaenterprise.v1.UserId
-	5,   // 33: google.cloud.recaptchaenterprise.v1.RiskAnalysis.reasons:type_name -> google.cloud.recaptchaenterprise.v1.RiskAnalysis.ClassificationReason
-	6,   // 34: google.cloud.recaptchaenterprise.v1.RiskAnalysis.challenge:type_name -> google.cloud.recaptchaenterprise.v1.RiskAnalysis.Challenge
-	33,  // 35: google.cloud.recaptchaenterprise.v1.RiskAnalysis.verified_bots:type_name -> google.cloud.recaptchaenterprise.v1.Bot
-	7,   // 36: google.cloud.recaptchaenterprise.v1.Bot.bot_type:type_name -> google.cloud.recaptchaenterprise.v1.Bot.BotType
-	8,   // 37: google.cloud.recaptchaenterprise.v1.TokenProperties.invalid_reason:type_name -> google.cloud.recaptchaenterprise.v1.TokenProperties.InvalidReason
-	111, // 38: google.cloud.recaptchaenterprise.v1.TokenProperties.create_time:type_name -> google.protobuf.Timestamp
-	93,  // 39: google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.risk_reasons:type_name -> google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.RiskReason
-	94,  // 40: google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.stolen_instrument_verdict:type_name -> google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.StolenInstrumentVerdict
-	95,  // 41: google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.card_testing_verdict:type_name -> google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.CardTestingVerdict
-	96,  // 42: google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.behavioral_trust_verdict:type_name -> google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.BehavioralTrustVerdict
-	97,  // 43: google.cloud.recaptchaenterprise.v1.FraudSignals.user_signals:type_name -> google.cloud.recaptchaenterprise.v1.FraudSignals.UserSignals
-	98,  // 44: google.cloud.recaptchaenterprise.v1.FraudSignals.card_signals:type_name -> google.cloud.recaptchaenterprise.v1.FraudSignals.CardSignals
-	11,  // 45: google.cloud.recaptchaenterprise.v1.SmsTollFraudVerdict.reasons:type_name -> google.cloud.recaptchaenterprise.v1.SmsTollFraudVerdict.SmsTollFraudReason
-	37,  // 46: google.cloud.recaptchaenterprise.v1.PhoneFraudAssessment.sms_toll_fraud_verdict:type_name -> google.cloud.recaptchaenterprise.v1.SmsTollFraudVerdict
-	12,  // 47: google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.labels:type_name -> google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountDefenderLabel
-	59,  // 48: google.cloud.recaptchaenterprise.v1.CreateKeyRequest.key:type_name -> google.cloud.recaptchaenterprise.v1.Key
-	59,  // 49: google.cloud.recaptchaenterprise.v1.ListKeysResponse.keys:type_name -> google.cloud.recaptchaenterprise.v1.Key
-	59,  // 50: google.cloud.recaptchaenterprise.v1.UpdateKeyRequest.key:type_name -> google.cloud.recaptchaenterprise.v1.Key
-	112, // 51: google.cloud.recaptchaenterprise.v1.UpdateKeyRequest.update_mask:type_name -> google.protobuf.FieldMask
-	71,  // 52: google.cloud.recaptchaenterprise.v1.CreateFirewallPolicyRequest.firewall_policy:type_name -> google.cloud.recaptchaenterprise.v1.FirewallPolicy
-	71,  // 53: google.cloud.recaptchaenterprise.v1.ListFirewallPoliciesResponse.firewall_policies:type_name -> google.cloud.recaptchaenterprise.v1.FirewallPolicy
-	71,  // 54: google.cloud.recaptchaenterprise.v1.UpdateFirewallPolicyRequest.firewall_policy:type_name -> google.cloud.recaptchaenterprise.v1.FirewallPolicy
-	112, // 55: google.cloud.recaptchaenterprise.v1.UpdateFirewallPolicyRequest.update_mask:type_name -> google.protobuf.FieldMask
-	111, // 56: google.cloud.recaptchaenterprise.v1.Metrics.start_time:type_name -> google.protobuf.Timestamp
-	67,  // 57: google.cloud.recaptchaenterprise.v1.Metrics.score_metrics:type_name -> google.cloud.recaptchaenterprise.v1.ScoreMetrics
-	68,  // 58: google.cloud.recaptchaenterprise.v1.Metrics.challenge_metrics:type_name -> google.cloud.recaptchaenterprise.v1.ChallengeMetrics
-	61,  // 59: google.cloud.recaptchaenterprise.v1.Key.web_settings:type_name -> google.cloud.recaptchaenterprise.v1.WebKeySettings
-	62,  // 60: google.cloud.recaptchaenterprise.v1.Key.android_settings:type_name -> google.cloud.recaptchaenterprise.v1.AndroidKeySettings
-	63,  // 61: google.cloud.recaptchaenterprise.v1.Key.ios_settings:type_name -> google.cloud.recaptchaenterprise.v1.IOSKeySettings
-	64,  // 62: google.cloud.recaptchaenterprise.v1.Key.express_settings:type_name -> google.cloud.recaptchaenterprise.v1.ExpressKeySettings
-	99,  // 63: google.cloud.recaptchaenterprise.v1.Key.labels:type_name -> google.cloud.recaptchaenterprise.v1.Key.LabelsEntry
-	111, // 64: google.cloud.recaptchaenterprise.v1.Key.create_time:type_name -> google.protobuf.Timestamp
-	60,  // 65: google.cloud.recaptchaenterprise.v1.Key.testing_options:type_name -> google.cloud.recaptchaenterprise.v1.TestingOptions
-	86,  // 66: google.cloud.recaptchaenterprise.v1.Key.waf_settings:type_name -> google.cloud.recaptchaenterprise.v1.WafSettings
-	13,  // 67: google.cloud.recaptchaenterprise.v1.TestingOptions.testing_challenge:type_name -> google.cloud.recaptchaenterprise.v1.TestingOptions.TestingChallenge
-	14,  // 68: google.cloud.recaptchaenterprise.v1.WebKeySettings.integration_type:type_name -> google.cloud.recaptchaenterprise.v1.WebKeySettings.IntegrationType
-	15,  // 69: google.cloud.recaptchaenterprise.v1.WebKeySettings.challenge_security_preference:type_name -> google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSecurityPreference
-	101, // 70: google.cloud.recaptchaenterprise.v1.WebKeySettings.challenge_settings:type_name -> google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSettings
-	65,  // 71: google.cloud.recaptchaenterprise.v1.IOSKeySettings.apple_developer_id:type_name -> google.cloud.recaptchaenterprise.v1.AppleDeveloperId
-	103, // 72: google.cloud.recaptchaenterprise.v1.ScoreDistribution.score_buckets:type_name -> google.cloud.recaptchaenterprise.v1.ScoreDistribution.ScoreBucketsEntry
-	66,  // 73: google.cloud.recaptchaenterprise.v1.ScoreMetrics.overall_metrics:type_name -> google.cloud.recaptchaenterprise.v1.ScoreDistribution
-	104, // 74: google.cloud.recaptchaenterprise.v1.ScoreMetrics.action_metrics:type_name -> google.cloud.recaptchaenterprise.v1.ScoreMetrics.ActionMetricsEntry
-	113, // 75: google.cloud.recaptchaenterprise.v1.FirewallPolicyAssessment.error:type_name -> google.rpc.Status
-	71,  // 76: google.cloud.recaptchaenterprise.v1.FirewallPolicyAssessment.firewall_policy:type_name -> google.cloud.recaptchaenterprise.v1.FirewallPolicy
-	105, // 77: google.cloud.recaptchaenterprise.v1.FirewallAction.allow:type_name -> google.cloud.recaptchaenterprise.v1.FirewallAction.AllowAction
-	106, // 78: google.cloud.recaptchaenterprise.v1.FirewallAction.block:type_name -> google.cloud.recaptchaenterprise.v1.FirewallAction.BlockAction
-	107, // 79: google.cloud.recaptchaenterprise.v1.FirewallAction.include_recaptcha_script:type_name -> google.cloud.recaptchaenterprise.v1.FirewallAction.IncludeRecaptchaScriptAction
-	108, // 80: google.cloud.recaptchaenterprise.v1.FirewallAction.redirect:type_name -> google.cloud.recaptchaenterprise.v1.FirewallAction.RedirectAction
-	109, // 81: google.cloud.recaptchaenterprise.v1.FirewallAction.substitute:type_name -> google.cloud.recaptchaenterprise.v1.FirewallAction.SubstituteAction
-	110, // 82: google.cloud.recaptchaenterprise.v1.FirewallAction.set_header:type_name -> google.cloud.recaptchaenterprise.v1.FirewallAction.SetHeaderAction
-	70,  // 83: google.cloud.recaptchaenterprise.v1.FirewallPolicy.actions:type_name -> google.cloud.recaptchaenterprise.v1.FirewallAction
-	84,  // 84: google.cloud.recaptchaenterprise.v1.ListRelatedAccountGroupMembershipsResponse.related_account_group_memberships:type_name -> google.cloud.recaptchaenterprise.v1.RelatedAccountGroupMembership
-	85,  // 85: google.cloud.recaptchaenterprise.v1.ListRelatedAccountGroupsResponse.related_account_groups:type_name -> google.cloud.recaptchaenterprise.v1.RelatedAccountGroup
-	84,  // 86: google.cloud.recaptchaenterprise.v1.SearchRelatedAccountGroupMembershipsResponse.related_account_group_memberships:type_name -> google.cloud.recaptchaenterprise.v1.RelatedAccountGroupMembership
-	88,  // 87: google.cloud.recaptchaenterprise.v1.AddIpOverrideRequest.ip_override_data:type_name -> google.cloud.recaptchaenterprise.v1.IpOverrideData
-	88,  // 88: google.cloud.recaptchaenterprise.v1.RemoveIpOverrideRequest.ip_override_data:type_name -> google.cloud.recaptchaenterprise.v1.IpOverrideData
-	88,  // 89: google.cloud.recaptchaenterprise.v1.ListIpOverridesResponse.ip_overrides:type_name -> google.cloud.recaptchaenterprise.v1.IpOverrideData
-	17,  // 90: google.cloud.recaptchaenterprise.v1.WafSettings.waf_service:type_name -> google.cloud.recaptchaenterprise.v1.WafSettings.WafService
-	16,  // 91: google.cloud.recaptchaenterprise.v1.WafSettings.waf_feature:type_name -> google.cloud.recaptchaenterprise.v1.WafSettings.WafFeature
-	18,  // 92: google.cloud.recaptchaenterprise.v1.IpOverrideData.override_type:type_name -> google.cloud.recaptchaenterprise.v1.IpOverrideData.OverrideType
-	9,   // 93: google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.RiskReason.reason:type_name -> google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.RiskReason.Reason
-	10,  // 94: google.cloud.recaptchaenterprise.v1.FraudSignals.CardSignals.card_labels:type_name -> google.cloud.recaptchaenterprise.v1.FraudSignals.CardSignals.CardLabel
-	100, // 95: google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSettings.default_settings:type_name -> google.cloud.recaptchaenterprise.v1.WebKeySettings.ActionSettings
-	102, // 96: google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSettings.action_settings:type_name -> google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSettings.ActionSettingsEntry
-	100, // 97: google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSettings.ActionSettingsEntry.value:type_name -> google.cloud.recaptchaenterprise.v1.WebKeySettings.ActionSettings
-	66,  // 98: google.cloud.recaptchaenterprise.v1.ScoreMetrics.ActionMetricsEntry.value:type_name -> google.cloud.recaptchaenterprise.v1.ScoreDistribution
-	19,  // 99: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.CreateAssessment:input_type -> google.cloud.recaptchaenterprise.v1.CreateAssessmentRequest
-	22,  // 100: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.AnnotateAssessment:input_type -> google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest
-	40,  // 101: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.CreateKey:input_type -> google.cloud.recaptchaenterprise.v1.CreateKeyRequest
-	41,  // 102: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListKeys:input_type -> google.cloud.recaptchaenterprise.v1.ListKeysRequest
-	43,  // 103: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.RetrieveLegacySecretKey:input_type -> google.cloud.recaptchaenterprise.v1.RetrieveLegacySecretKeyRequest
-	44,  // 104: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.GetKey:input_type -> google.cloud.recaptchaenterprise.v1.GetKeyRequest
-	45,  // 105: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.UpdateKey:input_type -> google.cloud.recaptchaenterprise.v1.UpdateKeyRequest
-	46,  // 106: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.DeleteKey:input_type -> google.cloud.recaptchaenterprise.v1.DeleteKeyRequest
-	55,  // 107: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.MigrateKey:input_type -> google.cloud.recaptchaenterprise.v1.MigrateKeyRequest
-	78,  // 108: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.AddIpOverride:input_type -> google.cloud.recaptchaenterprise.v1.AddIpOverrideRequest
-	80,  // 109: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.RemoveIpOverride:input_type -> google.cloud.recaptchaenterprise.v1.RemoveIpOverrideRequest
-	82,  // 110: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListIpOverrides:input_type -> google.cloud.recaptchaenterprise.v1.ListIpOverridesRequest
-	56,  // 111: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.GetMetrics:input_type -> google.cloud.recaptchaenterprise.v1.GetMetricsRequest
-	47,  // 112: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.CreateFirewallPolicy:input_type -> google.cloud.recaptchaenterprise.v1.CreateFirewallPolicyRequest
-	48,  // 113: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListFirewallPolicies:input_type -> google.cloud.recaptchaenterprise.v1.ListFirewallPoliciesRequest
-	50,  // 114: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.GetFirewallPolicy:input_type -> google.cloud.recaptchaenterprise.v1.GetFirewallPolicyRequest
-	51,  // 115: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.UpdateFirewallPolicy:input_type -> google.cloud.recaptchaenterprise.v1.UpdateFirewallPolicyRequest
-	52,  // 116: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.DeleteFirewallPolicy:input_type -> google.cloud.recaptchaenterprise.v1.DeleteFirewallPolicyRequest
-	53,  // 117: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ReorderFirewallPolicies:input_type -> google.cloud.recaptchaenterprise.v1.ReorderFirewallPoliciesRequest
-	74,  // 118: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListRelatedAccountGroups:input_type -> google.cloud.recaptchaenterprise.v1.ListRelatedAccountGroupsRequest
-	72,  // 119: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListRelatedAccountGroupMemberships:input_type -> google.cloud.recaptchaenterprise.v1.ListRelatedAccountGroupMembershipsRequest
-	76,  // 120: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.SearchRelatedAccountGroupMemberships:input_type -> google.cloud.recaptchaenterprise.v1.SearchRelatedAccountGroupMembershipsRequest
-	27,  // 121: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.CreateAssessment:output_type -> google.cloud.recaptchaenterprise.v1.Assessment
-	23,  // 122: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.AnnotateAssessment:output_type -> google.cloud.recaptchaenterprise.v1.AnnotateAssessmentResponse
-	59,  // 123: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.CreateKey:output_type -> google.cloud.recaptchaenterprise.v1.Key
-	42,  // 124: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListKeys:output_type -> google.cloud.recaptchaenterprise.v1.ListKeysResponse
-	58,  // 125: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.RetrieveLegacySecretKey:output_type -> google.cloud.recaptchaenterprise.v1.RetrieveLegacySecretKeyResponse
-	59,  // 126: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.GetKey:output_type -> google.cloud.recaptchaenterprise.v1.Key
-	59,  // 127: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.UpdateKey:output_type -> google.cloud.recaptchaenterprise.v1.Key
-	114, // 128: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.DeleteKey:output_type -> google.protobuf.Empty
-	59,  // 129: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.MigrateKey:output_type -> google.cloud.recaptchaenterprise.v1.Key
-	79,  // 130: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.AddIpOverride:output_type -> google.cloud.recaptchaenterprise.v1.AddIpOverrideResponse
-	81,  // 131: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.RemoveIpOverride:output_type -> google.cloud.recaptchaenterprise.v1.RemoveIpOverrideResponse
-	83,  // 132: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListIpOverrides:output_type -> google.cloud.recaptchaenterprise.v1.ListIpOverridesResponse
-	57,  // 133: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.GetMetrics:output_type -> google.cloud.recaptchaenterprise.v1.Metrics
-	71,  // 134: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.CreateFirewallPolicy:output_type -> google.cloud.recaptchaenterprise.v1.FirewallPolicy
-	49,  // 135: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListFirewallPolicies:output_type -> google.cloud.recaptchaenterprise.v1.ListFirewallPoliciesResponse
-	71,  // 136: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.GetFirewallPolicy:output_type -> google.cloud.recaptchaenterprise.v1.FirewallPolicy
-	71,  // 137: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.UpdateFirewallPolicy:output_type -> google.cloud.recaptchaenterprise.v1.FirewallPolicy
-	114, // 138: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.DeleteFirewallPolicy:output_type -> google.protobuf.Empty
-	54,  // 139: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ReorderFirewallPolicies:output_type -> google.cloud.recaptchaenterprise.v1.ReorderFirewallPoliciesResponse
-	75,  // 140: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListRelatedAccountGroups:output_type -> google.cloud.recaptchaenterprise.v1.ListRelatedAccountGroupsResponse
-	73,  // 141: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListRelatedAccountGroupMemberships:output_type -> google.cloud.recaptchaenterprise.v1.ListRelatedAccountGroupMembershipsResponse
-	77,  // 142: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.SearchRelatedAccountGroupMemberships:output_type -> google.cloud.recaptchaenterprise.v1.SearchRelatedAccountGroupMembershipsResponse
-	121, // [121:143] is the sub-list for method output_type
-	99,  // [99:121] is the sub-list for method input_type
-	99,  // [99:99] is the sub-list for extension type_name
-	99,  // [99:99] is the sub-list for extension extendee
-	0,   // [0:99] is the sub-list for field type_name
+	30,  // 0: google.cloud.recaptchaenterprise.v1.CreateAssessmentRequest.assessment:type_name -> google.cloud.recaptchaenterprise.v1.Assessment
+	1,   // 1: google.cloud.recaptchaenterprise.v1.TransactionEvent.event_type:type_name -> google.cloud.recaptchaenterprise.v1.TransactionEvent.TransactionEventType
+	130, // 2: google.cloud.recaptchaenterprise.v1.TransactionEvent.event_time:type_name -> google.protobuf.Timestamp
+	130, // 3: google.cloud.recaptchaenterprise.v1.PhoneAuthenticationEvent.event_time:type_name -> google.protobuf.Timestamp
+	2,   // 4: google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest.annotation:type_name -> google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest.Annotation
+	3,   // 5: google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest.reasons:type_name -> google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest.Reason
+	23,  // 6: google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest.transaction_event:type_name -> google.cloud.recaptchaenterprise.v1.TransactionEvent
+	24,  // 7: google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest.phone_authentication_event:type_name -> google.cloud.recaptchaenterprise.v1.PhoneAuthenticationEvent
+	130, // 8: google.cloud.recaptchaenterprise.v1.EndpointVerificationInfo.last_verification_time:type_name -> google.protobuf.Timestamp
+	27,  // 9: google.cloud.recaptchaenterprise.v1.AccountVerificationInfo.endpoints:type_name -> google.cloud.recaptchaenterprise.v1.EndpointVerificationInfo
+	4,   // 10: google.cloud.recaptchaenterprise.v1.AccountVerificationInfo.latest_verification_result:type_name -> google.cloud.recaptchaenterprise.v1.AccountVerificationInfo.Result
+	31,  // 11: google.cloud.recaptchaenterprise.v1.Assessment.event:type_name -> google.cloud.recaptchaenterprise.v1.Event
+	35,  // 12: google.cloud.recaptchaenterprise.v1.Assessment.risk_analysis:type_name -> google.cloud.recaptchaenterprise.v1.RiskAnalysis
+	37,  // 13: google.cloud.recaptchaenterprise.v1.Assessment.token_properties:type_name -> google.cloud.recaptchaenterprise.v1.TokenProperties
+	28,  // 14: google.cloud.recaptchaenterprise.v1.Assessment.account_verification:type_name -> google.cloud.recaptchaenterprise.v1.AccountVerificationInfo
+	42,  // 15: google.cloud.recaptchaenterprise.v1.Assessment.account_defender_assessment:type_name -> google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment
+	29,  // 16: google.cloud.recaptchaenterprise.v1.Assessment.private_password_leak_verification:type_name -> google.cloud.recaptchaenterprise.v1.PrivatePasswordLeakVerification
+	73,  // 17: google.cloud.recaptchaenterprise.v1.Assessment.firewall_policy_assessment:type_name -> google.cloud.recaptchaenterprise.v1.FirewallPolicyAssessment
+	38,  // 18: google.cloud.recaptchaenterprise.v1.Assessment.fraud_prevention_assessment:type_name -> google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment
+	39,  // 19: google.cloud.recaptchaenterprise.v1.Assessment.fraud_signals:type_name -> google.cloud.recaptchaenterprise.v1.FraudSignals
+	41,  // 20: google.cloud.recaptchaenterprise.v1.Assessment.phone_fraud_assessment:type_name -> google.cloud.recaptchaenterprise.v1.PhoneFraudAssessment
+	91,  // 21: google.cloud.recaptchaenterprise.v1.Assessment.assessment_environment:type_name -> google.cloud.recaptchaenterprise.v1.AssessmentEnvironment
+	92,  // 22: google.cloud.recaptchaenterprise.v1.Assessment.policy_evaluation:type_name -> google.cloud.recaptchaenterprise.v1.PolicyEvaluation
+	32,  // 23: google.cloud.recaptchaenterprise.v1.Event.transaction_data:type_name -> google.cloud.recaptchaenterprise.v1.TransactionData
+	33,  // 24: google.cloud.recaptchaenterprise.v1.Event.user_info:type_name -> google.cloud.recaptchaenterprise.v1.UserInfo
+	5,   // 25: google.cloud.recaptchaenterprise.v1.Event.fraud_prevention:type_name -> google.cloud.recaptchaenterprise.v1.Event.FraudPrevention
+	103, // 26: google.cloud.recaptchaenterprise.v1.TransactionData.shipping_address:type_name -> google.cloud.recaptchaenterprise.v1.TransactionData.Address
+	103, // 27: google.cloud.recaptchaenterprise.v1.TransactionData.billing_address:type_name -> google.cloud.recaptchaenterprise.v1.TransactionData.Address
+	104, // 28: google.cloud.recaptchaenterprise.v1.TransactionData.user:type_name -> google.cloud.recaptchaenterprise.v1.TransactionData.User
+	104, // 29: google.cloud.recaptchaenterprise.v1.TransactionData.merchants:type_name -> google.cloud.recaptchaenterprise.v1.TransactionData.User
+	105, // 30: google.cloud.recaptchaenterprise.v1.TransactionData.items:type_name -> google.cloud.recaptchaenterprise.v1.TransactionData.Item
+	106, // 31: google.cloud.recaptchaenterprise.v1.TransactionData.gateway_info:type_name -> google.cloud.recaptchaenterprise.v1.TransactionData.GatewayInfo
+	130, // 32: google.cloud.recaptchaenterprise.v1.UserInfo.create_account_time:type_name -> google.protobuf.Timestamp
+	34,  // 33: google.cloud.recaptchaenterprise.v1.UserInfo.user_ids:type_name -> google.cloud.recaptchaenterprise.v1.UserId
+	6,   // 34: google.cloud.recaptchaenterprise.v1.RiskAnalysis.reasons:type_name -> google.cloud.recaptchaenterprise.v1.RiskAnalysis.ClassificationReason
+	0,   // 35: google.cloud.recaptchaenterprise.v1.RiskAnalysis.last_challenge_type:type_name -> google.cloud.recaptchaenterprise.v1.ChallengeType
+	7,   // 36: google.cloud.recaptchaenterprise.v1.RiskAnalysis.challenge:type_name -> google.cloud.recaptchaenterprise.v1.RiskAnalysis.Challenge
+	36,  // 37: google.cloud.recaptchaenterprise.v1.RiskAnalysis.verified_bots:type_name -> google.cloud.recaptchaenterprise.v1.Bot
+	8,   // 38: google.cloud.recaptchaenterprise.v1.Bot.bot_type:type_name -> google.cloud.recaptchaenterprise.v1.Bot.BotType
+	9,   // 39: google.cloud.recaptchaenterprise.v1.TokenProperties.invalid_reason:type_name -> google.cloud.recaptchaenterprise.v1.TokenProperties.InvalidReason
+	130, // 40: google.cloud.recaptchaenterprise.v1.TokenProperties.create_time:type_name -> google.protobuf.Timestamp
+	107, // 41: google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.risk_reasons:type_name -> google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.RiskReason
+	108, // 42: google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.stolen_instrument_verdict:type_name -> google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.StolenInstrumentVerdict
+	109, // 43: google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.card_testing_verdict:type_name -> google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.CardTestingVerdict
+	110, // 44: google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.behavioral_trust_verdict:type_name -> google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.BehavioralTrustVerdict
+	111, // 45: google.cloud.recaptchaenterprise.v1.FraudSignals.user_signals:type_name -> google.cloud.recaptchaenterprise.v1.FraudSignals.UserSignals
+	112, // 46: google.cloud.recaptchaenterprise.v1.FraudSignals.card_signals:type_name -> google.cloud.recaptchaenterprise.v1.FraudSignals.CardSignals
+	12,  // 47: google.cloud.recaptchaenterprise.v1.SmsTollFraudVerdict.reasons:type_name -> google.cloud.recaptchaenterprise.v1.SmsTollFraudVerdict.SmsTollFraudReason
+	40,  // 48: google.cloud.recaptchaenterprise.v1.PhoneFraudAssessment.sms_toll_fraud_verdict:type_name -> google.cloud.recaptchaenterprise.v1.SmsTollFraudVerdict
+	13,  // 49: google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.labels:type_name -> google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountDefenderLabel
+	113, // 50: google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.account_takeover_verdict:type_name -> google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountTakeoverVerdict
+	62,  // 51: google.cloud.recaptchaenterprise.v1.CreateKeyRequest.key:type_name -> google.cloud.recaptchaenterprise.v1.Key
+	62,  // 52: google.cloud.recaptchaenterprise.v1.ListKeysResponse.keys:type_name -> google.cloud.recaptchaenterprise.v1.Key
+	62,  // 53: google.cloud.recaptchaenterprise.v1.UpdateKeyRequest.key:type_name -> google.cloud.recaptchaenterprise.v1.Key
+	131, // 54: google.cloud.recaptchaenterprise.v1.UpdateKeyRequest.update_mask:type_name -> google.protobuf.FieldMask
+	75,  // 55: google.cloud.recaptchaenterprise.v1.CreateFirewallPolicyRequest.firewall_policy:type_name -> google.cloud.recaptchaenterprise.v1.FirewallPolicy
+	75,  // 56: google.cloud.recaptchaenterprise.v1.ListFirewallPoliciesResponse.firewall_policies:type_name -> google.cloud.recaptchaenterprise.v1.FirewallPolicy
+	75,  // 57: google.cloud.recaptchaenterprise.v1.UpdateFirewallPolicyRequest.firewall_policy:type_name -> google.cloud.recaptchaenterprise.v1.FirewallPolicy
+	131, // 58: google.cloud.recaptchaenterprise.v1.UpdateFirewallPolicyRequest.update_mask:type_name -> google.protobuf.FieldMask
+	130, // 59: google.cloud.recaptchaenterprise.v1.Metrics.start_time:type_name -> google.protobuf.Timestamp
+	71,  // 60: google.cloud.recaptchaenterprise.v1.Metrics.score_metrics:type_name -> google.cloud.recaptchaenterprise.v1.ScoreMetrics
+	72,  // 61: google.cloud.recaptchaenterprise.v1.Metrics.challenge_metrics:type_name -> google.cloud.recaptchaenterprise.v1.ChallengeMetrics
+	64,  // 62: google.cloud.recaptchaenterprise.v1.Key.web_settings:type_name -> google.cloud.recaptchaenterprise.v1.WebKeySettings
+	65,  // 63: google.cloud.recaptchaenterprise.v1.Key.android_settings:type_name -> google.cloud.recaptchaenterprise.v1.AndroidKeySettings
+	66,  // 64: google.cloud.recaptchaenterprise.v1.Key.ios_settings:type_name -> google.cloud.recaptchaenterprise.v1.IOSKeySettings
+	67,  // 65: google.cloud.recaptchaenterprise.v1.Key.express_settings:type_name -> google.cloud.recaptchaenterprise.v1.ExpressKeySettings
+	68,  // 66: google.cloud.recaptchaenterprise.v1.Key.universal_settings:type_name -> google.cloud.recaptchaenterprise.v1.UniversalKeySettings
+	116, // 67: google.cloud.recaptchaenterprise.v1.Key.labels:type_name -> google.cloud.recaptchaenterprise.v1.Key.LabelsEntry
+	130, // 68: google.cloud.recaptchaenterprise.v1.Key.create_time:type_name -> google.protobuf.Timestamp
+	63,  // 69: google.cloud.recaptchaenterprise.v1.Key.testing_options:type_name -> google.cloud.recaptchaenterprise.v1.TestingOptions
+	90,  // 70: google.cloud.recaptchaenterprise.v1.Key.waf_settings:type_name -> google.cloud.recaptchaenterprise.v1.WafSettings
+	16,  // 71: google.cloud.recaptchaenterprise.v1.TestingOptions.testing_challenge:type_name -> google.cloud.recaptchaenterprise.v1.TestingOptions.TestingChallenge
+	17,  // 72: google.cloud.recaptchaenterprise.v1.WebKeySettings.integration_type:type_name -> google.cloud.recaptchaenterprise.v1.WebKeySettings.IntegrationType
+	18,  // 73: google.cloud.recaptchaenterprise.v1.WebKeySettings.challenge_security_preference:type_name -> google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSecurityPreference
+	118, // 74: google.cloud.recaptchaenterprise.v1.WebKeySettings.challenge_settings:type_name -> google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSettings
+	69,  // 75: google.cloud.recaptchaenterprise.v1.IOSKeySettings.apple_developer_id:type_name -> google.cloud.recaptchaenterprise.v1.AppleDeveloperId
+	120, // 76: google.cloud.recaptchaenterprise.v1.ScoreDistribution.score_buckets:type_name -> google.cloud.recaptchaenterprise.v1.ScoreDistribution.ScoreBucketsEntry
+	70,  // 77: google.cloud.recaptchaenterprise.v1.ScoreMetrics.overall_metrics:type_name -> google.cloud.recaptchaenterprise.v1.ScoreDistribution
+	121, // 78: google.cloud.recaptchaenterprise.v1.ScoreMetrics.action_metrics:type_name -> google.cloud.recaptchaenterprise.v1.ScoreMetrics.ActionMetricsEntry
+	132, // 79: google.cloud.recaptchaenterprise.v1.FirewallPolicyAssessment.error:type_name -> google.rpc.Status
+	75,  // 80: google.cloud.recaptchaenterprise.v1.FirewallPolicyAssessment.firewall_policy:type_name -> google.cloud.recaptchaenterprise.v1.FirewallPolicy
+	122, // 81: google.cloud.recaptchaenterprise.v1.FirewallAction.allow:type_name -> google.cloud.recaptchaenterprise.v1.FirewallAction.AllowAction
+	123, // 82: google.cloud.recaptchaenterprise.v1.FirewallAction.block:type_name -> google.cloud.recaptchaenterprise.v1.FirewallAction.BlockAction
+	124, // 83: google.cloud.recaptchaenterprise.v1.FirewallAction.include_recaptcha_script:type_name -> google.cloud.recaptchaenterprise.v1.FirewallAction.IncludeRecaptchaScriptAction
+	125, // 84: google.cloud.recaptchaenterprise.v1.FirewallAction.redirect:type_name -> google.cloud.recaptchaenterprise.v1.FirewallAction.RedirectAction
+	126, // 85: google.cloud.recaptchaenterprise.v1.FirewallAction.substitute:type_name -> google.cloud.recaptchaenterprise.v1.FirewallAction.SubstituteAction
+	127, // 86: google.cloud.recaptchaenterprise.v1.FirewallAction.set_header:type_name -> google.cloud.recaptchaenterprise.v1.FirewallAction.SetHeaderAction
+	74,  // 87: google.cloud.recaptchaenterprise.v1.FirewallPolicy.actions:type_name -> google.cloud.recaptchaenterprise.v1.FirewallAction
+	88,  // 88: google.cloud.recaptchaenterprise.v1.ListRelatedAccountGroupMembershipsResponse.related_account_group_memberships:type_name -> google.cloud.recaptchaenterprise.v1.RelatedAccountGroupMembership
+	89,  // 89: google.cloud.recaptchaenterprise.v1.ListRelatedAccountGroupsResponse.related_account_groups:type_name -> google.cloud.recaptchaenterprise.v1.RelatedAccountGroup
+	88,  // 90: google.cloud.recaptchaenterprise.v1.SearchRelatedAccountGroupMembershipsResponse.related_account_group_memberships:type_name -> google.cloud.recaptchaenterprise.v1.RelatedAccountGroupMembership
+	94,  // 91: google.cloud.recaptchaenterprise.v1.AddIpOverrideRequest.ip_override_data:type_name -> google.cloud.recaptchaenterprise.v1.IpOverrideData
+	94,  // 92: google.cloud.recaptchaenterprise.v1.RemoveIpOverrideRequest.ip_override_data:type_name -> google.cloud.recaptchaenterprise.v1.IpOverrideData
+	94,  // 93: google.cloud.recaptchaenterprise.v1.ListIpOverridesResponse.ip_overrides:type_name -> google.cloud.recaptchaenterprise.v1.IpOverrideData
+	20,  // 94: google.cloud.recaptchaenterprise.v1.WafSettings.waf_service:type_name -> google.cloud.recaptchaenterprise.v1.WafSettings.WafService
+	19,  // 95: google.cloud.recaptchaenterprise.v1.WafSettings.waf_feature:type_name -> google.cloud.recaptchaenterprise.v1.WafSettings.WafFeature
+	93,  // 96: google.cloud.recaptchaenterprise.v1.PolicyEvaluation.challenge_rule_evaluation:type_name -> google.cloud.recaptchaenterprise.v1.ChallengeRuleEvaluation
+	21,  // 97: google.cloud.recaptchaenterprise.v1.IpOverrideData.override_type:type_name -> google.cloud.recaptchaenterprise.v1.IpOverrideData.OverrideType
+	97,  // 98: google.cloud.recaptchaenterprise.v1.UpdatePolicyRequest.policy:type_name -> google.cloud.recaptchaenterprise.v1.Policy
+	131, // 99: google.cloud.recaptchaenterprise.v1.UpdatePolicyRequest.update_mask:type_name -> google.protobuf.FieldMask
+	100, // 100: google.cloud.recaptchaenterprise.v1.Policy.client_settings:type_name -> google.cloud.recaptchaenterprise.v1.ClientSettings
+	98,  // 101: google.cloud.recaptchaenterprise.v1.Policy.challenge_rule_groups:type_name -> google.cloud.recaptchaenterprise.v1.ChallengeRuleGroup
+	99,  // 102: google.cloud.recaptchaenterprise.v1.ChallengeRuleGroup.challenge_rules:type_name -> google.cloud.recaptchaenterprise.v1.ChallengeRule
+	128, // 103: google.cloud.recaptchaenterprise.v1.ChallengeRule.no_challenge:type_name -> google.cloud.recaptchaenterprise.v1.ChallengeRule.NoChallengeOutcome
+	129, // 104: google.cloud.recaptchaenterprise.v1.ChallengeRule.challenge:type_name -> google.cloud.recaptchaenterprise.v1.ChallengeRule.ChallengeOutcome
+	101, // 105: google.cloud.recaptchaenterprise.v1.ClientSettings.protected_endpoint_group:type_name -> google.cloud.recaptchaenterprise.v1.ProtectedEndpointGroup
+	102, // 106: google.cloud.recaptchaenterprise.v1.ProtectedEndpointGroup.protected_endpoints:type_name -> google.cloud.recaptchaenterprise.v1.ProtectedEndpoint
+	10,  // 107: google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.RiskReason.reason:type_name -> google.cloud.recaptchaenterprise.v1.FraudPreventionAssessment.RiskReason.Reason
+	11,  // 108: google.cloud.recaptchaenterprise.v1.FraudSignals.CardSignals.card_labels:type_name -> google.cloud.recaptchaenterprise.v1.FraudSignals.CardSignals.CardLabel
+	114, // 109: google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountTakeoverVerdict.risk_reasons:type_name -> google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountRiskReason
+	115, // 110: google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountTakeoverVerdict.trust_reasons:type_name -> google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountTrustReason
+	14,  // 111: google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountRiskReason.reason:type_name -> google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountRiskReason.RiskReason
+	15,  // 112: google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountTrustReason.reason:type_name -> google.cloud.recaptchaenterprise.v1.AccountDefenderAssessment.AccountTrustReason.TrustReason
+	117, // 113: google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSettings.default_settings:type_name -> google.cloud.recaptchaenterprise.v1.WebKeySettings.ActionSettings
+	119, // 114: google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSettings.action_settings:type_name -> google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSettings.ActionSettingsEntry
+	117, // 115: google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSettings.ActionSettingsEntry.value:type_name -> google.cloud.recaptchaenterprise.v1.WebKeySettings.ActionSettings
+	70,  // 116: google.cloud.recaptchaenterprise.v1.ScoreMetrics.ActionMetricsEntry.value:type_name -> google.cloud.recaptchaenterprise.v1.ScoreDistribution
+	18,  // 117: google.cloud.recaptchaenterprise.v1.ChallengeRule.ChallengeOutcome.difficulty:type_name -> google.cloud.recaptchaenterprise.v1.WebKeySettings.ChallengeSecurityPreference
+	22,  // 118: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.CreateAssessment:input_type -> google.cloud.recaptchaenterprise.v1.CreateAssessmentRequest
+	25,  // 119: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.AnnotateAssessment:input_type -> google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest
+	43,  // 120: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.CreateKey:input_type -> google.cloud.recaptchaenterprise.v1.CreateKeyRequest
+	44,  // 121: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListKeys:input_type -> google.cloud.recaptchaenterprise.v1.ListKeysRequest
+	46,  // 122: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.RetrieveLegacySecretKey:input_type -> google.cloud.recaptchaenterprise.v1.RetrieveLegacySecretKeyRequest
+	47,  // 123: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.GetKey:input_type -> google.cloud.recaptchaenterprise.v1.GetKeyRequest
+	48,  // 124: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.UpdateKey:input_type -> google.cloud.recaptchaenterprise.v1.UpdateKeyRequest
+	49,  // 125: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.DeleteKey:input_type -> google.cloud.recaptchaenterprise.v1.DeleteKeyRequest
+	58,  // 126: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.MigrateKey:input_type -> google.cloud.recaptchaenterprise.v1.MigrateKeyRequest
+	82,  // 127: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.AddIpOverride:input_type -> google.cloud.recaptchaenterprise.v1.AddIpOverrideRequest
+	84,  // 128: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.RemoveIpOverride:input_type -> google.cloud.recaptchaenterprise.v1.RemoveIpOverrideRequest
+	86,  // 129: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListIpOverrides:input_type -> google.cloud.recaptchaenterprise.v1.ListIpOverridesRequest
+	59,  // 130: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.GetMetrics:input_type -> google.cloud.recaptchaenterprise.v1.GetMetricsRequest
+	95,  // 131: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.GetPolicy:input_type -> google.cloud.recaptchaenterprise.v1.GetPolicyRequest
+	96,  // 132: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.UpdatePolicy:input_type -> google.cloud.recaptchaenterprise.v1.UpdatePolicyRequest
+	50,  // 133: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.CreateFirewallPolicy:input_type -> google.cloud.recaptchaenterprise.v1.CreateFirewallPolicyRequest
+	51,  // 134: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListFirewallPolicies:input_type -> google.cloud.recaptchaenterprise.v1.ListFirewallPoliciesRequest
+	53,  // 135: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.GetFirewallPolicy:input_type -> google.cloud.recaptchaenterprise.v1.GetFirewallPolicyRequest
+	54,  // 136: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.UpdateFirewallPolicy:input_type -> google.cloud.recaptchaenterprise.v1.UpdateFirewallPolicyRequest
+	55,  // 137: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.DeleteFirewallPolicy:input_type -> google.cloud.recaptchaenterprise.v1.DeleteFirewallPolicyRequest
+	56,  // 138: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ReorderFirewallPolicies:input_type -> google.cloud.recaptchaenterprise.v1.ReorderFirewallPoliciesRequest
+	78,  // 139: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListRelatedAccountGroups:input_type -> google.cloud.recaptchaenterprise.v1.ListRelatedAccountGroupsRequest
+	76,  // 140: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListRelatedAccountGroupMemberships:input_type -> google.cloud.recaptchaenterprise.v1.ListRelatedAccountGroupMembershipsRequest
+	80,  // 141: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.SearchRelatedAccountGroupMemberships:input_type -> google.cloud.recaptchaenterprise.v1.SearchRelatedAccountGroupMembershipsRequest
+	30,  // 142: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.CreateAssessment:output_type -> google.cloud.recaptchaenterprise.v1.Assessment
+	26,  // 143: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.AnnotateAssessment:output_type -> google.cloud.recaptchaenterprise.v1.AnnotateAssessmentResponse
+	62,  // 144: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.CreateKey:output_type -> google.cloud.recaptchaenterprise.v1.Key
+	45,  // 145: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListKeys:output_type -> google.cloud.recaptchaenterprise.v1.ListKeysResponse
+	61,  // 146: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.RetrieveLegacySecretKey:output_type -> google.cloud.recaptchaenterprise.v1.RetrieveLegacySecretKeyResponse
+	62,  // 147: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.GetKey:output_type -> google.cloud.recaptchaenterprise.v1.Key
+	62,  // 148: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.UpdateKey:output_type -> google.cloud.recaptchaenterprise.v1.Key
+	133, // 149: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.DeleteKey:output_type -> google.protobuf.Empty
+	62,  // 150: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.MigrateKey:output_type -> google.cloud.recaptchaenterprise.v1.Key
+	83,  // 151: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.AddIpOverride:output_type -> google.cloud.recaptchaenterprise.v1.AddIpOverrideResponse
+	85,  // 152: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.RemoveIpOverride:output_type -> google.cloud.recaptchaenterprise.v1.RemoveIpOverrideResponse
+	87,  // 153: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListIpOverrides:output_type -> google.cloud.recaptchaenterprise.v1.ListIpOverridesResponse
+	60,  // 154: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.GetMetrics:output_type -> google.cloud.recaptchaenterprise.v1.Metrics
+	97,  // 155: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.GetPolicy:output_type -> google.cloud.recaptchaenterprise.v1.Policy
+	97,  // 156: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.UpdatePolicy:output_type -> google.cloud.recaptchaenterprise.v1.Policy
+	75,  // 157: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.CreateFirewallPolicy:output_type -> google.cloud.recaptchaenterprise.v1.FirewallPolicy
+	52,  // 158: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListFirewallPolicies:output_type -> google.cloud.recaptchaenterprise.v1.ListFirewallPoliciesResponse
+	75,  // 159: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.GetFirewallPolicy:output_type -> google.cloud.recaptchaenterprise.v1.FirewallPolicy
+	75,  // 160: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.UpdateFirewallPolicy:output_type -> google.cloud.recaptchaenterprise.v1.FirewallPolicy
+	133, // 161: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.DeleteFirewallPolicy:output_type -> google.protobuf.Empty
+	57,  // 162: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ReorderFirewallPolicies:output_type -> google.cloud.recaptchaenterprise.v1.ReorderFirewallPoliciesResponse
+	79,  // 163: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListRelatedAccountGroups:output_type -> google.cloud.recaptchaenterprise.v1.ListRelatedAccountGroupsResponse
+	77,  // 164: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListRelatedAccountGroupMemberships:output_type -> google.cloud.recaptchaenterprise.v1.ListRelatedAccountGroupMembershipsResponse
+	81,  // 165: google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.SearchRelatedAccountGroupMemberships:output_type -> google.cloud.recaptchaenterprise.v1.SearchRelatedAccountGroupMembershipsResponse
+	142, // [142:166] is the sub-list for method output_type
+	118, // [118:142] is the sub-list for method input_type
+	118, // [118:118] is the sub-list for extension type_name
+	118, // [118:118] is the sub-list for extension extendee
+	0,   // [0:118] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_init() }
@@ -8338,8 +9640,9 @@ func file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_init() {
 		(*Key_AndroidSettings)(nil),
 		(*Key_IosSettings)(nil),
 		(*Key_ExpressSettings)(nil),
+		(*Key_UniversalSettings)(nil),
 	}
-	file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[51].OneofWrappers = []any{
+	file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[52].OneofWrappers = []any{
 		(*FirewallAction_Allow)(nil),
 		(*FirewallAction_Block)(nil),
 		(*FirewallAction_IncludeRecaptchaScript)(nil),
@@ -8347,13 +9650,17 @@ func file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_init() {
 		(*FirewallAction_Substitute)(nil),
 		(*FirewallAction_SetHeader)(nil),
 	}
+	file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_msgTypes[77].OneofWrappers = []any{
+		(*ChallengeRule_NoChallenge)(nil),
+		(*ChallengeRule_Challenge)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDesc), len(file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDesc)),
-			NumEnums:      19,
-			NumMessages:   92,
+			NumEnums:      22,
+			NumMessages:   108,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

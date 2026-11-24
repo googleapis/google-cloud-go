@@ -298,25 +298,25 @@ var File_google_cloud_oracledatabase_v1_db_node_proto protoreflect.FileDescripto
 
 const file_google_cloud_oracledatabase_v1_db_node_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/oracledatabase/v1/db_node.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf2\x02\n" +
-	"\x06DbNode\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12U\n" +
+	",google/cloud/oracledatabase/v1/db_node.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf4\x02\n" +
+	"\x06DbNode\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12V\n" +
 	"\n" +
-	"properties\x18\x03 \x01(\v20.google.cloud.oracledatabase.v1.DbNodePropertiesB\x03\xe0A\x01R\n" +
+	"properties\x18\x03 \x01(\v20.google.cloud.oracledatabase.v1.DbNodePropertiesB\x04\xe2A\x01\x01R\n" +
 	"properties:\xf7\x01\xeaA\xf3\x01\n" +
-	"$oracledatabase.googleapis.com/DbNode\x12\\projects/{project}/locations/{location}/cloudVmClusters/{cloud_vm_cluster}/dbNodes/{db_node}\x12\\projects/{project}/locations/{location}/exadbVmClusters/{exadb_vm_cluster}/dbNodes/{db_node}*\adbNodes2\x06dbNode\"\xe8\x04\n" +
-	"\x10DbNodeProperties\x12\x17\n" +
-	"\x04ocid\x18\x01 \x01(\tB\x03\xe0A\x03R\x04ocid\x12\"\n" +
+	"$oracledatabase.googleapis.com/DbNode\x12\\projects/{project}/locations/{location}/cloudVmClusters/{cloud_vm_cluster}/dbNodes/{db_node}\x12\\projects/{project}/locations/{location}/exadbVmClusters/{exadb_vm_cluster}/dbNodes/{db_node}*\adbNodes2\x06dbNode\"\xef\x04\n" +
+	"\x10DbNodeProperties\x12\x18\n" +
+	"\x04ocid\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04ocid\x12#\n" +
 	"\n" +
-	"ocpu_count\x18\x02 \x01(\x05B\x03\xe0A\x01R\tocpuCount\x12$\n" +
-	"\x0ememory_size_gb\x18\x03 \x01(\x05R\fmemorySizeGb\x129\n" +
-	"\x17db_node_storage_size_gb\x18\x04 \x01(\x05B\x03\xe0A\x01R\x13dbNodeStorageSizeGb\x12)\n" +
-	"\x0edb_server_ocid\x18\x05 \x01(\tB\x03\xe0A\x01R\fdbServerOcid\x12\x1f\n" +
-	"\bhostname\x18\b \x01(\tB\x03\xe0A\x01R\bhostname\x12Q\n" +
-	"\x05state\x18\t \x01(\x0e26.google.cloud.oracledatabase.v1.DbNodeProperties.StateB\x03\xe0A\x03R\x05state\x12/\n" +
+	"ocpu_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\tocpuCount\x12$\n" +
+	"\x0ememory_size_gb\x18\x03 \x01(\x05R\fmemorySizeGb\x12:\n" +
+	"\x17db_node_storage_size_gb\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x13dbNodeStorageSizeGb\x12*\n" +
+	"\x0edb_server_ocid\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\fdbServerOcid\x12 \n" +
+	"\bhostname\x18\b \x01(\tB\x04\xe2A\x01\x01R\bhostname\x12R\n" +
+	"\x05state\x18\t \x01(\x0e26.google.cloud.oracledatabase.v1.DbNodeProperties.StateB\x04\xe2A\x01\x03R\x05state\x12/\n" +
 	"\x14total_cpu_core_count\x18\n" +
-	" \x01(\x05R\x11totalCpuCoreCount\x12@\n" +
-	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	" \x01(\x05R\x11totalCpuCoreCount\x12A\n" +
+	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\"\xa3\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x10\n" +

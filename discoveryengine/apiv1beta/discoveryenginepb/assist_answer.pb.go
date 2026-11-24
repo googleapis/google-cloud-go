@@ -1616,12 +1616,12 @@ var File_google_cloud_discoveryengine_v1beta_assist_answer_proto protoreflect.Fi
 const file_google_cloud_discoveryengine_v1beta_assist_answer_proto_rawDesc = "" +
 	"\n" +
 	"7google/cloud/discoveryengine/v1beta/assist_answer.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aEgoogle/cloud/discoveryengine/v1beta/grounded_generation_service.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xa8\x10\n" +
-	"\fAssistAnswer\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x05\xe0A\bR\x04name\x12M\n" +
+	"\fAssistAnswer\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x05\xe2A\x02\x05\bR\x04name\x12M\n" +
 	"\x05state\x18\x02 \x01(\x0e27.google.cloud.discoveryengine.v1beta.AssistAnswer.StateR\x05state\x12Q\n" +
 	"\areplies\x18\x03 \x03(\v27.google.cloud.discoveryengine.v1beta.AssistAnswer.ReplyR\areplies\x12{\n" +
-	"\x16assist_skipped_reasons\x18\x05 \x03(\x0e2E.google.cloud.discoveryengine.v1beta.AssistAnswer.AssistSkippedReasonR\x14assistSkippedReasons\x12\xa3\x01\n" +
-	"\"customer_policy_enforcement_result\x18\b \x01(\v2Q.google.cloud.discoveryengine.v1beta.AssistAnswer.CustomerPolicyEnforcementResultB\x03\xe0A\x01R\x1fcustomerPolicyEnforcementResult\x1a\xb9\x01\n" +
+	"\x16assist_skipped_reasons\x18\x05 \x03(\x0e2E.google.cloud.discoveryengine.v1beta.AssistAnswer.AssistSkippedReasonR\x14assistSkippedReasons\x12\xa4\x01\n" +
+	"\"customer_policy_enforcement_result\x18\b \x01(\v2Q.google.cloud.discoveryengine.v1beta.AssistAnswer.CustomerPolicyEnforcementResultB\x04\xe2A\x01\x01R\x1fcustomerPolicyEnforcementResult\x1a\xb9\x01\n" +
 	"\x05Reply\x12j\n" +
 	"\x10grounded_content\x18\x01 \x01(\v2=.google.cloud.discoveryengine.v1beta.AssistantGroundedContentH\x00R\x0fgroundedContent\x12;\n" +
 	"\vcreate_time\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampR\n" +
@@ -1656,7 +1656,7 @@ const file_google_cloud_discoveryengine_v1beta_assist_answer_proto_rawDesc = "" 
 	"!ASSIST_SKIPPED_REASON_UNSPECIFIED\x10\x00\x12$\n" +
 	" NON_ASSIST_SEEKING_QUERY_IGNORED\x10\x01\x12\x1d\n" +
 	"\x19CUSTOMER_POLICY_VIOLATION\x10\x02:\xb6\x01\xeaA\xb2\x01\n" +
-	"+discoveryengine.googleapis.com/AssistAnswer\x12\x82\x01projects/{project}/locations/{location}/collections/{collection}/engines/{engine}/sessions/{session}/assistAnswers/{assist_answer}\"\xca\a\n" +
+	"+discoveryengine.googleapis.com/AssistAnswer\x12\x82\x01projects/{project}/locations/{location}/collections/{collection}/engines/{engine}/sessions/{session}/assistAnswers/{assist_answer}\"\xd2\a\n" +
 	"\x10AssistantContent\x12\x14\n" +
 	"\x04text\x18\x02 \x01(\tH\x00R\x04text\x12]\n" +
 	"\vinline_data\x18\x03 \x01(\v2:.google.cloud.discoveryengine.v1beta.AssistantContent.BlobH\x00R\n" +
@@ -1664,19 +1664,19 @@ const file_google_cloud_discoveryengine_v1beta_assist_answer_proto_rawDesc = "" 
 	"\x04file\x18\x04 \x01(\v2:.google.cloud.discoveryengine.v1beta.AssistantContent.FileH\x00R\x04file\x12o\n" +
 	"\x0fexecutable_code\x18\a \x01(\v2D.google.cloud.discoveryengine.v1beta.AssistantContent.ExecutableCodeH\x00R\x0eexecutableCode\x12\x7f\n" +
 	"\x15code_execution_result\x18\b \x01(\v2I.google.cloud.discoveryengine.v1beta.AssistantContent.CodeExecutionResultH\x00R\x13codeExecutionResult\x12\x12\n" +
-	"\x04role\x18\x01 \x01(\tR\x04role\x12\x1d\n" +
-	"\athought\x18\x06 \x01(\bB\x03\xe0A\x01R\athought\x1aA\n" +
-	"\x04Blob\x12 \n" +
-	"\tmime_type\x18\x01 \x01(\tB\x03\xe0A\x02R\bmimeType\x12\x17\n" +
-	"\x04data\x18\x02 \x01(\fB\x03\xe0A\x02R\x04data\x1aF\n" +
-	"\x04File\x12 \n" +
-	"\tmime_type\x18\x01 \x01(\tB\x03\xe0A\x02R\bmimeType\x12\x1c\n" +
-	"\afile_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x06fileId\x1a)\n" +
-	"\x0eExecutableCode\x12\x17\n" +
-	"\x04code\x18\x02 \x01(\tB\x03\xe0A\x02R\x04code\x1a\x8b\x02\n" +
-	"\x13CodeExecutionResult\x12p\n" +
-	"\aoutcome\x18\x01 \x01(\x0e2Q.google.cloud.discoveryengine.v1beta.AssistantContent.CodeExecutionResult.OutcomeB\x03\xe0A\x02R\aoutcome\x12\x1b\n" +
-	"\x06output\x18\x02 \x01(\tB\x03\xe0A\x01R\x06output\"e\n" +
+	"\x04role\x18\x01 \x01(\tR\x04role\x12\x1e\n" +
+	"\athought\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\athought\x1aC\n" +
+	"\x04Blob\x12!\n" +
+	"\tmime_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bmimeType\x12\x18\n" +
+	"\x04data\x18\x02 \x01(\fB\x04\xe2A\x01\x02R\x04data\x1aH\n" +
+	"\x04File\x12!\n" +
+	"\tmime_type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bmimeType\x12\x1d\n" +
+	"\afile_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06fileId\x1a*\n" +
+	"\x0eExecutableCode\x12\x18\n" +
+	"\x04code\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04code\x1a\x8d\x02\n" +
+	"\x13CodeExecutionResult\x12q\n" +
+	"\aoutcome\x18\x01 \x01(\x0e2Q.google.cloud.discoveryengine.v1beta.AssistantContent.CodeExecutionResult.OutcomeB\x04\xe2A\x01\x02R\aoutcome\x12\x1c\n" +
+	"\x06output\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06output\"e\n" +
 	"\aOutcome\x12\x17\n" +
 	"\x13OUTCOME_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +

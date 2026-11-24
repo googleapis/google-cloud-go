@@ -118,14 +118,14 @@ var File_google_cloud_ces_v1_client_function_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1_client_function_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/ces/v1/client_function.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a google/cloud/ces/v1/schema.proto\"\xd0\x01\n" +
-	"\x0eClientFunction\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
+	")google/cloud/ces/v1/client_function.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a google/cloud/ces/v1/schema.proto\"\xd4\x01\n" +
+	"\x0eClientFunction\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12A\n" +
 	"\n" +
-	"parameters\x18\x03 \x01(\v2\x1b.google.cloud.ces.v1.SchemaB\x03\xe0A\x01R\n" +
-	"parameters\x12<\n" +
-	"\bresponse\x18\x04 \x01(\v2\x1b.google.cloud.ces.v1.SchemaB\x03\xe0A\x01R\bresponseB[\n" +
+	"parameters\x18\x03 \x01(\v2\x1b.google.cloud.ces.v1.SchemaB\x04\xe2A\x01\x01R\n" +
+	"parameters\x12=\n" +
+	"\bresponse\x18\x04 \x01(\v2\x1b.google.cloud.ces.v1.SchemaB\x04\xe2A\x01\x01R\bresponseB[\n" +
 	"\x17com.google.cloud.ces.v1B\x13ClientFunctionProtoP\x01Z)cloud.google.com/go/ces/apiv1/cespb;cespbb\x06proto3"
 
 var (

@@ -2911,16 +2911,16 @@ var File_google_cloud_osconfig_v1beta_guest_policies_proto protoreflect.FileDesc
 
 const file_google_cloud_osconfig_v1beta_guest_policies_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/osconfig/v1beta/guest_policies.proto\x12\x1cgoogle.cloud.osconfig.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf9\x04\n" +
-	"\vGuestPolicy\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x12@\n" +
-	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12M\n" +
+	"1google/cloud/osconfig/v1beta/guest_policies.proto\x12\x1cgoogle.cloud.osconfig.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfd\x04\n" +
+	"\vGuestPolicy\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12A\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12N\n" +
 	"\n" +
-	"assignment\x18\x06 \x01(\v2(.google.cloud.osconfig.v1beta.AssignmentB\x03\xe0A\x02R\n" +
+	"assignment\x18\x06 \x01(\v2(.google.cloud.osconfig.v1beta.AssignmentB\x04\xe2A\x01\x02R\n" +
 	"assignment\x12A\n" +
 	"\bpackages\x18\a \x03(\v2%.google.cloud.osconfig.v1beta.PackageR\bpackages\x12b\n" +
 	"\x14package_repositories\x18\b \x03(\v2/.google.cloud.osconfig.v1beta.PackageRepositoryR\x13packageRepositories\x12F\n" +
@@ -2945,9 +2945,9 @@ const file_google_cloud_osconfig_v1beta_guest_policies_proto_rawDesc = "" +
 	"\ros_short_name\x18\x01 \x01(\tR\vosShortName\x12\x1d\n" +
 	"\n" +
 	"os_version\x18\x02 \x01(\tR\tosVersion\x12'\n" +
-	"\x0fos_architecture\x18\x03 \x01(\tR\x0eosArchitecture\"\x90\x02\n" +
-	"\aPackage\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12O\n" +
+	"\x0fos_architecture\x18\x03 \x01(\tR\x0eosArchitecture\"\x91\x02\n" +
+	"\aPackage\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12O\n" +
 	"\rdesired_state\x18\x02 \x01(\x0e2*.google.cloud.osconfig.v1beta.DesiredStateR\fdesiredState\x12G\n" +
 	"\amanager\x18\x03 \x01(\x0e2-.google.cloud.osconfig.v1beta.Package.ManagerR\amanager\"R\n" +
 	"\aManager\x12\x17\n" +
@@ -2957,48 +2957,48 @@ const file_google_cloud_osconfig_v1beta_guest_policies_proto_rawDesc = "" +
 	"\x03YUM\x10\x03\x12\n" +
 	"\n" +
 	"\x06ZYPPER\x10\x04\x12\a\n" +
-	"\x03GOO\x10\x05\"\xac\x02\n" +
+	"\x03GOO\x10\x05\"\xaf\x02\n" +
 	"\rAptRepository\x12Z\n" +
-	"\farchive_type\x18\x01 \x01(\x0e27.google.cloud.osconfig.v1beta.AptRepository.ArchiveTypeR\varchiveType\x12\x15\n" +
-	"\x03uri\x18\x02 \x01(\tB\x03\xe0A\x02R\x03uri\x12'\n" +
-	"\fdistribution\x18\x03 \x01(\tB\x03\xe0A\x02R\fdistribution\x12#\n" +
+	"\farchive_type\x18\x01 \x01(\x0e27.google.cloud.osconfig.v1beta.AptRepository.ArchiveTypeR\varchiveType\x12\x16\n" +
+	"\x03uri\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x03uri\x12(\n" +
+	"\fdistribution\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\fdistribution\x12$\n" +
 	"\n" +
-	"components\x18\x04 \x03(\tB\x03\xe0A\x02R\n" +
+	"components\x18\x04 \x03(\tB\x04\xe2A\x01\x02R\n" +
 	"components\x12\x17\n" +
 	"\agpg_key\x18\x05 \x01(\tR\x06gpgKey\"A\n" +
 	"\vArchiveType\x12\x1c\n" +
 	"\x18ARCHIVE_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03DEB\x10\x01\x12\v\n" +
-	"\aDEB_SRC\x10\x02\"\x82\x01\n" +
-	"\rYumRepository\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x1e\n" +
-	"\bbase_url\x18\x03 \x01(\tB\x03\xe0A\x02R\abaseUrl\x12\x19\n" +
-	"\bgpg_keys\x18\x04 \x03(\tR\agpgKeys\"\x85\x01\n" +
-	"\x10ZypperRepository\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x1e\n" +
-	"\bbase_url\x18\x03 \x01(\tB\x03\xe0A\x02R\abaseUrl\x12\x19\n" +
-	"\bgpg_keys\x18\x04 \x03(\tR\agpgKeys\"?\n" +
-	"\rGooRepository\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x15\n" +
-	"\x03url\x18\x02 \x01(\tB\x03\xe0A\x02R\x03url\"\xae\x02\n" +
+	"\aDEB_SRC\x10\x02\"\x84\x01\n" +
+	"\rYumRepository\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12!\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x1f\n" +
+	"\bbase_url\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\abaseUrl\x12\x19\n" +
+	"\bgpg_keys\x18\x04 \x03(\tR\agpgKeys\"\x87\x01\n" +
+	"\x10ZypperRepository\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12!\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x1f\n" +
+	"\bbase_url\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\abaseUrl\x12\x19\n" +
+	"\bgpg_keys\x18\x04 \x03(\tR\agpgKeys\"A\n" +
+	"\rGooRepository\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x16\n" +
+	"\x03url\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x03url\"\xae\x02\n" +
 	"\x11PackageRepository\x12?\n" +
 	"\x03apt\x18\x01 \x01(\v2+.google.cloud.osconfig.v1beta.AptRepositoryH\x00R\x03apt\x12?\n" +
 	"\x03yum\x18\x02 \x01(\v2+.google.cloud.osconfig.v1beta.YumRepositoryH\x00R\x03yum\x12H\n" +
 	"\x06zypper\x18\x03 \x01(\v2..google.cloud.osconfig.v1beta.ZypperRepositoryH\x00R\x06zypper\x12?\n" +
 	"\x03goo\x18\x04 \x01(\v2+.google.cloud.osconfig.v1beta.GooRepositoryH\x00R\x03gooB\f\n" +
 	"\n" +
-	"repository\"\xdf\x14\n" +
-	"\x0eSoftwareRecipe\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x18\n" +
+	"repository\"\xe9\x14\n" +
+	"\x0eSoftwareRecipe\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12S\n" +
 	"\tartifacts\x18\x03 \x03(\v25.google.cloud.osconfig.v1beta.SoftwareRecipe.ArtifactR\tartifacts\x12V\n" +
 	"\rinstall_steps\x18\x04 \x03(\v21.google.cloud.osconfig.v1beta.SoftwareRecipe.StepR\finstallSteps\x12T\n" +
 	"\fupdate_steps\x18\x05 \x03(\v21.google.cloud.osconfig.v1beta.SoftwareRecipe.StepR\vupdateSteps\x12O\n" +
-	"\rdesired_state\x18\x06 \x01(\x0e2*.google.cloud.osconfig.v1beta.DesiredStateR\fdesiredState\x1a\x88\x03\n" +
-	"\bArtifact\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12V\n" +
+	"\rdesired_state\x18\x06 \x01(\x0e2*.google.cloud.osconfig.v1beta.DesiredStateR\fdesiredState\x1a\x89\x03\n" +
+	"\bArtifact\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x02id\x12V\n" +
 	"\x06remote\x18\x02 \x01(\v2<.google.cloud.osconfig.v1beta.SoftwareRecipe.Artifact.RemoteH\x00R\x06remote\x12M\n" +
 	"\x03gcs\x18\x03 \x01(\v29.google.cloud.osconfig.v1beta.SoftwareRecipe.Artifact.GcsH\x00R\x03gcs\x12%\n" +
 	"\x0eallow_insecure\x18\x04 \x01(\bR\rallowInsecure\x1a6\n" +
@@ -3012,7 +3012,7 @@ const file_google_cloud_osconfig_v1beta_guest_policies_proto_rawDesc = "" +
 	"generation\x18\x03 \x01(\x03R\n" +
 	"generationB\n" +
 	"\n" +
-	"\bartifact\x1a\xba\x0e\n" +
+	"\bartifact\x1a\xc2\x0e\n" +
 	"\x04Step\x12Y\n" +
 	"\tfile_copy\x18\x01 \x01(\v2:.google.cloud.osconfig.v1beta.SoftwareRecipe.Step.CopyFileH\x00R\bfileCopy\x12q\n" +
 	"\x12archive_extraction\x18\x02 \x01(\v2@.google.cloud.osconfig.v1beta.SoftwareRecipe.Step.ExtractArchiveH\x00R\x11archiveExtraction\x12i\n" +
@@ -3021,18 +3021,18 @@ const file_google_cloud_osconfig_v1beta_guest_policies_proto_rawDesc = "" +
 	"\x10rpm_installation\x18\x05 \x01(\v2<.google.cloud.osconfig.v1beta.SoftwareRecipe.Step.InstallRpmH\x00R\x0frpmInstallation\x12Y\n" +
 	"\tfile_exec\x18\x06 \x01(\v2:.google.cloud.osconfig.v1beta.SoftwareRecipe.Step.ExecFileH\x00R\bfileExec\x12\\\n" +
 	"\n" +
-	"script_run\x18\a \x01(\v2;.google.cloud.osconfig.v1beta.SoftwareRecipe.Step.RunScriptH\x00R\tscriptRun\x1a\x97\x01\n" +
-	"\bCopyFile\x12$\n" +
-	"\vartifact_id\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"artifactId\x12%\n" +
-	"\vdestination\x18\x02 \x01(\tB\x03\xe0A\x02R\vdestination\x12\x1c\n" +
+	"script_run\x18\a \x01(\v2;.google.cloud.osconfig.v1beta.SoftwareRecipe.Step.RunScriptH\x00R\tscriptRun\x1a\x99\x01\n" +
+	"\bCopyFile\x12%\n" +
+	"\vartifact_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"artifactId\x12&\n" +
+	"\vdestination\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdestination\x12\x1c\n" +
 	"\toverwrite\x18\x03 \x01(\bR\toverwrite\x12 \n" +
-	"\vpermissions\x18\x04 \x01(\tR\vpermissions\x1a\xb4\x02\n" +
-	"\x0eExtractArchive\x12$\n" +
-	"\vartifact_id\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
+	"\vpermissions\x18\x04 \x01(\tR\vpermissions\x1a\xb6\x02\n" +
+	"\x0eExtractArchive\x12%\n" +
+	"\vartifact_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"artifactId\x12 \n" +
-	"\vdestination\x18\x02 \x01(\tR\vdestination\x12e\n" +
-	"\x04type\x18\x03 \x01(\x0e2L.google.cloud.osconfig.v1beta.SoftwareRecipe.Step.ExtractArchive.ArchiveTypeB\x03\xe0A\x02R\x04type\"s\n" +
+	"\vdestination\x18\x02 \x01(\tR\vdestination\x12f\n" +
+	"\x04type\x18\x03 \x01(\x0e2L.google.cloud.osconfig.v1beta.SoftwareRecipe.Step.ExtractArchive.ArchiveTypeB\x04\xe2A\x01\x02R\x04type\"s\n" +
 	"\vArchiveType\x12\x1c\n" +
 	"\x18ARCHIVE_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03TAR\x10\x01\x12\f\n" +
@@ -3041,19 +3041,19 @@ const file_google_cloud_osconfig_v1beta_guest_policies_proto_rawDesc = "" +
 	"\bTAR_LZMA\x10\x04\x12\n" +
 	"\n" +
 	"\x06TAR_XZ\x10\x05\x12\a\n" +
-	"\x03ZIP\x10\v\x1av\n" +
+	"\x03ZIP\x10\v\x1aw\n" +
 	"\n" +
-	"InstallMsi\x12$\n" +
-	"\vartifact_id\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
+	"InstallMsi\x12%\n" +
+	"\vartifact_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"artifactId\x12\x14\n" +
 	"\x05flags\x18\x02 \x03(\tR\x05flags\x12,\n" +
-	"\x12allowed_exit_codes\x18\x03 \x03(\x05R\x10allowedExitCodes\x1a3\n" +
-	"\vInstallDpkg\x12$\n" +
-	"\vartifact_id\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"artifactId\x1a2\n" +
+	"\x12allowed_exit_codes\x18\x03 \x03(\x05R\x10allowedExitCodes\x1a4\n" +
+	"\vInstallDpkg\x12%\n" +
+	"\vartifact_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"artifactId\x1a3\n" +
 	"\n" +
-	"InstallRpm\x12$\n" +
-	"\vartifact_id\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
+	"InstallRpm\x12%\n" +
+	"\vartifact_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\n" +
 	"artifactId\x1a\xa1\x01\n" +
 	"\bExecFile\x12!\n" +
 	"\vartifact_id\x18\x01 \x01(\tH\x00R\n" +
@@ -3062,9 +3062,9 @@ const file_google_cloud_osconfig_v1beta_guest_policies_proto_rawDesc = "" +
 	"local_path\x18\x02 \x01(\tH\x00R\tlocalPath\x12\x12\n" +
 	"\x04args\x18\x03 \x03(\tR\x04args\x12,\n" +
 	"\x12allowed_exit_codes\x18\x04 \x03(\x05R\x10allowedExitCodesB\x0f\n" +
-	"\rlocation_type\x1a\x88\x02\n" +
-	"\tRunScript\x12\x1b\n" +
-	"\x06script\x18\x01 \x01(\tB\x03\xe0A\x02R\x06script\x12,\n" +
+	"\rlocation_type\x1a\x89\x02\n" +
+	"\tRunScript\x12\x1c\n" +
+	"\x06script\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06script\x12,\n" +
 	"\x12allowed_exit_codes\x18\x02 \x03(\x05R\x10allowedExitCodes\x12i\n" +
 	"\vinterpreter\x18\x03 \x01(\x0e2G.google.cloud.osconfig.v1beta.SoftwareRecipe.Step.RunScript.InterpreterR\vinterpreter\"E\n" +
 	"\vInterpreter\x12\x1b\n" +
@@ -3072,31 +3072,31 @@ const file_google_cloud_osconfig_v1beta_guest_policies_proto_rawDesc = "" +
 	"\x05SHELL\x10\x01\x12\x0e\n" +
 	"\n" +
 	"POWERSHELL\x10\x03B\x06\n" +
-	"\x04step\"\xdf\x01\n" +
-	"\x18CreateGuestPolicyRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#osconfig.googleapis.com/GuestPolicyR\x06parent\x12+\n" +
-	"\x0fguest_policy_id\x18\x02 \x01(\tB\x03\xe0A\x02R\rguestPolicyId\x12Q\n" +
-	"\fguest_policy\x18\x03 \x01(\v2).google.cloud.osconfig.v1beta.GuestPolicyB\x03\xe0A\x02R\vguestPolicy\"X\n" +
-	"\x15GetGuestPolicyRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#osconfig.googleapis.com/GuestPolicyR\x04name\"\x9b\x01\n" +
-	"\x18ListGuestPoliciesRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#osconfig.googleapis.com/GuestPolicyR\x06parent\x12\x1b\n" +
+	"\x04step\"\xe2\x01\n" +
+	"\x18CreateGuestPolicyRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#osconfig.googleapis.com/GuestPolicyR\x06parent\x12,\n" +
+	"\x0fguest_policy_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rguestPolicyId\x12R\n" +
+	"\fguest_policy\x18\x03 \x01(\v2).google.cloud.osconfig.v1beta.GuestPolicyB\x04\xe2A\x01\x02R\vguestPolicy\"Y\n" +
+	"\x15GetGuestPolicyRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#osconfig.googleapis.com/GuestPolicyR\x04name\"\x9c\x01\n" +
+	"\x18ListGuestPoliciesRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#osconfig.googleapis.com/GuestPolicyR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x95\x01\n" +
 	"\x19ListGuestPoliciesResponse\x12P\n" +
 	"\x0eguest_policies\x18\x01 \x03(\v2).google.cloud.osconfig.v1beta.GuestPolicyR\rguestPolicies\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xaa\x01\n" +
-	"\x18UpdateGuestPolicyRequest\x12Q\n" +
-	"\fguest_policy\x18\x01 \x01(\v2).google.cloud.osconfig.v1beta.GuestPolicyB\x03\xe0A\x02R\vguestPolicy\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xab\x01\n" +
+	"\x18UpdateGuestPolicyRequest\x12R\n" +
+	"\fguest_policy\x18\x01 \x01(\v2).google.cloud.osconfig.v1beta.GuestPolicyB\x04\xe2A\x01\x02R\vguestPolicy\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"[\n" +
-	"\x18DeleteGuestPolicyRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#osconfig.googleapis.com/GuestPolicyR\x04name\"\xb0\x01\n" +
-	"!LookupEffectiveGuestPolicyRequest\x12\x1f\n" +
-	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\"\n" +
+	"updateMask\"\\\n" +
+	"\x18DeleteGuestPolicyRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#osconfig.googleapis.com/GuestPolicyR\x04name\"\xb1\x01\n" +
+	"!LookupEffectiveGuestPolicyRequest\x12 \n" +
+	"\binstance\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\binstance\x12\"\n" +
 	"\ros_short_name\x18\x02 \x01(\tR\vosShortName\x12\x1d\n" +
 	"\n" +
 	"os_version\x18\x03 \x01(\tR\tosVersion\x12'\n" +

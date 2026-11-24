@@ -246,6 +246,35 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ValidateAddress = append(client.CallOptions.ValidateAddress, gax.WithClientMetrics(metrics))
 		client.CallOptions.ProvideValidationFeedback = append(client.CallOptions.ProvideValidationFeedback, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "addressvalidation",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/addressvalidation/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "addressvalidation.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ValidateAddress = append(client.CallOptions.ValidateAddress, gax.WithClientTracing(tracing))
+		client.CallOptions.ProvideValidationFeedback = append(client.CallOptions.ProvideValidationFeedback, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "addressvalidation",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/addressvalidation/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "addressvalidation.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ValidateAddress = append(client.CallOptions.ValidateAddress, gax.WithClientLogging(logging))
+		client.CallOptions.ProvideValidationFeedback = append(client.CallOptions.ProvideValidationFeedback, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -337,6 +366,35 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 
 		callOpts.ValidateAddress = append(callOpts.ValidateAddress, gax.WithClientMetrics(metrics))
 		callOpts.ProvideValidationFeedback = append(callOpts.ProvideValidationFeedback, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "addressvalidation",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/addressvalidation/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "addressvalidation.googleapis.com",
+			}),
+		)
+
+		callOpts.ValidateAddress = append(callOpts.ValidateAddress, gax.WithClientTracing(tracing))
+		callOpts.ProvideValidationFeedback = append(callOpts.ProvideValidationFeedback, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "addressvalidation",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/addressvalidation/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "addressvalidation.googleapis.com",
+			}),
+		)
+
+		callOpts.ValidateAddress = append(callOpts.ValidateAddress, gax.WithClientLogging(logging))
+		callOpts.ProvideValidationFeedback = append(callOpts.ProvideValidationFeedback, gax.WithClientLogging(logging))
 	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil

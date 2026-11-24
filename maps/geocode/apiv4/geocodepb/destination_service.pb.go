@@ -1371,25 +1371,25 @@ var File_google_maps_geocode_v4_destination_service_proto protoreflect.FileDescr
 
 const file_google_maps_geocode_v4_destination_service_proto_rawDesc = "" +
 	"\n" +
-	"0google/maps/geocode/v4/destination_service.proto\x12\x16google.maps.geocode.v4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x18google/type/latlng.proto\x1a google/type/localized_text.proto\x1a google/type/postal_address.proto\"\xc3\b\n" +
+	"0google/maps/geocode/v4/destination_service.proto\x12\x16google.maps.geocode.v4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x18google/type/latlng.proto\x1a google/type/localized_text.proto\x1a google/type/postal_address.proto\"\xc9\b\n" +
 	"\x19SearchDestinationsRequest\x12\x16\n" +
 	"\x05place\x18\x01 \x01(\tH\x00R\x05place\x12e\n" +
 	"\raddress_query\x18\x02 \x01(\v2>.google.maps.geocode.v4.SearchDestinationsRequest.AddressQueryH\x00R\faddressQuery\x12h\n" +
-	"\x0elocation_query\x18\x03 \x01(\v2?.google.maps.geocode.v4.SearchDestinationsRequest.LocationQueryH\x00R\rlocationQuery\x12Z\n" +
-	"\ftravel_modes\x18\x05 \x03(\x0e22.google.maps.geocode.v4.NavigationPoint.TravelModeB\x03\xe0A\x01R\vtravelModes\x12(\n" +
-	"\rlanguage_code\x18\x06 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12$\n" +
-	"\vregion_code\x18\a \x01(\tB\x03\xe0A\x01R\n" +
+	"\x0elocation_query\x18\x03 \x01(\v2?.google.maps.geocode.v4.SearchDestinationsRequest.LocationQueryH\x00R\rlocationQuery\x12[\n" +
+	"\ftravel_modes\x18\x05 \x03(\x0e22.google.maps.geocode.v4.NavigationPoint.TravelModeB\x04\xe2A\x01\x01R\vtravelModes\x12)\n" +
+	"\rlanguage_code\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\x12%\n" +
+	"\vregion_code\x18\a \x01(\tB\x04\xe2A\x01\x01R\n" +
 	"regionCode\x1au\n" +
 	"\fAddressQuery\x126\n" +
 	"\aaddress\x18\x01 \x01(\v2\x1a.google.type.PostalAddressH\x00R\aaddress\x12%\n" +
 	"\raddress_query\x18\x02 \x01(\tH\x00R\faddressQueryB\x06\n" +
-	"\x04kind\x1a\x88\x04\n" +
+	"\x04kind\x1a\x8b\x04\n" +
 	"\rLocationQuery\x121\n" +
-	"\blocation\x18\x01 \x01(\v2\x13.google.type.LatLngH\x00R\blocation\x12s\n" +
-	"\fplace_filter\x18\x02 \x01(\v2K.google.maps.geocode.v4.SearchDestinationsRequest.LocationQuery.PlaceFilterB\x03\xe0A\x01R\vplaceFilter\x1a\xc6\x02\n" +
-	"\vPlaceFilter\x12[\n" +
-	"\x0estructure_type\x18\x02 \x01(\x0e2/.google.maps.geocode.v4.PlaceView.StructureTypeB\x03\xe0A\x01R\rstructureType\x12\x87\x01\n" +
-	"\x0eaddressability\x18\x03 \x01(\x0e2Z.google.maps.geocode.v4.SearchDestinationsRequest.LocationQuery.PlaceFilter.AddressabilityB\x03\xe0A\x01R\x0eaddressability\"P\n" +
+	"\blocation\x18\x01 \x01(\v2\x13.google.type.LatLngH\x00R\blocation\x12t\n" +
+	"\fplace_filter\x18\x02 \x01(\v2K.google.maps.geocode.v4.SearchDestinationsRequest.LocationQuery.PlaceFilterB\x04\xe2A\x01\x01R\vplaceFilter\x1a\xc8\x02\n" +
+	"\vPlaceFilter\x12\\\n" +
+	"\x0estructure_type\x18\x02 \x01(\x0e2/.google.maps.geocode.v4.PlaceView.StructureTypeB\x04\xe2A\x01\x01R\rstructureType\x12\x88\x01\n" +
+	"\x0eaddressability\x18\x03 \x01(\x0e2Z.google.maps.geocode.v4.SearchDestinationsRequest.LocationQuery.PlaceFilter.AddressabilityB\x04\xe2A\x01\x01R\x0eaddressability\"P\n" +
 	"\x0eAddressability\x12\x1e\n" +
 	"\x1aADDRESSABILITY_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03ANY\x10\x01\x12\v\n" +
@@ -1430,9 +1430,9 @@ const file_google_maps_geocode_v4_destination_service_proto_rawDesc = "" +
 	"\x05place\x18\x04 \x01(\tR\x05place\")\n" +
 	"\x03Tag\x12\x13\n" +
 	"\x0fTAG_UNSPECIFIED\x10\x00\x12\r\n" +
-	"\tPREFERRED\x10\x01\"\xed\x03\n" +
-	"\x0fNavigationPoint\x129\n" +
-	"\x16navigation_point_token\x18\x01 \x01(\tB\x03\xe0A\x03R\x14navigationPointToken\x12=\n" +
+	"\tPREFERRED\x10\x01\"\xee\x03\n" +
+	"\x0fNavigationPoint\x12:\n" +
+	"\x16navigation_point_token\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x14navigationPointToken\x12=\n" +
 	"\fdisplay_name\x18\x02 \x01(\v2\x1a.google.type.LocalizedTextR\vdisplayName\x12/\n" +
 	"\blocation\x18\x03 \x01(\v2\x13.google.type.LatLngR\blocation\x12U\n" +
 	"\ftravel_modes\x18\x04 \x03(\x0e22.google.maps.geocode.v4.NavigationPoint.TravelModeR\vtravelModes\x12E\n" +
@@ -1448,13 +1448,13 @@ const file_google_maps_geocode_v4_destination_service_proto_rawDesc = "" +
 	"\aDROPOFF\x10\x02\x12\n" +
 	"\n" +
 	"\x06PICKUP\x10\x03\x12\v\n" +
-	"\aPARKING\x10\x04\"\x97\x03\n" +
+	"\aPARKING\x10\x04\"\x99\x03\n" +
 	"\bLandmark\x129\n" +
 	"\x05place\x18\x01 \x01(\v2!.google.maps.geocode.v4.PlaceViewH\x00R\x05place\x12Q\n" +
 	"\x16relational_description\x18\x02 \x01(\v2\x1a.google.type.LocalizedTextR\x15relationalDescription\x128\n" +
-	"\x04tags\x18\x03 \x03(\x0e2$.google.maps.geocode.v4.Landmark.TagR\x04tags\x12F\n" +
-	"\x1dstraight_line_distance_meters\x18\x04 \x01(\x01B\x03\xe0A\x03R\x1astraightLineDistanceMeters\x129\n" +
-	"\x16travel_distance_meters\x18\x05 \x01(\x01B\x03\xe0A\x03R\x14travelDistanceMeters\"4\n" +
+	"\x04tags\x18\x03 \x03(\x0e2$.google.maps.geocode.v4.Landmark.TagR\x04tags\x12G\n" +
+	"\x1dstraight_line_distance_meters\x18\x04 \x01(\x01B\x04\xe2A\x01\x03R\x1astraightLineDistanceMeters\x12:\n" +
+	"\x16travel_distance_meters\x18\x05 \x01(\x01B\x04\xe2A\x01\x03R\x14travelDistanceMeters\"4\n" +
 	"\x03Tag\x12\x13\n" +
 	"\x0fTAG_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aADDRESS\x10\x01\x12\v\n" +

@@ -205,9 +205,9 @@ var File_google_monitoring_dashboard_v1_dashboard_filter_proto protoreflect.File
 
 const file_google_monitoring_dashboard_v1_dashboard_filter_proto_rawDesc = "" +
 	"\n" +
-	"5google/monitoring/dashboard/v1/dashboard_filter.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1fgoogle/api/field_behavior.proto\"\x84\x03\n" +
-	"\x0fDashboardFilter\x12 \n" +
-	"\tlabel_key\x18\x01 \x01(\tB\x03\xe0A\x02R\blabelKey\x12+\n" +
+	"5google/monitoring/dashboard/v1/dashboard_filter.proto\x12\x1egoogle.monitoring.dashboard.v1\x1a\x1fgoogle/api/field_behavior.proto\"\x85\x03\n" +
+	"\x0fDashboardFilter\x12!\n" +
+	"\tlabel_key\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\blabelKey\x12+\n" +
 	"\x11template_variable\x18\x03 \x01(\tR\x10templateVariable\x12#\n" +
 	"\fstring_value\x18\x04 \x01(\tH\x00R\vstringValue\x12[\n" +
 	"\vfilter_type\x18\x05 \x01(\x0e2:.google.monitoring.dashboard.v1.DashboardFilter.FilterTypeR\n" +

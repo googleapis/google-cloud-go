@@ -6032,18 +6032,18 @@ var File_google_ai_generativelanguage_v1beta_generative_service_proto protorefle
 
 const file_google_ai_generativelanguage_v1beta_generative_service_proto_rawDesc = "" +
 	"\n" +
-	"<google/ai/generativelanguage/v1beta/generative_service.proto\x12#google.ai.generativelanguage.v1beta\x1a2google/ai/generativelanguage/v1beta/citation.proto\x1a1google/ai/generativelanguage/v1beta/content.proto\x1a3google/ai/generativelanguage/v1beta/retriever.proto\x1a0google/ai/generativelanguage/v1beta/safety.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xa7\x06\n" +
-	"\x16GenerateContentRequest\x12E\n" +
-	"\x05model\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'generativelanguage.googleapis.com/ModelR\x05model\x12e\n" +
-	"\x12system_instruction\x18\b \x01(\v2,.google.ai.generativelanguage.v1beta.ContentB\x03\xe0A\x01H\x00R\x11systemInstruction\x88\x01\x01\x12M\n" +
-	"\bcontents\x18\x02 \x03(\v2,.google.ai.generativelanguage.v1beta.ContentB\x03\xe0A\x02R\bcontents\x12D\n" +
-	"\x05tools\x18\x05 \x03(\v2).google.ai.generativelanguage.v1beta.ToolB\x03\xe0A\x01R\x05tools\x12U\n" +
-	"\vtool_config\x18\a \x01(\v2/.google.ai.generativelanguage.v1beta.ToolConfigB\x03\xe0A\x01R\n" +
-	"toolConfig\x12`\n" +
-	"\x0fsafety_settings\x18\x03 \x03(\v22.google.ai.generativelanguage.v1beta.SafetySettingB\x03\xe0A\x01R\x0esafetySettings\x12l\n" +
-	"\x11generation_config\x18\x04 \x01(\v25.google.ai.generativelanguage.v1beta.GenerationConfigB\x03\xe0A\x01H\x01R\x10generationConfig\x88\x01\x01\x12c\n" +
-	"\x0ecached_content\x18\t \x01(\tB7\xe0A\x01\xfaA1\n" +
+	"<google/ai/generativelanguage/v1beta/generative_service.proto\x12#google.ai.generativelanguage.v1beta\x1a2google/ai/generativelanguage/v1beta/citation.proto\x1a1google/ai/generativelanguage/v1beta/content.proto\x1a3google/ai/generativelanguage/v1beta/retriever.proto\x1a0google/ai/generativelanguage/v1beta/safety.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xaf\x06\n" +
+	"\x16GenerateContentRequest\x12F\n" +
+	"\x05model\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'generativelanguage.googleapis.com/ModelR\x05model\x12f\n" +
+	"\x12system_instruction\x18\b \x01(\v2,.google.ai.generativelanguage.v1beta.ContentB\x04\xe2A\x01\x01H\x00R\x11systemInstruction\x88\x01\x01\x12N\n" +
+	"\bcontents\x18\x02 \x03(\v2,.google.ai.generativelanguage.v1beta.ContentB\x04\xe2A\x01\x02R\bcontents\x12E\n" +
+	"\x05tools\x18\x05 \x03(\v2).google.ai.generativelanguage.v1beta.ToolB\x04\xe2A\x01\x01R\x05tools\x12V\n" +
+	"\vtool_config\x18\a \x01(\v2/.google.ai.generativelanguage.v1beta.ToolConfigB\x04\xe2A\x01\x01R\n" +
+	"toolConfig\x12a\n" +
+	"\x0fsafety_settings\x18\x03 \x03(\v22.google.ai.generativelanguage.v1beta.SafetySettingB\x04\xe2A\x01\x01R\x0esafetySettings\x12m\n" +
+	"\x11generation_config\x18\x04 \x01(\v25.google.ai.generativelanguage.v1beta.GenerationConfigB\x04\xe2A\x01\x01H\x01R\x10generationConfig\x88\x01\x01\x12d\n" +
+	"\x0ecached_content\x18\t \x01(\tB8\xe2A\x01\x01\xfaA1\n" +
 	"/generativelanguage.googleapis.com/CachedContentH\x02R\rcachedContent\x88\x01\x01B\x15\n" +
 	"\x13_system_instructionB\x14\n" +
 	"\x12_generation_configB\x11\n" +
@@ -6054,47 +6054,47 @@ const file_google_ai_generativelanguage_v1beta_generative_service_proto_rawDesc 
 	"\v_voice_name\"\x8d\x01\n" +
 	"\vVoiceConfig\x12n\n" +
 	"\x15prebuilt_voice_config\x18\x01 \x01(\v28.google.ai.generativelanguage.v1beta.PrebuiltVoiceConfigH\x00R\x13prebuiltVoiceConfigB\x0e\n" +
-	"\fvoice_config\"\x8d\x01\n" +
-	"\x12SpeakerVoiceConfig\x12\x1d\n" +
-	"\aspeaker\x18\x01 \x01(\tB\x03\xe0A\x02R\aspeaker\x12X\n" +
-	"\fvoice_config\x18\x02 \x01(\v20.google.ai.generativelanguage.v1beta.VoiceConfigB\x03\xe0A\x02R\vvoiceConfig\"\x8b\x01\n" +
-	"\x17MultiSpeakerVoiceConfig\x12p\n" +
-	"\x15speaker_voice_configs\x18\x02 \x03(\v27.google.ai.generativelanguage.v1beta.SpeakerVoiceConfigB\x03\xe0A\x02R\x13speakerVoiceConfigs\"\x8d\x02\n" +
+	"\fvoice_config\"\x8f\x01\n" +
+	"\x12SpeakerVoiceConfig\x12\x1e\n" +
+	"\aspeaker\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\aspeaker\x12Y\n" +
+	"\fvoice_config\x18\x02 \x01(\v20.google.ai.generativelanguage.v1beta.VoiceConfigB\x04\xe2A\x01\x02R\vvoiceConfig\"\x8c\x01\n" +
+	"\x17MultiSpeakerVoiceConfig\x12q\n" +
+	"\x15speaker_voice_configs\x18\x02 \x03(\v27.google.ai.generativelanguage.v1beta.SpeakerVoiceConfigB\x04\xe2A\x01\x02R\x13speakerVoiceConfigs\"\x8f\x02\n" +
 	"\fSpeechConfig\x12S\n" +
-	"\fvoice_config\x18\x01 \x01(\v20.google.ai.generativelanguage.v1beta.VoiceConfigR\vvoiceConfig\x12~\n" +
-	"\x1amulti_speaker_voice_config\x18\x03 \x01(\v2<.google.ai.generativelanguage.v1beta.MultiSpeakerVoiceConfigB\x03\xe0A\x01R\x17multiSpeakerVoiceConfig\x12(\n" +
-	"\rlanguage_code\x18\x02 \x01(\tB\x03\xe0A\x01R\flanguageCode\"\x97\x01\n" +
+	"\fvoice_config\x18\x01 \x01(\v20.google.ai.generativelanguage.v1beta.VoiceConfigR\vvoiceConfig\x12\x7f\n" +
+	"\x1amulti_speaker_voice_config\x18\x03 \x01(\v2<.google.ai.generativelanguage.v1beta.MultiSpeakerVoiceConfigB\x04\xe2A\x01\x01R\x17multiSpeakerVoiceConfig\x12)\n" +
+	"\rlanguage_code\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\flanguageCode\"\x97\x01\n" +
 	"\x0eThinkingConfig\x12.\n" +
 	"\x10include_thoughts\x18\x01 \x01(\bH\x00R\x0fincludeThoughts\x88\x01\x01\x12,\n" +
 	"\x0fthinking_budget\x18\x02 \x01(\x05H\x01R\x0ethinkingBudget\x88\x01\x01B\x13\n" +
 	"\x11_include_thoughtsB\x12\n" +
-	"\x10_thinking_budget\"K\n" +
-	"\vImageConfig\x12+\n" +
-	"\faspect_ratio\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\vaspectRatio\x88\x01\x01B\x0f\n" +
-	"\r_aspect_ratio\"\xf6\x0e\n" +
-	"\x10GenerationConfig\x121\n" +
-	"\x0fcandidate_count\x18\x01 \x01(\x05B\x03\xe0A\x01H\x00R\x0ecandidateCount\x88\x01\x01\x12*\n" +
-	"\x0estop_sequences\x18\x02 \x03(\tB\x03\xe0A\x01R\rstopSequences\x124\n" +
-	"\x11max_output_tokens\x18\x04 \x01(\x05B\x03\xe0A\x01H\x01R\x0fmaxOutputTokens\x88\x01\x01\x12*\n" +
-	"\vtemperature\x18\x05 \x01(\x02B\x03\xe0A\x01H\x02R\vtemperature\x88\x01\x01\x12\x1d\n" +
-	"\x05top_p\x18\x06 \x01(\x02B\x03\xe0A\x01H\x03R\x04topP\x88\x01\x01\x12\x1d\n" +
-	"\x05top_k\x18\a \x01(\x05B\x03\xe0A\x01H\x04R\x04topK\x88\x01\x01\x12\x1c\n" +
-	"\x04seed\x18\b \x01(\x05B\x03\xe0A\x01H\x05R\x04seed\x88\x01\x01\x121\n" +
-	"\x12response_mime_type\x18\r \x01(\tB\x03\xe0A\x01R\x10responseMimeType\x12Y\n" +
-	"\x0fresponse_schema\x18\x0e \x01(\v2+.google.ai.generativelanguage.v1beta.SchemaB\x03\xe0A\x01R\x0eresponseSchema\x12N\n" +
-	"\x14response_json_schema\x18\x18 \x01(\v2\x16.google.protobuf.ValueB\x03\xe0A\x01R\x13_responseJsonSchema\x12U\n" +
-	"\x1cresponse_json_schema_ordered\x18\x1c \x01(\v2\x16.google.protobuf.ValueB\x03\xe0A\x01R\x12responseJsonSchema\x123\n" +
-	"\x10presence_penalty\x18\x0f \x01(\x02B\x03\xe0A\x01H\x06R\x0fpresencePenalty\x88\x01\x01\x125\n" +
-	"\x11frequency_penalty\x18\x10 \x01(\x02B\x03\xe0A\x01H\aR\x10frequencyPenalty\x88\x01\x01\x125\n" +
-	"\x11response_logprobs\x18\x11 \x01(\bB\x03\xe0A\x01H\bR\x10responseLogprobs\x88\x01\x01\x12$\n" +
-	"\blogprobs\x18\x12 \x01(\x05B\x03\xe0A\x01H\tR\blogprobs\x88\x01\x01\x12K\n" +
-	"\x1denable_enhanced_civic_answers\x18\x13 \x01(\bB\x03\xe0A\x01H\n" +
-	"R\x1aenableEnhancedCivicAnswers\x88\x01\x01\x12t\n" +
-	"\x13response_modalities\x18\x14 \x03(\x0e2>.google.ai.generativelanguage.v1beta.GenerationConfig.ModalityB\x03\xe0A\x01R\x12responseModalities\x12`\n" +
-	"\rspeech_config\x18\x15 \x01(\v21.google.ai.generativelanguage.v1beta.SpeechConfigB\x03\xe0A\x01H\vR\fspeechConfig\x88\x01\x01\x12f\n" +
-	"\x0fthinking_config\x18\x16 \x01(\v23.google.ai.generativelanguage.v1beta.ThinkingConfigB\x03\xe0A\x01H\fR\x0ethinkingConfig\x88\x01\x01\x12]\n" +
-	"\fimage_config\x18\x1b \x01(\v20.google.ai.generativelanguage.v1beta.ImageConfigB\x03\xe0A\x01H\rR\vimageConfig\x88\x01\x01\x12z\n" +
-	"\x10media_resolution\x18\x17 \x01(\x0e2E.google.ai.generativelanguage.v1beta.GenerationConfig.MediaResolutionB\x03\xe0A\x01H\x0eR\x0fmediaResolution\x88\x01\x01\"D\n" +
+	"\x10_thinking_budget\"L\n" +
+	"\vImageConfig\x12,\n" +
+	"\faspect_ratio\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\vaspectRatio\x88\x01\x01B\x0f\n" +
+	"\r_aspect_ratio\"\x8b\x0f\n" +
+	"\x10GenerationConfig\x122\n" +
+	"\x0fcandidate_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x01H\x00R\x0ecandidateCount\x88\x01\x01\x12+\n" +
+	"\x0estop_sequences\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\rstopSequences\x125\n" +
+	"\x11max_output_tokens\x18\x04 \x01(\x05B\x04\xe2A\x01\x01H\x01R\x0fmaxOutputTokens\x88\x01\x01\x12+\n" +
+	"\vtemperature\x18\x05 \x01(\x02B\x04\xe2A\x01\x01H\x02R\vtemperature\x88\x01\x01\x12\x1e\n" +
+	"\x05top_p\x18\x06 \x01(\x02B\x04\xe2A\x01\x01H\x03R\x04topP\x88\x01\x01\x12\x1e\n" +
+	"\x05top_k\x18\a \x01(\x05B\x04\xe2A\x01\x01H\x04R\x04topK\x88\x01\x01\x12\x1d\n" +
+	"\x04seed\x18\b \x01(\x05B\x04\xe2A\x01\x01H\x05R\x04seed\x88\x01\x01\x122\n" +
+	"\x12response_mime_type\x18\r \x01(\tB\x04\xe2A\x01\x01R\x10responseMimeType\x12Z\n" +
+	"\x0fresponse_schema\x18\x0e \x01(\v2+.google.ai.generativelanguage.v1beta.SchemaB\x04\xe2A\x01\x01R\x0eresponseSchema\x12O\n" +
+	"\x14response_json_schema\x18\x18 \x01(\v2\x16.google.protobuf.ValueB\x04\xe2A\x01\x01R\x13_responseJsonSchema\x12V\n" +
+	"\x1cresponse_json_schema_ordered\x18\x1c \x01(\v2\x16.google.protobuf.ValueB\x04\xe2A\x01\x01R\x12responseJsonSchema\x124\n" +
+	"\x10presence_penalty\x18\x0f \x01(\x02B\x04\xe2A\x01\x01H\x06R\x0fpresencePenalty\x88\x01\x01\x126\n" +
+	"\x11frequency_penalty\x18\x10 \x01(\x02B\x04\xe2A\x01\x01H\aR\x10frequencyPenalty\x88\x01\x01\x126\n" +
+	"\x11response_logprobs\x18\x11 \x01(\bB\x04\xe2A\x01\x01H\bR\x10responseLogprobs\x88\x01\x01\x12%\n" +
+	"\blogprobs\x18\x12 \x01(\x05B\x04\xe2A\x01\x01H\tR\blogprobs\x88\x01\x01\x12L\n" +
+	"\x1denable_enhanced_civic_answers\x18\x13 \x01(\bB\x04\xe2A\x01\x01H\n" +
+	"R\x1aenableEnhancedCivicAnswers\x88\x01\x01\x12u\n" +
+	"\x13response_modalities\x18\x14 \x03(\x0e2>.google.ai.generativelanguage.v1beta.GenerationConfig.ModalityB\x04\xe2A\x01\x01R\x12responseModalities\x12a\n" +
+	"\rspeech_config\x18\x15 \x01(\v21.google.ai.generativelanguage.v1beta.SpeechConfigB\x04\xe2A\x01\x01H\vR\fspeechConfig\x88\x01\x01\x12g\n" +
+	"\x0fthinking_config\x18\x16 \x01(\v23.google.ai.generativelanguage.v1beta.ThinkingConfigB\x04\xe2A\x01\x01H\fR\x0ethinkingConfig\x88\x01\x01\x12^\n" +
+	"\fimage_config\x18\x1b \x01(\v20.google.ai.generativelanguage.v1beta.ImageConfigB\x04\xe2A\x01\x01H\rR\vimageConfig\x88\x01\x01\x12{\n" +
+	"\x10media_resolution\x18\x17 \x01(\x0e2E.google.ai.generativelanguage.v1beta.GenerationConfig.MediaResolutionB\x04\xe2A\x01\x01H\x0eR\x0fmediaResolution\x88\x01\x01\"D\n" +
 	"\bModality\x12\x18\n" +
 	"\x14MODALITY_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04TEXT\x10\x01\x12\t\n" +
@@ -6119,26 +6119,26 @@ const file_google_ai_generativelanguage_v1beta_generative_service_proto_rawDesc 
 	"\x0e_speech_configB\x12\n" +
 	"\x10_thinking_configB\x0f\n" +
 	"\r_image_configB\x13\n" +
-	"\x11_media_resolution\"\x8b\x03\n" +
-	"\x17SemanticRetrieverConfig\x12\x1b\n" +
-	"\x06source\x18\x01 \x01(\tB\x03\xe0A\x02R\x06source\x12G\n" +
-	"\x05query\x18\x02 \x01(\v2,.google.ai.generativelanguage.v1beta.ContentB\x03\xe0A\x02R\x05query\x12c\n" +
-	"\x10metadata_filters\x18\x03 \x03(\v23.google.ai.generativelanguage.v1beta.MetadataFilterB\x03\xe0A\x01R\x0fmetadataFilters\x122\n" +
-	"\x10max_chunks_count\x18\x04 \x01(\x05B\x03\xe0A\x01H\x00R\x0emaxChunksCount\x88\x01\x01\x12@\n" +
-	"\x17minimum_relevance_score\x18\x05 \x01(\x02B\x03\xe0A\x01H\x01R\x15minimumRelevanceScore\x88\x01\x01B\x13\n" +
+	"\x11_media_resolution\"\x90\x03\n" +
+	"\x17SemanticRetrieverConfig\x12\x1c\n" +
+	"\x06source\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06source\x12H\n" +
+	"\x05query\x18\x02 \x01(\v2,.google.ai.generativelanguage.v1beta.ContentB\x04\xe2A\x01\x02R\x05query\x12d\n" +
+	"\x10metadata_filters\x18\x03 \x03(\v23.google.ai.generativelanguage.v1beta.MetadataFilterB\x04\xe2A\x01\x01R\x0fmetadataFilters\x123\n" +
+	"\x10max_chunks_count\x18\x04 \x01(\x05B\x04\xe2A\x01\x01H\x00R\x0emaxChunksCount\x88\x01\x01\x12A\n" +
+	"\x17minimum_relevance_score\x18\x05 \x01(\x02B\x04\xe2A\x01\x01H\x01R\x15minimumRelevanceScore\x88\x01\x01B\x13\n" +
 	"\x11_max_chunks_countB\x1a\n" +
-	"\x18_minimum_relevance_score\"\xca\f\n" +
+	"\x18_minimum_relevance_score\"\xd5\f\n" +
 	"\x17GenerateContentResponse\x12N\n" +
 	"\n" +
 	"candidates\x18\x01 \x03(\v2..google.ai.generativelanguage.v1beta.CandidateR\n" +
 	"candidates\x12t\n" +
-	"\x0fprompt_feedback\x18\x02 \x01(\v2K.google.ai.generativelanguage.v1beta.GenerateContentResponse.PromptFeedbackR\x0epromptFeedback\x12v\n" +
-	"\x0eusage_metadata\x18\x03 \x01(\v2J.google.ai.generativelanguage.v1beta.GenerateContentResponse.UsageMetadataB\x03\xe0A\x03R\rusageMetadata\x12(\n" +
-	"\rmodel_version\x18\x04 \x01(\tB\x03\xe0A\x03R\fmodelVersion\x12$\n" +
-	"\vresponse_id\x18\x05 \x01(\tB\x03\xe0A\x03R\n" +
-	"responseId\x1a\xe8\x02\n" +
-	"\x0ePromptFeedback\x12\x7f\n" +
-	"\fblock_reason\x18\x01 \x01(\x0e2W.google.ai.generativelanguage.v1beta.GenerateContentResponse.PromptFeedback.BlockReasonB\x03\xe0A\x01R\vblockReason\x12X\n" +
+	"\x0fprompt_feedback\x18\x02 \x01(\v2K.google.ai.generativelanguage.v1beta.GenerateContentResponse.PromptFeedbackR\x0epromptFeedback\x12w\n" +
+	"\x0eusage_metadata\x18\x03 \x01(\v2J.google.ai.generativelanguage.v1beta.GenerateContentResponse.UsageMetadataB\x04\xe2A\x01\x03R\rusageMetadata\x12)\n" +
+	"\rmodel_version\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\fmodelVersion\x12%\n" +
+	"\vresponse_id\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"responseId\x1a\xea\x02\n" +
+	"\x0ePromptFeedback\x12\x80\x01\n" +
+	"\fblock_reason\x18\x01 \x01(\x0e2W.google.ai.generativelanguage.v1beta.GenerateContentResponse.PromptFeedback.BlockReasonB\x04\xe2A\x01\x01R\vblockReason\x12X\n" +
 	"\x0esafety_ratings\x18\x02 \x03(\v21.google.ai.generativelanguage.v1beta.SafetyRatingR\rsafetyRatings\"{\n" +
 	"\vBlockReason\x12\x1c\n" +
 	"\x18BLOCK_REASON_UNSPECIFIED\x10\x00\x12\n" +
@@ -6147,35 +6147,35 @@ const file_google_ai_generativelanguage_v1beta_generative_service_proto_rawDesc 
 	"\x05OTHER\x10\x02\x12\r\n" +
 	"\tBLOCKLIST\x10\x03\x12\x16\n" +
 	"\x12PROHIBITED_CONTENT\x10\x04\x12\x10\n" +
-	"\fIMAGE_SAFETY\x10\x05\x1a\xb5\x06\n" +
+	"\fIMAGE_SAFETY\x10\x05\x1a\xbb\x06\n" +
 	"\rUsageMetadata\x12,\n" +
 	"\x12prompt_token_count\x18\x01 \x01(\x05R\x10promptTokenCount\x12;\n" +
 	"\x1acached_content_token_count\x18\x04 \x01(\x05R\x17cachedContentTokenCount\x124\n" +
-	"\x16candidates_token_count\x18\x02 \x01(\x05R\x14candidatesTokenCount\x12A\n" +
-	"\x1btool_use_prompt_token_count\x18\b \x01(\x05B\x03\xe0A\x03R\x17toolUsePromptTokenCount\x125\n" +
+	"\x16candidates_token_count\x18\x02 \x01(\x05R\x14candidatesTokenCount\x12B\n" +
+	"\x1btool_use_prompt_token_count\x18\b \x01(\x05B\x04\xe2A\x01\x03R\x17toolUsePromptTokenCount\x126\n" +
 	"\x14thoughts_token_count\x18\n" +
-	" \x01(\x05B\x03\xe0A\x03R\x12thoughtsTokenCount\x12*\n" +
-	"\x11total_token_count\x18\x03 \x01(\x05R\x0ftotalTokenCount\x12p\n" +
-	"\x15prompt_tokens_details\x18\x05 \x03(\v27.google.ai.generativelanguage.v1beta.ModalityTokenCountB\x03\xe0A\x03R\x13promptTokensDetails\x12n\n" +
-	"\x14cache_tokens_details\x18\x06 \x03(\v27.google.ai.generativelanguage.v1beta.ModalityTokenCountB\x03\xe0A\x03R\x12cacheTokensDetails\x12x\n" +
-	"\x19candidates_tokens_details\x18\a \x03(\v27.google.ai.generativelanguage.v1beta.ModalityTokenCountB\x03\xe0A\x03R\x17candidatesTokensDetails\x12\x80\x01\n" +
-	"\x1etool_use_prompt_tokens_details\x18\t \x03(\v27.google.ai.generativelanguage.v1beta.ModalityTokenCountB\x03\xe0A\x03R\x1atoolUsePromptTokensDetails\"\xdf\n" +
+	" \x01(\x05B\x04\xe2A\x01\x03R\x12thoughtsTokenCount\x12*\n" +
+	"\x11total_token_count\x18\x03 \x01(\x05R\x0ftotalTokenCount\x12q\n" +
+	"\x15prompt_tokens_details\x18\x05 \x03(\v27.google.ai.generativelanguage.v1beta.ModalityTokenCountB\x04\xe2A\x01\x03R\x13promptTokensDetails\x12o\n" +
+	"\x14cache_tokens_details\x18\x06 \x03(\v27.google.ai.generativelanguage.v1beta.ModalityTokenCountB\x04\xe2A\x01\x03R\x12cacheTokensDetails\x12y\n" +
+	"\x19candidates_tokens_details\x18\a \x03(\v27.google.ai.generativelanguage.v1beta.ModalityTokenCountB\x04\xe2A\x01\x03R\x17candidatesTokensDetails\x12\x81\x01\n" +
+	"\x1etool_use_prompt_tokens_details\x18\t \x03(\v27.google.ai.generativelanguage.v1beta.ModalityTokenCountB\x04\xe2A\x01\x03R\x1atoolUsePromptTokensDetails\"\xe6\n" +
 	"\n" +
-	"\tCandidate\x12\x1e\n" +
-	"\x05index\x18\x03 \x01(\x05B\x03\xe0A\x03H\x00R\x05index\x88\x01\x01\x12K\n" +
-	"\acontent\x18\x01 \x01(\v2,.google.ai.generativelanguage.v1beta.ContentB\x03\xe0A\x03R\acontent\x12h\n" +
-	"\rfinish_reason\x18\x02 \x01(\x0e2;.google.ai.generativelanguage.v1beta.Candidate.FinishReasonB\x06\xe0A\x01\xe0A\x03R\ffinishReason\x122\n" +
-	"\x0efinish_message\x18\x04 \x01(\tB\x06\xe0A\x01\xe0A\x03H\x01R\rfinishMessage\x88\x01\x01\x12X\n" +
-	"\x0esafety_ratings\x18\x05 \x03(\v21.google.ai.generativelanguage.v1beta.SafetyRatingR\rsafetyRatings\x12g\n" +
-	"\x11citation_metadata\x18\x06 \x01(\v25.google.ai.generativelanguage.v1beta.CitationMetadataB\x03\xe0A\x03R\x10citationMetadata\x12$\n" +
-	"\vtoken_count\x18\a \x01(\x05B\x03\xe0A\x03R\n" +
-	"tokenCount\x12u\n" +
-	"\x16grounding_attributions\x18\b \x03(\v29.google.ai.generativelanguage.v1beta.GroundingAttributionB\x03\xe0A\x03R\x15groundingAttributions\x12j\n" +
-	"\x12grounding_metadata\x18\t \x01(\v26.google.ai.generativelanguage.v1beta.GroundingMetadataB\x03\xe0A\x03R\x11groundingMetadata\x12&\n" +
+	"\tCandidate\x12\x1f\n" +
+	"\x05index\x18\x03 \x01(\x05B\x04\xe2A\x01\x03H\x00R\x05index\x88\x01\x01\x12L\n" +
+	"\acontent\x18\x01 \x01(\v2,.google.ai.generativelanguage.v1beta.ContentB\x04\xe2A\x01\x03R\acontent\x12g\n" +
+	"\rfinish_reason\x18\x02 \x01(\x0e2;.google.ai.generativelanguage.v1beta.Candidate.FinishReasonB\x05\xe2A\x02\x01\x03R\ffinishReason\x121\n" +
+	"\x0efinish_message\x18\x04 \x01(\tB\x05\xe2A\x02\x01\x03H\x01R\rfinishMessage\x88\x01\x01\x12X\n" +
+	"\x0esafety_ratings\x18\x05 \x03(\v21.google.ai.generativelanguage.v1beta.SafetyRatingR\rsafetyRatings\x12h\n" +
+	"\x11citation_metadata\x18\x06 \x01(\v25.google.ai.generativelanguage.v1beta.CitationMetadataB\x04\xe2A\x01\x03R\x10citationMetadata\x12%\n" +
+	"\vtoken_count\x18\a \x01(\x05B\x04\xe2A\x01\x03R\n" +
+	"tokenCount\x12v\n" +
+	"\x16grounding_attributions\x18\b \x03(\v29.google.ai.generativelanguage.v1beta.GroundingAttributionB\x04\xe2A\x01\x03R\x15groundingAttributions\x12k\n" +
+	"\x12grounding_metadata\x18\t \x01(\v26.google.ai.generativelanguage.v1beta.GroundingMetadataB\x04\xe2A\x01\x03R\x11groundingMetadata\x12'\n" +
 	"\favg_logprobs\x18\n" +
-	" \x01(\x01B\x03\xe0A\x03R\vavgLogprobs\x12a\n" +
-	"\x0flogprobs_result\x18\v \x01(\v23.google.ai.generativelanguage.v1beta.LogprobsResultB\x03\xe0A\x03R\x0elogprobsResult\x12n\n" +
-	"\x14url_context_metadata\x18\r \x01(\v27.google.ai.generativelanguage.v1beta.UrlContextMetadataB\x03\xe0A\x03R\x12urlContextMetadata\"\xe2\x02\n" +
+	" \x01(\x01B\x04\xe2A\x01\x03R\vavgLogprobs\x12b\n" +
+	"\x0flogprobs_result\x18\v \x01(\v23.google.ai.generativelanguage.v1beta.LogprobsResultB\x04\xe2A\x01\x03R\x0elogprobsResult\x12o\n" +
+	"\x14url_context_metadata\x18\r \x01(\v27.google.ai.generativelanguage.v1beta.UrlContextMetadataB\x04\xe2A\x01\x03R\x12urlContextMetadata\"\xe2\x02\n" +
 	"\fFinishReason\x12\x1d\n" +
 	"\x19FINISH_REASON_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04STOP\x10\x01\x12\x0e\n" +
@@ -6227,50 +6227,50 @@ const file_google_ai_generativelanguage_v1beta_generative_service_proto_rawDesc 
 	"\n" +
 	"candidates\x18\x01 \x03(\v2=.google.ai.generativelanguage.v1beta.LogprobsResult.CandidateR\n" +
 	"candidatesB\x16\n" +
-	"\x14_log_probability_sum\"\xd9\x03\n" +
+	"\x14_log_probability_sum\"\xdd\x03\n" +
 	"\x13AttributionSourceId\x12z\n" +
 	"\x11grounding_passage\x18\x01 \x01(\v2K.google.ai.generativelanguage.v1beta.AttributionSourceId.GroundingPassageIdH\x00R\x10groundingPassage\x12\x8b\x01\n" +
-	"\x18semantic_retriever_chunk\x18\x02 \x01(\v2O.google.ai.generativelanguage.v1beta.AttributionSourceId.SemanticRetrieverChunkH\x00R\x16semanticRetrieverChunk\x1a\\\n" +
-	"\x12GroundingPassageId\x12\"\n" +
+	"\x18semantic_retriever_chunk\x18\x02 \x01(\v2O.google.ai.generativelanguage.v1beta.AttributionSourceId.SemanticRetrieverChunkH\x00R\x16semanticRetrieverChunk\x1a^\n" +
+	"\x12GroundingPassageId\x12#\n" +
 	"\n" +
-	"passage_id\x18\x01 \x01(\tB\x03\xe0A\x03R\tpassageId\x12\"\n" +
+	"passage_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\tpassageId\x12#\n" +
 	"\n" +
-	"part_index\x18\x02 \x01(\x05B\x03\xe0A\x03R\tpartIndex\x1aP\n" +
-	"\x16SemanticRetrieverChunk\x12\x1b\n" +
-	"\x06source\x18\x01 \x01(\tB\x03\xe0A\x03R\x06source\x12\x19\n" +
-	"\x05chunk\x18\x02 \x01(\tB\x03\xe0A\x03R\x05chunkB\b\n" +
-	"\x06source\"\xba\x01\n" +
-	"\x14GroundingAttribution\x12Z\n" +
-	"\tsource_id\x18\x03 \x01(\v28.google.ai.generativelanguage.v1beta.AttributionSourceIdB\x03\xe0A\x03R\bsourceId\x12F\n" +
-	"\acontent\x18\x02 \x01(\v2,.google.ai.generativelanguage.v1beta.ContentR\acontent\"j\n" +
-	"\x11RetrievalMetadata\x12U\n" +
-	"%google_search_dynamic_retrieval_score\x18\x02 \x01(\x02B\x03\xe0A\x01R!googleSearchDynamicRetrievalScore\"\x87\x05\n" +
-	"\x11GroundingMetadata\x12m\n" +
-	"\x12search_entry_point\x18\x01 \x01(\v25.google.ai.generativelanguage.v1beta.SearchEntryPointB\x03\xe0A\x01H\x00R\x10searchEntryPoint\x88\x01\x01\x12^\n" +
+	"part_index\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\tpartIndex\x1aR\n" +
+	"\x16SemanticRetrieverChunk\x12\x1c\n" +
+	"\x06source\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06source\x12\x1a\n" +
+	"\x05chunk\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05chunkB\b\n" +
+	"\x06source\"\xbb\x01\n" +
+	"\x14GroundingAttribution\x12[\n" +
+	"\tsource_id\x18\x03 \x01(\v28.google.ai.generativelanguage.v1beta.AttributionSourceIdB\x04\xe2A\x01\x03R\bsourceId\x12F\n" +
+	"\acontent\x18\x02 \x01(\v2,.google.ai.generativelanguage.v1beta.ContentR\acontent\"k\n" +
+	"\x11RetrievalMetadata\x12V\n" +
+	"%google_search_dynamic_retrieval_score\x18\x02 \x01(\x02B\x04\xe2A\x01\x01R!googleSearchDynamicRetrievalScore\"\x89\x05\n" +
+	"\x11GroundingMetadata\x12n\n" +
+	"\x12search_entry_point\x18\x01 \x01(\v25.google.ai.generativelanguage.v1beta.SearchEntryPointB\x04\xe2A\x01\x01H\x00R\x10searchEntryPoint\x88\x01\x01\x12^\n" +
 	"\x10grounding_chunks\x18\x02 \x03(\v23.google.ai.generativelanguage.v1beta.GroundingChunkR\x0fgroundingChunks\x12d\n" +
 	"\x12grounding_supports\x18\x03 \x03(\v25.google.ai.generativelanguage.v1beta.GroundingSupportR\x11groundingSupports\x12j\n" +
 	"\x12retrieval_metadata\x18\x04 \x01(\v26.google.ai.generativelanguage.v1beta.RetrievalMetadataH\x01R\x11retrievalMetadata\x88\x01\x01\x12,\n" +
-	"\x12web_search_queries\x18\x05 \x03(\tR\x10webSearchQueries\x12P\n" +
-	" google_maps_widget_context_token\x18\a \x01(\tB\x03\xe0A\x01H\x02R\x1cgoogleMapsWidgetContextToken\x88\x01\x01B\x15\n" +
+	"\x12web_search_queries\x18\x05 \x03(\tR\x10webSearchQueries\x12Q\n" +
+	" google_maps_widget_context_token\x18\a \x01(\tB\x04\xe2A\x01\x01H\x02R\x1cgoogleMapsWidgetContextToken\x88\x01\x01B\x15\n" +
 	"\x13_search_entry_pointB\x15\n" +
 	"\x13_retrieval_metadataB#\n" +
-	"!_google_maps_widget_context_token\"b\n" +
-	"\x10SearchEntryPoint\x12.\n" +
-	"\x10rendered_content\x18\x01 \x01(\tB\x03\xe0A\x01R\x0frenderedContent\x12\x1e\n" +
-	"\bsdk_blob\x18\x02 \x01(\fB\x03\xe0A\x01R\asdkBlob\"\x8d\t\n" +
+	"!_google_maps_widget_context_token\"d\n" +
+	"\x10SearchEntryPoint\x12/\n" +
+	"\x10rendered_content\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x0frenderedContent\x12\x1f\n" +
+	"\bsdk_blob\x18\x02 \x01(\fB\x04\xe2A\x01\x01R\asdkBlob\"\x92\t\n" +
 	"\x0eGroundingChunk\x12K\n" +
-	"\x03web\x18\x01 \x01(\v27.google.ai.generativelanguage.v1beta.GroundingChunk.WebH\x00R\x03web\x12x\n" +
-	"\x11retrieved_context\x18\x02 \x01(\v2D.google.ai.generativelanguage.v1beta.GroundingChunk.RetrievedContextB\x03\xe0A\x01H\x00R\x10retrievedContext\x12S\n" +
-	"\x04maps\x18\x03 \x01(\v28.google.ai.generativelanguage.v1beta.GroundingChunk.MapsB\x03\xe0A\x01H\x00R\x04maps\x1aI\n" +
+	"\x03web\x18\x01 \x01(\v27.google.ai.generativelanguage.v1beta.GroundingChunk.WebH\x00R\x03web\x12y\n" +
+	"\x11retrieved_context\x18\x02 \x01(\v2D.google.ai.generativelanguage.v1beta.GroundingChunk.RetrievedContextB\x04\xe2A\x01\x01H\x00R\x10retrievedContext\x12T\n" +
+	"\x04maps\x18\x03 \x01(\v28.google.ai.generativelanguage.v1beta.GroundingChunk.MapsB\x04\xe2A\x01\x01H\x00R\x04maps\x1aI\n" +
 	"\x03Web\x12\x15\n" +
 	"\x03uri\x18\x01 \x01(\tH\x00R\x03uri\x88\x01\x01\x12\x19\n" +
 	"\x05title\x18\x02 \x01(\tH\x01R\x05title\x88\x01\x01B\x06\n" +
 	"\x04_uriB\b\n" +
-	"\x06_title\x1a\x87\x01\n" +
-	"\x10RetrievedContext\x12\x1a\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\x03uri\x88\x01\x01\x12\x1e\n" +
-	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x01H\x01R\x05title\x88\x01\x01\x12\x1c\n" +
-	"\x04text\x18\x03 \x01(\tB\x03\xe0A\x01H\x02R\x04text\x88\x01\x01B\x06\n" +
+	"\x06_title\x1a\x8a\x01\n" +
+	"\x10RetrievedContext\x12\x1b\n" +
+	"\x03uri\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\x03uri\x88\x01\x01\x12\x1f\n" +
+	"\x05title\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x01R\x05title\x88\x01\x01\x12\x1d\n" +
+	"\x04text\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x02R\x04text\x88\x01\x01B\x06\n" +
 	"\x04_uriB\b\n" +
 	"\x06_titleB\a\n" +
 	"\x05_text\x1a\xfb\x04\n" +
@@ -6296,29 +6296,29 @@ const file_google_ai_generativelanguage_v1beta_generative_service_proto_rawDesc 
 	"\t_place_idB\x17\n" +
 	"\x15_place_answer_sourcesB\f\n" +
 	"\n" +
-	"chunk_type\"\x8e\x01\n" +
-	"\aSegment\x12\"\n" +
+	"chunk_type\"\x92\x01\n" +
+	"\aSegment\x12#\n" +
 	"\n" +
-	"part_index\x18\x01 \x01(\x05B\x03\xe0A\x03R\tpartIndex\x12$\n" +
-	"\vstart_index\x18\x02 \x01(\x05B\x03\xe0A\x03R\n" +
-	"startIndex\x12 \n" +
-	"\tend_index\x18\x03 \x01(\x05B\x03\xe0A\x03R\bendIndex\x12\x17\n" +
-	"\x04text\x18\x04 \x01(\tB\x03\xe0A\x03R\x04text\"\xd0\x01\n" +
+	"part_index\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\tpartIndex\x12%\n" +
+	"\vstart_index\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\n" +
+	"startIndex\x12!\n" +
+	"\tend_index\x18\x03 \x01(\x05B\x04\xe2A\x01\x03R\bendIndex\x12\x18\n" +
+	"\x04text\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04text\"\xd0\x01\n" +
 	"\x10GroundingSupport\x12K\n" +
 	"\asegment\x18\x01 \x01(\v2,.google.ai.generativelanguage.v1beta.SegmentH\x00R\asegment\x88\x01\x01\x126\n" +
 	"\x17grounding_chunk_indices\x18\x02 \x03(\x05R\x15groundingChunkIndices\x12+\n" +
 	"\x11confidence_scores\x18\x03 \x03(\x02R\x10confidenceScoresB\n" +
 	"\n" +
-	"\b_segment\"\xfc\x05\n" +
+	"\b_segment\"\x81\x06\n" +
 	"\x15GenerateAnswerRequest\x12a\n" +
 	"\x0finline_passages\x18\x06 \x01(\v26.google.ai.generativelanguage.v1beta.GroundingPassagesH\x00R\x0einlinePassages\x12m\n" +
-	"\x12semantic_retriever\x18\a \x01(\v2<.google.ai.generativelanguage.v1beta.SemanticRetrieverConfigH\x00R\x11semanticRetriever\x12E\n" +
-	"\x05model\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'generativelanguage.googleapis.com/ModelR\x05model\x12M\n" +
-	"\bcontents\x18\x02 \x03(\v2,.google.ai.generativelanguage.v1beta.ContentB\x03\xe0A\x02R\bcontents\x12n\n" +
-	"\fanswer_style\x18\x05 \x01(\x0e2F.google.ai.generativelanguage.v1beta.GenerateAnswerRequest.AnswerStyleB\x03\xe0A\x02R\vanswerStyle\x12`\n" +
-	"\x0fsafety_settings\x18\x03 \x03(\v22.google.ai.generativelanguage.v1beta.SafetySettingB\x03\xe0A\x01R\x0esafetySettings\x12*\n" +
-	"\vtemperature\x18\x04 \x01(\x02B\x03\xe0A\x01H\x01R\vtemperature\x88\x01\x01\"Y\n" +
+	"\x12semantic_retriever\x18\a \x01(\v2<.google.ai.generativelanguage.v1beta.SemanticRetrieverConfigH\x00R\x11semanticRetriever\x12F\n" +
+	"\x05model\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'generativelanguage.googleapis.com/ModelR\x05model\x12N\n" +
+	"\bcontents\x18\x02 \x03(\v2,.google.ai.generativelanguage.v1beta.ContentB\x04\xe2A\x01\x02R\bcontents\x12o\n" +
+	"\fanswer_style\x18\x05 \x01(\x0e2F.google.ai.generativelanguage.v1beta.GenerateAnswerRequest.AnswerStyleB\x04\xe2A\x01\x02R\vanswerStyle\x12a\n" +
+	"\x0fsafety_settings\x18\x03 \x03(\v22.google.ai.generativelanguage.v1beta.SafetySettingB\x04\xe2A\x01\x01R\x0esafetySettings\x12+\n" +
+	"\vtemperature\x18\x04 \x01(\x02B\x04\xe2A\x01\x01H\x01R\vtemperature\x88\x01\x01\"Y\n" +
 	"\vAnswerStyle\x12\x1c\n" +
 	"\x18ANSWER_STYLE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vABSTRACTIVE\x10\x01\x12\x0e\n" +
@@ -6326,13 +6326,13 @@ const file_google_ai_generativelanguage_v1beta_generative_service_proto_rawDesc 
 	"EXTRACTIVE\x10\x02\x12\v\n" +
 	"\aVERBOSE\x10\x03B\x12\n" +
 	"\x10grounding_sourceB\x0e\n" +
-	"\f_temperature\"\x91\x05\n" +
+	"\f_temperature\"\x94\x05\n" +
 	"\x16GenerateAnswerResponse\x12F\n" +
-	"\x06answer\x18\x01 \x01(\v2..google.ai.generativelanguage.v1beta.CandidateR\x06answer\x12?\n" +
-	"\x16answerable_probability\x18\x02 \x01(\x02B\x03\xe0A\x03H\x00R\x15answerableProbability\x88\x01\x01\x12z\n" +
-	"\x0einput_feedback\x18\x03 \x01(\v2I.google.ai.generativelanguage.v1beta.GenerateAnswerResponse.InputFeedbackB\x03\xe0A\x03H\x01R\rinputFeedback\x88\x01\x01\x1a\xc3\x02\n" +
-	"\rInputFeedback\x12\x82\x01\n" +
-	"\fblock_reason\x18\x01 \x01(\x0e2U.google.ai.generativelanguage.v1beta.GenerateAnswerResponse.InputFeedback.BlockReasonB\x03\xe0A\x01H\x00R\vblockReason\x88\x01\x01\x12X\n" +
+	"\x06answer\x18\x01 \x01(\v2..google.ai.generativelanguage.v1beta.CandidateR\x06answer\x12@\n" +
+	"\x16answerable_probability\x18\x02 \x01(\x02B\x04\xe2A\x01\x03H\x00R\x15answerableProbability\x88\x01\x01\x12{\n" +
+	"\x0einput_feedback\x18\x03 \x01(\v2I.google.ai.generativelanguage.v1beta.GenerateAnswerResponse.InputFeedbackB\x04\xe2A\x01\x03H\x01R\rinputFeedback\x88\x01\x01\x1a\xc4\x02\n" +
+	"\rInputFeedback\x12\x83\x01\n" +
+	"\fblock_reason\x18\x01 \x01(\x0e2U.google.ai.generativelanguage.v1beta.GenerateAnswerResponse.InputFeedback.BlockReasonB\x04\xe2A\x01\x01H\x00R\vblockReason\x88\x01\x01\x12X\n" +
 	"\x0esafety_ratings\x18\x02 \x03(\v21.google.ai.generativelanguage.v1beta.SafetyRatingR\rsafetyRatings\"B\n" +
 	"\vBlockReason\x12\x1c\n" +
 	"\x18BLOCK_REASON_UNSPECIFIED\x10\x00\x12\n" +
@@ -6341,50 +6341,50 @@ const file_google_ai_generativelanguage_v1beta_generative_service_proto_rawDesc 
 	"\x05OTHER\x10\x02B\x0f\n" +
 	"\r_block_reasonB\x19\n" +
 	"\x17_answerable_probabilityB\x11\n" +
-	"\x0f_input_feedback\"\x90\x03\n" +
-	"\x13EmbedContentRequest\x12E\n" +
-	"\x05model\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'generativelanguage.googleapis.com/ModelR\x05model\x12K\n" +
-	"\acontent\x18\x02 \x01(\v2,.google.ai.generativelanguage.v1beta.ContentB\x03\xe0A\x02R\acontent\x12T\n" +
-	"\ttask_type\x18\x03 \x01(\x0e2-.google.ai.generativelanguage.v1beta.TaskTypeB\x03\xe0A\x01H\x00R\btaskType\x88\x01\x01\x12\x1e\n" +
-	"\x05title\x18\x04 \x01(\tB\x03\xe0A\x01H\x01R\x05title\x88\x01\x01\x12=\n" +
-	"\x15output_dimensionality\x18\x05 \x01(\x05B\x03\xe0A\x01H\x02R\x14outputDimensionality\x88\x01\x01B\f\n" +
+	"\x0f_input_feedback\"\x95\x03\n" +
+	"\x13EmbedContentRequest\x12F\n" +
+	"\x05model\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'generativelanguage.googleapis.com/ModelR\x05model\x12L\n" +
+	"\acontent\x18\x02 \x01(\v2,.google.ai.generativelanguage.v1beta.ContentB\x04\xe2A\x01\x02R\acontent\x12U\n" +
+	"\ttask_type\x18\x03 \x01(\x0e2-.google.ai.generativelanguage.v1beta.TaskTypeB\x04\xe2A\x01\x01H\x00R\btaskType\x88\x01\x01\x12\x1f\n" +
+	"\x05title\x18\x04 \x01(\tB\x04\xe2A\x01\x01H\x01R\x05title\x88\x01\x01\x12>\n" +
+	"\x15output_dimensionality\x18\x05 \x01(\x05B\x04\xe2A\x01\x01H\x02R\x14outputDimensionality\x88\x01\x01B\f\n" +
 	"\n" +
 	"_task_typeB\b\n" +
 	"\x06_titleB\x18\n" +
 	"\x16_output_dimensionality\"*\n" +
 	"\x10ContentEmbedding\x12\x16\n" +
-	"\x06values\x18\x01 \x03(\x02R\x06values\"p\n" +
-	"\x14EmbedContentResponse\x12X\n" +
-	"\tembedding\x18\x01 \x01(\v25.google.ai.generativelanguage.v1beta.ContentEmbeddingB\x03\xe0A\x03R\tembedding\"\xbd\x01\n" +
-	"\x19BatchEmbedContentsRequest\x12E\n" +
-	"\x05model\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'generativelanguage.googleapis.com/ModelR\x05model\x12Y\n" +
-	"\brequests\x18\x02 \x03(\v28.google.ai.generativelanguage.v1beta.EmbedContentRequestB\x03\xe0A\x02R\brequests\"x\n" +
-	"\x1aBatchEmbedContentsResponse\x12Z\n" +
+	"\x06values\x18\x01 \x03(\x02R\x06values\"q\n" +
+	"\x14EmbedContentResponse\x12Y\n" +
+	"\tembedding\x18\x01 \x01(\v25.google.ai.generativelanguage.v1beta.ContentEmbeddingB\x04\xe2A\x01\x03R\tembedding\"\xbf\x01\n" +
+	"\x19BatchEmbedContentsRequest\x12F\n" +
+	"\x05model\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'generativelanguage.googleapis.com/ModelR\x05model\x12Z\n" +
+	"\brequests\x18\x02 \x03(\v28.google.ai.generativelanguage.v1beta.EmbedContentRequestB\x04\xe2A\x01\x02R\brequests\"y\n" +
+	"\x1aBatchEmbedContentsResponse\x12[\n" +
 	"\n" +
-	"embeddings\x18\x01 \x03(\v25.google.ai.generativelanguage.v1beta.ContentEmbeddingB\x03\xe0A\x03R\n" +
-	"embeddings\"\xa6\x02\n" +
-	"\x12CountTokensRequest\x12E\n" +
-	"\x05model\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'generativelanguage.googleapis.com/ModelR\x05model\x12M\n" +
-	"\bcontents\x18\x02 \x03(\v2,.google.ai.generativelanguage.v1beta.ContentB\x03\xe0A\x01R\bcontents\x12z\n" +
-	"\x18generate_content_request\x18\x03 \x01(\v2;.google.ai.generativelanguage.v1beta.GenerateContentRequestB\x03\xe0A\x01R\x16generateContentRequest\"\xd7\x02\n" +
+	"embeddings\x18\x01 \x03(\v25.google.ai.generativelanguage.v1beta.ContentEmbeddingB\x04\xe2A\x01\x03R\n" +
+	"embeddings\"\xa9\x02\n" +
+	"\x12CountTokensRequest\x12F\n" +
+	"\x05model\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'generativelanguage.googleapis.com/ModelR\x05model\x12N\n" +
+	"\bcontents\x18\x02 \x03(\v2,.google.ai.generativelanguage.v1beta.ContentB\x04\xe2A\x01\x01R\bcontents\x12{\n" +
+	"\x18generate_content_request\x18\x03 \x01(\v2;.google.ai.generativelanguage.v1beta.GenerateContentRequestB\x04\xe2A\x01\x01R\x16generateContentRequest\"\xd9\x02\n" +
 	"\x13CountTokensResponse\x12!\n" +
 	"\ftotal_tokens\x18\x01 \x01(\x05R\vtotalTokens\x12;\n" +
-	"\x1acached_content_token_count\x18\x05 \x01(\x05R\x17cachedContentTokenCount\x12p\n" +
-	"\x15prompt_tokens_details\x18\x06 \x03(\v27.google.ai.generativelanguage.v1beta.ModalityTokenCountB\x03\xe0A\x03R\x13promptTokensDetails\x12n\n" +
-	"\x14cache_tokens_details\x18\a \x03(\v27.google.ai.generativelanguage.v1beta.ModalityTokenCountB\x03\xe0A\x03R\x12cacheTokensDetails\"\x8a\f\n" +
-	"\x13RealtimeInputConfig\x12\x9a\x01\n" +
-	"\x1cautomatic_activity_detection\x18\x01 \x01(\v2S.google.ai.generativelanguage.v1beta.RealtimeInputConfig.AutomaticActivityDetectionB\x03\xe0A\x01R\x1aautomaticActivityDetection\x12\x80\x01\n" +
-	"\x11activity_handling\x18\x03 \x01(\x0e2I.google.ai.generativelanguage.v1beta.RealtimeInputConfig.ActivityHandlingB\x03\xe0A\x01H\x00R\x10activityHandling\x88\x01\x01\x12t\n" +
-	"\rturn_coverage\x18\x04 \x01(\x0e2E.google.ai.generativelanguage.v1beta.RealtimeInputConfig.TurnCoverageB\x03\xe0A\x01H\x01R\fturnCoverage\x88\x01\x01\x1a\xd9\x06\n" +
-	"\x1aAutomaticActivityDetection\x12$\n" +
-	"\bdisabled\x18\x02 \x01(\bB\x03\xe0A\x01H\x00R\bdisabled\x88\x01\x01\x12\xad\x01\n" +
-	"\x1bstart_of_speech_sensitivity\x18\x03 \x01(\x0e2d.google.ai.generativelanguage.v1beta.RealtimeInputConfig.AutomaticActivityDetection.StartSensitivityB\x03\xe0A\x01H\x01R\x18startOfSpeechSensitivity\x88\x01\x01\x124\n" +
-	"\x11prefix_padding_ms\x18\x04 \x01(\x05B\x03\xe0A\x01H\x02R\x0fprefixPaddingMs\x88\x01\x01\x12\xa7\x01\n" +
-	"\x19end_of_speech_sensitivity\x18\x05 \x01(\x0e2b.google.ai.generativelanguage.v1beta.RealtimeInputConfig.AutomaticActivityDetection.EndSensitivityB\x03\xe0A\x01H\x03R\x16endOfSpeechSensitivity\x88\x01\x01\x128\n" +
-	"\x13silence_duration_ms\x18\x06 \x01(\x05B\x03\xe0A\x01H\x04R\x11silenceDurationMs\x88\x01\x01\"l\n" +
+	"\x1acached_content_token_count\x18\x05 \x01(\x05R\x17cachedContentTokenCount\x12q\n" +
+	"\x15prompt_tokens_details\x18\x06 \x03(\v27.google.ai.generativelanguage.v1beta.ModalityTokenCountB\x04\xe2A\x01\x03R\x13promptTokensDetails\x12o\n" +
+	"\x14cache_tokens_details\x18\a \x03(\v27.google.ai.generativelanguage.v1beta.ModalityTokenCountB\x04\xe2A\x01\x03R\x12cacheTokensDetails\"\x92\f\n" +
+	"\x13RealtimeInputConfig\x12\x9b\x01\n" +
+	"\x1cautomatic_activity_detection\x18\x01 \x01(\v2S.google.ai.generativelanguage.v1beta.RealtimeInputConfig.AutomaticActivityDetectionB\x04\xe2A\x01\x01R\x1aautomaticActivityDetection\x12\x81\x01\n" +
+	"\x11activity_handling\x18\x03 \x01(\x0e2I.google.ai.generativelanguage.v1beta.RealtimeInputConfig.ActivityHandlingB\x04\xe2A\x01\x01H\x00R\x10activityHandling\x88\x01\x01\x12u\n" +
+	"\rturn_coverage\x18\x04 \x01(\x0e2E.google.ai.generativelanguage.v1beta.RealtimeInputConfig.TurnCoverageB\x04\xe2A\x01\x01H\x01R\fturnCoverage\x88\x01\x01\x1a\xde\x06\n" +
+	"\x1aAutomaticActivityDetection\x12%\n" +
+	"\bdisabled\x18\x02 \x01(\bB\x04\xe2A\x01\x01H\x00R\bdisabled\x88\x01\x01\x12\xae\x01\n" +
+	"\x1bstart_of_speech_sensitivity\x18\x03 \x01(\x0e2d.google.ai.generativelanguage.v1beta.RealtimeInputConfig.AutomaticActivityDetection.StartSensitivityB\x04\xe2A\x01\x01H\x01R\x18startOfSpeechSensitivity\x88\x01\x01\x125\n" +
+	"\x11prefix_padding_ms\x18\x04 \x01(\x05B\x04\xe2A\x01\x01H\x02R\x0fprefixPaddingMs\x88\x01\x01\x12\xa8\x01\n" +
+	"\x19end_of_speech_sensitivity\x18\x05 \x01(\x0e2b.google.ai.generativelanguage.v1beta.RealtimeInputConfig.AutomaticActivityDetection.EndSensitivityB\x04\xe2A\x01\x01H\x03R\x16endOfSpeechSensitivity\x88\x01\x01\x129\n" +
+	"\x13silence_duration_ms\x18\x06 \x01(\x05B\x04\xe2A\x01\x01H\x04R\x11silenceDurationMs\x88\x01\x01\"l\n" +
 	"\x10StartSensitivity\x12!\n" +
 	"\x1dSTART_SENSITIVITY_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16START_SENSITIVITY_HIGH\x10\x01\x12\x19\n" +
@@ -6419,59 +6419,59 @@ const file_google_ai_generativelanguage_v1beta_generative_service_proto_rawDesc 
 	"\x0e_target_tokensB\x17\n" +
 	"\x15compression_mechanismB\x11\n" +
 	"\x0f_trigger_tokens\"\x1a\n" +
-	"\x18AudioTranscriptionConfig\"\xb7\a\n" +
-	"\x18BidiGenerateContentSetup\x12\x19\n" +
-	"\x05model\x18\x01 \x01(\tB\x03\xe0A\x02R\x05model\x12g\n" +
-	"\x11generation_config\x18\x02 \x01(\v25.google.ai.generativelanguage.v1beta.GenerationConfigB\x03\xe0A\x01R\x10generationConfig\x12`\n" +
-	"\x12system_instruction\x18\x03 \x01(\v2,.google.ai.generativelanguage.v1beta.ContentB\x03\xe0A\x01R\x11systemInstruction\x12D\n" +
-	"\x05tools\x18\x04 \x03(\v2).google.ai.generativelanguage.v1beta.ToolB\x03\xe0A\x01R\x05tools\x12q\n" +
-	"\x15realtime_input_config\x18\x06 \x01(\v28.google.ai.generativelanguage.v1beta.RealtimeInputConfigB\x03\xe0A\x01R\x13realtimeInputConfig\x12p\n" +
-	"\x12session_resumption\x18\a \x01(\v2<.google.ai.generativelanguage.v1beta.SessionResumptionConfigB\x03\xe0A\x01R\x11sessionResumption\x12\x86\x01\n" +
-	"\x1acontext_window_compression\x18\b \x01(\v2C.google.ai.generativelanguage.v1beta.ContextWindowCompressionConfigB\x03\xe0A\x01R\x18contextWindowCompression\x12~\n" +
+	"\x18AudioTranscriptionConfig\"\xc0\a\n" +
+	"\x18BidiGenerateContentSetup\x12\x1a\n" +
+	"\x05model\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05model\x12h\n" +
+	"\x11generation_config\x18\x02 \x01(\v25.google.ai.generativelanguage.v1beta.GenerationConfigB\x04\xe2A\x01\x01R\x10generationConfig\x12a\n" +
+	"\x12system_instruction\x18\x03 \x01(\v2,.google.ai.generativelanguage.v1beta.ContentB\x04\xe2A\x01\x01R\x11systemInstruction\x12E\n" +
+	"\x05tools\x18\x04 \x03(\v2).google.ai.generativelanguage.v1beta.ToolB\x04\xe2A\x01\x01R\x05tools\x12r\n" +
+	"\x15realtime_input_config\x18\x06 \x01(\v28.google.ai.generativelanguage.v1beta.RealtimeInputConfigB\x04\xe2A\x01\x01R\x13realtimeInputConfig\x12q\n" +
+	"\x12session_resumption\x18\a \x01(\v2<.google.ai.generativelanguage.v1beta.SessionResumptionConfigB\x04\xe2A\x01\x01R\x11sessionResumption\x12\x87\x01\n" +
+	"\x1acontext_window_compression\x18\b \x01(\v2C.google.ai.generativelanguage.v1beta.ContextWindowCompressionConfigB\x04\xe2A\x01\x01R\x18contextWindowCompression\x12\x7f\n" +
 	"\x19input_audio_transcription\x18\n" +
-	" \x01(\v2=.google.ai.generativelanguage.v1beta.AudioTranscriptionConfigB\x03\xe0A\x01R\x17inputAudioTranscription\x12\x80\x01\n" +
-	"\x1aoutput_audio_transcription\x18\v \x01(\v2=.google.ai.generativelanguage.v1beta.AudioTranscriptionConfigB\x03\xe0A\x01R\x18outputAudioTranscription\"\x95\x01\n" +
-	" BidiGenerateContentClientContent\x12G\n" +
-	"\x05turns\x18\x01 \x03(\v2,.google.ai.generativelanguage.v1beta.ContentB\x03\xe0A\x01R\x05turns\x12(\n" +
-	"\rturn_complete\x18\x02 \x01(\bB\x03\xe0A\x01R\fturnComplete\"\x8d\x05\n" +
-	" BidiGenerateContentRealtimeInput\x12Q\n" +
-	"\fmedia_chunks\x18\x01 \x03(\v2).google.ai.generativelanguage.v1beta.BlobB\x03\xe0A\x01R\vmediaChunks\x12D\n" +
-	"\x05audio\x18\x02 \x01(\v2).google.ai.generativelanguage.v1beta.BlobB\x03\xe0A\x01R\x05audio\x122\n" +
-	"\x10audio_stream_end\x18\x03 \x01(\bB\x03\xe0A\x01H\x00R\x0eaudioStreamEnd\x88\x01\x01\x12D\n" +
-	"\x05video\x18\x04 \x01(\v2).google.ai.generativelanguage.v1beta.BlobB\x03\xe0A\x01R\x05video\x12\x1c\n" +
-	"\x04text\x18\x05 \x01(\tB\x03\xe0A\x01H\x01R\x04text\x88\x01\x01\x12\x7f\n" +
-	"\x0eactivity_start\x18\x06 \x01(\v2S.google.ai.generativelanguage.v1beta.BidiGenerateContentRealtimeInput.ActivityStartB\x03\xe0A\x01R\ractivityStart\x12y\n" +
-	"\factivity_end\x18\a \x01(\v2Q.google.ai.generativelanguage.v1beta.BidiGenerateContentRealtimeInput.ActivityEndB\x03\xe0A\x01R\vactivityEnd\x1a\x0f\n" +
+	" \x01(\v2=.google.ai.generativelanguage.v1beta.AudioTranscriptionConfigB\x04\xe2A\x01\x01R\x17inputAudioTranscription\x12\x81\x01\n" +
+	"\x1aoutput_audio_transcription\x18\v \x01(\v2=.google.ai.generativelanguage.v1beta.AudioTranscriptionConfigB\x04\xe2A\x01\x01R\x18outputAudioTranscription\"\x97\x01\n" +
+	" BidiGenerateContentClientContent\x12H\n" +
+	"\x05turns\x18\x01 \x03(\v2,.google.ai.generativelanguage.v1beta.ContentB\x04\xe2A\x01\x01R\x05turns\x12)\n" +
+	"\rturn_complete\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fturnComplete\"\x95\x05\n" +
+	" BidiGenerateContentRealtimeInput\x12R\n" +
+	"\fmedia_chunks\x18\x01 \x03(\v2).google.ai.generativelanguage.v1beta.BlobB\x04\xe2A\x01\x01R\vmediaChunks\x12E\n" +
+	"\x05audio\x18\x02 \x01(\v2).google.ai.generativelanguage.v1beta.BlobB\x04\xe2A\x01\x01R\x05audio\x123\n" +
+	"\x10audio_stream_end\x18\x03 \x01(\bB\x04\xe2A\x01\x01H\x00R\x0eaudioStreamEnd\x88\x01\x01\x12E\n" +
+	"\x05video\x18\x04 \x01(\v2).google.ai.generativelanguage.v1beta.BlobB\x04\xe2A\x01\x01R\x05video\x12\x1d\n" +
+	"\x04text\x18\x05 \x01(\tB\x04\xe2A\x01\x01H\x01R\x04text\x88\x01\x01\x12\x80\x01\n" +
+	"\x0eactivity_start\x18\x06 \x01(\v2S.google.ai.generativelanguage.v1beta.BidiGenerateContentRealtimeInput.ActivityStartB\x04\xe2A\x01\x01R\ractivityStart\x12z\n" +
+	"\factivity_end\x18\a \x01(\v2Q.google.ai.generativelanguage.v1beta.BidiGenerateContentRealtimeInput.ActivityEndB\x04\xe2A\x01\x01R\vactivityEnd\x1a\x0f\n" +
 	"\rActivityStart\x1a\r\n" +
 	"\vActivityEndB\x13\n" +
 	"\x11_audio_stream_endB\a\n" +
-	"\x05_text\"\x8c\x01\n" +
-	"\x1fBidiGenerateContentToolResponse\x12i\n" +
-	"\x12function_responses\x18\x01 \x03(\v25.google.ai.generativelanguage.v1beta.FunctionResponseB\x03\xe0A\x01R\x11functionResponses\"\xea\x03\n" +
-	" BidiGenerateContentClientMessage\x12Z\n" +
-	"\x05setup\x18\x01 \x01(\v2=.google.ai.generativelanguage.v1beta.BidiGenerateContentSetupB\x03\xe0A\x01H\x00R\x05setup\x12s\n" +
-	"\x0eclient_content\x18\x02 \x01(\v2E.google.ai.generativelanguage.v1beta.BidiGenerateContentClientContentB\x03\xe0A\x01H\x00R\rclientContent\x12s\n" +
-	"\x0erealtime_input\x18\x03 \x01(\v2E.google.ai.generativelanguage.v1beta.BidiGenerateContentRealtimeInputB\x03\xe0A\x01H\x00R\rrealtimeInput\x12p\n" +
-	"\rtool_response\x18\x04 \x01(\v2D.google.ai.generativelanguage.v1beta.BidiGenerateContentToolResponseB\x03\xe0A\x01H\x00R\ftoolResponseB\x0e\n" +
+	"\x05_text\"\x8d\x01\n" +
+	"\x1fBidiGenerateContentToolResponse\x12j\n" +
+	"\x12function_responses\x18\x01 \x03(\v25.google.ai.generativelanguage.v1beta.FunctionResponseB\x04\xe2A\x01\x01R\x11functionResponses\"\xee\x03\n" +
+	" BidiGenerateContentClientMessage\x12[\n" +
+	"\x05setup\x18\x01 \x01(\v2=.google.ai.generativelanguage.v1beta.BidiGenerateContentSetupB\x04\xe2A\x01\x01H\x00R\x05setup\x12t\n" +
+	"\x0eclient_content\x18\x02 \x01(\v2E.google.ai.generativelanguage.v1beta.BidiGenerateContentClientContentB\x04\xe2A\x01\x01H\x00R\rclientContent\x12t\n" +
+	"\x0erealtime_input\x18\x03 \x01(\v2E.google.ai.generativelanguage.v1beta.BidiGenerateContentRealtimeInputB\x04\xe2A\x01\x01H\x00R\rrealtimeInput\x12q\n" +
+	"\rtool_response\x18\x04 \x01(\v2D.google.ai.generativelanguage.v1beta.BidiGenerateContentToolResponseB\x04\xe2A\x01\x01H\x00R\ftoolResponseB\x0e\n" +
 	"\fmessage_type\"\"\n" +
-	" BidiGenerateContentSetupComplete\"\x98\x06\n" +
-	" BidiGenerateContentServerContent\x12U\n" +
+	" BidiGenerateContentSetupComplete\"\xa1\x06\n" +
+	" BidiGenerateContentServerContent\x12V\n" +
 	"\n" +
-	"model_turn\x18\x01 \x01(\v2,.google.ai.generativelanguage.v1beta.ContentB\x03\xe0A\x03H\x00R\tmodelTurn\x88\x01\x01\x124\n" +
-	"\x13generation_complete\x18\x05 \x01(\bB\x03\xe0A\x03R\x12generationComplete\x12(\n" +
-	"\rturn_complete\x18\x02 \x01(\bB\x03\xe0A\x03R\fturnComplete\x12%\n" +
-	"\vinterrupted\x18\x03 \x01(\bB\x03\xe0A\x03R\vinterrupted\x12j\n" +
-	"\x12grounding_metadata\x18\x04 \x01(\v26.google.ai.generativelanguage.v1beta.GroundingMetadataB\x03\xe0A\x03R\x11groundingMetadata\x12{\n" +
-	"\x13input_transcription\x18\x06 \x01(\v2E.google.ai.generativelanguage.v1beta.BidiGenerateContentTranscriptionB\x03\xe0A\x03R\x12inputTranscription\x12}\n" +
-	"\x14output_transcription\x18\a \x01(\v2E.google.ai.generativelanguage.v1beta.BidiGenerateContentTranscriptionB\x03\xe0A\x03R\x13outputTranscription\x12n\n" +
-	"\x14url_context_metadata\x18\t \x01(\v27.google.ai.generativelanguage.v1beta.UrlContextMetadataB\x03\xe0A\x03R\x12urlContextMetadata\x12/\n" +
+	"model_turn\x18\x01 \x01(\v2,.google.ai.generativelanguage.v1beta.ContentB\x04\xe2A\x01\x03H\x00R\tmodelTurn\x88\x01\x01\x125\n" +
+	"\x13generation_complete\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\x12generationComplete\x12)\n" +
+	"\rturn_complete\x18\x02 \x01(\bB\x04\xe2A\x01\x03R\fturnComplete\x12&\n" +
+	"\vinterrupted\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\vinterrupted\x12k\n" +
+	"\x12grounding_metadata\x18\x04 \x01(\v26.google.ai.generativelanguage.v1beta.GroundingMetadataB\x04\xe2A\x01\x03R\x11groundingMetadata\x12|\n" +
+	"\x13input_transcription\x18\x06 \x01(\v2E.google.ai.generativelanguage.v1beta.BidiGenerateContentTranscriptionB\x04\xe2A\x01\x03R\x12inputTranscription\x12~\n" +
+	"\x14output_transcription\x18\a \x01(\v2E.google.ai.generativelanguage.v1beta.BidiGenerateContentTranscriptionB\x04\xe2A\x01\x03R\x13outputTranscription\x12o\n" +
+	"\x14url_context_metadata\x18\t \x01(\v27.google.ai.generativelanguage.v1beta.UrlContextMetadataB\x04\xe2A\x01\x03R\x12urlContextMetadata\x120\n" +
 	"\x11waiting_for_input\x18\n" +
-	" \x01(\bB\x03\xe0A\x03R\x0fwaitingForInputB\r\n" +
-	"\v_model_turn\"|\n" +
-	"\x1bBidiGenerateContentToolCall\x12]\n" +
-	"\x0efunction_calls\x18\x02 \x03(\v21.google.ai.generativelanguage.v1beta.FunctionCallB\x03\xe0A\x03R\rfunctionCalls\"@\n" +
-	"'BidiGenerateContentToolCallCancellation\x12\x15\n" +
-	"\x03ids\x18\x01 \x03(\tB\x03\xe0A\x03R\x03ids\"@\n" +
+	" \x01(\bB\x04\xe2A\x01\x03R\x0fwaitingForInputB\r\n" +
+	"\v_model_turn\"}\n" +
+	"\x1bBidiGenerateContentToolCall\x12^\n" +
+	"\x0efunction_calls\x18\x02 \x03(\v21.google.ai.generativelanguage.v1beta.FunctionCallB\x04\xe2A\x01\x03R\rfunctionCalls\"A\n" +
+	"'BidiGenerateContentToolCallCancellation\x12\x16\n" +
+	"\x03ids\x18\x01 \x03(\tB\x04\xe2A\x01\x03R\x03ids\"@\n" +
 	"\x06GoAway\x126\n" +
 	"\ttime_left\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\btimeLeft\"V\n" +
 	"\x17SessionResumptionUpdate\x12\x1d\n" +
@@ -6479,29 +6479,29 @@ const file_google_ai_generativelanguage_v1beta_generative_service_proto_rawDesc 
 	"new_handle\x18\x01 \x01(\tR\tnewHandle\x12\x1c\n" +
 	"\tresumable\x18\x02 \x01(\bR\tresumable\"6\n" +
 	" BidiGenerateContentTranscription\x12\x12\n" +
-	"\x04text\x18\x01 \x01(\tR\x04text\"\xbc\x06\n" +
-	" BidiGenerateContentServerMessage\x12s\n" +
-	"\x0esetup_complete\x18\x02 \x01(\v2E.google.ai.generativelanguage.v1beta.BidiGenerateContentSetupCompleteB\x03\xe0A\x03H\x00R\rsetupComplete\x12s\n" +
-	"\x0eserver_content\x18\x03 \x01(\v2E.google.ai.generativelanguage.v1beta.BidiGenerateContentServerContentB\x03\xe0A\x03H\x00R\rserverContent\x12d\n" +
-	"\ttool_call\x18\x04 \x01(\v2@.google.ai.generativelanguage.v1beta.BidiGenerateContentToolCallB\x03\xe0A\x03H\x00R\btoolCall\x12\x89\x01\n" +
-	"\x16tool_call_cancellation\x18\x05 \x01(\v2L.google.ai.generativelanguage.v1beta.BidiGenerateContentToolCallCancellationB\x03\xe0A\x03H\x00R\x14toolCallCancellation\x12K\n" +
-	"\ago_away\x18\x06 \x01(\v2+.google.ai.generativelanguage.v1beta.GoAwayB\x03\xe0A\x03H\x00R\x06goAway\x12\x7f\n" +
-	"\x19session_resumption_update\x18\a \x01(\v2<.google.ai.generativelanguage.v1beta.SessionResumptionUpdateB\x03\xe0A\x03H\x00R\x17sessionResumptionUpdate\x12^\n" +
+	"\x04text\x18\x01 \x01(\tR\x04text\"\xc4\x06\n" +
+	" BidiGenerateContentServerMessage\x12t\n" +
+	"\x0esetup_complete\x18\x02 \x01(\v2E.google.ai.generativelanguage.v1beta.BidiGenerateContentSetupCompleteB\x04\xe2A\x01\x03H\x00R\rsetupComplete\x12t\n" +
+	"\x0eserver_content\x18\x03 \x01(\v2E.google.ai.generativelanguage.v1beta.BidiGenerateContentServerContentB\x04\xe2A\x01\x03H\x00R\rserverContent\x12e\n" +
+	"\ttool_call\x18\x04 \x01(\v2@.google.ai.generativelanguage.v1beta.BidiGenerateContentToolCallB\x04\xe2A\x01\x03H\x00R\btoolCall\x12\x8a\x01\n" +
+	"\x16tool_call_cancellation\x18\x05 \x01(\v2L.google.ai.generativelanguage.v1beta.BidiGenerateContentToolCallCancellationB\x04\xe2A\x01\x03H\x00R\x14toolCallCancellation\x12L\n" +
+	"\ago_away\x18\x06 \x01(\v2+.google.ai.generativelanguage.v1beta.GoAwayB\x04\xe2A\x01\x03H\x00R\x06goAway\x12\x80\x01\n" +
+	"\x19session_resumption_update\x18\a \x01(\v2<.google.ai.generativelanguage.v1beta.SessionResumptionUpdateB\x04\xe2A\x01\x03H\x00R\x17sessionResumptionUpdate\x12_\n" +
 	"\x0eusage_metadata\x18\n" +
-	" \x01(\v22.google.ai.generativelanguage.v1beta.UsageMetadataB\x03\xe0A\x03R\rusageMetadataB\x0e\n" +
-	"\fmessage_type\"\xbc\x06\n" +
-	"\rUsageMetadata\x121\n" +
-	"\x12prompt_token_count\x18\x01 \x01(\x05B\x03\xe0A\x03R\x10promptTokenCount\x12;\n" +
-	"\x1acached_content_token_count\x18\x04 \x01(\x05R\x17cachedContentTokenCount\x125\n" +
-	"\x14response_token_count\x18\x02 \x01(\x05B\x03\xe0A\x03R\x12responseTokenCount\x12A\n" +
-	"\x1btool_use_prompt_token_count\x18\b \x01(\x05B\x03\xe0A\x03R\x17toolUsePromptTokenCount\x125\n" +
+	" \x01(\v22.google.ai.generativelanguage.v1beta.UsageMetadataB\x04\xe2A\x01\x03R\rusageMetadataB\x0e\n" +
+	"\fmessage_type\"\xc5\x06\n" +
+	"\rUsageMetadata\x122\n" +
+	"\x12prompt_token_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\x10promptTokenCount\x12;\n" +
+	"\x1acached_content_token_count\x18\x04 \x01(\x05R\x17cachedContentTokenCount\x126\n" +
+	"\x14response_token_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\x12responseTokenCount\x12B\n" +
+	"\x1btool_use_prompt_token_count\x18\b \x01(\x05B\x04\xe2A\x01\x03R\x17toolUsePromptTokenCount\x126\n" +
 	"\x14thoughts_token_count\x18\n" +
-	" \x01(\x05B\x03\xe0A\x03R\x12thoughtsTokenCount\x12/\n" +
-	"\x11total_token_count\x18\x03 \x01(\x05B\x03\xe0A\x03R\x0ftotalTokenCount\x12p\n" +
-	"\x15prompt_tokens_details\x18\x05 \x03(\v27.google.ai.generativelanguage.v1beta.ModalityTokenCountB\x03\xe0A\x03R\x13promptTokensDetails\x12n\n" +
-	"\x14cache_tokens_details\x18\x06 \x03(\v27.google.ai.generativelanguage.v1beta.ModalityTokenCountB\x03\xe0A\x03R\x12cacheTokensDetails\x12t\n" +
-	"\x17response_tokens_details\x18\a \x03(\v27.google.ai.generativelanguage.v1beta.ModalityTokenCountB\x03\xe0A\x03R\x15responseTokensDetails\x12\x80\x01\n" +
-	"\x1etool_use_prompt_tokens_details\x18\t \x03(\v27.google.ai.generativelanguage.v1beta.ModalityTokenCountB\x03\xe0A\x03R\x1atoolUsePromptTokensDetails*\xd8\x01\n" +
+	" \x01(\x05B\x04\xe2A\x01\x03R\x12thoughtsTokenCount\x120\n" +
+	"\x11total_token_count\x18\x03 \x01(\x05B\x04\xe2A\x01\x03R\x0ftotalTokenCount\x12q\n" +
+	"\x15prompt_tokens_details\x18\x05 \x03(\v27.google.ai.generativelanguage.v1beta.ModalityTokenCountB\x04\xe2A\x01\x03R\x13promptTokensDetails\x12o\n" +
+	"\x14cache_tokens_details\x18\x06 \x03(\v27.google.ai.generativelanguage.v1beta.ModalityTokenCountB\x04\xe2A\x01\x03R\x12cacheTokensDetails\x12u\n" +
+	"\x17response_tokens_details\x18\a \x03(\v27.google.ai.generativelanguage.v1beta.ModalityTokenCountB\x04\xe2A\x01\x03R\x15responseTokensDetails\x12\x81\x01\n" +
+	"\x1etool_use_prompt_tokens_details\x18\t \x03(\v27.google.ai.generativelanguage.v1beta.ModalityTokenCountB\x04\xe2A\x01\x03R\x1atoolUsePromptTokensDetails*\xd8\x01\n" +
 	"\bTaskType\x12\x19\n" +
 	"\x15TASK_TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fRETRIEVAL_QUERY\x10\x01\x12\x16\n" +

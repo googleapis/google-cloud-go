@@ -117,13 +117,13 @@ var File_google_cloud_ces_v1beta_python_function_proto protoreflect.FileDescript
 
 const file_google_cloud_ces_v1beta_python_function_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/ces/v1beta/python_function.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a$google/cloud/ces/v1beta/common.proto\"\xe6\x01\n" +
-	"\x0ePythonFunction\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12$\n" +
-	"\vpython_code\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
-	"pythonCode\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x03R\vdescription\x12n\n" +
-	"\x18service_directory_config\x18\x04 \x01(\v2/.google.cloud.ces.v1beta.ServiceDirectoryConfigB\x03\xe0A\x01R\x16serviceDirectoryConfigBc\n" +
+	"-google/cloud/ces/v1beta/python_function.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a$google/cloud/ces/v1beta/common.proto\"\xea\x01\n" +
+	"\x0ePythonFunction\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x04name\x12%\n" +
+	"\vpython_code\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"pythonCode\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12o\n" +
+	"\x18service_directory_config\x18\x04 \x01(\v2/.google.cloud.ces.v1beta.ServiceDirectoryConfigB\x04\xe2A\x01\x01R\x16serviceDirectoryConfigBc\n" +
 	"\x1bcom.google.cloud.ces.v1betaB\x13PythonFunctionProtoP\x01Z-cloud.google.com/go/ces/apiv1beta/cespb;cespbb\x06proto3"
 
 var (

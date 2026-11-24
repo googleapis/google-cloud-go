@@ -491,22 +491,22 @@ const file_google_cloud_datacatalog_v1_schema_proto_rawDesc = "" +
 	"\n" +
 	"(google/cloud/datacatalog/v1/schema.proto\x12\x1bgoogle.cloud.datacatalog.v1\x1a\x1fgoogle/api/field_behavior.proto\"M\n" +
 	"\x06Schema\x12C\n" +
-	"\acolumns\x18\x02 \x03(\v2).google.cloud.datacatalog.v1.ColumnSchemaR\acolumns\"\xee\b\n" +
-	"\fColumnSchema\x12\x1b\n" +
-	"\x06column\x18\x06 \x01(\tB\x03\xe0A\x02R\x06column\x12\x17\n" +
-	"\x04type\x18\x01 \x01(\tB\x03\xe0A\x02R\x04type\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x17\n" +
-	"\x04mode\x18\x03 \x01(\tB\x03\xe0A\x01R\x04mode\x12(\n" +
-	"\rdefault_value\x18\b \x01(\tB\x03\xe0A\x01R\fdefaultValue\x12.\n" +
-	"\x10ordinal_position\x18\t \x01(\x05B\x03\xe0A\x01R\x0fordinalPosition\x12o\n" +
+	"\acolumns\x18\x02 \x03(\v2).google.cloud.datacatalog.v1.ColumnSchemaR\acolumns\"\xf9\b\n" +
+	"\fColumnSchema\x12\x1c\n" +
+	"\x06column\x18\x06 \x01(\tB\x04\xe2A\x01\x02R\x06column\x12\x18\n" +
+	"\x04type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04type\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x18\n" +
+	"\x04mode\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x04mode\x12)\n" +
+	"\rdefault_value\x18\b \x01(\tB\x04\xe2A\x01\x01R\fdefaultValue\x12/\n" +
+	"\x10ordinal_position\x18\t \x01(\x05B\x04\xe2A\x01\x01R\x0fordinalPosition\x12p\n" +
 	"\x15highest_indexing_type\x18\n" +
-	" \x01(\x0e26.google.cloud.datacatalog.v1.ColumnSchema.IndexingTypeB\x03\xe0A\x01R\x13highestIndexingType\x12N\n" +
+	" \x01(\x0e26.google.cloud.datacatalog.v1.ColumnSchema.IndexingTypeB\x04\xe2A\x01\x01R\x13highestIndexingType\x12O\n" +
 	"\n" +
-	"subcolumns\x18\a \x03(\v2).google.cloud.datacatalog.v1.ColumnSchemaB\x03\xe0A\x01R\n" +
+	"subcolumns\x18\a \x03(\v2).google.cloud.datacatalog.v1.ColumnSchemaB\x04\xe2A\x01\x01R\n" +
 	"subcolumns\x12j\n" +
-	"\x12looker_column_spec\x18\x12 \x01(\v2:.google.cloud.datacatalog.v1.ColumnSchema.LookerColumnSpecH\x00R\x10lookerColumnSpec\x12m\n" +
-	"\x12range_element_type\x18\x13 \x01(\v2:.google.cloud.datacatalog.v1.ColumnSchema.FieldElementTypeB\x03\xe0A\x01R\x10rangeElementType\x12\x1c\n" +
-	"\agc_rule\x18\v \x01(\tB\x03\xe0A\x01R\x06gcRule\x1a\xf8\x01\n" +
+	"\x12looker_column_spec\x18\x12 \x01(\v2:.google.cloud.datacatalog.v1.ColumnSchema.LookerColumnSpecH\x00R\x10lookerColumnSpec\x12n\n" +
+	"\x12range_element_type\x18\x13 \x01(\v2:.google.cloud.datacatalog.v1.ColumnSchema.FieldElementTypeB\x04\xe2A\x01\x01R\x10rangeElementType\x12\x1d\n" +
+	"\agc_rule\x18\v \x01(\tB\x04\xe2A\x01\x01R\x06gcRule\x1a\xf8\x01\n" +
 	"\x10LookerColumnSpec\x12_\n" +
 	"\x04type\x18\x01 \x01(\x0e2K.google.cloud.datacatalog.v1.ColumnSchema.LookerColumnSpec.LookerColumnTypeR\x04type\"\x82\x01\n" +
 	"\x10LookerColumnType\x12\"\n" +
@@ -516,9 +516,9 @@ const file_google_cloud_datacatalog_v1_schema_proto_rawDesc = "" +
 	"\n" +
 	"\x06FILTER\x10\x03\x12\v\n" +
 	"\aMEASURE\x10\x04\x12\r\n" +
-	"\tPARAMETER\x10\x05\x1a+\n" +
-	"\x10FieldElementType\x12\x17\n" +
-	"\x04type\x18\x01 \x01(\tB\x03\xe0A\x02R\x04type\"\x9c\x01\n" +
+	"\tPARAMETER\x10\x05\x1a,\n" +
+	"\x10FieldElementType\x12\x18\n" +
+	"\x04type\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04type\"\x9c\x01\n" +
 	"\fIndexingType\x12\x1d\n" +
 	"\x19INDEXING_TYPE_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12INDEXING_TYPE_NONE\x10\x01\x12\x1c\n" +

@@ -1152,12 +1152,12 @@ var File_google_cloud_advisorynotifications_v1_service_proto protoreflect.FileDe
 
 const file_google_cloud_advisorynotifications_v1_service_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/advisorynotifications/v1/service.proto\x12%google.cloud.advisorynotifications.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcd\x04\n" +
+	"3google/cloud/advisorynotifications/v1/service.proto\x12%google.cloud.advisorynotifications.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xce\x04\n" +
 	"\fNotification\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12H\n" +
 	"\asubject\x18\x02 \x01(\v2..google.cloud.advisorynotifications.v1.SubjectR\asubject\x12J\n" +
-	"\bmessages\x18\x03 \x03(\v2..google.cloud.advisorynotifications.v1.MessageR\bmessages\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\bmessages\x18\x03 \x03(\v2..google.cloud.advisorynotifications.v1.MessageR\bmessages\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"createTime\x12d\n" +
 	"\x11notification_type\x18\f \x01(\x0e27.google.cloud.advisorynotifications.v1.NotificationTypeR\x10notificationType:\xea\x01\xeaA\xe6\x01\n" +
 	"1advisorynotifications.googleapis.com/Notification\x12Norganizations/{organization}/locations/{location}/notifications/{notification}\x12Dprojects/{project}/locations/{location}/notifications/{notification}*\rnotifications2\fnotification\"\xaf\x01\n" +
@@ -1184,9 +1184,9 @@ const file_google_cloud_advisorynotifications_v1_service_proto_rawDesc = "" +
 	"\aheaders\x18\x01 \x03(\tR\aheaders\x12N\n" +
 	"\tdata_rows\x18\x02 \x03(\v21.google.cloud.advisorynotifications.v1.Csv.CsvRowR\bdataRows\x1a\"\n" +
 	"\x06CsvRow\x12\x18\n" +
-	"\aentries\x18\x01 \x03(\tR\aentries\"\x9b\x02\n" +
-	"\x18ListNotificationsRequest\x12Q\n" +
-	"\x06parent\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\x121advisorynotifications.googleapis.com/NotificationR\x06parent\x12\x1b\n" +
+	"\aentries\x18\x01 \x03(\tR\aentries\"\x9c\x02\n" +
+	"\x18ListNotificationsRequest\x12R\n" +
+	"\x06parent\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\x121advisorynotifications.googleapis.com/NotificationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12K\n" +
@@ -1196,26 +1196,26 @@ const file_google_cloud_advisorynotifications_v1_service_proto_rawDesc = "" +
 	"\rnotifications\x18\x01 \x03(\v23.google.cloud.advisorynotifications.v1.NotificationR\rnotifications\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
 	"\n" +
-	"total_size\x18\x03 \x01(\x05R\ttotalSize\"\x8c\x01\n" +
-	"\x16GetNotificationRequest\x12M\n" +
-	"\x04name\x18\x01 \x01(\tB9\xe0A\x02\xfaA3\n" +
+	"total_size\x18\x03 \x01(\x05R\ttotalSize\"\x8d\x01\n" +
+	"\x16GetNotificationRequest\x12N\n" +
+	"\x04name\x18\x01 \x01(\tB:\xe2A\x01\x02\xfaA3\n" +
 	"1advisorynotifications.googleapis.com/NotificationR\x04name\x12#\n" +
-	"\rlanguage_code\x18\x05 \x01(\tR\flanguageCode\"\x81\x04\n" +
-	"\bSettings\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x83\x01\n" +
-	"\x15notification_settings\x18\x02 \x03(\v2I.google.cloud.advisorynotifications.v1.Settings.NotificationSettingsEntryB\x03\xe0A\x02R\x14notificationSettings\x12\x17\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x02R\x04etag\x1a\x84\x01\n" +
+	"\rlanguage_code\x18\x05 \x01(\tR\flanguageCode\"\x84\x04\n" +
+	"\bSettings\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12\x84\x01\n" +
+	"\x15notification_settings\x18\x02 \x03(\v2I.google.cloud.advisorynotifications.v1.Settings.NotificationSettingsEntryB\x04\xe2A\x01\x02R\x14notificationSettings\x12\x18\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x04etag\x1a\x84\x01\n" +
 	"\x19NotificationSettingsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12Q\n" +
 	"\x05value\x18\x02 \x01(\v2;.google.cloud.advisorynotifications.v1.NotificationSettingsR\x05value:\x028\x01:\xb5\x01\xeaA\xb1\x01\n" +
 	"-advisorynotifications.googleapis.com/Settings\x12:organizations/{organization}/locations/{location}/settings\x120projects/{project}/locations/{location}/settings*\bsettings2\bsettings\"0\n" +
 	"\x14NotificationSettings\x12\x18\n" +
-	"\aenabled\x18\x01 \x01(\bR\aenabled\"_\n" +
-	"\x12GetSettingsRequest\x12I\n" +
-	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-advisorynotifications.googleapis.com/SettingsR\x04name\"i\n" +
-	"\x15UpdateSettingsRequest\x12P\n" +
-	"\bsettings\x18\x01 \x01(\v2/.google.cloud.advisorynotifications.v1.SettingsB\x03\xe0A\x02R\bsettings*J\n" +
+	"\aenabled\x18\x01 \x01(\bR\aenabled\"`\n" +
+	"\x12GetSettingsRequest\x12J\n" +
+	"\x04name\x18\x01 \x01(\tB6\xe2A\x01\x02\xfaA/\n" +
+	"-advisorynotifications.googleapis.com/SettingsR\x04name\"j\n" +
+	"\x15UpdateSettingsRequest\x12Q\n" +
+	"\bsettings\x18\x01 \x01(\v2/.google.cloud.advisorynotifications.v1.SettingsB\x04\xe2A\x01\x02R\bsettings*J\n" +
 	"\x10NotificationView\x12!\n" +
 	"\x1dNOTIFICATION_VIEW_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05BASIC\x10\x01\x12\b\n" +

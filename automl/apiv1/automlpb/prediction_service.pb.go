@@ -456,11 +456,11 @@ var File_google_cloud_automl_v1_prediction_service_proto protoreflect.FileDescri
 
 const file_google_cloud_automl_v1_prediction_service_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/automl/v1/prediction_service.proto\x12\x16google.cloud.automl.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a/google/cloud/automl/v1/annotation_payload.proto\x1a'google/cloud/automl/v1/data_items.proto\x1a\x1fgoogle/cloud/automl/v1/io.proto\x1a#google/longrunning/operations.proto\"\x97\x02\n" +
-	"\x0ePredictRequest\x127\n" +
-	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
-	"\x1bautoml.googleapis.com/ModelR\x04name\x12E\n" +
-	"\apayload\x18\x02 \x01(\v2&.google.cloud.automl.v1.ExamplePayloadB\x03\xe0A\x02R\apayload\x12J\n" +
+	"/google/cloud/automl/v1/prediction_service.proto\x12\x16google.cloud.automl.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a/google/cloud/automl/v1/annotation_payload.proto\x1a'google/cloud/automl/v1/data_items.proto\x1a\x1fgoogle/cloud/automl/v1/io.proto\x1a#google/longrunning/operations.proto\"\x99\x02\n" +
+	"\x0ePredictRequest\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
+	"\x1bautoml.googleapis.com/ModelR\x04name\x12F\n" +
+	"\apayload\x18\x02 \x01(\v2&.google.cloud.automl.v1.ExamplePayloadB\x04\xe2A\x01\x02R\apayload\x12J\n" +
 	"\x06params\x18\x03 \x03(\v22.google.cloud.automl.v1.PredictRequest.ParamsEntryR\x06params\x1a9\n" +
 	"\vParamsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -471,12 +471,12 @@ const file_google_cloud_automl_v1_prediction_service_proto_rawDesc = "" +
 	"\bmetadata\x18\x02 \x03(\v25.google.cloud.automl.v1.PredictResponse.MetadataEntryR\bmetadata\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x8f\x03\n" +
-	"\x13BatchPredictRequest\x127\n" +
-	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
-	"\x1bautoml.googleapis.com/ModelR\x04name\x12W\n" +
-	"\finput_config\x18\x03 \x01(\v2/.google.cloud.automl.v1.BatchPredictInputConfigB\x03\xe0A\x02R\vinputConfig\x12Z\n" +
-	"\routput_config\x18\x04 \x01(\v20.google.cloud.automl.v1.BatchPredictOutputConfigB\x03\xe0A\x02R\foutputConfig\x12O\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x92\x03\n" +
+	"\x13BatchPredictRequest\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
+	"\x1bautoml.googleapis.com/ModelR\x04name\x12X\n" +
+	"\finput_config\x18\x03 \x01(\v2/.google.cloud.automl.v1.BatchPredictInputConfigB\x04\xe2A\x01\x02R\vinputConfig\x12[\n" +
+	"\routput_config\x18\x04 \x01(\v20.google.cloud.automl.v1.BatchPredictOutputConfigB\x04\xe2A\x01\x02R\foutputConfig\x12O\n" +
 	"\x06params\x18\x05 \x03(\v27.google.cloud.automl.v1.BatchPredictRequest.ParamsEntryR\x06params\x1a9\n" +
 	"\vParamsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +

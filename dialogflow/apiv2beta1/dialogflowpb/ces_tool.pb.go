@@ -97,11 +97,11 @@ var File_google_cloud_dialogflow_v2beta1_ces_tool_proto protoreflect.FileDescrip
 
 const file_google_cloud_dialogflow_v2beta1_ces_tool_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/dialogflow/v2beta1/ces_tool.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/dialogflow/v2beta1/tool.proto\"\xc8\x01\n" +
-	"\vCesToolSpec\x12:\n" +
-	"\bces_tool\x18\x01 \x01(\tB\x1f\xe0A\x01\xfaA\x19\n" +
-	"\x17ces.googleapis.com/ToolR\acesTool\x12}\n" +
-	"\x18confirmation_requirement\x18\x02 \x01(\x0e2=.google.cloud.dialogflow.v2beta1.Tool.ConfirmationRequirementB\x03\xe0A\x01R\x17confirmationRequirementB\xa1\x01\n" +
+	".google/cloud/dialogflow/v2beta1/ces_tool.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/dialogflow/v2beta1/tool.proto\"\xca\x01\n" +
+	"\vCesToolSpec\x12;\n" +
+	"\bces_tool\x18\x01 \x01(\tB \xe2A\x01\x01\xfaA\x19\n" +
+	"\x17ces.googleapis.com/ToolR\acesTool\x12~\n" +
+	"\x18confirmation_requirement\x18\x02 \x01(\x0e2=.google.cloud.dialogflow.v2beta1.Tool.ConfirmationRequirementB\x04\xe2A\x01\x01R\x17confirmationRequirementB\xa1\x01\n" +
 	"#com.google.cloud.dialogflow.v2beta1B\fCesToolProtoP\x01ZCcloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb;dialogflowpb\xa2\x02\x02DF\xaa\x02\x1fGoogle.Cloud.Dialogflow.V2Beta1b\x06proto3"
 
 var (

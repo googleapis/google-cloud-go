@@ -656,15 +656,15 @@ var File_google_cloud_vpcaccess_v1_vpc_access_proto protoreflect.FileDescriptor
 
 const file_google_cloud_vpcaccess_v1_vpc_access_proto_rawDesc = "" +
 	"\n" +
-	"*google/cloud/vpcaccess/v1/vpc_access.proto\x12\x19google.cloud.vpcaccess.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xde\x05\n" +
+	"*google/cloud/vpcaccess/v1/vpc_access.proto\x12\x19google.cloud.vpcaccess.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe0\x05\n" +
 	"\tConnector\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n" +
 	"\anetwork\x18\x02 \x01(\tR\anetwork\x12\"\n" +
-	"\rip_cidr_range\x18\x03 \x01(\tR\vipCidrRange\x12E\n" +
-	"\x05state\x18\x04 \x01(\x0e2*.google.cloud.vpcaccess.v1.Connector.StateB\x03\xe0A\x03R\x05state\x12%\n" +
+	"\rip_cidr_range\x18\x03 \x01(\tR\vipCidrRange\x12F\n" +
+	"\x05state\x18\x04 \x01(\x0e2*.google.cloud.vpcaccess.v1.Connector.StateB\x04\xe2A\x01\x03R\x05state\x12%\n" +
 	"\x0emin_throughput\x18\x05 \x01(\x05R\rminThroughput\x12%\n" +
-	"\x0emax_throughput\x18\x06 \x01(\x05R\rmaxThroughput\x122\n" +
-	"\x12connected_projects\x18\a \x03(\tB\x03\xe0A\x03R\x11connectedProjects\x12C\n" +
+	"\x0emax_throughput\x18\x06 \x01(\x05R\rmaxThroughput\x123\n" +
+	"\x12connected_projects\x18\a \x03(\tB\x04\xe2A\x01\x03R\x11connectedProjects\x12C\n" +
 	"\x06subnet\x18\b \x01(\v2+.google.cloud.vpcaccess.v1.Connector.SubnetR\x06subnet\x12!\n" +
 	"\fmachine_type\x18\n" +
 	" \x01(\tR\vmachineType\x12#\n" +
@@ -681,17 +681,17 @@ const file_google_cloud_vpcaccess_v1_vpc_access_proto_rawDesc = "" +
 	"\bDELETING\x10\x03\x12\t\n" +
 	"\x05ERROR\x10\x04\x12\f\n" +
 	"\bUPDATING\x10\x05:g\xeaAd\n" +
-	"\"vpcaccess.googleapis.com/Connector\x12>projects/{project}/locations/{location}/connectors/{connector}\"\xcc\x01\n" +
-	"\x16CreateConnectorRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12&\n" +
-	"\fconnector_id\x18\x02 \x01(\tB\x03\xe0A\x02R\vconnectorId\x12G\n" +
-	"\tconnector\x18\x03 \x01(\v2$.google.cloud.vpcaccess.v1.ConnectorB\x03\xe0A\x02R\tconnector\"U\n" +
-	"\x13GetConnectorRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"vpcaccess.googleapis.com/ConnectorR\x04name\"\x96\x01\n" +
-	"\x15ListConnectorsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\"vpcaccess.googleapis.com/Connector\x12>projects/{project}/locations/{location}/connectors/{connector}\"\xcf\x01\n" +
+	"\x16CreateConnectorRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12'\n" +
+	"\fconnector_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vconnectorId\x12H\n" +
+	"\tconnector\x18\x03 \x01(\v2$.google.cloud.vpcaccess.v1.ConnectorB\x04\xe2A\x01\x02R\tconnector\"V\n" +
+	"\x13GetConnectorRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"vpcaccess.googleapis.com/ConnectorR\x04name\"\x97\x01\n" +
+	"\x15ListConnectorsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -700,16 +700,16 @@ const file_google_cloud_vpcaccess_v1_vpc_access_proto_rawDesc = "" +
 	"\n" +
 	"connectors\x18\x01 \x03(\v2$.google.cloud.vpcaccess.v1.ConnectorR\n" +
 	"connectors\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"X\n" +
-	"\x16DeleteConnectorRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"vpcaccess.googleapis.com/ConnectorR\x04name\"\xf2\x01\n" +
-	"\x11OperationMetadata\x12\x1b\n" +
-	"\x06method\x18\x01 \x01(\tB\x03\xe0A\x03R\x06method\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12B\n" +
-	"\x06target\x18\x05 \x01(\tB*\xe0A\x03\xfaA$\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Y\n" +
+	"\x16DeleteConnectorRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"vpcaccess.googleapis.com/ConnectorR\x04name\"\xf6\x01\n" +
+	"\x11OperationMetadata\x12\x1c\n" +
+	"\x06method\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06method\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12C\n" +
+	"\x06target\x18\x05 \x01(\tB+\xe2A\x01\x03\xfaA$\n" +
 	"\"vpcaccess.googleapis.com/ConnectorR\x06target2\xfc\x06\n" +
 	"\x10VpcAccessService\x12\xe8\x01\n" +
 	"\x0fCreateConnector\x121.google.cloud.vpcaccess.v1.CreateConnectorRequest\x1a\x1d.google.longrunning.Operation\"\x82\x01\xcaA\x1e\n" +

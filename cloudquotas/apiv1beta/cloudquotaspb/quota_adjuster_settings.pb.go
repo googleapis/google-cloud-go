@@ -318,25 +318,25 @@ var File_google_api_cloudquotas_v1beta_quota_adjuster_settings_proto protoreflec
 
 const file_google_api_cloudquotas_v1beta_quota_adjuster_settings_proto_rawDesc = "" +
 	"\n" +
-	";google/api/cloudquotas/v1beta/quota_adjuster_settings.proto\x12\x1dgoogle.api.cloudquotas.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"o\n" +
-	"\x1fGetQuotaAdjusterSettingsRequest\x12L\n" +
-	"\x04name\x18\x01 \x01(\tB8\xe0A\x02\xfaA2\n" +
-	"0cloudquotas.googleapis.com/QuotaAdjusterSettingsR\x04name\"\x83\x02\n" +
-	"\"UpdateQuotaAdjusterSettingsRequest\x12q\n" +
-	"\x17quota_adjuster_settings\x18\x01 \x01(\v24.google.api.cloudquotas.v1beta.QuotaAdjusterSettingsB\x03\xe0A\x02R\x15quotaAdjusterSettings\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xb4\x05\n" +
-	"\x15QuotaAdjusterSettings\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12d\n" +
+	";google/api/cloudquotas/v1beta/quota_adjuster_settings.proto\x12\x1dgoogle.api.cloudquotas.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"p\n" +
+	"\x1fGetQuotaAdjusterSettingsRequest\x12M\n" +
+	"\x04name\x18\x01 \x01(\tB9\xe2A\x01\x02\xfaA2\n" +
+	"0cloudquotas.googleapis.com/QuotaAdjusterSettingsR\x04name\"\x86\x02\n" +
+	"\"UpdateQuotaAdjusterSettingsRequest\x12r\n" +
+	"\x17quota_adjuster_settings\x18\x01 \x01(\v24.google.api.cloudquotas.v1beta.QuotaAdjusterSettingsB\x04\xe2A\x01\x02R\x15quotaAdjusterSettings\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xba\x05\n" +
+	"\x15QuotaAdjusterSettings\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12e\n" +
 	"\n" +
-	"enablement\x18\x02 \x01(\x0e2?.google.api.cloudquotas.v1beta.QuotaAdjusterSettings.EnablementB\x03\xe0A\x01R\n" +
-	"enablement\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12\x17\n" +
-	"\x04etag\x18\x06 \x01(\tB\x03\xe0A\x01R\x04etag\x12!\n" +
-	"\tinherited\x18\a \x01(\bB\x03\xe0A\x01R\tinherited\x12*\n" +
-	"\x0einherited_from\x18\b \x01(\tB\x03\xe0A\x03R\rinheritedFrom\"C\n" +
+	"enablement\x18\x02 \x01(\x0e2?.google.api.cloudquotas.v1beta.QuotaAdjusterSettings.EnablementB\x04\xe2A\x01\x01R\n" +
+	"enablement\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12\x18\n" +
+	"\x04etag\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12\"\n" +
+	"\tinherited\x18\a \x01(\bB\x04\xe2A\x01\x01R\tinherited\x12+\n" +
+	"\x0einherited_from\x18\b \x01(\tB\x04\xe2A\x01\x03R\rinheritedFrom\"C\n" +
 	"\n" +
 	"Enablement\x12\x1a\n" +
 	"\x16ENABLEMENT_UNSPECIFIED\x10\x00\x12\v\n" +

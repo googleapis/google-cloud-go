@@ -1146,77 +1146,77 @@ var File_google_maps_fleetengine_delivery_v1_delivery_api_proto protoreflect.Fil
 
 const file_google_maps_fleetengine_delivery_v1_delivery_api_proto_rawDesc = "" +
 	"\n" +
-	"6google/maps/fleetengine/delivery/v1/delivery_api.proto\x12\x1cmaps.fleetengine.delivery.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a\x1egoogle/geo/type/viewport.proto\x1a;google/maps/fleetengine/delivery/v1/delivery_vehicles.proto\x1a0google/maps/fleetengine/delivery/v1/header.proto\x1a<google/maps/fleetengine/delivery/v1/task_tracking_info.proto\x1a/google/maps/fleetengine/delivery/v1/tasks.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xa1\x02\n" +
-	"\x1cCreateDeliveryVehicleRequest\x12P\n" +
-	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x03\xe0A\x01R\x06header\x12\x1b\n" +
-	"\x06parent\x18\x03 \x01(\tB\x03\xe0A\x02R\x06parent\x123\n" +
-	"\x13delivery_vehicle_id\x18\x04 \x01(\tB\x03\xe0A\x02R\x11deliveryVehicleId\x12]\n" +
-	"\x10delivery_vehicle\x18\x05 \x01(\v2-.maps.fleetengine.delivery.v1.DeliveryVehicleB\x03\xe0A\x02R\x0fdeliveryVehicle\"\xb5\x01\n" +
-	"\x19GetDeliveryVehicleRequest\x12P\n" +
-	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x03\xe0A\x01R\x06header\x12F\n" +
-	"\x04name\x18\x03 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*fleetengine.googleapis.com/DeliveryVehicleR\x04name\"\xb8\x01\n" +
-	"\x1cDeleteDeliveryVehicleRequest\x12P\n" +
-	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x03\xe0A\x01R\x06header\x12F\n" +
-	"\x04name\x18\x02 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*fleetengine.googleapis.com/DeliveryVehicleR\x04name\"\xda\x02\n" +
-	"\x1bListDeliveryVehiclesRequest\x12P\n" +
-	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x03\xe0A\x01R\x06header\x12J\n" +
-	"\x06parent\x18\x03 \x01(\tB2\xe0A\x02\xfaA,\x12*fleetengine.googleapis.com/DeliveryVehicleR\x06parent\x12 \n" +
-	"\tpage_size\x18\x04 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"6google/maps/fleetengine/delivery/v1/delivery_api.proto\x12\x1cmaps.fleetengine.delivery.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a\x1egoogle/geo/type/viewport.proto\x1a;google/maps/fleetengine/delivery/v1/delivery_vehicles.proto\x1a0google/maps/fleetengine/delivery/v1/header.proto\x1a<google/maps/fleetengine/delivery/v1/task_tracking_info.proto\x1a/google/maps/fleetengine/delivery/v1/tasks.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xa5\x02\n" +
+	"\x1cCreateDeliveryVehicleRequest\x12Q\n" +
+	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x04\xe2A\x01\x01R\x06header\x12\x1c\n" +
+	"\x06parent\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x124\n" +
+	"\x13delivery_vehicle_id\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x11deliveryVehicleId\x12^\n" +
+	"\x10delivery_vehicle\x18\x05 \x01(\v2-.maps.fleetengine.delivery.v1.DeliveryVehicleB\x04\xe2A\x01\x02R\x0fdeliveryVehicle\"\xb7\x01\n" +
+	"\x19GetDeliveryVehicleRequest\x12Q\n" +
+	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x04\xe2A\x01\x01R\x06header\x12G\n" +
+	"\x04name\x18\x03 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*fleetengine.googleapis.com/DeliveryVehicleR\x04name\"\xba\x01\n" +
+	"\x1cDeleteDeliveryVehicleRequest\x12Q\n" +
+	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x04\xe2A\x01\x01R\x06header\x12G\n" +
+	"\x04name\x18\x02 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*fleetengine.googleapis.com/DeliveryVehicleR\x04name\"\xe0\x02\n" +
+	"\x1bListDeliveryVehiclesRequest\x12Q\n" +
+	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x04\xe2A\x01\x01R\x06header\x12K\n" +
+	"\x06parent\x18\x03 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*fleetengine.googleapis.com/DeliveryVehicleR\x06parent\x12!\n" +
+	"\tpage_size\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x05 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x06 \x01(\tB\x03\xe0A\x01R\x06filter\x12:\n" +
-	"\bviewport\x18\a \x01(\v2\x19.google.geo.type.ViewportB\x03\xe0A\x01R\bviewport\"\xc1\x01\n" +
+	"page_token\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12;\n" +
+	"\bviewport\x18\a \x01(\v2\x19.google.geo.type.ViewportB\x04\xe2A\x01\x01R\bviewport\"\xc1\x01\n" +
 	"\x1cListDeliveryVehiclesResponse\x12Z\n" +
 	"\x11delivery_vehicles\x18\x01 \x03(\v2-.maps.fleetengine.delivery.v1.DeliveryVehicleR\x10deliveryVehicles\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
 	"\n" +
-	"total_size\x18\x03 \x01(\x03R\ttotalSize\"\x91\x02\n" +
-	"\x1cUpdateDeliveryVehicleRequest\x12P\n" +
-	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x03\xe0A\x01R\x06header\x12]\n" +
-	"\x10delivery_vehicle\x18\x03 \x01(\v2-.maps.fleetengine.delivery.v1.DeliveryVehicleB\x03\xe0A\x02R\x0fdeliveryVehicle\x12@\n" +
-	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xfe\x01\n" +
-	"\x17BatchCreateTasksRequest\x12P\n" +
-	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x03\xe0A\x01R\x06header\x12?\n" +
-	"\x06parent\x18\x03 \x01(\tB'\xe0A\x02\xfaA!\x12\x1ffleetengine.googleapis.com/TaskR\x06parent\x12P\n" +
-	"\brequests\x18\x04 \x03(\v2/.maps.fleetengine.delivery.v1.CreateTaskRequestB\x03\xe0A\x02R\brequests\"T\n" +
+	"total_size\x18\x03 \x01(\x03R\ttotalSize\"\x94\x02\n" +
+	"\x1cUpdateDeliveryVehicleRequest\x12Q\n" +
+	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x04\xe2A\x01\x01R\x06header\x12^\n" +
+	"\x10delivery_vehicle\x18\x03 \x01(\v2-.maps.fleetengine.delivery.v1.DeliveryVehicleB\x04\xe2A\x01\x02R\x0fdeliveryVehicle\x12A\n" +
+	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\x81\x02\n" +
+	"\x17BatchCreateTasksRequest\x12Q\n" +
+	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x04\xe2A\x01\x01R\x06header\x12@\n" +
+	"\x06parent\x18\x03 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1ffleetengine.googleapis.com/TaskR\x06parent\x12Q\n" +
+	"\brequests\x18\x04 \x03(\v2/.maps.fleetengine.delivery.v1.CreateTaskRequestB\x04\xe2A\x01\x02R\brequests\"T\n" +
 	"\x18BatchCreateTasksResponse\x128\n" +
-	"\x05tasks\x18\x01 \x03(\v2\".maps.fleetengine.delivery.v1.TaskR\x05tasks\"\xdd\x01\n" +
-	"\x11CreateTaskRequest\x12P\n" +
-	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x03\xe0A\x01R\x06header\x12\x1b\n" +
-	"\x06parent\x18\x03 \x01(\tB\x03\xe0A\x02R\x06parent\x12\x1c\n" +
-	"\atask_id\x18\x05 \x01(\tB\x03\xe0A\x02R\x06taskId\x12;\n" +
-	"\x04task\x18\x04 \x01(\v2\".maps.fleetengine.delivery.v1.TaskB\x03\xe0A\x02R\x04task\"\x9f\x01\n" +
-	"\x0eGetTaskRequest\x12P\n" +
-	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x03\xe0A\x01R\x06header\x12;\n" +
-	"\x04name\x18\x03 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1ffleetengine.googleapis.com/TaskR\x04name\"\xa2\x01\n" +
-	"\x11DeleteTaskRequest\x12P\n" +
-	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x03\xe0A\x01R\x06header\x12;\n" +
-	"\x04name\x18\x02 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1ffleetengine.googleapis.com/TaskR\x04name\"\xe4\x01\n" +
-	"\x11UpdateTaskRequest\x12P\n" +
-	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x03\xe0A\x01R\x06header\x12;\n" +
-	"\x04task\x18\x03 \x01(\v2\".maps.fleetengine.delivery.v1.TaskB\x03\xe0A\x02R\x04task\x12@\n" +
-	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\x88\x02\n" +
-	"\x10ListTasksRequest\x12P\n" +
-	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x03\xe0A\x01R\x06header\x12?\n" +
-	"\x06parent\x18\x03 \x01(\tB'\xe0A\x02\xfaA!\x12\x1ffleetengine.googleapis.com/TaskR\x06parent\x12 \n" +
-	"\tpage_size\x18\x04 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x05tasks\x18\x01 \x03(\v2\".maps.fleetengine.delivery.v1.TaskR\x05tasks\"\xe1\x01\n" +
+	"\x11CreateTaskRequest\x12Q\n" +
+	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x04\xe2A\x01\x01R\x06header\x12\x1c\n" +
+	"\x06parent\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06parent\x12\x1d\n" +
+	"\atask_id\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\x06taskId\x12<\n" +
+	"\x04task\x18\x04 \x01(\v2\".maps.fleetengine.delivery.v1.TaskB\x04\xe2A\x01\x02R\x04task\"\xa1\x01\n" +
+	"\x0eGetTaskRequest\x12Q\n" +
+	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x04\xe2A\x01\x01R\x06header\x12<\n" +
+	"\x04name\x18\x03 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1ffleetengine.googleapis.com/TaskR\x04name\"\xa4\x01\n" +
+	"\x11DeleteTaskRequest\x12Q\n" +
+	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x04\xe2A\x01\x01R\x06header\x12<\n" +
+	"\x04name\x18\x02 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1ffleetengine.googleapis.com/TaskR\x04name\"\xe7\x01\n" +
+	"\x11UpdateTaskRequest\x12Q\n" +
+	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x04\xe2A\x01\x01R\x06header\x12<\n" +
+	"\x04task\x18\x03 \x01(\v2\".maps.fleetengine.delivery.v1.TaskB\x04\xe2A\x01\x02R\x04task\x12A\n" +
+	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\x8d\x02\n" +
+	"\x10ListTasksRequest\x12Q\n" +
+	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x04\xe2A\x01\x01R\x06header\x12@\n" +
+	"\x06parent\x18\x03 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1ffleetengine.googleapis.com/TaskR\x06parent\x12!\n" +
+	"\tpage_size\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x05 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x06 \x01(\tB\x03\xe0A\x01R\x06filter\"\x94\x01\n" +
+	"page_token\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x94\x01\n" +
 	"\x11ListTasksResponse\x128\n" +
 	"\x05tasks\x18\x01 \x03(\v2\".maps.fleetengine.delivery.v1.TaskR\x05tasks\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
 	"\n" +
-	"total_size\x18\x03 \x01(\x03R\ttotalSize\"\xb7\x01\n" +
-	"\x1aGetTaskTrackingInfoRequest\x12P\n" +
-	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x03\xe0A\x01R\x06header\x12G\n" +
-	"\x04name\x18\x03 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"total_size\x18\x03 \x01(\x03R\ttotalSize\"\xb9\x01\n" +
+	"\x1aGetTaskTrackingInfoRequest\x12Q\n" +
+	"\x06header\x18\x01 \x01(\v23.maps.fleetengine.delivery.v1.DeliveryRequestHeaderB\x04\xe2A\x01\x01R\x06header\x12H\n" +
+	"\x04name\x18\x03 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+fleetengine.googleapis.com/TaskTrackingInfoR\x04name2\x8b\x16\n" +
 	"\x0fDeliveryService\x12\xa1\x02\n" +
 	"\x15CreateDeliveryVehicle\x12:.maps.fleetengine.delivery.v1.CreateDeliveryVehicleRequest\x1a-.maps.fleetengine.delivery.v1.DeliveryVehicle\"\x9c\x01\xdaA+parent,delivery_vehicle,delivery_vehicle_id\x82\xd3\xe4\x93\x02=:\x10delivery_vehicle\")/v1/{parent=providers/*}/deliveryVehicles\x8a\xd3\xe4\x93\x02%\x12#\n" +

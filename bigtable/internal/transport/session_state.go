@@ -14,6 +14,8 @@
 
 package internal
 
+import "time"
+
 // State represents the lifecycle state of a Session. Sessions move strictly
 // forward through the values (monotonic by ordinal); once StateClosed is
 // reached the session is terminal. Modeled on the SessionState enum in the
@@ -56,5 +58,46 @@ func (s State) String() string {
 		return "Closed"
 	default:
 		return "Unknown"
+	}
+}
+
+// transitionTo sets the session state to `to` iff ok(currentState) returns
+// true. Returns the previous state and whether the transition was applied.
+// Retries on CAS failure so a losing racer with a still-valid current state
+// still transitions; the predicate is re-evaluated after each spurious loss.
+func (s *Session) transitionTo(to State, ok func(State) bool) (prev State, applied bool) {
+	for {
+		prev = State(s.state.Load())
+		if !ok(prev) {
+			return prev, false
+		}
+		if s.state.CompareAndSwap(int32(prev), int32(to)) {
+			s.lastStateChangeNano.Store(time.Now().UnixNano())
+			return prev, true
+		}
+	}
+}
+
+// isState returns a predicate matching any of `allowed`.
+func isState(allowed ...State) func(State) bool {
+	return func(s State) bool {
+		for _, a := range allowed {
+			if s == a {
+				return true
+			}
+		}
+		return false
+	}
+}
+
+// notState returns a predicate matching any state NOT in `forbidden`.
+func notState(forbidden ...State) func(State) bool {
+	return func(s State) bool {
+		for _, f := range forbidden {
+			if s == f {
+				return false
+			}
+		}
+		return true
 	}
 }

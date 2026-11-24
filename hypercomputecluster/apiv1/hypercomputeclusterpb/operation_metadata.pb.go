@@ -1720,101 +1720,101 @@ var File_google_cloud_hypercomputecluster_v1_operation_metadata_proto protorefle
 
 const file_google_cloud_hypercomputecluster_v1_operation_metadata_proto_rawDesc = "" +
 	"\n" +
-	"<google/cloud/hypercomputecluster/v1/operation_metadata.proto\x12#google.cloud.hypercomputecluster.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x82\x03\n" +
-	"\x11OperationMetadata\x12@\n" +
-	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12:\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12\x1b\n" +
-	"\x06target\x18\x03 \x01(\tB\x03\xe0A\x03R\x06target\x12\x17\n" +
-	"\x04verb\x18\x04 \x01(\tB\x03\xe0A\x03R\x04verb\x12:\n" +
-	"\x16requested_cancellation\x18\x05 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
-	"\vapi_version\x18\x06 \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\x12W\n" +
-	"\bprogress\x18\a \x01(\v26.google.cloud.hypercomputecluster.v1.OperationProgressB\x03\xe0A\x03R\bprogress\"b\n" +
-	"\x11OperationProgress\x12M\n" +
-	"\x05steps\x18\x01 \x03(\v22.google.cloud.hypercomputecluster.v1.OperationStepB\x03\xe0A\x03R\x05steps\"\xca\x15\n" +
-	"\rOperationStep\x12`\n" +
-	"\x0ecreate_network\x18\x02 \x01(\v22.google.cloud.hypercomputecluster.v1.CreateNetworkB\x03\xe0A\x03H\x00R\rcreateNetwork\x12\x89\x01\n" +
-	"\x1dcreate_private_service_access\x18\x03 \x01(\v2?.google.cloud.hypercomputecluster.v1.CreatePrivateServiceAccessB\x03\xe0A\x03H\x00R\x1acreatePrivateServiceAccess\x12\x7f\n" +
-	"\x19create_filestore_instance\x18\x04 \x01(\v2<.google.cloud.hypercomputecluster.v1.CreateFilestoreInstanceB\x03\xe0A\x03H\x00R\x17createFilestoreInstance\x12s\n" +
-	"\x15create_storage_bucket\x18\x05 \x01(\v28.google.cloud.hypercomputecluster.v1.CreateStorageBucketB\x03\xe0A\x03H\x00R\x13createStorageBucket\x12v\n" +
-	"\x16create_lustre_instance\x18\x06 \x01(\v29.google.cloud.hypercomputecluster.v1.CreateLustreInstanceB\x03\xe0A\x03H\x00R\x14createLustreInstance\x12o\n" +
-	"\x13create_orchestrator\x18\b \x01(\v27.google.cloud.hypercomputecluster.v1.CreateOrchestratorB\x03\xe0A\x03H\x00R\x12createOrchestrator\x12`\n" +
-	"\x0ecreate_nodeset\x18\t \x01(\v22.google.cloud.hypercomputecluster.v1.CreateNodesetB\x03\xe0A\x03H\x00R\rcreateNodeset\x12f\n" +
+	"<google/cloud/hypercomputecluster/v1/operation_metadata.proto\x12#google.cloud.hypercomputecluster.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x89\x03\n" +
+	"\x11OperationMetadata\x12A\n" +
+	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12;\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12\x1c\n" +
+	"\x06target\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x06target\x12\x18\n" +
+	"\x04verb\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x04verb\x12;\n" +
+	"\x16requested_cancellation\x18\x05 \x01(\bB\x04\xe2A\x01\x03R\x15requestedCancellation\x12%\n" +
+	"\vapi_version\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"apiVersion\x12X\n" +
+	"\bprogress\x18\a \x01(\v26.google.cloud.hypercomputecluster.v1.OperationProgressB\x04\xe2A\x01\x03R\bprogress\"c\n" +
+	"\x11OperationProgress\x12N\n" +
+	"\x05steps\x18\x01 \x03(\v22.google.cloud.hypercomputecluster.v1.OperationStepB\x04\xe2A\x01\x03R\x05steps\"\xe4\x15\n" +
+	"\rOperationStep\x12a\n" +
+	"\x0ecreate_network\x18\x02 \x01(\v22.google.cloud.hypercomputecluster.v1.CreateNetworkB\x04\xe2A\x01\x03H\x00R\rcreateNetwork\x12\x8a\x01\n" +
+	"\x1dcreate_private_service_access\x18\x03 \x01(\v2?.google.cloud.hypercomputecluster.v1.CreatePrivateServiceAccessB\x04\xe2A\x01\x03H\x00R\x1acreatePrivateServiceAccess\x12\x80\x01\n" +
+	"\x19create_filestore_instance\x18\x04 \x01(\v2<.google.cloud.hypercomputecluster.v1.CreateFilestoreInstanceB\x04\xe2A\x01\x03H\x00R\x17createFilestoreInstance\x12t\n" +
+	"\x15create_storage_bucket\x18\x05 \x01(\v28.google.cloud.hypercomputecluster.v1.CreateStorageBucketB\x04\xe2A\x01\x03H\x00R\x13createStorageBucket\x12w\n" +
+	"\x16create_lustre_instance\x18\x06 \x01(\v29.google.cloud.hypercomputecluster.v1.CreateLustreInstanceB\x04\xe2A\x01\x03H\x00R\x14createLustreInstance\x12p\n" +
+	"\x13create_orchestrator\x18\b \x01(\v27.google.cloud.hypercomputecluster.v1.CreateOrchestratorB\x04\xe2A\x01\x03H\x00R\x12createOrchestrator\x12a\n" +
+	"\x0ecreate_nodeset\x18\t \x01(\v22.google.cloud.hypercomputecluster.v1.CreateNodesetB\x04\xe2A\x01\x03H\x00R\rcreateNodeset\x12g\n" +
 	"\x10create_partition\x18\n" +
-	" \x01(\v24.google.cloud.hypercomputecluster.v1.CreatePartitionB\x03\xe0A\x03H\x00R\x0fcreatePartition\x12g\n" +
-	"\x11create_login_node\x18\v \x01(\v24.google.cloud.hypercomputecluster.v1.CreateLoginNodeB\x03\xe0A\x03H\x00R\x0fcreateLoginNode\x12p\n" +
-	"\x14check_cluster_health\x18\f \x01(\v27.google.cloud.hypercomputecluster.v1.CheckClusterHealthB\x03\xe0A\x03H\x00R\x12checkClusterHealth\x12o\n" +
-	"\x13update_orchestrator\x18\r \x01(\v27.google.cloud.hypercomputecluster.v1.UpdateOrchestratorB\x03\xe0A\x03H\x00R\x12updateOrchestrator\x12`\n" +
-	"\x0eupdate_nodeset\x18\x0e \x01(\v22.google.cloud.hypercomputecluster.v1.UpdateNodesetB\x03\xe0A\x03H\x00R\rupdateNodeset\x12f\n" +
-	"\x10update_partition\x18\x0f \x01(\v24.google.cloud.hypercomputecluster.v1.UpdatePartitionB\x03\xe0A\x03H\x00R\x0fupdatePartition\x12g\n" +
-	"\x11update_login_node\x18\x10 \x01(\v24.google.cloud.hypercomputecluster.v1.UpdateLoginNodeB\x03\xe0A\x03H\x00R\x0fupdateLoginNode\x12o\n" +
-	"\x13delete_orchestrator\x18\x12 \x01(\v27.google.cloud.hypercomputecluster.v1.DeleteOrchestratorB\x03\xe0A\x03H\x00R\x12deleteOrchestrator\x12`\n" +
-	"\x0edelete_nodeset\x18\x13 \x01(\v22.google.cloud.hypercomputecluster.v1.DeleteNodesetB\x03\xe0A\x03H\x00R\rdeleteNodeset\x12f\n" +
-	"\x10delete_partition\x18\x14 \x01(\v24.google.cloud.hypercomputecluster.v1.DeletePartitionB\x03\xe0A\x03H\x00R\x0fdeletePartition\x12g\n" +
-	"\x11delete_login_node\x18\x15 \x01(\v24.google.cloud.hypercomputecluster.v1.DeleteLoginNodeB\x03\xe0A\x03H\x00R\x0fdeleteLoginNode\x12\x7f\n" +
-	"\x19delete_filestore_instance\x18\x16 \x01(\v2<.google.cloud.hypercomputecluster.v1.DeleteFilestoreInstanceB\x03\xe0A\x03H\x00R\x17deleteFilestoreInstance\x12s\n" +
-	"\x15delete_storage_bucket\x18\x17 \x01(\v28.google.cloud.hypercomputecluster.v1.DeleteStorageBucketB\x03\xe0A\x03H\x00R\x13deleteStorageBucket\x12v\n" +
-	"\x16delete_lustre_instance\x18\x18 \x01(\v29.google.cloud.hypercomputecluster.v1.DeleteLustreInstanceB\x03\xe0A\x03H\x00R\x14deleteLustreInstance\x12\x89\x01\n" +
-	"\x1ddelete_private_service_access\x18\x19 \x01(\v2?.google.cloud.hypercomputecluster.v1.DeletePrivateServiceAccessB\x03\xe0A\x03H\x00R\x1adeletePrivateServiceAccess\x12`\n" +
-	"\x0edelete_network\x18\x1a \x01(\v22.google.cloud.hypercomputecluster.v1.DeleteNetworkB\x03\xe0A\x03H\x00R\rdeleteNetwork\x12S\n" +
-	"\x05state\x18\x01 \x01(\x0e28.google.cloud.hypercomputecluster.v1.OperationStep.StateB\x03\xe0A\x03R\x05state\"F\n" +
+	" \x01(\v24.google.cloud.hypercomputecluster.v1.CreatePartitionB\x04\xe2A\x01\x03H\x00R\x0fcreatePartition\x12h\n" +
+	"\x11create_login_node\x18\v \x01(\v24.google.cloud.hypercomputecluster.v1.CreateLoginNodeB\x04\xe2A\x01\x03H\x00R\x0fcreateLoginNode\x12q\n" +
+	"\x14check_cluster_health\x18\f \x01(\v27.google.cloud.hypercomputecluster.v1.CheckClusterHealthB\x04\xe2A\x01\x03H\x00R\x12checkClusterHealth\x12p\n" +
+	"\x13update_orchestrator\x18\r \x01(\v27.google.cloud.hypercomputecluster.v1.UpdateOrchestratorB\x04\xe2A\x01\x03H\x00R\x12updateOrchestrator\x12a\n" +
+	"\x0eupdate_nodeset\x18\x0e \x01(\v22.google.cloud.hypercomputecluster.v1.UpdateNodesetB\x04\xe2A\x01\x03H\x00R\rupdateNodeset\x12g\n" +
+	"\x10update_partition\x18\x0f \x01(\v24.google.cloud.hypercomputecluster.v1.UpdatePartitionB\x04\xe2A\x01\x03H\x00R\x0fupdatePartition\x12h\n" +
+	"\x11update_login_node\x18\x10 \x01(\v24.google.cloud.hypercomputecluster.v1.UpdateLoginNodeB\x04\xe2A\x01\x03H\x00R\x0fupdateLoginNode\x12p\n" +
+	"\x13delete_orchestrator\x18\x12 \x01(\v27.google.cloud.hypercomputecluster.v1.DeleteOrchestratorB\x04\xe2A\x01\x03H\x00R\x12deleteOrchestrator\x12a\n" +
+	"\x0edelete_nodeset\x18\x13 \x01(\v22.google.cloud.hypercomputecluster.v1.DeleteNodesetB\x04\xe2A\x01\x03H\x00R\rdeleteNodeset\x12g\n" +
+	"\x10delete_partition\x18\x14 \x01(\v24.google.cloud.hypercomputecluster.v1.DeletePartitionB\x04\xe2A\x01\x03H\x00R\x0fdeletePartition\x12h\n" +
+	"\x11delete_login_node\x18\x15 \x01(\v24.google.cloud.hypercomputecluster.v1.DeleteLoginNodeB\x04\xe2A\x01\x03H\x00R\x0fdeleteLoginNode\x12\x80\x01\n" +
+	"\x19delete_filestore_instance\x18\x16 \x01(\v2<.google.cloud.hypercomputecluster.v1.DeleteFilestoreInstanceB\x04\xe2A\x01\x03H\x00R\x17deleteFilestoreInstance\x12t\n" +
+	"\x15delete_storage_bucket\x18\x17 \x01(\v28.google.cloud.hypercomputecluster.v1.DeleteStorageBucketB\x04\xe2A\x01\x03H\x00R\x13deleteStorageBucket\x12w\n" +
+	"\x16delete_lustre_instance\x18\x18 \x01(\v29.google.cloud.hypercomputecluster.v1.DeleteLustreInstanceB\x04\xe2A\x01\x03H\x00R\x14deleteLustreInstance\x12\x8a\x01\n" +
+	"\x1ddelete_private_service_access\x18\x19 \x01(\v2?.google.cloud.hypercomputecluster.v1.DeletePrivateServiceAccessB\x04\xe2A\x01\x03H\x00R\x1adeletePrivateServiceAccess\x12a\n" +
+	"\x0edelete_network\x18\x1a \x01(\v22.google.cloud.hypercomputecluster.v1.DeleteNetworkB\x04\xe2A\x01\x03H\x00R\rdeleteNetwork\x12T\n" +
+	"\x05state\x18\x01 \x01(\x0e28.google.cloud.hypercomputecluster.v1.OperationStep.StateB\x04\xe2A\x01\x03R\x05state\"F\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aWAITING\x10\x01\x12\x0f\n" +
 	"\vIN_PROGRESS\x10\x02\x12\b\n" +
 	"\x04DONE\x10\x03B\x06\n" +
-	"\x04type\"Q\n" +
-	"\rCreateNetwork\x12@\n" +
-	"\anetwork\x18\x01 \x01(\tB&\xe0A\x03\xfaA \n" +
+	"\x04type\"R\n" +
+	"\rCreateNetwork\x12A\n" +
+	"\anetwork\x18\x01 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
 	"\x1ecompute.googleapis.com/NetworkR\anetwork\"\x1c\n" +
-	"\x1aCreatePrivateServiceAccess\"a\n" +
-	"\x17CreateFilestoreInstance\x12F\n" +
-	"\tfilestore\x18\x01 \x01(\tB(\xe0A\x03\xfaA\"\n" +
-	" file.googleapis.com/FileInstanceR\tfilestore\"T\n" +
-	"\x13CreateStorageBucket\x12=\n" +
-	"\x06bucket\x18\x01 \x01(\tB%\xe0A\x03\xfaA\x1f\n" +
-	"\x1dstorage.googleapis.com/BucketR\x06bucket\"V\n" +
-	"\x14CreateLustreInstance\x12>\n" +
-	"\x06lustre\x18\x01 \x01(\tB&\xe0A\x03\xfaA \n" +
+	"\x1aCreatePrivateServiceAccess\"b\n" +
+	"\x17CreateFilestoreInstance\x12G\n" +
+	"\tfilestore\x18\x01 \x01(\tB)\xe2A\x01\x03\xfaA\"\n" +
+	" file.googleapis.com/FileInstanceR\tfilestore\"U\n" +
+	"\x13CreateStorageBucket\x12>\n" +
+	"\x06bucket\x18\x01 \x01(\tB&\xe2A\x01\x03\xfaA\x1f\n" +
+	"\x1dstorage.googleapis.com/BucketR\x06bucket\"W\n" +
+	"\x14CreateLustreInstance\x12?\n" +
+	"\x06lustre\x18\x01 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
 	"\x1elustre.googleapis.com/InstanceR\x06lustre\"\x14\n" +
-	"\x12CreateOrchestrator\"0\n" +
-	"\rCreateNodeset\x12\x1f\n" +
-	"\bnodesets\x18\x01 \x03(\tB\x03\xe0A\x03R\bnodesets\"6\n" +
-	"\x0fCreatePartition\x12#\n" +
+	"\x12CreateOrchestrator\"1\n" +
+	"\rCreateNodeset\x12 \n" +
+	"\bnodesets\x18\x01 \x03(\tB\x04\xe2A\x01\x03R\bnodesets\"7\n" +
+	"\x0fCreatePartition\x12$\n" +
 	"\n" +
-	"partitions\x18\x01 \x03(\tB\x03\xe0A\x03R\n" +
+	"partitions\x18\x01 \x03(\tB\x04\xe2A\x01\x03R\n" +
 	"partitions\"\x11\n" +
 	"\x0fCreateLoginNode\"\x14\n" +
 	"\x12CheckClusterHealth\"\x14\n" +
-	"\x12UpdateOrchestrator\"0\n" +
-	"\rUpdateNodeset\x12\x1f\n" +
-	"\bnodesets\x18\x01 \x03(\tB\x03\xe0A\x03R\bnodesets\"6\n" +
-	"\x0fUpdatePartition\x12#\n" +
+	"\x12UpdateOrchestrator\"1\n" +
+	"\rUpdateNodeset\x12 \n" +
+	"\bnodesets\x18\x01 \x03(\tB\x04\xe2A\x01\x03R\bnodesets\"7\n" +
+	"\x0fUpdatePartition\x12$\n" +
 	"\n" +
-	"partitions\x18\x01 \x03(\tB\x03\xe0A\x03R\n" +
+	"partitions\x18\x01 \x03(\tB\x04\xe2A\x01\x03R\n" +
 	"partitions\"\x11\n" +
 	"\x0fUpdateLoginNode\"\x14\n" +
-	"\x12DeleteOrchestrator\"0\n" +
-	"\rDeleteNodeset\x12\x1f\n" +
-	"\bnodesets\x18\x01 \x03(\tB\x03\xe0A\x03R\bnodesets\"6\n" +
-	"\x0fDeletePartition\x12#\n" +
+	"\x12DeleteOrchestrator\"1\n" +
+	"\rDeleteNodeset\x12 \n" +
+	"\bnodesets\x18\x01 \x03(\tB\x04\xe2A\x01\x03R\bnodesets\"7\n" +
+	"\x0fDeletePartition\x12$\n" +
 	"\n" +
-	"partitions\x18\x01 \x03(\tB\x03\xe0A\x03R\n" +
+	"partitions\x18\x01 \x03(\tB\x04\xe2A\x01\x03R\n" +
 	"partitions\"\x11\n" +
-	"\x0fDeleteLoginNode\"a\n" +
-	"\x17DeleteFilestoreInstance\x12F\n" +
-	"\tfilestore\x18\x01 \x01(\tB(\xe0A\x03\xfaA\"\n" +
-	" file.googleapis.com/FileInstanceR\tfilestore\"T\n" +
-	"\x13DeleteStorageBucket\x12=\n" +
-	"\x06bucket\x18\x01 \x01(\tB%\xe0A\x03\xfaA\x1f\n" +
-	"\x1dstorage.googleapis.com/BucketR\x06bucket\"V\n" +
-	"\x14DeleteLustreInstance\x12>\n" +
-	"\x06lustre\x18\x01 \x01(\tB&\xe0A\x03\xfaA \n" +
+	"\x0fDeleteLoginNode\"b\n" +
+	"\x17DeleteFilestoreInstance\x12G\n" +
+	"\tfilestore\x18\x01 \x01(\tB)\xe2A\x01\x03\xfaA\"\n" +
+	" file.googleapis.com/FileInstanceR\tfilestore\"U\n" +
+	"\x13DeleteStorageBucket\x12>\n" +
+	"\x06bucket\x18\x01 \x01(\tB&\xe2A\x01\x03\xfaA\x1f\n" +
+	"\x1dstorage.googleapis.com/BucketR\x06bucket\"W\n" +
+	"\x14DeleteLustreInstance\x12?\n" +
+	"\x06lustre\x18\x01 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
 	"\x1elustre.googleapis.com/InstanceR\x06lustre\"\x1c\n" +
-	"\x1aDeletePrivateServiceAccess\"Q\n" +
-	"\rDeleteNetwork\x12@\n" +
-	"\anetwork\x18\x01 \x01(\tB&\xe0A\x03\xfaA \n" +
+	"\x1aDeletePrivateServiceAccess\"R\n" +
+	"\rDeleteNetwork\x12A\n" +
+	"\anetwork\x18\x01 \x01(\tB'\xe2A\x01\x03\xfaA \n" +
 	"\x1ecompute.googleapis.com/NetworkR\anetworkB\xf4\x02\xeaA^\n" +
 	"\x1elustre.googleapis.com/Instance\x12<projects/{project}/locations/{location}/instances/{instance}\n" +
 	"'com.google.cloud.hypercomputecluster.v1B\x16OperationMetadataProtoP\x01ZYcloud.google.com/go/hypercomputecluster/apiv1/hypercomputeclusterpb;hypercomputeclusterpb\xaa\x02#Google.Cloud.HypercomputeCluster.V1\xca\x02#Google\\Cloud\\HypercomputeCluster\\V1\xea\x02&Google::Cloud::HypercomputeCluster::V1b\x06proto3"

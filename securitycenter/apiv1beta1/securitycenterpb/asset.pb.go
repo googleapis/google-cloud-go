@@ -237,7 +237,7 @@ var File_google_cloud_securitycenter_v1beta1_asset_proto protoreflect.FileDescri
 
 const file_google_cloud_securitycenter_v1beta1_asset_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/securitycenter/v1beta1/asset.proto\x12#google.cloud.securitycenter.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/securitycenter/v1beta1/security_marks.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x88\a\n" +
+	"/google/cloud/securitycenter/v1beta1/asset.proto\x12#google.cloud.securitycenter.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/securitycenter/v1beta1/security_marks.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x89\a\n" +
 	"\x05Asset\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x81\x01\n" +
 	"\x1asecurity_center_properties\x18\x02 \x01(\v2C.google.cloud.securitycenter.v1beta1.Asset.SecurityCenterPropertiesR\x18securityCenterProperties\x12s\n" +
@@ -247,9 +247,9 @@ const file_google_cloud_securitycenter_v1beta1_asset_proto_rawDesc = "" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\n" +
 	" \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\x1a\xe6\x01\n" +
-	"\x18SecurityCenterProperties\x12(\n" +
-	"\rresource_name\x18\x01 \x01(\tB\x03\xe0A\x05R\fresourceName\x12#\n" +
+	"updateTime\x1a\xe7\x01\n" +
+	"\x18SecurityCenterProperties\x12)\n" +
+	"\rresource_name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\fresourceName\x12#\n" +
 	"\rresource_type\x18\x02 \x01(\tR\fresourceType\x12'\n" +
 	"\x0fresource_parent\x18\x03 \x01(\tR\x0eresourceParent\x12)\n" +
 	"\x10resource_project\x18\x04 \x01(\tR\x0fresourceProject\x12'\n" +

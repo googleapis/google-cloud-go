@@ -18,11 +18,13 @@ package talent
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	talentpb "cloud.google.com/go/talent/apiv4beta1/talentpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -154,6 +156,12 @@ func (op *BatchUpdateJobsOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CompanyIterator) All() iter.Seq2[*talentpb.Company, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CompanyIterator manages a stream of *talentpb.Company.
 type CompanyIterator struct {
 	items    []*talentpb.Company
@@ -199,6 +207,12 @@ func (it *CompanyIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *JobIterator) All() iter.Seq2[*talentpb.Job, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // JobIterator manages a stream of *talentpb.Job.
@@ -248,6 +262,12 @@ func (it *JobIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SearchJobsResponse_MatchingJobIterator) All() iter.Seq2[*talentpb.SearchJobsResponse_MatchingJob, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SearchJobsResponse_MatchingJobIterator manages a stream of *talentpb.SearchJobsResponse_MatchingJob.
 type SearchJobsResponse_MatchingJobIterator struct {
 	items    []*talentpb.SearchJobsResponse_MatchingJob
@@ -293,6 +313,12 @@ func (it *SearchJobsResponse_MatchingJobIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TenantIterator) All() iter.Seq2[*talentpb.Tenant, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TenantIterator manages a stream of *talentpb.Tenant.

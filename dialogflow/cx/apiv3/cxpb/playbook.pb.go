@@ -2005,54 +2005,54 @@ var File_google_cloud_dialogflow_cx_v3_playbook_proto protoreflect.FileDescripto
 
 const file_google_cloud_dialogflow_cx_v3_playbook_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/dialogflow/cx/v3/playbook.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/dialogflow/cx/v3/code_block.proto\x1a+google/cloud/dialogflow/cx/v3/example.proto\x1a/google/cloud/dialogflow/cx/v3/fulfillment.proto\x1a7google/cloud/dialogflow/cx/v3/generative_settings.proto\x1a3google/cloud/dialogflow/cx/v3/import_strategy.proto\x1a8google/cloud/dialogflow/cx/v3/parameter_definition.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa5\x01\n" +
-	"\x15CreatePlaybookRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"dialogflow.googleapis.com/PlaybookR\x06parent\x12H\n" +
-	"\bplaybook\x18\x02 \x01(\v2'.google.cloud.dialogflow.cx.v3.PlaybookB\x03\xe0A\x02R\bplaybook\"W\n" +
-	"\x15DeletePlaybookRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dialogflow.googleapis.com/PlaybookR\x04name\"\x96\x01\n" +
-	"\x14ListPlaybooksRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"dialogflow.googleapis.com/PlaybookR\x06parent\x12\x1b\n" +
+	",google/cloud/dialogflow/cx/v3/playbook.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a.google/cloud/dialogflow/cx/v3/code_block.proto\x1a+google/cloud/dialogflow/cx/v3/example.proto\x1a/google/cloud/dialogflow/cx/v3/fulfillment.proto\x1a7google/cloud/dialogflow/cx/v3/generative_settings.proto\x1a3google/cloud/dialogflow/cx/v3/import_strategy.proto\x1a8google/cloud/dialogflow/cx/v3/parameter_definition.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa7\x01\n" +
+	"\x15CreatePlaybookRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"dialogflow.googleapis.com/PlaybookR\x06parent\x12I\n" +
+	"\bplaybook\x18\x02 \x01(\v2'.google.cloud.dialogflow.cx.v3.PlaybookB\x04\xe2A\x01\x02R\bplaybook\"X\n" +
+	"\x15DeletePlaybookRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dialogflow.googleapis.com/PlaybookR\x04name\"\x97\x01\n" +
+	"\x14ListPlaybooksRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"dialogflow.googleapis.com/PlaybookR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x86\x01\n" +
 	"\x15ListPlaybooksResponse\x12E\n" +
 	"\tplaybooks\x18\x01 \x03(\v2'.google.cloud.dialogflow.cx.v3.PlaybookR\tplaybooks\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"T\n" +
-	"\x12GetPlaybookRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dialogflow.googleapis.com/PlaybookR\x04name\"\x9e\x01\n" +
-	"\x15UpdatePlaybookRequest\x12H\n" +
-	"\bplaybook\x18\x01 \x01(\v2'.google.cloud.dialogflow.cx.v3.PlaybookB\x03\xe0A\x02R\bplaybook\x12;\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"U\n" +
+	"\x12GetPlaybookRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dialogflow.googleapis.com/PlaybookR\x04name\"\x9f\x01\n" +
+	"\x15UpdatePlaybookRequest\x12I\n" +
+	"\bplaybook\x18\x01 \x01(\v2'.google.cloud.dialogflow.cx.v3.PlaybookB\x04\xe2A\x01\x02R\bplaybook\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\x83\r\n" +
+	"updateMask\"\x90\r\n" +
 	"\bPlaybook\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12\x17\n" +
-	"\x04goal\x18\x03 \x01(\tB\x03\xe0A\x02R\x04goal\x12w\n" +
-	"\x1binput_parameter_definitions\x18\x05 \x03(\v22.google.cloud.dialogflow.cx.v3.ParameterDefinitionB\x03\xe0A\x01R\x19inputParameterDefinitions\x12y\n" +
-	"\x1coutput_parameter_definitions\x18\x06 \x03(\v22.google.cloud.dialogflow.cx.v3.ParameterDefinitionB\x03\xe0A\x01R\x1aoutputParameterDefinitions\x12U\n" +
-	"\vinstruction\x18\x11 \x01(\v23.google.cloud.dialogflow.cx.v3.Playbook.InstructionR\vinstruction\x12$\n" +
-	"\vtoken_count\x18\b \x01(\x03B\x03\xe0A\x03R\n" +
-	"tokenCount\x12@\n" +
-	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12\x18\n" +
+	"\x04goal\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x04goal\x12x\n" +
+	"\x1binput_parameter_definitions\x18\x05 \x03(\v22.google.cloud.dialogflow.cx.v3.ParameterDefinitionB\x04\xe2A\x01\x01R\x19inputParameterDefinitions\x12z\n" +
+	"\x1coutput_parameter_definitions\x18\x06 \x03(\v22.google.cloud.dialogflow.cx.v3.ParameterDefinitionB\x04\xe2A\x01\x01R\x1aoutputParameterDefinitions\x12U\n" +
+	"\vinstruction\x18\x11 \x01(\v23.google.cloud.dialogflow.cx.v3.Playbook.InstructionR\vinstruction\x12%\n" +
+	"\vtoken_count\x18\b \x01(\x03B\x04\xe2A\x01\x03R\n" +
+	"tokenCount\x12A\n" +
+	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
 	"\vupdate_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12]\n" +
-	"\x14referenced_playbooks\x18\v \x03(\tB*\xe0A\x03\xfaA$\n" +
-	"\"dialogflow.googleapis.com/PlaybookR\x13referencedPlaybooks\x12Q\n" +
-	"\x10referenced_flows\x18\f \x03(\tB&\xe0A\x03\xfaA \n" +
-	"\x1edialogflow.googleapis.com/FlowR\x0freferencedFlows\x12Q\n" +
-	"\x10referenced_tools\x18\r \x03(\tB&\xe0A\x01\xfaA \n" +
-	"\x1edialogflow.googleapis.com/ToolR\x0freferencedTools\x12-\n" +
-	"\x0einline_actions\x18\x16 \x03(\tB\x06\xe0A\x01\xe0A\x03R\rinlineActions\x12L\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x12^\n" +
+	"\x14referenced_playbooks\x18\v \x03(\tB+\xe2A\x01\x03\xfaA$\n" +
+	"\"dialogflow.googleapis.com/PlaybookR\x13referencedPlaybooks\x12R\n" +
+	"\x10referenced_flows\x18\f \x03(\tB'\xe2A\x01\x03\xfaA \n" +
+	"\x1edialogflow.googleapis.com/FlowR\x0freferencedFlows\x12R\n" +
+	"\x10referenced_tools\x18\r \x03(\tB'\xe2A\x01\x01\xfaA \n" +
+	"\x1edialogflow.googleapis.com/ToolR\x0freferencedTools\x12,\n" +
+	"\x0einline_actions\x18\x16 \x03(\tB\x05\xe2A\x02\x01\x03R\rinlineActions\x12M\n" +
 	"\n" +
-	"code_block\x18\x15 \x01(\v2(.google.cloud.dialogflow.cx.v3.CodeBlockB\x03\xe0A\x01R\tcodeBlock\x12b\n" +
-	"\x12llm_model_settings\x18\x0e \x01(\v2/.google.cloud.dialogflow.cx.v3.LlmModelSettingsB\x03\xe0A\x01R\x10llmModelSettings\x12G\n" +
-	"\bhandlers\x18\x10 \x03(\v2&.google.cloud.dialogflow.cx.v3.HandlerB\x03\xe0A\x01R\bhandlers\x12^\n" +
-	"\rplaybook_type\x18\x13 \x01(\x0e24.google.cloud.dialogflow.cx.v3.Playbook.PlaybookTypeB\x03\xe0A\x01R\fplaybookType\x1ao\n" +
+	"code_block\x18\x15 \x01(\v2(.google.cloud.dialogflow.cx.v3.CodeBlockB\x04\xe2A\x01\x01R\tcodeBlock\x12c\n" +
+	"\x12llm_model_settings\x18\x0e \x01(\v2/.google.cloud.dialogflow.cx.v3.LlmModelSettingsB\x04\xe2A\x01\x01R\x10llmModelSettings\x12H\n" +
+	"\bhandlers\x18\x10 \x03(\v2&.google.cloud.dialogflow.cx.v3.HandlerB\x04\xe2A\x01\x01R\bhandlers\x12_\n" +
+	"\rplaybook_type\x18\x13 \x01(\x0e24.google.cloud.dialogflow.cx.v3.Playbook.PlaybookTypeB\x04\xe2A\x01\x01R\fplaybookType\x1ao\n" +
 	"\x04Step\x12\x14\n" +
 	"\x04text\x18\x01 \x01(\tH\x00R\x04text\x12B\n" +
 	"\x05steps\x18\x02 \x03(\v2,.google.cloud.dialogflow.cx.v3.Playbook.StepR\x05stepsB\r\n" +
@@ -2066,59 +2066,59 @@ const file_google_cloud_dialogflow_cx_v3_playbook_proto_rawDesc = "" +
 	"\x19PLAYBOOK_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04TASK\x10\x01\x12\v\n" +
 	"\aROUTINE\x10\x03:t\xeaAq\n" +
-	"\"dialogflow.googleapis.com/Playbook\x12Kprojects/{project}/locations/{location}/agents/{agent}/playbooks/{playbook}\"\xc9\x01\n" +
-	"\x1cCreatePlaybookVersionRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)dialogflow.googleapis.com/PlaybookVersionR\x06parent\x12^\n" +
-	"\x10playbook_version\x18\x02 \x01(\v2..google.cloud.dialogflow.cx.v3.PlaybookVersionB\x03\xe0A\x02R\x0fplaybookVersion\"\xd6\x03\n" +
+	"\"dialogflow.googleapis.com/Playbook\x12Kprojects/{project}/locations/{location}/agents/{agent}/playbooks/{playbook}\"\xcb\x01\n" +
+	"\x1cCreatePlaybookVersionRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)dialogflow.googleapis.com/PlaybookVersionR\x06parent\x12_\n" +
+	"\x10playbook_version\x18\x02 \x01(\v2..google.cloud.dialogflow.cx.v3.PlaybookVersionB\x04\xe2A\x01\x02R\x0fplaybookVersion\"\xda\x03\n" +
 	"\x0fPlaybookVersion\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12H\n" +
-	"\bplaybook\x18\x03 \x01(\v2'.google.cloud.dialogflow.cx.v3.PlaybookB\x03\xe0A\x03R\bplaybook\x12G\n" +
-	"\bexamples\x18\x04 \x03(\v2&.google.cloud.dialogflow.cx.v3.ExampleB\x03\xe0A\x03R\bexamples\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12I\n" +
+	"\bplaybook\x18\x03 \x01(\v2'.google.cloud.dialogflow.cx.v3.PlaybookB\x04\xe2A\x01\x03R\bplaybook\x12H\n" +
+	"\bexamples\x18\x04 \x03(\v2&.google.cloud.dialogflow.cx.v3.ExampleB\x04\xe2A\x01\x03R\bexamples\x12A\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime:\xb2\x01\xeaA\xae\x01\n" +
-	")dialogflow.googleapis.com/PlaybookVersion\x12^projects/{project}/locations/{location}/agents/{agent}/playbooks/{playbook}/versions/{version}*\x10playbookVersions2\x0fplaybookVersion\"b\n" +
-	"\x19GetPlaybookVersionRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")dialogflow.googleapis.com/PlaybookVersionR\x04name\"f\n" +
-	"\x1dRestorePlaybookVersionRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	")dialogflow.googleapis.com/PlaybookVersion\x12^projects/{project}/locations/{location}/agents/{agent}/playbooks/{playbook}/versions/{version}*\x10playbookVersions2\x0fplaybookVersion\"c\n" +
+	"\x19GetPlaybookVersionRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")dialogflow.googleapis.com/PlaybookVersionR\x04name\"g\n" +
+	"\x1dRestorePlaybookVersionRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")dialogflow.googleapis.com/PlaybookVersionR\x04name\"e\n" +
 	"\x1eRestorePlaybookVersionResponse\x12C\n" +
-	"\bplaybook\x18\x02 \x01(\v2'.google.cloud.dialogflow.cx.v3.PlaybookR\bplaybook\"\xae\x01\n" +
-	"\x1bListPlaybookVersionsRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)dialogflow.googleapis.com/PlaybookVersionR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\bplaybook\x18\x02 \x01(\v2'.google.cloud.dialogflow.cx.v3.PlaybookR\bplaybook\"\xb1\x01\n" +
+	"\x1bListPlaybookVersionsRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\x12)dialogflow.googleapis.com/PlaybookVersionR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa3\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa3\x01\n" +
 	"\x1cListPlaybookVersionsResponse\x12[\n" +
 	"\x11playbook_versions\x18\x01 \x03(\v2..google.cloud.dialogflow.cx.v3.PlaybookVersionR\x10playbookVersions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"e\n" +
-	"\x1cDeletePlaybookVersionRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")dialogflow.googleapis.com/PlaybookVersionR\x04name\"\xa5\x02\n" +
-	"\x15ExportPlaybookRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"dialogflow.googleapis.com/PlaybookR\x04name\x12&\n" +
-	"\fplaybook_uri\x18\x02 \x01(\tB\x03\xe0A\x01R\vplaybookUri\x12e\n" +
-	"\vdata_format\x18\x03 \x01(\x0e2?.google.cloud.dialogflow.cx.v3.ExportPlaybookRequest.DataFormatB\x03\xe0A\x01R\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"f\n" +
+	"\x1cDeletePlaybookVersionRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")dialogflow.googleapis.com/PlaybookVersionR\x04name\"\xa8\x02\n" +
+	"\x15ExportPlaybookRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"dialogflow.googleapis.com/PlaybookR\x04name\x12'\n" +
+	"\fplaybook_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vplaybookUri\x12f\n" +
+	"\vdata_format\x18\x03 \x01(\x0e2?.google.cloud.dialogflow.cx.v3.ExportPlaybookRequest.DataFormatB\x04\xe2A\x01\x01R\n" +
 	"dataFormat\"=\n" +
 	"\n" +
 	"DataFormat\x12\x1b\n" +
 	"\x17DATA_FORMAT_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04BLOB\x10\x01\x12\b\n" +
-	"\x04JSON\x10\x02\"\x9e\x02\n" +
-	"\x15ImportPlaybookRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"dialogflow.googleapis.com/PlaybookR\x06parent\x12#\n" +
+	"\x04JSON\x10\x02\"\xa0\x02\n" +
+	"\x15ImportPlaybookRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\x12\"dialogflow.googleapis.com/PlaybookR\x06parent\x12#\n" +
 	"\fplaybook_uri\x18\x02 \x01(\tH\x00R\vplaybookUri\x12+\n" +
-	"\x10playbook_content\x18\x03 \x01(\fH\x00R\x0fplaybookContent\x12c\n" +
-	"\x0fimport_strategy\x18\x04 \x01(\v25.google.cloud.dialogflow.cx.v3.PlaybookImportStrategyB\x03\xe0A\x01R\x0eimportStrategyB\n" +
+	"\x10playbook_content\x18\x03 \x01(\fH\x00R\x0fplaybookContent\x12d\n" +
+	"\x0fimport_strategy\x18\x04 \x01(\v25.google.cloud.dialogflow.cx.v3.PlaybookImportStrategyB\x04\xe2A\x01\x01R\x0eimportStrategyB\n" +
 	"\n" +
-	"\bplaybook\"\xf0\x02\n" +
-	"\x16PlaybookImportStrategy\x12u\n" +
-	"\x1dmain_playbook_import_strategy\x18\x04 \x01(\x0e2-.google.cloud.dialogflow.cx.v3.ImportStrategyB\x03\xe0A\x01R\x1amainPlaybookImportStrategy\x12y\n" +
-	"\x1fnested_resource_import_strategy\x18\x05 \x01(\x0e2-.google.cloud.dialogflow.cx.v3.ImportStrategyB\x03\xe0A\x01R\x1cnestedResourceImportStrategy\x12d\n" +
-	"\x14tool_import_strategy\x18\x06 \x01(\x0e2-.google.cloud.dialogflow.cx.v3.ImportStrategyB\x03\xe0A\x01R\x12toolImportStrategy\"\xa5\x03\n" +
+	"\bplaybook\"\xf3\x02\n" +
+	"\x16PlaybookImportStrategy\x12v\n" +
+	"\x1dmain_playbook_import_strategy\x18\x04 \x01(\x0e2-.google.cloud.dialogflow.cx.v3.ImportStrategyB\x04\xe2A\x01\x01R\x1amainPlaybookImportStrategy\x12z\n" +
+	"\x1fnested_resource_import_strategy\x18\x05 \x01(\x0e2-.google.cloud.dialogflow.cx.v3.ImportStrategyB\x04\xe2A\x01\x01R\x1cnestedResourceImportStrategy\x12e\n" +
+	"\x14tool_import_strategy\x18\x06 \x01(\x0e2-.google.cloud.dialogflow.cx.v3.ImportStrategyB\x04\xe2A\x01\x01R\x12toolImportStrategy\"\xa5\x03\n" +
 	"\x16ImportPlaybookResponse\x12C\n" +
 	"\bplaybook\x18\x01 \x01(\tB'\xfaA$\n" +
 	"\"dialogflow.googleapis.com/PlaybookR\bplaybook\x12\x7f\n" +
@@ -2131,18 +2131,18 @@ const file_google_cloud_dialogflow_cx_v3_playbook_proto_rawDesc = "" +
 	"\fplaybook_uri\x18\x01 \x01(\tH\x00R\vplaybookUri\x12+\n" +
 	"\x10playbook_content\x18\x02 \x01(\fH\x00R\x0fplaybookContentB\n" +
 	"\n" +
-	"\bplaybook\"\xb3\x04\n" +
+	"\bplaybook\"\xb9\x04\n" +
 	"\aHandler\x12Z\n" +
 	"\revent_handler\x18\x01 \x01(\v23.google.cloud.dialogflow.cx.v3.Handler.EventHandlerH\x00R\feventHandler\x12f\n" +
-	"\x11lifecycle_handler\x18\x03 \x01(\v27.google.cloud.dialogflow.cx.v3.Handler.LifecycleHandlerH\x00R\x10lifecycleHandler\x1a\x9f\x01\n" +
-	"\fEventHandler\x12\x19\n" +
-	"\x05event\x18\x01 \x01(\tB\x03\xe0A\x02R\x05event\x12!\n" +
-	"\tcondition\x18\x03 \x01(\tB\x03\xe0A\x01R\tcondition\x12Q\n" +
-	"\vfulfillment\x18\x02 \x01(\v2*.google.cloud.dialogflow.cx.v3.FulfillmentB\x03\xe0A\x02R\vfulfillment\x1a\xb6\x01\n" +
-	"\x10LifecycleHandler\x12,\n" +
-	"\x0flifecycle_stage\x18\x01 \x01(\tB\x03\xe0A\x02R\x0elifecycleStage\x12!\n" +
-	"\tcondition\x18\x02 \x01(\tB\x03\xe0A\x01R\tcondition\x12Q\n" +
-	"\vfulfillment\x18\x03 \x01(\v2*.google.cloud.dialogflow.cx.v3.FulfillmentB\x03\xe0A\x02R\vfulfillmentB\t\n" +
+	"\x11lifecycle_handler\x18\x03 \x01(\v27.google.cloud.dialogflow.cx.v3.Handler.LifecycleHandlerH\x00R\x10lifecycleHandler\x1a\xa2\x01\n" +
+	"\fEventHandler\x12\x1a\n" +
+	"\x05event\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05event\x12\"\n" +
+	"\tcondition\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tcondition\x12R\n" +
+	"\vfulfillment\x18\x02 \x01(\v2*.google.cloud.dialogflow.cx.v3.FulfillmentB\x04\xe2A\x01\x02R\vfulfillment\x1a\xb9\x01\n" +
+	"\x10LifecycleHandler\x12-\n" +
+	"\x0flifecycle_stage\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0elifecycleStage\x12\"\n" +
+	"\tcondition\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\tcondition\x12R\n" +
+	"\vfulfillment\x18\x03 \x01(\v2*.google.cloud.dialogflow.cx.v3.FulfillmentB\x04\xe2A\x01\x02R\vfulfillmentB\t\n" +
 	"\ahandler2\x87\x15\n" +
 	"\tPlaybooks\x12\xcb\x01\n" +
 	"\x0eCreatePlaybook\x124.google.cloud.dialogflow.cx.v3.CreatePlaybookRequest\x1a'.google.cloud.dialogflow.cx.v3.Playbook\"Z\xdaA\x0fparent,playbook\x82\xd3\xe4\x93\x02B:\bplaybook\"6/v3/{parent=projects/*/locations/*/agents/*}/playbooks\x12\xa5\x01\n" +

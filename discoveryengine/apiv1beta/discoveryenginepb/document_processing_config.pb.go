@@ -590,7 +590,7 @@ var File_google_cloud_discoveryengine_v1beta_document_processing_config_proto pr
 
 const file_google_cloud_discoveryengine_v1beta_document_processing_config_proto_rawDesc = "" +
 	"\n" +
-	"Dgoogle/cloud/discoveryengine/v1beta/document_processing_config.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xa5\x12\n" +
+	"Dgoogle/cloud/discoveryengine/v1beta/document_processing_config.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xad\x12\n" +
 	"\x18DocumentProcessingConfig\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12u\n" +
 	"\x0fchunking_config\x18\x03 \x01(\v2L.google.cloud.discoveryengine.v1beta.DocumentProcessingConfig.ChunkingConfigR\x0echunkingConfig\x12\x81\x01\n" +
@@ -603,7 +603,7 @@ const file_google_cloud_discoveryengine_v1beta_document_processing_config_proto_
 	"chunk_size\x18\x01 \x01(\x05R\tchunkSize\x12:\n" +
 	"\x19include_ancestor_headings\x18\x02 \x01(\bR\x17includeAncestorHeadingsB\f\n" +
 	"\n" +
-	"chunk_mode\x1a\xf8\b\n" +
+	"chunk_mode\x1a\x80\t\n" +
 	"\rParsingConfig\x12\x98\x01\n" +
 	"\x16digital_parsing_config\x18\x01 \x01(\v2`.google.cloud.discoveryengine.v1beta.DocumentProcessingConfig.ParsingConfig.DigitalParsingConfigH\x00R\x14digitalParsingConfig\x12\x8c\x01\n" +
 	"\x12ocr_parsing_config\x18\x02 \x01(\v2\\.google.cloud.discoveryengine.v1beta.DocumentProcessingConfig.ParsingConfig.OcrParsingConfigH\x00R\x10ocrParsingConfig\x12\x95\x01\n" +
@@ -611,17 +611,17 @@ const file_google_cloud_discoveryengine_v1beta_document_processing_config_proto_
 	"\x14DigitalParsingConfig\x1a|\n" +
 	"\x10OcrParsingConfig\x12@\n" +
 	"\x1aenhanced_document_elements\x18\x01 \x03(\tB\x02\x18\x01R\x18enhancedDocumentElements\x12&\n" +
-	"\x0fuse_native_text\x18\x02 \x01(\bR\ruseNativeText\x1a\xf5\x03\n" +
-	"\x13LayoutParsingConfig\x12;\n" +
-	"\x17enable_table_annotation\x18\x01 \x01(\bB\x03\xe0A\x01R\x15enableTableAnnotation\x12;\n" +
-	"\x17enable_image_annotation\x18\x02 \x01(\bB\x03\xe0A\x01R\x15enableImageAnnotation\x12>\n" +
-	"\x19enable_llm_layout_parsing\x18\x05 \x01(\bB\x03\xe0A\x01R\x16enableLlmLayoutParsing\x12=\n" +
-	"\x18structured_content_types\x18\t \x03(\tB\x03\xe0A\x01R\x16structuredContentTypes\x127\n" +
+	"\x0fuse_native_text\x18\x02 \x01(\bR\ruseNativeText\x1a\xfd\x03\n" +
+	"\x13LayoutParsingConfig\x12<\n" +
+	"\x17enable_table_annotation\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x15enableTableAnnotation\x12<\n" +
+	"\x17enable_image_annotation\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x15enableImageAnnotation\x12?\n" +
+	"\x19enable_llm_layout_parsing\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x16enableLlmLayoutParsing\x12>\n" +
+	"\x18structured_content_types\x18\t \x03(\tB\x04\xe2A\x01\x01R\x16structuredContentTypes\x128\n" +
 	"\x15exclude_html_elements\x18\n" +
-	" \x03(\tB\x03\xe0A\x01R\x13excludeHtmlElements\x125\n" +
-	"\x14exclude_html_classes\x18\v \x03(\tB\x03\xe0A\x01R\x12excludeHtmlClasses\x12-\n" +
-	"\x10exclude_html_ids\x18\f \x03(\tB\x03\xe0A\x01R\x0eexcludeHtmlIds\x12F\n" +
-	"\x1denable_get_processed_document\x18\x0e \x01(\bB\x03\xe0A\x01R\x1aenableGetProcessedDocumentB\x17\n" +
+	" \x03(\tB\x04\xe2A\x01\x01R\x13excludeHtmlElements\x126\n" +
+	"\x14exclude_html_classes\x18\v \x03(\tB\x04\xe2A\x01\x01R\x12excludeHtmlClasses\x12.\n" +
+	"\x10exclude_html_ids\x18\f \x03(\tB\x04\xe2A\x01\x01R\x0eexcludeHtmlIds\x12G\n" +
+	"\x1denable_get_processed_document\x18\x0e \x01(\bB\x04\xe2A\x01\x01R\x1aenableGetProcessedDocumentB\x17\n" +
 	"\x15type_dedicated_config\x1a\x96\x01\n" +
 	"\x1bParsingConfigOverridesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12a\n" +

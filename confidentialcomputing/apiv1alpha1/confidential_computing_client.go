@@ -268,6 +268,39 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "confidentialcomputing",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/confidentialcomputing/apiv1alpha1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "confidentialcomputing.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateChallenge = append(client.CallOptions.CreateChallenge, gax.WithClientTracing(tracing))
+		client.CallOptions.VerifyAttestation = append(client.CallOptions.VerifyAttestation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "confidentialcomputing",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/confidentialcomputing/apiv1alpha1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "confidentialcomputing.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateChallenge = append(client.CallOptions.CreateChallenge, gax.WithClientLogging(logging))
+		client.CallOptions.VerifyAttestation = append(client.CallOptions.VerifyAttestation, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -362,6 +395,39 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "confidentialcomputing",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/confidentialcomputing/apiv1alpha1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "confidentialcomputing.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateChallenge = append(callOpts.CreateChallenge, gax.WithClientTracing(tracing))
+		callOpts.VerifyAttestation = append(callOpts.VerifyAttestation, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "confidentialcomputing",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/confidentialcomputing/apiv1alpha1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "confidentialcomputing.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateChallenge = append(callOpts.CreateChallenge, gax.WithClientLogging(logging))
+		callOpts.VerifyAttestation = append(callOpts.VerifyAttestation, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -408,9 +474,6 @@ func (c *gRPCClient) CreateChallenge(ctx context.Context, req *confidentialcompu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//confidentialcomputing.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.confidentialcomputing.v1alpha1.ConfidentialComputing/CreateChallenge")
 	}
@@ -432,9 +495,6 @@ func (c *gRPCClient) VerifyAttestation(ctx context.Context, req *confidentialcom
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//confidentialcomputing.googleapis.com/%v", req.GetChallenge()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.confidentialcomputing.v1alpha1.ConfidentialComputing/VerifyAttestation")
 	}
@@ -534,6 +594,11 @@ func (c *restClient) CreateChallenge(ctx context.Context, req *confidentialcompu
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/challenges", req.GetParent())
 
 	params := url.Values{}
@@ -547,9 +612,6 @@ func (c *restClient) CreateChallenge(ctx context.Context, req *confidentialcompu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//confidentialcomputing.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.confidentialcomputing.v1alpha1.ConfidentialComputing/CreateChallenge")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{parent=projects/*/locations/*}/challenges")
@@ -597,6 +659,11 @@ func (c *restClient) VerifyAttestation(ctx context.Context, req *confidentialcom
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetChallenge(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v:verifyAttestation", req.GetChallenge())
 
 	params := url.Values{}
@@ -610,9 +677,6 @@ func (c *restClient) VerifyAttestation(ctx context.Context, req *confidentialcom
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//confidentialcomputing.googleapis.com/%v", req.GetChallenge()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.confidentialcomputing.v1alpha1.ConfidentialComputing/VerifyAttestation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{challenge=projects/*/locations/*/challenges/*}:verifyAttestation")
@@ -652,6 +716,11 @@ func (c *restClient) VerifyAttestation(ctx context.Context, req *confidentialcom
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
@@ -719,6 +788,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/locations", req.GetName())

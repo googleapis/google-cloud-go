@@ -1737,94 +1737,99 @@ var File_google_cloud_managedkafka_schemaregistry_v1_schema_registry_proto proto
 
 const file_google_cloud_managedkafka_schemaregistry_v1_schema_registry_proto_rawDesc = "" +
 	"\n" +
-	"Agoogle/cloud/managedkafka/schemaregistry/v1/schema_registry.proto\x12+google.cloud.managedkafka.schemaregistry.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1aKgoogle/cloud/managedkafka/schemaregistry/v1/schema_registry_resources.proto\x1a\x1bgoogle/protobuf/empty.proto\"b\n" +
-	"\x18GetSchemaRegistryRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*managedkafka.googleapis.com/SchemaRegistryR\x04name\"@\n" +
-	"\x1bListSchemaRegistriesRequest\x12!\n" +
-	"\x06parent\x18\x01 \x01(\tB\t\xe0A\x02\xfaA\x03\n" +
+	"Agoogle/cloud/managedkafka/schemaregistry/v1/schema_registry.proto\x12+google.cloud.managedkafka.schemaregistry.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1aKgoogle/cloud/managedkafka/schemaregistry/v1/schema_registry_resources.proto\x1a\x1bgoogle/protobuf/empty.proto\"c\n" +
+	"\x18GetSchemaRegistryRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*managedkafka.googleapis.com/SchemaRegistryR\x04name\"A\n" +
+	"\x1bListSchemaRegistriesRequest\x12\"\n" +
+	"\x06parent\x18\x01 \x01(\tB\n" +
+	"\xe2A\x01\x02\xfaA\x03\n" +
 	"\x01*R\x06parent\"\x88\x01\n" +
 	"\x1cListSchemaRegistriesResponse\x12h\n" +
-	"\x11schema_registries\x18\x01 \x03(\v2;.google.cloud.managedkafka.schemaregistry.v1.SchemaRegistryR\x10schemaRegistries\"\xde\x01\n" +
-	"\x1bCreateSchemaRegistryRequest\x12!\n" +
-	"\x06parent\x18\x01 \x01(\tB\t\xe0A\x02\xfaA\x03\n" +
-	"\x01*R\x06parent\x121\n" +
-	"\x12schema_registry_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x10schemaRegistryId\x12i\n" +
-	"\x0fschema_registry\x18\x03 \x01(\v2;.google.cloud.managedkafka.schemaregistry.v1.SchemaRegistryB\x03\xe0A\x02R\x0eschemaRegistry\"e\n" +
-	"\x1bDeleteSchemaRegistryRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*managedkafka.googleapis.com/SchemaRegistryR\x04name\"Z\n" +
-	"\x11GetContextRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")managedkafka.googleapis.com/SchemaContextR\x04name\"a\n" +
-	"\x13ListContextsRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*managedkafka.googleapis.com/SchemaRegistryR\x06parent\"\x82\x01\n" +
-	"\x10GetSchemaRequest\x12>\n" +
-	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"managedkafka.googleapis.com/SchemaR\x04name\x12\"\n" +
-	"\asubject\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\asubject\x88\x01\x01B\n" +
+	"\x11schema_registries\x18\x01 \x03(\v2;.google.cloud.managedkafka.schemaregistry.v1.SchemaRegistryR\x10schemaRegistries\"\xe1\x01\n" +
+	"\x1bCreateSchemaRegistryRequest\x12\"\n" +
+	"\x06parent\x18\x01 \x01(\tB\n" +
+	"\xe2A\x01\x02\xfaA\x03\n" +
+	"\x01*R\x06parent\x122\n" +
+	"\x12schema_registry_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x10schemaRegistryId\x12j\n" +
+	"\x0fschema_registry\x18\x03 \x01(\v2;.google.cloud.managedkafka.schemaregistry.v1.SchemaRegistryB\x04\xe2A\x01\x02R\x0eschemaRegistry\"f\n" +
+	"\x1bDeleteSchemaRegistryRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*managedkafka.googleapis.com/SchemaRegistryR\x04name\"[\n" +
+	"\x11GetContextRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")managedkafka.googleapis.com/SchemaContextR\x04name\"b\n" +
+	"\x13ListContextsRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*managedkafka.googleapis.com/SchemaRegistryR\x06parent\"\x84\x01\n" +
+	"\x10GetSchemaRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"managedkafka.googleapis.com/SchemaR\x04name\x12#\n" +
+	"\asubject\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\asubject\x88\x01\x01B\n" +
 	"\n" +
-	"\b_subject\";\n" +
-	"\x16ListSchemaTypesRequest\x12!\n" +
-	"\x06parent\x18\x01 \x01(\tB\t\xe0A\x02\xfaA\x03\n" +
-	"\x01*R\x06parent\"\xbf\x01\n" +
-	"\x19ListSchemaVersionsRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"managedkafka.googleapis.com/SchemaR\x06parent\x12\"\n" +
-	"\asubject\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\asubject\x88\x01\x01\x12\"\n" +
-	"\adeleted\x18\x03 \x01(\bB\x03\xe0A\x01H\x01R\adeleted\x88\x01\x01B\n" +
+	"\b_subject\"<\n" +
+	"\x16ListSchemaTypesRequest\x12\"\n" +
+	"\x06parent\x18\x01 \x01(\tB\n" +
+	"\xe2A\x01\x02\xfaA\x03\n" +
+	"\x01*R\x06parent\"\xc2\x01\n" +
+	"\x19ListSchemaVersionsRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe2A\x01\x02\xfaA$\n" +
+	"\"managedkafka.googleapis.com/SchemaR\x06parent\x12#\n" +
+	"\asubject\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\asubject\x88\x01\x01\x12#\n" +
+	"\adeleted\x18\x03 \x01(\bB\x04\xe2A\x01\x01H\x01R\adeleted\x88\x01\x01B\n" +
 	"\n" +
 	"\b_subjectB\n" +
 	"\n" +
-	"\b_deleted\"\xac\x01\n" +
-	"\x13ListSubjectsRequest\x12!\n" +
-	"\x06parent\x18\x01 \x01(\tB\t\xe0A\x02\xfaA\x03\n" +
-	"\x01*R\x06parent\x12/\n" +
-	"\x0esubject_prefix\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\rsubjectPrefix\x88\x01\x01\x12\"\n" +
-	"\adeleted\x18\x03 \x01(\bB\x03\xe0A\x01H\x01R\adeleted\x88\x01\x01B\x11\n" +
+	"\b_deleted\"\xaf\x01\n" +
+	"\x13ListSubjectsRequest\x12\"\n" +
+	"\x06parent\x18\x01 \x01(\tB\n" +
+	"\xe2A\x01\x02\xfaA\x03\n" +
+	"\x01*R\x06parent\x120\n" +
+	"\x0esubject_prefix\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\rsubjectPrefix\x88\x01\x01\x12#\n" +
+	"\adeleted\x18\x03 \x01(\bB\x04\xe2A\x01\x01H\x01R\adeleted\x88\x01\x01B\x11\n" +
 	"\x0f_subject_prefixB\n" +
 	"\n" +
-	"\b_deleted\"\xa2\x01\n" +
-	"\x1dListSubjectsBySchemaIdRequest\x12!\n" +
-	"\x06parent\x18\x01 \x01(\tB\t\xe0A\x02\xfaA\x03\n" +
-	"\x01*R\x06parent\x12\"\n" +
-	"\asubject\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\asubject\x88\x01\x01\x12\"\n" +
-	"\adeleted\x18\x03 \x01(\bB\x03\xe0A\x01H\x01R\adeleted\x88\x01\x01B\n" +
+	"\b_deleted\"\xa5\x01\n" +
+	"\x1dListSubjectsBySchemaIdRequest\x12\"\n" +
+	"\x06parent\x18\x01 \x01(\tB\n" +
+	"\xe2A\x01\x02\xfaA\x03\n" +
+	"\x01*R\x06parent\x12#\n" +
+	"\asubject\x18\x02 \x01(\tB\x04\xe2A\x01\x01H\x00R\asubject\x88\x01\x01\x12#\n" +
+	"\adeleted\x18\x03 \x01(\bB\x04\xe2A\x01\x01H\x01R\adeleted\x88\x01\x01B\n" +
 	"\n" +
 	"\b_subjectB\n" +
 	"\n" +
-	"\b_deleted\"\x90\x01\n" +
-	"\x13ListVersionsRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")managedkafka.googleapis.com/SchemaSubjectR\x06parent\x12\"\n" +
-	"\adeleted\x18\x02 \x01(\bB\x03\xe0A\x01H\x00R\adeleted\x88\x01\x01B\n" +
+	"\b_deleted\"\x92\x01\n" +
+	"\x13ListVersionsRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")managedkafka.googleapis.com/SchemaSubjectR\x06parent\x12#\n" +
+	"\adeleted\x18\x02 \x01(\bB\x04\xe2A\x01\x01H\x00R\adeleted\x88\x01\x01B\n" +
 	"\n" +
-	"\b_deleted\"\x93\x01\n" +
-	"\x14DeleteSubjectRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")managedkafka.googleapis.com/SchemaSubjectR\x04name\x12&\n" +
-	"\tpermanent\x18\x02 \x01(\bB\x03\xe0A\x01H\x00R\tpermanent\x88\x01\x01B\f\n" +
+	"\b_deleted\"\x95\x01\n" +
+	"\x14DeleteSubjectRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")managedkafka.googleapis.com/SchemaSubjectR\x04name\x12'\n" +
+	"\tpermanent\x18\x02 \x01(\bB\x04\xe2A\x01\x01H\x00R\tpermanent\x88\x01\x01B\f\n" +
 	"\n" +
-	"_permanent\"\x8a\x01\n" +
-	"\x11GetVersionRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")managedkafka.googleapis.com/SchemaVersionR\x04name\x12\"\n" +
-	"\adeleted\x18\x02 \x01(\bB\x03\xe0A\x01H\x00R\adeleted\x88\x01\x01B\n" +
+	"_permanent\"\x8c\x01\n" +
+	"\x11GetVersionRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")managedkafka.googleapis.com/SchemaVersionR\x04name\x12#\n" +
+	"\adeleted\x18\x02 \x01(\bB\x04\xe2A\x01\x01H\x00R\adeleted\x88\x01\x01B\n" +
 	"\n" +
-	"\b_deleted\"\xea\x03\n" +
-	"\x14CreateVersionRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")managedkafka.googleapis.com/SchemaSubjectR\x06parent\x12\"\n" +
-	"\aversion\x18\x02 \x01(\x05B\x03\xe0A\x01H\x00R\aversion\x88\x01\x01\x12\x18\n" +
-	"\x02id\x18\x03 \x01(\x05B\x03\xe0A\x01H\x01R\x02id\x88\x01\x01\x12i\n" +
-	"\vschema_type\x18\x04 \x01(\x0e2>.google.cloud.managedkafka.schemaregistry.v1.Schema.SchemaTypeB\x03\xe0A\x01H\x02R\n" +
-	"schemaType\x88\x01\x01\x12\x1b\n" +
-	"\x06schema\x18\x05 \x01(\tB\x03\xe0A\x02R\x06schema\x12h\n" +
+	"\b_deleted\"\xf1\x03\n" +
+	"\x14CreateVersionRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")managedkafka.googleapis.com/SchemaSubjectR\x06parent\x12#\n" +
+	"\aversion\x18\x02 \x01(\x05B\x04\xe2A\x01\x01H\x00R\aversion\x88\x01\x01\x12\x19\n" +
+	"\x02id\x18\x03 \x01(\x05B\x04\xe2A\x01\x01H\x01R\x02id\x88\x01\x01\x12j\n" +
+	"\vschema_type\x18\x04 \x01(\x0e2>.google.cloud.managedkafka.schemaregistry.v1.Schema.SchemaTypeB\x04\xe2A\x01\x01H\x02R\n" +
+	"schemaType\x88\x01\x01\x12\x1c\n" +
+	"\x06schema\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\x06schema\x12i\n" +
 	"\n" +
-	"references\x18\x06 \x03(\v2C.google.cloud.managedkafka.schemaregistry.v1.Schema.SchemaReferenceB\x03\xe0A\x01R\n" +
-	"references\x12&\n" +
-	"\tnormalize\x18\a \x01(\bB\x03\xe0A\x01H\x03R\tnormalize\x88\x01\x01B\n" +
+	"references\x18\x06 \x03(\v2C.google.cloud.managedkafka.schemaregistry.v1.Schema.SchemaReferenceB\x04\xe2A\x01\x01R\n" +
+	"references\x12'\n" +
+	"\tnormalize\x18\a \x01(\bB\x04\xe2A\x01\x01H\x03R\tnormalize\x88\x01\x01B\n" +
 	"\n" +
 	"\b_versionB\x05\n" +
 	"\x03_idB\x0e\n" +
@@ -1832,73 +1837,74 @@ const file_google_cloud_managedkafka_schemaregistry_v1_schema_registry_proto_raw
 	"\n" +
 	"_normalize\"'\n" +
 	"\x15CreateVersionResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x05R\x02id\"\xc9\x03\n" +
-	"\x14LookupVersionRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")managedkafka.googleapis.com/SchemaSubjectR\x06parent\x12i\n" +
-	"\vschema_type\x18\x02 \x01(\x0e2>.google.cloud.managedkafka.schemaregistry.v1.Schema.SchemaTypeB\x03\xe0A\x01H\x00R\n" +
-	"schemaType\x88\x01\x01\x12\x1b\n" +
-	"\x06schema\x18\x03 \x01(\tB\x03\xe0A\x02R\x06schema\x12h\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\"\xcf\x03\n" +
+	"\x14LookupVersionRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")managedkafka.googleapis.com/SchemaSubjectR\x06parent\x12j\n" +
+	"\vschema_type\x18\x02 \x01(\x0e2>.google.cloud.managedkafka.schemaregistry.v1.Schema.SchemaTypeB\x04\xe2A\x01\x01H\x00R\n" +
+	"schemaType\x88\x01\x01\x12\x1c\n" +
+	"\x06schema\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06schema\x12i\n" +
 	"\n" +
-	"references\x18\x04 \x03(\v2C.google.cloud.managedkafka.schemaregistry.v1.Schema.SchemaReferenceB\x03\xe0A\x01R\n" +
-	"references\x12&\n" +
-	"\tnormalize\x18\x05 \x01(\bB\x03\xe0A\x01H\x01R\tnormalize\x88\x01\x01\x12\"\n" +
-	"\adeleted\x18\x06 \x01(\bB\x03\xe0A\x01H\x02R\adeleted\x88\x01\x01B\x0e\n" +
+	"references\x18\x04 \x03(\v2C.google.cloud.managedkafka.schemaregistry.v1.Schema.SchemaReferenceB\x04\xe2A\x01\x01R\n" +
+	"references\x12'\n" +
+	"\tnormalize\x18\x05 \x01(\bB\x04\xe2A\x01\x01H\x01R\tnormalize\x88\x01\x01\x12#\n" +
+	"\adeleted\x18\x06 \x01(\bB\x04\xe2A\x01\x01H\x02R\adeleted\x88\x01\x01B\x0e\n" +
 	"\f_schema_typeB\f\n" +
 	"\n" +
 	"_normalizeB\n" +
 	"\n" +
-	"\b_deleted\"\x93\x01\n" +
-	"\x14DeleteVersionRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")managedkafka.googleapis.com/SchemaVersionR\x04name\x12&\n" +
-	"\tpermanent\x18\x02 \x01(\bB\x03\xe0A\x01H\x00R\tpermanent\x88\x01\x01B\f\n" +
+	"\b_deleted\"\x95\x01\n" +
+	"\x14DeleteVersionRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")managedkafka.googleapis.com/SchemaVersionR\x04name\x12'\n" +
+	"\tpermanent\x18\x02 \x01(\bB\x04\xe2A\x01\x01H\x00R\tpermanent\x88\x01\x01B\f\n" +
 	"\n" +
-	"_permanent\"i\n" +
-	"\x1cListReferencedSchemasRequest\x12I\n" +
-	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")managedkafka.googleapis.com/SchemaVersionR\x06parent\"\xec\x02\n" +
-	"\x19CheckCompatibilityRequest\x12\x1d\n" +
-	"\x04name\x18\x01 \x01(\tB\t\xe0A\x02\xfaA\x03\n" +
-	"\x01*R\x04name\x12i\n" +
-	"\vschema_type\x18\x02 \x01(\x0e2>.google.cloud.managedkafka.schemaregistry.v1.Schema.SchemaTypeB\x03\xe0A\x01H\x00R\n" +
-	"schemaType\x88\x01\x01\x12\x1b\n" +
-	"\x06schema\x18\x03 \x01(\tB\x03\xe0A\x02R\x06schema\x12h\n" +
+	"_permanent\"j\n" +
+	"\x1cListReferencedSchemasRequest\x12J\n" +
+	"\x06parent\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")managedkafka.googleapis.com/SchemaVersionR\x06parent\"\xf1\x02\n" +
+	"\x19CheckCompatibilityRequest\x12\x1e\n" +
+	"\x04name\x18\x01 \x01(\tB\n" +
+	"\xe2A\x01\x02\xfaA\x03\n" +
+	"\x01*R\x04name\x12j\n" +
+	"\vschema_type\x18\x02 \x01(\x0e2>.google.cloud.managedkafka.schemaregistry.v1.Schema.SchemaTypeB\x04\xe2A\x01\x01H\x00R\n" +
+	"schemaType\x88\x01\x01\x12\x1c\n" +
+	"\x06schema\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06schema\x12i\n" +
 	"\n" +
-	"references\x18\x04 \x03(\v2C.google.cloud.managedkafka.schemaregistry.v1.Schema.SchemaReferenceB\x03\xe0A\x01R\n" +
-	"references\x12\"\n" +
-	"\averbose\x18\x05 \x01(\bB\x03\xe0A\x01H\x01R\averbose\x88\x01\x01B\x0e\n" +
+	"references\x18\x04 \x03(\v2C.google.cloud.managedkafka.schemaregistry.v1.Schema.SchemaReferenceB\x04\xe2A\x01\x01R\n" +
+	"references\x12#\n" +
+	"\averbose\x18\x05 \x01(\bB\x04\xe2A\x01\x01H\x01R\averbose\x88\x01\x01B\x0e\n" +
 	"\f_schema_typeB\n" +
 	"\n" +
 	"\b_verbose\"^\n" +
 	"\x1aCheckCompatibilityResponse\x12$\n" +
 	"\ris_compatible\x18\x01 \x01(\bR\ris_compatible\x12\x1a\n" +
-	"\bmessages\x18\x02 \x03(\tR\bmessages\"\xaa\x01\n" +
-	"\x16GetSchemaConfigRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(managedkafka.googleapis.com/SchemaConfigR\x04name\x124\n" +
-	"\x11default_to_global\x18\x02 \x01(\bB\x03\xe0A\x01H\x00R\x0fdefaultToGlobal\x88\x01\x01B\x14\n" +
-	"\x12_default_to_global\"\xa6\x02\n" +
-	"\x19UpdateSchemaConfigRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(managedkafka.googleapis.com/SchemaConfigR\x04name\x12{\n" +
-	"\rcompatibility\x18\x02 \x01(\x0e2K.google.cloud.managedkafka.schemaregistry.v1.SchemaConfig.CompatibilityTypeB\x03\xe0A\x02H\x00R\rcompatibility\x88\x01\x01\x12&\n" +
-	"\tnormalize\x18\x03 \x01(\bB\x03\xe0A\x01H\x01R\tnormalize\x88\x01\x01B\x10\n" +
+	"\bmessages\x18\x02 \x03(\tR\bmessages\"\xac\x01\n" +
+	"\x16GetSchemaConfigRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(managedkafka.googleapis.com/SchemaConfigR\x04name\x125\n" +
+	"\x11default_to_global\x18\x02 \x01(\bB\x04\xe2A\x01\x01H\x00R\x0fdefaultToGlobal\x88\x01\x01B\x14\n" +
+	"\x12_default_to_global\"\xa9\x02\n" +
+	"\x19UpdateSchemaConfigRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(managedkafka.googleapis.com/SchemaConfigR\x04name\x12|\n" +
+	"\rcompatibility\x18\x02 \x01(\x0e2K.google.cloud.managedkafka.schemaregistry.v1.SchemaConfig.CompatibilityTypeB\x04\xe2A\x01\x02H\x00R\rcompatibility\x88\x01\x01\x12'\n" +
+	"\tnormalize\x18\x03 \x01(\bB\x04\xe2A\x01\x01H\x01R\tnormalize\x88\x01\x01B\x10\n" +
 	"\x0e_compatibilityB\f\n" +
 	"\n" +
-	"_normalize\"a\n" +
-	"\x19DeleteSchemaConfigRequest\x12D\n" +
-	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(managedkafka.googleapis.com/SchemaConfigR\x04name\"Z\n" +
-	"\x14GetSchemaModeRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&managedkafka.googleapis.com/SchemaModeR\x04name\"\xb8\x01\n" +
-	"\x17UpdateSchemaModeRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&managedkafka.googleapis.com/SchemaModeR\x04name\x12Y\n" +
-	"\x04mode\x18\x02 \x01(\x0e2@.google.cloud.managedkafka.schemaregistry.v1.SchemaMode.ModeTypeB\x03\xe0A\x02R\x04mode\"]\n" +
-	"\x17DeleteSchemaModeRequest\x12B\n" +
-	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"_normalize\"b\n" +
+	"\x19DeleteSchemaConfigRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe2A\x01\x02\xfaA*\n" +
+	"(managedkafka.googleapis.com/SchemaConfigR\x04name\"[\n" +
+	"\x14GetSchemaModeRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&managedkafka.googleapis.com/SchemaModeR\x04name\"\xba\x01\n" +
+	"\x17UpdateSchemaModeRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
+	"&managedkafka.googleapis.com/SchemaModeR\x04name\x12Z\n" +
+	"\x04mode\x18\x02 \x01(\x0e2@.google.cloud.managedkafka.schemaregistry.v1.SchemaMode.ModeTypeB\x04\xe2A\x01\x02R\x04mode\"^\n" +
+	"\x17DeleteSchemaModeRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe2A\x01\x02\xfaA(\n" +
 	"&managedkafka.googleapis.com/SchemaModeR\x04name2\xf0=\n" +
 	"\x15ManagedSchemaRegistry\x12\xdc\x01\n" +
 	"\x11GetSchemaRegistry\x12E.google.cloud.managedkafka.schemaregistry.v1.GetSchemaRegistryRequest\x1a;.google.cloud.managedkafka.schemaregistry.v1.SchemaRegistry\"C\xdaA\x04name\x82\xd3\xe4\x93\x026\x124/v1/{name=projects/*/locations/*/schemaRegistries/*}\x12\xf2\x01\n" +

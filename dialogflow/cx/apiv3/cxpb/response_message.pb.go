@@ -1043,47 +1043,47 @@ var File_google_cloud_dialogflow_cx_v3_response_message_proto protoreflect.FileD
 
 const file_google_cloud_dialogflow_cx_v3_response_message_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/dialogflow/cx/v3/response_message.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1fgoogle/api/field_behavior.proto\x1a-google/cloud/dialogflow/cx/v3/tool_call.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xa9\x11\n" +
+	"4google/cloud/dialogflow/cx/v3/response_message.proto\x12\x1dgoogle.cloud.dialogflow.cx.v3\x1a\x1fgoogle/api/field_behavior.proto\x1a-google/cloud/dialogflow/cx/v3/tool_call.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xb1\x11\n" +
 	"\x0fResponseMessage\x12I\n" +
 	"\x04text\x18\x01 \x01(\v23.google.cloud.dialogflow.cx.v3.ResponseMessage.TextH\x00R\x04text\x123\n" +
 	"\apayload\x18\x02 \x01(\v2\x17.google.protobuf.StructH\x00R\apayload\x12w\n" +
 	"\x14conversation_success\x18\t \x01(\v2B.google.cloud.dialogflow.cx.v3.ResponseMessage.ConversationSuccessH\x00R\x13conversationSuccess\x12l\n" +
 	"\x11output_audio_text\x18\b \x01(\v2>.google.cloud.dialogflow.cx.v3.ResponseMessage.OutputAudioTextH\x00R\x0foutputAudioText\x12o\n" +
 	"\x12live_agent_handoff\x18\n" +
-	" \x01(\v2?.google.cloud.dialogflow.cx.v3.ResponseMessage.LiveAgentHandoffH\x00R\x10liveAgentHandoff\x12m\n" +
-	"\x0fend_interaction\x18\v \x01(\v2=.google.cloud.dialogflow.cx.v3.ResponseMessage.EndInteractionB\x03\xe0A\x03H\x00R\x0eendInteraction\x12Y\n" +
+	" \x01(\v2?.google.cloud.dialogflow.cx.v3.ResponseMessage.LiveAgentHandoffH\x00R\x10liveAgentHandoff\x12n\n" +
+	"\x0fend_interaction\x18\v \x01(\v2=.google.cloud.dialogflow.cx.v3.ResponseMessage.EndInteractionB\x04\xe2A\x01\x03H\x00R\x0eendInteraction\x12Y\n" +
 	"\n" +
-	"play_audio\x18\f \x01(\v28.google.cloud.dialogflow.cx.v3.ResponseMessage.PlayAudioH\x00R\tplayAudio\x12a\n" +
-	"\vmixed_audio\x18\r \x01(\v29.google.cloud.dialogflow.cx.v3.ResponseMessage.MixedAudioB\x03\xe0A\x03H\x00R\n" +
+	"play_audio\x18\f \x01(\v28.google.cloud.dialogflow.cx.v3.ResponseMessage.PlayAudioH\x00R\tplayAudio\x12b\n" +
+	"\vmixed_audio\x18\r \x01(\v29.google.cloud.dialogflow.cx.v3.ResponseMessage.MixedAudioB\x04\xe2A\x01\x03H\x00R\n" +
 	"mixedAudio\x12~\n" +
 	"\x17telephony_transfer_call\x18\x12 \x01(\v2D.google.cloud.dialogflow.cx.v3.ResponseMessage.TelephonyTransferCallH\x00R\x15telephonyTransferCall\x12r\n" +
 	"\x13knowledge_info_card\x18\x14 \x01(\v2@.google.cloud.dialogflow.cx.v3.ResponseMessage.KnowledgeInfoCardH\x00R\x11knowledgeInfoCard\x12F\n" +
 	"\ttool_call\x18\x16 \x01(\v2'.google.cloud.dialogflow.cx.v3.ToolCallH\x00R\btoolCall\x12`\n" +
 	"\rresponse_type\x18\x04 \x01(\x0e2;.google.cloud.dialogflow.cx.v3.ResponseMessage.ResponseTypeR\fresponseType\x12\x18\n" +
-	"\achannel\x18\x13 \x01(\tR\achannel\x1ad\n" +
-	"\x04Text\x12\x17\n" +
-	"\x04text\x18\x01 \x03(\tB\x03\xe0A\x02R\x04text\x12C\n" +
-	"\x1ballow_playback_interruption\x18\x02 \x01(\bB\x03\xe0A\x03R\x19allowPlaybackInterruption\x1aG\n" +
+	"\achannel\x18\x13 \x01(\tR\achannel\x1af\n" +
+	"\x04Text\x12\x18\n" +
+	"\x04text\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x04text\x12D\n" +
+	"\x1ballow_playback_interruption\x18\x02 \x01(\bB\x04\xe2A\x01\x03R\x19allowPlaybackInterruption\x1aG\n" +
 	"\x10LiveAgentHandoff\x123\n" +
 	"\bmetadata\x18\x01 \x01(\v2\x17.google.protobuf.StructR\bmetadata\x1aJ\n" +
 	"\x13ConversationSuccess\x123\n" +
-	"\bmetadata\x18\x01 \x01(\v2\x17.google.protobuf.StructR\bmetadata\x1a\x8c\x01\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x17.google.protobuf.StructR\bmetadata\x1a\x8d\x01\n" +
 	"\x0fOutputAudioText\x12\x14\n" +
 	"\x04text\x18\x01 \x01(\tH\x00R\x04text\x12\x14\n" +
-	"\x04ssml\x18\x02 \x01(\tH\x00R\x04ssml\x12C\n" +
-	"\x1ballow_playback_interruption\x18\x03 \x01(\bB\x03\xe0A\x03R\x19allowPlaybackInterruptionB\b\n" +
+	"\x04ssml\x18\x02 \x01(\tH\x00R\x04ssml\x12D\n" +
+	"\x1ballow_playback_interruption\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\x19allowPlaybackInterruptionB\b\n" +
 	"\x06source\x1a\x10\n" +
-	"\x0eEndInteraction\x1ar\n" +
-	"\tPlayAudio\x12 \n" +
-	"\taudio_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\baudioUri\x12C\n" +
-	"\x1ballow_playback_interruption\x18\x02 \x01(\bB\x03\xe0A\x03R\x19allowPlaybackInterruption\x1a\xf3\x01\n" +
+	"\x0eEndInteraction\x1at\n" +
+	"\tPlayAudio\x12!\n" +
+	"\taudio_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\baudioUri\x12D\n" +
+	"\x1ballow_playback_interruption\x18\x02 \x01(\bB\x04\xe2A\x01\x03R\x19allowPlaybackInterruption\x1a\xf4\x01\n" +
 	"\n" +
 	"MixedAudio\x12]\n" +
-	"\bsegments\x18\x01 \x03(\v2A.google.cloud.dialogflow.cx.v3.ResponseMessage.MixedAudio.SegmentR\bsegments\x1a\x85\x01\n" +
+	"\bsegments\x18\x01 \x03(\v2A.google.cloud.dialogflow.cx.v3.ResponseMessage.MixedAudio.SegmentR\bsegments\x1a\x86\x01\n" +
 	"\aSegment\x12\x16\n" +
 	"\x05audio\x18\x01 \x01(\fH\x00R\x05audio\x12\x12\n" +
-	"\x03uri\x18\x02 \x01(\tH\x00R\x03uri\x12C\n" +
-	"\x1ballow_playback_interruption\x18\x03 \x01(\bB\x03\xe0A\x03R\x19allowPlaybackInterruptionB\t\n" +
+	"\x03uri\x18\x02 \x01(\tH\x00R\x03uri\x12D\n" +
+	"\x1ballow_playback_interruption\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\x19allowPlaybackInterruptionB\t\n" +
 	"\acontent\x1aH\n" +
 	"\x15TelephonyTransferCall\x12#\n" +
 	"\fphone_number\x18\x01 \x01(\tH\x00R\vphoneNumberB\n" +

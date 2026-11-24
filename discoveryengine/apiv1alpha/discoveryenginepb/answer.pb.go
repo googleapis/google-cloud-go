@@ -1587,9 +1587,9 @@ var File_google_cloud_discoveryengine_v1alpha_answer_proto protoreflect.FileDesc
 
 const file_google_cloud_discoveryengine_v1alpha_answer_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/discoveryengine/v1alpha/answer.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa5(\n" +
-	"\x06Answer\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12H\n" +
+	"1google/cloud/discoveryengine/v1alpha/answer.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa8(\n" +
+	"\x06Answer\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12H\n" +
 	"\x05state\x18\x02 \x01(\x0e22.google.cloud.discoveryengine.v1alpha.Answer.StateR\x05state\x12\x1f\n" +
 	"\vanswer_text\x18\x03 \x01(\tR\n" +
 	"answerText\x12S\n" +
@@ -1601,10 +1601,10 @@ const file_google_cloud_discoveryengine_v1alpha_answer_proto_rawDesc = "" +
 	"\x05steps\x18\a \x03(\v21.google.cloud.discoveryengine.v1alpha.Answer.StepR\x05steps\x12}\n" +
 	"\x18query_understanding_info\x18\n" +
 	" \x01(\v2C.google.cloud.discoveryengine.v1alpha.Answer.QueryUnderstandingInfoR\x16queryUnderstandingInfo\x12v\n" +
-	"\x16answer_skipped_reasons\x18\v \x03(\x0e2@.google.cloud.discoveryengine.v1alpha.Answer.AnswerSkippedReasonR\x14answerSkippedReasons\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12D\n" +
-	"\rcomplete_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fcompleteTime\x1a\x9f\x01\n" +
+	"\x16answer_skipped_reasons\x18\v \x03(\x0e2@.google.cloud.discoveryengine.v1alpha.Answer.AnswerSkippedReasonR\x14answerSkippedReasons\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12E\n" +
+	"\rcomplete_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\fcompleteTime\x1a\x9f\x01\n" +
 	"\bCitation\x12\x1f\n" +
 	"\vstart_index\x18\x01 \x01(\x03R\n" +
 	"startIndex\x12\x1b\n" +

@@ -17,6 +17,8 @@
 // Package apphub is an auto-generated package for the
 // App Hub API.
 //
+// App Hub lets you build, operate, and manage applications on Google Cloud.
+//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference

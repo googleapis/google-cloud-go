@@ -429,6 +429,51 @@ func NewTransitionRouteGroupsClient(ctx context.Context, opts ...option.ClientOp
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListTransitionRouteGroups = append(client.CallOptions.ListTransitionRouteGroups, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTransitionRouteGroup = append(client.CallOptions.GetTransitionRouteGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateTransitionRouteGroup = append(client.CallOptions.CreateTransitionRouteGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTransitionRouteGroup = append(client.CallOptions.UpdateTransitionRouteGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTransitionRouteGroup = append(client.CallOptions.DeleteTransitionRouteGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListTransitionRouteGroups = append(client.CallOptions.ListTransitionRouteGroups, gax.WithClientLogging(logging))
+		client.CallOptions.GetTransitionRouteGroup = append(client.CallOptions.GetTransitionRouteGroup, gax.WithClientLogging(logging))
+		client.CallOptions.CreateTransitionRouteGroup = append(client.CallOptions.CreateTransitionRouteGroup, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTransitionRouteGroup = append(client.CallOptions.UpdateTransitionRouteGroup, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTransitionRouteGroup = append(client.CallOptions.DeleteTransitionRouteGroup, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -530,6 +575,51 @@ func NewTransitionRouteGroupsRESTClient(ctx context.Context, opts ...option.Clie
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.ListTransitionRouteGroups = append(callOpts.ListTransitionRouteGroups, gax.WithClientTracing(tracing))
+		callOpts.GetTransitionRouteGroup = append(callOpts.GetTransitionRouteGroup, gax.WithClientTracing(tracing))
+		callOpts.CreateTransitionRouteGroup = append(callOpts.CreateTransitionRouteGroup, gax.WithClientTracing(tracing))
+		callOpts.UpdateTransitionRouteGroup = append(callOpts.UpdateTransitionRouteGroup, gax.WithClientTracing(tracing))
+		callOpts.DeleteTransitionRouteGroup = append(callOpts.DeleteTransitionRouteGroup, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.ListTransitionRouteGroups = append(callOpts.ListTransitionRouteGroups, gax.WithClientLogging(logging))
+		callOpts.GetTransitionRouteGroup = append(callOpts.GetTransitionRouteGroup, gax.WithClientLogging(logging))
+		callOpts.CreateTransitionRouteGroup = append(callOpts.CreateTransitionRouteGroup, gax.WithClientLogging(logging))
+		callOpts.UpdateTransitionRouteGroup = append(callOpts.UpdateTransitionRouteGroup, gax.WithClientLogging(logging))
+		callOpts.DeleteTransitionRouteGroup = append(callOpts.DeleteTransitionRouteGroup, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &TransitionRouteGroupsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -576,9 +666,6 @@ func (c *transitionRouteGroupsGRPCClient) ListTransitionRouteGroups(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.TransitionRouteGroups/ListTransitionRouteGroups")
 	}
@@ -628,9 +715,6 @@ func (c *transitionRouteGroupsGRPCClient) GetTransitionRouteGroup(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.TransitionRouteGroups/GetTransitionRouteGroup")
 	}
@@ -652,9 +736,6 @@ func (c *transitionRouteGroupsGRPCClient) CreateTransitionRouteGroup(ctx context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.TransitionRouteGroups/CreateTransitionRouteGroup")
 	}
@@ -697,9 +778,6 @@ func (c *transitionRouteGroupsGRPCClient) DeleteTransitionRouteGroup(ctx context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.TransitionRouteGroups/DeleteTransitionRouteGroup")
 	}
@@ -888,6 +966,11 @@ func (c *transitionRouteGroupsRESTClient) ListTransitionRouteGroups(ctx context.
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3/%v/transitionRouteGroups", req.GetParent())
 
 		params := url.Values{}
@@ -957,6 +1040,11 @@ func (c *transitionRouteGroupsRESTClient) GetTransitionRouteGroup(ctx context.Co
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
 
 	params := url.Values{}
@@ -973,9 +1061,6 @@ func (c *transitionRouteGroupsRESTClient) GetTransitionRouteGroup(ctx context.Co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.TransitionRouteGroups/GetTransitionRouteGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/agents/*/flows/*/transitionRouteGroups/*}")
@@ -1030,6 +1115,11 @@ func (c *transitionRouteGroupsRESTClient) CreateTransitionRouteGroup(ctx context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v/transitionRouteGroups", req.GetParent())
 
 	params := url.Values{}
@@ -1046,9 +1136,6 @@ func (c *transitionRouteGroupsRESTClient) CreateTransitionRouteGroup(ctx context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.TransitionRouteGroups/CreateTransitionRouteGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{parent=projects/*/locations/*/agents/*/flows/*}/transitionRouteGroups")
@@ -1100,6 +1187,11 @@ func (c *transitionRouteGroupsRESTClient) UpdateTransitionRouteGroup(ctx context
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTransitionRouteGroup().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetTransitionRouteGroup().GetName())
@@ -1171,6 +1263,11 @@ func (c *transitionRouteGroupsRESTClient) DeleteTransitionRouteGroup(ctx context
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
 
 	params := url.Values{}
@@ -1187,9 +1284,6 @@ func (c *transitionRouteGroupsRESTClient) DeleteTransitionRouteGroup(ctx context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.TransitionRouteGroups/DeleteTransitionRouteGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/agents/*/flows/*/transitionRouteGroups/*}")
@@ -1214,6 +1308,11 @@ func (c *transitionRouteGroupsRESTClient) DeleteTransitionRouteGroup(ctx context
 func (c *transitionRouteGroupsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
@@ -1298,6 +1397,11 @@ func (c *transitionRouteGroupsRESTClient) ListLocations(ctx context.Context, req
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v3/%v/locations", req.GetName())
 
 		params := url.Values{}
@@ -1366,6 +1470,11 @@ func (c *transitionRouteGroupsRESTClient) CancelOperation(ctx context.Context, r
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -1403,6 +1512,11 @@ func (c *transitionRouteGroupsRESTClient) CancelOperation(ctx context.Context, r
 func (c *transitionRouteGroupsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
@@ -1470,6 +1584,11 @@ func (c *transitionRouteGroupsRESTClient) ListOperations(ctx context.Context, re
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v3/%v/operations", req.GetName())

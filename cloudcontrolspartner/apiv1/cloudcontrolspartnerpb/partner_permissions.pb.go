@@ -208,9 +208,9 @@ var File_google_cloud_cloudcontrolspartner_v1_partner_permissions_proto protoref
 
 const file_google_cloud_cloudcontrolspartner_v1_partner_permissions_proto_rawDesc = "" +
 	"\n" +
-	">google/cloud/cloudcontrolspartner/v1/partner_permissions.proto\x12$google.cloud.cloudcontrolspartner.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xcf\x04\n" +
-	"\x12PartnerPermissions\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12t\n" +
+	">google/cloud/cloudcontrolspartner/v1/partner_permissions.proto\x12$google.cloud.cloudcontrolspartner.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xd0\x04\n" +
+	"\x12PartnerPermissions\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12t\n" +
 	"\x13partner_permissions\x18\x02 \x03(\x0e2C.google.cloud.cloudcontrolspartner.v1.PartnerPermissions.PermissionR\x12partnerPermissions\"\xfa\x01\n" +
 	"\n" +
 	"Permission\x12\x1a\n" +
@@ -220,9 +220,9 @@ const file_google_cloud_cloudcontrolspartner_v1_partner_permissions_proto_rawDes
 	"\x18ACCESS_APPROVAL_REQUESTS\x10\x03\x12+\n" +
 	"'ASSURED_WORKLOADS_EKM_CONNECTION_STATUS\x10\x04\x120\n" +
 	",ACCESS_TRANSPARENCY_LOGS_SUPPORT_CASE_VIEWER\x10\x05:\xac\x01\xeaA\xa8\x01\n" +
-	"6cloudcontrolspartner.googleapis.com/PartnerPermissions\x12norganizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}/partnerPermissions\"r\n" +
-	"\x1cGetPartnerPermissionsRequest\x12R\n" +
-	"\x04name\x18\x01 \x01(\tB>\xe0A\x02\xfaA8\n" +
+	"6cloudcontrolspartner.googleapis.com/PartnerPermissions\x12norganizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}/partnerPermissions\"s\n" +
+	"\x1cGetPartnerPermissionsRequest\x12S\n" +
+	"\x04name\x18\x01 \x01(\tB?\xe2A\x01\x02\xfaA8\n" +
 	"6cloudcontrolspartner.googleapis.com/PartnerPermissionsR\x04nameB\x9b\x02\n" +
 	"(com.google.cloud.cloudcontrolspartner.v1B\x17PartnerPermissionsProtoP\x01Z\\cloud.google.com/go/cloudcontrolspartner/apiv1/cloudcontrolspartnerpb;cloudcontrolspartnerpb\xaa\x02$Google.Cloud.CloudControlsPartner.V1\xca\x02$Google\\Cloud\\CloudControlsPartner\\V1\xea\x02'Google::Cloud::CloudControlsPartner::V1b\x06proto3"
 

@@ -608,9 +608,9 @@ func (c *locationAwareSpannerClient) Rollback(ctx context.Context, req *spannerp
 	return err
 }
 
-// affinityTrackingStream wraps a streaming RPC client to intercept Recv()
-// calls and record transaction affinity from the first PartialResultSet that
-// contains a transaction ID.
+// affinityTrackingStream wraps a streaming RPC client to intercept Recv() and
+// RecvMsg() calls and record transaction affinity from the first
+// PartialResultSet that contains a transaction ID.
 type affinityTrackingStream struct {
 	grpc.ClientStream
 	router             *locationRouter
@@ -671,14 +671,36 @@ func newAffinityTrackingStream(
 func (s *affinityTrackingStream) Recv() (*spannerpb.PartialResultSet, error) {
 	prs, err := s.inner.Recv()
 	if err != nil {
-		s.finish()
-		s.errorOnce.Do(func() {
-			if s.onError != nil {
-				s.onError(err)
-			}
-		})
+		s.recvFailed(err)
 		return nil, err
 	}
+	s.received(prs.GetMetadata().GetTransaction().GetId(), prs.GetCacheUpdate())
+	return prs, nil
+}
+
+// RecvMsg is Recv for callers that receive the PartialResultSet into a message
+// of another type. See vtproto_stream.go.
+func (s *affinityTrackingStream) RecvMsg(m any) error {
+	if err := s.inner.RecvMsg(m); err != nil {
+		s.recvFailed(err)
+		return err
+	}
+	s.received(partialResultSetRouting(m))
+	return nil
+}
+
+func (s *affinityTrackingStream) recvFailed(err error) {
+	s.finish()
+	s.errorOnce.Do(func() {
+		if s.onError != nil {
+			s.onError(err)
+		}
+	})
+}
+
+// received records the transaction ID and the cache update of a received
+// PartialResultSet.
+func (s *affinityTrackingStream) received(txID []byte, cacheUpdate *spannerpb.CacheUpdate) {
 	s.latencyOnce.Do(func() {
 		if s.onFirstResponse != nil {
 			s.onFirstResponse()
@@ -686,21 +708,20 @@ func (s *affinityTrackingStream) Recv() (*spannerpb.PartialResultSet, error) {
 	})
 	// Record transaction metadata from the first PartialResultSet that contains
 	// a transaction ID.
-	if txMeta := prs.GetMetadata().GetTransaction(); txMeta != nil && len(txMeta.GetId()) > 0 {
-		txID := string(txMeta.GetId())
+	if len(txID) > 0 {
+		id := string(txID)
 		s.once.Do(func() {
 			if s.trackReadOnlyBegin {
-				s.router.trackReadOnlyTransaction(txID, s.readOnlyStrong)
+				s.router.trackReadOnlyTransaction(id, s.readOnlyStrong)
 				return
 			}
 			if s.trackAffinity {
-				s.router.setTransactionAffinity(txID, s.affinityEndpoint)
+				s.router.setTransactionAffinity(id, s.affinityEndpoint)
 			}
 		})
 	}
 	// Observe cache updates from every PartialResultSet.
-	s.router.observePartialResultSet(prs)
-	return prs, nil
+	s.router.observeCacheUpdate(cacheUpdate)
 }
 
 func readOnlyBeginFromSelector(selector *spannerpb.TransactionSelector) (bool, bool) {

@@ -978,57 +978,57 @@ var File_google_cloud_osconfig_agentendpoint_v1_agentendpoint_proto protoreflect
 
 const file_google_cloud_osconfig_agentendpoint_v1_agentendpoint_proto_rawDesc = "" +
 	"\n" +
-	":google/cloud/osconfig/agentendpoint/v1/agentendpoint.proto\x12&google.cloud.osconfig.agentendpoint.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a6google/cloud/osconfig/agentendpoint/v1/inventory.proto\x1a2google/cloud/osconfig/agentendpoint/v1/tasks.proto\x1a9google/cloud/osconfig/agentendpoint/v1/vm_inventory.proto\"{\n" +
-	"\x1eReceiveTaskNotificationRequest\x12/\n" +
-	"\x11instance_id_token\x18\x01 \x01(\tB\x03\xe0A\x02R\x0finstanceIdToken\x12(\n" +
-	"\ragent_version\x18\x02 \x01(\tB\x03\xe0A\x02R\fagentVersion\"!\n" +
-	"\x1fReceiveTaskNotificationResponse\"G\n" +
-	"\x14StartNextTaskRequest\x12/\n" +
-	"\x11instance_id_token\x18\x01 \x01(\tB\x03\xe0A\x02R\x0finstanceIdToken\"Y\n" +
+	":google/cloud/osconfig/agentendpoint/v1/agentendpoint.proto\x12&google.cloud.osconfig.agentendpoint.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a6google/cloud/osconfig/agentendpoint/v1/inventory.proto\x1a2google/cloud/osconfig/agentendpoint/v1/tasks.proto\x1a9google/cloud/osconfig/agentendpoint/v1/vm_inventory.proto\"}\n" +
+	"\x1eReceiveTaskNotificationRequest\x120\n" +
+	"\x11instance_id_token\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0finstanceIdToken\x12)\n" +
+	"\ragent_version\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fagentVersion\"!\n" +
+	"\x1fReceiveTaskNotificationResponse\"H\n" +
+	"\x14StartNextTaskRequest\x120\n" +
+	"\x11instance_id_token\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0finstanceIdToken\"Y\n" +
 	"\x15StartNextTaskResponse\x12@\n" +
-	"\x04task\x18\x01 \x01(\v2,.google.cloud.osconfig.agentendpoint.v1.TaskR\x04task\"\xc5\x04\n" +
-	"\x19ReportTaskProgressRequest\x12/\n" +
-	"\x11instance_id_token\x18\x01 \x01(\tB\x03\xe0A\x02R\x0finstanceIdToken\x12\x1c\n" +
-	"\atask_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x06taskId\x12R\n" +
-	"\ttask_type\x18\x03 \x01(\x0e20.google.cloud.osconfig.agentendpoint.v1.TaskTypeB\x03\xe0A\x02R\btaskType\x12\x81\x01\n" +
+	"\x04task\x18\x01 \x01(\v2,.google.cloud.osconfig.agentendpoint.v1.TaskR\x04task\"\xc8\x04\n" +
+	"\x19ReportTaskProgressRequest\x120\n" +
+	"\x11instance_id_token\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0finstanceIdToken\x12\x1d\n" +
+	"\atask_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06taskId\x12S\n" +
+	"\ttask_type\x18\x03 \x01(\x0e20.google.cloud.osconfig.agentendpoint.v1.TaskTypeB\x04\xe2A\x01\x02R\btaskType\x12\x81\x01\n" +
 	"\x1bapply_patches_task_progress\x18\x04 \x01(\v2@.google.cloud.osconfig.agentendpoint.v1.ApplyPatchesTaskProgressH\x00R\x18applyPatchesTaskProgress\x12u\n" +
 	"\x17exec_step_task_progress\x18\x05 \x01(\v2<.google.cloud.osconfig.agentendpoint.v1.ExecStepTaskProgressH\x00R\x14execStepTaskProgress\x12~\n" +
 	"\x1aapply_config_task_progress\x18\x06 \x01(\v2?.google.cloud.osconfig.agentendpoint.v1.ApplyConfigTaskProgressH\x00R\x17applyConfigTaskProgressB\n" +
 	"\n" +
 	"\bprogress\"z\n" +
 	"\x1aReportTaskProgressResponse\x12\\\n" +
-	"\x0etask_directive\x18\x01 \x01(\x0e25.google.cloud.osconfig.agentendpoint.v1.TaskDirectiveR\rtaskDirective\"\xd5\x04\n" +
-	"\x19ReportTaskCompleteRequest\x12/\n" +
-	"\x11instance_id_token\x18\x01 \x01(\tB\x03\xe0A\x02R\x0finstanceIdToken\x12\x1c\n" +
-	"\atask_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x06taskId\x12R\n" +
-	"\ttask_type\x18\x03 \x01(\x0e20.google.cloud.osconfig.agentendpoint.v1.TaskTypeB\x03\xe0A\x02R\btaskType\x12#\n" +
+	"\x0etask_directive\x18\x01 \x01(\x0e25.google.cloud.osconfig.agentendpoint.v1.TaskDirectiveR\rtaskDirective\"\xd8\x04\n" +
+	"\x19ReportTaskCompleteRequest\x120\n" +
+	"\x11instance_id_token\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0finstanceIdToken\x12\x1d\n" +
+	"\atask_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06taskId\x12S\n" +
+	"\ttask_type\x18\x03 \x01(\x0e20.google.cloud.osconfig.agentendpoint.v1.TaskTypeB\x04\xe2A\x01\x02R\btaskType\x12#\n" +
 	"\rerror_message\x18\x04 \x01(\tR\ferrorMessage\x12{\n" +
 	"\x19apply_patches_task_output\x18\x05 \x01(\v2>.google.cloud.osconfig.agentendpoint.v1.ApplyPatchesTaskOutputH\x00R\x16applyPatchesTaskOutput\x12o\n" +
 	"\x15exec_step_task_output\x18\x06 \x01(\v2:.google.cloud.osconfig.agentendpoint.v1.ExecStepTaskOutputH\x00R\x12execStepTaskOutput\x12x\n" +
 	"\x18apply_config_task_output\x18\a \x01(\v2=.google.cloud.osconfig.agentendpoint.v1.ApplyConfigTaskOutputH\x00R\x15applyConfigTaskOutputB\b\n" +
 	"\x06output\"\x1c\n" +
-	"\x1aReportTaskCompleteResponse\"\xbb\x02\n" +
-	"\x14RegisterAgentRequest\x12/\n" +
-	"\x11instance_id_token\x18\x01 \x01(\tB\x03\xe0A\x02R\x0finstanceIdToken\x12(\n" +
-	"\ragent_version\x18\x02 \x01(\tB\x03\xe0A\x02R\fagentVersion\x12:\n" +
-	"\x16supported_capabilities\x18\x03 \x03(\tB\x03\xe0A\x02R\x15supportedCapabilities\x12 \n" +
+	"\x1aReportTaskCompleteResponse\"\xbe\x02\n" +
+	"\x14RegisterAgentRequest\x120\n" +
+	"\x11instance_id_token\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0finstanceIdToken\x12)\n" +
+	"\ragent_version\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fagentVersion\x12;\n" +
+	"\x16supported_capabilities\x18\x03 \x03(\tB\x04\xe2A\x01\x02R\x15supportedCapabilities\x12 \n" +
 	"\fos_long_name\x18\x04 \x01(\tR\n" +
 	"osLongName\x12\"\n" +
 	"\ros_short_name\x18\x05 \x01(\tR\vosShortName\x12\x1d\n" +
 	"\n" +
 	"os_version\x18\x06 \x01(\tR\tosVersion\x12'\n" +
 	"\x0fos_architecture\x18\a \x01(\tR\x0eosArchitecture\"\x17\n" +
-	"\x15RegisterAgentResponse\"\xd3\x01\n" +
-	"\x16ReportInventoryRequest\x12/\n" +
-	"\x11instance_id_token\x18\x01 \x01(\tB\x03\xe0A\x02R\x0finstanceIdToken\x122\n" +
-	"\x12inventory_checksum\x18\x02 \x01(\tB\x03\xe0A\x02R\x11inventoryChecksum\x12T\n" +
-	"\tinventory\x18\x03 \x01(\v21.google.cloud.osconfig.agentendpoint.v1.InventoryB\x03\xe0A\x01R\tinventory\"M\n" +
+	"\x15RegisterAgentResponse\"\xd6\x01\n" +
+	"\x16ReportInventoryRequest\x120\n" +
+	"\x11instance_id_token\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0finstanceIdToken\x123\n" +
+	"\x12inventory_checksum\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x11inventoryChecksum\x12U\n" +
+	"\tinventory\x18\x03 \x01(\v21.google.cloud.osconfig.agentendpoint.v1.InventoryB\x04\xe2A\x01\x01R\tinventory\"M\n" +
 	"\x17ReportInventoryResponse\x122\n" +
-	"\x15report_full_inventory\x18\x01 \x01(\bR\x13reportFullInventory\"\xdc\x01\n" +
-	"\x18ReportVmInventoryRequest\x12/\n" +
-	"\x11instance_id_token\x18\x01 \x01(\tB\x03\xe0A\x02R\x0finstanceIdToken\x122\n" +
-	"\x12inventory_checksum\x18\x02 \x01(\tB\x03\xe0A\x02R\x11inventoryChecksum\x12[\n" +
-	"\fvm_inventory\x18\x03 \x01(\v23.google.cloud.osconfig.agentendpoint.v1.VmInventoryB\x03\xe0A\x01R\vvmInventory\"O\n" +
+	"\x15report_full_inventory\x18\x01 \x01(\bR\x13reportFullInventory\"\xdf\x01\n" +
+	"\x18ReportVmInventoryRequest\x120\n" +
+	"\x11instance_id_token\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0finstanceIdToken\x123\n" +
+	"\x12inventory_checksum\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x11inventoryChecksum\x12\\\n" +
+	"\fvm_inventory\x18\x03 \x01(\v23.google.cloud.osconfig.agentendpoint.v1.VmInventoryB\x04\xe2A\x01\x01R\vvmInventory\"O\n" +
 	"\x19ReportVmInventoryResponse\x122\n" +
 	"\x15report_full_inventory\x18\x01 \x01(\bR\x13reportFullInventory2\xa7\v\n" +
 	"\x14AgentEndpointService\x12\xd0\x01\n" +

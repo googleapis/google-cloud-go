@@ -2504,6 +2504,140 @@ func (x *ListPartitionsResponse) GetPartitions() []*Partition {
 	return nil
 }
 
+// Request message for FailoverHiveCatalog.
+type FailoverHiveCatalogRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the catalog in the form
+	// "projects/{project_id}/catalogs/{catalog_id}"
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Required. The region being assigned as the new primary replica region. For
+	// example "us-east1". This must be one of the replica regions in the
+	// catalog's list of replicas marked as a "secondary".
+	PrimaryReplica string `protobuf:"bytes,2,opt,name=primary_replica,json=primaryReplica,proto3" json:"primary_replica,omitempty"`
+	// Optional. If set, only validate the request, but do not perform the update.
+	// This can be used to inspect the replication_time at any time, including
+	// before performing a fail-over.
+	ValidateOnly bool `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
+	// Optional. If unset, wait for all data from the source region to replicate
+	// to the new primary region before completing the failover, with no data loss
+	// (also called "soft failover"). If set, failover immediately, accepting the
+	// loss of any data committed in the source region after this timestamp, that
+	// has not yet replicated. If any data committed before this time has not
+	// replicated, the failover will not be performed and an error will be
+	// returned (also called "hard failover").
+	ConditionalFailoverReplicationTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=conditional_failover_replication_time,json=conditionalFailoverReplicationTime,proto3" json:"conditional_failover_replication_time,omitempty"`
+	unknownFields                      protoimpl.UnknownFields
+	sizeCache                          protoimpl.SizeCache
+}
+
+func (x *FailoverHiveCatalogRequest) Reset() {
+	*x = FailoverHiveCatalogRequest{}
+	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[35]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FailoverHiveCatalogRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FailoverHiveCatalogRequest) ProtoMessage() {}
+
+func (x *FailoverHiveCatalogRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[35]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FailoverHiveCatalogRequest.ProtoReflect.Descriptor instead.
+func (*FailoverHiveCatalogRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_rawDescGZIP(), []int{35}
+}
+
+func (x *FailoverHiveCatalogRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *FailoverHiveCatalogRequest) GetPrimaryReplica() string {
+	if x != nil {
+		return x.PrimaryReplica
+	}
+	return ""
+}
+
+func (x *FailoverHiveCatalogRequest) GetValidateOnly() bool {
+	if x != nil {
+		return x.ValidateOnly
+	}
+	return false
+}
+
+func (x *FailoverHiveCatalogRequest) GetConditionalFailoverReplicationTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ConditionalFailoverReplicationTime
+	}
+	return nil
+}
+
+// Response message for FailoverHiveCatalog.
+type FailoverHiveCatalogResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The min timestamp for which all namespaces and table metadata
+	// have been replicated in the region specified as the new primary_replica.
+	// Some resources may have been replicated more recently than this timestamp.
+	// If empty, the replica has just been created and has not yet been fully
+	// initialized.
+	ReplicationTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=replication_time,json=replicationTime,proto3" json:"replication_time,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *FailoverHiveCatalogResponse) Reset() {
+	*x = FailoverHiveCatalogResponse{}
+	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FailoverHiveCatalogResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FailoverHiveCatalogResponse) ProtoMessage() {}
+
+func (x *FailoverHiveCatalogResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FailoverHiveCatalogResponse.ProtoReflect.Descriptor instead.
+func (*FailoverHiveCatalogResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_rawDescGZIP(), []int{36}
+}
+
+func (x *FailoverHiveCatalogResponse) GetReplicationTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ReplicationTime
+	}
+	return nil
+}
+
 // The replica of the Catalog.
 type HiveCatalog_Replica struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2517,7 +2651,7 @@ type HiveCatalog_Replica struct {
 
 func (x *HiveCatalog_Replica) Reset() {
 	*x = HiveCatalog_Replica{}
-	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[35]
+	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2529,7 +2663,7 @@ func (x *HiveCatalog_Replica) String() string {
 func (*HiveCatalog_Replica) ProtoMessage() {}
 
 func (x *HiveCatalog_Replica) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[35]
+	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2573,7 +2707,7 @@ type StorageDescriptor_Order struct {
 
 func (x *StorageDescriptor_Order) Reset() {
 	*x = StorageDescriptor_Order{}
-	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[38]
+	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2585,7 +2719,7 @@ func (x *StorageDescriptor_Order) String() string {
 func (*StorageDescriptor_Order) ProtoMessage() {}
 
 func (x *StorageDescriptor_Order) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[38]
+	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2631,7 +2765,7 @@ type StorageDescriptor_SkewedInfo struct {
 
 func (x *StorageDescriptor_SkewedInfo) Reset() {
 	*x = StorageDescriptor_SkewedInfo{}
-	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[39]
+	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2643,7 +2777,7 @@ func (x *StorageDescriptor_SkewedInfo) String() string {
 func (*StorageDescriptor_SkewedInfo) ProtoMessage() {}
 
 func (x *StorageDescriptor_SkewedInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[39]
+	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2692,7 +2826,7 @@ type StorageDescriptor_SkewedInfo_SkewedColumnValue struct {
 
 func (x *StorageDescriptor_SkewedInfo_SkewedColumnValue) Reset() {
 	*x = StorageDescriptor_SkewedInfo_SkewedColumnValue{}
-	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[41]
+	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2704,7 +2838,7 @@ func (x *StorageDescriptor_SkewedInfo_SkewedColumnValue) String() string {
 func (*StorageDescriptor_SkewedInfo_SkewedColumnValue) ProtoMessage() {}
 
 func (x *StorageDescriptor_SkewedInfo_SkewedColumnValue) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[41]
+	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2742,7 +2876,7 @@ type StorageDescriptor_SkewedInfo_SkewedKeyValuesLocation struct {
 
 func (x *StorageDescriptor_SkewedInfo_SkewedKeyValuesLocation) Reset() {
 	*x = StorageDescriptor_SkewedInfo_SkewedKeyValuesLocation{}
-	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[42]
+	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2754,7 +2888,7 @@ func (x *StorageDescriptor_SkewedInfo_SkewedKeyValuesLocation) String() string {
 func (*StorageDescriptor_SkewedInfo_SkewedKeyValuesLocation) ProtoMessage() {}
 
 func (x *StorageDescriptor_SkewedInfo_SkewedKeyValuesLocation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[42]
+	mi := &file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2788,255 +2922,262 @@ var File_google_cloud_biglake_hive_v1beta_hive_metastore_proto protoreflect.File
 
 const file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/biglake/hive/v1beta/hive_metastore.proto\x12 google.cloud.biglake.hive.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbb\x05\n" +
-	"\vHiveCatalog\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\b\xfaA \n" +
-	"\x1ebiglake.googleapis.com/CatalogR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12&\n" +
-	"\flocation_uri\x18\x03 \x01(\tB\x03\xe0A\x02R\vlocationUri\x12V\n" +
-	"\breplicas\x18\x04 \x03(\v25.google.cloud.biglake.hive.v1beta.HiveCatalog.ReplicaB\x03\xe0A\x03R\breplicas\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x1a\xe5\x01\n" +
-	"\aReplica\x12\x1b\n" +
-	"\x06region\x18\x01 \x01(\tB\x03\xe0A\x03R\x06region\x12V\n" +
-	"\x05state\x18\x02 \x01(\x0e2;.google.cloud.biglake.hive.v1beta.HiveCatalog.Replica.StateB\x03\xe0A\x03R\x05state\"e\n" +
+	"5google/cloud/biglake/hive/v1beta/hive_metastore.proto\x12 google.cloud.biglake.hive.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc3\x05\n" +
+	"\vHiveCatalog\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\b\xfaA \n" +
+	"\x1ebiglake.googleapis.com/CatalogR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12'\n" +
+	"\flocation_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vlocationUri\x12W\n" +
+	"\breplicas\x18\x04 \x03(\v25.google.cloud.biglake.hive.v1beta.HiveCatalog.ReplicaB\x04\xe2A\x01\x03R\breplicas\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\x1a\xe7\x01\n" +
+	"\aReplica\x12\x1c\n" +
+	"\x06region\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x06region\x12W\n" +
+	"\x05state\x18\x02 \x01(\x0e2;.google.cloud.biglake.hive.v1beta.HiveCatalog.Replica.StateB\x04\xe2A\x01\x03R\x05state\"e\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rSTATE_PRIMARY\x10\x01\x12\x1d\n" +
 	"\x19STATE_PRIMARY_IN_PROGRESS\x10\x02\x12\x13\n" +
 	"\x0fSTATE_SECONDARY\x10\x03:]\xeaAZ\n" +
-	"\x1ebiglake.googleapis.com/Catalog\x12%projects/{project}/catalogs/{catalog}*\bcatalogs2\acatalog\"\x9c\x02\n" +
-	"\x18CreateHiveCatalogRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12U\n" +
-	"\fhive_catalog\x18\x02 \x01(\v2-.google.cloud.biglake.hive.v1beta.HiveCatalogB\x03\xe0A\x02R\vhiveCatalog\x12+\n" +
-	"\x0fhive_catalog_id\x18\x03 \x01(\tB\x03\xe0A\x02R\rhiveCatalogId\x12/\n" +
-	"\x10primary_location\x18\x04 \x01(\tB\x03\xe0A\x02R\x10primary_location\"S\n" +
-	"\x15GetHiveCatalogRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ebiglake.googleapis.com/CatalogR\x04name\"\xac\x01\n" +
-	"\x17ListHiveCatalogsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x1ebiglake.googleapis.com/Catalog\x12%projects/{project}/catalogs/{catalog}*\bcatalogs2\acatalog\"\xa0\x02\n" +
+	"\x18CreateHiveCatalogRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12V\n" +
+	"\fhive_catalog\x18\x02 \x01(\v2-.google.cloud.biglake.hive.v1beta.HiveCatalogB\x04\xe2A\x01\x02R\vhiveCatalog\x12,\n" +
+	"\x0fhive_catalog_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\rhiveCatalogId\x120\n" +
+	"\x10primary_location\x18\x04 \x01(\tB\x04\xe2A\x01\x02R\x10primary_location\"T\n" +
+	"\x15GetHiveCatalogRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ebiglake.googleapis.com/CatalogR\x04name\"\xaf\x01\n" +
+	"\x17ListHiveCatalogsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xbe\x01\n" +
-	"\x18ListHiveCatalogsResponse\x12N\n" +
-	"\bcatalogs\x18\x01 \x03(\v2-.google.cloud.biglake.hive.v1beta.HiveCatalogB\x03\xe0A\x03R\bcatalogs\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\x12%\n" +
-	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x03R\vunreachable\"\xb3\x01\n" +
-	"\x18UpdateHiveCatalogRequest\x12U\n" +
-	"\fhive_catalog\x18\x01 \x01(\v2-.google.cloud.biglake.hive.v1beta.HiveCatalogB\x03\xe0A\x02R\vhiveCatalog\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"V\n" +
-	"\x18DeleteHiveCatalogRequest\x12:\n" +
-	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ebiglake.googleapis.com/CatalogR\x04name\"\xbd\x04\n" +
-	"\fHiveDatabase\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\b\xfaA\"\n" +
-	" biglake.googleapis.com/NamespaceR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12&\n" +
-	"\flocation_uri\x18\x03 \x01(\tB\x03\xe0A\x01R\vlocationUri\x12c\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xc1\x01\n" +
+	"\x18ListHiveCatalogsResponse\x12O\n" +
+	"\bcatalogs\x18\x01 \x03(\v2-.google.cloud.biglake.hive.v1beta.HiveCatalogB\x04\xe2A\x01\x03R\bcatalogs\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\x12&\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\vunreachable\"\xb5\x01\n" +
+	"\x18UpdateHiveCatalogRequest\x12V\n" +
+	"\fhive_catalog\x18\x01 \x01(\v2-.google.cloud.biglake.hive.v1beta.HiveCatalogB\x04\xe2A\x01\x02R\vhiveCatalog\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"W\n" +
+	"\x18DeleteHiveCatalogRequest\x12;\n" +
+	"\x04name\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ebiglake.googleapis.com/CatalogR\x04name\"\xc3\x04\n" +
+	"\fHiveDatabase\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\b\xfaA\"\n" +
+	" biglake.googleapis.com/NamespaceR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12'\n" +
+	"\flocation_uri\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vlocationUri\x12d\n" +
 	"\n" +
-	"parameters\x18\x04 \x03(\v2>.google.cloud.biglake.hive.v1beta.HiveDatabase.ParametersEntryB\x03\xe0A\x01R\n" +
-	"parameters\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"parameters\x18\x04 \x03(\v2>.google.cloud.biglake.hive.v1beta.HiveDatabase.ParametersEntryB\x04\xe2A\x01\x01R\n" +
+	"parameters\x12A\n" +
+	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x1a=\n" +
 	"\x0fParametersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:x\xeaAu\n" +
 	" biglake.googleapis.com/Namespace\x12:projects/{project}/catalogs/{catalog}/databases/{database}*\n" +
-	"namespaces2\tnamespace\"\xe4\x01\n" +
-	"\x19CreateHiveDatabaseRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ebiglake.googleapis.com/CatalogR\x06parent\x12X\n" +
-	"\rhive_database\x18\x02 \x01(\v2..google.cloud.biglake.hive.v1beta.HiveDatabaseB\x03\xe0A\x02R\fhiveDatabase\x12-\n" +
-	"\x10hive_database_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x0ehiveDatabaseId\"V\n" +
-	"\x16GetHiveDatabaseRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" biglake.googleapis.com/NamespaceR\x04name\"\xa0\x01\n" +
-	"\x18ListHiveDatabasesRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ebiglake.googleapis.com/CatalogR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"namespaces2\tnamespace\"\xe7\x01\n" +
+	"\x19CreateHiveDatabaseRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ebiglake.googleapis.com/CatalogR\x06parent\x12Y\n" +
+	"\rhive_database\x18\x02 \x01(\v2..google.cloud.biglake.hive.v1beta.HiveDatabaseB\x04\xe2A\x01\x02R\fhiveDatabase\x12.\n" +
+	"\x10hive_database_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x0ehiveDatabaseId\"W\n" +
+	"\x16GetHiveDatabaseRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" biglake.googleapis.com/NamespaceR\x04name\"\xa3\x01\n" +
+	"\x18ListHiveDatabasesRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ebiglake.googleapis.com/CatalogR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x9b\x01\n" +
-	"\x19ListHiveDatabasesResponse\x12Q\n" +
-	"\tdatabases\x18\x01 \x03(\v2..google.cloud.biglake.hive.v1beta.HiveDatabaseB\x03\xe0A\x03R\tdatabases\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"\xb7\x01\n" +
-	"\x19UpdateHiveDatabaseRequest\x12X\n" +
-	"\rhive_database\x18\x01 \x01(\v2..google.cloud.biglake.hive.v1beta.HiveDatabaseB\x03\xe0A\x02R\fhiveDatabase\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"Y\n" +
-	"\x19DeleteHiveDatabaseRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" biglake.googleapis.com/NamespaceR\x04name\"\xdc\x06\n" +
-	"\tHiveTable\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\b\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12g\n" +
-	"\x12storage_descriptor\x18\x03 \x01(\v23.google.cloud.biglake.hive.v1beta.StorageDescriptorB\x03\xe0A\x02R\x11storageDescriptor\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12Y\n" +
-	"\x0epartition_keys\x18\a \x03(\v2-.google.cloud.biglake.hive.v1beta.FieldSchemaB\x03\xe0A\x01R\rpartitionKeys\x12`\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x9d\x01\n" +
+	"\x19ListHiveDatabasesResponse\x12R\n" +
+	"\tdatabases\x18\x01 \x03(\v2..google.cloud.biglake.hive.v1beta.HiveDatabaseB\x04\xe2A\x01\x03R\tdatabases\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"\xb9\x01\n" +
+	"\x19UpdateHiveDatabaseRequest\x12Y\n" +
+	"\rhive_database\x18\x01 \x01(\v2..google.cloud.biglake.hive.v1beta.HiveDatabaseB\x04\xe2A\x01\x02R\fhiveDatabase\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"Z\n" +
+	"\x19DeleteHiveDatabaseRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" biglake.googleapis.com/NamespaceR\x04name\"\xe6\x06\n" +
+	"\tHiveTable\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\b\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x04name\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12h\n" +
+	"\x12storage_descriptor\x18\x03 \x01(\v23.google.cloud.biglake.hive.v1beta.StorageDescriptorB\x04\xe2A\x01\x02R\x11storageDescriptor\x12A\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12Z\n" +
+	"\x0epartition_keys\x18\a \x03(\v2-.google.cloud.biglake.hive.v1beta.FieldSchemaB\x04\xe2A\x01\x01R\rpartitionKeys\x12a\n" +
 	"\n" +
-	"parameters\x18\b \x03(\v2;.google.cloud.biglake.hive.v1beta.HiveTable.ParametersEntryB\x03\xe0A\x01R\n" +
-	"parameters\x121\n" +
-	"\x12view_original_text\x18\t \x01(\tB\x03\xe0A\x01R\x10viewOriginalText\x121\n" +
+	"parameters\x18\b \x03(\v2;.google.cloud.biglake.hive.v1beta.HiveTable.ParametersEntryB\x04\xe2A\x01\x01R\n" +
+	"parameters\x122\n" +
+	"\x12view_original_text\x18\t \x01(\tB\x04\xe2A\x01\x01R\x10viewOriginalText\x122\n" +
 	"\x12view_expanded_text\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x10viewExpandedText\x12\"\n" +
+	" \x01(\tB\x04\xe2A\x01\x01R\x10viewExpandedText\x12#\n" +
 	"\n" +
-	"table_type\x18\v \x01(\tB\x03\xe0A\x03R\ttableType\x12@\n" +
-	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"table_type\x18\v \x01(\tB\x04\xe2A\x01\x03R\ttableType\x12A\n" +
+	"\vupdate_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x1a=\n" +
 	"\x0fParametersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:{\xeaAx\n" +
-	"\x1cbiglake.googleapis.com/Table\x12Iprojects/{project}/catalogs/{catalog}/databases/{database}/tables/{table}*\x06tables2\x05table\"^\n" +
-	"\vFieldSchema\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x17\n" +
-	"\x04type\x18\x02 \x01(\tB\x03\xe0A\x02R\x04type\x12\x1d\n" +
-	"\acomment\x18\x03 \x01(\tB\x03\xe0A\x01R\acomment\"\xa5\v\n" +
-	"\x11StorageDescriptor\x12L\n" +
-	"\acolumns\x18\x01 \x03(\v2-.google.cloud.biglake.hive.v1beta.FieldSchemaB\x03\xe0A\x02R\acolumns\x12&\n" +
-	"\flocation_uri\x18\x02 \x01(\tB\x03\xe0A\x01R\vlocationUri\x12&\n" +
-	"\finput_format\x18\x03 \x01(\tB\x03\xe0A\x01R\vinputFormat\x12(\n" +
-	"\routput_format\x18\x04 \x01(\tB\x03\xe0A\x01R\foutputFormat\x12(\n" +
+	"\x1cbiglake.googleapis.com/Table\x12Iprojects/{project}/catalogs/{catalog}/databases/{database}/tables/{table}*\x06tables2\x05table\"a\n" +
+	"\vFieldSchema\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x18\n" +
+	"\x04type\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x04type\x12\x1e\n" +
+	"\acomment\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\acomment\"\xb9\v\n" +
+	"\x11StorageDescriptor\x12M\n" +
+	"\acolumns\x18\x01 \x03(\v2-.google.cloud.biglake.hive.v1beta.FieldSchemaB\x04\xe2A\x01\x02R\acolumns\x12'\n" +
+	"\flocation_uri\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vlocationUri\x12'\n" +
+	"\finput_format\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vinputFormat\x12)\n" +
+	"\routput_format\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\foutputFormat\x12)\n" +
 	"\n" +
-	"compressed\x18\x05 \x01(\bB\x03\xe0A\x01H\x00R\n" +
-	"compressed\x88\x01\x01\x12)\n" +
-	"\vnum_buckets\x18\x06 \x01(\x05B\x03\xe0A\x01H\x01R\n" +
-	"numBuckets\x88\x01\x01\x12O\n" +
+	"compressed\x18\x05 \x01(\bB\x04\xe2A\x01\x01H\x00R\n" +
+	"compressed\x88\x01\x01\x12*\n" +
+	"\vnum_buckets\x18\x06 \x01(\x05B\x04\xe2A\x01\x01H\x01R\n" +
+	"numBuckets\x88\x01\x01\x12P\n" +
 	"\n" +
-	"serde_info\x18\a \x01(\v2+.google.cloud.biglake.hive.v1beta.SerdeInfoB\x03\xe0A\x01R\tserdeInfo\x12$\n" +
-	"\vbucket_cols\x18\b \x03(\tB\x03\xe0A\x01R\n" +
-	"bucketCols\x12[\n" +
-	"\tsort_cols\x18\t \x03(\v29.google.cloud.biglake.hive.v1beta.StorageDescriptor.OrderB\x03\xe0A\x01R\bsortCols\x12h\n" +
+	"serde_info\x18\a \x01(\v2+.google.cloud.biglake.hive.v1beta.SerdeInfoB\x04\xe2A\x01\x01R\tserdeInfo\x12%\n" +
+	"\vbucket_cols\x18\b \x03(\tB\x04\xe2A\x01\x01R\n" +
+	"bucketCols\x12\\\n" +
+	"\tsort_cols\x18\t \x03(\v29.google.cloud.biglake.hive.v1beta.StorageDescriptor.OrderB\x04\xe2A\x01\x01R\bsortCols\x12i\n" +
 	"\n" +
 	"parameters\x18\n" +
-	" \x03(\v2C.google.cloud.biglake.hive.v1beta.StorageDescriptor.ParametersEntryB\x03\xe0A\x01R\n" +
-	"parameters\x12d\n" +
-	"\vskewed_info\x18\v \x01(\v2>.google.cloud.biglake.hive.v1beta.StorageDescriptor.SkewedInfoB\x03\xe0A\x01R\n" +
-	"skewedInfo\x125\n" +
-	"\x12stored_as_sub_dirs\x18\f \x01(\bB\x03\xe0A\x01H\x02R\x0fstoredAsSubDirs\x88\x01\x01\x1a9\n" +
-	"\x05Order\x12\x15\n" +
-	"\x03col\x18\x01 \x01(\tB\x03\xe0A\x02R\x03col\x12\x19\n" +
-	"\x05order\x18\x02 \x01(\x05B\x03\xe0A\x02R\x05order\x1a\xe7\x03\n" +
+	" \x03(\v2C.google.cloud.biglake.hive.v1beta.StorageDescriptor.ParametersEntryB\x04\xe2A\x01\x01R\n" +
+	"parameters\x12e\n" +
+	"\vskewed_info\x18\v \x01(\v2>.google.cloud.biglake.hive.v1beta.StorageDescriptor.SkewedInfoB\x04\xe2A\x01\x01R\n" +
+	"skewedInfo\x126\n" +
+	"\x12stored_as_sub_dirs\x18\f \x01(\bB\x04\xe2A\x01\x01H\x02R\x0fstoredAsSubDirs\x88\x01\x01\x1a;\n" +
+	"\x05Order\x12\x16\n" +
+	"\x03col\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x03col\x12\x1a\n" +
+	"\x05order\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x05order\x1a\xed\x03\n" +
 	"\n" +
-	"SkewedInfo\x12-\n" +
-	"\x10skewed_col_names\x18\x01 \x03(\tB\x03\xe0A\x02R\x0eskewedColNames\x12\x81\x01\n" +
-	"\x11skewed_col_values\x18\x02 \x03(\v2P.google.cloud.biglake.hive.v1beta.StorageDescriptor.SkewedInfo.SkewedColumnValueB\x03\xe0A\x02R\x0fskewedColValues\x12\x9a\x01\n" +
-	"\x1bskewed_key_values_locations\x18\x03 \x03(\v2V.google.cloud.biglake.hive.v1beta.StorageDescriptor.SkewedInfo.SkewedKeyValuesLocationB\x03\xe0A\x02R\x18skewedKeyValuesLocations\x1a0\n" +
-	"\x11SkewedColumnValue\x12\x1b\n" +
-	"\x06values\x18\x01 \x03(\tB\x03\xe0A\x02R\x06values\x1aW\n" +
-	"\x17SkewedKeyValuesLocation\x12\x1b\n" +
-	"\x06values\x18\x01 \x03(\tB\x03\xe0A\x02R\x06values\x12\x1f\n" +
-	"\blocation\x18\x02 \x01(\tB\x03\xe0A\x02R\blocation\x1a=\n" +
+	"SkewedInfo\x12.\n" +
+	"\x10skewed_col_names\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x0eskewedColNames\x12\x82\x01\n" +
+	"\x11skewed_col_values\x18\x02 \x03(\v2P.google.cloud.biglake.hive.v1beta.StorageDescriptor.SkewedInfo.SkewedColumnValueB\x04\xe2A\x01\x02R\x0fskewedColValues\x12\x9b\x01\n" +
+	"\x1bskewed_key_values_locations\x18\x03 \x03(\v2V.google.cloud.biglake.hive.v1beta.StorageDescriptor.SkewedInfo.SkewedKeyValuesLocationB\x04\xe2A\x01\x02R\x18skewedKeyValuesLocations\x1a1\n" +
+	"\x11SkewedColumnValue\x12\x1c\n" +
+	"\x06values\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x06values\x1aY\n" +
+	"\x17SkewedKeyValuesLocation\x12\x1c\n" +
+	"\x06values\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x06values\x12 \n" +
+	"\blocation\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\blocation\x1a=\n" +
 	"\x0fParametersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\r\n" +
 	"\v_compressedB\x0e\n" +
 	"\f_num_bucketsB\x15\n" +
-	"\x13_stored_as_sub_dirs\"\xa5\x04\n" +
-	"\tSerdeInfo\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x120\n" +
-	"\x11serialization_lib\x18\x02 \x01(\tB\x03\xe0A\x02R\x10serializationLib\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12`\n" +
+	"\x13_stored_as_sub_dirs\"\xac\x04\n" +
+	"\tSerdeInfo\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x121\n" +
+	"\x11serialization_lib\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x10serializationLib\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12a\n" +
 	"\n" +
-	"parameters\x18\x04 \x03(\v2;.google.cloud.biglake.hive.v1beta.SerdeInfo.ParametersEntryB\x03\xe0A\x01R\n" +
-	"parameters\x12.\n" +
-	"\x10serializer_class\x18\x05 \x01(\tB\x03\xe0A\x01R\x0fserializerClass\x122\n" +
-	"\x12deserializer_class\x18\x06 \x01(\tB\x03\xe0A\x01R\x11deserializerClass\x12Y\n" +
+	"parameters\x18\x04 \x03(\v2;.google.cloud.biglake.hive.v1beta.SerdeInfo.ParametersEntryB\x04\xe2A\x01\x01R\n" +
+	"parameters\x12/\n" +
+	"\x10serializer_class\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x0fserializerClass\x123\n" +
+	"\x12deserializer_class\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x11deserializerClass\x12Z\n" +
 	"\n" +
-	"serde_type\x18\a \x01(\x0e25.google.cloud.biglake.hive.v1beta.SerdeInfo.SerdeTypeB\x03\xe0A\x01R\tserdeType\x1a=\n" +
+	"serde_type\x18\a \x01(\x0e25.google.cloud.biglake.hive.v1beta.SerdeInfo.SerdeTypeB\x04\xe2A\x01\x01R\tserdeType\x1a=\n" +
 	"\x0fParametersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"F\n" +
 	"\tSerdeType\x12\x1a\n" +
 	"\x16SERDE_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04HIVE\x10\x01\x12\x13\n" +
-	"\x0fSCHEMA_REGISTRY\x10\x02\"\xd4\x01\n" +
-	"\x16CreateHiveTableRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" biglake.googleapis.com/NamespaceR\x06parent\x12O\n" +
+	"\x0fSCHEMA_REGISTRY\x10\x02\"\xd7\x01\n" +
+	"\x16CreateHiveTableRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" biglake.googleapis.com/NamespaceR\x06parent\x12P\n" +
 	"\n" +
-	"hive_table\x18\x02 \x01(\v2+.google.cloud.biglake.hive.v1beta.HiveTableB\x03\xe0A\x02R\thiveTable\x12'\n" +
-	"\rhive_table_id\x18\x03 \x01(\tB\x03\xe0A\x02R\vhiveTableId\"O\n" +
-	"\x13GetHiveTableRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x04name\"\x9f\x01\n" +
-	"\x15ListHiveTablesRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" biglake.googleapis.com/NamespaceR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"hive_table\x18\x02 \x01(\v2+.google.cloud.biglake.hive.v1beta.HiveTableB\x04\xe2A\x01\x02R\thiveTable\x12(\n" +
+	"\rhive_table_id\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\vhiveTableId\"P\n" +
+	"\x13GetHiveTableRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x04name\"\xa2\x01\n" +
+	"\x15ListHiveTablesRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" biglake.googleapis.com/NamespaceR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x8f\x01\n" +
-	"\x16ListHiveTablesResponse\x12H\n" +
-	"\x06tables\x18\x01 \x03(\v2+.google.cloud.biglake.hive.v1beta.HiveTableB\x03\xe0A\x03R\x06tables\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x03R\rnextPageToken\"\xab\x01\n" +
-	"\x16UpdateHiveTableRequest\x12O\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x91\x01\n" +
+	"\x16ListHiveTablesResponse\x12I\n" +
+	"\x06tables\x18\x01 \x03(\v2+.google.cloud.biglake.hive.v1beta.HiveTableB\x04\xe2A\x01\x03R\x06tables\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\rnextPageToken\"\xad\x01\n" +
+	"\x16UpdateHiveTableRequest\x12P\n" +
 	"\n" +
-	"hive_table\x18\x01 \x01(\v2+.google.cloud.biglake.hive.v1beta.HiveTableB\x03\xe0A\x02R\thiveTable\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"R\n" +
-	"\x16DeleteHiveTableRequest\x128\n" +
-	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x04name\"\xc0\x03\n" +
-	"\tPartition\x12\x1b\n" +
-	"\x06values\x18\x01 \x03(\tB\x03\xe0A\x02R\x06values\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12g\n" +
-	"\x12storage_descriptor\x18\x03 \x01(\v23.google.cloud.biglake.hive.v1beta.StorageDescriptorB\x03\xe0A\x01R\x11storageDescriptor\x12`\n" +
+	"hive_table\x18\x01 \x01(\v2+.google.cloud.biglake.hive.v1beta.HiveTableB\x04\xe2A\x01\x02R\thiveTable\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"S\n" +
+	"\x16DeleteHiveTableRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x04name\"\xc5\x03\n" +
+	"\tPartition\x12\x1c\n" +
+	"\x06values\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x06values\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12h\n" +
+	"\x12storage_descriptor\x18\x03 \x01(\v23.google.cloud.biglake.hive.v1beta.StorageDescriptorB\x04\xe2A\x01\x01R\x11storageDescriptor\x12a\n" +
 	"\n" +
-	"parameters\x18\x04 \x03(\v2;.google.cloud.biglake.hive.v1beta.Partition.ParametersEntryB\x03\xe0A\x01R\n" +
-	"parameters\x12J\n" +
-	"\x06fields\x18\x05 \x03(\v2-.google.cloud.biglake.hive.v1beta.FieldSchemaB\x03\xe0A\x01R\x06fields\x1a=\n" +
+	"parameters\x18\x04 \x03(\v2;.google.cloud.biglake.hive.v1beta.Partition.ParametersEntryB\x04\xe2A\x01\x01R\n" +
+	"parameters\x12K\n" +
+	"\x06fields\x18\x05 \x03(\v2-.google.cloud.biglake.hive.v1beta.FieldSchemaB\x04\xe2A\x01\x01R\x06fields\x1a=\n" +
 	"\x0fParametersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\".\n" +
-	"\x0fPartitionValues\x12\x1b\n" +
-	"\x06values\x18\x01 \x03(\tB\x03\xe0A\x02R\x06values\"\xa6\x01\n" +
-	"\x16CreatePartitionRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x06parent\x12N\n" +
-	"\tpartition\x18\x02 \x01(\v2+.google.cloud.biglake.hive.v1beta.PartitionB\x03\xe0A\x02R\tpartition\"\xf6\x01\n" +
-	"\x1cBatchCreatePartitionsRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x06parent\x12Y\n" +
-	"\brequests\x18\x02 \x03(\v28.google.cloud.biglake.hive.v1beta.CreatePartitionRequestB\x03\xe0A\x02R\brequests\x12=\n" +
-	"\x18skip_existing_partitions\x18\x03 \x01(\bB\x03\xe0A\x01R\x16skipExistingPartitions\"l\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"/\n" +
+	"\x0fPartitionValues\x12\x1c\n" +
+	"\x06values\x18\x01 \x03(\tB\x04\xe2A\x01\x02R\x06values\"\xa8\x01\n" +
+	"\x16CreatePartitionRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x06parent\x12O\n" +
+	"\tpartition\x18\x02 \x01(\v2+.google.cloud.biglake.hive.v1beta.PartitionB\x04\xe2A\x01\x02R\tpartition\"\xf9\x01\n" +
+	"\x1cBatchCreatePartitionsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x06parent\x12Z\n" +
+	"\brequests\x18\x02 \x03(\v28.google.cloud.biglake.hive.v1beta.CreatePartitionRequestB\x04\xe2A\x01\x02R\brequests\x12>\n" +
+	"\x18skip_existing_partitions\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x16skipExistingPartitions\"l\n" +
 	"\x1dBatchCreatePartitionsResponse\x12K\n" +
 	"\n" +
 	"partitions\x18\x01 \x03(\v2+.google.cloud.biglake.hive.v1beta.PartitionR\n" +
-	"partitions\"\xbf\x01\n" +
-	"\x1cBatchDeletePartitionsRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x06parent\x12a\n" +
-	"\x10partition_values\x18\x02 \x03(\v21.google.cloud.biglake.hive.v1beta.PartitionValuesB\x03\xe0A\x02R\x0fpartitionValues\"\xaa\x01\n" +
-	"\x16UpdatePartitionRequest\x12N\n" +
-	"\tpartition\x18\x01 \x01(\v2+.google.cloud.biglake.hive.v1beta.PartitionB\x03\xe0A\x02R\tpartition\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xb7\x01\n" +
-	"\x1cBatchUpdatePartitionsRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x06parent\x12Y\n" +
-	"\brequests\x18\x02 \x03(\v28.google.cloud.biglake.hive.v1beta.UpdatePartitionRequestB\x03\xe0A\x02R\brequests\"l\n" +
+	"partitions\"\xc1\x01\n" +
+	"\x1cBatchDeletePartitionsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x06parent\x12b\n" +
+	"\x10partition_values\x18\x02 \x03(\v21.google.cloud.biglake.hive.v1beta.PartitionValuesB\x04\xe2A\x01\x02R\x0fpartitionValues\"\xac\x01\n" +
+	"\x16UpdatePartitionRequest\x12O\n" +
+	"\tpartition\x18\x01 \x01(\v2+.google.cloud.biglake.hive.v1beta.PartitionB\x04\xe2A\x01\x02R\tpartition\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\xb9\x01\n" +
+	"\x1cBatchUpdatePartitionsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x06parent\x12Z\n" +
+	"\brequests\x18\x02 \x03(\v28.google.cloud.biglake.hive.v1beta.UpdatePartitionRequestB\x04\xe2A\x01\x02R\brequests\"l\n" +
 	"\x1dBatchUpdatePartitionsResponse\x12K\n" +
 	"\n" +
 	"partitions\x18\x01 \x03(\v2+.google.cloud.biglake.hive.v1beta.PartitionR\n" +
-	"partitions\"r\n" +
-	"\x15ListPartitionsRequest\x12<\n" +
-	"\x06parent\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1cbiglake.googleapis.com/TableR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\"j\n" +
-	"\x16ListPartitionsResponse\x12P\n" +
+	"partitions\"t\n" +
+	"\x15ListPartitionsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe2A\x01\x02\xfaA\x1e\n" +
+	"\x1cbiglake.googleapis.com/TableR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"k\n" +
+	"\x16ListPartitionsResponse\x12Q\n" +
 	"\n" +
-	"partitions\x18\x01 \x03(\v2+.google.cloud.biglake.hive.v1beta.PartitionB\x03\xe0A\x03R\n" +
-	"partitions2\xcf!\n" +
+	"partitions\x18\x01 \x03(\v2+.google.cloud.biglake.hive.v1beta.PartitionB\x04\xe2A\x01\x03R\n" +
+	"partitions\"\x85\x02\n" +
+	"\x1aFailoverHiveCatalogRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12-\n" +
+	"\x0fprimary_replica\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0eprimaryReplica\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12s\n" +
+	"%conditional_failover_replication_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\"conditionalFailoverReplicationTime\"j\n" +
+	"\x1bFailoverHiveCatalogResponse\x12K\n" +
+	"\x10replication_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x0freplicationTime2\xba#\n" +
 	"\x14HiveMetastoreService\x12\xe5\x01\n" +
 	"\x11CreateHiveCatalog\x12:.google.cloud.biglake.hive.v1beta.CreateHiveCatalogRequest\x1a-.google.cloud.biglake.hive.v1beta.HiveCatalog\"e\xdaA#parent,hive_catalog,hive_catalog_id\x82\xd3\xe4\x93\x029:\fhive_catalog\")/hive/v1beta/{parent=projects/*}/catalogs\x12\xb2\x01\n" +
 	"\x0eGetHiveCatalog\x127.google.cloud.biglake.hive.v1beta.GetHiveCatalogRequest\x1a-.google.cloud.biglake.hive.v1beta.HiveCatalog\"8\xdaA\x04name\x82\xd3\xe4\x93\x02+\x12)/hive/v1beta/{name=projects/*/catalogs/*}\x12\xc5\x01\n" +
@@ -3058,7 +3199,8 @@ const file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_rawDesc = "" +
 	"\x15BatchCreatePartitions\x12>.google.cloud.biglake.hive.v1beta.BatchCreatePartitionsRequest\x1a?.google.cloud.biglake.hive.v1beta.BatchCreatePartitionsResponse\"k\xdaA\x06parent\x82\xd3\xe4\x93\x02\\:\x01*\"W/hive/v1beta/{parent=projects/*/catalogs/*/databases/*/tables/*}/partitions:batchCreate\x12\xdc\x01\n" +
 	"\x15BatchDeletePartitions\x12>.google.cloud.biglake.hive.v1beta.BatchDeletePartitionsRequest\x1a\x16.google.protobuf.Empty\"k\xdaA\x06parent\x82\xd3\xe4\x93\x02\\:\x01*\"W/hive/v1beta/{parent=projects/*/catalogs/*/databases/*/tables/*}/partitions:batchDelete\x12\x85\x02\n" +
 	"\x15BatchUpdatePartitions\x12>.google.cloud.biglake.hive.v1beta.BatchUpdatePartitionsRequest\x1a?.google.cloud.biglake.hive.v1beta.BatchUpdatePartitionsResponse\"k\xdaA\x06parent\x82\xd3\xe4\x93\x02\\:\x01*\"W/hive/v1beta/{parent=projects/*/catalogs/*/databases/*/tables/*}/partitions:batchUpdate\x12\xe8\x01\n" +
-	"\x0eListPartitions\x127.google.cloud.biglake.hive.v1beta.ListPartitionsRequest\x1a8.google.cloud.biglake.hive.v1beta.ListPartitionsResponse\"a\xdaA\x06parent\x82\xd3\xe4\x93\x02R\x12P/hive/v1beta/{parent=projects/*/catalogs/*/databases/*/tables/*}/partitions:list0\x01\x1as\xcaA\x16biglake.googleapis.com\xd2AWhttps://www.googleapis.com/auth/bigquery,https://www.googleapis.com/auth/cloud-platformBv\n" +
+	"\x0eListPartitions\x127.google.cloud.biglake.hive.v1beta.ListPartitionsRequest\x1a8.google.cloud.biglake.hive.v1beta.ListPartitionsResponse\"a\xdaA\x06parent\x82\xd3\xe4\x93\x02R\x12P/hive/v1beta/{parent=projects/*/catalogs/*/databases/*/tables/*}/partitions:list0\x01\x12\xe8\x01\n" +
+	"\x13FailoverHiveCatalog\x12<.google.cloud.biglake.hive.v1beta.FailoverHiveCatalogRequest\x1a=.google.cloud.biglake.hive.v1beta.FailoverHiveCatalogResponse\"T\xdaA\x14name,primary_replica\x82\xd3\xe4\x93\x027:\x01*\"2/hive/v1beta/{name=projects/*/catalogs/*}:failover\x1as\xcaA\x16biglake.googleapis.com\xd2AWhttps://www.googleapis.com/auth/bigquery,https://www.googleapis.com/auth/cloud-platformBv\n" +
 	"$com.google.cloud.biglake.hive.v1betaB\x12HiveMetastoreProtoP\x01Z8cloud.google.com/go/biglake/hive/apiv1beta/hivepb;hivepbb\x06proto3"
 
 var (
@@ -3074,7 +3216,7 @@ func file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_rawDescGZIP() []
 }
 
 var file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes = make([]protoimpl.MessageInfo, 45)
+var file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_msgTypes = make([]protoimpl.MessageInfo, 47)
 var file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_goTypes = []any{
 	(HiveCatalog_Replica_State)(0),                               // 0: google.cloud.biglake.hive.v1beta.HiveCatalog.Replica.State
 	(SerdeInfo_SerdeType)(0),                                     // 1: google.cloud.biglake.hive.v1beta.SerdeInfo.SerdeType
@@ -3113,110 +3255,116 @@ var file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_goTypes = []any{
 	(*BatchUpdatePartitionsResponse)(nil),                        // 34: google.cloud.biglake.hive.v1beta.BatchUpdatePartitionsResponse
 	(*ListPartitionsRequest)(nil),                                // 35: google.cloud.biglake.hive.v1beta.ListPartitionsRequest
 	(*ListPartitionsResponse)(nil),                               // 36: google.cloud.biglake.hive.v1beta.ListPartitionsResponse
-	(*HiveCatalog_Replica)(nil),                                  // 37: google.cloud.biglake.hive.v1beta.HiveCatalog.Replica
-	nil,                                                          // 38: google.cloud.biglake.hive.v1beta.HiveDatabase.ParametersEntry
-	nil,                                                          // 39: google.cloud.biglake.hive.v1beta.HiveTable.ParametersEntry
-	(*StorageDescriptor_Order)(nil),                              // 40: google.cloud.biglake.hive.v1beta.StorageDescriptor.Order
-	(*StorageDescriptor_SkewedInfo)(nil),                         // 41: google.cloud.biglake.hive.v1beta.StorageDescriptor.SkewedInfo
-	nil,                                                          // 42: google.cloud.biglake.hive.v1beta.StorageDescriptor.ParametersEntry
-	(*StorageDescriptor_SkewedInfo_SkewedColumnValue)(nil),       // 43: google.cloud.biglake.hive.v1beta.StorageDescriptor.SkewedInfo.SkewedColumnValue
-	(*StorageDescriptor_SkewedInfo_SkewedKeyValuesLocation)(nil), // 44: google.cloud.biglake.hive.v1beta.StorageDescriptor.SkewedInfo.SkewedKeyValuesLocation
-	nil,                           // 45: google.cloud.biglake.hive.v1beta.SerdeInfo.ParametersEntry
-	nil,                           // 46: google.cloud.biglake.hive.v1beta.Partition.ParametersEntry
-	(*timestamppb.Timestamp)(nil), // 47: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil), // 48: google.protobuf.FieldMask
-	(*emptypb.Empty)(nil),         // 49: google.protobuf.Empty
+	(*FailoverHiveCatalogRequest)(nil),                           // 37: google.cloud.biglake.hive.v1beta.FailoverHiveCatalogRequest
+	(*FailoverHiveCatalogResponse)(nil),                          // 38: google.cloud.biglake.hive.v1beta.FailoverHiveCatalogResponse
+	(*HiveCatalog_Replica)(nil),                                  // 39: google.cloud.biglake.hive.v1beta.HiveCatalog.Replica
+	nil,                                                          // 40: google.cloud.biglake.hive.v1beta.HiveDatabase.ParametersEntry
+	nil,                                                          // 41: google.cloud.biglake.hive.v1beta.HiveTable.ParametersEntry
+	(*StorageDescriptor_Order)(nil),                              // 42: google.cloud.biglake.hive.v1beta.StorageDescriptor.Order
+	(*StorageDescriptor_SkewedInfo)(nil),                         // 43: google.cloud.biglake.hive.v1beta.StorageDescriptor.SkewedInfo
+	nil,                                                          // 44: google.cloud.biglake.hive.v1beta.StorageDescriptor.ParametersEntry
+	(*StorageDescriptor_SkewedInfo_SkewedColumnValue)(nil),       // 45: google.cloud.biglake.hive.v1beta.StorageDescriptor.SkewedInfo.SkewedColumnValue
+	(*StorageDescriptor_SkewedInfo_SkewedKeyValuesLocation)(nil), // 46: google.cloud.biglake.hive.v1beta.StorageDescriptor.SkewedInfo.SkewedKeyValuesLocation
+	nil,                           // 47: google.cloud.biglake.hive.v1beta.SerdeInfo.ParametersEntry
+	nil,                           // 48: google.cloud.biglake.hive.v1beta.Partition.ParametersEntry
+	(*timestamppb.Timestamp)(nil), // 49: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil), // 50: google.protobuf.FieldMask
+	(*emptypb.Empty)(nil),         // 51: google.protobuf.Empty
 }
 var file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_depIdxs = []int32{
-	37, // 0: google.cloud.biglake.hive.v1beta.HiveCatalog.replicas:type_name -> google.cloud.biglake.hive.v1beta.HiveCatalog.Replica
-	47, // 1: google.cloud.biglake.hive.v1beta.HiveCatalog.create_time:type_name -> google.protobuf.Timestamp
-	47, // 2: google.cloud.biglake.hive.v1beta.HiveCatalog.update_time:type_name -> google.protobuf.Timestamp
+	39, // 0: google.cloud.biglake.hive.v1beta.HiveCatalog.replicas:type_name -> google.cloud.biglake.hive.v1beta.HiveCatalog.Replica
+	49, // 1: google.cloud.biglake.hive.v1beta.HiveCatalog.create_time:type_name -> google.protobuf.Timestamp
+	49, // 2: google.cloud.biglake.hive.v1beta.HiveCatalog.update_time:type_name -> google.protobuf.Timestamp
 	2,  // 3: google.cloud.biglake.hive.v1beta.CreateHiveCatalogRequest.hive_catalog:type_name -> google.cloud.biglake.hive.v1beta.HiveCatalog
 	2,  // 4: google.cloud.biglake.hive.v1beta.ListHiveCatalogsResponse.catalogs:type_name -> google.cloud.biglake.hive.v1beta.HiveCatalog
 	2,  // 5: google.cloud.biglake.hive.v1beta.UpdateHiveCatalogRequest.hive_catalog:type_name -> google.cloud.biglake.hive.v1beta.HiveCatalog
-	48, // 6: google.cloud.biglake.hive.v1beta.UpdateHiveCatalogRequest.update_mask:type_name -> google.protobuf.FieldMask
-	38, // 7: google.cloud.biglake.hive.v1beta.HiveDatabase.parameters:type_name -> google.cloud.biglake.hive.v1beta.HiveDatabase.ParametersEntry
-	47, // 8: google.cloud.biglake.hive.v1beta.HiveDatabase.create_time:type_name -> google.protobuf.Timestamp
-	47, // 9: google.cloud.biglake.hive.v1beta.HiveDatabase.update_time:type_name -> google.protobuf.Timestamp
+	50, // 6: google.cloud.biglake.hive.v1beta.UpdateHiveCatalogRequest.update_mask:type_name -> google.protobuf.FieldMask
+	40, // 7: google.cloud.biglake.hive.v1beta.HiveDatabase.parameters:type_name -> google.cloud.biglake.hive.v1beta.HiveDatabase.ParametersEntry
+	49, // 8: google.cloud.biglake.hive.v1beta.HiveDatabase.create_time:type_name -> google.protobuf.Timestamp
+	49, // 9: google.cloud.biglake.hive.v1beta.HiveDatabase.update_time:type_name -> google.protobuf.Timestamp
 	9,  // 10: google.cloud.biglake.hive.v1beta.CreateHiveDatabaseRequest.hive_database:type_name -> google.cloud.biglake.hive.v1beta.HiveDatabase
 	9,  // 11: google.cloud.biglake.hive.v1beta.ListHiveDatabasesResponse.databases:type_name -> google.cloud.biglake.hive.v1beta.HiveDatabase
 	9,  // 12: google.cloud.biglake.hive.v1beta.UpdateHiveDatabaseRequest.hive_database:type_name -> google.cloud.biglake.hive.v1beta.HiveDatabase
-	48, // 13: google.cloud.biglake.hive.v1beta.UpdateHiveDatabaseRequest.update_mask:type_name -> google.protobuf.FieldMask
+	50, // 13: google.cloud.biglake.hive.v1beta.UpdateHiveDatabaseRequest.update_mask:type_name -> google.protobuf.FieldMask
 	18, // 14: google.cloud.biglake.hive.v1beta.HiveTable.storage_descriptor:type_name -> google.cloud.biglake.hive.v1beta.StorageDescriptor
-	47, // 15: google.cloud.biglake.hive.v1beta.HiveTable.create_time:type_name -> google.protobuf.Timestamp
+	49, // 15: google.cloud.biglake.hive.v1beta.HiveTable.create_time:type_name -> google.protobuf.Timestamp
 	17, // 16: google.cloud.biglake.hive.v1beta.HiveTable.partition_keys:type_name -> google.cloud.biglake.hive.v1beta.FieldSchema
-	39, // 17: google.cloud.biglake.hive.v1beta.HiveTable.parameters:type_name -> google.cloud.biglake.hive.v1beta.HiveTable.ParametersEntry
-	47, // 18: google.cloud.biglake.hive.v1beta.HiveTable.update_time:type_name -> google.protobuf.Timestamp
+	41, // 17: google.cloud.biglake.hive.v1beta.HiveTable.parameters:type_name -> google.cloud.biglake.hive.v1beta.HiveTable.ParametersEntry
+	49, // 18: google.cloud.biglake.hive.v1beta.HiveTable.update_time:type_name -> google.protobuf.Timestamp
 	17, // 19: google.cloud.biglake.hive.v1beta.StorageDescriptor.columns:type_name -> google.cloud.biglake.hive.v1beta.FieldSchema
 	19, // 20: google.cloud.biglake.hive.v1beta.StorageDescriptor.serde_info:type_name -> google.cloud.biglake.hive.v1beta.SerdeInfo
-	40, // 21: google.cloud.biglake.hive.v1beta.StorageDescriptor.sort_cols:type_name -> google.cloud.biglake.hive.v1beta.StorageDescriptor.Order
-	42, // 22: google.cloud.biglake.hive.v1beta.StorageDescriptor.parameters:type_name -> google.cloud.biglake.hive.v1beta.StorageDescriptor.ParametersEntry
-	41, // 23: google.cloud.biglake.hive.v1beta.StorageDescriptor.skewed_info:type_name -> google.cloud.biglake.hive.v1beta.StorageDescriptor.SkewedInfo
-	45, // 24: google.cloud.biglake.hive.v1beta.SerdeInfo.parameters:type_name -> google.cloud.biglake.hive.v1beta.SerdeInfo.ParametersEntry
+	42, // 21: google.cloud.biglake.hive.v1beta.StorageDescriptor.sort_cols:type_name -> google.cloud.biglake.hive.v1beta.StorageDescriptor.Order
+	44, // 22: google.cloud.biglake.hive.v1beta.StorageDescriptor.parameters:type_name -> google.cloud.biglake.hive.v1beta.StorageDescriptor.ParametersEntry
+	43, // 23: google.cloud.biglake.hive.v1beta.StorageDescriptor.skewed_info:type_name -> google.cloud.biglake.hive.v1beta.StorageDescriptor.SkewedInfo
+	47, // 24: google.cloud.biglake.hive.v1beta.SerdeInfo.parameters:type_name -> google.cloud.biglake.hive.v1beta.SerdeInfo.ParametersEntry
 	1,  // 25: google.cloud.biglake.hive.v1beta.SerdeInfo.serde_type:type_name -> google.cloud.biglake.hive.v1beta.SerdeInfo.SerdeType
 	16, // 26: google.cloud.biglake.hive.v1beta.CreateHiveTableRequest.hive_table:type_name -> google.cloud.biglake.hive.v1beta.HiveTable
 	16, // 27: google.cloud.biglake.hive.v1beta.ListHiveTablesResponse.tables:type_name -> google.cloud.biglake.hive.v1beta.HiveTable
 	16, // 28: google.cloud.biglake.hive.v1beta.UpdateHiveTableRequest.hive_table:type_name -> google.cloud.biglake.hive.v1beta.HiveTable
-	48, // 29: google.cloud.biglake.hive.v1beta.UpdateHiveTableRequest.update_mask:type_name -> google.protobuf.FieldMask
-	47, // 30: google.cloud.biglake.hive.v1beta.Partition.create_time:type_name -> google.protobuf.Timestamp
+	50, // 29: google.cloud.biglake.hive.v1beta.UpdateHiveTableRequest.update_mask:type_name -> google.protobuf.FieldMask
+	49, // 30: google.cloud.biglake.hive.v1beta.Partition.create_time:type_name -> google.protobuf.Timestamp
 	18, // 31: google.cloud.biglake.hive.v1beta.Partition.storage_descriptor:type_name -> google.cloud.biglake.hive.v1beta.StorageDescriptor
-	46, // 32: google.cloud.biglake.hive.v1beta.Partition.parameters:type_name -> google.cloud.biglake.hive.v1beta.Partition.ParametersEntry
+	48, // 32: google.cloud.biglake.hive.v1beta.Partition.parameters:type_name -> google.cloud.biglake.hive.v1beta.Partition.ParametersEntry
 	17, // 33: google.cloud.biglake.hive.v1beta.Partition.fields:type_name -> google.cloud.biglake.hive.v1beta.FieldSchema
 	26, // 34: google.cloud.biglake.hive.v1beta.CreatePartitionRequest.partition:type_name -> google.cloud.biglake.hive.v1beta.Partition
 	28, // 35: google.cloud.biglake.hive.v1beta.BatchCreatePartitionsRequest.requests:type_name -> google.cloud.biglake.hive.v1beta.CreatePartitionRequest
 	26, // 36: google.cloud.biglake.hive.v1beta.BatchCreatePartitionsResponse.partitions:type_name -> google.cloud.biglake.hive.v1beta.Partition
 	27, // 37: google.cloud.biglake.hive.v1beta.BatchDeletePartitionsRequest.partition_values:type_name -> google.cloud.biglake.hive.v1beta.PartitionValues
 	26, // 38: google.cloud.biglake.hive.v1beta.UpdatePartitionRequest.partition:type_name -> google.cloud.biglake.hive.v1beta.Partition
-	48, // 39: google.cloud.biglake.hive.v1beta.UpdatePartitionRequest.update_mask:type_name -> google.protobuf.FieldMask
+	50, // 39: google.cloud.biglake.hive.v1beta.UpdatePartitionRequest.update_mask:type_name -> google.protobuf.FieldMask
 	32, // 40: google.cloud.biglake.hive.v1beta.BatchUpdatePartitionsRequest.requests:type_name -> google.cloud.biglake.hive.v1beta.UpdatePartitionRequest
 	26, // 41: google.cloud.biglake.hive.v1beta.BatchUpdatePartitionsResponse.partitions:type_name -> google.cloud.biglake.hive.v1beta.Partition
 	26, // 42: google.cloud.biglake.hive.v1beta.ListPartitionsResponse.partitions:type_name -> google.cloud.biglake.hive.v1beta.Partition
-	0,  // 43: google.cloud.biglake.hive.v1beta.HiveCatalog.Replica.state:type_name -> google.cloud.biglake.hive.v1beta.HiveCatalog.Replica.State
-	43, // 44: google.cloud.biglake.hive.v1beta.StorageDescriptor.SkewedInfo.skewed_col_values:type_name -> google.cloud.biglake.hive.v1beta.StorageDescriptor.SkewedInfo.SkewedColumnValue
-	44, // 45: google.cloud.biglake.hive.v1beta.StorageDescriptor.SkewedInfo.skewed_key_values_locations:type_name -> google.cloud.biglake.hive.v1beta.StorageDescriptor.SkewedInfo.SkewedKeyValuesLocation
-	3,  // 46: google.cloud.biglake.hive.v1beta.HiveMetastoreService.CreateHiveCatalog:input_type -> google.cloud.biglake.hive.v1beta.CreateHiveCatalogRequest
-	4,  // 47: google.cloud.biglake.hive.v1beta.HiveMetastoreService.GetHiveCatalog:input_type -> google.cloud.biglake.hive.v1beta.GetHiveCatalogRequest
-	5,  // 48: google.cloud.biglake.hive.v1beta.HiveMetastoreService.ListHiveCatalogs:input_type -> google.cloud.biglake.hive.v1beta.ListHiveCatalogsRequest
-	7,  // 49: google.cloud.biglake.hive.v1beta.HiveMetastoreService.UpdateHiveCatalog:input_type -> google.cloud.biglake.hive.v1beta.UpdateHiveCatalogRequest
-	8,  // 50: google.cloud.biglake.hive.v1beta.HiveMetastoreService.DeleteHiveCatalog:input_type -> google.cloud.biglake.hive.v1beta.DeleteHiveCatalogRequest
-	10, // 51: google.cloud.biglake.hive.v1beta.HiveMetastoreService.CreateHiveDatabase:input_type -> google.cloud.biglake.hive.v1beta.CreateHiveDatabaseRequest
-	11, // 52: google.cloud.biglake.hive.v1beta.HiveMetastoreService.GetHiveDatabase:input_type -> google.cloud.biglake.hive.v1beta.GetHiveDatabaseRequest
-	12, // 53: google.cloud.biglake.hive.v1beta.HiveMetastoreService.ListHiveDatabases:input_type -> google.cloud.biglake.hive.v1beta.ListHiveDatabasesRequest
-	14, // 54: google.cloud.biglake.hive.v1beta.HiveMetastoreService.UpdateHiveDatabase:input_type -> google.cloud.biglake.hive.v1beta.UpdateHiveDatabaseRequest
-	15, // 55: google.cloud.biglake.hive.v1beta.HiveMetastoreService.DeleteHiveDatabase:input_type -> google.cloud.biglake.hive.v1beta.DeleteHiveDatabaseRequest
-	20, // 56: google.cloud.biglake.hive.v1beta.HiveMetastoreService.CreateHiveTable:input_type -> google.cloud.biglake.hive.v1beta.CreateHiveTableRequest
-	21, // 57: google.cloud.biglake.hive.v1beta.HiveMetastoreService.GetHiveTable:input_type -> google.cloud.biglake.hive.v1beta.GetHiveTableRequest
-	22, // 58: google.cloud.biglake.hive.v1beta.HiveMetastoreService.ListHiveTables:input_type -> google.cloud.biglake.hive.v1beta.ListHiveTablesRequest
-	24, // 59: google.cloud.biglake.hive.v1beta.HiveMetastoreService.UpdateHiveTable:input_type -> google.cloud.biglake.hive.v1beta.UpdateHiveTableRequest
-	25, // 60: google.cloud.biglake.hive.v1beta.HiveMetastoreService.DeleteHiveTable:input_type -> google.cloud.biglake.hive.v1beta.DeleteHiveTableRequest
-	29, // 61: google.cloud.biglake.hive.v1beta.HiveMetastoreService.BatchCreatePartitions:input_type -> google.cloud.biglake.hive.v1beta.BatchCreatePartitionsRequest
-	31, // 62: google.cloud.biglake.hive.v1beta.HiveMetastoreService.BatchDeletePartitions:input_type -> google.cloud.biglake.hive.v1beta.BatchDeletePartitionsRequest
-	33, // 63: google.cloud.biglake.hive.v1beta.HiveMetastoreService.BatchUpdatePartitions:input_type -> google.cloud.biglake.hive.v1beta.BatchUpdatePartitionsRequest
-	35, // 64: google.cloud.biglake.hive.v1beta.HiveMetastoreService.ListPartitions:input_type -> google.cloud.biglake.hive.v1beta.ListPartitionsRequest
-	2,  // 65: google.cloud.biglake.hive.v1beta.HiveMetastoreService.CreateHiveCatalog:output_type -> google.cloud.biglake.hive.v1beta.HiveCatalog
-	2,  // 66: google.cloud.biglake.hive.v1beta.HiveMetastoreService.GetHiveCatalog:output_type -> google.cloud.biglake.hive.v1beta.HiveCatalog
-	6,  // 67: google.cloud.biglake.hive.v1beta.HiveMetastoreService.ListHiveCatalogs:output_type -> google.cloud.biglake.hive.v1beta.ListHiveCatalogsResponse
-	2,  // 68: google.cloud.biglake.hive.v1beta.HiveMetastoreService.UpdateHiveCatalog:output_type -> google.cloud.biglake.hive.v1beta.HiveCatalog
-	49, // 69: google.cloud.biglake.hive.v1beta.HiveMetastoreService.DeleteHiveCatalog:output_type -> google.protobuf.Empty
-	9,  // 70: google.cloud.biglake.hive.v1beta.HiveMetastoreService.CreateHiveDatabase:output_type -> google.cloud.biglake.hive.v1beta.HiveDatabase
-	9,  // 71: google.cloud.biglake.hive.v1beta.HiveMetastoreService.GetHiveDatabase:output_type -> google.cloud.biglake.hive.v1beta.HiveDatabase
-	13, // 72: google.cloud.biglake.hive.v1beta.HiveMetastoreService.ListHiveDatabases:output_type -> google.cloud.biglake.hive.v1beta.ListHiveDatabasesResponse
-	9,  // 73: google.cloud.biglake.hive.v1beta.HiveMetastoreService.UpdateHiveDatabase:output_type -> google.cloud.biglake.hive.v1beta.HiveDatabase
-	49, // 74: google.cloud.biglake.hive.v1beta.HiveMetastoreService.DeleteHiveDatabase:output_type -> google.protobuf.Empty
-	16, // 75: google.cloud.biglake.hive.v1beta.HiveMetastoreService.CreateHiveTable:output_type -> google.cloud.biglake.hive.v1beta.HiveTable
-	16, // 76: google.cloud.biglake.hive.v1beta.HiveMetastoreService.GetHiveTable:output_type -> google.cloud.biglake.hive.v1beta.HiveTable
-	23, // 77: google.cloud.biglake.hive.v1beta.HiveMetastoreService.ListHiveTables:output_type -> google.cloud.biglake.hive.v1beta.ListHiveTablesResponse
-	16, // 78: google.cloud.biglake.hive.v1beta.HiveMetastoreService.UpdateHiveTable:output_type -> google.cloud.biglake.hive.v1beta.HiveTable
-	49, // 79: google.cloud.biglake.hive.v1beta.HiveMetastoreService.DeleteHiveTable:output_type -> google.protobuf.Empty
-	30, // 80: google.cloud.biglake.hive.v1beta.HiveMetastoreService.BatchCreatePartitions:output_type -> google.cloud.biglake.hive.v1beta.BatchCreatePartitionsResponse
-	49, // 81: google.cloud.biglake.hive.v1beta.HiveMetastoreService.BatchDeletePartitions:output_type -> google.protobuf.Empty
-	34, // 82: google.cloud.biglake.hive.v1beta.HiveMetastoreService.BatchUpdatePartitions:output_type -> google.cloud.biglake.hive.v1beta.BatchUpdatePartitionsResponse
-	36, // 83: google.cloud.biglake.hive.v1beta.HiveMetastoreService.ListPartitions:output_type -> google.cloud.biglake.hive.v1beta.ListPartitionsResponse
-	65, // [65:84] is the sub-list for method output_type
-	46, // [46:65] is the sub-list for method input_type
-	46, // [46:46] is the sub-list for extension type_name
-	46, // [46:46] is the sub-list for extension extendee
-	0,  // [0:46] is the sub-list for field type_name
+	49, // 43: google.cloud.biglake.hive.v1beta.FailoverHiveCatalogRequest.conditional_failover_replication_time:type_name -> google.protobuf.Timestamp
+	49, // 44: google.cloud.biglake.hive.v1beta.FailoverHiveCatalogResponse.replication_time:type_name -> google.protobuf.Timestamp
+	0,  // 45: google.cloud.biglake.hive.v1beta.HiveCatalog.Replica.state:type_name -> google.cloud.biglake.hive.v1beta.HiveCatalog.Replica.State
+	45, // 46: google.cloud.biglake.hive.v1beta.StorageDescriptor.SkewedInfo.skewed_col_values:type_name -> google.cloud.biglake.hive.v1beta.StorageDescriptor.SkewedInfo.SkewedColumnValue
+	46, // 47: google.cloud.biglake.hive.v1beta.StorageDescriptor.SkewedInfo.skewed_key_values_locations:type_name -> google.cloud.biglake.hive.v1beta.StorageDescriptor.SkewedInfo.SkewedKeyValuesLocation
+	3,  // 48: google.cloud.biglake.hive.v1beta.HiveMetastoreService.CreateHiveCatalog:input_type -> google.cloud.biglake.hive.v1beta.CreateHiveCatalogRequest
+	4,  // 49: google.cloud.biglake.hive.v1beta.HiveMetastoreService.GetHiveCatalog:input_type -> google.cloud.biglake.hive.v1beta.GetHiveCatalogRequest
+	5,  // 50: google.cloud.biglake.hive.v1beta.HiveMetastoreService.ListHiveCatalogs:input_type -> google.cloud.biglake.hive.v1beta.ListHiveCatalogsRequest
+	7,  // 51: google.cloud.biglake.hive.v1beta.HiveMetastoreService.UpdateHiveCatalog:input_type -> google.cloud.biglake.hive.v1beta.UpdateHiveCatalogRequest
+	8,  // 52: google.cloud.biglake.hive.v1beta.HiveMetastoreService.DeleteHiveCatalog:input_type -> google.cloud.biglake.hive.v1beta.DeleteHiveCatalogRequest
+	10, // 53: google.cloud.biglake.hive.v1beta.HiveMetastoreService.CreateHiveDatabase:input_type -> google.cloud.biglake.hive.v1beta.CreateHiveDatabaseRequest
+	11, // 54: google.cloud.biglake.hive.v1beta.HiveMetastoreService.GetHiveDatabase:input_type -> google.cloud.biglake.hive.v1beta.GetHiveDatabaseRequest
+	12, // 55: google.cloud.biglake.hive.v1beta.HiveMetastoreService.ListHiveDatabases:input_type -> google.cloud.biglake.hive.v1beta.ListHiveDatabasesRequest
+	14, // 56: google.cloud.biglake.hive.v1beta.HiveMetastoreService.UpdateHiveDatabase:input_type -> google.cloud.biglake.hive.v1beta.UpdateHiveDatabaseRequest
+	15, // 57: google.cloud.biglake.hive.v1beta.HiveMetastoreService.DeleteHiveDatabase:input_type -> google.cloud.biglake.hive.v1beta.DeleteHiveDatabaseRequest
+	20, // 58: google.cloud.biglake.hive.v1beta.HiveMetastoreService.CreateHiveTable:input_type -> google.cloud.biglake.hive.v1beta.CreateHiveTableRequest
+	21, // 59: google.cloud.biglake.hive.v1beta.HiveMetastoreService.GetHiveTable:input_type -> google.cloud.biglake.hive.v1beta.GetHiveTableRequest
+	22, // 60: google.cloud.biglake.hive.v1beta.HiveMetastoreService.ListHiveTables:input_type -> google.cloud.biglake.hive.v1beta.ListHiveTablesRequest
+	24, // 61: google.cloud.biglake.hive.v1beta.HiveMetastoreService.UpdateHiveTable:input_type -> google.cloud.biglake.hive.v1beta.UpdateHiveTableRequest
+	25, // 62: google.cloud.biglake.hive.v1beta.HiveMetastoreService.DeleteHiveTable:input_type -> google.cloud.biglake.hive.v1beta.DeleteHiveTableRequest
+	29, // 63: google.cloud.biglake.hive.v1beta.HiveMetastoreService.BatchCreatePartitions:input_type -> google.cloud.biglake.hive.v1beta.BatchCreatePartitionsRequest
+	31, // 64: google.cloud.biglake.hive.v1beta.HiveMetastoreService.BatchDeletePartitions:input_type -> google.cloud.biglake.hive.v1beta.BatchDeletePartitionsRequest
+	33, // 65: google.cloud.biglake.hive.v1beta.HiveMetastoreService.BatchUpdatePartitions:input_type -> google.cloud.biglake.hive.v1beta.BatchUpdatePartitionsRequest
+	35, // 66: google.cloud.biglake.hive.v1beta.HiveMetastoreService.ListPartitions:input_type -> google.cloud.biglake.hive.v1beta.ListPartitionsRequest
+	37, // 67: google.cloud.biglake.hive.v1beta.HiveMetastoreService.FailoverHiveCatalog:input_type -> google.cloud.biglake.hive.v1beta.FailoverHiveCatalogRequest
+	2,  // 68: google.cloud.biglake.hive.v1beta.HiveMetastoreService.CreateHiveCatalog:output_type -> google.cloud.biglake.hive.v1beta.HiveCatalog
+	2,  // 69: google.cloud.biglake.hive.v1beta.HiveMetastoreService.GetHiveCatalog:output_type -> google.cloud.biglake.hive.v1beta.HiveCatalog
+	6,  // 70: google.cloud.biglake.hive.v1beta.HiveMetastoreService.ListHiveCatalogs:output_type -> google.cloud.biglake.hive.v1beta.ListHiveCatalogsResponse
+	2,  // 71: google.cloud.biglake.hive.v1beta.HiveMetastoreService.UpdateHiveCatalog:output_type -> google.cloud.biglake.hive.v1beta.HiveCatalog
+	51, // 72: google.cloud.biglake.hive.v1beta.HiveMetastoreService.DeleteHiveCatalog:output_type -> google.protobuf.Empty
+	9,  // 73: google.cloud.biglake.hive.v1beta.HiveMetastoreService.CreateHiveDatabase:output_type -> google.cloud.biglake.hive.v1beta.HiveDatabase
+	9,  // 74: google.cloud.biglake.hive.v1beta.HiveMetastoreService.GetHiveDatabase:output_type -> google.cloud.biglake.hive.v1beta.HiveDatabase
+	13, // 75: google.cloud.biglake.hive.v1beta.HiveMetastoreService.ListHiveDatabases:output_type -> google.cloud.biglake.hive.v1beta.ListHiveDatabasesResponse
+	9,  // 76: google.cloud.biglake.hive.v1beta.HiveMetastoreService.UpdateHiveDatabase:output_type -> google.cloud.biglake.hive.v1beta.HiveDatabase
+	51, // 77: google.cloud.biglake.hive.v1beta.HiveMetastoreService.DeleteHiveDatabase:output_type -> google.protobuf.Empty
+	16, // 78: google.cloud.biglake.hive.v1beta.HiveMetastoreService.CreateHiveTable:output_type -> google.cloud.biglake.hive.v1beta.HiveTable
+	16, // 79: google.cloud.biglake.hive.v1beta.HiveMetastoreService.GetHiveTable:output_type -> google.cloud.biglake.hive.v1beta.HiveTable
+	23, // 80: google.cloud.biglake.hive.v1beta.HiveMetastoreService.ListHiveTables:output_type -> google.cloud.biglake.hive.v1beta.ListHiveTablesResponse
+	16, // 81: google.cloud.biglake.hive.v1beta.HiveMetastoreService.UpdateHiveTable:output_type -> google.cloud.biglake.hive.v1beta.HiveTable
+	51, // 82: google.cloud.biglake.hive.v1beta.HiveMetastoreService.DeleteHiveTable:output_type -> google.protobuf.Empty
+	30, // 83: google.cloud.biglake.hive.v1beta.HiveMetastoreService.BatchCreatePartitions:output_type -> google.cloud.biglake.hive.v1beta.BatchCreatePartitionsResponse
+	51, // 84: google.cloud.biglake.hive.v1beta.HiveMetastoreService.BatchDeletePartitions:output_type -> google.protobuf.Empty
+	34, // 85: google.cloud.biglake.hive.v1beta.HiveMetastoreService.BatchUpdatePartitions:output_type -> google.cloud.biglake.hive.v1beta.BatchUpdatePartitionsResponse
+	36, // 86: google.cloud.biglake.hive.v1beta.HiveMetastoreService.ListPartitions:output_type -> google.cloud.biglake.hive.v1beta.ListPartitionsResponse
+	38, // 87: google.cloud.biglake.hive.v1beta.HiveMetastoreService.FailoverHiveCatalog:output_type -> google.cloud.biglake.hive.v1beta.FailoverHiveCatalogResponse
+	68, // [68:88] is the sub-list for method output_type
+	48, // [48:68] is the sub-list for method input_type
+	48, // [48:48] is the sub-list for extension type_name
+	48, // [48:48] is the sub-list for extension extendee
+	0,  // [0:48] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_init() }
@@ -3231,7 +3379,7 @@ func file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_rawDesc), len(file_google_cloud_biglake_hive_v1beta_hive_metastore_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   45,
+			NumMessages:   47,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

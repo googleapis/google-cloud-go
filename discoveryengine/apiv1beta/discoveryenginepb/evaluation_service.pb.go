@@ -550,40 +550,40 @@ var File_google_cloud_discoveryengine_v1beta_evaluation_service_proto protorefle
 
 const file_google_cloud_discoveryengine_v1beta_evaluation_service_proto_rawDesc = "" +
 	"\n" +
-	"<google/cloud/discoveryengine/v1beta/evaluation_service.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/discoveryengine/v1beta/evaluation.proto\x1a6google/cloud/discoveryengine/v1beta/sample_query.proto\x1a#google/longrunning/operations.proto\"]\n" +
-	"\x14GetEvaluationRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")discoveryengine.googleapis.com/EvaluationR\x04name\"\xa7\x01\n" +
-	"\x16ListEvaluationsRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'discoveryengine.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"<google/cloud/discoveryengine/v1beta/evaluation_service.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/discoveryengine/v1beta/evaluation.proto\x1a6google/cloud/discoveryengine/v1beta/sample_query.proto\x1a#google/longrunning/operations.proto\"^\n" +
+	"\x14GetEvaluationRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")discoveryengine.googleapis.com/EvaluationR\x04name\"\xaa\x01\n" +
+	"\x16ListEvaluationsRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'discoveryengine.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x94\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x94\x01\n" +
 	"\x17ListEvaluationsResponse\x12Q\n" +
 	"\vevaluations\x18\x01 \x03(\v2/.google.cloud.discoveryengine.v1beta.EvaluationR\vevaluations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb8\x01\n" +
-	"\x17CreateEvaluationRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'discoveryengine.googleapis.com/LocationR\x06parent\x12T\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xba\x01\n" +
+	"\x17CreateEvaluationRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'discoveryengine.googleapis.com/LocationR\x06parent\x12U\n" +
 	"\n" +
-	"evaluation\x18\x02 \x01(\v2/.google.cloud.discoveryengine.v1beta.EvaluationB\x03\xe0A\x02R\n" +
+	"evaluation\x18\x02 \x01(\v2/.google.cloud.discoveryengine.v1beta.EvaluationB\x04\xe2A\x01\x02R\n" +
 	"evaluation\"\x1a\n" +
-	"\x18CreateEvaluationMetadata\"\xb7\x01\n" +
-	"\x1cListEvaluationResultsRequest\x12Q\n" +
+	"\x18CreateEvaluationMetadata\"\xba\x01\n" +
+	"\x1cListEvaluationResultsRequest\x12R\n" +
 	"\n" +
-	"evaluation\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"evaluation\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")discoveryengine.googleapis.com/EvaluationR\n" +
-	"evaluation\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"evaluation\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x9e\x03\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\xa0\x03\n" +
 	"\x1dListEvaluationResultsResponse\x12\x82\x01\n" +
 	"\x12evaluation_results\x18\x01 \x03(\v2S.google.cloud.discoveryengine.v1beta.ListEvaluationResultsResponse.EvaluationResultR\x11evaluationResults\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x1a\xcf\x01\n" +
-	"\x10EvaluationResult\x12X\n" +
-	"\fsample_query\x18\x01 \x01(\v20.google.cloud.discoveryengine.v1beta.SampleQueryB\x03\xe0A\x03R\vsampleQuery\x12a\n" +
-	"\x0fquality_metrics\x18\x02 \x01(\v23.google.cloud.discoveryengine.v1beta.QualityMetricsB\x03\xe0A\x03R\x0equalityMetrics2\xfb\t\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x1a\xd1\x01\n" +
+	"\x10EvaluationResult\x12Y\n" +
+	"\fsample_query\x18\x01 \x01(\v20.google.cloud.discoveryengine.v1beta.SampleQueryB\x04\xe2A\x01\x03R\vsampleQuery\x12b\n" +
+	"\x0fquality_metrics\x18\x02 \x01(\v23.google.cloud.discoveryengine.v1beta.QualityMetricsB\x04\xe2A\x01\x03R\x0equalityMetrics2\xfb\t\n" +
 	"\x11EvaluationService\x12\xbf\x01\n" +
 	"\rGetEvaluation\x129.google.cloud.discoveryengine.v1beta.GetEvaluationRequest\x1a/.google.cloud.discoveryengine.v1beta.Evaluation\"B\xdaA\x04name\x82\xd3\xe4\x93\x025\x123/v1beta/{name=projects/*/locations/*/evaluations/*}\x12\xd2\x01\n" +
 	"\x0fListEvaluations\x12;.google.cloud.discoveryengine.v1beta.ListEvaluationsRequest\x1a<.google.cloud.discoveryengine.v1beta.ListEvaluationsResponse\"D\xdaA\x06parent\x82\xd3\xe4\x93\x025\x123/v1beta/{parent=projects/*/locations/*}/evaluations\x12\xbe\x02\n" +

@@ -1278,16 +1278,16 @@ var File_google_cloud_automl_v1_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_automl_v1_service_proto_rawDesc = "" +
 	"\n" +
-	"$google/cloud/automl/v1/service.proto\x12\x16google.cloud.automl.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a/google/cloud/automl/v1/annotation_payload.proto\x1a,google/cloud/automl/v1/annotation_spec.proto\x1a$google/cloud/automl/v1/dataset.proto\x1a\"google/cloud/automl/v1/image.proto\x1a\x1fgoogle/cloud/automl/v1/io.proto\x1a\"google/cloud/automl/v1/model.proto\x1a-google/cloud/automl/v1/model_evaluation.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\"\x99\x01\n" +
-	"\x14CreateDatasetRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12>\n" +
-	"\adataset\x18\x02 \x01(\v2\x1f.google.cloud.automl.v1.DatasetB\x03\xe0A\x02R\adataset\"N\n" +
-	"\x11GetDatasetRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dautoml.googleapis.com/DatasetR\x04name\"\xac\x01\n" +
-	"\x13ListDatasetsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"$google/cloud/automl/v1/service.proto\x12\x16google.cloud.automl.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a/google/cloud/automl/v1/annotation_payload.proto\x1a,google/cloud/automl/v1/annotation_spec.proto\x1a$google/cloud/automl/v1/dataset.proto\x1a\"google/cloud/automl/v1/image.proto\x1a\x1fgoogle/cloud/automl/v1/io.proto\x1a\"google/cloud/automl/v1/model.proto\x1a-google/cloud/automl/v1/model_evaluation.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\"\x9b\x01\n" +
+	"\x14CreateDatasetRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12?\n" +
+	"\adataset\x18\x02 \x01(\v2\x1f.google.cloud.automl.v1.DatasetB\x04\xe2A\x01\x02R\adataset\"O\n" +
+	"\x11GetDatasetRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dautoml.googleapis.com/DatasetR\x04name\"\xad\x01\n" +
+	"\x13ListDatasetsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x1b\n" +
 	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\x12\x1d\n" +
@@ -1295,34 +1295,34 @@ const file_google_cloud_automl_v1_service_proto_rawDesc = "" +
 	"page_token\x18\x06 \x01(\tR\tpageToken\"{\n" +
 	"\x14ListDatasetsResponse\x12;\n" +
 	"\bdatasets\x18\x01 \x03(\v2\x1f.google.cloud.automl.v1.DatasetR\bdatasets\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x98\x01\n" +
-	"\x14UpdateDatasetRequest\x12>\n" +
-	"\adataset\x18\x01 \x01(\v2\x1f.google.cloud.automl.v1.DatasetB\x03\xe0A\x02R\adataset\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"Q\n" +
-	"\x14DeleteDatasetRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dautoml.googleapis.com/DatasetR\x04name\"\x9b\x01\n" +
-	"\x11ImportDataRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dautoml.googleapis.com/DatasetR\x04name\x12K\n" +
-	"\finput_config\x18\x03 \x01(\v2#.google.cloud.automl.v1.InputConfigB\x03\xe0A\x02R\vinputConfig\"\x9e\x01\n" +
-	"\x11ExportDataRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dautoml.googleapis.com/DatasetR\x04name\x12N\n" +
-	"\routput_config\x18\x03 \x01(\v2$.google.cloud.automl.v1.OutputConfigB\x03\xe0A\x02R\foutputConfig\"\\\n" +
-	"\x18GetAnnotationSpecRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$automl.googleapis.com/AnnotationSpecR\x04name\"\x91\x01\n" +
-	"\x12CreateModelRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x128\n" +
-	"\x05model\x18\x04 \x01(\v2\x1d.google.cloud.automl.v1.ModelB\x03\xe0A\x02R\x05model\"J\n" +
-	"\x0fGetModelRequest\x127\n" +
-	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
-	"\x1bautoml.googleapis.com/ModelR\x04name\"\xaa\x01\n" +
-	"\x11ListModelsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9a\x01\n" +
+	"\x14UpdateDatasetRequest\x12?\n" +
+	"\adataset\x18\x01 \x01(\v2\x1f.google.cloud.automl.v1.DatasetB\x04\xe2A\x01\x02R\adataset\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"R\n" +
+	"\x14DeleteDatasetRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dautoml.googleapis.com/DatasetR\x04name\"\x9d\x01\n" +
+	"\x11ImportDataRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dautoml.googleapis.com/DatasetR\x04name\x12L\n" +
+	"\finput_config\x18\x03 \x01(\v2#.google.cloud.automl.v1.InputConfigB\x04\xe2A\x01\x02R\vinputConfig\"\xa0\x01\n" +
+	"\x11ExportDataRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dautoml.googleapis.com/DatasetR\x04name\x12O\n" +
+	"\routput_config\x18\x03 \x01(\v2$.google.cloud.automl.v1.OutputConfigB\x04\xe2A\x01\x02R\foutputConfig\"]\n" +
+	"\x18GetAnnotationSpecRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$automl.googleapis.com/AnnotationSpecR\x04name\"\x93\x01\n" +
+	"\x12CreateModelRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x129\n" +
+	"\x05model\x18\x04 \x01(\v2\x1d.google.cloud.automl.v1.ModelB\x04\xe2A\x01\x02R\x05model\"K\n" +
+	"\x0fGetModelRequest\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
+	"\x1bautoml.googleapis.com/ModelR\x04name\"\xab\x01\n" +
+	"\x11ListModelsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x1b\n" +
 	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\x12\x1d\n" +
@@ -1330,34 +1330,34 @@ const file_google_cloud_automl_v1_service_proto_rawDesc = "" +
 	"page_token\x18\x06 \x01(\tR\tpageToken\"q\n" +
 	"\x12ListModelsResponse\x123\n" +
 	"\x05model\x18\x01 \x03(\v2\x1d.google.cloud.automl.v1.ModelR\x05model\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"M\n" +
-	"\x12DeleteModelRequest\x127\n" +
-	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
-	"\x1bautoml.googleapis.com/ModelR\x04name\"\x90\x01\n" +
-	"\x12UpdateModelRequest\x128\n" +
-	"\x05model\x18\x01 \x01(\v2\x1d.google.cloud.automl.v1.ModelB\x03\xe0A\x02R\x05model\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xc4\x03\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"N\n" +
+	"\x12DeleteModelRequest\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
+	"\x1bautoml.googleapis.com/ModelR\x04name\"\x92\x01\n" +
+	"\x12UpdateModelRequest\x129\n" +
+	"\x05model\x18\x01 \x01(\v2\x1d.google.cloud.automl.v1.ModelB\x04\xe2A\x01\x02R\x05model\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
+	"updateMask\"\xc5\x03\n" +
 	"\x12DeployModelRequest\x12\xac\x01\n" +
 	"0image_object_detection_model_deployment_metadata\x18\x02 \x01(\v2C.google.cloud.automl.v1.ImageObjectDetectionModelDeploymentMetadataH\x00R+imageObjectDetectionModelDeploymentMetadata\x12\xa8\x01\n" +
-	".image_classification_model_deployment_metadata\x18\x04 \x01(\v2B.google.cloud.automl.v1.ImageClassificationModelDeploymentMetadataH\x00R*imageClassificationModelDeploymentMetadata\x127\n" +
-	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
+	".image_classification_model_deployment_metadata\x18\x04 \x01(\v2B.google.cloud.automl.v1.ImageClassificationModelDeploymentMetadataH\x00R*imageClassificationModelDeploymentMetadata\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
 	"\x1bautoml.googleapis.com/ModelR\x04nameB\x1b\n" +
-	"\x19model_deployment_metadata\"O\n" +
-	"\x14UndeployModelRequest\x127\n" +
-	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
-	"\x1bautoml.googleapis.com/ModelR\x04name\"\xa8\x01\n" +
-	"\x12ExportModelRequest\x127\n" +
-	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
-	"\x1bautoml.googleapis.com/ModelR\x04name\x12Y\n" +
-	"\routput_config\x18\x03 \x01(\v2/.google.cloud.automl.v1.ModelExportOutputConfigB\x03\xe0A\x02R\foutputConfig\"^\n" +
-	"\x19GetModelEvaluationRequest\x12A\n" +
-	"\x04name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
-	"%automl.googleapis.com/ModelEvaluationR\x04name\"\xb3\x01\n" +
-	"\x1bListModelEvaluationsRequest\x12;\n" +
-	"\x06parent\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
-	"\x1bautoml.googleapis.com/ModelR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x02R\x06filter\x12\x1b\n" +
+	"\x19model_deployment_metadata\"P\n" +
+	"\x14UndeployModelRequest\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
+	"\x1bautoml.googleapis.com/ModelR\x04name\"\xaa\x01\n" +
+	"\x12ExportModelRequest\x128\n" +
+	"\x04name\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
+	"\x1bautoml.googleapis.com/ModelR\x04name\x12Z\n" +
+	"\routput_config\x18\x03 \x01(\v2/.google.cloud.automl.v1.ModelExportOutputConfigB\x04\xe2A\x01\x02R\foutputConfig\"_\n" +
+	"\x19GetModelEvaluationRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe2A\x01\x02\xfaA'\n" +
+	"%automl.googleapis.com/ModelEvaluationR\x04name\"\xb5\x01\n" +
+	"\x1bListModelEvaluationsRequest\x12<\n" +
+	"\x06parent\x18\x01 \x01(\tB$\xe2A\x01\x02\xfaA\x1d\n" +
+	"\x1bautoml.googleapis.com/ModelR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x06filter\x12\x1b\n" +
 	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x06 \x01(\tR\tpageToken\"\x9a\x01\n" +

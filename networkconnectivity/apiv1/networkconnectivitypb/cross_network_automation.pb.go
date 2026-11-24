@@ -3270,38 +3270,38 @@ var File_google_cloud_networkconnectivity_v1_cross_network_automation_proto prot
 
 const file_google_cloud_networkconnectivity_v1_cross_network_automation_proto_rawDesc = "" +
 	"\n" +
-	"Bgoogle/cloud/networkconnectivity/v1/cross_network_automation.proto\x12#google.cloud.networkconnectivity.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/networkconnectivity/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/rpc/error_details.proto\x1a\x17google/rpc/status.proto\"\xcb\x1c\n" +
-	"\x14ServiceConnectionMap\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"Bgoogle/cloud/networkconnectivity/v1/cross_network_automation.proto\x12#google.cloud.networkconnectivity.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/networkconnectivity/v1/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/rpc/error_details.proto\x1a\x17google/rpc/status.proto\"\xdb\x1c\n" +
+	"\x14ServiceConnectionMap\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12]\n" +
 	"\x06labels\x18\x04 \x03(\v2E.google.cloud.networkconnectivity.v1.ServiceConnectionMap.LabelsEntryR\x06labels\x12 \n" +
 	"\vdescription\x18\x05 \x01(\tR\vdescription\x12#\n" +
-	"\rservice_class\x18\a \x01(\tR\fserviceClass\x12/\n" +
-	"\x11service_class_uri\x18\f \x01(\tB\x03\xe0A\x03R\x0fserviceClassUri\x12`\n" +
-	"\x0einfrastructure\x18\b \x01(\x0e23.google.cloud.networkconnectivity.v1.InfrastructureB\x03\xe0A\x03R\x0einfrastructure\x12}\n" +
+	"\rservice_class\x18\a \x01(\tR\fserviceClass\x120\n" +
+	"\x11service_class_uri\x18\f \x01(\tB\x04\xe2A\x01\x03R\x0fserviceClassUri\x12a\n" +
+	"\x0einfrastructure\x18\b \x01(\x0e23.google.cloud.networkconnectivity.v1.InfrastructureB\x04\xe2A\x01\x03R\x0einfrastructure\x12}\n" +
 	"\x14producer_psc_configs\x18\t \x03(\v2K.google.cloud.networkconnectivity.v1.ServiceConnectionMap.ProducerPscConfigR\x12producerPscConfigs\x12}\n" +
 	"\x14consumer_psc_configs\x18\n" +
-	" \x03(\v2K.google.cloud.networkconnectivity.v1.ServiceConnectionMap.ConsumerPscConfigR\x12consumerPscConfigs\x12\x8e\x01\n" +
-	"\x18consumer_psc_connections\x18\v \x03(\v2O.google.cloud.networkconnectivity.v1.ServiceConnectionMap.ConsumerPscConnectionB\x03\xe0A\x03R\x16consumerPscConnections\x12\x14\n" +
-	"\x05token\x18\r \x01(\tR\x05token\x12\x1c\n" +
-	"\x04etag\x18\x0e \x01(\tB\x03\xe0A\x01H\x00R\x04etag\x88\x01\x01\x1ax\n" +
+	" \x03(\v2K.google.cloud.networkconnectivity.v1.ServiceConnectionMap.ConsumerPscConfigR\x12consumerPscConfigs\x12\x8f\x01\n" +
+	"\x18consumer_psc_connections\x18\v \x03(\v2O.google.cloud.networkconnectivity.v1.ServiceConnectionMap.ConsumerPscConnectionB\x04\xe2A\x01\x03R\x16consumerPscConnections\x12\x14\n" +
+	"\x05token\x18\r \x01(\tR\x05token\x12\x1d\n" +
+	"\x04etag\x18\x0e \x01(\tB\x04\xe2A\x01\x01H\x00R\x04etag\x88\x01\x01\x1ax\n" +
 	"\x11ProducerPscConfig\x12c\n" +
 	"\x16service_attachment_uri\x18\x01 \x01(\tB-\xfaA*\n" +
-	"(compute.googleapis.com/ServiceAttachmentR\x14serviceAttachmentUri\x1a\xb0\t\n" +
+	"(compute.googleapis.com/ServiceAttachmentR\x14serviceAttachmentUri\x1a\xb5\t\n" +
 	"\x11ConsumerPscConfig\x12\x18\n" +
 	"\aproject\x18\x01 \x01(\tR\aproject\x12=\n" +
 	"\anetwork\x18\x02 \x01(\tB#\xfaA \n" +
 	"\x1ecompute.googleapis.com/NetworkR\anetwork\x122\n" +
-	"\x15disable_global_access\x18\x03 \x01(\bR\x13disableGlobalAccess\x12l\n" +
-	"\x05state\x18\x04 \x01(\x0e2Q.google.cloud.networkconnectivity.v1.ServiceConnectionMap.ConsumerPscConfig.StateB\x03\xe0A\x03R\x05state\x127\n" +
-	"\x14producer_instance_id\x18\x05 \x01(\tB\x05\xe0A\x05\x18\x01R\x12producerInstanceId\x12\xbd\x01\n" +
-	"!service_attachment_ip_address_map\x18\x06 \x03(\v2n.google.cloud.networkconnectivity.v1.ServiceConnectionMap.ConsumerPscConfig.ServiceAttachmentIpAddressMapEntryB\x03\xe0A\x03R\x1dserviceAttachmentIpAddressMap\x12b\n" +
-	"\x19consumer_instance_project\x18\a \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ecompute.googleapis.com/ProjectR\x17consumerInstanceProject\x12\xac\x01\n" +
-	"\x1aproducer_instance_metadata\x18\b \x03(\v2i.google.cloud.networkconnectivity.v1.ServiceConnectionMap.ConsumerPscConfig.ProducerInstanceMetadataEntryB\x03\xe0A\x05R\x18producerInstanceMetadata\x12R\n" +
+	"\x15disable_global_access\x18\x03 \x01(\bR\x13disableGlobalAccess\x12m\n" +
+	"\x05state\x18\x04 \x01(\x0e2Q.google.cloud.networkconnectivity.v1.ServiceConnectionMap.ConsumerPscConfig.StateB\x04\xe2A\x01\x03R\x05state\x128\n" +
+	"\x14producer_instance_id\x18\x05 \x01(\tB\x06\xe2A\x01\x05\x18\x01R\x12producerInstanceId\x12\xbe\x01\n" +
+	"!service_attachment_ip_address_map\x18\x06 \x03(\v2n.google.cloud.networkconnectivity.v1.ServiceConnectionMap.ConsumerPscConfig.ServiceAttachmentIpAddressMapEntryB\x04\xe2A\x01\x03R\x1dserviceAttachmentIpAddressMap\x12c\n" +
+	"\x19consumer_instance_project\x18\a \x01(\tB'\xe2A\x01\x02\xfaA \n" +
+	"\x1ecompute.googleapis.com/ProjectR\x17consumerInstanceProject\x12\xad\x01\n" +
+	"\x1aproducer_instance_metadata\x18\b \x03(\v2i.google.cloud.networkconnectivity.v1.ServiceConnectionMap.ConsumerPscConfig.ProducerInstanceMetadataEntryB\x04\xe2A\x01\x05R\x18producerInstanceMetadata\x12R\n" +
 	"\n" +
 	"ip_version\x18\t \x01(\x0e2..google.cloud.networkconnectivity.v1.IPVersionH\x00R\tipVersion\x88\x01\x01\x1aP\n" +
 	"\"ServiceAttachmentIpAddressMapEntry\x12\x10\n" +
@@ -3316,7 +3316,7 @@ const file_google_cloud_networkconnectivity_v1_cross_network_automation_proto_ra
 	"\x19CONNECTION_POLICY_MISSING\x10\x02\x12\x18\n" +
 	"\x14POLICY_LIMIT_REACHED\x10\x03\x12-\n" +
 	")CONSUMER_INSTANCE_PROJECT_NOT_ALLOWLISTED\x10\x04B\r\n" +
-	"\v_ip_version\x1a\x90\t\n" +
+	"\v_ip_version\x1a\x94\t\n" +
 	"\x15ConsumerPscConnection\x124\n" +
 	"\x16service_attachment_uri\x18\x01 \x01(\tR\x14serviceAttachmentUri\x12k\n" +
 	"\x05state\x18\x02 \x01(\x0e2U.google.cloud.networkconnectivity.v1.ServiceConnectionMap.ConsumerPscConnection.StateR\x05state\x12\x18\n" +
@@ -3329,12 +3329,12 @@ const file_google_cloud_networkconnectivity_v1_cross_network_automation_proto_ra
 	"\x05error\x18\b \x01(\v2\x12.google.rpc.StatusB\x02\x18\x01R\x05error\x12#\n" +
 	"\rgce_operation\x18\t \x01(\tR\fgceOperation\x12'\n" +
 	"\x0fforwarding_rule\x18\n" +
-	" \x01(\tR\x0eforwardingRule\x129\n" +
+	" \x01(\tR\x0eforwardingRule\x12:\n" +
 	"\n" +
-	"error_info\x18\v \x01(\v2\x15.google.rpc.ErrorInfoB\x03\xe0A\x03R\terrorInfo\x124\n" +
-	"\x13selected_subnetwork\x18\f \x01(\tB\x03\xe0A\x03R\x12selectedSubnetwork\x127\n" +
-	"\x14producer_instance_id\x18\r \x01(\tB\x05\xe0A\x05\x18\x01R\x12producerInstanceId\x12\xb0\x01\n" +
-	"\x1aproducer_instance_metadata\x18\x0e \x03(\v2m.google.cloud.networkconnectivity.v1.ServiceConnectionMap.ConsumerPscConnection.ProducerInstanceMetadataEntryB\x03\xe0A\x05R\x18producerInstanceMetadata\x12R\n" +
+	"error_info\x18\v \x01(\v2\x15.google.rpc.ErrorInfoB\x04\xe2A\x01\x03R\terrorInfo\x125\n" +
+	"\x13selected_subnetwork\x18\f \x01(\tB\x04\xe2A\x01\x03R\x12selectedSubnetwork\x128\n" +
+	"\x14producer_instance_id\x18\r \x01(\tB\x06\xe2A\x01\x05\x18\x01R\x12producerInstanceId\x12\xb1\x01\n" +
+	"\x1aproducer_instance_metadata\x18\x0e \x03(\v2m.google.cloud.networkconnectivity.v1.ServiceConnectionMap.ConsumerPscConnection.ProducerInstanceMetadataEntryB\x04\xe2A\x01\x05R\x18producerInstanceMetadata\x12R\n" +
 	"\n" +
 	"ip_version\x18\x0f \x01(\x0e2..google.cloud.networkconnectivity.v1.IPVersionH\x00R\tipVersion\x88\x01\x01\x1aK\n" +
 	"\x1dProducerInstanceMetadataEntry\x12\x10\n" +
@@ -3355,9 +3355,9 @@ const file_google_cloud_networkconnectivity_v1_cross_network_automation_proto_ra
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x95\x01\xeaA\x91\x01\n" +
 	"7networkconnectivity.googleapis.com/ServiceConnectionMap\x12Vprojects/{project}/locations/{location}/serviceConnectionMaps/{service_connection_map}B\a\n" +
-	"\x05_etag\"\xd4\x01\n" +
-	" ListServiceConnectionMapsRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x05_etag\"\xd5\x01\n" +
+	" ListServiceConnectionMapsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -3367,56 +3367,56 @@ const file_google_cloud_networkconnectivity_v1_cross_network_automation_proto_ra
 	"!ListServiceConnectionMapsResponse\x12q\n" +
 	"\x17service_connection_maps\x18\x01 \x03(\v29.google.cloud.networkconnectivity.v1.ServiceConnectionMapR\x15serviceConnectionMaps\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"u\n" +
-	"\x1eGetServiceConnectionMapRequest\x12S\n" +
-	"\x04name\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\n" +
-	"7networkconnectivity.googleapis.com/ServiceConnectionMapR\x04name\"\xd6\x02\n" +
-	"!CreateServiceConnectionMapRequest\x12W\n" +
-	"\x06parent\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\x127networkconnectivity.googleapis.com/ServiceConnectionMapR\x06parent\x12>\n" +
-	"\x19service_connection_map_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x16serviceConnectionMapId\x12t\n" +
-	"\x16service_connection_map\x18\x03 \x01(\v29.google.cloud.networkconnectivity.v1.ServiceConnectionMapB\x03\xe0A\x02R\x14serviceConnectionMap\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"v\n" +
+	"\x1eGetServiceConnectionMapRequest\x12T\n" +
+	"\x04name\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\n" +
+	"7networkconnectivity.googleapis.com/ServiceConnectionMapR\x04name\"\xda\x02\n" +
+	"!CreateServiceConnectionMapRequest\x12X\n" +
+	"\x06parent\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\x127networkconnectivity.googleapis.com/ServiceConnectionMapR\x06parent\x12?\n" +
+	"\x19service_connection_map_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x16serviceConnectionMapId\x12u\n" +
+	"\x16service_connection_map\x18\x03 \x01(\v29.google.cloud.networkconnectivity.v1.ServiceConnectionMapB\x04\xe2A\x01\x02R\x14serviceConnectionMap\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xff\x01\n" +
-	"!UpdateServiceConnectionMapRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12t\n" +
-	"\x16service_connection_map\x18\x02 \x01(\v29.google.cloud.networkconnectivity.v1.ServiceConnectionMapB\x03\xe0A\x02R\x14serviceConnectionMap\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x82\x02\n" +
+	"!UpdateServiceConnectionMapRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12u\n" +
+	"\x16service_connection_map\x18\x02 \x01(\v29.google.cloud.networkconnectivity.v1.ServiceConnectionMapB\x04\xe2A\x01\x02R\x14serviceConnectionMap\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\xc3\x01\n" +
-	"!DeleteServiceConnectionMapRequest\x12S\n" +
-	"\x04name\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\n" +
-	"7networkconnectivity.googleapis.com/ServiceConnectionMapR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xc6\x01\n" +
+	"!DeleteServiceConnectionMapRequest\x12T\n" +
+	"\x04name\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\n" +
+	"7networkconnectivity.googleapis.com/ServiceConnectionMapR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12\x1c\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\x04etag\x88\x01\x01B\a\n" +
-	"\x05_etag\"\xff\x14\n" +
-	"\x17ServiceConnectionPolicy\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12\x1d\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\x04etag\x88\x01\x01B\a\n" +
+	"\x05_etag\"\x8d\x15\n" +
+	"\x17ServiceConnectionPolicy\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12`\n" +
 	"\x06labels\x18\x04 \x03(\v2H.google.cloud.networkconnectivity.v1.ServiceConnectionPolicy.LabelsEntryR\x06labels\x12 \n" +
 	"\vdescription\x18\x05 \x01(\tR\vdescription\x12=\n" +
 	"\anetwork\x18\x06 \x01(\tB#\xfaA \n" +
 	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12#\n" +
-	"\rservice_class\x18\a \x01(\tR\fserviceClass\x12`\n" +
-	"\x0einfrastructure\x18\b \x01(\x0e23.google.cloud.networkconnectivity.v1.InfrastructureB\x03\xe0A\x03R\x0einfrastructure\x12e\n" +
+	"\rservice_class\x18\a \x01(\tR\fserviceClass\x12a\n" +
+	"\x0einfrastructure\x18\b \x01(\x0e23.google.cloud.networkconnectivity.v1.InfrastructureB\x04\xe2A\x01\x03R\x0einfrastructure\x12e\n" +
 	"\n" +
-	"psc_config\x18\t \x01(\v2F.google.cloud.networkconnectivity.v1.ServiceConnectionPolicy.PscConfigR\tpscConfig\x12x\n" +
+	"psc_config\x18\t \x01(\v2F.google.cloud.networkconnectivity.v1.ServiceConnectionPolicy.PscConfigR\tpscConfig\x12y\n" +
 	"\x0fpsc_connections\x18\n" +
-	" \x03(\v2J.google.cloud.networkconnectivity.v1.ServiceConnectionPolicy.PscConnectionB\x03\xe0A\x03R\x0epscConnections\x12\x1c\n" +
-	"\x04etag\x18\v \x01(\tB\x03\xe0A\x01H\x00R\x04etag\x88\x01\x01\x1a\x80\x04\n" +
+	" \x03(\v2J.google.cloud.networkconnectivity.v1.ServiceConnectionPolicy.PscConnectionB\x04\xe2A\x01\x03R\x0epscConnections\x12\x1d\n" +
+	"\x04etag\x18\v \x01(\tB\x04\xe2A\x01\x01H\x00R\x04etag\x88\x01\x01\x1a\x83\x04\n" +
 	"\tPscConfig\x12H\n" +
 	"\vsubnetworks\x18\x01 \x03(\tB&\xfaA#\n" +
-	"!compute.googleapis.com/SubnetworkR\vsubnetworks\x12\x1e\n" +
-	"\x05limit\x18\x02 \x01(\x03B\x03\xe0A\x01H\x00R\x05limit\x88\x01\x01\x12\xa2\x01\n" +
-	"\x1aproducer_instance_location\x18\x03 \x01(\x0e2_.google.cloud.networkconnectivity.v1.ServiceConnectionPolicy.PscConfig.ProducerInstanceLocationB\x03\xe0A\x02R\x18producerInstanceLocation\x12l\n" +
-	"1allowed_google_producers_resource_hierarchy_level\x18\x04 \x03(\tB\x03\xe0A\x01R,allowedGoogleProducersResourceHierarchyLevel\"l\n" +
+	"!compute.googleapis.com/SubnetworkR\vsubnetworks\x12\x1f\n" +
+	"\x05limit\x18\x02 \x01(\x03B\x04\xe2A\x01\x01H\x00R\x05limit\x88\x01\x01\x12\xa3\x01\n" +
+	"\x1aproducer_instance_location\x18\x03 \x01(\x0e2_.google.cloud.networkconnectivity.v1.ServiceConnectionPolicy.PscConfig.ProducerInstanceLocationB\x04\xe2A\x01\x02R\x18producerInstanceLocation\x12m\n" +
+	"1allowed_google_producers_resource_hierarchy_level\x18\x04 \x03(\tB\x04\xe2A\x01\x01R,allowedGoogleProducersResourceHierarchyLevel\"l\n" +
 	"\x18ProducerInstanceLocation\x12*\n" +
 	"&PRODUCER_INSTANCE_LOCATION_UNSPECIFIED\x10\x00\x12$\n" +
 	" CUSTOM_RESOURCE_HIERARCHY_LEVELS\x10\x01B\b\n" +
-	"\x06_limit\x1a\x94\b\n" +
+	"\x06_limit\x1a\x99\b\n" +
 	"\rPscConnection\x12X\n" +
 	"\x05state\x18\x01 \x01(\x0e2B.google.cloud.networkconnectivity.v1.ServiceConnectionPolicy.StateR\x05state\x128\n" +
 	"\x18consumer_forwarding_rule\x18\x02 \x01(\tR\x16consumerForwardingRule\x12)\n" +
@@ -3426,14 +3426,14 @@ const file_google_cloud_networkconnectivity_v1_cross_network_automation_proto_ra
 	"\x05error\x18\x05 \x01(\v2\x12.google.rpc.StatusB\x02\x18\x01R\x05error\x12#\n" +
 	"\rgce_operation\x18\x06 \x01(\tR\fgceOperation\x126\n" +
 	"\x17consumer_target_project\x18\a \x01(\tR\x15consumerTargetProject\x12*\n" +
-	"\x11psc_connection_id\x18\b \x01(\tR\x0fpscConnectionId\x129\n" +
+	"\x11psc_connection_id\x18\b \x01(\tR\x0fpscConnectionId\x12:\n" +
 	"\n" +
-	"error_info\x18\t \x01(\v2\x15.google.rpc.ErrorInfoB\x03\xe0A\x03R\terrorInfo\x124\n" +
+	"error_info\x18\t \x01(\v2\x15.google.rpc.ErrorInfoB\x04\xe2A\x01\x03R\terrorInfo\x125\n" +
 	"\x13selected_subnetwork\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x12selectedSubnetwork\x127\n" +
-	"\x14producer_instance_id\x18\v \x01(\tB\x05\xe0A\x05\x18\x01R\x12producerInstanceId\x12\xab\x01\n" +
-	"\x1aproducer_instance_metadata\x18\f \x03(\v2h.google.cloud.networkconnectivity.v1.ServiceConnectionPolicy.PscConnection.ProducerInstanceMetadataEntryB\x03\xe0A\x05R\x18producerInstanceMetadata\x12(\n" +
-	"\rservice_class\x18\r \x01(\tB\x03\xe0A\x03R\fserviceClass\x12R\n" +
+	" \x01(\tB\x04\xe2A\x01\x03R\x12selectedSubnetwork\x128\n" +
+	"\x14producer_instance_id\x18\v \x01(\tB\x06\xe2A\x01\x05\x18\x01R\x12producerInstanceId\x12\xac\x01\n" +
+	"\x1aproducer_instance_metadata\x18\f \x03(\v2h.google.cloud.networkconnectivity.v1.ServiceConnectionPolicy.PscConnection.ProducerInstanceMetadataEntryB\x04\xe2A\x01\x05R\x18producerInstanceMetadata\x12)\n" +
+	"\rservice_class\x18\r \x01(\tB\x04\xe2A\x01\x03R\fserviceClass\x12R\n" +
 	"\n" +
 	"ip_version\x18\x0e \x01(\x0e2..google.cloud.networkconnectivity.v1.IPVersionH\x00R\tipVersion\x88\x01\x01\x1aK\n" +
 	"\x1dProducerInstanceMetadataEntry\x12\x10\n" +
@@ -3454,9 +3454,9 @@ const file_google_cloud_networkconnectivity_v1_cross_network_automation_proto_ra
 	"\x10CREATE_REPAIRING\x10\x05\x12\x14\n" +
 	"\x10DELETE_REPAIRING\x10\x06:\x9f\x01\xeaA\x9b\x01\n" +
 	":networkconnectivity.googleapis.com/ServiceConnectionPolicy\x12]projects/{project}/locations/{location}/serviceConnectionPolicies/{service_connection_policy}B\a\n" +
-	"\x05_etag\"\xd8\x01\n" +
-	"$ListServiceConnectionPoliciesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x05_etag\"\xd9\x01\n" +
+	"$ListServiceConnectionPoliciesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -3466,46 +3466,46 @@ const file_google_cloud_networkconnectivity_v1_cross_network_automation_proto_ra
 	"%ListServiceConnectionPoliciesResponse\x12|\n" +
 	"\x1bservice_connection_policies\x18\x01 \x03(\v2<.google.cloud.networkconnectivity.v1.ServiceConnectionPolicyR\x19serviceConnectionPolicies\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"{\n" +
-	"!GetServiceConnectionPolicyRequest\x12V\n" +
-	"\x04name\x18\x01 \x01(\tBB\xe0A\x02\xfaA<\n" +
-	":networkconnectivity.googleapis.com/ServiceConnectionPolicyR\x04name\"\xeb\x02\n" +
-	"$CreateServiceConnectionPolicyRequest\x12Z\n" +
-	"\x06parent\x18\x01 \x01(\tBB\xe0A\x02\xfaA<\x12:networkconnectivity.googleapis.com/ServiceConnectionPolicyR\x06parent\x12D\n" +
-	"\x1cservice_connection_policy_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x19serviceConnectionPolicyId\x12}\n" +
-	"\x19service_connection_policy\x18\x03 \x01(\v2<.google.cloud.networkconnectivity.v1.ServiceConnectionPolicyB\x03\xe0A\x02R\x17serviceConnectionPolicy\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"|\n" +
+	"!GetServiceConnectionPolicyRequest\x12W\n" +
+	"\x04name\x18\x01 \x01(\tBC\xe2A\x01\x02\xfaA<\n" +
+	":networkconnectivity.googleapis.com/ServiceConnectionPolicyR\x04name\"\xef\x02\n" +
+	"$CreateServiceConnectionPolicyRequest\x12[\n" +
+	"\x06parent\x18\x01 \x01(\tBC\xe2A\x01\x02\xfaA<\x12:networkconnectivity.googleapis.com/ServiceConnectionPolicyR\x06parent\x12E\n" +
+	"\x1cservice_connection_policy_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x19serviceConnectionPolicyId\x12~\n" +
+	"\x19service_connection_policy\x18\x03 \x01(\v2<.google.cloud.networkconnectivity.v1.ServiceConnectionPolicyB\x04\xe2A\x01\x02R\x17serviceConnectionPolicy\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\x8b\x02\n" +
-	"$UpdateServiceConnectionPolicyRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12}\n" +
-	"\x19service_connection_policy\x18\x02 \x01(\v2<.google.cloud.networkconnectivity.v1.ServiceConnectionPolicyB\x03\xe0A\x02R\x17serviceConnectionPolicy\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\x8e\x02\n" +
+	"$UpdateServiceConnectionPolicyRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12~\n" +
+	"\x19service_connection_policy\x18\x02 \x01(\v2<.google.cloud.networkconnectivity.v1.ServiceConnectionPolicyB\x04\xe2A\x01\x02R\x17serviceConnectionPolicy\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\xc9\x01\n" +
-	"$DeleteServiceConnectionPolicyRequest\x12V\n" +
-	"\x04name\x18\x01 \x01(\tBB\xe0A\x02\xfaA<\n" +
-	":networkconnectivity.googleapis.com/ServiceConnectionPolicyR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xcc\x01\n" +
+	"$DeleteServiceConnectionPolicyRequest\x12W\n" +
+	"\x04name\x18\x01 \x01(\tBC\xe2A\x01\x02\xfaA<\n" +
+	":networkconnectivity.googleapis.com/ServiceConnectionPolicyR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12\x1c\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\x04etag\x88\x01\x01B\a\n" +
-	"\x05_etag\"\xae\x04\n" +
-	"\fServiceClass\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12(\n" +
-	"\rservice_class\x18\a \x01(\tB\x03\xe0A\x03R\fserviceClass\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12\x1d\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\x04etag\x88\x01\x01B\a\n" +
+	"\x05_etag\"\xb3\x04\n" +
+	"\fServiceClass\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12)\n" +
+	"\rservice_class\x18\a \x01(\tB\x04\xe2A\x01\x03R\fserviceClass\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12U\n" +
 	"\x06labels\x18\x04 \x03(\v2=.google.cloud.networkconnectivity.v1.ServiceClass.LabelsEntryR\x06labels\x12 \n" +
-	"\vdescription\x18\x05 \x01(\tR\vdescription\x12\x1c\n" +
-	"\x04etag\x18\b \x01(\tB\x03\xe0A\x01H\x00R\x04etag\x88\x01\x01\x1a9\n" +
+	"\vdescription\x18\x05 \x01(\tR\vdescription\x12\x1d\n" +
+	"\x04etag\x18\b \x01(\tB\x04\xe2A\x01\x01H\x00R\x04etag\x88\x01\x01\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:|\xeaAy\n" +
 	"/networkconnectivity.googleapis.com/ServiceClass\x12Fprojects/{project}/locations/{location}/serviceClasses/{service_class}B\a\n" +
-	"\x05_etag\"\xcd\x01\n" +
-	"\x19ListServiceClassesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x05_etag\"\xce\x01\n" +
+	"\x19ListServiceClassesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -3515,44 +3515,44 @@ const file_google_cloud_networkconnectivity_v1_cross_network_automation_proto_ra
 	"\x1aListServiceClassesResponse\x12Z\n" +
 	"\x0fservice_classes\x18\x01 \x03(\v21.google.cloud.networkconnectivity.v1.ServiceClassR\x0eserviceClasses\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"e\n" +
-	"\x16GetServiceClassRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/networkconnectivity.googleapis.com/ServiceClassR\x04name\"\xde\x01\n" +
-	"\x19UpdateServiceClassRequest\x12@\n" +
-	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\x12[\n" +
-	"\rservice_class\x18\x02 \x01(\v21.google.cloud.networkconnectivity.v1.ServiceClassB\x03\xe0A\x02R\fserviceClass\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"f\n" +
+	"\x16GetServiceClassRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/networkconnectivity.googleapis.com/ServiceClassR\x04name\"\xe1\x01\n" +
+	"\x19UpdateServiceClassRequest\x12A\n" +
+	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\x12\\\n" +
+	"\rservice_class\x18\x02 \x01(\v21.google.cloud.networkconnectivity.v1.ServiceClassB\x04\xe2A\x01\x02R\fserviceClass\x12#\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\x03\xe0A\x01R\trequestId\"\xb3\x01\n" +
-	"\x19DeleteServiceClassRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/networkconnectivity.googleapis.com/ServiceClassR\x04name\x12\"\n" +
+	"request_id\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xb6\x01\n" +
+	"\x19DeleteServiceClassRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/networkconnectivity.googleapis.com/ServiceClassR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12\x1c\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\x04etag\x88\x01\x01B\a\n" +
-	"\x05_etag\"\xd4\x05\n" +
-	"\x16ServiceConnectionToken\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12\x1d\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\x04etag\x88\x01\x01B\a\n" +
+	"\x05_etag\"\xda\x05\n" +
+	"\x16ServiceConnectionToken\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12_\n" +
 	"\x06labels\x18\x04 \x03(\v2G.google.cloud.networkconnectivity.v1.ServiceConnectionToken.LabelsEntryR\x06labels\x12 \n" +
 	"\vdescription\x18\x05 \x01(\tR\vdescription\x12=\n" +
 	"\anetwork\x18\x06 \x01(\tB#\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12\x19\n" +
-	"\x05token\x18\a \x01(\tB\x03\xe0A\x03R\x05token\x12@\n" +
-	"\vexpire_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\x12\x1c\n" +
-	"\x04etag\x18\t \x01(\tB\x03\xe0A\x01H\x00R\x04etag\x88\x01\x01\x1a9\n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12\x1a\n" +
+	"\x05token\x18\a \x01(\tB\x04\xe2A\x01\x03R\x05token\x12A\n" +
+	"\vexpire_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"expireTime\x12\x1d\n" +
+	"\x04etag\x18\t \x01(\tB\x04\xe2A\x01\x01H\x00R\x04etag\x88\x01\x01\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x9b\x01\xeaA\x97\x01\n" +
 	"9networkconnectivity.googleapis.com/ServiceConnectionToken\x12Zprojects/{project}/locations/{location}/serviceConnectionTokens/{service_connection_token}B\a\n" +
-	"\x05_etag\"\xd6\x01\n" +
-	"\"ListServiceConnectionTokensRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"\x05_etag\"\xd7\x01\n" +
+	"\"ListServiceConnectionTokensRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
@@ -3562,22 +3562,22 @@ const file_google_cloud_networkconnectivity_v1_cross_network_automation_proto_ra
 	"#ListServiceConnectionTokensResponse\x12w\n" +
 	"\x19service_connection_tokens\x18\x01 \x03(\v2;.google.cloud.networkconnectivity.v1.ServiceConnectionTokenR\x17serviceConnectionTokens\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"y\n" +
-	" GetServiceConnectionTokenRequest\x12U\n" +
-	"\x04name\x18\x01 \x01(\tBA\xe0A\x02\xfaA;\n" +
-	"9networkconnectivity.googleapis.com/ServiceConnectionTokenR\x04name\"\xe4\x02\n" +
-	"#CreateServiceConnectionTokenRequest\x12Y\n" +
-	"\x06parent\x18\x01 \x01(\tBA\xe0A\x02\xfaA;\x129networkconnectivity.googleapis.com/ServiceConnectionTokenR\x06parent\x12B\n" +
-	"\x1bservice_connection_token_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x18serviceConnectionTokenId\x12z\n" +
-	"\x18service_connection_token\x18\x03 \x01(\v2;.google.cloud.networkconnectivity.v1.ServiceConnectionTokenB\x03\xe0A\x02R\x16serviceConnectionToken\x12\"\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"z\n" +
+	" GetServiceConnectionTokenRequest\x12V\n" +
+	"\x04name\x18\x01 \x01(\tBB\xe2A\x01\x02\xfaA;\n" +
+	"9networkconnectivity.googleapis.com/ServiceConnectionTokenR\x04name\"\xe8\x02\n" +
+	"#CreateServiceConnectionTokenRequest\x12Z\n" +
+	"\x06parent\x18\x01 \x01(\tBB\xe2A\x01\x02\xfaA;\x129networkconnectivity.googleapis.com/ServiceConnectionTokenR\x06parent\x12C\n" +
+	"\x1bservice_connection_token_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x18serviceConnectionTokenId\x12{\n" +
+	"\x18service_connection_token\x18\x03 \x01(\v2;.google.cloud.networkconnectivity.v1.ServiceConnectionTokenB\x04\xe2A\x01\x02R\x16serviceConnectionToken\x12#\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xc7\x01\n" +
-	"#DeleteServiceConnectionTokenRequest\x12U\n" +
-	"\x04name\x18\x01 \x01(\tBA\xe0A\x02\xfaA;\n" +
-	"9networkconnectivity.googleapis.com/ServiceConnectionTokenR\x04name\x12\"\n" +
+	"request_id\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\trequestId\"\xca\x01\n" +
+	"#DeleteServiceConnectionTokenRequest\x12V\n" +
+	"\x04name\x18\x01 \x01(\tBB\xe2A\x01\x02\xfaA;\n" +
+	"9networkconnectivity.googleapis.com/ServiceConnectionTokenR\x04name\x12#\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12\x1c\n" +
-	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\x04etag\x88\x01\x01B\a\n" +
+	"request_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\trequestId\x12\x1d\n" +
+	"\x04etag\x18\x03 \x01(\tB\x04\xe2A\x01\x01H\x00R\x04etag\x88\x01\x01B\a\n" +
 	"\x05_etag*9\n" +
 	"\x0eInfrastructure\x12\x1e\n" +
 	"\x1aINFRASTRUCTURE_UNSPECIFIED\x10\x00\x12\a\n" +

@@ -322,16 +322,16 @@ var File_google_cloud_networksecurity_v1_tls_proto protoreflect.FileDescriptor
 
 const file_google_cloud_networksecurity_v1_tls_proto_rawDesc = "" +
 	"\n" +
-	")google/cloud/networksecurity/v1/tls.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1fgoogle/api/field_behavior.proto\"2\n" +
-	"\fGrpcEndpoint\x12\"\n" +
+	")google/cloud/networksecurity/v1/tls.proto\x12\x1fgoogle.cloud.networksecurity.v1\x1a\x1fgoogle/api/field_behavior.proto\"3\n" +
+	"\fGrpcEndpoint\x12#\n" +
 	"\n" +
-	"target_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\ttargetUri\"\xf1\x01\n" +
+	"target_uri\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\ttargetUri\"\xf1\x01\n" +
 	"\fValidationCA\x12T\n" +
 	"\rgrpc_endpoint\x18\x02 \x01(\v2-.google.cloud.networksecurity.v1.GrpcEndpointH\x00R\fgrpcEndpoint\x12\x82\x01\n" +
 	"\x1dcertificate_provider_instance\x18\x03 \x01(\v2<.google.cloud.networksecurity.v1.CertificateProviderInstanceH\x00R\x1bcertificateProviderInstanceB\x06\n" +
-	"\x04type\"K\n" +
-	"\x1bCertificateProviderInstance\x12,\n" +
-	"\x0fplugin_instance\x18\x01 \x01(\tB\x03\xe0A\x02R\x0epluginInstance\"\xf8\x01\n" +
+	"\x04type\"L\n" +
+	"\x1bCertificateProviderInstance\x12-\n" +
+	"\x0fplugin_instance\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x0epluginInstance\"\xf8\x01\n" +
 	"\x13CertificateProvider\x12T\n" +
 	"\rgrpc_endpoint\x18\x02 \x01(\v2-.google.cloud.networksecurity.v1.GrpcEndpointH\x00R\fgrpcEndpoint\x12\x82\x01\n" +
 	"\x1dcertificate_provider_instance\x18\x03 \x01(\v2<.google.cloud.networksecurity.v1.CertificateProviderInstanceH\x00R\x1bcertificateProviderInstanceB\x06\n" +

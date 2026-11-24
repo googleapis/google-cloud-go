@@ -402,29 +402,29 @@ var File_google_cloud_retail_v2alpha_generative_question_service_proto protorefl
 
 const file_google_cloud_retail_v2alpha_generative_question_service_proto_rawDesc = "" +
 	"\n" +
-	"=google/cloud/retail/v2alpha/generative_question_service.proto\x12\x1bgoogle.cloud.retail.v2alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/retail/v2alpha/generative_question.proto\x1a google/protobuf/field_mask.proto\"\x85\x02\n" +
-	"-UpdateGenerativeQuestionsFeatureConfigRequest\x12\x91\x01\n" +
-	"#generative_questions_feature_config\x18\x02 \x01(\v2=.google.cloud.retail.v2alpha.GenerativeQuestionsFeatureConfigB\x03\xe0A\x02R generativeQuestionsFeatureConfig\x12@\n" +
-	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"m\n" +
-	"*GetGenerativeQuestionsFeatureConfigRequest\x12?\n" +
-	"\acatalog\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dretail.googleapis.com/CatalogR\acatalog\"e\n" +
-	"$ListGenerativeQuestionConfigsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"=google/cloud/retail/v2alpha/generative_question_service.proto\x12\x1bgoogle.cloud.retail.v2alpha\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/retail/v2alpha/generative_question.proto\x1a google/protobuf/field_mask.proto\"\x87\x02\n" +
+	"-UpdateGenerativeQuestionsFeatureConfigRequest\x12\x92\x01\n" +
+	"#generative_questions_feature_config\x18\x02 \x01(\v2=.google.cloud.retail.v2alpha.GenerativeQuestionsFeatureConfigB\x04\xe2A\x01\x02R generativeQuestionsFeatureConfig\x12A\n" +
+	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"n\n" +
+	"*GetGenerativeQuestionsFeatureConfigRequest\x12@\n" +
+	"\acatalog\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
+	"\x1dretail.googleapis.com/CatalogR\acatalog\"f\n" +
+	"$ListGenerativeQuestionConfigsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x02\xfaA\x1f\n" +
 	"\x1dretail.googleapis.com/CatalogR\x06parent\"\x9e\x01\n" +
 	"%ListGenerativeQuestionConfigsResponse\x12u\n" +
-	"\x1bgenerative_question_configs\x18\x01 \x03(\v25.google.cloud.retail.v2alpha.GenerativeQuestionConfigR\x19generativeQuestionConfigs\"\xe3\x01\n" +
-	"%UpdateGenerativeQuestionConfigRequest\x12x\n" +
-	"\x1agenerative_question_config\x18\x03 \x01(\v25.google.cloud.retail.v2alpha.GenerativeQuestionConfigB\x03\xe0A\x02R\x18generativeQuestionConfig\x12@\n" +
-	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xd1\x01\n" +
-	"+BatchUpdateGenerativeQuestionConfigsRequest\x12=\n" +
-	"\x06parent\x18\x01 \x01(\tB%\xe0A\x01\xfaA\x1f\n" +
-	"\x1dretail.googleapis.com/CatalogR\x06parent\x12c\n" +
-	"\brequests\x18\x02 \x03(\v2B.google.cloud.retail.v2alpha.UpdateGenerativeQuestionConfigRequestB\x03\xe0A\x02R\brequests\"\xaa\x01\n" +
-	",BatchUpdateGenerativeQuestionConfigsResponse\x12z\n" +
-	"\x1bgenerative_question_configs\x18\x01 \x03(\v25.google.cloud.retail.v2alpha.GenerativeQuestionConfigB\x03\xe0A\x01R\x19generativeQuestionConfigs2\x86\r\n" +
+	"\x1bgenerative_question_configs\x18\x01 \x03(\v25.google.cloud.retail.v2alpha.GenerativeQuestionConfigR\x19generativeQuestionConfigs\"\xe5\x01\n" +
+	"%UpdateGenerativeQuestionConfigRequest\x12y\n" +
+	"\x1agenerative_question_config\x18\x03 \x01(\v25.google.cloud.retail.v2alpha.GenerativeQuestionConfigB\x04\xe2A\x01\x02R\x18generativeQuestionConfig\x12A\n" +
+	"\vupdate_mask\x18\x04 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\xd3\x01\n" +
+	"+BatchUpdateGenerativeQuestionConfigsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe2A\x01\x01\xfaA\x1f\n" +
+	"\x1dretail.googleapis.com/CatalogR\x06parent\x12d\n" +
+	"\brequests\x18\x02 \x03(\v2B.google.cloud.retail.v2alpha.UpdateGenerativeQuestionConfigRequestB\x04\xe2A\x01\x02R\brequests\"\xab\x01\n" +
+	",BatchUpdateGenerativeQuestionConfigsResponse\x12{\n" +
+	"\x1bgenerative_question_configs\x18\x01 \x03(\v25.google.cloud.retail.v2alpha.GenerativeQuestionConfigB\x04\xe2A\x01\x01R\x19generativeQuestionConfigs2\x86\r\n" +
 	"\x19GenerativeQuestionService\x12\x88\x03\n" +
 	"&UpdateGenerativeQuestionsFeatureConfig\x12J.google.cloud.retail.v2alpha.UpdateGenerativeQuestionsFeatureConfigRequest\x1a=.google.cloud.retail.v2alpha.GenerativeQuestionsFeatureConfig\"\xd2\x01\xdaA/generative_questions_feature_config,update_mask\x82\xd3\xe4\x93\x02\x99\x01:#generative_questions_feature_config2r/v2alpha/{generative_questions_feature_config.catalog=projects/*/locations/*/catalogs/*}/generativeQuestionFeature\x12\x8f\x02\n" +
 	"#GetGenerativeQuestionsFeatureConfig\x12G.google.cloud.retail.v2alpha.GetGenerativeQuestionsFeatureConfigRequest\x1a=.google.cloud.retail.v2alpha.GenerativeQuestionsFeatureConfig\"`\xdaA\acatalog\x82\xd3\xe4\x93\x02P\x12N/v2alpha/{catalog=projects/*/locations/*/catalogs/*}/generativeQuestionFeature\x12\x80\x02\n" +

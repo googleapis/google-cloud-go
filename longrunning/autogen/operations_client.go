@@ -217,6 +217,16 @@ func (c *OperationsClient) setGoogleClientInfo(keyval ...string) {
 	c.internalClient.setGoogleClientInfo(keyval...)
 }
 
+// SetGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+//
+// SetGoogleClientInfo is not concurrency-safe and should only be invoked
+// sequentially before concurrent operations begin.
+func (c *OperationsClient) SetGoogleClientInfo(keyval ...string) {
+	c.setGoogleClientInfo(keyval...)
+}
+
 // Connection returns a connection to the API service.
 //
 // Deprecated: Connections are now pooled so this method does not always
@@ -356,6 +366,41 @@ func NewOperationsClient(ctx context.Context, opts ...option.ClientOption) (*Ope
 		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.WaitOperation = append(client.CallOptions.WaitOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "longrunning",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/longrunning/autogen",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "longrunning.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.WaitOperation = append(client.CallOptions.WaitOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "longrunning",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/longrunning/autogen",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "longrunning.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.WaitOperation = append(client.CallOptions.WaitOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -458,6 +503,41 @@ func NewOperationsRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
 		callOpts.WaitOperation = append(callOpts.WaitOperation, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "longrunning",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/longrunning/autogen",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "longrunning.googleapis.com",
+			}),
+		)
+
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.WaitOperation = append(callOpts.WaitOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "longrunning",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/longrunning/autogen",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "longrunning.googleapis.com",
+			}),
+		)
+
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.WaitOperation = append(callOpts.WaitOperation, gax.WithClientLogging(logging))
 	}
 
 	return &OperationsClient{internalClient: c, CallOptions: callOpts}, nil
@@ -642,6 +722,11 @@ func (c *operationsRESTClient) ListOperations(ctx context.Context, req *longrunn
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 		params := url.Values{}
@@ -714,6 +799,11 @@ func (c *operationsRESTClient) GetOperation(ctx context.Context, req *longrunnin
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -766,6 +856,11 @@ func (c *operationsRESTClient) DeleteOperation(ctx context.Context, req *longrun
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
@@ -814,6 +909,11 @@ func (c *operationsRESTClient) CancelOperation(ctx context.Context, req *longrun
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())

@@ -541,38 +541,38 @@ var File_google_cloud_recommendationengine_v1beta1_user_event_service_proto prot
 
 const file_google_cloud_recommendationengine_v1beta1_user_event_service_proto_rawDesc = "" +
 	"\n" +
-	"Bgoogle/cloud/recommendationengine/v1beta1/user_event_service.proto\x12)google.cloud.recommendationengine.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1a6google/cloud/recommendationengine/v1beta1/import.proto\x1a:google/cloud/recommendationengine/v1beta1/user_event.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/api/client.proto\"\xa0\x01\n" +
-	"\x16PurgeUserEventsRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".recommendationengine.googleapis.com/EventStoreR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x02R\x06filter\x12\x19\n" +
-	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\"}\n" +
+	"Bgoogle/cloud/recommendationengine/v1beta1/user_event_service.proto\x12)google.cloud.recommendationengine.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1a6google/cloud/recommendationengine/v1beta1/import.proto\x1a:google/cloud/recommendationengine/v1beta1/user_event.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/api/client.proto\"\xa3\x01\n" +
+	"\x16PurgeUserEventsRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".recommendationengine.googleapis.com/EventStoreR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06filter\x12\x1a\n" +
+	"\x05force\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x05force\"}\n" +
 	"\x17PurgeUserEventsMetadata\x12%\n" +
 	"\x0eoperation_name\x18\x01 \x01(\tR\roperationName\x12;\n" +
 	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\"\xad\x01\n" +
 	"\x17PurgeUserEventsResponse\x12.\n" +
 	"\x13purged_events_count\x18\x01 \x01(\x03R\x11purgedEventsCount\x12b\n" +
-	"\x12user_events_sample\x18\x02 \x03(\v24.google.cloud.recommendationengine.v1beta1.UserEventR\x10userEventsSample\"\xc1\x01\n" +
-	"\x15WriteUserEventRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".recommendationengine.googleapis.com/EventStoreR\x06parent\x12X\n" +
+	"\x12user_events_sample\x18\x02 \x03(\v24.google.cloud.recommendationengine.v1beta1.UserEventR\x10userEventsSample\"\xc3\x01\n" +
+	"\x15WriteUserEventRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".recommendationengine.googleapis.com/EventStoreR\x06parent\x12Y\n" +
 	"\n" +
-	"user_event\x18\x02 \x01(\v24.google.cloud.recommendationengine.v1beta1.UserEventB\x03\xe0A\x02R\tuserEvent\"\xbb\x01\n" +
-	"\x17CollectUserEventRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".recommendationengine.googleapis.com/EventStoreR\x06parent\x12\"\n" +
+	"user_event\x18\x02 \x01(\v24.google.cloud.recommendationengine.v1beta1.UserEventB\x04\xe2A\x01\x02R\tuserEvent\"\xbf\x01\n" +
+	"\x17CollectUserEventRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".recommendationengine.googleapis.com/EventStoreR\x06parent\x12#\n" +
 	"\n" +
-	"user_event\x18\x02 \x01(\tB\x03\xe0A\x02R\tuserEvent\x12\x15\n" +
-	"\x03uri\x18\x03 \x01(\tB\x03\xe0A\x01R\x03uri\x12\x15\n" +
-	"\x03ets\x18\x04 \x01(\x03B\x03\xe0A\x01R\x03ets\"\xca\x01\n" +
-	"\x15ListUserEventsRequest\x12N\n" +
-	"\x06parent\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
-	".recommendationengine.googleapis.com/EventStoreR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"user_event\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tuserEvent\x12\x16\n" +
+	"\x03uri\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x03uri\x12\x16\n" +
+	"\x03ets\x18\x04 \x01(\x03B\x04\xe2A\x01\x01R\x03ets\"\xce\x01\n" +
+	"\x15ListUserEventsRequest\x12O\n" +
+	"\x06parent\x18\x01 \x01(\tB7\xe2A\x01\x02\xfaA0\n" +
+	".recommendationengine.googleapis.com/EventStoreR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x97\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x97\x01\n" +
 	"\x16ListUserEventsResponse\x12U\n" +
 	"\vuser_events\x18\x01 \x03(\v24.google.cloud.recommendationengine.v1beta1.UserEventR\n" +
 	"userEvents\x12&\n" +

@@ -329,6 +329,24 @@ func TestAWSv4Signature_PostRequestWithSecurityToken(t *testing.T) {
 	testRequestSigner(t, requestSignerWithToken, input, output)
 }
 
+func TestAWSv4Signature_PostRequestFipsWithSecurityToken(t *testing.T) {
+	input, _ := http.NewRequest("POST", "https://sts-fips.us-east-2.amazonaws.com?Action=GetCallerIdentity&Version=2011-06-15", nil)
+
+	output, _ := http.NewRequest("POST", "https://sts-fips.us-east-2.amazonaws.com?Action=GetCallerIdentity&Version=2011-06-15", nil)
+	output.Header = http.Header{
+		"Authorization":        []string{"AWS4-HMAC-SHA256 Credential=" + accessKeyID + "/20200811/us-east-2/sts/aws4_request, SignedHeaders=host;x-amz-date;x-amz-security-token, Signature=4b3ce0f92bb2746ac7b437e6fd623393ed06de7569987a80b9a1081fc10aeca5"},
+		"Host":                 []string{"sts-fips.us-east-2.amazonaws.com"},
+		"X-Amz-Date":           []string{"20200811T065522Z"},
+		"X-Amz-Security-Token": []string{sessionToken},
+	}
+
+	oldNow := Now
+	defer func() { Now = oldNow }()
+	Now = setTime(secondDefaultTime)
+
+	testRequestSigner(t, requestSignerWithToken, input, output)
+}
+
 func TestAWSv4Signature_PostRequestWithSecurityTokenAndAdditionalHeaders(t *testing.T) {
 	requestParams := "{\"KeySchema\":[{\"KeyType\":\"HASH\",\"AttributeName\":\"Id\"}],\"TableName\":\"TestTable\",\"AttributeDefinitions\":[{\"AttributeName\":\"Id\",\"AttributeType\":\"S\"}],\"ProvisionedThroughput\":{\"WriteCapacityUnits\":5,\"ReadCapacityUnits\":5}}"
 	input, _ := http.NewRequest("POST", "https://dynamodb.us-east-2.amazonaws.com/", strings.NewReader(requestParams))

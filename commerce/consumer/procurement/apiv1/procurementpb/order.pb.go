@@ -857,49 +857,49 @@ var File_google_cloud_commerce_consumer_procurement_v1_order_proto protoreflect.
 
 const file_google_cloud_commerce_consumer_procurement_v1_order_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/commerce/consumer/procurement/v1/order.proto\x12-google.cloud.commerce.consumer.procurement.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9b\x04\n" +
-	"\x05Order\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12&\n" +
+	"9google/cloud/commerce/consumer/procurement/v1/order.proto\x12-google.cloud.commerce.consumer.procurement.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa1\x04\n" +
+	"\x05Order\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12'\n" +
 	"\fdisplay_name\x18\n" +
-	" \x01(\tB\x03\xe0A\x02R\vdisplayName\x12[\n" +
+	" \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12\\\n" +
 	"\n" +
-	"line_items\x18\x06 \x03(\v27.google.cloud.commerce.consumer.procurement.v1.LineItemB\x03\xe0A\x03R\tlineItems\x12n\n" +
-	"\x14cancelled_line_items\x18\a \x03(\v27.google.cloud.commerce.consumer.procurement.v1.LineItemB\x03\xe0A\x03R\x12cancelledLineItems\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"line_items\x18\x06 \x03(\v27.google.cloud.commerce.consumer.procurement.v1.LineItemB\x04\xe2A\x01\x03R\tlineItems\x12o\n" +
+	"\x14cancelled_line_items\x18\a \x03(\v27.google.cloud.commerce.consumer.procurement.v1.LineItemB\x04\xe2A\x01\x03R\x12cancelledLineItems\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12\x12\n" +
 	"\x04etag\x18\v \x01(\tR\x04etag:l\xeaAi\n" +
-	"5cloudcommerceconsumerprocurement.googleapis.com/Order\x120billingAccounts/{billing_account}/orders/{order}\"\xef\x02\n" +
-	"\bLineItem\x12%\n" +
-	"\fline_item_id\x18\x01 \x01(\tB\x03\xe0A\x03R\n" +
-	"lineItemId\x12f\n" +
-	"\x0eline_item_info\x18\x02 \x01(\v2;.google.cloud.commerce.consumer.procurement.v1.LineItemInfoB\x03\xe0A\x03R\flineItemInfo\x12i\n" +
-	"\x0epending_change\x18\x03 \x01(\v2=.google.cloud.commerce.consumer.procurement.v1.LineItemChangeB\x03\xe0A\x03R\rpendingChange\x12i\n" +
-	"\x0echange_history\x18\x04 \x03(\v2=.google.cloud.commerce.consumer.procurement.v1.LineItemChangeB\x03\xe0A\x03R\rchangeHistory\"\xee\x06\n" +
-	"\x0eLineItemChange\x12 \n" +
-	"\tchange_id\x18\x01 \x01(\tB\x03\xe0A\x03R\bchangeId\x12g\n" +
-	"\vchange_type\x18\x02 \x01(\x0e2A.google.cloud.commerce.consumer.procurement.v1.LineItemChangeTypeB\x03\xe0A\x02R\n" +
-	"changeType\x12m\n" +
-	"\x12old_line_item_info\x18\x03 \x01(\v2;.google.cloud.commerce.consumer.procurement.v1.LineItemInfoB\x03\xe0A\x03R\x0foldLineItemInfo\x12h\n" +
-	"\x12new_line_item_info\x18\x04 \x01(\v2;.google.cloud.commerce.consumer.procurement.v1.LineItemInfoR\x0fnewLineItemInfo\x12j\n" +
-	"\fchange_state\x18\x05 \x01(\x0e2B.google.cloud.commerce.consumer.procurement.v1.LineItemChangeStateB\x03\xe0A\x03R\vchangeState\x12&\n" +
-	"\fstate_reason\x18\x06 \x01(\tB\x03\xe0A\x03R\vstateReason\x12\x8a\x01\n" +
+	"5cloudcommerceconsumerprocurement.googleapis.com/Order\x120billingAccounts/{billing_account}/orders/{order}\"\xf3\x02\n" +
+	"\bLineItem\x12&\n" +
+	"\fline_item_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\n" +
+	"lineItemId\x12g\n" +
+	"\x0eline_item_info\x18\x02 \x01(\v2;.google.cloud.commerce.consumer.procurement.v1.LineItemInfoB\x04\xe2A\x01\x03R\flineItemInfo\x12j\n" +
+	"\x0epending_change\x18\x03 \x01(\v2=.google.cloud.commerce.consumer.procurement.v1.LineItemChangeB\x04\xe2A\x01\x03R\rpendingChange\x12j\n" +
+	"\x0echange_history\x18\x04 \x03(\v2=.google.cloud.commerce.consumer.procurement.v1.LineItemChangeB\x04\xe2A\x01\x03R\rchangeHistory\"\xf7\x06\n" +
+	"\x0eLineItemChange\x12!\n" +
+	"\tchange_id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\bchangeId\x12h\n" +
+	"\vchange_type\x18\x02 \x01(\x0e2A.google.cloud.commerce.consumer.procurement.v1.LineItemChangeTypeB\x04\xe2A\x01\x02R\n" +
+	"changeType\x12n\n" +
+	"\x12old_line_item_info\x18\x03 \x01(\v2;.google.cloud.commerce.consumer.procurement.v1.LineItemInfoB\x04\xe2A\x01\x03R\x0foldLineItemInfo\x12h\n" +
+	"\x12new_line_item_info\x18\x04 \x01(\v2;.google.cloud.commerce.consumer.procurement.v1.LineItemInfoR\x0fnewLineItemInfo\x12k\n" +
+	"\fchange_state\x18\x05 \x01(\x0e2B.google.cloud.commerce.consumer.procurement.v1.LineItemChangeStateB\x04\xe2A\x01\x03R\vchangeState\x12'\n" +
+	"\fstate_reason\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\vstateReason\x12\x8b\x01\n" +
 	"\x18change_state_reason_type\x18\n" +
-	" \x01(\x0e2L.google.cloud.commerce.consumer.procurement.v1.LineItemChangeStateReasonTypeB\x03\xe0A\x03R\x15changeStateReasonType\x12S\n" +
-	"\x15change_effective_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x13changeEffectiveTime\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\"\x9c\x02\n" +
-	"\fLineItemInfo\x12G\n" +
-	"\x05offer\x18\r \x01(\tB1\xe0A\x01\xfaA+\n" +
-	")commerceoffercatalog.googleapis.com/OfferR\x05offer\x12]\n" +
+	" \x01(\x0e2L.google.cloud.commerce.consumer.procurement.v1.LineItemChangeStateReasonTypeB\x04\xe2A\x01\x03R\x15changeStateReasonType\x12T\n" +
+	"\x15change_effective_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\x13changeEffectiveTime\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"updateTime\"\x9f\x02\n" +
+	"\fLineItemInfo\x12H\n" +
+	"\x05offer\x18\r \x01(\tB2\xe2A\x01\x01\xfaA+\n" +
+	")commerceoffercatalog.googleapis.com/OfferR\x05offer\x12^\n" +
 	"\n" +
-	"parameters\x18\t \x03(\v28.google.cloud.commerce.consumer.procurement.v1.ParameterB\x03\xe0A\x01R\n" +
-	"parameters\x12d\n" +
+	"parameters\x18\t \x03(\v28.google.cloud.commerce.consumer.procurement.v1.ParameterB\x04\xe2A\x01\x01R\n" +
+	"parameters\x12e\n" +
 	"\fsubscription\x18\n" +
-	" \x01(\v2;.google.cloud.commerce.consumer.procurement.v1.SubscriptionB\x03\xe0A\x03R\fsubscription\"\xf3\x01\n" +
+	" \x01(\v2;.google.cloud.commerce.consumer.procurement.v1.SubscriptionB\x04\xe2A\x01\x03R\fsubscription\"\xf3\x01\n" +
 	"\tParameter\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12T\n" +
 	"\x05value\x18\x02 \x01(\v2>.google.cloud.commerce.consumer.procurement.v1.Parameter.ValueR\x05value\x1a|\n" +

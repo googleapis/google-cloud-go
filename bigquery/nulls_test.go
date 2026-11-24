@@ -31,7 +31,7 @@ var (
 
 func TestNullsJSON(t *testing.T) {
 	for _, test := range []struct {
-		in   interface{}
+		in   any
 		want string
 	}{
 		{&NullInt64{Valid: true, Int64: 3}, `3`},
@@ -137,7 +137,6 @@ func TestNullFloat64JSON(t *testing.T) {
 			marshalled:   `"NaN"`,
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 

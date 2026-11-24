@@ -274,7 +274,7 @@ type SingleTenantHsmInstance struct {
 	// Optional. Immutable. Indicates whether key portability is enabled for the
 	// [SingleTenantHsmInstance][google.cloud.kms.v1.SingleTenantHsmInstance].
 	// This can only be set at creation time. Key portability features are
-	// disabled by default and not yet available in GA.
+	// disabled by default.
 	KeyPortabilityEnabled bool `protobuf:"varint,8,opt,name=key_portability_enabled,json=keyPortabilityEnabled,proto3" json:"key_portability_enabled,omitempty"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
@@ -430,6 +430,7 @@ type SingleTenantHsmInstanceProposal struct {
 	//	*SingleTenantHsmInstanceProposal_AddQuorumMember_
 	//	*SingleTenantHsmInstanceProposal_RemoveQuorumMember_
 	//	*SingleTenantHsmInstanceProposal_RefreshSingleTenantHsmInstance_
+	//	*SingleTenantHsmInstanceProposal_UpgradeKeyTrust_
 	Operation     isSingleTenantHsmInstanceProposal_Operation `protobuf_oneof:"operation"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -627,6 +628,15 @@ func (x *SingleTenantHsmInstanceProposal) GetRefreshSingleTenantHsmInstance() *S
 	return nil
 }
 
+func (x *SingleTenantHsmInstanceProposal) GetUpgradeKeyTrust() *SingleTenantHsmInstanceProposal_UpgradeKeyTrust {
+	if x != nil {
+		if x, ok := x.Operation.(*SingleTenantHsmInstanceProposal_UpgradeKeyTrust_); ok {
+			return x.UpgradeKeyTrust
+		}
+	}
+	return nil
+}
+
 type isSingleTenantHsmInstanceProposal_ApprovalParameters interface {
 	isSingleTenantHsmInstanceProposal_ApprovalParameters()
 }
@@ -766,6 +776,14 @@ type SingleTenantHsmInstanceProposal_RefreshSingleTenantHsmInstance_ struct {
 	RefreshSingleTenantHsmInstance *SingleTenantHsmInstanceProposal_RefreshSingleTenantHsmInstance `protobuf:"bytes,17,opt,name=refresh_single_tenant_hsm_instance,json=refreshSingleTenantHsmInstance,proto3,oneof"`
 }
 
+type SingleTenantHsmInstanceProposal_UpgradeKeyTrust_ struct {
+	// Promotes a key with the AES_WRAPPING purpose to a trusted wrapping key.
+	// The key must be in the
+	// [ACTIVE][CryptoKeyVersion.CryptoKeyVersionState.ACTIVE] state to perform
+	// this operation.
+	UpgradeKeyTrust *SingleTenantHsmInstanceProposal_UpgradeKeyTrust `protobuf:"bytes,18,opt,name=upgrade_key_trust,json=upgradeKeyTrust,proto3,oneof"`
+}
+
 func (*SingleTenantHsmInstanceProposal_RegisterTwoFactorAuthKeys_) isSingleTenantHsmInstanceProposal_Operation() {
 }
 
@@ -785,6 +803,9 @@ func (*SingleTenantHsmInstanceProposal_RemoveQuorumMember_) isSingleTenantHsmIns
 }
 
 func (*SingleTenantHsmInstanceProposal_RefreshSingleTenantHsmInstance_) isSingleTenantHsmInstanceProposal_Operation() {
+}
+
+func (*SingleTenantHsmInstanceProposal_UpgradeKeyTrust_) isSingleTenantHsmInstanceProposal_Operation() {
 }
 
 // A challenge to be signed by a 2FA key.
@@ -2493,6 +2514,66 @@ func (*SingleTenantHsmInstanceProposal_RefreshSingleTenantHsmInstance) Descripto
 	return file_google_cloud_kms_v1_hsm_management_proto_rawDescGZIP(), []int{1, 8}
 }
 
+// Promotes a key with the AES_WRAPPING purpose to a trusted wrapping key.
+// The key must be in the
+// [ACTIVE][CryptoKeyVersion.CryptoKeyVersionState.ACTIVE] state to perform
+// this operation.
+type SingleTenantHsmInstanceProposal_UpgradeKeyTrust struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The [name][google.cloud.kms.v1.CryptoKeyVersion.name] of the
+	// [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] to promote.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Required. The public key associated with the 2FA key that will sign the
+	// login nonce for this operation.
+	TwoFactorPublicKeyPem string `protobuf:"bytes,2,opt,name=two_factor_public_key_pem,json=twoFactorPublicKeyPem,proto3" json:"two_factor_public_key_pem,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *SingleTenantHsmInstanceProposal_UpgradeKeyTrust) Reset() {
+	*x = SingleTenantHsmInstanceProposal_UpgradeKeyTrust{}
+	mi := &file_google_cloud_kms_v1_hsm_management_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SingleTenantHsmInstanceProposal_UpgradeKeyTrust) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SingleTenantHsmInstanceProposal_UpgradeKeyTrust) ProtoMessage() {}
+
+func (x *SingleTenantHsmInstanceProposal_UpgradeKeyTrust) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_kms_v1_hsm_management_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SingleTenantHsmInstanceProposal_UpgradeKeyTrust.ProtoReflect.Descriptor instead.
+func (*SingleTenantHsmInstanceProposal_UpgradeKeyTrust) Descriptor() ([]byte, []int) {
+	return file_google_cloud_kms_v1_hsm_management_proto_rawDescGZIP(), []int{1, 9}
+}
+
+func (x *SingleTenantHsmInstanceProposal_UpgradeKeyTrust) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *SingleTenantHsmInstanceProposal_UpgradeKeyTrust) GetTwoFactorPublicKeyPem() string {
+	if x != nil {
+		return x.TwoFactorPublicKeyPem
+	}
+	return ""
+}
+
 // The reply to
 // [QuorumParameters][google.cloud.kms.v1.SingleTenantHsmInstanceProposal.QuorumParameters]
 // for approving the proposal.
@@ -2510,7 +2591,7 @@ type ApproveSingleTenantHsmInstanceProposalRequest_QuorumReply struct {
 
 func (x *ApproveSingleTenantHsmInstanceProposalRequest_QuorumReply) Reset() {
 	*x = ApproveSingleTenantHsmInstanceProposalRequest_QuorumReply{}
-	mi := &file_google_cloud_kms_v1_hsm_management_proto_msgTypes[30]
+	mi := &file_google_cloud_kms_v1_hsm_management_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2522,7 +2603,7 @@ func (x *ApproveSingleTenantHsmInstanceProposalRequest_QuorumReply) String() str
 func (*ApproveSingleTenantHsmInstanceProposalRequest_QuorumReply) ProtoMessage() {}
 
 func (x *ApproveSingleTenantHsmInstanceProposalRequest_QuorumReply) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_hsm_management_proto_msgTypes[30]
+	mi := &file_google_cloud_kms_v1_hsm_management_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2565,7 +2646,7 @@ type ApproveSingleTenantHsmInstanceProposalRequest_RequiredActionQuorumReply str
 
 func (x *ApproveSingleTenantHsmInstanceProposalRequest_RequiredActionQuorumReply) Reset() {
 	*x = ApproveSingleTenantHsmInstanceProposalRequest_RequiredActionQuorumReply{}
-	mi := &file_google_cloud_kms_v1_hsm_management_proto_msgTypes[31]
+	mi := &file_google_cloud_kms_v1_hsm_management_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2577,7 +2658,7 @@ func (x *ApproveSingleTenantHsmInstanceProposalRequest_RequiredActionQuorumReply
 func (*ApproveSingleTenantHsmInstanceProposalRequest_RequiredActionQuorumReply) ProtoMessage() {}
 
 func (x *ApproveSingleTenantHsmInstanceProposalRequest_RequiredActionQuorumReply) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_hsm_management_proto_msgTypes[31]
+	mi := &file_google_cloud_kms_v1_hsm_management_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2611,24 +2692,24 @@ var File_google_cloud_kms_v1_hsm_management_proto protoreflect.FileDescriptor
 
 const file_google_cloud_kms_v1_hsm_management_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/kms/v1/hsm_management.proto\x12\x13google.cloud.kms.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8c\t\n" +
-	"\x17SingleTenantHsmInstance\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12M\n" +
-	"\x05state\x18\x03 \x01(\x0e22.google.cloud.kms.v1.SingleTenantHsmInstance.StateB\x03\xe0A\x03R\x05state\x12]\n" +
-	"\vquorum_auth\x18\x04 \x01(\v27.google.cloud.kms.v1.SingleTenantHsmInstance.QuorumAuthB\x03\xe0A\x02R\n" +
-	"quorumAuth\x12@\n" +
-	"\vdelete_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12k\n" +
-	"\"unrefreshed_duration_until_disable\x18\x06 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\x1funrefreshedDurationUntilDisable\x12B\n" +
-	"\fdisable_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vdisableTime\x12>\n" +
-	"\x17key_portability_enabled\x18\b \x01(\bB\x06\xe0A\x01\xe0A\x05R\x15keyPortabilityEnabled\x1a\xc1\x01\n" +
+	"(google/cloud/kms/v1/hsm_management.proto\x12\x13google.cloud.kms.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x95\t\n" +
+	"\x17SingleTenantHsmInstance\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12N\n" +
+	"\x05state\x18\x03 \x01(\x0e22.google.cloud.kms.v1.SingleTenantHsmInstance.StateB\x04\xe2A\x01\x03R\x05state\x12^\n" +
+	"\vquorum_auth\x18\x04 \x01(\v27.google.cloud.kms.v1.SingleTenantHsmInstance.QuorumAuthB\x04\xe2A\x01\x02R\n" +
+	"quorumAuth\x12A\n" +
+	"\vdelete_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12l\n" +
+	"\"unrefreshed_duration_until_disable\x18\x06 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\x1funrefreshedDurationUntilDisable\x12C\n" +
+	"\fdisable_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\vdisableTime\x12=\n" +
+	"\x17key_portability_enabled\x18\b \x01(\bB\x05\xe2A\x02\x01\x05R\x15keyPortabilityEnabled\x1a\xc4\x01\n" +
 	"\n" +
-	"QuorumAuth\x125\n" +
-	"\x14total_approver_count\x18\x01 \x01(\x05B\x03\xe0A\x02R\x12totalApproverCount\x12;\n" +
-	"\x17required_approver_count\x18\x02 \x01(\x05B\x03\xe0A\x03R\x15requiredApproverCount\x12?\n" +
-	"\x1atwo_factor_public_key_pems\x18\x03 \x03(\tB\x03\xe0A\x03R\x16twoFactorPublicKeyPems\"\xa6\x01\n" +
+	"QuorumAuth\x126\n" +
+	"\x14total_approver_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x02R\x12totalApproverCount\x12<\n" +
+	"\x17required_approver_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\x15requiredApproverCount\x12@\n" +
+	"\x1atwo_factor_public_key_pems\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\x16twoFactorPublicKeyPems\"\xa6\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12(\n" +
@@ -2641,22 +2722,22 @@ const file_google_cloud_kms_v1_hsm_management_proto_rawDesc = "" +
 	"\aDELETED\x10\a\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\b:\xc7\x01\xeaA\xc3\x01\n" +
-	"/cloudkms.googleapis.com/SingleTenantHsmInstance\x12]projects/{project}/locations/{location}/singleTenantHsmInstances/{single_tenant_hsm_instance}*\x18singleTenantHsmInstances2\x17singleTenantHsmInstance\"\xda\x19\n" +
-	"\x1fSingleTenantHsmInstanceProposal\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
-	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12U\n" +
-	"\x05state\x18\x03 \x01(\x0e2:.google.cloud.kms.v1.SingleTenantHsmInstanceProposal.StateB\x03\xe0A\x03R\x05state\x12*\n" +
-	"\x0efailure_reason\x18\x04 \x01(\tB\x03\xe0A\x03R\rfailureReason\x12y\n" +
-	"\x11quorum_parameters\x18\x05 \x01(\v2E.google.cloud.kms.v1.SingleTenantHsmInstanceProposal.QuorumParametersB\x03\xe0A\x03H\x00R\x10quorumParameters\x12\xa5\x01\n" +
-	"!required_action_quorum_parameters\x18\x0e \x01(\v2S.google.cloud.kms.v1.SingleTenantHsmInstanceProposal.RequiredActionQuorumParametersB\x03\xe0A\x03H\x00R\x1erequiredActionQuorumParameters\x12=\n" +
+	"/cloudkms.googleapis.com/SingleTenantHsmInstance\x12]projects/{project}/locations/{location}/singleTenantHsmInstances/{single_tenant_hsm_instance}*\x18singleTenantHsmInstances2\x17singleTenantHsmInstance\"\xcf\x1b\n" +
+	"\x1fSingleTenantHsmInstanceProposal\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12A\n" +
+	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12V\n" +
+	"\x05state\x18\x03 \x01(\x0e2:.google.cloud.kms.v1.SingleTenantHsmInstanceProposal.StateB\x04\xe2A\x01\x03R\x05state\x12+\n" +
+	"\x0efailure_reason\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\rfailureReason\x12z\n" +
+	"\x11quorum_parameters\x18\x05 \x01(\v2E.google.cloud.kms.v1.SingleTenantHsmInstanceProposal.QuorumParametersB\x04\xe2A\x01\x03H\x00R\x10quorumParameters\x12\xa6\x01\n" +
+	"!required_action_quorum_parameters\x18\x0e \x01(\v2S.google.cloud.kms.v1.SingleTenantHsmInstanceProposal.RequiredActionQuorumParametersB\x04\xe2A\x01\x03H\x00R\x1erequiredActionQuorumParameters\x12=\n" +
 	"\vexpire_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampH\x01R\n" +
-	"expireTime\x122\n" +
-	"\x03ttl\x18\a \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x04H\x01R\x03ttl\x12@\n" +
-	"\vdelete_time\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"deleteTime\x12>\n" +
+	"expireTime\x123\n" +
+	"\x03ttl\x18\a \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x04H\x01R\x03ttl\x12A\n" +
+	"\vdelete_time\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"deleteTime\x12?\n" +
 	"\n" +
-	"purge_time\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tpurgeTime\x12\x92\x01\n" +
+	"purge_time\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tpurgeTime\x12\x92\x01\n" +
 	"\x1dregister_two_factor_auth_keys\x18\b \x01(\v2N.google.cloud.kms.v1.SingleTenantHsmInstanceProposal.RegisterTwoFactorAuthKeysH\x02R\x19registerTwoFactorAuthKeys\x12\xa1\x01\n" +
 	"\"disable_single_tenant_hsm_instance\x18\t \x01(\v2S.google.cloud.kms.v1.SingleTenantHsmInstanceProposal.DisableSingleTenantHsmInstanceH\x02R\x1edisableSingleTenantHsmInstance\x12\x9e\x01\n" +
 	"!enable_single_tenant_hsm_instance\x18\n" +
@@ -2664,29 +2745,33 @@ const file_google_cloud_kms_v1_hsm_management_proto_rawDesc = "" +
 	"!delete_single_tenant_hsm_instance\x18\v \x01(\v2R.google.cloud.kms.v1.SingleTenantHsmInstanceProposal.DeleteSingleTenantHsmInstanceH\x02R\x1ddeleteSingleTenantHsmInstance\x12r\n" +
 	"\x11add_quorum_member\x18\f \x01(\v2D.google.cloud.kms.v1.SingleTenantHsmInstanceProposal.AddQuorumMemberH\x02R\x0faddQuorumMember\x12{\n" +
 	"\x14remove_quorum_member\x18\r \x01(\v2G.google.cloud.kms.v1.SingleTenantHsmInstanceProposal.RemoveQuorumMemberH\x02R\x12removeQuorumMember\x12\xa1\x01\n" +
-	"\"refresh_single_tenant_hsm_instance\x18\x11 \x01(\v2S.google.cloud.kms.v1.SingleTenantHsmInstanceProposal.RefreshSingleTenantHsmInstanceH\x02R\x1erefreshSingleTenantHsmInstance\x1a\xe6\x01\n" +
-	"\x10QuorumParameters\x12;\n" +
-	"\x17required_approver_count\x18\x01 \x01(\x05B\x03\xe0A\x03R\x15requiredApproverCount\x12C\n" +
+	"\"refresh_single_tenant_hsm_instance\x18\x11 \x01(\v2S.google.cloud.kms.v1.SingleTenantHsmInstanceProposal.RefreshSingleTenantHsmInstanceH\x02R\x1erefreshSingleTenantHsmInstance\x12r\n" +
+	"\x11upgrade_key_trust\x18\x12 \x01(\v2D.google.cloud.kms.v1.SingleTenantHsmInstanceProposal.UpgradeKeyTrustH\x02R\x0fupgradeKeyTrust\x1a\xe9\x01\n" +
+	"\x10QuorumParameters\x12<\n" +
+	"\x17required_approver_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x03R\x15requiredApproverCount\x12D\n" +
 	"\n" +
-	"challenges\x18\x02 \x03(\v2\x1e.google.cloud.kms.v1.ChallengeB\x03\xe0A\x03R\n" +
-	"challenges\x12P\n" +
-	"#approved_two_factor_public_key_pems\x18\x03 \x03(\tB\x03\xe0A\x03R\x1eapprovedTwoFactorPublicKeyPems\x1a\xd7\x02\n" +
-	"\x1eRequiredActionQuorumParameters\x12T\n" +
-	"\x13required_challenges\x18\x01 \x03(\v2\x1e.google.cloud.kms.v1.ChallengeB\x03\xe0A\x03R\x12requiredChallenges\x12;\n" +
-	"\x17required_approver_count\x18\x02 \x01(\x05B\x03\xe0A\x03R\x15requiredApproverCount\x12P\n" +
-	"\x11quorum_challenges\x18\x03 \x03(\v2\x1e.google.cloud.kms.v1.ChallengeB\x03\xe0A\x03R\x10quorumChallenges\x12P\n" +
-	"#approved_two_factor_public_key_pems\x18\x04 \x03(\tB\x03\xe0A\x03R\x1eapprovedTwoFactorPublicKeyPems\x1a\x99\x01\n" +
-	"\x19RegisterTwoFactorAuthKeys\x12;\n" +
-	"\x17required_approver_count\x18\x01 \x01(\x05B\x03\xe0A\x02R\x15requiredApproverCount\x12?\n" +
-	"\x1atwo_factor_public_key_pems\x18\x02 \x03(\tB\x03\xe0A\x02R\x16twoFactorPublicKeyPems\x1a \n" +
+	"challenges\x18\x02 \x03(\v2\x1e.google.cloud.kms.v1.ChallengeB\x04\xe2A\x01\x03R\n" +
+	"challenges\x12Q\n" +
+	"#approved_two_factor_public_key_pems\x18\x03 \x03(\tB\x04\xe2A\x01\x03R\x1eapprovedTwoFactorPublicKeyPems\x1a\xdb\x02\n" +
+	"\x1eRequiredActionQuorumParameters\x12U\n" +
+	"\x13required_challenges\x18\x01 \x03(\v2\x1e.google.cloud.kms.v1.ChallengeB\x04\xe2A\x01\x03R\x12requiredChallenges\x12<\n" +
+	"\x17required_approver_count\x18\x02 \x01(\x05B\x04\xe2A\x01\x03R\x15requiredApproverCount\x12Q\n" +
+	"\x11quorum_challenges\x18\x03 \x03(\v2\x1e.google.cloud.kms.v1.ChallengeB\x04\xe2A\x01\x03R\x10quorumChallenges\x12Q\n" +
+	"#approved_two_factor_public_key_pems\x18\x04 \x03(\tB\x04\xe2A\x01\x03R\x1eapprovedTwoFactorPublicKeyPems\x1a\x9b\x01\n" +
+	"\x19RegisterTwoFactorAuthKeys\x12<\n" +
+	"\x17required_approver_count\x18\x01 \x01(\x05B\x04\xe2A\x01\x02R\x15requiredApproverCount\x12@\n" +
+	"\x1atwo_factor_public_key_pems\x18\x02 \x03(\tB\x04\xe2A\x01\x02R\x16twoFactorPublicKeyPems\x1a \n" +
 	"\x1eDisableSingleTenantHsmInstance\x1a\x1f\n" +
 	"\x1dEnableSingleTenantHsmInstance\x1a\x1f\n" +
-	"\x1dDeleteSingleTenantHsmInstance\x1aP\n" +
-	"\x0fAddQuorumMember\x12=\n" +
-	"\x19two_factor_public_key_pem\x18\x01 \x01(\tB\x03\xe0A\x02R\x15twoFactorPublicKeyPem\x1aS\n" +
-	"\x12RemoveQuorumMember\x12=\n" +
-	"\x19two_factor_public_key_pem\x18\x01 \x01(\tB\x03\xe0A\x02R\x15twoFactorPublicKeyPem\x1a \n" +
-	"\x1eRefreshSingleTenantHsmInstance\"|\n" +
+	"\x1dDeleteSingleTenantHsmInstance\x1aQ\n" +
+	"\x0fAddQuorumMember\x12>\n" +
+	"\x19two_factor_public_key_pem\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x15twoFactorPublicKeyPem\x1aT\n" +
+	"\x12RemoveQuorumMember\x12>\n" +
+	"\x19two_factor_public_key_pem\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x15twoFactorPublicKeyPem\x1a \n" +
+	"\x1eRefreshSingleTenantHsmInstance\x1ak\n" +
+	"\x0fUpgradeKeyTrust\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12>\n" +
+	"\x19two_factor_public_key_pem\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x15twoFactorPublicKeyPem\"|\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\v\n" +
@@ -2701,78 +2786,78 @@ const file_google_cloud_kms_v1_hsm_management_proto_rawDesc = "" +
 	"\x13approval_parametersB\f\n" +
 	"\n" +
 	"expirationB\v\n" +
-	"\toperation\"Y\n" +
-	"\tChallenge\x12!\n" +
-	"\tchallenge\x18\x01 \x01(\fB\x03\xe0A\x03R\tchallenge\x12)\n" +
-	"\x0epublic_key_pem\x18\x02 \x01(\tB\x03\xe0A\x03R\fpublicKeyPem\"k\n" +
-	"\x0eChallengeReply\x12.\n" +
-	"\x10signed_challenge\x18\x01 \x01(\fB\x03\xe0A\x02R\x0fsignedChallenge\x12)\n" +
-	"\x0epublic_key_pem\x18\x02 \x01(\tB\x03\xe0A\x02R\fpublicKeyPem\"\x93\x02\n" +
-	"#ListSingleTenantHsmInstancesRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\toperation\"[\n" +
+	"\tChallenge\x12\"\n" +
+	"\tchallenge\x18\x01 \x01(\fB\x04\xe2A\x01\x03R\tchallenge\x12*\n" +
+	"\x0epublic_key_pem\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\fpublicKeyPem\"m\n" +
+	"\x0eChallengeReply\x12/\n" +
+	"\x10signed_challenge\x18\x01 \x01(\fB\x04\xe2A\x01\x02R\x0fsignedChallenge\x12*\n" +
+	"\x0epublic_key_pem\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\fpublicKeyPem\"\x99\x02\n" +
+	"#ListSingleTenantHsmInstancesRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\x12&\n" +
-	"\fshow_deleted\x18\x06 \x01(\bB\x03\xe0A\x01R\vshowDeleted\"\xda\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12'\n" +
+	"\fshow_deleted\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\vshowDeleted\"\xda\x01\n" +
 	"$ListSingleTenantHsmInstancesResponse\x12k\n" +
 	"\x1bsingle_tenant_hsm_instances\x18\x01 \x03(\v2,.google.cloud.kms.v1.SingleTenantHsmInstanceR\x18singleTenantHsmInstances\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
 	"\n" +
-	"total_size\x18\x03 \x01(\x05R\ttotalSize\"p\n" +
-	"!GetSingleTenantHsmInstanceRequest\x12K\n" +
-	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/cloudkms.googleapis.com/SingleTenantHsmInstanceR\x04name\"\xa0\x02\n" +
-	"$CreateSingleTenantHsmInstanceRequest\x12A\n" +
-	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x06parent\x12E\n" +
-	"\x1dsingle_tenant_hsm_instance_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x19singleTenantHsmInstanceId\x12n\n" +
-	"\x1asingle_tenant_hsm_instance\x18\x03 \x01(\v2,.google.cloud.kms.v1.SingleTenantHsmInstanceB\x03\xe0A\x02R\x17singleTenantHsmInstance\"'\n" +
-	"%CreateSingleTenantHsmInstanceMetadata\"\xe1\x02\n" +
-	",CreateSingleTenantHsmInstanceProposalRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/cloudkms.googleapis.com/SingleTenantHsmInstanceR\x06parent\x12V\n" +
-	"&single_tenant_hsm_instance_proposal_id\x18\x02 \x01(\tB\x03\xe0A\x01R!singleTenantHsmInstanceProposalId\x12\x87\x01\n" +
-	"#single_tenant_hsm_instance_proposal\x18\x03 \x01(\v24.google.cloud.kms.v1.SingleTenantHsmInstanceProposalB\x03\xe0A\x02R\x1fsingleTenantHsmInstanceProposal\"/\n" +
-	"-CreateSingleTenantHsmInstanceProposalMetadata\"\x80\x01\n" +
-	")GetSingleTenantHsmInstanceProposalRequest\x12S\n" +
-	"\x04name\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\n" +
-	"7cloudkms.googleapis.com/SingleTenantHsmInstanceProposalR\x04name\"\x89\x06\n" +
-	"-ApproveSingleTenantHsmInstanceProposalRequest\x12S\n" +
-	"\x04name\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\n" +
-	"7cloudkms.googleapis.com/SingleTenantHsmInstanceProposalR\x04name\x12x\n" +
-	"\fquorum_reply\x18\x02 \x01(\v2N.google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest.QuorumReplyB\x03\xe0A\x02H\x00R\vquorumReply\x12\xa4\x01\n" +
-	"\x1crequired_action_quorum_reply\x18\x03 \x01(\v2\\.google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest.RequiredActionQuorumReplyB\x03\xe0A\x02H\x00R\x19requiredActionQuorumReply\x1ad\n" +
-	"\vQuorumReply\x12U\n" +
-	"\x11challenge_replies\x18\x01 \x03(\v2#.google.cloud.kms.v1.ChallengeReplyB\x03\xe0A\x02R\x10challengeReplies\x1a\xe7\x01\n" +
-	"\x19RequiredActionQuorumReply\x12f\n" +
-	"\x1arequired_challenge_replies\x18\x01 \x03(\v2#.google.cloud.kms.v1.ChallengeReplyB\x03\xe0A\x02R\x18requiredChallengeReplies\x12b\n" +
-	"\x18quorum_challenge_replies\x18\x02 \x03(\v2#.google.cloud.kms.v1.ChallengeReplyB\x03\xe0A\x02R\x16quorumChallengeRepliesB\x12\n" +
+	"total_size\x18\x03 \x01(\x05R\ttotalSize\"q\n" +
+	"!GetSingleTenantHsmInstanceRequest\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/cloudkms.googleapis.com/SingleTenantHsmInstanceR\x04name\"\xa3\x02\n" +
+	"$CreateSingleTenantHsmInstanceRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe2A\x01\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12F\n" +
+	"\x1dsingle_tenant_hsm_instance_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x19singleTenantHsmInstanceId\x12o\n" +
+	"\x1asingle_tenant_hsm_instance\x18\x03 \x01(\v2,.google.cloud.kms.v1.SingleTenantHsmInstanceB\x04\xe2A\x01\x02R\x17singleTenantHsmInstance\"'\n" +
+	"%CreateSingleTenantHsmInstanceMetadata\"\xe4\x02\n" +
+	",CreateSingleTenantHsmInstanceProposalRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/cloudkms.googleapis.com/SingleTenantHsmInstanceR\x06parent\x12W\n" +
+	"&single_tenant_hsm_instance_proposal_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R!singleTenantHsmInstanceProposalId\x12\x88\x01\n" +
+	"#single_tenant_hsm_instance_proposal\x18\x03 \x01(\v24.google.cloud.kms.v1.SingleTenantHsmInstanceProposalB\x04\xe2A\x01\x02R\x1fsingleTenantHsmInstanceProposal\"/\n" +
+	"-CreateSingleTenantHsmInstanceProposalMetadata\"\x81\x01\n" +
+	")GetSingleTenantHsmInstanceProposalRequest\x12T\n" +
+	"\x04name\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\n" +
+	"7cloudkms.googleapis.com/SingleTenantHsmInstanceProposalR\x04name\"\x8f\x06\n" +
+	"-ApproveSingleTenantHsmInstanceProposalRequest\x12T\n" +
+	"\x04name\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\n" +
+	"7cloudkms.googleapis.com/SingleTenantHsmInstanceProposalR\x04name\x12y\n" +
+	"\fquorum_reply\x18\x02 \x01(\v2N.google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest.QuorumReplyB\x04\xe2A\x01\x02H\x00R\vquorumReply\x12\xa5\x01\n" +
+	"\x1crequired_action_quorum_reply\x18\x03 \x01(\v2\\.google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest.RequiredActionQuorumReplyB\x04\xe2A\x01\x02H\x00R\x19requiredActionQuorumReply\x1ae\n" +
+	"\vQuorumReply\x12V\n" +
+	"\x11challenge_replies\x18\x01 \x03(\v2#.google.cloud.kms.v1.ChallengeReplyB\x04\xe2A\x01\x02R\x10challengeReplies\x1a\xe9\x01\n" +
+	"\x19RequiredActionQuorumReply\x12g\n" +
+	"\x1arequired_challenge_replies\x18\x01 \x03(\v2#.google.cloud.kms.v1.ChallengeReplyB\x04\xe2A\x01\x02R\x18requiredChallengeReplies\x12c\n" +
+	"\x18quorum_challenge_replies\x18\x02 \x03(\v2#.google.cloud.kms.v1.ChallengeReplyB\x04\xe2A\x01\x02R\x16quorumChallengeRepliesB\x12\n" +
 	"\x10approval_payload\"0\n" +
-	".ApproveSingleTenantHsmInstanceProposalResponse\"\x84\x01\n" +
-	"-ExecuteSingleTenantHsmInstanceProposalRequest\x12S\n" +
-	"\x04name\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\n" +
+	".ApproveSingleTenantHsmInstanceProposalResponse\"\x85\x01\n" +
+	"-ExecuteSingleTenantHsmInstanceProposalRequest\x12T\n" +
+	"\x04name\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\n" +
 	"7cloudkms.googleapis.com/SingleTenantHsmInstanceProposalR\x04name\"0\n" +
 	".ExecuteSingleTenantHsmInstanceProposalResponse\"0\n" +
-	".ExecuteSingleTenantHsmInstanceProposalMetadata\"\xa9\x02\n" +
-	"+ListSingleTenantHsmInstanceProposalsRequest\x12O\n" +
-	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/cloudkms.googleapis.com/SingleTenantHsmInstanceR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	".ExecuteSingleTenantHsmInstanceProposalMetadata\"\xaf\x02\n" +
+	"+ListSingleTenantHsmInstanceProposalsRequest\x12P\n" +
+	"\x06parent\x18\x01 \x01(\tB8\xe2A\x01\x02\xfaA1\n" +
+	"/cloudkms.googleapis.com/SingleTenantHsmInstanceR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\x12&\n" +
-	"\fshow_deleted\x18\x06 \x01(\bB\x03\xe0A\x01R\vshowDeleted\"\xfc\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\x12\x1f\n" +
+	"\border_by\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\aorderBy\x12'\n" +
+	"\fshow_deleted\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\vshowDeleted\"\xfc\x01\n" +
 	",ListSingleTenantHsmInstanceProposalsResponse\x12\x84\x01\n" +
 	"$single_tenant_hsm_instance_proposals\x18\x01 \x03(\v24.google.cloud.kms.v1.SingleTenantHsmInstanceProposalR singleTenantHsmInstanceProposals\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
 	"\n" +
-	"total_size\x18\x03 \x01(\x05R\ttotalSize\"\x83\x01\n" +
-	",DeleteSingleTenantHsmInstanceProposalRequest\x12S\n" +
-	"\x04name\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\n" +
+	"total_size\x18\x03 \x01(\x05R\ttotalSize\"\x84\x01\n" +
+	",DeleteSingleTenantHsmInstanceProposalRequest\x12T\n" +
+	"\x04name\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\n" +
 	"7cloudkms.googleapis.com/SingleTenantHsmInstanceProposalR\x04name2\xa3\x15\n" +
 	"\rHsmManagement\x12\xe2\x01\n" +
 	"\x1cListSingleTenantHsmInstances\x128.google.cloud.kms.v1.ListSingleTenantHsmInstancesRequest\x1a9.google.cloud.kms.v1.ListSingleTenantHsmInstancesResponse\"M\xdaA\x06parent\x82\xd3\xe4\x93\x02>\x12</v1/{parent=projects/*/locations/*}/singleTenantHsmInstances\x12\xcf\x01\n" +
@@ -2802,7 +2887,7 @@ func file_google_cloud_kms_v1_hsm_management_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_kms_v1_hsm_management_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_google_cloud_kms_v1_hsm_management_proto_msgTypes = make([]protoimpl.MessageInfo, 32)
+var file_google_cloud_kms_v1_hsm_management_proto_msgTypes = make([]protoimpl.MessageInfo, 33)
 var file_google_cloud_kms_v1_hsm_management_proto_goTypes = []any{
 	(SingleTenantHsmInstance_State)(0),                                              // 0: google.cloud.kms.v1.SingleTenantHsmInstance.State
 	(SingleTenantHsmInstanceProposal_State)(0),                                      // 1: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.State
@@ -2836,28 +2921,29 @@ var file_google_cloud_kms_v1_hsm_management_proto_goTypes = []any{
 	(*SingleTenantHsmInstanceProposal_AddQuorumMember)(nil),                         // 29: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.AddQuorumMember
 	(*SingleTenantHsmInstanceProposal_RemoveQuorumMember)(nil),                      // 30: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.RemoveQuorumMember
 	(*SingleTenantHsmInstanceProposal_RefreshSingleTenantHsmInstance)(nil),          // 31: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.RefreshSingleTenantHsmInstance
-	(*ApproveSingleTenantHsmInstanceProposalRequest_QuorumReply)(nil),               // 32: google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest.QuorumReply
-	(*ApproveSingleTenantHsmInstanceProposalRequest_RequiredActionQuorumReply)(nil), // 33: google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest.RequiredActionQuorumReply
-	(*timestamppb.Timestamp)(nil),                                                   // 34: google.protobuf.Timestamp
-	(*durationpb.Duration)(nil),                                                     // 35: google.protobuf.Duration
-	(*longrunningpb.Operation)(nil),                                                 // 36: google.longrunning.Operation
-	(*emptypb.Empty)(nil),                                                           // 37: google.protobuf.Empty
+	(*SingleTenantHsmInstanceProposal_UpgradeKeyTrust)(nil),                         // 32: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.UpgradeKeyTrust
+	(*ApproveSingleTenantHsmInstanceProposalRequest_QuorumReply)(nil),               // 33: google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest.QuorumReply
+	(*ApproveSingleTenantHsmInstanceProposalRequest_RequiredActionQuorumReply)(nil), // 34: google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest.RequiredActionQuorumReply
+	(*timestamppb.Timestamp)(nil),                                                   // 35: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),                                                     // 36: google.protobuf.Duration
+	(*longrunningpb.Operation)(nil),                                                 // 37: google.longrunning.Operation
+	(*emptypb.Empty)(nil),                                                           // 38: google.protobuf.Empty
 }
 var file_google_cloud_kms_v1_hsm_management_proto_depIdxs = []int32{
-	34, // 0: google.cloud.kms.v1.SingleTenantHsmInstance.create_time:type_name -> google.protobuf.Timestamp
+	35, // 0: google.cloud.kms.v1.SingleTenantHsmInstance.create_time:type_name -> google.protobuf.Timestamp
 	0,  // 1: google.cloud.kms.v1.SingleTenantHsmInstance.state:type_name -> google.cloud.kms.v1.SingleTenantHsmInstance.State
 	22, // 2: google.cloud.kms.v1.SingleTenantHsmInstance.quorum_auth:type_name -> google.cloud.kms.v1.SingleTenantHsmInstance.QuorumAuth
-	34, // 3: google.cloud.kms.v1.SingleTenantHsmInstance.delete_time:type_name -> google.protobuf.Timestamp
-	35, // 4: google.cloud.kms.v1.SingleTenantHsmInstance.unrefreshed_duration_until_disable:type_name -> google.protobuf.Duration
-	34, // 5: google.cloud.kms.v1.SingleTenantHsmInstance.disable_time:type_name -> google.protobuf.Timestamp
-	34, // 6: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.create_time:type_name -> google.protobuf.Timestamp
+	35, // 3: google.cloud.kms.v1.SingleTenantHsmInstance.delete_time:type_name -> google.protobuf.Timestamp
+	36, // 4: google.cloud.kms.v1.SingleTenantHsmInstance.unrefreshed_duration_until_disable:type_name -> google.protobuf.Duration
+	35, // 5: google.cloud.kms.v1.SingleTenantHsmInstance.disable_time:type_name -> google.protobuf.Timestamp
+	35, // 6: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.create_time:type_name -> google.protobuf.Timestamp
 	1,  // 7: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.state:type_name -> google.cloud.kms.v1.SingleTenantHsmInstanceProposal.State
 	23, // 8: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.quorum_parameters:type_name -> google.cloud.kms.v1.SingleTenantHsmInstanceProposal.QuorumParameters
 	24, // 9: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.required_action_quorum_parameters:type_name -> google.cloud.kms.v1.SingleTenantHsmInstanceProposal.RequiredActionQuorumParameters
-	34, // 10: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.expire_time:type_name -> google.protobuf.Timestamp
-	35, // 11: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.ttl:type_name -> google.protobuf.Duration
-	34, // 12: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.delete_time:type_name -> google.protobuf.Timestamp
-	34, // 13: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.purge_time:type_name -> google.protobuf.Timestamp
+	35, // 10: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.expire_time:type_name -> google.protobuf.Timestamp
+	36, // 11: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.ttl:type_name -> google.protobuf.Duration
+	35, // 12: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.delete_time:type_name -> google.protobuf.Timestamp
+	35, // 13: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.purge_time:type_name -> google.protobuf.Timestamp
 	25, // 14: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.register_two_factor_auth_keys:type_name -> google.cloud.kms.v1.SingleTenantHsmInstanceProposal.RegisterTwoFactorAuthKeys
 	26, // 15: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.disable_single_tenant_hsm_instance:type_name -> google.cloud.kms.v1.SingleTenantHsmInstanceProposal.DisableSingleTenantHsmInstance
 	27, // 16: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.enable_single_tenant_hsm_instance:type_name -> google.cloud.kms.v1.SingleTenantHsmInstanceProposal.EnableSingleTenantHsmInstance
@@ -2865,41 +2951,42 @@ var file_google_cloud_kms_v1_hsm_management_proto_depIdxs = []int32{
 	29, // 18: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.add_quorum_member:type_name -> google.cloud.kms.v1.SingleTenantHsmInstanceProposal.AddQuorumMember
 	30, // 19: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.remove_quorum_member:type_name -> google.cloud.kms.v1.SingleTenantHsmInstanceProposal.RemoveQuorumMember
 	31, // 20: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.refresh_single_tenant_hsm_instance:type_name -> google.cloud.kms.v1.SingleTenantHsmInstanceProposal.RefreshSingleTenantHsmInstance
-	2,  // 21: google.cloud.kms.v1.ListSingleTenantHsmInstancesResponse.single_tenant_hsm_instances:type_name -> google.cloud.kms.v1.SingleTenantHsmInstance
-	2,  // 22: google.cloud.kms.v1.CreateSingleTenantHsmInstanceRequest.single_tenant_hsm_instance:type_name -> google.cloud.kms.v1.SingleTenantHsmInstance
-	3,  // 23: google.cloud.kms.v1.CreateSingleTenantHsmInstanceProposalRequest.single_tenant_hsm_instance_proposal:type_name -> google.cloud.kms.v1.SingleTenantHsmInstanceProposal
-	32, // 24: google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest.quorum_reply:type_name -> google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest.QuorumReply
-	33, // 25: google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest.required_action_quorum_reply:type_name -> google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest.RequiredActionQuorumReply
-	3,  // 26: google.cloud.kms.v1.ListSingleTenantHsmInstanceProposalsResponse.single_tenant_hsm_instance_proposals:type_name -> google.cloud.kms.v1.SingleTenantHsmInstanceProposal
-	4,  // 27: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.QuorumParameters.challenges:type_name -> google.cloud.kms.v1.Challenge
-	4,  // 28: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.RequiredActionQuorumParameters.required_challenges:type_name -> google.cloud.kms.v1.Challenge
-	4,  // 29: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.RequiredActionQuorumParameters.quorum_challenges:type_name -> google.cloud.kms.v1.Challenge
-	5,  // 30: google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest.QuorumReply.challenge_replies:type_name -> google.cloud.kms.v1.ChallengeReply
-	5,  // 31: google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest.RequiredActionQuorumReply.required_challenge_replies:type_name -> google.cloud.kms.v1.ChallengeReply
-	5,  // 32: google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest.RequiredActionQuorumReply.quorum_challenge_replies:type_name -> google.cloud.kms.v1.ChallengeReply
-	6,  // 33: google.cloud.kms.v1.HsmManagement.ListSingleTenantHsmInstances:input_type -> google.cloud.kms.v1.ListSingleTenantHsmInstancesRequest
-	8,  // 34: google.cloud.kms.v1.HsmManagement.GetSingleTenantHsmInstance:input_type -> google.cloud.kms.v1.GetSingleTenantHsmInstanceRequest
-	9,  // 35: google.cloud.kms.v1.HsmManagement.CreateSingleTenantHsmInstance:input_type -> google.cloud.kms.v1.CreateSingleTenantHsmInstanceRequest
-	11, // 36: google.cloud.kms.v1.HsmManagement.CreateSingleTenantHsmInstanceProposal:input_type -> google.cloud.kms.v1.CreateSingleTenantHsmInstanceProposalRequest
-	14, // 37: google.cloud.kms.v1.HsmManagement.ApproveSingleTenantHsmInstanceProposal:input_type -> google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest
-	16, // 38: google.cloud.kms.v1.HsmManagement.ExecuteSingleTenantHsmInstanceProposal:input_type -> google.cloud.kms.v1.ExecuteSingleTenantHsmInstanceProposalRequest
-	13, // 39: google.cloud.kms.v1.HsmManagement.GetSingleTenantHsmInstanceProposal:input_type -> google.cloud.kms.v1.GetSingleTenantHsmInstanceProposalRequest
-	19, // 40: google.cloud.kms.v1.HsmManagement.ListSingleTenantHsmInstanceProposals:input_type -> google.cloud.kms.v1.ListSingleTenantHsmInstanceProposalsRequest
-	21, // 41: google.cloud.kms.v1.HsmManagement.DeleteSingleTenantHsmInstanceProposal:input_type -> google.cloud.kms.v1.DeleteSingleTenantHsmInstanceProposalRequest
-	7,  // 42: google.cloud.kms.v1.HsmManagement.ListSingleTenantHsmInstances:output_type -> google.cloud.kms.v1.ListSingleTenantHsmInstancesResponse
-	2,  // 43: google.cloud.kms.v1.HsmManagement.GetSingleTenantHsmInstance:output_type -> google.cloud.kms.v1.SingleTenantHsmInstance
-	36, // 44: google.cloud.kms.v1.HsmManagement.CreateSingleTenantHsmInstance:output_type -> google.longrunning.Operation
-	36, // 45: google.cloud.kms.v1.HsmManagement.CreateSingleTenantHsmInstanceProposal:output_type -> google.longrunning.Operation
-	15, // 46: google.cloud.kms.v1.HsmManagement.ApproveSingleTenantHsmInstanceProposal:output_type -> google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalResponse
-	36, // 47: google.cloud.kms.v1.HsmManagement.ExecuteSingleTenantHsmInstanceProposal:output_type -> google.longrunning.Operation
-	3,  // 48: google.cloud.kms.v1.HsmManagement.GetSingleTenantHsmInstanceProposal:output_type -> google.cloud.kms.v1.SingleTenantHsmInstanceProposal
-	20, // 49: google.cloud.kms.v1.HsmManagement.ListSingleTenantHsmInstanceProposals:output_type -> google.cloud.kms.v1.ListSingleTenantHsmInstanceProposalsResponse
-	37, // 50: google.cloud.kms.v1.HsmManagement.DeleteSingleTenantHsmInstanceProposal:output_type -> google.protobuf.Empty
-	42, // [42:51] is the sub-list for method output_type
-	33, // [33:42] is the sub-list for method input_type
-	33, // [33:33] is the sub-list for extension type_name
-	33, // [33:33] is the sub-list for extension extendee
-	0,  // [0:33] is the sub-list for field type_name
+	32, // 21: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.upgrade_key_trust:type_name -> google.cloud.kms.v1.SingleTenantHsmInstanceProposal.UpgradeKeyTrust
+	2,  // 22: google.cloud.kms.v1.ListSingleTenantHsmInstancesResponse.single_tenant_hsm_instances:type_name -> google.cloud.kms.v1.SingleTenantHsmInstance
+	2,  // 23: google.cloud.kms.v1.CreateSingleTenantHsmInstanceRequest.single_tenant_hsm_instance:type_name -> google.cloud.kms.v1.SingleTenantHsmInstance
+	3,  // 24: google.cloud.kms.v1.CreateSingleTenantHsmInstanceProposalRequest.single_tenant_hsm_instance_proposal:type_name -> google.cloud.kms.v1.SingleTenantHsmInstanceProposal
+	33, // 25: google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest.quorum_reply:type_name -> google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest.QuorumReply
+	34, // 26: google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest.required_action_quorum_reply:type_name -> google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest.RequiredActionQuorumReply
+	3,  // 27: google.cloud.kms.v1.ListSingleTenantHsmInstanceProposalsResponse.single_tenant_hsm_instance_proposals:type_name -> google.cloud.kms.v1.SingleTenantHsmInstanceProposal
+	4,  // 28: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.QuorumParameters.challenges:type_name -> google.cloud.kms.v1.Challenge
+	4,  // 29: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.RequiredActionQuorumParameters.required_challenges:type_name -> google.cloud.kms.v1.Challenge
+	4,  // 30: google.cloud.kms.v1.SingleTenantHsmInstanceProposal.RequiredActionQuorumParameters.quorum_challenges:type_name -> google.cloud.kms.v1.Challenge
+	5,  // 31: google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest.QuorumReply.challenge_replies:type_name -> google.cloud.kms.v1.ChallengeReply
+	5,  // 32: google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest.RequiredActionQuorumReply.required_challenge_replies:type_name -> google.cloud.kms.v1.ChallengeReply
+	5,  // 33: google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest.RequiredActionQuorumReply.quorum_challenge_replies:type_name -> google.cloud.kms.v1.ChallengeReply
+	6,  // 34: google.cloud.kms.v1.HsmManagement.ListSingleTenantHsmInstances:input_type -> google.cloud.kms.v1.ListSingleTenantHsmInstancesRequest
+	8,  // 35: google.cloud.kms.v1.HsmManagement.GetSingleTenantHsmInstance:input_type -> google.cloud.kms.v1.GetSingleTenantHsmInstanceRequest
+	9,  // 36: google.cloud.kms.v1.HsmManagement.CreateSingleTenantHsmInstance:input_type -> google.cloud.kms.v1.CreateSingleTenantHsmInstanceRequest
+	11, // 37: google.cloud.kms.v1.HsmManagement.CreateSingleTenantHsmInstanceProposal:input_type -> google.cloud.kms.v1.CreateSingleTenantHsmInstanceProposalRequest
+	14, // 38: google.cloud.kms.v1.HsmManagement.ApproveSingleTenantHsmInstanceProposal:input_type -> google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalRequest
+	16, // 39: google.cloud.kms.v1.HsmManagement.ExecuteSingleTenantHsmInstanceProposal:input_type -> google.cloud.kms.v1.ExecuteSingleTenantHsmInstanceProposalRequest
+	13, // 40: google.cloud.kms.v1.HsmManagement.GetSingleTenantHsmInstanceProposal:input_type -> google.cloud.kms.v1.GetSingleTenantHsmInstanceProposalRequest
+	19, // 41: google.cloud.kms.v1.HsmManagement.ListSingleTenantHsmInstanceProposals:input_type -> google.cloud.kms.v1.ListSingleTenantHsmInstanceProposalsRequest
+	21, // 42: google.cloud.kms.v1.HsmManagement.DeleteSingleTenantHsmInstanceProposal:input_type -> google.cloud.kms.v1.DeleteSingleTenantHsmInstanceProposalRequest
+	7,  // 43: google.cloud.kms.v1.HsmManagement.ListSingleTenantHsmInstances:output_type -> google.cloud.kms.v1.ListSingleTenantHsmInstancesResponse
+	2,  // 44: google.cloud.kms.v1.HsmManagement.GetSingleTenantHsmInstance:output_type -> google.cloud.kms.v1.SingleTenantHsmInstance
+	37, // 45: google.cloud.kms.v1.HsmManagement.CreateSingleTenantHsmInstance:output_type -> google.longrunning.Operation
+	37, // 46: google.cloud.kms.v1.HsmManagement.CreateSingleTenantHsmInstanceProposal:output_type -> google.longrunning.Operation
+	15, // 47: google.cloud.kms.v1.HsmManagement.ApproveSingleTenantHsmInstanceProposal:output_type -> google.cloud.kms.v1.ApproveSingleTenantHsmInstanceProposalResponse
+	37, // 48: google.cloud.kms.v1.HsmManagement.ExecuteSingleTenantHsmInstanceProposal:output_type -> google.longrunning.Operation
+	3,  // 49: google.cloud.kms.v1.HsmManagement.GetSingleTenantHsmInstanceProposal:output_type -> google.cloud.kms.v1.SingleTenantHsmInstanceProposal
+	20, // 50: google.cloud.kms.v1.HsmManagement.ListSingleTenantHsmInstanceProposals:output_type -> google.cloud.kms.v1.ListSingleTenantHsmInstanceProposalsResponse
+	38, // 51: google.cloud.kms.v1.HsmManagement.DeleteSingleTenantHsmInstanceProposal:output_type -> google.protobuf.Empty
+	43, // [43:52] is the sub-list for method output_type
+	34, // [34:43] is the sub-list for method input_type
+	34, // [34:34] is the sub-list for extension type_name
+	34, // [34:34] is the sub-list for extension extendee
+	0,  // [0:34] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_kms_v1_hsm_management_proto_init() }
@@ -2919,6 +3006,7 @@ func file_google_cloud_kms_v1_hsm_management_proto_init() {
 		(*SingleTenantHsmInstanceProposal_AddQuorumMember_)(nil),
 		(*SingleTenantHsmInstanceProposal_RemoveQuorumMember_)(nil),
 		(*SingleTenantHsmInstanceProposal_RefreshSingleTenantHsmInstance_)(nil),
+		(*SingleTenantHsmInstanceProposal_UpgradeKeyTrust_)(nil),
 	}
 	file_google_cloud_kms_v1_hsm_management_proto_msgTypes[12].OneofWrappers = []any{
 		(*ApproveSingleTenantHsmInstanceProposalRequest_QuorumReply_)(nil),
@@ -2930,7 +3018,7 @@ func file_google_cloud_kms_v1_hsm_management_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_kms_v1_hsm_management_proto_rawDesc), len(file_google_cloud_kms_v1_hsm_management_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   32,
+			NumMessages:   33,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

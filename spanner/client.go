@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -25,6 +26,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
@@ -38,32 +40,29 @@ import (
 	otrace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/encoding/gzip"
-	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
-	"cloud.google.com/go/spanner/internal"
+	"cloud.google.com/go/spanner/internal/transport"
 	"cloud.google.com/go/spanner/omni"
 )
 
 const (
 	// resourcePrefixHeader is the name of the metadata header used to indicate
 	// the resource being operated on.
-	resourcePrefixHeader = "google-cloud-resource-prefix"
+	resourcePrefixHeader = transport.ResourcePrefixHeader
 
 	// routeToLeaderHeader is the name of the metadata header if RW/PDML
 	// requests need  to route to leader.
-	routeToLeaderHeader = "x-goog-spanner-route-to-leader"
+	routeToLeaderHeader = transport.RouteToLeaderHeader
 
-	requestsCompressionHeader = "x-response-encoding"
+	requestsCompressionHeader = transport.RequestsCompressionHeader
 
 	// endToEndTracingHeader is the name of the metadata header if client
 	// has opted-in for the creation of trace spans on the Spanner layer.
@@ -74,7 +73,7 @@ const (
 	afeMetricHeader = "x-goog-spanner-enable-afe-server-timing"
 
 	// numChannels is the default value for NumChannels of client.
-	numChannels = 4
+	numChannels = transport.DefaultNumChannels
 
 	// Server timing header constants
 	serverTimingHeaderKey = "server-timing"
@@ -205,14 +204,7 @@ func createGCPMultiEndpoint(cfg *grpcgcp.GCPMultiEndpointOptions, config ClientC
 	}
 	// Append emulator options if SPANNER_EMULATOR_HOST has been set.
 	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
-		schemeRemoved := regexp.MustCompile("^(http://|https://|passthrough:///)").ReplaceAllString(emulatorAddr, "")
-		emulatorOpts := []option.ClientOption{
-			option.WithEndpoint("passthrough:///" + schemeRemoved),
-			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
-			option.WithoutAuthentication(),
-			internaloption.SkipDialSettingsValidation(),
-		}
-		opts = append(opts, emulatorOpts...)
+		opts = append(opts, transport.EmulatorClientOptions(emulatorAddr)...)
 		// Replace all endpoints with emulator target.
 		for _, meo := range cfg.MultiEndpoints {
 			meo.Endpoints = []string{emulatorAddr}
@@ -232,7 +224,7 @@ func createGCPMultiEndpoint(cfg *grpcgcp.GCPMultiEndpointOptions, config ClientC
 	cfg.GRPCgcpConfig.ChannelPool.BindPickStrategy = grpcgcppb.ChannelPoolConfig_ROUND_ROBIN
 
 	cfg.DialFunc = func(ctx context.Context, target string, dopts ...grpc.DialOption) (*grpc.ClientConn, error) {
-		copts := opts
+		copts := opts[:len(opts):len(opts)]
 
 		for _, do := range dopts {
 			copts = append(copts, option.WithGRPCDialOption(do))
@@ -300,6 +292,13 @@ type ClientConfig struct {
 	SessionPoolConfig
 
 	// DynamicChannelPoolConfig is the opt-in configuration for dynamic gRPC channel pooling.
+	// It is ignored with multi-endpoint clients, the emulator, and location-aware
+	// routing.
+	//
+	// Unless DCPEnabled is true, the client uses a fixed pool of NumChannels
+	// channels and assigns transactions to them round robin. Set
+	// GOOGLE_SPANNER_ENABLE_LEGACY_STATIC_CHANNEL_POOL=true to use the earlier
+	// static pool instead. Multi-endpoint clients keep their own pool.
 	DynamicChannelPoolConfig DynamicChannelPoolConfig
 
 	// SessionLabels for the sessions created by this client.
@@ -371,6 +370,14 @@ type ClientConfig struct {
 
 	OpenTelemetryMeterProvider metric.MeterProvider
 
+	// ClientMetricsProvider exports Spanner built-in client metrics to a
+	// caller-owned OpenTelemetry pipeline. Metrics use the spanner/client/
+	// instrument namespace. This provider is independent of the native Cloud
+	// Monitoring export controlled by DisableNativeMetrics and
+	// SPANNER_DISABLE_BUILTIN_METRICS. A nil provider disables this export.
+	// The caller owns the provider lifecycle.
+	ClientMetricsProvider metric.MeterProvider
+
 	// EnableEndToEndTracing indicates whether end to end tracing is enabled or not. If
 	// it is enabled, trace spans will be created at Spanner layer. Enabling end to end
 	// tracing requires OpenTelemetry to be set up. Simply enabling this option won't
@@ -379,8 +386,8 @@ type ClientConfig struct {
 	// Default: false
 	EnableEndToEndTracing bool
 
-	// DisableNativeMetrics indicates whether native metrics should be disabled or not.
-	// If true, native metrics will not be emitted.
+	// DisableNativeMetrics disables the native Cloud Monitoring export. It does
+	// not affect the caller-owned export configured by ClientMetricsProvider.
 	//
 	// Default: false
 	DisableNativeMetrics bool
@@ -389,6 +396,14 @@ type ClientConfig struct {
 	// CLOUD is a no-op and for connecting to Spanner Omni it's mandatory to set Type to OMNI.
 	// If unspecified, it defaults to CLOUD.
 	Type InstanceType
+
+	// Username is the username for logging into Spanner Omni.
+	// Note: This field is only applicable when Type is OMNI.
+	Username string
+
+	// Password is the password for logging into Spanner Omni.
+	// Note: This field is only applicable when Type is OMNI.
+	Password []byte
 
 	// UsePlainText specifies whether to use plain text for the connection.
 	UsePlainText bool
@@ -442,6 +457,16 @@ func (c ClientConfig) GetInstanceType() string {
 // GetUsePlainText returns whether plain text is used.
 func (c ClientConfig) GetUsePlainText() bool {
 	return c.UsePlainText
+}
+
+// GetUsername returns the username for OPAQUE login.
+func (c ClientConfig) GetUsername() string {
+	return c.Username
+}
+
+// GetPassword returns the password for OPAQUE login.
+func (c ClientConfig) GetPassword() []byte {
+	return c.Password
 }
 
 // GetCaCertificateFile returns the CA certificate file path.
@@ -500,37 +525,18 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	return newClientWithConfig(ctx, database, config, nil, opts...)
 }
 
-type fallbackWrapper struct {
-	*grpcgcp.GCPFallback
-	primaryConn  gtransport.ConnPool
-	fallbackConn gtransport.ConnPool
-}
-
-// Conn returns nil because GCPFallback hides the underlying ClientConn.
-// The Spanner client handles this by using the interface methods (Invoke/NewStream).
-func (fw *fallbackWrapper) Conn() *grpc.ClientConn {
-	return nil
-}
-
-func (fw *fallbackWrapper) Num() int {
-	return fw.primaryConn.Num()
-}
-
-func (fw *fallbackWrapper) Close() error {
-	fw.GCPFallback.Close()
-	err1 := fw.primaryConn.Close()
-	err2 := fw.fallbackConn.Close()
-	if err1 != nil {
-		return err1
-	}
-	return err2
-}
+type fallbackWrapper = transport.FallbackPool
 
 func isDCPEnabledForConfig(config ClientConfig, gme *grpcgcp.GCPMultiEndpoint) bool {
 	return config.DynamicChannelPoolConfig.DCPEnabled &&
 		gme == nil &&
 		!isExperimentalLocationAPIEnabledForConfig(config) &&
 		os.Getenv("SPANNER_EMULATOR_HOST") == ""
+}
+
+// isSpannerEmulatorEnabled is the shared metrics gate for emulator clients.
+func isSpannerEmulatorEnabled() bool {
+	return os.Getenv("SPANNER_EMULATOR_HOST") != ""
 }
 
 func createDCPConnPool(
@@ -540,26 +546,105 @@ func createDCPConnPool(
 	sessionLabels map[string]string,
 	md metadata.MD,
 	metricsTracerFactory *builtinMetricsTracerFactory,
+	directPathFallbackEnabled bool,
 	opts ...option.ClientOption,
 ) (gtransport.ConnPool, *sessionClient, error) {
-	reqIDInjector := new(requestIDHeaderInjector)
-	dcpOpts := append([]option.ClientOption{}, opts...)
-	dcpOpts = append(dcpOpts,
-		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(reqIDInjector.interceptStream)),
-		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(reqIDInjector.interceptUnary)),
-	)
+	userOpts := append([]option.ClientOption(nil), opts...)
+	dcpPoolCfg := newTransportPoolConfig(config, false, meterProviderOf(metricsTracerFactory))
+	dcpPoolCfg.NumChannels = 1
 	sc := newSessionClient(nil, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
 	sc.metricsTracerFactory = metricsTracerFactory
+	var firstDialed atomic.Pointer[gtransport.ConnPool]
 	dial := func(dialCtx context.Context) (gtransport.ConnPool, error) {
-		return gtransport.DialPool(dialCtx, allClientOpts(1, config.Compression, config.EnableDirectAccess, dcpOpts...)...)
+		pool, err := gtransport.DialPool(dialCtx, dcpPoolCfg.ClientOptions(userOpts...)...)
+		if err == nil {
+			firstDialed.CompareAndSwap(nil, &pool)
+		}
+		return pool, err
 	}
-	dcp, err := newDynamicChannelPool(ctx, sc, config.DynamicChannelPoolConfig, config.OpenTelemetryMeterProvider, dial)
+	fallback := newPoolFallback(directPathFallbackEnabled, dcpPoolCfg, config.Logger, userOpts, func(pool gtransport.ConnPool) bool {
+		first := firstDialed.Load()
+		return first != nil && sameConnPool(pool, *first)
+	})
+	builtinMetricsCfg := newChannelPoolBuiltinMetricsConfig(metricsTracerFactory, transport.ResolveDirectPathEnabled(config.EnableDirectAccess))
+	dcp, err := newDynamicChannelPool(ctx, sc, config.DynamicChannelPoolConfig, config.OpenTelemetryMeterProvider, builtinMetricsCfg, dial, fallback)
 	if err != nil {
+		fallback.close()
 		return nil, nil, err
 	}
 	sc.connPool = dcp
 	sc.dynamicPool = dcp
 	return dcp, sc, nil
+}
+
+func newTransportPoolConfig(config ClientConfig, hasNumChannelsConfig bool, mp metric.MeterProvider) transport.PoolConfig {
+	return transport.PoolConfig{
+		NumChannels:          config.NumChannels,
+		HasNumChannelsConfig: hasNumChannelsConfig,
+		Compression:          config.Compression,
+		EnableDirectAccess:   config.EnableDirectAccess,
+		AugmentError:         augmentErrorWithRequestID,
+		MeterProvider:        mp,
+		UnaryInterceptors:    addNativeMetricsInterceptor(),
+		StreamInterceptors:   addStreamNativeMetricsInterceptor(),
+	}
+}
+
+func meterProviderOf(f *builtinMetricsTracerFactory) metric.MeterProvider {
+	if f == nil {
+		return nil
+	}
+	return f.meterProvider
+}
+
+func wrapPoolDialError(err error) error {
+	var mismatch *transport.PoolSizeMismatchError
+	if errors.As(err, &mismatch) && mismatch != nil {
+		return spannerError(codes.InvalidArgument, mismatch.Msg)
+	}
+	return err
+}
+
+// createFixedConnPool dials the default fixed-size channel pool. It returns
+// the client options used by location-aware routing to dial new endpoints.
+func createFixedConnPool(
+	ctx context.Context,
+	database string,
+	config ClientConfig,
+	hasNumChannelsConfig bool,
+	sessionLabels map[string]string,
+	md metadata.MD,
+	metricsTracerFactory *builtinMetricsTracerFactory,
+	directPathFallbackEnabled bool,
+	opts ...option.ClientOption,
+) (gtransport.ConnPool, *sessionClient, []option.ClientOption, error) {
+	fixedPoolCfg := newTransportPoolConfig(config, hasNumChannelsConfig, meterProviderOf(metricsTracerFactory))
+	dialedPool, allOpts, err := transport.DialStaticPool(
+		ctx,
+		fixedPoolCfg,
+		opts...,
+	)
+	if err != nil {
+		return nil, nil, nil, wrapPoolDialError(err)
+	}
+	if dialedPool.Num() <= 0 {
+		dialedPool.Close()
+		return nil, nil, nil, spannerError(codes.InvalidArgument, "gRPC connection pool has no connections")
+	}
+	fallback := newPoolFallback(directPathFallbackEnabled, fixedPoolCfg, config.Logger, opts, func(pool gtransport.ConnPool) bool {
+		return sameConnPool(pool, dialedPool)
+	})
+	sc := newSessionClient(nil, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
+	sc.metricsTracerFactory = metricsTracerFactory
+	pool, err := newFixedChannelPool(ctx, sc, dialedPool, fallback)
+	if err != nil {
+		fallback.close()
+		dialedPool.Close()
+		return nil, nil, nil, err
+	}
+	sc.connPool = pool
+	sc.dynamicPool = pool
+	return pool, sc, allOpts, nil
 }
 
 func createFallbackConnPool(
@@ -569,48 +654,19 @@ func createFallbackConnPool(
 	metricsTracerFactory *builtinMetricsTracerFactory,
 	opts ...option.ClientOption,
 ) (gtransport.ConnPool, []option.ClientOption, error) {
-	reqIDInjector := new(requestIDHeaderInjector)
-	opts = append(opts,
-		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(reqIDInjector.interceptStream)),
-		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(reqIDInjector.interceptUnary)),
+	var mp metric.MeterProvider
+	if metricsTracerFactory != nil {
+		mp = metricsTracerFactory.meterProvider
+	}
+	pool, allOpts, err := transport.CreateFallbackConnPool(
+		ctx,
+		newTransportPoolConfig(config, hasNumChannelsConfig, mp),
+		opts...,
 	)
-	allOpts := allClientOpts(config.NumChannels, config.Compression, config.EnableDirectAccess, opts...)
-	primaryConn, err := gtransport.DialPool(ctx, allOpts...)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, wrapPoolDialError(err)
 	}
-
-	fallbackConnOpts := append(allOpts, internaloption.EnableDirectPath(false))
-	fallbackConn, err := gtransport.DialPool(ctx, fallbackConnOpts...)
-	if err != nil {
-		primaryConn.Close()
-		return nil, nil, err
-	}
-
-	if hasNumChannelsConfig && ((primaryConn.Num() != config.NumChannels) || (fallbackConn.Num() != config.NumChannels)) {
-		primaryConn.Close()
-		fallbackConn.Close()
-		return nil, nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, primaryConn.Num()=%v, fallbackConn.Num()=%v", config.NumChannels, primaryConn.Num(), fallbackConn.Num())
-	}
-
-	fbOpts := grpcgcp.NewGCPFallbackOptions()
-	fbOpts.EnableFallback = true
-	fbOpts.ErrorRateThreshold = 1
-	fbOpts.MinFailedCalls = 1
-	fbOpts.Period = time.Minute * 3
-
-	if metricsTracerFactory != nil && metricsTracerFactory.meterProvider != nil {
-		fbOpts.MeterProvider = metricsTracerFactory.meterProvider
-	}
-
-	gcpFallback, err := grpcgcp.NewGCPFallback(ctx, primaryConn, fallbackConn, fbOpts)
-	if err != nil {
-		primaryConn.Close()
-		fallbackConn.Close()
-		return nil, nil, err
-	}
-
-	return &fallbackWrapper{gcpFallback, primaryConn, fallbackConn}, allOpts, nil
+	return pool, allOpts, nil
 }
 
 func newClientWithConfig(ctx context.Context, database string, config ClientConfig, gme *grpcgcp.GCPMultiEndpoint, opts ...option.ClientOption) (c *Client, err error) {
@@ -624,6 +680,18 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 			return nil, err
 		}
 		opts = append(opts, omniOpts...)
+
+		hasUsername := config.Username != ""
+		hasPassword := len(config.Password) > 0
+		if hasUsername != hasPassword {
+			return nil, spannerErrorf(codes.InvalidArgument, "both Username and Password must be specified for Omni authentication")
+		}
+		if hasUsername && hasPassword {
+			tsOpts := append([]option.ClientOption(nil), opts...)
+			opts = append(opts, option.WithTokenSource(omni.NewTokenSource(ctx, config.Username, config.Password, tsOpts)))
+		} else {
+			opts = append(opts, option.WithoutAuthentication())
+		}
 	}
 
 	// Validate database path.
@@ -645,14 +713,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 
 	// Append emulator options if SPANNER_EMULATOR_HOST has been set.
 	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
-		schemeRemoved := regexp.MustCompile("^(http://|https://|passthrough:///)").ReplaceAllString(emulatorAddr, "")
-		emulatorOpts := []option.ClientOption{
-			option.WithEndpoint("passthrough:///" + schemeRemoved),
-			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
-			option.WithoutAuthentication(),
-			internaloption.SkipDialSettingsValidation(),
-		}
-		opts = append(emulatorOpts, opts...)
+		opts = append(transport.EmulatorClientOptions(emulatorAddr), opts...)
 	}
 
 	// Prepare gRPC channels.
@@ -661,26 +722,24 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		config.NumChannels = numChannels
 	}
 
+	emulatorEnabled := isSpannerEmulatorEnabled()
 	var metricsProvider metric.MeterProvider
-	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
-		// Do not emit native metrics when emulator is being used
-		metricsProvider = noop.NewMeterProvider()
-	}
 	// Check if native metrics are disabled via env.
 	if disableNativeMetrics, _ := strconv.ParseBool(os.Getenv("SPANNER_DISABLE_BUILTIN_METRICS")); disableNativeMetrics {
 		config.DisableNativeMetrics = true
 	}
-	if config.DisableNativeMetrics {
-		// Do not emit native metrics when DisableNativeMetrics is set
+	if config.DisableNativeMetrics || config.Type == OMNI || config.IsExperimentalHost || emulatorEnabled {
+		// Do not emit native metrics when the Cloud Monitoring sink is unavailable or disabled.
 		metricsProvider = noop.NewMeterProvider()
+	}
+	clientMetricsProvider := config.ClientMetricsProvider
+	if emulatorEnabled {
+		clientMetricsProvider = nil
 	}
 	isAFEBuiltInMetricEnabled := strings.EqualFold("false", os.Getenv("SPANNER_DISABLE_AFE_SERVER_TIMING"))
 	isGRPCBuiltInMetricsEnabled := strings.EqualFold("false", os.Getenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS"))
 	// enable the AFE/GRPC built-in metrics if direct-path is enabled
-	isDirectPathEnabled := config.EnableDirectAccess
-	if enableDirectPathXdsString := os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"); enableDirectPathXdsString != "" {
-		isDirectPathEnabled, _ = strconv.ParseBool(enableDirectPathXdsString)
-	}
+	isDirectPathEnabled := transport.ResolveDirectPathEnabled(config.EnableDirectAccess)
 	if isDirectPathEnabled {
 		isAFEBuiltInMetricEnabled = true
 		isGRPCBuiltInMetricsEnabled = true
@@ -693,7 +752,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		isGRPCBuiltInMetricsEnabled = false
 	}
 
-	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, database, config.Compression, isAFEBuiltInMetricEnabled, isGRPCBuiltInMetricsEnabled, metricsProvider, opts...)
+	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, database, config.Compression, isAFEBuiltInMetricEnabled, isGRPCBuiltInMetricsEnabled, metricsProvider, clientMetricsProvider, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -705,10 +764,14 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	var endpointClientOpts []option.ClientOption
 	var sc *sessionClient
 
-	isFallbackEnabled := true
-	if val, ok := os.LookupEnv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK"); ok {
+	// DirectPath to CloudPath fallback is disabled by default. Set
+	// GOOGLE_SPANNER_ENABLE_GCP_FALLBACK=true to enable it.
+	isFallbackEnabled := transport.ResolveGCPFallbackEnabled() && isDirectPathEnabled
+
+	isLegacyStaticChannelPoolEnabled := false
+	if val, ok := os.LookupEnv("GOOGLE_SPANNER_ENABLE_LEGACY_STATIC_CHANNEL_POOL"); ok {
 		if b, err := strconv.ParseBool(val); err == nil {
-			isFallbackEnabled = b
+			isLegacyStaticChannelPoolEnabled = b
 		}
 	}
 
@@ -740,7 +803,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	}
 
 	if isDCPEnabledForConfig(config, gme) {
-		pool, sc, err = createDCPConnPool(ctx, database, config, sessionLabels, md, metricsTracerFactory, opts...)
+		pool, sc, err = createDCPConnPool(ctx, database, config, sessionLabels, md, metricsTracerFactory, isFallbackEnabled, opts...)
 		if err != nil {
 			return nil, err
 		}
@@ -748,32 +811,31 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		// Use GCPMultiEndpoint if provided.
 		pool = &gmeWrapper{gme}
 		endpointClientOpts = append(endpointClientOpts, opts...)
-	} else if isFallbackEnabled && isDirectPathEnabled {
+	} else if isLegacyStaticChannelPoolEnabled && isFallbackEnabled {
+		// The legacy static pool keeps grpc-gcp-go's GCPFallback.
 		pool, endpointClientOpts, err = createFallbackConnPool(ctx, config, hasNumChannelsConfig, metricsTracerFactory, opts...)
 		if err != nil {
 			return nil, err
 		}
-	} else {
-		// Create gtransport ConnPool as usual if MultiEndpoint is not used.
-		// gRPC options.
-
-		// Add a unaryClientInterceptor and streamClientInterceptor.
-		reqIDInjector := new(requestIDHeaderInjector)
-		opts = append(opts,
-			option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(reqIDInjector.interceptStream)),
-			option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(reqIDInjector.interceptUnary)),
+	} else if isLegacyStaticChannelPoolEnabled {
+		var allOpts []option.ClientOption
+		pool, allOpts, err = transport.DialStaticPool(
+			ctx,
+			newTransportPoolConfig(config, hasNumChannelsConfig, nil),
+			opts...,
 		)
-
-		allOpts := allClientOpts(config.NumChannels, config.Compression, config.EnableDirectAccess, opts...)
+		if err != nil {
+			return nil, wrapPoolDialError(err)
+		}
 		endpointClientOpts = append(endpointClientOpts, allOpts...)
-		pool, err = gtransport.DialPool(ctx, allOpts...)
+	} else {
+		if config.DynamicChannelPoolConfig.DCPEnabled && isExperimentalLocationAPIEnabledForConfig(config) {
+			logf(config.Logger, "spanner: DynamicChannelPoolConfig is ignored with location-aware routing; using a fixed-size channel pool")
+		}
+		// The emulator has no DirectPath to fall back from.
+		pool, sc, endpointClientOpts, err = createFixedConnPool(ctx, database, config, hasNumChannelsConfig, sessionLabels, md, metricsTracerFactory, isFallbackEnabled && !emulatorEnabled, opts...)
 		if err != nil {
 			return nil, err
-		}
-
-		if hasNumChannelsConfig && pool.Num() != config.NumChannels {
-			pool.Close()
-			return nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, WithGRPCConnectionPool=%v. Only set one of these options, or set both to the same value.", config.NumChannels, pool.Num())
 		}
 	}
 
@@ -940,32 +1002,14 @@ func NewMultiEndpointClientWithConfig(ctx context.Context, database string, conf
 // of the hand-written client and the user options to one list of options.
 // Precedence: userOpts > clientDefaultOpts > generatedDefaultOpts
 func allClientOpts(numChannels int, compression string, enableDirectAccess bool, userOpts ...option.ClientOption) []option.ClientOption {
-	generatedDefaultOpts := vkit.DefaultClientOptions()
-	clientDefaultOpts := []option.ClientOption{
-		option.WithGRPCConnectionPool(numChannels),
-		option.WithUserAgent(fmt.Sprintf("spanner-go/v%s", internal.Version)),
-		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(addNativeMetricsInterceptor()...)),
-		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(addStreamNativeMetricsInterceptor()...)),
-		option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{Time: 120 * time.Second})),
-	}
-	enableDirectPathXds := enableDirectAccess
-	if enableDirectPathXdsString := os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"); enableDirectPathXdsString != "" {
-		enableDirectPathXds, _ = strconv.ParseBool(enableDirectPathXdsString)
-	}
-
-	if enableDirectPathXds {
-		clientDefaultOpts = append(clientDefaultOpts, internaloption.AllowNonDefaultServiceAccount(true))
-		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
-		if disableBoundToken, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_DISABLE_DIRECT_ACCESS_BOUND_TOKEN")); !disableBoundToken {
-			clientDefaultOpts = append(clientDefaultOpts, internaloption.AllowHardBoundTokens("ALTS"))
-		}
-	}
-	if compression == "gzip" {
-		userOpts = append(userOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
-			grpc.UseCompressor(gzip.Name))))
-	}
-	allDefaultOpts := append(generatedDefaultOpts, clientDefaultOpts...)
-	return append(allDefaultOpts, userOpts...)
+	return transport.DefaultClientOptions(
+		numChannels,
+		compression,
+		enableDirectAccess,
+		addNativeMetricsInterceptor(),
+		addStreamNativeMetricsInterceptor(),
+		userOpts...,
+	)
 }
 
 // metricsInterceptor is a gRPC unary client interceptor that records metrics for unary RPCs.
@@ -980,8 +1024,17 @@ func metricsInterceptor() grpc.UnaryClientInterceptor {
 		opts ...grpc.CallOption,
 	) error {
 		mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
-		if !ok {
-			return invoker(ctx, method, req, reply, cc, opts...)
+		if !ok || mt == nil {
+			span := otrace.SpanFromContext(ctx)
+			if !span.IsRecording() {
+				return invoker(ctx, method, req, reply, cc, opts...)
+			}
+			// Built-in metrics are disabled, but the server timing span
+			// attributes are still recorded for traced calls.
+			var md metadata.MD
+			err := invoker(ctx, method, req, reply, cc, append(opts, grpc.Header(&md))...)
+			setGFEAndAFESpanAttributes(span, parseServerTimingHeader(md))
+			return err
 		}
 
 		mt.method = method
@@ -1019,16 +1072,21 @@ func metricsStreamInterceptor() grpc.StreamClientInterceptor {
 		streamer grpc.Streamer,
 		opts ...grpc.CallOption,
 	) (grpc.ClientStream, error) {
-		s, err := streamer(ctx, desc, cc, method, opts...)
-		if err != nil {
-			return nil, err
-		}
+		// Set the method before creating the stream, so that a stream that
+		// fails to open is recorded for its method.
 		mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
 		if ok && mt != nil {
 			mt.method = method
 			if strings.HasPrefix(cc.Target(), "google-c2p") {
 				mt.currOp.setDirectPathEnabled(true)
 			}
+			if mt.currOp.currAttempt != nil {
+				mt.currOp.currAttempt.rpcStarted = true
+			}
+		}
+		s, err := streamer(ctx, desc, cc, method, opts...)
+		if err != nil {
+			return nil, err
 		}
 		return s, nil
 	}
@@ -1546,61 +1604,187 @@ func (bwo BatchWriteOptions) merge(opts BatchWriteOptions) BatchWriteOptions {
 }
 
 // BatchWriteResponseIterator is an iterator over BatchWriteResponse structures returned from BatchWrite RPC.
+//
+// If the stream fails with a retryable error, or ends before every mutation
+// group has been acknowledged, the iterator opens a new stream that contains
+// only the mutation groups that have not yet been acknowledged. The indexes in
+// each returned BatchWriteResponse always refer to the positions of the
+// mutation groups in the original request. Mutation groups that have been
+// acknowledged are never sent again, so a retry does not return the index of
+// a mutation group that an earlier response already returned. As for streaming
+// reads and queries, retries continue until the request succeeds, fails with
+// an error that cannot be retried, or the context is canceled or its deadline
+// passes.
 type BatchWriteResponseIterator struct {
-	ctx                context.Context
-	stream             sppb.Spanner_BatchWriteClient
-	err                error
-	meterTracerFactory *builtinMetricsTracerFactory
-	rpc                func(ctx context.Context) (sppb.Spanner_BatchWriteClient, error)
-	release            func(error)
-	cancel             func()
+	ctx     context.Context
+	stream  sppb.Spanner_BatchWriteClient
+	err     error
+	rpc     func(ctx context.Context, mgs []*sppb.BatchWriteRequest_MutationGroup) (sppb.Spanner_BatchWriteClient, error)
+	release func(error)
+	cancel  func()
+
+	// streamOperationMetrics records the built-in metrics operation of the
+	// BatchWrite request. Every stream that is opened for it is an attempt.
+	streamOperationMetrics
+
+	// pending holds the mutation groups of the original request. An entry is
+	// set to nil once a response has acknowledged it, so that it is not sent
+	// again on retry.
+	pending []*sppb.BatchWriteRequest_MutationGroup
+	// remaining is the number of non-nil entries in pending.
+	remaining int
+	// streamIndexes maps the indexes of the mutation groups sent on the
+	// current stream to their indexes in pending.
+	streamIndexes []int
+	retryer       gax.Retryer
+}
+
+func newBatchWriteResponseIterator(ctx context.Context, mgs []*sppb.BatchWriteRequest_MutationGroup, rpc func(context.Context, []*sppb.BatchWriteRequest_MutationGroup) (sppb.Spanner_BatchWriteClient, error), backoff gax.Backoff) *BatchWriteResponseIterator {
+	return &BatchWriteResponseIterator{
+		ctx:       ctx,
+		rpc:       rpc,
+		pending:   append([]*sppb.BatchWriteRequest_MutationGroup(nil), mgs...),
+		remaining: len(mgs),
+		retryer:   onCodes(backoff, codes.Unavailable),
+	}
 }
 
 // Next returns the next result. Its second return value is iterator.Done if
 // there are no more results. Once Next returns Done, all subsequent calls
 // will return Done.
 func (r *BatchWriteResponseIterator) Next() (*sppb.BatchWriteResponse, error) {
-	mt := r.meterTracerFactory.createBuiltinMetricsTracer(r.ctx)
-	defer func() {
-		if mt.method != "" {
-			statusCode, _ := convertToGrpcStatusErr(r.err)
-			mt.currOp.setStatus(statusCode.String())
-			recordOperationCompletion(&mt)
+	response, err := r.next()
+	if err != nil && r.mt != nil {
+		// The built-in metrics operation of the BatchWrite request ends when
+		// Next first returns an error or iterator.Done.
+		code := codes.OK
+		if err != iterator.Done {
+			code, _ = convertToGrpcStatusErr(err)
 		}
-	}()
+		r.finishOperation(code)
+	}
+	return response, err
+}
+
+func (r *BatchWriteResponseIterator) next() (*sppb.BatchWriteResponse, error) {
 	for {
 		// Stream finished or in error state.
 		if r.err != nil {
 			return nil, r.err
 		}
 
-		// RPC not made yet.
+		// No stream is open, so open one for the mutation groups that have not
+		// been acknowledged yet.
 		if r.stream == nil {
-			r.stream, r.err = r.rpc(r.ctx)
+			r.startAttempt(r.ctx)
+			stream, err := r.rpc(contextWithBuiltinMetricsTracer(r.ctx, r.mt), r.unacknowledgedMutationGroups())
+			if err != nil {
+				if r.mt != nil {
+					r.endAttempt(status.Code(err))
+				}
+				r.retryOrFail(err)
+				continue
+			}
+			r.stream = stream
 			continue
 		}
 
 		// Read from the stream.
-		var response *sppb.BatchWriteResponse
-		response, r.err = r.stream.Recv()
-
-		// Return an item.
-		if r.err == nil {
+		response, err := r.stream.Recv()
+		switch {
+		case err == nil:
+			if ackErr := r.acknowledge(response); ackErr != nil {
+				r.stream = nil
+				r.err = ackErr
+				return nil, r.err
+			}
 			return response, nil
+		case err == io.EOF:
+			r.stream = nil
+			r.endAttempt(codes.OK)
+			if r.remaining > 0 {
+				r.retryOrFail(spannerErrorf(codes.Unavailable, "BatchWrite stream closed prematurely with %d unprocessed mutation groups", r.remaining))
+			}
+		default:
+			r.stream = nil
+			if r.mt != nil {
+				r.endAttempt(status.Code(err))
+			}
+			r.retryOrFail(err)
 		}
-
-		// Stream finished.
-		if r.err == io.EOF {
+		if r.err == nil && r.remaining == 0 {
 			r.err = iterator.Done
-			return nil, r.err
 		}
+	}
+}
+
+// unacknowledgedMutationGroups returns the mutation groups that have not been
+// acknowledged yet and records their original indexes in streamIndexes.
+func (r *BatchWriteResponseIterator) unacknowledgedMutationGroups() []*sppb.BatchWriteRequest_MutationGroup {
+	r.streamIndexes = r.streamIndexes[:0]
+	mgs := make([]*sppb.BatchWriteRequest_MutationGroup, 0, r.remaining)
+	for i, mg := range r.pending {
+		if mg == nil {
+			continue
+		}
+		r.streamIndexes = append(r.streamIndexes, i)
+		mgs = append(mgs, mg)
+	}
+	return mgs
+}
+
+// acknowledge translates the indexes in response from positions in the current
+// stream request to positions in the original request, and marks the mutation
+// groups as acknowledged. A mutation group is acknowledged regardless of the
+// status in the response, as that status has been delivered to the caller.
+func (r *BatchWriteResponseIterator) acknowledge(response *sppb.BatchWriteResponse) error {
+	for _, index := range response.GetIndexes() {
+		if index < 0 || int(index) >= len(r.streamIndexes) {
+			return spannerErrorf(codes.Internal, "Spanner returned mutation group index %d out of bounds for BatchWrite stream with %d mutation groups", index, len(r.streamIndexes))
+		}
+	}
+	for i, index := range response.GetIndexes() {
+		original := r.streamIndexes[index]
+		if r.pending[original] != nil {
+			r.pending[original] = nil
+			r.remaining--
+		}
+		response.Indexes[i] = int32(original)
+	}
+	return nil
+}
+
+// retryOrFail waits for the retry delay if err can be retried. Otherwise, or if
+// the context ends while waiting, it sets the error as the terminal error of
+// the iterator. All mutation groups that have been acknowledged are excluded
+// from the retried request.
+func (r *BatchWriteResponseIterator) retryOrFail(err error) {
+	if r.remaining == 0 && len(r.pending) > 0 {
+		// Every mutation group has been acknowledged, so the error does not
+		// affect the outcome of the request.
+		return
+	}
+	delay, shouldRetry := r.retryer.Retry(err)
+	if !shouldRetry {
+		r.err = err
+		return
+	}
+	trace.TracePrintf(r.ctx, nil, "Backing off BatchWrite stream for %s", delay)
+	if sleepErr := gax.Sleep(r.ctx, delay); sleepErr != nil {
+		r.err = sleepErr
 	}
 }
 
 // Stop terminates the iteration. It should be called after you finish using the
 // iterator.
 func (r *BatchWriteResponseIterator) Stop() {
-	if r.stream != nil {
+	if r.err == nil {
+		// Stop before Next returned an error or iterator.Done ends the built-in
+		// metrics operation without an error, as the caller chose to stop
+		// reading.
+		r.finishOperation(codes.OK)
+	}
+	if r.ctx != nil {
 		err := r.err
 		if err == iterator.Done {
 			err = nil
@@ -1659,6 +1843,11 @@ func (r *BatchWriteResponseIterator) Do(f func(r *sppb.BatchWriteResponse) error
 // timestamp-based keys, it may result in additional rows being added to the
 // mutation's table. We recommend structuring your mutation groups to be
 // idempotent to avoid this issue.
+//
+// If the response stream fails with an UNAVAILABLE error, or ends before all
+// mutation groups have been acknowledged, the client retries the request with
+// only the mutation groups that have not been acknowledged yet. The indexes in
+// the returned responses always refer to the positions in mgs.
 func (c *Client) BatchWrite(ctx context.Context, mgs []*MutationGroup) *BatchWriteResponseIterator {
 	return c.BatchWriteWithOptions(ctx, mgs, BatchWriteOptions{})
 }
@@ -1679,33 +1868,22 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 
 	mgsPb, err := mutationGroupsProto(mgs)
 	if err != nil {
-		return &BatchWriteResponseIterator{meterTracerFactory: c.metricsTracerFactory, err: err}
+		return &BatchWriteResponseIterator{err: err}
 	}
 
 	var sh *sessionHandle
 	sh, err = c.sm.takeMultiplexed(ctx)
 	if err != nil {
-		return &BatchWriteResponseIterator{meterTracerFactory: c.metricsTracerFactory, err: err}
+		return &BatchWriteResponseIterator{err: err}
 	}
 
-	rpc := func(ct context.Context) (sppb.Spanner_BatchWriteClient, error) {
-		var md metadata.MD
-		stream, rpcErr := sh.getClient().BatchWrite(contextWithOutgoingMetadata(ct, sh.getMetadata(), c.disableRouteToLeader), &sppb.BatchWriteRequest{
+	rpc := func(ct context.Context, mgs []*sppb.BatchWriteRequest_MutationGroup) (sppb.Spanner_BatchWriteClient, error) {
+		return sh.getClient().BatchWrite(contextWithOutgoingMetadata(ct, sh.getMetadata(), c.disableRouteToLeader), &sppb.BatchWriteRequest{
 			Session:                     sh.getID(),
-			MutationGroups:              mgsPb,
+			MutationGroups:              mgs,
 			RequestOptions:              createRequestOptions(opts.Priority, "", opts.TransactionTag, mergeClientContext(c.clientContext, opts.ClientContext)),
 			ExcludeTxnFromChangeStreams: opts.ExcludeTxnFromChangeStreams,
-		}, gax.WithGRPCOptions(grpc.Header(&md)))
-
-		if getGFELatencyMetricsFlag() && md != nil && c.ct != nil {
-			if metricErr := createContextAndCaptureGFELatencyMetrics(ct, c.ct, md, "BatchWrite"); metricErr != nil {
-				trace.TracePrintf(ct, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
-			}
-		}
-		if metricErr := recordGFELatencyMetricsOT(ct, md, "BatchWrite", c.otConfig); metricErr != nil {
-			trace.TracePrintf(ct, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", err)
-		}
-		return stream, rpcErr
+		})
 	}
 
 	release := func(err error) {
@@ -1715,15 +1893,15 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 		sh.recycle()
 	}
 
-	ctx, cancel := context.WithCancel(ctx)
-	ctx, _ = startSpan(ctx, "BatchWriteResponseIterator", c.otConfig.commonTraceStartOptions...)
-	return &BatchWriteResponseIterator{
-		ctx:                ctx,
-		meterTracerFactory: c.metricsTracerFactory,
-		rpc:                rpc,
-		release:            release,
-		cancel:             cancel,
-	}
+	// The iterator uses its own context, so that the deferred EndSpan above
+	// ends the BatchWrite span and not the span of the iterator.
+	iterCtx, cancelCause := context.WithCancelCause(ctx)
+	iterCtx, _ = startSpan(iterCtx, "BatchWriteResponseIterator", c.otConfig.commonTraceStartOptions...)
+	iter := newBatchWriteResponseIterator(iterCtx, mgsPb, rpc, DefaultRetryBackoff)
+	iter.meterTracerFactory = c.metricsTracerFactory
+	iter.release = release
+	iter.cancel = func() { cancelCause(errStreamStoppedByReader) }
+	return iter
 }
 
 // logf logs the given message to the given logger, or the standard logger if

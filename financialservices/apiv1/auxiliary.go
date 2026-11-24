@@ -18,12 +18,14 @@ package financialservices
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	financialservicespb "cloud.google.com/go/financialservices/apiv1/financialservicespb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -1498,6 +1500,12 @@ func (op *UpdatePredictionResultOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BacktestResultIterator) All() iter.Seq2[*financialservicespb.BacktestResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // BacktestResultIterator manages a stream of *financialservicespb.BacktestResult.
 type BacktestResultIterator struct {
 	items    []*financialservicespb.BacktestResult
@@ -1543,6 +1551,12 @@ func (it *BacktestResultIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DatasetIterator) All() iter.Seq2[*financialservicespb.Dataset, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DatasetIterator manages a stream of *financialservicespb.Dataset.
@@ -1592,6 +1606,12 @@ func (it *DatasetIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EngineConfigIterator) All() iter.Seq2[*financialservicespb.EngineConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EngineConfigIterator manages a stream of *financialservicespb.EngineConfig.
 type EngineConfigIterator struct {
 	items    []*financialservicespb.EngineConfig
@@ -1637,6 +1657,12 @@ func (it *EngineConfigIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EngineVersionIterator) All() iter.Seq2[*financialservicespb.EngineVersion, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // EngineVersionIterator manages a stream of *financialservicespb.EngineVersion.
@@ -1686,6 +1712,12 @@ func (it *EngineVersionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceIterator) All() iter.Seq2[*financialservicespb.Instance, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InstanceIterator manages a stream of *financialservicespb.Instance.
 type InstanceIterator struct {
 	items    []*financialservicespb.Instance
@@ -1731,6 +1763,12 @@ func (it *InstanceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -1780,6 +1818,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ModelIterator) All() iter.Seq2[*financialservicespb.Model, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ModelIterator manages a stream of *financialservicespb.Model.
 type ModelIterator struct {
 	items    []*financialservicespb.Model
@@ -1827,6 +1871,12 @@ func (it *ModelIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -1872,6 +1922,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PredictionResultIterator) All() iter.Seq2[*financialservicespb.PredictionResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PredictionResultIterator manages a stream of *financialservicespb.PredictionResult.

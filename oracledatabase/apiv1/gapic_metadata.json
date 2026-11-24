@@ -65,6 +65,11 @@
                 "CreateGoldengateDeployment"
               ]
             },
+            "CreateOdbDnsZone": {
+              "methods": [
+                "CreateOdbDnsZone"
+              ]
+            },
             "CreateOdbNetwork": {
               "methods": [
                 "CreateOdbNetwork"
@@ -120,6 +125,11 @@
                 "DeleteGoldengateDeployment"
               ]
             },
+            "DeleteOdbDnsZone": {
+              "methods": [
+                "DeleteOdbDnsZone"
+              ]
+            },
             "DeleteOdbNetwork": {
               "methods": [
                 "DeleteOdbNetwork"
@@ -148,6 +158,11 @@
             "GetAutonomousDatabase": {
               "methods": [
                 "GetAutonomousDatabase"
+              ]
+            },
+            "GetAutonomousDatabaseRefreshableClones": {
+              "methods": [
+                "GetAutonomousDatabaseRefreshableClones"
               ]
             },
             "GetCloudExadataInfrastructure": {
@@ -198,6 +213,11 @@
             "GetLocation": {
               "methods": [
                 "GetLocation"
+              ]
+            },
+            "GetOdbDnsZone": {
+              "methods": [
+                "GetOdbDnsZone"
               ]
             },
             "GetOdbNetwork": {
@@ -355,6 +375,11 @@
                 "ListMinorVersions"
               ]
             },
+            "ListOdbDnsZones": {
+              "methods": [
+                "ListOdbDnsZones"
+              ]
+            },
             "ListOdbNetworks": {
               "methods": [
                 "ListOdbNetworks"
@@ -373,6 +398,11 @@
             "ListPluggableDatabases": {
               "methods": [
                 "ListPluggableDatabases"
+              ]
+            },
+            "RefreshAutonomousDatabase": {
+              "methods": [
+                "RefreshAutonomousDatabase"
               ]
             },
             "RemoveVirtualMachineExadbVmCluster": {
@@ -490,6 +520,11 @@
                 "CreateGoldengateDeployment"
               ]
             },
+            "CreateOdbDnsZone": {
+              "methods": [
+                "CreateOdbDnsZone"
+              ]
+            },
             "CreateOdbNetwork": {
               "methods": [
                 "CreateOdbNetwork"
@@ -545,6 +580,11 @@
                 "DeleteGoldengateDeployment"
               ]
             },
+            "DeleteOdbDnsZone": {
+              "methods": [
+                "DeleteOdbDnsZone"
+              ]
+            },
             "DeleteOdbNetwork": {
               "methods": [
                 "DeleteOdbNetwork"
@@ -573,6 +613,11 @@
             "GetAutonomousDatabase": {
               "methods": [
                 "GetAutonomousDatabase"
+              ]
+            },
+            "GetAutonomousDatabaseRefreshableClones": {
+              "methods": [
+                "GetAutonomousDatabaseRefreshableClones"
               ]
             },
             "GetCloudExadataInfrastructure": {
@@ -623,6 +668,11 @@
             "GetLocation": {
               "methods": [
                 "GetLocation"
+              ]
+            },
+            "GetOdbDnsZone": {
+              "methods": [
+                "GetOdbDnsZone"
               ]
             },
             "GetOdbNetwork": {
@@ -780,6 +830,11 @@
                 "ListMinorVersions"
               ]
             },
+            "ListOdbDnsZones": {
+              "methods": [
+                "ListOdbDnsZones"
+              ]
+            },
             "ListOdbNetworks": {
               "methods": [
                 "ListOdbNetworks"
@@ -798,6 +853,11 @@
             "ListPluggableDatabases": {
               "methods": [
                 "ListPluggableDatabases"
+              ]
+            },
+            "RefreshAutonomousDatabase": {
+              "methods": [
+                "RefreshAutonomousDatabase"
               ]
             },
             "RemoveVirtualMachineExadbVmCluster": {

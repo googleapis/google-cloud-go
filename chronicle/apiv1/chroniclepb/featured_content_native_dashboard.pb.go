@@ -420,30 +420,30 @@ var File_google_cloud_chronicle_v1_featured_content_native_dashboard_proto proto
 
 const file_google_cloud_chronicle_v1_featured_content_native_dashboard_proto_rawDesc = "" +
 	"\n" +
-	"Agoogle/cloud/chronicle/v1/featured_content_native_dashboard.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a9google/cloud/chronicle/v1/featured_content_metadata.proto\x1a0google/cloud/chronicle/v1/native_dashboard.proto\"\x9e\x04\n" +
-	"\x1eFeaturedContentNativeDashboard\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12b\n" +
-	"\x10content_metadata\x18\x02 \x01(\v22.google.cloud.chronicle.v1.FeaturedContentMetadataB\x03\xe0A\x03R\x0fcontentMetadata\x12p\n" +
-	"\x11dashboard_content\x18\x03 \x01(\v2>.google.cloud.chronicle.v1.NativeDashboardWithChartsAndQueriesB\x03\xe0A\x01R\x10dashboardContent:\x8c\x02\xeaA\x88\x02\n" +
-	"7chronicle.googleapis.com/FeaturedContentNativeDashboard\x12\x8b\x01projects/{project}/locations/{location}/instances/{instance}/contentHub/featuredContentNativeDashboards/{featured_content_native_dashboard}*\x1ffeaturedContentNativeDashboards2\x1efeaturedContentNativeDashboard\"\x7f\n" +
-	"(GetFeaturedContentNativeDashboardRequest\x12S\n" +
-	"\x04name\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\n" +
-	"7chronicle.googleapis.com/FeaturedContentNativeDashboardR\x04name\"\xe8\x01\n" +
-	"*ListFeaturedContentNativeDashboardsRequest\x12W\n" +
-	"\x06parent\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\x127chronicle.googleapis.com/FeaturedContentNativeDashboardR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"Agoogle/cloud/chronicle/v1/featured_content_native_dashboard.proto\x12\x19google.cloud.chronicle.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a9google/cloud/chronicle/v1/featured_content_metadata.proto\x1a0google/cloud/chronicle/v1/native_dashboard.proto\"\xa1\x04\n" +
+	"\x1eFeaturedContentNativeDashboard\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12c\n" +
+	"\x10content_metadata\x18\x02 \x01(\v22.google.cloud.chronicle.v1.FeaturedContentMetadataB\x04\xe2A\x01\x03R\x0fcontentMetadata\x12q\n" +
+	"\x11dashboard_content\x18\x03 \x01(\v2>.google.cloud.chronicle.v1.NativeDashboardWithChartsAndQueriesB\x04\xe2A\x01\x01R\x10dashboardContent:\x8c\x02\xeaA\x88\x02\n" +
+	"7chronicle.googleapis.com/FeaturedContentNativeDashboard\x12\x8b\x01projects/{project}/locations/{location}/instances/{instance}/contentHub/featuredContentNativeDashboards/{featured_content_native_dashboard}*\x1ffeaturedContentNativeDashboards2\x1efeaturedContentNativeDashboard\"\x80\x01\n" +
+	"(GetFeaturedContentNativeDashboardRequest\x12T\n" +
+	"\x04name\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\n" +
+	"7chronicle.googleapis.com/FeaturedContentNativeDashboardR\x04name\"\xec\x01\n" +
+	"*ListFeaturedContentNativeDashboardsRequest\x12X\n" +
+	"\x06parent\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\x127chronicle.googleapis.com/FeaturedContentNativeDashboardR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\xde\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\xde\x01\n" +
 	"+ListFeaturedContentNativeDashboardsResponse\x12\x86\x01\n" +
 	"\"featured_content_native_dashboards\x18\x01 \x03(\v29.google.cloud.chronicle.v1.FeaturedContentNativeDashboardR\x1ffeaturedContentNativeDashboards\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8f\x02\n" +
-	",InstallFeaturedContentNativeDashboardRequest\x12S\n" +
-	"\x04name\x18\x01 \x01(\tB?\xe0A\x02\xfaA9\n" +
-	"7chronicle.googleapis.com/FeaturedContentNativeDashboardR\x04name\x12\x89\x01\n" +
-	"!featured_content_native_dashboard\x18\x02 \x01(\v29.google.cloud.chronicle.v1.FeaturedContentNativeDashboardB\x03\xe0A\x01R\x1efeaturedContentNativeDashboard\"\x8c\x01\n" +
-	"-InstallFeaturedContentNativeDashboardResponse\x12[\n" +
-	"\x10native_dashboard\x18\x01 \x01(\tB0\xe0A\x01\xfaA*\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x91\x02\n" +
+	",InstallFeaturedContentNativeDashboardRequest\x12T\n" +
+	"\x04name\x18\x01 \x01(\tB@\xe2A\x01\x02\xfaA9\n" +
+	"7chronicle.googleapis.com/FeaturedContentNativeDashboardR\x04name\x12\x8a\x01\n" +
+	"!featured_content_native_dashboard\x18\x02 \x01(\v29.google.cloud.chronicle.v1.FeaturedContentNativeDashboardB\x04\xe2A\x01\x01R\x1efeaturedContentNativeDashboard\"\x8d\x01\n" +
+	"-InstallFeaturedContentNativeDashboardResponse\x12\\\n" +
+	"\x10native_dashboard\x18\x01 \x01(\tB1\xe2A\x01\x01\xfaA*\n" +
 	"(chronicle.googleapis.com/NativeDashboardR\x0fnativeDashboard2\xbc\b\n" +
 	"%FeaturedContentNativeDashboardService\x12\x8e\x02\n" +
 	"!GetFeaturedContentNativeDashboard\x12C.google.cloud.chronicle.v1.GetFeaturedContentNativeDashboardRequest\x1a9.google.cloud.chronicle.v1.FeaturedContentNativeDashboard\"i\xdaA\x04name\x82\xd3\xe4\x93\x02\\\x12Z/v1/{name=projects/*/locations/*/instances/*/contentHub/featuredContentNativeDashboards/*}\x12\xa1\x02\n" +

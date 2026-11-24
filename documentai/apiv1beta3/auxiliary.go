@@ -18,12 +18,14 @@ package documentai
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	documentaipb "cloud.google.com/go/documentai/apiv1beta3/documentaipb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -966,6 +968,12 @@ func (op *UpdateDatasetOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DocumentMetadataIterator) All() iter.Seq2[*documentaipb.DocumentMetadata, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DocumentMetadataIterator manages a stream of *documentaipb.DocumentMetadata.
 type DocumentMetadataIterator struct {
 	items    []*documentaipb.DocumentMetadata
@@ -1011,6 +1019,12 @@ func (it *DocumentMetadataIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EvaluationIterator) All() iter.Seq2[*documentaipb.Evaluation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // EvaluationIterator manages a stream of *documentaipb.Evaluation.
@@ -1060,6 +1074,12 @@ func (it *EvaluationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -1105,6 +1125,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -1154,6 +1180,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProcessorIterator) All() iter.Seq2[*documentaipb.Processor, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ProcessorIterator manages a stream of *documentaipb.Processor.
 type ProcessorIterator struct {
 	items    []*documentaipb.Processor
@@ -1201,6 +1233,12 @@ func (it *ProcessorIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProcessorTypeIterator) All() iter.Seq2[*documentaipb.ProcessorType, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ProcessorTypeIterator manages a stream of *documentaipb.ProcessorType.
 type ProcessorTypeIterator struct {
 	items    []*documentaipb.ProcessorType
@@ -1246,6 +1284,12 @@ func (it *ProcessorTypeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProcessorVersionIterator) All() iter.Seq2[*documentaipb.ProcessorVersion, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ProcessorVersionIterator manages a stream of *documentaipb.ProcessorVersion.

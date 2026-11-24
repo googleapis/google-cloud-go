@@ -532,37 +532,37 @@ var File_google_cloud_binaryauthorization_v1beta1_service_proto protoreflect.Fil
 
 const file_google_cloud_binaryauthorization_v1beta1_service_proto_rawDesc = "" +
 	"\n" +
-	"6google/cloud/binaryauthorization/v1beta1/service.proto\x12(google.cloud.binaryauthorization.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/binaryauthorization/v1beta1/resources.proto\x1a\x1bgoogle/protobuf/empty.proto\"Y\n" +
-	"\x10GetPolicyRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")binaryauthorization.googleapis.com/PolicyR\x04name\"d\n" +
-	"\x13UpdatePolicyRequest\x12M\n" +
-	"\x06policy\x18\x01 \x01(\v20.google.cloud.binaryauthorization.v1beta1.PolicyB\x03\xe0A\x02R\x06policy\"\xdf\x01\n" +
-	"\x15CreateAttestorRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12$\n" +
-	"\vattestor_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"attestorId\x12S\n" +
-	"\battestor\x18\x03 \x01(\v22.google.cloud.binaryauthorization.v1beta1.AttestorB\x03\xe0A\x02R\battestor\"]\n" +
-	"\x12GetAttestorRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+binaryauthorization.googleapis.com/AttestorR\x04name\"l\n" +
-	"\x15UpdateAttestorRequest\x12S\n" +
-	"\battestor\x18\x01 \x01(\v22.google.cloud.binaryauthorization.v1beta1.AttestorB\x03\xe0A\x02R\battestor\"\x9f\x01\n" +
-	"\x14ListAttestorsRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"6google/cloud/binaryauthorization/v1beta1/service.proto\x12(google.cloud.binaryauthorization.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/binaryauthorization/v1beta1/resources.proto\x1a\x1bgoogle/protobuf/empty.proto\"Z\n" +
+	"\x10GetPolicyRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
+	")binaryauthorization.googleapis.com/PolicyR\x04name\"e\n" +
+	"\x13UpdatePolicyRequest\x12N\n" +
+	"\x06policy\x18\x01 \x01(\v20.google.cloud.binaryauthorization.v1beta1.PolicyB\x04\xe2A\x01\x02R\x06policy\"\xe2\x01\n" +
+	"\x15CreateAttestorRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12%\n" +
+	"\vattestor_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"attestorId\x12T\n" +
+	"\battestor\x18\x03 \x01(\v22.google.cloud.binaryauthorization.v1beta1.AttestorB\x04\xe2A\x01\x02R\battestor\"^\n" +
+	"\x12GetAttestorRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+binaryauthorization.googleapis.com/AttestorR\x04name\"m\n" +
+	"\x15UpdateAttestorRequest\x12T\n" +
+	"\battestor\x18\x01 \x01(\v22.google.cloud.binaryauthorization.v1beta1.AttestorB\x04\xe2A\x01\x02R\battestor\"\xa0\x01\n" +
+	"\x14ListAttestorsRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x91\x01\n" +
 	"\x15ListAttestorsResponse\x12P\n" +
 	"\tattestors\x18\x01 \x03(\v22.google.cloud.binaryauthorization.v1beta1.AttestorR\tattestors\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"`\n" +
-	"\x15DeleteAttestorRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+binaryauthorization.googleapis.com/AttestorR\x04name\"_\n" +
-	"\x16GetSystemPolicyRequest\x12E\n" +
-	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"a\n" +
+	"\x15DeleteAttestorRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+binaryauthorization.googleapis.com/AttestorR\x04name\"`\n" +
+	"\x16GetSystemPolicyRequest\x12F\n" +
+	"\x04name\x18\x01 \x01(\tB2\xe2A\x01\x02\xfaA+\n" +
 	")binaryauthorization.googleapis.com/PolicyR\x04name2\xcb\v\n" +
 	" BinauthzManagementServiceV1Beta1\x12\xab\x01\n" +
 	"\tGetPolicy\x12:.google.cloud.binaryauthorization.v1beta1.GetPolicyRequest\x1a0.google.cloud.binaryauthorization.v1beta1.Policy\"0\xdaA\x04name\x82\xd3\xe4\x93\x02#\x12!/v1beta1/{name=projects/*/policy}\x12\xc2\x01\n" +

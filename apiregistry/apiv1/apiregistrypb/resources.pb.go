@@ -268,19 +268,19 @@ var File_google_cloud_apiregistry_v1_resources_proto protoreflect.FileDescriptor
 
 const file_google_cloud_apiregistry_v1_resources_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/apiregistry/v1/resources.proto\x12\x1bgoogle.cloud.apiregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/apiregistry/v1/common.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xec\x03\n" +
-	"\tMcpServer\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x12\n" +
+	"+google/cloud/apiregistry/v1/resources.proto\x12\x1bgoogle.cloud.apiregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/apiregistry/v1/common.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xf0\x03\n" +
+	"\tMcpServer\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12\x12\n" +
 	"\x04urls\x18\x04 \x03(\tR\x04urls\x12;\n" +
-	"\fcapabilities\x18\x06 \x01(\v2\x17.google.protobuf.StructR\fcapabilities\x12=\n" +
-	"\x05state\x18\a \x01(\x0e2\".google.cloud.apiregistry.v1.StateB\x03\xe0A\x03R\x05state:\xe6\x01\xeaA\xe2\x01\n" +
+	"\fcapabilities\x18\x06 \x01(\v2\x17.google.protobuf.StructR\fcapabilities\x12>\n" +
+	"\x05state\x18\a \x01(\x0e2\".google.cloud.apiregistry.v1.StateB\x04\xe2A\x01\x03R\x05state:\xe6\x01\xeaA\xe2\x01\n" +
 	")cloudapiregistry.googleapis.com/McpServer\x12]projects/{project}/locations/{location}/apiNamespaces/{api_namespace}/mcpServers/{mcp_server}\x12?projects/{project}/locations/{location}/mcpServers/{mcp_server}*\n" +
-	"mcpServers2\tmcpServer\"\xd4\x04\n" +
-	"\aMcpTool\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12 \n" +
+	"mcpServers2\tmcpServer\"\xd6\x04\n" +
+	"\aMcpTool\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\vdisplayName\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12&\n" +
 	"\x0fmcp_server_urls\x18\x04 \x03(\tR\rmcpServerUrls\x12:\n" +
 	"\finput_schema\x18\x05 \x01(\v2\x17.google.protobuf.StructR\vinputSchema\x12<\n" +

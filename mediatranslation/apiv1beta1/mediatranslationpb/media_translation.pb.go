@@ -592,30 +592,30 @@ var File_google_cloud_mediatranslation_v1beta1_media_translation_proto protorefl
 
 const file_google_cloud_mediatranslation_v1beta1_media_translation_proto_rawDesc = "" +
 	"\n" +
-	"=google/cloud/mediatranslation/v1beta1/media_translation.proto\x12%google.cloud.mediatranslation.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x17google/rpc/status.proto\x1a\x17google/api/client.proto\"\xfd\x01\n" +
-	"\x15TranslateSpeechConfig\x12*\n" +
-	"\x0eaudio_encoding\x18\x01 \x01(\tB\x03\xe0A\x02R\raudioEncoding\x125\n" +
-	"\x14source_language_code\x18\x02 \x01(\tB\x03\xe0A\x02R\x12sourceLanguageCode\x125\n" +
-	"\x14target_language_code\x18\x03 \x01(\tB\x03\xe0A\x02R\x12targetLanguageCode\x12/\n" +
-	"\x11sample_rate_hertz\x18\x04 \x01(\x05B\x03\xe0A\x01R\x0fsampleRateHertz\x12\x19\n" +
-	"\x05model\x18\x05 \x01(\tB\x03\xe0A\x01R\x05model\"\xb6\x01\n" +
-	"\x1eStreamingTranslateSpeechConfig\x12d\n" +
-	"\faudio_config\x18\x01 \x01(\v2<.google.cloud.mediatranslation.v1beta1.TranslateSpeechConfigB\x03\xe0A\x02R\vaudioConfig\x12.\n" +
-	"\x10single_utterance\x18\x02 \x01(\bB\x03\xe0A\x01R\x0fsingleUtterance\"\xd1\x01\n" +
+	"=google/cloud/mediatranslation/v1beta1/media_translation.proto\x12%google.cloud.mediatranslation.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x17google/rpc/status.proto\x1a\x17google/api/client.proto\"\x82\x02\n" +
+	"\x15TranslateSpeechConfig\x12+\n" +
+	"\x0eaudio_encoding\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\raudioEncoding\x126\n" +
+	"\x14source_language_code\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x12sourceLanguageCode\x126\n" +
+	"\x14target_language_code\x18\x03 \x01(\tB\x04\xe2A\x01\x02R\x12targetLanguageCode\x120\n" +
+	"\x11sample_rate_hertz\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x0fsampleRateHertz\x12\x1a\n" +
+	"\x05model\x18\x05 \x01(\tB\x04\xe2A\x01\x01R\x05model\"\xb8\x01\n" +
+	"\x1eStreamingTranslateSpeechConfig\x12e\n" +
+	"\faudio_config\x18\x01 \x01(\v2<.google.cloud.mediatranslation.v1beta1.TranslateSpeechConfigB\x04\xe2A\x01\x02R\vaudioConfig\x12/\n" +
+	"\x10single_utterance\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x0fsingleUtterance\"\xd1\x01\n" +
 	"\x1fStreamingTranslateSpeechRequest\x12r\n" +
 	"\x10streaming_config\x18\x01 \x01(\v2E.google.cloud.mediatranslation.v1beta1.StreamingTranslateSpeechConfigH\x00R\x0fstreamingConfig\x12%\n" +
 	"\raudio_content\x18\x02 \x01(\fH\x00R\faudioContentB\x13\n" +
-	"\x11streaming_request\"\xa2\x02\n" +
+	"\x11streaming_request\"\xa4\x02\n" +
 	"\x1eStreamingTranslateSpeechResult\x12\x95\x01\n" +
-	"\x17text_translation_result\x18\x01 \x01(\v2[.google.cloud.mediatranslation.v1beta1.StreamingTranslateSpeechResult.TextTranslationResultH\x00R\x15textTranslationResult\x1a^\n" +
-	"\x15TextTranslationResult\x12%\n" +
-	"\vtranslation\x18\x01 \x01(\tB\x03\xe0A\x03R\vtranslation\x12\x1e\n" +
-	"\bis_final\x18\x02 \x01(\bB\x03\xe0A\x03R\aisFinalB\b\n" +
-	"\x06result\"\x93\x03\n" +
-	" StreamingTranslateSpeechResponse\x12-\n" +
-	"\x05error\x18\x01 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\x12b\n" +
-	"\x06result\x18\x02 \x01(\v2E.google.cloud.mediatranslation.v1beta1.StreamingTranslateSpeechResultB\x03\xe0A\x03R\x06result\x12\x88\x01\n" +
-	"\x11speech_event_type\x18\x03 \x01(\x0e2W.google.cloud.mediatranslation.v1beta1.StreamingTranslateSpeechResponse.SpeechEventTypeB\x03\xe0A\x03R\x0fspeechEventType\"Q\n" +
+	"\x17text_translation_result\x18\x01 \x01(\v2[.google.cloud.mediatranslation.v1beta1.StreamingTranslateSpeechResult.TextTranslationResultH\x00R\x15textTranslationResult\x1a`\n" +
+	"\x15TextTranslationResult\x12&\n" +
+	"\vtranslation\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\vtranslation\x12\x1f\n" +
+	"\bis_final\x18\x02 \x01(\bB\x04\xe2A\x01\x03R\aisFinalB\b\n" +
+	"\x06result\"\x96\x03\n" +
+	" StreamingTranslateSpeechResponse\x12.\n" +
+	"\x05error\x18\x01 \x01(\v2\x12.google.rpc.StatusB\x04\xe2A\x01\x03R\x05error\x12c\n" +
+	"\x06result\x18\x02 \x01(\v2E.google.cloud.mediatranslation.v1beta1.StreamingTranslateSpeechResultB\x04\xe2A\x01\x03R\x06result\x12\x89\x01\n" +
+	"\x11speech_event_type\x18\x03 \x01(\x0e2W.google.cloud.mediatranslation.v1beta1.StreamingTranslateSpeechResponse.SpeechEventTypeB\x04\xe2A\x01\x03R\x0fspeechEventType\"Q\n" +
 	"\x0fSpeechEventType\x12!\n" +
 	"\x1dSPEECH_EVENT_TYPE_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17END_OF_SINGLE_UTTERANCE\x10\x012\xa3\x02\n" +

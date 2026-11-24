@@ -107,13 +107,13 @@ var File_google_cloud_datacatalog_v1beta1_timestamps_proto protoreflect.FileDesc
 
 const file_google_cloud_datacatalog_v1beta1_timestamps_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/datacatalog/v1beta1/timestamps.proto\x12 google.cloud.datacatalog.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xce\x01\n" +
+	"1google/cloud/datacatalog/v1beta1/timestamps.proto\x12 google.cloud.datacatalog.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcf\x01\n" +
 	"\x10SystemTimestamps\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\x12@\n" +
-	"\vexpire_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"updateTime\x12A\n" +
+	"\vexpire_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"expireTimeB\xdc\x01\n" +
 	"$com.google.cloud.datacatalog.v1beta1P\x01ZFcloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb;datacatalogpb\xaa\x02 Google.Cloud.DataCatalog.V1Beta1\xca\x02 Google\\Cloud\\DataCatalog\\V1beta1\xea\x02#Google::Cloud::DataCatalog::V1beta1b\x06proto3"
 

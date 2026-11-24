@@ -1340,6 +1340,127 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "eventarc",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/eventarc/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "eventarc.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetTrigger = append(client.CallOptions.GetTrigger, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTriggers = append(client.CallOptions.ListTriggers, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateTrigger = append(client.CallOptions.CreateTrigger, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTrigger = append(client.CallOptions.UpdateTrigger, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTrigger = append(client.CallOptions.DeleteTrigger, gax.WithClientTracing(tracing))
+		client.CallOptions.GetChannel = append(client.CallOptions.GetChannel, gax.WithClientTracing(tracing))
+		client.CallOptions.ListChannels = append(client.CallOptions.ListChannels, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateChannel = append(client.CallOptions.CreateChannel, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateChannel = append(client.CallOptions.UpdateChannel, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteChannel = append(client.CallOptions.DeleteChannel, gax.WithClientTracing(tracing))
+		client.CallOptions.GetProvider = append(client.CallOptions.GetProvider, gax.WithClientTracing(tracing))
+		client.CallOptions.ListProviders = append(client.CallOptions.ListProviders, gax.WithClientTracing(tracing))
+		client.CallOptions.GetChannelConnection = append(client.CallOptions.GetChannelConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.ListChannelConnections = append(client.CallOptions.ListChannelConnections, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateChannelConnection = append(client.CallOptions.CreateChannelConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteChannelConnection = append(client.CallOptions.DeleteChannelConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.GetGoogleChannelConfig = append(client.CallOptions.GetGoogleChannelConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateGoogleChannelConfig = append(client.CallOptions.UpdateGoogleChannelConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetMessageBus = append(client.CallOptions.GetMessageBus, gax.WithClientTracing(tracing))
+		client.CallOptions.ListMessageBuses = append(client.CallOptions.ListMessageBuses, gax.WithClientTracing(tracing))
+		client.CallOptions.ListMessageBusEnrollments = append(client.CallOptions.ListMessageBusEnrollments, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateMessageBus = append(client.CallOptions.CreateMessageBus, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateMessageBus = append(client.CallOptions.UpdateMessageBus, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteMessageBus = append(client.CallOptions.DeleteMessageBus, gax.WithClientTracing(tracing))
+		client.CallOptions.GetEnrollment = append(client.CallOptions.GetEnrollment, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEnrollments = append(client.CallOptions.ListEnrollments, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateEnrollment = append(client.CallOptions.CreateEnrollment, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateEnrollment = append(client.CallOptions.UpdateEnrollment, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteEnrollment = append(client.CallOptions.DeleteEnrollment, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPipeline = append(client.CallOptions.GetPipeline, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPipelines = append(client.CallOptions.ListPipelines, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePipeline = append(client.CallOptions.CreatePipeline, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePipeline = append(client.CallOptions.UpdatePipeline, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePipeline = append(client.CallOptions.DeletePipeline, gax.WithClientTracing(tracing))
+		client.CallOptions.GetGoogleApiSource = append(client.CallOptions.GetGoogleApiSource, gax.WithClientTracing(tracing))
+		client.CallOptions.ListGoogleApiSources = append(client.CallOptions.ListGoogleApiSources, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateGoogleApiSource = append(client.CallOptions.CreateGoogleApiSource, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateGoogleApiSource = append(client.CallOptions.UpdateGoogleApiSource, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteGoogleApiSource = append(client.CallOptions.DeleteGoogleApiSource, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "eventarc",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/eventarc/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "eventarc.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetTrigger = append(client.CallOptions.GetTrigger, gax.WithClientLogging(logging))
+		client.CallOptions.ListTriggers = append(client.CallOptions.ListTriggers, gax.WithClientLogging(logging))
+		client.CallOptions.CreateTrigger = append(client.CallOptions.CreateTrigger, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTrigger = append(client.CallOptions.UpdateTrigger, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTrigger = append(client.CallOptions.DeleteTrigger, gax.WithClientLogging(logging))
+		client.CallOptions.GetChannel = append(client.CallOptions.GetChannel, gax.WithClientLogging(logging))
+		client.CallOptions.ListChannels = append(client.CallOptions.ListChannels, gax.WithClientLogging(logging))
+		client.CallOptions.CreateChannel = append(client.CallOptions.CreateChannel, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateChannel = append(client.CallOptions.UpdateChannel, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteChannel = append(client.CallOptions.DeleteChannel, gax.WithClientLogging(logging))
+		client.CallOptions.GetProvider = append(client.CallOptions.GetProvider, gax.WithClientLogging(logging))
+		client.CallOptions.ListProviders = append(client.CallOptions.ListProviders, gax.WithClientLogging(logging))
+		client.CallOptions.GetChannelConnection = append(client.CallOptions.GetChannelConnection, gax.WithClientLogging(logging))
+		client.CallOptions.ListChannelConnections = append(client.CallOptions.ListChannelConnections, gax.WithClientLogging(logging))
+		client.CallOptions.CreateChannelConnection = append(client.CallOptions.CreateChannelConnection, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteChannelConnection = append(client.CallOptions.DeleteChannelConnection, gax.WithClientLogging(logging))
+		client.CallOptions.GetGoogleChannelConfig = append(client.CallOptions.GetGoogleChannelConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateGoogleChannelConfig = append(client.CallOptions.UpdateGoogleChannelConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetMessageBus = append(client.CallOptions.GetMessageBus, gax.WithClientLogging(logging))
+		client.CallOptions.ListMessageBuses = append(client.CallOptions.ListMessageBuses, gax.WithClientLogging(logging))
+		client.CallOptions.ListMessageBusEnrollments = append(client.CallOptions.ListMessageBusEnrollments, gax.WithClientLogging(logging))
+		client.CallOptions.CreateMessageBus = append(client.CallOptions.CreateMessageBus, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateMessageBus = append(client.CallOptions.UpdateMessageBus, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteMessageBus = append(client.CallOptions.DeleteMessageBus, gax.WithClientLogging(logging))
+		client.CallOptions.GetEnrollment = append(client.CallOptions.GetEnrollment, gax.WithClientLogging(logging))
+		client.CallOptions.ListEnrollments = append(client.CallOptions.ListEnrollments, gax.WithClientLogging(logging))
+		client.CallOptions.CreateEnrollment = append(client.CallOptions.CreateEnrollment, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateEnrollment = append(client.CallOptions.UpdateEnrollment, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteEnrollment = append(client.CallOptions.DeleteEnrollment, gax.WithClientLogging(logging))
+		client.CallOptions.GetPipeline = append(client.CallOptions.GetPipeline, gax.WithClientLogging(logging))
+		client.CallOptions.ListPipelines = append(client.CallOptions.ListPipelines, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePipeline = append(client.CallOptions.CreatePipeline, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePipeline = append(client.CallOptions.UpdatePipeline, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePipeline = append(client.CallOptions.DeletePipeline, gax.WithClientLogging(logging))
+		client.CallOptions.GetGoogleApiSource = append(client.CallOptions.GetGoogleApiSource, gax.WithClientLogging(logging))
+		client.CallOptions.ListGoogleApiSources = append(client.CallOptions.ListGoogleApiSources, gax.WithClientLogging(logging))
+		client.CallOptions.CreateGoogleApiSource = append(client.CallOptions.CreateGoogleApiSource, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateGoogleApiSource = append(client.CallOptions.UpdateGoogleApiSource, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteGoogleApiSource = append(client.CallOptions.DeleteGoogleApiSource, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1495,6 +1616,127 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "eventarc",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/eventarc/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "eventarc.googleapis.com",
+			}),
+		)
+
+		callOpts.GetTrigger = append(callOpts.GetTrigger, gax.WithClientTracing(tracing))
+		callOpts.ListTriggers = append(callOpts.ListTriggers, gax.WithClientTracing(tracing))
+		callOpts.CreateTrigger = append(callOpts.CreateTrigger, gax.WithClientTracing(tracing))
+		callOpts.UpdateTrigger = append(callOpts.UpdateTrigger, gax.WithClientTracing(tracing))
+		callOpts.DeleteTrigger = append(callOpts.DeleteTrigger, gax.WithClientTracing(tracing))
+		callOpts.GetChannel = append(callOpts.GetChannel, gax.WithClientTracing(tracing))
+		callOpts.ListChannels = append(callOpts.ListChannels, gax.WithClientTracing(tracing))
+		callOpts.CreateChannel = append(callOpts.CreateChannel, gax.WithClientTracing(tracing))
+		callOpts.UpdateChannel = append(callOpts.UpdateChannel, gax.WithClientTracing(tracing))
+		callOpts.DeleteChannel = append(callOpts.DeleteChannel, gax.WithClientTracing(tracing))
+		callOpts.GetProvider = append(callOpts.GetProvider, gax.WithClientTracing(tracing))
+		callOpts.ListProviders = append(callOpts.ListProviders, gax.WithClientTracing(tracing))
+		callOpts.GetChannelConnection = append(callOpts.GetChannelConnection, gax.WithClientTracing(tracing))
+		callOpts.ListChannelConnections = append(callOpts.ListChannelConnections, gax.WithClientTracing(tracing))
+		callOpts.CreateChannelConnection = append(callOpts.CreateChannelConnection, gax.WithClientTracing(tracing))
+		callOpts.DeleteChannelConnection = append(callOpts.DeleteChannelConnection, gax.WithClientTracing(tracing))
+		callOpts.GetGoogleChannelConfig = append(callOpts.GetGoogleChannelConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateGoogleChannelConfig = append(callOpts.UpdateGoogleChannelConfig, gax.WithClientTracing(tracing))
+		callOpts.GetMessageBus = append(callOpts.GetMessageBus, gax.WithClientTracing(tracing))
+		callOpts.ListMessageBuses = append(callOpts.ListMessageBuses, gax.WithClientTracing(tracing))
+		callOpts.ListMessageBusEnrollments = append(callOpts.ListMessageBusEnrollments, gax.WithClientTracing(tracing))
+		callOpts.CreateMessageBus = append(callOpts.CreateMessageBus, gax.WithClientTracing(tracing))
+		callOpts.UpdateMessageBus = append(callOpts.UpdateMessageBus, gax.WithClientTracing(tracing))
+		callOpts.DeleteMessageBus = append(callOpts.DeleteMessageBus, gax.WithClientTracing(tracing))
+		callOpts.GetEnrollment = append(callOpts.GetEnrollment, gax.WithClientTracing(tracing))
+		callOpts.ListEnrollments = append(callOpts.ListEnrollments, gax.WithClientTracing(tracing))
+		callOpts.CreateEnrollment = append(callOpts.CreateEnrollment, gax.WithClientTracing(tracing))
+		callOpts.UpdateEnrollment = append(callOpts.UpdateEnrollment, gax.WithClientTracing(tracing))
+		callOpts.DeleteEnrollment = append(callOpts.DeleteEnrollment, gax.WithClientTracing(tracing))
+		callOpts.GetPipeline = append(callOpts.GetPipeline, gax.WithClientTracing(tracing))
+		callOpts.ListPipelines = append(callOpts.ListPipelines, gax.WithClientTracing(tracing))
+		callOpts.CreatePipeline = append(callOpts.CreatePipeline, gax.WithClientTracing(tracing))
+		callOpts.UpdatePipeline = append(callOpts.UpdatePipeline, gax.WithClientTracing(tracing))
+		callOpts.DeletePipeline = append(callOpts.DeletePipeline, gax.WithClientTracing(tracing))
+		callOpts.GetGoogleApiSource = append(callOpts.GetGoogleApiSource, gax.WithClientTracing(tracing))
+		callOpts.ListGoogleApiSources = append(callOpts.ListGoogleApiSources, gax.WithClientTracing(tracing))
+		callOpts.CreateGoogleApiSource = append(callOpts.CreateGoogleApiSource, gax.WithClientTracing(tracing))
+		callOpts.UpdateGoogleApiSource = append(callOpts.UpdateGoogleApiSource, gax.WithClientTracing(tracing))
+		callOpts.DeleteGoogleApiSource = append(callOpts.DeleteGoogleApiSource, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "eventarc",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/eventarc/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "eventarc.googleapis.com",
+			}),
+		)
+
+		callOpts.GetTrigger = append(callOpts.GetTrigger, gax.WithClientLogging(logging))
+		callOpts.ListTriggers = append(callOpts.ListTriggers, gax.WithClientLogging(logging))
+		callOpts.CreateTrigger = append(callOpts.CreateTrigger, gax.WithClientLogging(logging))
+		callOpts.UpdateTrigger = append(callOpts.UpdateTrigger, gax.WithClientLogging(logging))
+		callOpts.DeleteTrigger = append(callOpts.DeleteTrigger, gax.WithClientLogging(logging))
+		callOpts.GetChannel = append(callOpts.GetChannel, gax.WithClientLogging(logging))
+		callOpts.ListChannels = append(callOpts.ListChannels, gax.WithClientLogging(logging))
+		callOpts.CreateChannel = append(callOpts.CreateChannel, gax.WithClientLogging(logging))
+		callOpts.UpdateChannel = append(callOpts.UpdateChannel, gax.WithClientLogging(logging))
+		callOpts.DeleteChannel = append(callOpts.DeleteChannel, gax.WithClientLogging(logging))
+		callOpts.GetProvider = append(callOpts.GetProvider, gax.WithClientLogging(logging))
+		callOpts.ListProviders = append(callOpts.ListProviders, gax.WithClientLogging(logging))
+		callOpts.GetChannelConnection = append(callOpts.GetChannelConnection, gax.WithClientLogging(logging))
+		callOpts.ListChannelConnections = append(callOpts.ListChannelConnections, gax.WithClientLogging(logging))
+		callOpts.CreateChannelConnection = append(callOpts.CreateChannelConnection, gax.WithClientLogging(logging))
+		callOpts.DeleteChannelConnection = append(callOpts.DeleteChannelConnection, gax.WithClientLogging(logging))
+		callOpts.GetGoogleChannelConfig = append(callOpts.GetGoogleChannelConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateGoogleChannelConfig = append(callOpts.UpdateGoogleChannelConfig, gax.WithClientLogging(logging))
+		callOpts.GetMessageBus = append(callOpts.GetMessageBus, gax.WithClientLogging(logging))
+		callOpts.ListMessageBuses = append(callOpts.ListMessageBuses, gax.WithClientLogging(logging))
+		callOpts.ListMessageBusEnrollments = append(callOpts.ListMessageBusEnrollments, gax.WithClientLogging(logging))
+		callOpts.CreateMessageBus = append(callOpts.CreateMessageBus, gax.WithClientLogging(logging))
+		callOpts.UpdateMessageBus = append(callOpts.UpdateMessageBus, gax.WithClientLogging(logging))
+		callOpts.DeleteMessageBus = append(callOpts.DeleteMessageBus, gax.WithClientLogging(logging))
+		callOpts.GetEnrollment = append(callOpts.GetEnrollment, gax.WithClientLogging(logging))
+		callOpts.ListEnrollments = append(callOpts.ListEnrollments, gax.WithClientLogging(logging))
+		callOpts.CreateEnrollment = append(callOpts.CreateEnrollment, gax.WithClientLogging(logging))
+		callOpts.UpdateEnrollment = append(callOpts.UpdateEnrollment, gax.WithClientLogging(logging))
+		callOpts.DeleteEnrollment = append(callOpts.DeleteEnrollment, gax.WithClientLogging(logging))
+		callOpts.GetPipeline = append(callOpts.GetPipeline, gax.WithClientLogging(logging))
+		callOpts.ListPipelines = append(callOpts.ListPipelines, gax.WithClientLogging(logging))
+		callOpts.CreatePipeline = append(callOpts.CreatePipeline, gax.WithClientLogging(logging))
+		callOpts.UpdatePipeline = append(callOpts.UpdatePipeline, gax.WithClientLogging(logging))
+		callOpts.DeletePipeline = append(callOpts.DeletePipeline, gax.WithClientLogging(logging))
+		callOpts.GetGoogleApiSource = append(callOpts.GetGoogleApiSource, gax.WithClientLogging(logging))
+		callOpts.ListGoogleApiSources = append(callOpts.ListGoogleApiSources, gax.WithClientLogging(logging))
+		callOpts.CreateGoogleApiSource = append(callOpts.CreateGoogleApiSource, gax.WithClientLogging(logging))
+		callOpts.UpdateGoogleApiSource = append(callOpts.UpdateGoogleApiSource, gax.WithClientLogging(logging))
+		callOpts.DeleteGoogleApiSource = append(callOpts.DeleteGoogleApiSource, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1551,9 +1793,6 @@ func (c *gRPCClient) GetTrigger(ctx context.Context, req *eventarcpb.GetTriggerR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetTrigger")
 	}
@@ -1575,9 +1814,6 @@ func (c *gRPCClient) ListTriggers(ctx context.Context, req *eventarcpb.ListTrigg
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/ListTriggers")
 	}
@@ -1627,9 +1863,6 @@ func (c *gRPCClient) CreateTrigger(ctx context.Context, req *eventarcpb.CreateTr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateTrigger")
 	}
@@ -1684,9 +1917,6 @@ func (c *gRPCClient) DeleteTrigger(ctx context.Context, req *eventarcpb.DeleteTr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteTrigger")
 	}
@@ -1714,9 +1944,6 @@ func (c *gRPCClient) GetChannel(ctx context.Context, req *eventarcpb.GetChannelR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetChannel")
 	}
@@ -1738,9 +1965,6 @@ func (c *gRPCClient) ListChannels(ctx context.Context, req *eventarcpb.ListChann
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/ListChannels")
 	}
@@ -1790,9 +2014,6 @@ func (c *gRPCClient) CreateChannel(ctx context.Context, req *eventarcpb.CreateCh
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateChannel")
 	}
@@ -1847,9 +2068,6 @@ func (c *gRPCClient) DeleteChannel(ctx context.Context, req *eventarcpb.DeleteCh
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteChannel")
 	}
@@ -1877,9 +2095,6 @@ func (c *gRPCClient) GetProvider(ctx context.Context, req *eventarcpb.GetProvide
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetProvider")
 	}
@@ -1901,9 +2116,6 @@ func (c *gRPCClient) ListProviders(ctx context.Context, req *eventarcpb.ListProv
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/ListProviders")
 	}
@@ -1953,9 +2165,6 @@ func (c *gRPCClient) GetChannelConnection(ctx context.Context, req *eventarcpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetChannelConnection")
 	}
@@ -1977,9 +2186,6 @@ func (c *gRPCClient) ListChannelConnections(ctx context.Context, req *eventarcpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/ListChannelConnections")
 	}
@@ -2029,9 +2235,6 @@ func (c *gRPCClient) CreateChannelConnection(ctx context.Context, req *eventarcp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateChannelConnection")
 	}
@@ -2059,9 +2262,6 @@ func (c *gRPCClient) DeleteChannelConnection(ctx context.Context, req *eventarcp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteChannelConnection")
 	}
@@ -2089,9 +2289,6 @@ func (c *gRPCClient) GetGoogleChannelConfig(ctx context.Context, req *eventarcpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetGoogleChannelConfig")
 	}
@@ -2134,9 +2331,6 @@ func (c *gRPCClient) GetMessageBus(ctx context.Context, req *eventarcpb.GetMessa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetMessageBus")
 	}
@@ -2158,9 +2352,6 @@ func (c *gRPCClient) ListMessageBuses(ctx context.Context, req *eventarcpb.ListM
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/ListMessageBuses")
 	}
@@ -2210,9 +2401,6 @@ func (c *gRPCClient) ListMessageBusEnrollments(ctx context.Context, req *eventar
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/ListMessageBusEnrollments")
 	}
@@ -2262,9 +2450,6 @@ func (c *gRPCClient) CreateMessageBus(ctx context.Context, req *eventarcpb.Creat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateMessageBus")
 	}
@@ -2319,9 +2504,6 @@ func (c *gRPCClient) DeleteMessageBus(ctx context.Context, req *eventarcpb.Delet
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteMessageBus")
 	}
@@ -2349,9 +2531,6 @@ func (c *gRPCClient) GetEnrollment(ctx context.Context, req *eventarcpb.GetEnrol
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetEnrollment")
 	}
@@ -2373,9 +2552,6 @@ func (c *gRPCClient) ListEnrollments(ctx context.Context, req *eventarcpb.ListEn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/ListEnrollments")
 	}
@@ -2425,9 +2601,6 @@ func (c *gRPCClient) CreateEnrollment(ctx context.Context, req *eventarcpb.Creat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateEnrollment")
 	}
@@ -2482,9 +2655,6 @@ func (c *gRPCClient) DeleteEnrollment(ctx context.Context, req *eventarcpb.Delet
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteEnrollment")
 	}
@@ -2512,9 +2682,6 @@ func (c *gRPCClient) GetPipeline(ctx context.Context, req *eventarcpb.GetPipelin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetPipeline")
 	}
@@ -2536,9 +2703,6 @@ func (c *gRPCClient) ListPipelines(ctx context.Context, req *eventarcpb.ListPipe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/ListPipelines")
 	}
@@ -2588,9 +2752,6 @@ func (c *gRPCClient) CreatePipeline(ctx context.Context, req *eventarcpb.CreateP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreatePipeline")
 	}
@@ -2645,9 +2806,6 @@ func (c *gRPCClient) DeletePipeline(ctx context.Context, req *eventarcpb.DeleteP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeletePipeline")
 	}
@@ -2675,9 +2833,6 @@ func (c *gRPCClient) GetGoogleApiSource(ctx context.Context, req *eventarcpb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetGoogleApiSource")
 	}
@@ -2699,9 +2854,6 @@ func (c *gRPCClient) ListGoogleApiSources(ctx context.Context, req *eventarcpb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/ListGoogleApiSources")
 	}
@@ -2751,9 +2903,6 @@ func (c *gRPCClient) CreateGoogleApiSource(ctx context.Context, req *eventarcpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateGoogleApiSource")
 	}
@@ -2808,9 +2957,6 @@ func (c *gRPCClient) DeleteGoogleApiSource(ctx context.Context, req *eventarcpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteGoogleApiSource")
 	}
@@ -2908,9 +3054,6 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 	}
@@ -2932,9 +3075,6 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 	}
@@ -2956,9 +3096,6 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 	}
@@ -3085,6 +3222,11 @@ func (c *restClient) GetTrigger(ctx context.Context, req *eventarcpb.GetTriggerR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3098,9 +3240,6 @@ func (c *restClient) GetTrigger(ctx context.Context, req *eventarcpb.GetTriggerR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetTrigger")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/triggers/*}")
@@ -3153,6 +3292,11 @@ func (c *restClient) ListTriggers(ctx context.Context, req *eventarcpb.ListTrigg
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/triggers", req.GetParent())
@@ -3233,6 +3377,11 @@ func (c *restClient) CreateTrigger(ctx context.Context, req *eventarcpb.CreateTr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/triggers", req.GetParent())
 
 	params := url.Values{}
@@ -3250,9 +3399,6 @@ func (c *restClient) CreateTrigger(ctx context.Context, req *eventarcpb.CreateTr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateTrigger")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/triggers")
@@ -3306,6 +3452,11 @@ func (c *restClient) UpdateTrigger(ctx context.Context, req *eventarcpb.UpdateTr
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetTrigger().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTrigger().GetName())
@@ -3382,6 +3533,11 @@ func (c *restClient) DeleteTrigger(ctx context.Context, req *eventarcpb.DeleteTr
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3404,9 +3560,6 @@ func (c *restClient) DeleteTrigger(ctx context.Context, req *eventarcpb.DeleteTr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteTrigger")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/triggers/*}")
@@ -3455,6 +3608,11 @@ func (c *restClient) GetChannel(ctx context.Context, req *eventarcpb.GetChannelR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3468,9 +3626,6 @@ func (c *restClient) GetChannel(ctx context.Context, req *eventarcpb.GetChannelR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetChannel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*}")
@@ -3523,6 +3678,11 @@ func (c *restClient) ListChannels(ctx context.Context, req *eventarcpb.ListChann
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/channels", req.GetParent())
@@ -3600,6 +3760,11 @@ func (c *restClient) CreateChannel(ctx context.Context, req *eventarcpb.CreateCh
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/channels", req.GetParent())
 
 	params := url.Values{}
@@ -3617,9 +3782,6 @@ func (c *restClient) CreateChannel(ctx context.Context, req *eventarcpb.CreateCh
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateChannel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/channels")
@@ -3673,6 +3835,11 @@ func (c *restClient) UpdateChannel(ctx context.Context, req *eventarcpb.UpdateCh
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetChannel().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetChannel().GetName())
@@ -3746,6 +3913,11 @@ func (c *restClient) DeleteChannel(ctx context.Context, req *eventarcpb.DeleteCh
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3762,9 +3934,6 @@ func (c *restClient) DeleteChannel(ctx context.Context, req *eventarcpb.DeleteCh
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteChannel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*}")
@@ -3813,6 +3982,11 @@ func (c *restClient) GetProvider(ctx context.Context, req *eventarcpb.GetProvide
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3826,9 +4000,6 @@ func (c *restClient) GetProvider(ctx context.Context, req *eventarcpb.GetProvide
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetProvider")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/providers/*}")
@@ -3881,6 +4052,11 @@ func (c *restClient) ListProviders(ctx context.Context, req *eventarcpb.ListProv
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/providers", req.GetParent())
@@ -3954,6 +4130,11 @@ func (c *restClient) GetChannelConnection(ctx context.Context, req *eventarcpb.G
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -3967,9 +4148,6 @@ func (c *restClient) GetChannelConnection(ctx context.Context, req *eventarcpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetChannelConnection")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channelConnections/*}")
@@ -4022,6 +4200,11 @@ func (c *restClient) ListChannelConnections(ctx context.Context, req *eventarcpb
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/channelConnections", req.GetParent())
@@ -4096,6 +4279,11 @@ func (c *restClient) CreateChannelConnection(ctx context.Context, req *eventarcp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/channelConnections", req.GetParent())
 
 	params := url.Values{}
@@ -4110,9 +4298,6 @@ func (c *restClient) CreateChannelConnection(ctx context.Context, req *eventarcp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateChannelConnection")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/channelConnections")
@@ -4161,6 +4346,11 @@ func (c *restClient) DeleteChannelConnection(ctx context.Context, req *eventarcp
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4174,9 +4364,6 @@ func (c *restClient) DeleteChannelConnection(ctx context.Context, req *eventarcp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteChannelConnection")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channelConnections/*}")
@@ -4227,6 +4414,11 @@ func (c *restClient) GetGoogleChannelConfig(ctx context.Context, req *eventarcpb
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4240,9 +4432,6 @@ func (c *restClient) GetGoogleChannelConfig(ctx context.Context, req *eventarcpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetGoogleChannelConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/googleChannelConfig}")
@@ -4289,6 +4478,11 @@ func (c *restClient) UpdateGoogleChannelConfig(ctx context.Context, req *eventar
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetGoogleChannelConfig().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetGoogleChannelConfig().GetName())
@@ -4352,6 +4546,11 @@ func (c *restClient) GetMessageBus(ctx context.Context, req *eventarcpb.GetMessa
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4365,9 +4564,6 @@ func (c *restClient) GetMessageBus(ctx context.Context, req *eventarcpb.GetMessa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetMessageBus")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/messageBuses/*}")
@@ -4420,6 +4616,11 @@ func (c *restClient) ListMessageBuses(ctx context.Context, req *eventarcpb.ListM
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/messageBuses", req.GetParent())
@@ -4506,6 +4707,11 @@ func (c *restClient) ListMessageBusEnrollments(ctx context.Context, req *eventar
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v:listEnrollments", req.GetParent())
 
 		params := url.Values{}
@@ -4578,6 +4784,11 @@ func (c *restClient) CreateMessageBus(ctx context.Context, req *eventarcpb.Creat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/messageBuses", req.GetParent())
 
 	params := url.Values{}
@@ -4595,9 +4806,6 @@ func (c *restClient) CreateMessageBus(ctx context.Context, req *eventarcpb.Creat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateMessageBus")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/messageBuses")
@@ -4651,6 +4859,11 @@ func (c *restClient) UpdateMessageBus(ctx context.Context, req *eventarcpb.Updat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetMessageBus().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetMessageBus().GetName())
@@ -4727,6 +4940,11 @@ func (c *restClient) DeleteMessageBus(ctx context.Context, req *eventarcpb.Delet
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4749,9 +4967,6 @@ func (c *restClient) DeleteMessageBus(ctx context.Context, req *eventarcpb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteMessageBus")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/messageBuses/*}")
@@ -4800,6 +5015,11 @@ func (c *restClient) GetEnrollment(ctx context.Context, req *eventarcpb.GetEnrol
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -4813,9 +5033,6 @@ func (c *restClient) GetEnrollment(ctx context.Context, req *eventarcpb.GetEnrol
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetEnrollment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/enrollments/*}")
@@ -4868,6 +5085,11 @@ func (c *restClient) ListEnrollments(ctx context.Context, req *eventarcpb.ListEn
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/enrollments", req.GetParent())
@@ -4948,6 +5170,11 @@ func (c *restClient) CreateEnrollment(ctx context.Context, req *eventarcpb.Creat
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/enrollments", req.GetParent())
 
 	params := url.Values{}
@@ -4965,9 +5192,6 @@ func (c *restClient) CreateEnrollment(ctx context.Context, req *eventarcpb.Creat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateEnrollment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/enrollments")
@@ -5021,6 +5245,11 @@ func (c *restClient) UpdateEnrollment(ctx context.Context, req *eventarcpb.Updat
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetEnrollment().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetEnrollment().GetName())
@@ -5097,6 +5326,11 @@ func (c *restClient) DeleteEnrollment(ctx context.Context, req *eventarcpb.Delet
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5119,9 +5353,6 @@ func (c *restClient) DeleteEnrollment(ctx context.Context, req *eventarcpb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteEnrollment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/enrollments/*}")
@@ -5170,6 +5401,11 @@ func (c *restClient) GetPipeline(ctx context.Context, req *eventarcpb.GetPipelin
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5183,9 +5419,6 @@ func (c *restClient) GetPipeline(ctx context.Context, req *eventarcpb.GetPipelin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetPipeline")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/pipelines/*}")
@@ -5238,6 +5471,11 @@ func (c *restClient) ListPipelines(ctx context.Context, req *eventarcpb.ListPipe
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/pipelines", req.GetParent())
@@ -5318,6 +5556,11 @@ func (c *restClient) CreatePipeline(ctx context.Context, req *eventarcpb.CreateP
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/pipelines", req.GetParent())
 
 	params := url.Values{}
@@ -5335,9 +5578,6 @@ func (c *restClient) CreatePipeline(ctx context.Context, req *eventarcpb.CreateP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreatePipeline")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/pipelines")
@@ -5391,6 +5631,11 @@ func (c *restClient) UpdatePipeline(ctx context.Context, req *eventarcpb.UpdateP
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetPipeline().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetPipeline().GetName())
@@ -5467,6 +5712,11 @@ func (c *restClient) DeletePipeline(ctx context.Context, req *eventarcpb.DeleteP
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5489,9 +5739,6 @@ func (c *restClient) DeletePipeline(ctx context.Context, req *eventarcpb.DeleteP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeletePipeline")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/pipelines/*}")
@@ -5540,6 +5787,11 @@ func (c *restClient) GetGoogleApiSource(ctx context.Context, req *eventarcpb.Get
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5553,9 +5805,6 @@ func (c *restClient) GetGoogleApiSource(ctx context.Context, req *eventarcpb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetGoogleApiSource")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/googleApiSources/*}")
@@ -5608,6 +5857,11 @@ func (c *restClient) ListGoogleApiSources(ctx context.Context, req *eventarcpb.L
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/googleApiSources", req.GetParent())
@@ -5688,6 +5942,11 @@ func (c *restClient) CreateGoogleApiSource(ctx context.Context, req *eventarcpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/googleApiSources", req.GetParent())
 
 	params := url.Values{}
@@ -5705,9 +5964,6 @@ func (c *restClient) CreateGoogleApiSource(ctx context.Context, req *eventarcpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateGoogleApiSource")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/googleApiSources")
@@ -5761,6 +6017,11 @@ func (c *restClient) UpdateGoogleApiSource(ctx context.Context, req *eventarcpb.
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetGoogleApiSource().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetGoogleApiSource().GetName())
@@ -5837,6 +6098,11 @@ func (c *restClient) DeleteGoogleApiSource(ctx context.Context, req *eventarcpb.
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -5859,9 +6125,6 @@ func (c *restClient) DeleteGoogleApiSource(ctx context.Context, req *eventarcpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//eventarc.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteGoogleApiSource")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/googleApiSources/*}")
@@ -5908,6 +6171,11 @@ func (c *restClient) DeleteGoogleApiSource(ctx context.Context, req *eventarcpb.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -5975,6 +6243,11 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -6046,6 +6319,11 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -6062,9 +6340,6 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/triggers/*}:getIamPolicy")
@@ -6116,6 +6391,11 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -6129,9 +6409,6 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/triggers/*}:setIamPolicy")
@@ -6185,6 +6462,11 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetResource(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
 	params := url.Values{}
@@ -6198,9 +6480,6 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/triggers/*}:testIamPermissions")
@@ -6248,6 +6527,11 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -6287,6 +6571,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -6324,6 +6613,11 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -6391,6 +6685,11 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

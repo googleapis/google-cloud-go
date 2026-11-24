@@ -601,41 +601,41 @@ var File_google_iam_v3beta_access_policies_service_proto protoreflect.FileDescri
 
 const file_google_iam_v3beta_access_policies_service_proto_rawDesc = "" +
 	"\n" +
-	"/google/iam/v3beta/access_policies_service.proto\x12\x11google.iam.v3beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a/google/iam/v3beta/access_policy_resources.proto\x1a*google/iam/v3beta/operation_metadata.proto\x1a0google/iam/v3beta/policy_binding_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\"\x80\x02\n" +
-	"\x19CreateAccessPolicyRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fiam.googleapis.com/AccessPolicyR\x06parent\x12-\n" +
-	"\x10access_policy_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x0eaccessPolicyId\x12I\n" +
-	"\raccess_policy\x18\x03 \x01(\v2\x1f.google.iam.v3beta.AccessPolicyB\x03\xe0A\x02R\faccessPolicy\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"U\n" +
-	"\x16GetAccessPolicyRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fiam.googleapis.com/AccessPolicyR\x04name\"\x90\x01\n" +
-	"\x19UpdateAccessPolicyRequest\x12I\n" +
-	"\raccess_policy\x18\x01 \x01(\v2\x1f.google.iam.v3beta.AccessPolicyB\x03\xe0A\x02R\faccessPolicy\x12(\n" +
-	"\rvalidate_only\x18\x02 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xb6\x01\n" +
-	"\x19DeleteAccessPolicyRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fiam.googleapis.com/AccessPolicyR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\x19\n" +
-	"\x05force\x18\x04 \x01(\bB\x03\xe0A\x01R\x05force\"\xa2\x01\n" +
-	"\x19ListAccessPoliciesRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fiam.googleapis.com/AccessPolicyR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"/google/iam/v3beta/access_policies_service.proto\x12\x11google.iam.v3beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a/google/iam/v3beta/access_policy_resources.proto\x1a*google/iam/v3beta/operation_metadata.proto\x1a0google/iam/v3beta/policy_binding_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\"\x84\x02\n" +
+	"\x19CreateAccessPolicyRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fiam.googleapis.com/AccessPolicyR\x06parent\x12.\n" +
+	"\x10access_policy_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0eaccessPolicyId\x12J\n" +
+	"\raccess_policy\x18\x03 \x01(\v2\x1f.google.iam.v3beta.AccessPolicyB\x04\xe2A\x01\x02R\faccessPolicy\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"V\n" +
+	"\x16GetAccessPolicyRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fiam.googleapis.com/AccessPolicyR\x04name\"\x92\x01\n" +
+	"\x19UpdateAccessPolicyRequest\x12J\n" +
+	"\raccess_policy\x18\x01 \x01(\v2\x1f.google.iam.v3beta.AccessPolicyB\x04\xe2A\x01\x02R\faccessPolicy\x12)\n" +
+	"\rvalidate_only\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xba\x01\n" +
+	"\x19DeleteAccessPolicyRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fiam.googleapis.com/AccessPolicyR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12\x1a\n" +
+	"\x05force\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x05force\"\xa5\x01\n" +
+	"\x19ListAccessPoliciesRequest\x12@\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\x12\x1fiam.googleapis.com/AccessPolicyR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x93\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x94\x01\n" +
 	"\x1aListAccessPoliciesResponse\x12H\n" +
-	"\x0faccess_policies\x18\x01 \x03(\v2\x1f.google.iam.v3beta.AccessPolicyR\x0eaccessPolicies\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\rnextPageToken\"\xa6\x01\n" +
-	"!SearchAccessPolicyBindingsRequest\x12;\n" +
-	"\x04name\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
-	"\x1fiam.googleapis.com/AccessPolicyR\x04name\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0faccess_policies\x18\x01 \x03(\v2\x1f.google.iam.v3beta.AccessPolicyR\x0eaccessPolicies\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rnextPageToken\"\xa9\x01\n" +
+	"!SearchAccessPolicyBindingsRequest\x12<\n" +
+	"\x04name\x18\x01 \x01(\tB(\xe2A\x01\x02\xfaA!\n" +
+	"\x1fiam.googleapis.com/AccessPolicyR\x04name\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x9c\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\"\x9d\x01\n" +
 	"\"SearchAccessPolicyBindingsResponse\x12I\n" +
-	"\x0fpolicy_bindings\x18\x01 \x03(\v2 .google.iam.v3beta.PolicyBindingR\x0epolicyBindings\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\rnextPageToken2\xbe\x11\n" +
+	"\x0fpolicy_bindings\x18\x01 \x03(\v2 .google.iam.v3beta.PolicyBindingR\x0epolicyBindings\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rnextPageToken2\xbe\x11\n" +
 	"\x0eAccessPolicies\x12\x94\x03\n" +
 	"\x12CreateAccessPolicy\x12,.google.iam.v3beta.CreateAccessPolicyRequest\x1a\x1d.google.longrunning.Operation\"\xb0\x02\xcaA!\n" +
 	"\fAccessPolicy\x12\x11OperationMetadata\xdaA%parent,access_policy,access_policy_id\x82\xd3\xe4\x93\x02\xdd\x01:\raccess_policyZF:\raccess_policy\"5/v3beta/{parent=folders/*/locations/*}/accessPoliciesZL:\raccess_policy\";/v3beta/{parent=organizations/*/locations/*}/accessPolicies\"6/v3beta/{parent=projects/*/locations/*}/accessPolicies\x12\x9e\x02\n" +

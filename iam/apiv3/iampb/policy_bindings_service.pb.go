@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -338,8 +338,7 @@ type ListPolicyBindingsRequest struct {
 	// Optional. The maximum number of policy bindings to return. The service may
 	// return fewer than this value.
 	//
-	// If unspecified, at most 50 policy bindings will be returned.
-	// The maximum value is 1000; values above 1000 will be coerced to 1000.
+	// The default value is 50. The maximum value is 1000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. A page token, received from a previous `ListPolicyBindings` call.
 	// Provide this to retrieve the subsequent page.
@@ -348,7 +347,8 @@ type ListPolicyBindingsRequest struct {
 	// match the call that provided the page token.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Optional. An expression for filtering the results of the request. Filter
-	// rules are case insensitive. Some eligible fields for filtering are:
+	// rules are case insensitive. Some eligible fields for filtering are the
+	// following:
 	//
 	// + `target`
 	// + `policy`
@@ -494,8 +494,7 @@ type SearchTargetPolicyBindingsRequest struct {
 	// Optional. The maximum number of policy bindings to return. The service may
 	// return fewer than this value.
 	//
-	// If unspecified, at most 50 policy bindings will be returned.
-	// The maximum value is 1000; values above 1000 will be coerced to 1000.
+	// The default value is 50. The maximum value is 1000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. A page token, received from a previous
 	// `SearchTargetPolicyBindingsRequest` call. Provide this to retrieve the
@@ -515,7 +514,18 @@ type SearchTargetPolicyBindingsRequest struct {
 	// * `projects/{project_number}/locations/{location}`
 	// * `folders/{folder_id}/locations/{location}`
 	// * `organizations/{organization_id}/locations/{location}`
-	Parent        string `protobuf:"bytes,5,opt,name=parent,proto3" json:"parent,omitempty"`
+	Parent string `protobuf:"bytes,5,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Optional. Filtering currently only supports the kind of policies to return,
+	// and must be in the format "policy_kind={policy_kind}".
+	//
+	// If String is empty, bindings bound to all kinds of policies would be
+	// returned.
+	//
+	// The only supported values are the following:
+	//
+	// * "policy_kind=PRINCIPAL_ACCESS_BOUNDARY",
+	// * "policy_kind=ACCESS"
+	Filter        string `protobuf:"bytes,6,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -574,6 +584,13 @@ func (x *SearchTargetPolicyBindingsRequest) GetPageToken() string {
 func (x *SearchTargetPolicyBindingsRequest) GetParent() string {
 	if x != nil {
 		return x.Parent
+	}
+	return ""
+}
+
+func (x *SearchTargetPolicyBindingsRequest) GetFilter() string {
+	if x != nil {
+		return x.Filter
 	}
 	return ""
 }
@@ -638,43 +655,44 @@ var File_google_iam_v3_policy_bindings_service_proto protoreflect.FileDescriptor
 
 const file_google_iam_v3_policy_bindings_service_proto_rawDesc = "" +
 	"\n" +
-	"+google/iam/v3/policy_bindings_service.proto\x12\rgoogle.iam.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a&google/iam/v3/operation_metadata.proto\x1a,google/iam/v3/policy_binding_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\x83\x02\n" +
-	"\x1aCreatePolicyBindingRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\x12 iam.googleapis.com/PolicyBindingR\x06parent\x12/\n" +
-	"\x11policy_binding_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x0fpolicyBindingId\x12H\n" +
-	"\x0epolicy_binding\x18\x03 \x01(\v2\x1c.google.iam.v3.PolicyBindingB\x03\xe0A\x02R\rpolicyBinding\x12(\n" +
-	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"W\n" +
-	"\x17GetPolicyBindingRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" iam.googleapis.com/PolicyBindingR\x04name\"\xd2\x01\n" +
-	"\x1aUpdatePolicyBindingRequest\x12H\n" +
-	"\x0epolicy_binding\x18\x01 \x01(\v2\x1c.google.iam.v3.PolicyBindingB\x03\xe0A\x02R\rpolicyBinding\x12(\n" +
-	"\rvalidate_only\x18\x02 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12@\n" +
-	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\x9d\x01\n" +
-	"\x1aDeletePolicyBindingRequest\x12<\n" +
-	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" iam.googleapis.com/PolicyBindingR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x01R\x04etag\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xc0\x01\n" +
-	"\x19ListPolicyBindingsRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\x12 iam.googleapis.com/PolicyBindingR\x06parent\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"+google/iam/v3/policy_bindings_service.proto\x12\rgoogle.iam.v3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a&google/iam/v3/operation_metadata.proto\x1a,google/iam/v3/policy_binding_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\x87\x02\n" +
+	"\x1aCreatePolicyBindingRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\x12 iam.googleapis.com/PolicyBindingR\x06parent\x120\n" +
+	"\x11policy_binding_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x0fpolicyBindingId\x12I\n" +
+	"\x0epolicy_binding\x18\x03 \x01(\v2\x1c.google.iam.v3.PolicyBindingB\x04\xe2A\x01\x02R\rpolicyBinding\x12)\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"X\n" +
+	"\x17GetPolicyBindingRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" iam.googleapis.com/PolicyBindingR\x04name\"\xd5\x01\n" +
+	"\x1aUpdatePolicyBindingRequest\x12I\n" +
+	"\x0epolicy_binding\x18\x01 \x01(\v2\x1c.google.iam.v3.PolicyBindingB\x04\xe2A\x01\x02R\rpolicyBinding\x12)\n" +
+	"\rvalidate_only\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\x12A\n" +
+	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
+	"updateMask\"\xa0\x01\n" +
+	"\x1aDeletePolicyBindingRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\n" +
+	" iam.googleapis.com/PolicyBindingR\x04name\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x04etag\x12)\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\fvalidateOnly\"\xc4\x01\n" +
+	"\x19ListPolicyBindingsRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe2A\x01\x02\xfaA\"\x12 iam.googleapis.com/PolicyBindingR\x06parent\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x90\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12\x1c\n" +
+	"\x06filter\x18\x04 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x91\x01\n" +
 	"\x1aListPolicyBindingsResponse\x12E\n" +
-	"\x0fpolicy_bindings\x18\x01 \x03(\v2\x1c.google.iam.v3.PolicyBindingR\x0epolicyBindings\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\rnextPageToken\"\xc8\x01\n" +
-	"!SearchTargetPolicyBindingsRequest\x12\x1b\n" +
-	"\x06target\x18\x01 \x01(\tB\x03\xe0A\x02R\x06target\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\x0fpolicy_bindings\x18\x01 \x03(\v2\x1c.google.iam.v3.PolicyBindingR\x0epolicyBindings\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rnextPageToken\"\xea\x01\n" +
+	"!SearchTargetPolicyBindingsRequest\x12\x1c\n" +
+	"\x06target\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06target\x12!\n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\bpageSize\x12#\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12@\n" +
-	"\x06parent\x18\x05 \x01(\tB(\xe0A\x02\xfaA\"\x12 iam.googleapis.com/PolicyBindingR\x06parent\"\x98\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\tpageToken\x12A\n" +
+	"\x06parent\x18\x05 \x01(\tB)\xe2A\x01\x02\xfaA\"\x12 iam.googleapis.com/PolicyBindingR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x06filter\"\x99\x01\n" +
 	"\"SearchTargetPolicyBindingsResponse\x12E\n" +
-	"\x0fpolicy_bindings\x18\x01 \x03(\v2\x1c.google.iam.v3.PolicyBindingR\x0epolicyBindings\x12+\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\rnextPageToken2\xa0\x11\n" +
+	"\x0fpolicy_bindings\x18\x01 \x03(\v2\x1c.google.iam.v3.PolicyBindingR\x0epolicyBindings\x12,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\rnextPageToken2\xa0\x11\n" +
 	"\x0ePolicyBindings\x12\x8c\x03\n" +
 	"\x13CreatePolicyBinding\x12).google.iam.v3.CreatePolicyBindingRequest\x1a\x1d.google.longrunning.Operation\"\xaa\x02\xcaA\"\n" +
 	"\rPolicyBinding\x12\x11OperationMetadata\xdaA'parent,policy_binding,policy_binding_id\x82\xd3\xe4\x93\x02\xd4\x01:\x0epolicy_bindingZC:\x0epolicy_binding\"1/v3/{parent=folders/*/locations/*}/policyBindingsZI:\x0epolicy_binding\"7/v3/{parent=organizations/*/locations/*}/policyBindings\"2/v3/{parent=projects/*/locations/*}/policyBindings\x12\x8d\x02\n" +

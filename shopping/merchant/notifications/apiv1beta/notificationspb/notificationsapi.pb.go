@@ -822,32 +822,32 @@ var File_google_shopping_merchant_notifications_v1beta_notificationsapi_proto pr
 
 const file_google_shopping_merchant_notifications_v1beta_notificationsapi_proto_rawDesc = "" +
 	"\n" +
-	"Dgoogle/shopping/merchant/notifications/v1beta/notificationsapi.proto\x12-google.shopping.merchant.notifications.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a google/shopping/type/types.proto\"u\n" +
-	"\"GetNotificationSubscriptionRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3merchantapi.googleapis.com/NotificationSubscriptionR\x04name\"\x88\x02\n" +
-	"%CreateNotificationSubscriptionRequest\x12S\n" +
-	"\x06parent\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\x123merchantapi.googleapis.com/NotificationSubscriptionR\x06parent\x12\x89\x01\n" +
-	"\x19notification_subscription\x18\x02 \x01(\v2G.google.shopping.merchant.notifications.v1beta.NotificationSubscriptionB\x03\xe0A\x02R\x18notificationSubscription\"\xf0\x01\n" +
-	"%UpdateNotificationSubscriptionRequest\x12\x89\x01\n" +
-	"\x19notification_subscription\x18\x01 \x01(\v2G.google.shopping.merchant.notifications.v1beta.NotificationSubscriptionB\x03\xe0A\x02R\x18notificationSubscription\x12;\n" +
+	"Dgoogle/shopping/merchant/notifications/v1beta/notificationsapi.proto\x12-google.shopping.merchant.notifications.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a google/shopping/type/types.proto\"v\n" +
+	"\"GetNotificationSubscriptionRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3merchantapi.googleapis.com/NotificationSubscriptionR\x04name\"\x8a\x02\n" +
+	"%CreateNotificationSubscriptionRequest\x12T\n" +
+	"\x06parent\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\x123merchantapi.googleapis.com/NotificationSubscriptionR\x06parent\x12\x8a\x01\n" +
+	"\x19notification_subscription\x18\x02 \x01(\v2G.google.shopping.merchant.notifications.v1beta.NotificationSubscriptionB\x04\xe2A\x01\x02R\x18notificationSubscription\"\xf1\x01\n" +
+	"%UpdateNotificationSubscriptionRequest\x12\x8a\x01\n" +
+	"\x19notification_subscription\x18\x01 \x01(\v2G.google.shopping.merchant.notifications.v1beta.NotificationSubscriptionB\x04\xe2A\x01\x02R\x18notificationSubscription\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"x\n" +
-	"%DeleteNotificationSubscriptionRequest\x12O\n" +
-	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3merchantapi.googleapis.com/NotificationSubscriptionR\x04name\"\xb7\x01\n" +
-	"$ListNotificationSubscriptionsRequest\x12S\n" +
-	"\x06parent\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\x123merchantapi.googleapis.com/NotificationSubscriptionR\x06parent\x12\x1b\n" +
+	"updateMask\"y\n" +
+	"%DeleteNotificationSubscriptionRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\n" +
+	"3merchantapi.googleapis.com/NotificationSubscriptionR\x04name\"\xb8\x01\n" +
+	"$ListNotificationSubscriptionsRequest\x12T\n" +
+	"\x06parent\x18\x01 \x01(\tB<\xe2A\x01\x02\xfaA5\x123merchantapi.googleapis.com/NotificationSubscriptionR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xd8\x01\n" +
 	"%ListNotificationSubscriptionsResponse\x12\x86\x01\n" +
 	"\x1anotification_subscriptions\x18\x01 \x03(\v2G.google.shopping.merchant.notifications.v1beta.NotificationSubscriptionR\x19notificationSubscriptions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb2\x04\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb3\x04\n" +
 	"\x18NotificationSubscription\x122\n" +
 	"\x14all_managed_accounts\x18\x03 \x01(\bH\x00R\x12allManagedAccounts\x12'\n" +
-	"\x0etarget_account\x18\x04 \x01(\tH\x00R\rtargetAccount\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x88\x01\n" +
+	"\x0etarget_account\x18\x04 \x01(\tH\x00R\rtargetAccount\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12\x88\x01\n" +
 	"\x10registered_event\x18\x02 \x01(\x0e2].google.shopping.merchant.notifications.v1beta.NotificationSubscription.NotificationEventTypeR\x0fregisteredEvent\x12\"\n" +
 	"\rcall_back_uri\x18\x05 \x01(\tR\vcallBackUri\"[\n" +
 	"\x15NotificationEventType\x12'\n" +

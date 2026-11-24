@@ -179,7 +179,7 @@ func (sc *sessionClient) createSession(ctx context.Context) (*session, error) {
 	sid, err := client.CreateSession(contextWithOutgoingMetadata(ctx, sc.md, sc.disableRouteToLeader), &sppb.CreateSessionRequest{
 		Database: sc.database,
 		Session:  &sppb.Session{Labels: sc.sessionLabels, CreatorRole: sc.databaseRole},
-	}, gax.WithGRPCOptions(grpc.Header(&md)))
+	}, gfeLatencyHeaderOptions(&md, true, sc.otConfig)...)
 
 	if getGFELatencyMetricsFlag() && md != nil {
 		_, instance, database, err := parseDatabaseName(sc.database)
@@ -232,7 +232,7 @@ func (sc *sessionClient) executeCreateMultiplexedSession(ctx context.Context, cl
 		Database: sc.database,
 		// Multiplexed sessions do not support labels.
 		Session: &sppb.Session{CreatorRole: sc.databaseRole, Multiplexed: true},
-	}, gax.WithGRPCOptions(grpc.Header(&mdForGFELatency)))
+	}, gfeLatencyHeaderOptions(&mdForGFELatency, true, sc.otConfig)...)
 
 	if getGFELatencyMetricsFlag() && mdForGFELatency != nil {
 		_, instance, database, err := parseDatabaseName(sc.database)
@@ -282,11 +282,11 @@ func (sc *sessionClient) sessionWithID(id string) (*session, error) {
 // optimal usage of server side caches.
 func (sc *sessionClient) nextClient() (spannerClient, error) {
 	if sc.dynamicPool != nil {
-		entry, err := sc.dynamicPool.pick(context.Background())
+		entry, err := sc.dynamicPool.Pick(context.Background())
 		if err != nil {
 			return nil, err
 		}
-		return entry.client, nil
+		return entry.Client, nil
 	}
 	var clientOpt option.ClientOption
 	var channelID uint64

@@ -550,6 +550,71 @@ func NewManagedKafkaConnectClient(ctx context.Context, opts ...option.ClientOpti
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "managedkafka",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/managedkafka/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "managedkafka.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListConnectClusters = append(client.CallOptions.ListConnectClusters, gax.WithClientTracing(tracing))
+		client.CallOptions.GetConnectCluster = append(client.CallOptions.GetConnectCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateConnectCluster = append(client.CallOptions.CreateConnectCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateConnectCluster = append(client.CallOptions.UpdateConnectCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteConnectCluster = append(client.CallOptions.DeleteConnectCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.ListConnectors = append(client.CallOptions.ListConnectors, gax.WithClientTracing(tracing))
+		client.CallOptions.GetConnector = append(client.CallOptions.GetConnector, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateConnector = append(client.CallOptions.CreateConnector, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateConnector = append(client.CallOptions.UpdateConnector, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteConnector = append(client.CallOptions.DeleteConnector, gax.WithClientTracing(tracing))
+		client.CallOptions.PauseConnector = append(client.CallOptions.PauseConnector, gax.WithClientTracing(tracing))
+		client.CallOptions.ResumeConnector = append(client.CallOptions.ResumeConnector, gax.WithClientTracing(tracing))
+		client.CallOptions.RestartConnector = append(client.CallOptions.RestartConnector, gax.WithClientTracing(tracing))
+		client.CallOptions.StopConnector = append(client.CallOptions.StopConnector, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "managedkafka",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/managedkafka/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "managedkafka.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListConnectClusters = append(client.CallOptions.ListConnectClusters, gax.WithClientLogging(logging))
+		client.CallOptions.GetConnectCluster = append(client.CallOptions.GetConnectCluster, gax.WithClientLogging(logging))
+		client.CallOptions.CreateConnectCluster = append(client.CallOptions.CreateConnectCluster, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateConnectCluster = append(client.CallOptions.UpdateConnectCluster, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteConnectCluster = append(client.CallOptions.DeleteConnectCluster, gax.WithClientLogging(logging))
+		client.CallOptions.ListConnectors = append(client.CallOptions.ListConnectors, gax.WithClientLogging(logging))
+		client.CallOptions.GetConnector = append(client.CallOptions.GetConnector, gax.WithClientLogging(logging))
+		client.CallOptions.CreateConnector = append(client.CallOptions.CreateConnector, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateConnector = append(client.CallOptions.UpdateConnector, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteConnector = append(client.CallOptions.DeleteConnector, gax.WithClientLogging(logging))
+		client.CallOptions.PauseConnector = append(client.CallOptions.PauseConnector, gax.WithClientLogging(logging))
+		client.CallOptions.ResumeConnector = append(client.CallOptions.ResumeConnector, gax.WithClientLogging(logging))
+		client.CallOptions.RestartConnector = append(client.CallOptions.RestartConnector, gax.WithClientLogging(logging))
+		client.CallOptions.StopConnector = append(client.CallOptions.StopConnector, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -677,6 +742,71 @@ func NewManagedKafkaConnectRESTClient(ctx context.Context, opts ...option.Client
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "managedkafka",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/managedkafka/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "managedkafka.googleapis.com",
+			}),
+		)
+
+		callOpts.ListConnectClusters = append(callOpts.ListConnectClusters, gax.WithClientTracing(tracing))
+		callOpts.GetConnectCluster = append(callOpts.GetConnectCluster, gax.WithClientTracing(tracing))
+		callOpts.CreateConnectCluster = append(callOpts.CreateConnectCluster, gax.WithClientTracing(tracing))
+		callOpts.UpdateConnectCluster = append(callOpts.UpdateConnectCluster, gax.WithClientTracing(tracing))
+		callOpts.DeleteConnectCluster = append(callOpts.DeleteConnectCluster, gax.WithClientTracing(tracing))
+		callOpts.ListConnectors = append(callOpts.ListConnectors, gax.WithClientTracing(tracing))
+		callOpts.GetConnector = append(callOpts.GetConnector, gax.WithClientTracing(tracing))
+		callOpts.CreateConnector = append(callOpts.CreateConnector, gax.WithClientTracing(tracing))
+		callOpts.UpdateConnector = append(callOpts.UpdateConnector, gax.WithClientTracing(tracing))
+		callOpts.DeleteConnector = append(callOpts.DeleteConnector, gax.WithClientTracing(tracing))
+		callOpts.PauseConnector = append(callOpts.PauseConnector, gax.WithClientTracing(tracing))
+		callOpts.ResumeConnector = append(callOpts.ResumeConnector, gax.WithClientTracing(tracing))
+		callOpts.RestartConnector = append(callOpts.RestartConnector, gax.WithClientTracing(tracing))
+		callOpts.StopConnector = append(callOpts.StopConnector, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "managedkafka",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/managedkafka/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "managedkafka.googleapis.com",
+			}),
+		)
+
+		callOpts.ListConnectClusters = append(callOpts.ListConnectClusters, gax.WithClientLogging(logging))
+		callOpts.GetConnectCluster = append(callOpts.GetConnectCluster, gax.WithClientLogging(logging))
+		callOpts.CreateConnectCluster = append(callOpts.CreateConnectCluster, gax.WithClientLogging(logging))
+		callOpts.UpdateConnectCluster = append(callOpts.UpdateConnectCluster, gax.WithClientLogging(logging))
+		callOpts.DeleteConnectCluster = append(callOpts.DeleteConnectCluster, gax.WithClientLogging(logging))
+		callOpts.ListConnectors = append(callOpts.ListConnectors, gax.WithClientLogging(logging))
+		callOpts.GetConnector = append(callOpts.GetConnector, gax.WithClientLogging(logging))
+		callOpts.CreateConnector = append(callOpts.CreateConnector, gax.WithClientLogging(logging))
+		callOpts.UpdateConnector = append(callOpts.UpdateConnector, gax.WithClientLogging(logging))
+		callOpts.DeleteConnector = append(callOpts.DeleteConnector, gax.WithClientLogging(logging))
+		callOpts.PauseConnector = append(callOpts.PauseConnector, gax.WithClientLogging(logging))
+		callOpts.ResumeConnector = append(callOpts.ResumeConnector, gax.WithClientLogging(logging))
+		callOpts.RestartConnector = append(callOpts.RestartConnector, gax.WithClientLogging(logging))
+		callOpts.StopConnector = append(callOpts.StopConnector, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -733,9 +863,6 @@ func (c *managedKafkaConnectGRPCClient) ListConnectClusters(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedkafka.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.v1.ManagedKafkaConnect/ListConnectClusters")
 	}
@@ -785,9 +912,6 @@ func (c *managedKafkaConnectGRPCClient) GetConnectCluster(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedkafka.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.v1.ManagedKafkaConnect/GetConnectCluster")
 	}
@@ -809,9 +933,6 @@ func (c *managedKafkaConnectGRPCClient) CreateConnectCluster(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedkafka.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.v1.ManagedKafkaConnect/CreateConnectCluster")
 	}
@@ -866,9 +987,6 @@ func (c *managedKafkaConnectGRPCClient) DeleteConnectCluster(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedkafka.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.v1.ManagedKafkaConnect/DeleteConnectCluster")
 	}
@@ -896,9 +1014,6 @@ func (c *managedKafkaConnectGRPCClient) ListConnectors(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedkafka.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.v1.ManagedKafkaConnect/ListConnectors")
 	}
@@ -948,9 +1063,6 @@ func (c *managedKafkaConnectGRPCClient) GetConnector(ctx context.Context, req *m
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedkafka.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.v1.ManagedKafkaConnect/GetConnector")
 	}
@@ -972,9 +1084,6 @@ func (c *managedKafkaConnectGRPCClient) CreateConnector(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedkafka.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.v1.ManagedKafkaConnect/CreateConnector")
 	}
@@ -1017,9 +1126,6 @@ func (c *managedKafkaConnectGRPCClient) DeleteConnector(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedkafka.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.v1.ManagedKafkaConnect/DeleteConnector")
 	}
@@ -1037,9 +1143,6 @@ func (c *managedKafkaConnectGRPCClient) PauseConnector(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedkafka.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.v1.ManagedKafkaConnect/PauseConnector")
 	}
@@ -1061,9 +1164,6 @@ func (c *managedKafkaConnectGRPCClient) ResumeConnector(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedkafka.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.v1.ManagedKafkaConnect/ResumeConnector")
 	}
@@ -1085,9 +1185,6 @@ func (c *managedKafkaConnectGRPCClient) RestartConnector(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedkafka.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.v1.ManagedKafkaConnect/RestartConnector")
 	}
@@ -1109,9 +1206,6 @@ func (c *managedKafkaConnectGRPCClient) StopConnector(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedkafka.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.v1.ManagedKafkaConnect/StopConnector")
 	}
@@ -1321,6 +1415,11 @@ func (c *managedKafkaConnectRESTClient) ListConnectClusters(ctx context.Context,
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/connectClusters", req.GetParent())
 
 		params := url.Values{}
@@ -1392,6 +1491,11 @@ func (c *managedKafkaConnectRESTClient) GetConnectCluster(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1405,9 +1509,6 @@ func (c *managedKafkaConnectRESTClient) GetConnectCluster(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedkafka.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.v1.ManagedKafkaConnect/GetConnectCluster")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connectClusters/*}")
@@ -1456,6 +1557,11 @@ func (c *managedKafkaConnectRESTClient) CreateConnectCluster(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/connectClusters", req.GetParent())
 
 	params := url.Values{}
@@ -1473,9 +1579,6 @@ func (c *managedKafkaConnectRESTClient) CreateConnectCluster(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedkafka.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.v1.ManagedKafkaConnect/CreateConnectCluster")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/connectClusters")
@@ -1529,6 +1632,11 @@ func (c *managedKafkaConnectRESTClient) UpdateConnectCluster(ctx context.Context
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetConnectCluster().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetConnectCluster().GetName())
@@ -1602,6 +1710,11 @@ func (c *managedKafkaConnectRESTClient) DeleteConnectCluster(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1618,9 +1731,6 @@ func (c *managedKafkaConnectRESTClient) DeleteConnectCluster(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedkafka.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.v1.ManagedKafkaConnect/DeleteConnectCluster")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connectClusters/*}")
@@ -1680,6 +1790,11 @@ func (c *managedKafkaConnectRESTClient) ListConnectors(ctx context.Context, req 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/connectors", req.GetParent())
@@ -1747,6 +1862,11 @@ func (c *managedKafkaConnectRESTClient) GetConnector(ctx context.Context, req *m
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1760,9 +1880,6 @@ func (c *managedKafkaConnectRESTClient) GetConnector(ctx context.Context, req *m
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedkafka.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.v1.ManagedKafkaConnect/GetConnector")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connectClusters/*/connectors/*}")
@@ -1811,6 +1928,11 @@ func (c *managedKafkaConnectRESTClient) CreateConnector(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/connectors", req.GetParent())
 
 	params := url.Values{}
@@ -1825,9 +1947,6 @@ func (c *managedKafkaConnectRESTClient) CreateConnector(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedkafka.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.v1.ManagedKafkaConnect/CreateConnector")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/connectClusters/*}/connectors")
@@ -1874,6 +1993,11 @@ func (c *managedKafkaConnectRESTClient) UpdateConnector(ctx context.Context, req
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetConnector().GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetConnector().GetName())
@@ -1937,6 +2061,11 @@ func (c *managedKafkaConnectRESTClient) DeleteConnector(ctx context.Context, req
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1950,9 +2079,6 @@ func (c *managedKafkaConnectRESTClient) DeleteConnector(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedkafka.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.v1.ManagedKafkaConnect/DeleteConnector")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connectClusters/*/connectors/*}")
@@ -1985,6 +2111,11 @@ func (c *managedKafkaConnectRESTClient) PauseConnector(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:pause", req.GetName())
 
 	params := url.Values{}
@@ -1998,9 +2129,6 @@ func (c *managedKafkaConnectRESTClient) PauseConnector(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedkafka.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.v1.ManagedKafkaConnect/PauseConnector")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connectClusters/*/connectors/*}:pause")
@@ -2048,6 +2176,11 @@ func (c *managedKafkaConnectRESTClient) ResumeConnector(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:resume", req.GetName())
 
 	params := url.Values{}
@@ -2061,9 +2194,6 @@ func (c *managedKafkaConnectRESTClient) ResumeConnector(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedkafka.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.v1.ManagedKafkaConnect/ResumeConnector")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connectClusters/*/connectors/*}:resume")
@@ -2111,6 +2241,11 @@ func (c *managedKafkaConnectRESTClient) RestartConnector(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:restart", req.GetName())
 
 	params := url.Values{}
@@ -2124,9 +2259,6 @@ func (c *managedKafkaConnectRESTClient) RestartConnector(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedkafka.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.v1.ManagedKafkaConnect/RestartConnector")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connectClusters/*/connectors/*}:restart")
@@ -2174,6 +2306,11 @@ func (c *managedKafkaConnectRESTClient) StopConnector(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:stop", req.GetName())
 
 	params := url.Values{}
@@ -2187,9 +2324,6 @@ func (c *managedKafkaConnectRESTClient) StopConnector(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedkafka.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.v1.ManagedKafkaConnect/StopConnector")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connectClusters/*/connectors/*}:stop")
@@ -2229,6 +2363,11 @@ func (c *managedKafkaConnectRESTClient) StopConnector(ctx context.Context, req *
 func (c *managedKafkaConnectRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2296,6 +2435,11 @@ func (c *managedKafkaConnectRESTClient) ListLocations(ctx context.Context, req *
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
@@ -2372,6 +2516,11 @@ func (c *managedKafkaConnectRESTClient) CancelOperation(ctx context.Context, req
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
@@ -2411,6 +2560,11 @@ func (c *managedKafkaConnectRESTClient) DeleteOperation(ctx context.Context, req
 	if err != nil {
 		return err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -2448,6 +2602,11 @@ func (c *managedKafkaConnectRESTClient) DeleteOperation(ctx context.Context, req
 func (c *managedKafkaConnectRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -2515,6 +2674,11 @@ func (c *managedKafkaConnectRESTClient) ListOperations(ctx context.Context, req 
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
+			return nil, "", err
+		}
+		if err = gax.ValidatePathExpressions(
+			req.GetName(),
+		); err != nil {
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())

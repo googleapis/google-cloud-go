@@ -310,6 +310,47 @@ func NewIdentityAwareProxyOAuthClient(ctx context.Context, opts ...option.Client
 		client.CallOptions.ResetIdentityAwareProxyClientSecret = append(client.CallOptions.ResetIdentityAwareProxyClientSecret, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteIdentityAwareProxyClient = append(client.CallOptions.DeleteIdentityAwareProxyClient, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "iap",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iap/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "iap.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListBrands = append(client.CallOptions.ListBrands, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateBrand = append(client.CallOptions.CreateBrand, gax.WithClientTracing(tracing))
+		client.CallOptions.GetBrand = append(client.CallOptions.GetBrand, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateIdentityAwareProxyClient = append(client.CallOptions.CreateIdentityAwareProxyClient, gax.WithClientTracing(tracing))
+		client.CallOptions.ListIdentityAwareProxyClients = append(client.CallOptions.ListIdentityAwareProxyClients, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIdentityAwareProxyClient = append(client.CallOptions.GetIdentityAwareProxyClient, gax.WithClientTracing(tracing))
+		client.CallOptions.ResetIdentityAwareProxyClientSecret = append(client.CallOptions.ResetIdentityAwareProxyClientSecret, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteIdentityAwareProxyClient = append(client.CallOptions.DeleteIdentityAwareProxyClient, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "iap",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iap/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "iap.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListBrands = append(client.CallOptions.ListBrands, gax.WithClientLogging(logging))
+		client.CallOptions.CreateBrand = append(client.CallOptions.CreateBrand, gax.WithClientLogging(logging))
+		client.CallOptions.GetBrand = append(client.CallOptions.GetBrand, gax.WithClientLogging(logging))
+		client.CallOptions.CreateIdentityAwareProxyClient = append(client.CallOptions.CreateIdentityAwareProxyClient, gax.WithClientLogging(logging))
+		client.CallOptions.ListIdentityAwareProxyClients = append(client.CallOptions.ListIdentityAwareProxyClients, gax.WithClientLogging(logging))
+		client.CallOptions.GetIdentityAwareProxyClient = append(client.CallOptions.GetIdentityAwareProxyClient, gax.WithClientLogging(logging))
+		client.CallOptions.ResetIdentityAwareProxyClientSecret = append(client.CallOptions.ResetIdentityAwareProxyClientSecret, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteIdentityAwareProxyClient = append(client.CallOptions.DeleteIdentityAwareProxyClient, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -409,6 +450,47 @@ func NewIdentityAwareProxyOAuthRESTClient(ctx context.Context, opts ...option.Cl
 		callOpts.GetIdentityAwareProxyClient = append(callOpts.GetIdentityAwareProxyClient, gax.WithClientMetrics(metrics))
 		callOpts.ResetIdentityAwareProxyClientSecret = append(callOpts.ResetIdentityAwareProxyClientSecret, gax.WithClientMetrics(metrics))
 		callOpts.DeleteIdentityAwareProxyClient = append(callOpts.DeleteIdentityAwareProxyClient, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "iap",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iap/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "iap.googleapis.com",
+			}),
+		)
+
+		callOpts.ListBrands = append(callOpts.ListBrands, gax.WithClientTracing(tracing))
+		callOpts.CreateBrand = append(callOpts.CreateBrand, gax.WithClientTracing(tracing))
+		callOpts.GetBrand = append(callOpts.GetBrand, gax.WithClientTracing(tracing))
+		callOpts.CreateIdentityAwareProxyClient = append(callOpts.CreateIdentityAwareProxyClient, gax.WithClientTracing(tracing))
+		callOpts.ListIdentityAwareProxyClients = append(callOpts.ListIdentityAwareProxyClients, gax.WithClientTracing(tracing))
+		callOpts.GetIdentityAwareProxyClient = append(callOpts.GetIdentityAwareProxyClient, gax.WithClientTracing(tracing))
+		callOpts.ResetIdentityAwareProxyClientSecret = append(callOpts.ResetIdentityAwareProxyClientSecret, gax.WithClientTracing(tracing))
+		callOpts.DeleteIdentityAwareProxyClient = append(callOpts.DeleteIdentityAwareProxyClient, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "iap",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iap/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "iap.googleapis.com",
+			}),
+		)
+
+		callOpts.ListBrands = append(callOpts.ListBrands, gax.WithClientLogging(logging))
+		callOpts.CreateBrand = append(callOpts.CreateBrand, gax.WithClientLogging(logging))
+		callOpts.GetBrand = append(callOpts.GetBrand, gax.WithClientLogging(logging))
+		callOpts.CreateIdentityAwareProxyClient = append(callOpts.CreateIdentityAwareProxyClient, gax.WithClientLogging(logging))
+		callOpts.ListIdentityAwareProxyClients = append(callOpts.ListIdentityAwareProxyClients, gax.WithClientLogging(logging))
+		callOpts.GetIdentityAwareProxyClient = append(callOpts.GetIdentityAwareProxyClient, gax.WithClientLogging(logging))
+		callOpts.ResetIdentityAwareProxyClientSecret = append(callOpts.ResetIdentityAwareProxyClientSecret, gax.WithClientLogging(logging))
+		callOpts.DeleteIdentityAwareProxyClient = append(callOpts.DeleteIdentityAwareProxyClient, gax.WithClientLogging(logging))
 	}
 
 	return &IdentityAwareProxyOAuthClient{internalClient: c, CallOptions: callOpts}, nil
@@ -649,6 +731,11 @@ func (c *identityAwareProxyOAuthRESTClient) ListBrands(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/brands", req.GetParent())
 
 	params := url.Values{}
@@ -717,6 +804,11 @@ func (c *identityAwareProxyOAuthRESTClient) CreateBrand(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/brands", req.GetParent())
 
 	params := url.Values{}
@@ -769,6 +861,11 @@ func (c *identityAwareProxyOAuthRESTClient) CreateBrand(ctx context.Context, req
 func (c *identityAwareProxyOAuthRESTClient) GetBrand(ctx context.Context, req *iappb.GetBrandRequest, opts ...gax.CallOption) (*iappb.Brand, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
@@ -832,6 +929,11 @@ func (c *identityAwareProxyOAuthRESTClient) CreateIdentityAwareProxyClient(ctx c
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetParent(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/identityAwareProxyClients", req.GetParent())
@@ -901,6 +1003,11 @@ func (c *identityAwareProxyOAuthRESTClient) ListIdentityAwareProxyClients(ctx co
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetParent(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/v1/%v/identityAwareProxyClients", req.GetParent())
 
 		params := url.Values{}
@@ -967,6 +1074,11 @@ func (c *identityAwareProxyOAuthRESTClient) GetIdentityAwareProxyClient(ctx cont
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
@@ -1028,6 +1140,11 @@ func (c *identityAwareProxyOAuthRESTClient) ResetIdentityAwareProxyClientSecret(
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:resetSecret", req.GetName())
 
 	params := url.Values{}
@@ -1082,6 +1199,11 @@ func (c *identityAwareProxyOAuthRESTClient) ResetIdentityAwareProxyClientSecret(
 func (c *identityAwareProxyOAuthRESTClient) DeleteIdentityAwareProxyClient(ctx context.Context, req *iappb.DeleteIdentityAwareProxyClientRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetName(),
+	); err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())

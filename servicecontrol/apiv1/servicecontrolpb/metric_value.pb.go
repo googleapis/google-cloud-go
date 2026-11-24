@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,19 +41,22 @@ const (
 type MetricValue struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The labels describing the metric value.
-	// See comments on [google.api.servicecontrol.v1.Operation.labels][google.api.servicecontrol.v1.Operation.labels] for
-	// the overriding relationship.
-	// Note that this map must not contain monitored resource labels.
+	// See comments on
+	// [google.api.servicecontrol.v1.Operation.labels][google.api.servicecontrol.v1.Operation.labels]
+	// for the overriding relationship. Note that this map must not contain
+	// monitored resource labels.
 	Labels map[string]string `protobuf:"bytes,1,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// The start of the time period over which this metric value's measurement
 	// applies. The time period has different semantics for different metric
 	// types (cumulative, delta, and gauge). See the metric definition
 	// documentation in the service configuration for details. If not specified,
-	// [google.api.servicecontrol.v1.Operation.start_time][google.api.servicecontrol.v1.Operation.start_time] will be used.
+	// [google.api.servicecontrol.v1.Operation.start_time][google.api.servicecontrol.v1.Operation.start_time]
+	// will be used.
 	StartTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
 	// The end of the time period over which this metric value's measurement
 	// applies.  If not specified,
-	// [google.api.servicecontrol.v1.Operation.end_time][google.api.servicecontrol.v1.Operation.end_time] will be used.
+	// [google.api.servicecontrol.v1.Operation.end_time][google.api.servicecontrol.v1.Operation.end_time]
+	// will be used.
 	EndTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
 	// The value. The type of value used in the request must
 	// agree with the metric definition in the service configuration, otherwise
@@ -294,8 +297,8 @@ const file_google_api_servicecontrol_v1_metric_value_proto_rawDesc = "" +
 	"\x0eMetricValueSet\x12\x1f\n" +
 	"\vmetric_name\x18\x01 \x01(\tR\n" +
 	"metricName\x12N\n" +
-	"\rmetric_values\x18\x02 \x03(\v2).google.api.servicecontrol.v1.MetricValueR\fmetricValuesB\xee\x01\n" +
-	" com.google.api.servicecontrol.v1B\x13MetricValueSetProtoP\x01ZJcloud.google.com/go/servicecontrol/apiv1/servicecontrolpb;servicecontrolpb\xf8\x01\x01\xaa\x02\x1eGoogle.Cloud.ServiceControl.V1\xca\x02\x1eGoogle\\Cloud\\ServiceControl\\V1\xea\x02!Google::Cloud::ServiceControl::V1b\x06proto3"
+	"\rmetric_values\x18\x02 \x03(\v2).google.api.servicecontrol.v1.MetricValueR\fmetricValuesB\xeb\x01\n" +
+	" com.google.api.servicecontrol.v1B\x13MetricValueSetProtoP\x01ZJcloud.google.com/go/servicecontrol/apiv1/servicecontrolpb;servicecontrolpb\xaa\x02\x1eGoogle.Cloud.ServiceControl.V1\xca\x02\x1eGoogle\\Cloud\\ServiceControl\\V1\xea\x02!Google::Cloud::ServiceControl::V1b\x06proto3"
 
 var (
 	file_google_api_servicecontrol_v1_metric_value_proto_rawDescOnce sync.Once

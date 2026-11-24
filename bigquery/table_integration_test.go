@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -451,10 +452,8 @@ func TestIntegration_Tables(t *testing.T) {
 		// Other tests may be running with this dataset, so there might be more
 		// than just our table in the list. So don't try for an exact match; just
 		// make sure that our table is there somewhere.
-		for _, tn := range tableNames {
-			if tn == wantName {
-				return true, nil
-			}
+		if slices.Contains(tableNames, wantName) {
+			return true, nil
 		}
 		return false, fmt.Errorf("got %v\nwant %s in the list", tableNames, wantName)
 	})
@@ -500,25 +499,13 @@ func TestIntegration_TableIAM(t *testing.T) {
 	if err != nil {
 		t.Fatalf("IAM.Policy (after update): %v", err)
 	}
-	foundRole := false
-	for _, r := range updatedPolicy.Roles() {
-		if r == wantedRole {
-			foundRole = true
-			break
-		}
-	}
+	foundRole := slices.Contains(updatedPolicy.Roles(), wantedRole)
 	if !foundRole {
 		t.Errorf("Did not find added role %s in the set of %d roles.",
 			wantedRole, len(updatedPolicy.Roles()))
 	}
 	members := updatedPolicy.Members(wantedRole)
-	foundMember := false
-	for _, m := range members {
-		if m == wantedMember {
-			foundMember = true
-			break
-		}
-	}
+	foundMember := slices.Contains(members, wantedMember)
 	if !foundMember {
 		t.Errorf("Did not find member %s in role %s", wantedMember, wantedRole)
 	}

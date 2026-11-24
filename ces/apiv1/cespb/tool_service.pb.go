@@ -673,17 +673,17 @@ var File_google_cloud_ces_v1_tool_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1_tool_service_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/ces/v1/tool_service.proto\x12\x13google.cloud.ces.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/cloud/ces/v1/schema.proto\x1a,google/cloud/ces/v1/search_suggestions.proto\x1a)google/cloud/ces/v1/session_service.proto\x1a\x1egoogle/cloud/ces/v1/tool.proto\x1a&google/cloud/ces/v1/toolset_tool.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xed\x03\n" +
-	"\x12ExecuteToolRequest\x125\n" +
-	"\x04tool\x18\x01 \x01(\tB\x1f\xe0A\x01\xfaA\x19\n" +
-	"\x17ces.googleapis.com/ToolH\x00R\x04tool\x12J\n" +
-	"\ftoolset_tool\x18\x03 \x01(\v2 .google.cloud.ces.v1.ToolsetToolB\x03\xe0A\x01H\x00R\vtoolsetTool\x12<\n" +
-	"\tvariables\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01H\x01R\tvariables\x128\n" +
-	"\acontext\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01H\x01R\acontext\x126\n" +
-	"\x06parent\x18\x04 \x01(\tB\x1e\xe0A\x02\xfaA\x18\n" +
-	"\x16ces.googleapis.com/AppR\x06parent\x120\n" +
-	"\x04args\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x04args\x12E\n" +
-	"\vmock_config\x18\a \x01(\v2\x1f.google.cloud.ces.v1.MockConfigB\x03\xe0A\x01R\n" +
+	"&google/cloud/ces/v1/tool_service.proto\x12\x13google.cloud.ces.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/cloud/ces/v1/schema.proto\x1a,google/cloud/ces/v1/search_suggestions.proto\x1a)google/cloud/ces/v1/session_service.proto\x1a\x1egoogle/cloud/ces/v1/tool.proto\x1a&google/cloud/ces/v1/toolset_tool.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xf4\x03\n" +
+	"\x12ExecuteToolRequest\x126\n" +
+	"\x04tool\x18\x01 \x01(\tB \xe2A\x01\x01\xfaA\x19\n" +
+	"\x17ces.googleapis.com/ToolH\x00R\x04tool\x12K\n" +
+	"\ftoolset_tool\x18\x03 \x01(\v2 .google.cloud.ces.v1.ToolsetToolB\x04\xe2A\x01\x01H\x00R\vtoolsetTool\x12=\n" +
+	"\tvariables\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01H\x01R\tvariables\x129\n" +
+	"\acontext\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01H\x01R\acontext\x127\n" +
+	"\x06parent\x18\x04 \x01(\tB\x1f\xe2A\x01\x02\xfaA\x18\n" +
+	"\x16ces.googleapis.com/AppR\x06parent\x121\n" +
+	"\x04args\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x04args\x12F\n" +
+	"\vmock_config\x18\a \x01(\v2\x1f.google.cloud.ces.v1.MockConfigB\x04\xe2A\x01\x01R\n" +
 	"mockConfigB\x11\n" +
 	"\x0ftool_identifierB\x18\n" +
 	"\x16tool_execution_context\"\xb7\x03\n" +
@@ -695,12 +695,12 @@ const file_google_cloud_ces_v1_tool_service_proto_rawDesc = "" +
 	"\tvariables\x18\x04 \x01(\v2\x17.google.protobuf.StructR\tvariables\x12<\n" +
 	"\tcitations\x18\x05 \x01(\v2\x1e.google.cloud.ces.v1.CitationsR\tcitations\x12h\n" +
 	"\x19google_search_suggestions\x18\x06 \x01(\v2,.google.cloud.ces.v1.GoogleSearchSuggestionsR\x17googleSearchSuggestionsB\x11\n" +
-	"\x0ftool_identifier\"\xe9\x01\n" +
-	"\x19RetrieveToolSchemaRequest\x125\n" +
-	"\x04tool\x18\x01 \x01(\tB\x1f\xe0A\x01\xfaA\x19\n" +
-	"\x17ces.googleapis.com/ToolH\x00R\x04tool\x12J\n" +
-	"\ftoolset_tool\x18\x02 \x01(\v2 .google.cloud.ces.v1.ToolsetToolB\x03\xe0A\x01H\x00R\vtoolsetTool\x126\n" +
-	"\x06parent\x18\x03 \x01(\tB\x1e\xe0A\x02\xfaA\x18\n" +
+	"\x0ftool_identifier\"\xec\x01\n" +
+	"\x19RetrieveToolSchemaRequest\x126\n" +
+	"\x04tool\x18\x01 \x01(\tB \xe2A\x01\x01\xfaA\x19\n" +
+	"\x17ces.googleapis.com/ToolH\x00R\x04tool\x12K\n" +
+	"\ftoolset_tool\x18\x02 \x01(\v2 .google.cloud.ces.v1.ToolsetToolB\x04\xe2A\x01\x01H\x00R\vtoolsetTool\x127\n" +
+	"\x06parent\x18\x03 \x01(\tB\x1f\xe2A\x01\x02\xfaA\x18\n" +
 	"\x16ces.googleapis.com/AppR\x06parentB\x11\n" +
 	"\x0ftool_identifier\"\xac\x02\n" +
 	"\x1aRetrieveToolSchemaResponse\x122\n" +
@@ -709,12 +709,12 @@ const file_google_cloud_ces_v1_tool_service_proto_rawDesc = "" +
 	"\ftoolset_tool\x18\x02 \x01(\v2 .google.cloud.ces.v1.ToolsetToolH\x00R\vtoolsetTool\x12>\n" +
 	"\finput_schema\x18\x03 \x01(\v2\x1b.google.cloud.ces.v1.SchemaR\vinputSchema\x12@\n" +
 	"\routput_schema\x18\x04 \x01(\v2\x1b.google.cloud.ces.v1.SchemaR\foutputSchemaB\x11\n" +
-	"\x0ftool_identifier\"\xb5\x01\n" +
-	"\x14RetrieveToolsRequest\x12<\n" +
-	"\atoolset\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1aces.googleapis.com/ToolsetR\atoolset\x12\x1e\n" +
-	"\btool_ids\x18\x03 \x03(\tB\x03\xe0A\x01R\atoolIds\x12?\n" +
-	"\x19bypass_persistence_config\x18\x04 \x01(\bB\x03\xe0A\x01R\x17bypassPersistenceConfig\"H\n" +
+	"\x0ftool_identifier\"\xb8\x01\n" +
+	"\x14RetrieveToolsRequest\x12=\n" +
+	"\atoolset\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1aces.googleapis.com/ToolsetR\atoolset\x12\x1f\n" +
+	"\btool_ids\x18\x03 \x03(\tB\x04\xe2A\x01\x01R\atoolIds\x12@\n" +
+	"\x19bypass_persistence_config\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x17bypassPersistenceConfig\"H\n" +
 	"\x15RetrieveToolsResponse\x12/\n" +
 	"\x05tools\x18\x01 \x03(\v2\x19.google.cloud.ces.v1.ToolR\x05tools2\x9b\x05\n" +
 	"\vToolService\x12\xa3\x01\n" +

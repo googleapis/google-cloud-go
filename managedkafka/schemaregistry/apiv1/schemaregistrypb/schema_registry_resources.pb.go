@@ -758,56 +758,56 @@ var File_google_cloud_managedkafka_schemaregistry_v1_schema_registry_resources_p
 
 const file_google_cloud_managedkafka_schemaregistry_v1_schema_registry_resources_proto_rawDesc = "" +
 	"\n" +
-	"Kgoogle/cloud/managedkafka/schemaregistry/v1/schema_registry_resources.proto\x12+google.cloud.managedkafka.schemaregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x99\x02\n" +
-	"\x0eSchemaRegistry\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12M\n" +
-	"\bcontexts\x18\x02 \x03(\tB1\xe0A\x03\xfaA+\n" +
+	"Kgoogle/cloud/managedkafka/schemaregistry/v1/schema_registry_resources.proto\x12+google.cloud.managedkafka.schemaregistry.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x9b\x02\n" +
+	"\x0eSchemaRegistry\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12N\n" +
+	"\bcontexts\x18\x02 \x03(\tB2\xe2A\x01\x03\xfaA+\n" +
 	")managedkafka.googleapis.com/SchemaContextR\bcontexts:\x9e\x01\xeaA\x9a\x01\n" +
-	"*managedkafka.googleapis.com/SchemaRegistry\x12Jprojects/{project}/locations/{location}/schemaRegistries/{schema_registry}*\x10schemaRegistries2\x0eschemaRegistry\"\x95\x02\n" +
-	"\aContext\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12M\n" +
-	"\bsubjects\x18\x02 \x03(\tB1\xe0A\x01\xfaA+\n" +
+	"*managedkafka.googleapis.com/SchemaRegistry\x12Jprojects/{project}/locations/{location}/schemaRegistries/{schema_registry}*\x10schemaRegistries2\x0eschemaRegistry\"\x97\x02\n" +
+	"\aContext\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12N\n" +
+	"\bsubjects\x18\x02 \x03(\tB2\xe2A\x01\x01\xfaA+\n" +
 	")managedkafka.googleapis.com/SchemaSubjectR\bsubjects:\xa1\x01\xeaA\x9d\x01\n" +
-	")managedkafka.googleapis.com/SchemaContext\x12]projects/{project}/locations/{location}/schemaRegistries/{schema_registry}/contexts/{context}*\bcontexts2\acontext\"\xc0\x05\n" +
-	"\x06Schema\x12d\n" +
-	"\vschema_type\x18\x01 \x01(\x0e2>.google.cloud.managedkafka.schemaregistry.v1.Schema.SchemaTypeB\x03\xe0A\x01R\n" +
+	")managedkafka.googleapis.com/SchemaContext\x12]projects/{project}/locations/{location}/schemaRegistries/{schema_registry}/contexts/{context}*\bcontexts2\acontext\"\xc5\x05\n" +
+	"\x06Schema\x12e\n" +
+	"\vschema_type\x18\x01 \x01(\x0e2>.google.cloud.managedkafka.schemaregistry.v1.Schema.SchemaTypeB\x04\xe2A\x01\x01R\n" +
 	"schemaType\x12\x1e\n" +
-	"\x0eschema_payload\x18\x02 \x01(\tR\x06schema\x12h\n" +
+	"\x0eschema_payload\x18\x02 \x01(\tR\x06schema\x12i\n" +
 	"\n" +
-	"references\x18\x03 \x03(\v2C.google.cloud.managedkafka.schemaregistry.v1.Schema.SchemaReferenceB\x03\xe0A\x01R\n" +
-	"references\x1ah\n" +
-	"\x0fSchemaReference\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x1d\n" +
-	"\asubject\x18\x02 \x01(\tB\x03\xe0A\x02R\asubject\x12\x1d\n" +
-	"\aversion\x18\x03 \x01(\x05B\x03\xe0A\x02R\aversion\"K\n" +
+	"references\x18\x03 \x03(\v2C.google.cloud.managedkafka.schemaregistry.v1.Schema.SchemaReferenceB\x04\xe2A\x01\x01R\n" +
+	"references\x1ak\n" +
+	"\x0fSchemaReference\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x1e\n" +
+	"\asubject\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\asubject\x12\x1e\n" +
+	"\aversion\x18\x03 \x01(\x05B\x04\xe2A\x01\x02R\aversion\"K\n" +
 	"\n" +
 	"SchemaType\x12\x1b\n" +
 	"\x17SCHEMA_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04AVRO\x10\x01\x12\b\n" +
 	"\x04JSON\x10\x02\x12\f\n" +
 	"\bPROTOBUF\x10\x03:\x8e\x02\xeaA\x8a\x02\n" +
-	"\"managedkafka.googleapis.com/Schema\x12_projects/{project}/locations/{location}/schemaRegistries/{schema_registry}/schemas/ids/{schema}\x12rprojects/{project}/locations/{location}/schemaRegistries/{schema_registry}/contexts/{context}/schemas/ids/{schema}*\aschemas2\x06schema\"\x8d\x03\n" +
-	"\rSchemaSubject\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12M\n" +
-	"\bversions\x18\x03 \x03(\tB1\xe0A\x01\xfaA+\n" +
+	"\"managedkafka.googleapis.com/Schema\x12_projects/{project}/locations/{location}/schemaRegistries/{schema_registry}/schemas/ids/{schema}\x12rprojects/{project}/locations/{location}/schemaRegistries/{schema_registry}/contexts/{context}/schemas/ids/{schema}*\aschemas2\x06schema\"\x8f\x03\n" +
+	"\rSchemaSubject\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12N\n" +
+	"\bversions\x18\x03 \x03(\tB2\xe2A\x01\x01\xfaA+\n" +
 	")managedkafka.googleapis.com/SchemaVersionR\bversions:\x93\x02\xeaA\x8f\x02\n" +
-	")managedkafka.googleapis.com/SchemaSubject\x12]projects/{project}/locations/{location}/schemaRegistries/{schema_registry}/subjects/{subject}\x12pprojects/{project}/locations/{location}/schemaRegistries/{schema_registry}/contexts/{context}/subjects/{subject}*\bsubjects2\asubject\"\xb2\t\n" +
-	"\rSchemaVersion\x12\x1d\n" +
-	"\asubject\x18\x01 \x01(\tB\x03\xe0A\x02R\asubject\x12 \n" +
+	")managedkafka.googleapis.com/SchemaSubject\x12]projects/{project}/locations/{location}/schemaRegistries/{schema_registry}/subjects/{subject}\x12pprojects/{project}/locations/{location}/schemaRegistries/{schema_registry}/contexts/{context}/subjects/{subject}*\bsubjects2\asubject\"\xb8\t\n" +
+	"\rSchemaVersion\x12\x1e\n" +
+	"\asubject\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\asubject\x12!\n" +
 	"\n" +
-	"version_id\x18\x02 \x01(\x05B\x03\xe0A\x02R\aversion\x12\x1a\n" +
-	"\tschema_id\x18\x03 \x01(\x05B\x03\xe0A\x02R\x02id\x12d\n" +
-	"\vschema_type\x18\x04 \x01(\x0e2>.google.cloud.managedkafka.schemaregistry.v1.Schema.SchemaTypeB\x03\xe0A\x01R\n" +
-	"schemaType\x12#\n" +
-	"\x0eschema_payload\x18\x05 \x01(\tB\x03\xe0A\x02R\x06schema\x12h\n" +
+	"version_id\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\aversion\x12\x1b\n" +
+	"\tschema_id\x18\x03 \x01(\x05B\x04\xe2A\x01\x02R\x02id\x12e\n" +
+	"\vschema_type\x18\x04 \x01(\x0e2>.google.cloud.managedkafka.schemaregistry.v1.Schema.SchemaTypeB\x04\xe2A\x01\x01R\n" +
+	"schemaType\x12$\n" +
+	"\x0eschema_payload\x18\x05 \x01(\tB\x04\xe2A\x01\x02R\x06schema\x12i\n" +
 	"\n" +
-	"references\x18\x06 \x03(\v2C.google.cloud.managedkafka.schemaregistry.v1.Schema.SchemaReferenceB\x03\xe0A\x01R\n" +
+	"references\x18\x06 \x03(\v2C.google.cloud.managedkafka.schemaregistry.v1.Schema.SchemaReferenceB\x04\xe2A\x01\x01R\n" +
 	"references:\xce\x06\xeaA\xca\x06\n" +
-	")managedkafka.googleapis.com/SchemaVersion\x12pprojects/{project}/locations/{location}/schemaRegistries/{schema_registry}/subjects/{subject}/versions/{version}\x12\x83\x01projects/{project}/locations/{location}/schemaRegistries/{schema_registry}/contexts/{context}/subjects/{subject}/versions/{version}\x12tprojects/{project}/locations/{location}/schemaRegistries/{schema_registry}/compatibility/subjects/{subject}/versions\x12\x87\x01projects/{project}/locations/{location}/schemaRegistries/{schema_registry}/contexts/{context}/compatibility/subjects/{subject}/versions\x12~projects/{project}/locations/{location}/schemaRegistries/{schema_registry}/compatibility/subjects/{subject}/versions/{version}\x12\x91\x01projects/{project}/locations/{location}/schemaRegistries/{schema_registry}/contexts/{context}/compatibility/subjects/{subject}/versions/{version}*\bversions2\aversion\"\xc1\x06\n" +
-	"\fSchemaConfig\x12{\n" +
-	"\rcompatibility\x18\x01 \x01(\x0e2K.google.cloud.managedkafka.schemaregistry.v1.SchemaConfig.CompatibilityTypeB\x03\xe0A\x02H\x00R\rcompatibility\x88\x01\x01\x12&\n" +
-	"\tnormalize\x18\x02 \x01(\bB\x03\xe0A\x01H\x01R\tnormalize\x88\x01\x01\x12\x19\n" +
-	"\x05alias\x18\x03 \x01(\tB\x03\xe0A\x01R\x05alias\"\x88\x01\n" +
+	")managedkafka.googleapis.com/SchemaVersion\x12pprojects/{project}/locations/{location}/schemaRegistries/{schema_registry}/subjects/{subject}/versions/{version}\x12\x83\x01projects/{project}/locations/{location}/schemaRegistries/{schema_registry}/contexts/{context}/subjects/{subject}/versions/{version}\x12tprojects/{project}/locations/{location}/schemaRegistries/{schema_registry}/compatibility/subjects/{subject}/versions\x12\x87\x01projects/{project}/locations/{location}/schemaRegistries/{schema_registry}/contexts/{context}/compatibility/subjects/{subject}/versions\x12~projects/{project}/locations/{location}/schemaRegistries/{schema_registry}/compatibility/subjects/{subject}/versions/{version}\x12\x91\x01projects/{project}/locations/{location}/schemaRegistries/{schema_registry}/contexts/{context}/compatibility/subjects/{subject}/versions/{version}*\bversions2\aversion\"\xc4\x06\n" +
+	"\fSchemaConfig\x12|\n" +
+	"\rcompatibility\x18\x01 \x01(\x0e2K.google.cloud.managedkafka.schemaregistry.v1.SchemaConfig.CompatibilityTypeB\x04\xe2A\x01\x02H\x00R\rcompatibility\x88\x01\x01\x12'\n" +
+	"\tnormalize\x18\x02 \x01(\bB\x04\xe2A\x01\x01H\x01R\tnormalize\x88\x01\x01\x12\x1a\n" +
+	"\x05alias\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x05alias\"\x88\x01\n" +
 	"\x11CompatibilityType\x12\b\n" +
 	"\x04NONE\x10\x00\x12\f\n" +
 	"\bBACKWARD\x10\x01\x12\x17\n" +
@@ -819,10 +819,10 @@ const file_google_cloud_managedkafka_schemaregistry_v1_schema_registry_resources
 	"(managedkafka.googleapis.com/SchemaConfig\x12Qprojects/{project}/locations/{location}/schemaRegistries/{schema_registry}/config\x12[projects/{project}/locations/{location}/schemaRegistries/{schema_registry}/config/{subject}\x12dprojects/{project}/locations/{location}/schemaRegistries/{schema_registry}/contexts/{context}/config\x12nprojects/{project}/locations/{location}/schemaRegistries/{schema_registry}/contexts/{context}/config/{subject}*\aconfigs2\x06configB\x10\n" +
 	"\x0e_compatibilityB\f\n" +
 	"\n" +
-	"_normalize\"\xe0\x04\n" +
+	"_normalize\"\xe1\x04\n" +
 	"\n" +
-	"SchemaMode\x12Y\n" +
-	"\x04mode\x18\x01 \x01(\x0e2@.google.cloud.managedkafka.schemaregistry.v1.SchemaMode.ModeTypeB\x03\xe0A\x02R\x04mode\"=\n" +
+	"SchemaMode\x12Z\n" +
+	"\x04mode\x18\x01 \x01(\x0e2@.google.cloud.managedkafka.schemaregistry.v1.SchemaMode.ModeTypeB\x04\xe2A\x01\x02R\x04mode\"=\n" +
 	"\bModeType\x12\b\n" +
 	"\x04NONE\x10\x00\x12\f\n" +
 	"\bREADONLY\x10\x01\x12\r\n" +

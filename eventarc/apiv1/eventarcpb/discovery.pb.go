@@ -264,23 +264,23 @@ var File_google_cloud_eventarc_v1_discovery_proto protoreflect.FileDescriptor
 
 const file_google_cloud_eventarc_v1_discovery_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/eventarc/v1/discovery.proto\x12\x18google.cloud.eventarc.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x90\x02\n" +
-	"\bProvider\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12I\n" +
-	"\vevent_types\x18\x03 \x03(\v2#.google.cloud.eventarc.v1.EventTypeB\x03\xe0A\x03R\n" +
+	"(google/cloud/eventarc/v1/discovery.proto\x12\x18google.cloud.eventarc.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\x93\x02\n" +
+	"\bProvider\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12J\n" +
+	"\vevent_types\x18\x03 \x03(\v2#.google.cloud.eventarc.v1.EventTypeB\x04\xe2A\x01\x03R\n" +
 	"eventTypes:x\xeaAu\n" +
-	" eventarc.googleapis.com/Provider\x12<projects/{project}/locations/{location}/providers/{provider}*\tproviders2\bprovider\"\xe0\x01\n" +
-	"\tEventType\x12\x17\n" +
-	"\x04type\x18\x01 \x01(\tB\x03\xe0A\x03R\x04type\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x03R\vdescription\x12d\n" +
-	"\x14filtering_attributes\x18\x03 \x03(\v2,.google.cloud.eventarc.v1.FilteringAttributeB\x03\xe0A\x03R\x13filteringAttributes\x12-\n" +
-	"\x10event_schema_uri\x18\x04 \x01(\tB\x03\xe0A\x03R\x0eeventSchemaUri\"\xba\x01\n" +
-	"\x12FilteringAttribute\x12!\n" +
-	"\tattribute\x18\x01 \x01(\tB\x03\xe0A\x03R\tattribute\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x03R\vdescription\x12\x1f\n" +
-	"\brequired\x18\x03 \x01(\bB\x03\xe0A\x03R\brequired\x129\n" +
-	"\x16path_pattern_supported\x18\x04 \x01(\bB\x03\xe0A\x03R\x14pathPatternSupportedBj\n" +
+	" eventarc.googleapis.com/Provider\x12<projects/{project}/locations/{location}/providers/{provider}*\tproviders2\bprovider\"\xe4\x01\n" +
+	"\tEventType\x12\x18\n" +
+	"\x04type\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04type\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12e\n" +
+	"\x14filtering_attributes\x18\x03 \x03(\v2,.google.cloud.eventarc.v1.FilteringAttributeB\x04\xe2A\x01\x03R\x13filteringAttributes\x12.\n" +
+	"\x10event_schema_uri\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\x0eeventSchemaUri\"\xbe\x01\n" +
+	"\x12FilteringAttribute\x12\"\n" +
+	"\tattribute\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\tattribute\x12&\n" +
+	"\vdescription\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x12 \n" +
+	"\brequired\x18\x03 \x01(\bB\x04\xe2A\x01\x03R\brequired\x12:\n" +
+	"\x16path_pattern_supported\x18\x04 \x01(\bB\x04\xe2A\x01\x03R\x14pathPatternSupportedBj\n" +
 	"\x1ccom.google.cloud.eventarc.v1B\x0eDiscoveryProtoP\x01Z8cloud.google.com/go/eventarc/apiv1/eventarcpb;eventarcpbb\x06proto3"
 
 var (

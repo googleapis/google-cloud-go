@@ -426,19 +426,20 @@ var File_google_shopping_merchant_accounts_v1_businessidentity_proto protoreflec
 
 const file_google_shopping_merchant_accounts_v1_businessidentity_proto_rawDesc = "" +
 	"\n" +
-	";google/shopping/merchant/accounts/v1/businessidentity.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xf9\t\n" +
-	"\x10BusinessIdentity\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12|\n" +
-	"\x12promotions_consent\x18\x02 \x01(\x0e2H.google.shopping.merchant.accounts.v1.BusinessIdentity.PromotionsConsentB\x03\xe0A\x02R\x11promotionsConsent\x12n\n" +
-	"\vblack_owned\x18\x03 \x01(\v2H.google.shopping.merchant.accounts.v1.BusinessIdentity.IdentityAttributeB\x03\xe0A\x01R\n" +
-	"blackOwned\x12n\n" +
-	"\vwomen_owned\x18\x04 \x01(\v2H.google.shopping.merchant.accounts.v1.BusinessIdentity.IdentityAttributeB\x03\xe0A\x01R\n" +
-	"womenOwned\x12r\n" +
-	"\rveteran_owned\x18\x05 \x01(\v2H.google.shopping.merchant.accounts.v1.BusinessIdentity.IdentityAttributeB\x03\xe0A\x01R\fveteranOwned\x12p\n" +
-	"\flatino_owned\x18\x06 \x01(\v2H.google.shopping.merchant.accounts.v1.BusinessIdentity.IdentityAttributeB\x03\xe0A\x01R\vlatinoOwned\x12t\n" +
-	"\x0esmall_business\x18\a \x01(\v2H.google.shopping.merchant.accounts.v1.BusinessIdentity.IdentityAttributeB\x03\xe0A\x01R\rsmallBusiness\x1a\x9e\x02\n" +
-	"\x11IdentityAttribute\x12\x94\x01\n" +
-	"\x14identity_declaration\x18\x01 \x01(\x0e2\\.google.shopping.merchant.accounts.v1.BusinessIdentity.IdentityAttribute.IdentityDeclarationB\x03\xe0A\x02R\x13identityDeclaration\"r\n" +
+	";google/shopping/merchant/accounts/v1/businessidentity.proto\x12$google.shopping.merchant.accounts.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\x81\n" +
+	"\n" +
+	"\x10BusinessIdentity\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\bR\x04name\x12}\n" +
+	"\x12promotions_consent\x18\x02 \x01(\x0e2H.google.shopping.merchant.accounts.v1.BusinessIdentity.PromotionsConsentB\x04\xe2A\x01\x02R\x11promotionsConsent\x12o\n" +
+	"\vblack_owned\x18\x03 \x01(\v2H.google.shopping.merchant.accounts.v1.BusinessIdentity.IdentityAttributeB\x04\xe2A\x01\x01R\n" +
+	"blackOwned\x12o\n" +
+	"\vwomen_owned\x18\x04 \x01(\v2H.google.shopping.merchant.accounts.v1.BusinessIdentity.IdentityAttributeB\x04\xe2A\x01\x01R\n" +
+	"womenOwned\x12s\n" +
+	"\rveteran_owned\x18\x05 \x01(\v2H.google.shopping.merchant.accounts.v1.BusinessIdentity.IdentityAttributeB\x04\xe2A\x01\x01R\fveteranOwned\x12q\n" +
+	"\flatino_owned\x18\x06 \x01(\v2H.google.shopping.merchant.accounts.v1.BusinessIdentity.IdentityAttributeB\x04\xe2A\x01\x01R\vlatinoOwned\x12u\n" +
+	"\x0esmall_business\x18\a \x01(\v2H.google.shopping.merchant.accounts.v1.BusinessIdentity.IdentityAttributeB\x04\xe2A\x01\x01R\rsmallBusiness\x1a\x9f\x02\n" +
+	"\x11IdentityAttribute\x12\x95\x01\n" +
+	"\x14identity_declaration\x18\x01 \x01(\x0e2\\.google.shopping.merchant.accounts.v1.BusinessIdentity.IdentityAttribute.IdentityDeclarationB\x04\xe2A\x01\x02R\x13identityDeclaration\"r\n" +
 	"\x13IdentityDeclaration\x12$\n" +
 	" IDENTITY_DECLARATION_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12SELF_IDENTIFIES_AS\x10\x01\x12\x1d\n" +
@@ -447,13 +448,13 @@ const file_google_shopping_merchant_accounts_v1_businessidentity_proto_rawDesc =
 	"\x1ePROMOTIONS_CONSENT_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18PROMOTIONS_CONSENT_GIVEN\x10\x01\x12\x1d\n" +
 	"\x19PROMOTIONS_CONSENT_DENIED\x10\x02:{\xeaAx\n" +
-	"+merchantapi.googleapis.com/BusinessIdentity\x12#accounts/{account}/businessIdentity*\x12businessIdentities2\x10businessIdentity\"e\n" +
-	"\x1aGetBusinessIdentityRequest\x12G\n" +
-	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
-	"+merchantapi.googleapis.com/BusinessIdentityR\x04name\"\xcb\x01\n" +
-	"\x1dUpdateBusinessIdentityRequest\x12h\n" +
-	"\x11business_identity\x18\x01 \x01(\v26.google.shopping.merchant.accounts.v1.BusinessIdentityB\x03\xe0A\x02R\x10businessIdentity\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"+merchantapi.googleapis.com/BusinessIdentity\x12#accounts/{account}/businessIdentity*\x12businessIdentities2\x10businessIdentity\"f\n" +
+	"\x1aGetBusinessIdentityRequest\x12H\n" +
+	"\x04name\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
+	"+merchantapi.googleapis.com/BusinessIdentityR\x04name\"\xcd\x01\n" +
+	"\x1dUpdateBusinessIdentityRequest\x12i\n" +
+	"\x11business_identity\x18\x01 \x01(\v26.google.shopping.merchant.accounts.v1.BusinessIdentityB\x04\xe2A\x01\x02R\x10businessIdentity\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x01R\n" +
 	"updateMask2\xca\x04\n" +
 	"\x17BusinessIdentityService\x12\xcf\x01\n" +
 	"\x13GetBusinessIdentity\x12@.google.shopping.merchant.accounts.v1.GetBusinessIdentityRequest\x1a6.google.shopping.merchant.accounts.v1.BusinessIdentity\">\xdaA\x04name\x82\xd3\xe4\x93\x021\x12//accounts/v1/{name=accounts/*/businessIdentity}\x12\x93\x02\n" +

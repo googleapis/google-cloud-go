@@ -241,6 +241,37 @@ func NewTemplatesClient(ctx context.Context, opts ...option.ClientOption) (*Temp
 		client.CallOptions.LaunchTemplate = append(client.CallOptions.LaunchTemplate, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetTemplate = append(client.CallOptions.GetTemplate, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateJobFromTemplate = append(client.CallOptions.CreateJobFromTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.LaunchTemplate = append(client.CallOptions.LaunchTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTemplate = append(client.CallOptions.GetTemplate, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateJobFromTemplate = append(client.CallOptions.CreateJobFromTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.LaunchTemplate = append(client.CallOptions.LaunchTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.GetTemplate = append(client.CallOptions.GetTemplate, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -333,6 +364,37 @@ func NewTemplatesRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		callOpts.CreateJobFromTemplate = append(callOpts.CreateJobFromTemplate, gax.WithClientMetrics(metrics))
 		callOpts.LaunchTemplate = append(callOpts.LaunchTemplate, gax.WithClientMetrics(metrics))
 		callOpts.GetTemplate = append(callOpts.GetTemplate, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateJobFromTemplate = append(callOpts.CreateJobFromTemplate, gax.WithClientTracing(tracing))
+		callOpts.LaunchTemplate = append(callOpts.LaunchTemplate, gax.WithClientTracing(tracing))
+		callOpts.GetTemplate = append(callOpts.GetTemplate, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateJobFromTemplate = append(callOpts.CreateJobFromTemplate, gax.WithClientLogging(logging))
+		callOpts.LaunchTemplate = append(callOpts.LaunchTemplate, gax.WithClientLogging(logging))
+		callOpts.GetTemplate = append(callOpts.GetTemplate, gax.WithClientLogging(logging))
 	}
 
 	return &TemplatesClient{internalClient: c, CallOptions: callOpts}, nil
@@ -457,6 +519,12 @@ func (c *templatesRESTClient) CreateJobFromTemplate(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetLocation(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/templates", req.GetProjectId(), req.GetLocation())
 
 	params := url.Values{}
@@ -522,6 +590,12 @@ func (c *templatesRESTClient) LaunchTemplate(ctx context.Context, req *dataflowp
 
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetLocation(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/templates:launch", req.GetProjectId(), req.GetLocation())
@@ -594,6 +668,12 @@ func (c *templatesRESTClient) LaunchTemplate(ctx context.Context, req *dataflowp
 func (c *templatesRESTClient) GetTemplate(ctx context.Context, req *dataflowpb.GetTemplateRequest, opts ...gax.CallOption) (*dataflowpb.GetTemplateResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProjectId(),
+		req.GetLocation(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/templates:get", req.GetProjectId(), req.GetLocation())

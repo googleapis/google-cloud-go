@@ -17,9 +17,18 @@
 package asset
 
 import (
+	"iter"
+
 	assetpb "cloud.google.com/go/asset/apiv1p5beta1/assetpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AssetIterator) All() iter.Seq2[*assetpb.Asset, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // AssetIterator manages a stream of *assetpb.Asset.
 type AssetIterator struct {

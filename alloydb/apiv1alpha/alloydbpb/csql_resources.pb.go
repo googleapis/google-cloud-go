@@ -106,12 +106,12 @@ var File_google_cloud_alloydb_v1alpha_csql_resources_proto protoreflect.FileDesc
 
 const file_google_cloud_alloydb_v1alpha_csql_resources_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/alloydb/v1alpha/csql_resources.proto\x12\x1cgoogle.cloud.alloydb.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\"\x82\x01\n" +
+	"1google/cloud/alloydb/v1alpha/csql_resources.proto\x12\x1cgoogle.cloud.alloydb.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\"\x84\x01\n" +
 	"\x17CloudSQLBackupRunSource\x12\x18\n" +
-	"\aproject\x18\x01 \x01(\tR\aproject\x12$\n" +
-	"\vinstance_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"instanceId\x12'\n" +
-	"\rbackup_run_id\x18\x03 \x01(\x03B\x03\xe0A\x02R\vbackupRunIdB\xd4\x01\n" +
+	"\aproject\x18\x01 \x01(\tR\aproject\x12%\n" +
+	"\vinstance_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\n" +
+	"instanceId\x12(\n" +
+	"\rbackup_run_id\x18\x03 \x01(\x03B\x04\xe2A\x01\x02R\vbackupRunIdB\xd4\x01\n" +
 	" com.google.cloud.alloydb.v1alphaB\x12CsqlResourcesProtoP\x01Z:cloud.google.com/go/alloydb/apiv1alpha/alloydbpb;alloydbpb\xaa\x02\x1cGoogle.Cloud.AlloyDb.V1Alpha\xca\x02\x1cGoogle\\Cloud\\AlloyDb\\V1alpha\xea\x02\x1fGoogle::Cloud::AlloyDB::V1alphab\x06proto3"
 
 var (

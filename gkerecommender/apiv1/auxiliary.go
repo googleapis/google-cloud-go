@@ -17,9 +17,18 @@
 package gkerecommender
 
 import (
+	"iter"
+
 	gkerecommenderpb "cloud.google.com/go/gkerecommender/apiv1/gkerecommenderpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProfileIterator) All() iter.Seq2[*gkerecommenderpb.Profile, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // ProfileIterator manages a stream of *gkerecommenderpb.Profile.
 type ProfileIterator struct {
@@ -66,6 +75,12 @@ func (it *ProfileIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StringIterator) All() iter.Seq2[string, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // StringIterator manages a stream of string.

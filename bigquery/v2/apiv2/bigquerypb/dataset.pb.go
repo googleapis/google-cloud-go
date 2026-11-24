@@ -1867,7 +1867,7 @@ const file_google_cloud_bigquery_v2_dataset_proto_rawDesc = "" +
 	"TargetType\x12\x1b\n" +
 	"\x17TARGET_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05VIEWS\x10\x01\x12\f\n" +
-	"\bROUTINES\x10\x02\"\xc4\x03\n" +
+	"\bROUTINES\x10\x02\"\xc5\x03\n" +
 	"\x06Access\x12\x12\n" +
 	"\x04role\x18\x01 \x01(\tR\x04role\x12\"\n" +
 	"\ruser_by_email\x18\x02 \x01(\tR\vuserByEmail\x12$\n" +
@@ -1878,42 +1878,42 @@ const file_google_cloud_bigquery_v2_dataset_proto_rawDesc = "" +
 	"iam_member\x18\a \x01(\tR\tiamMember\x12<\n" +
 	"\x04view\x18\x06 \x01(\v2(.google.cloud.bigquery.v2.TableReferenceR\x04view\x12D\n" +
 	"\aroutine\x18\b \x01(\v2*.google.cloud.bigquery.v2.RoutineReferenceR\aroutine\x12F\n" +
-	"\adataset\x18\t \x01(\v2,.google.cloud.bigquery.v2.DatasetAccessEntryR\adataset\x124\n" +
+	"\adataset\x18\t \x01(\v2,.google.cloud.bigquery.v2.DatasetAccessEntryR\adataset\x125\n" +
 	"\tcondition\x18\n" +
-	" \x01(\v2\x11.google.type.ExprB\x03\xe0A\x01R\tcondition\"\xfe\x13\n" +
-	"\aDataset\x12\x17\n" +
-	"\x04kind\x18\x01 \x01(\tB\x03\xe0A\x03R\x04kind\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x03R\x04etag\x12\x13\n" +
-	"\x02id\x18\x03 \x01(\tB\x03\xe0A\x03R\x02id\x12 \n" +
-	"\tself_link\x18\x04 \x01(\tB\x03\xe0A\x03R\bselfLink\x12\\\n" +
-	"\x11dataset_reference\x18\x05 \x01(\v2*.google.cloud.bigquery.v2.DatasetReferenceB\x03\xe0A\x02R\x10datasetReference\x12F\n" +
-	"\rfriendly_name\x18\x06 \x01(\v2\x1c.google.protobuf.StringValueB\x03\xe0A\x01R\ffriendlyName\x12C\n" +
-	"\vdescription\x18\a \x01(\v2\x1c.google.protobuf.StringValueB\x03\xe0A\x01R\vdescription\x12_\n" +
-	"\x1bdefault_table_expiration_ms\x18\b \x01(\v2\x1b.google.protobuf.Int64ValueB\x03\xe0A\x01R\x18defaultTableExpirationMs\x12b\n" +
+	" \x01(\v2\x11.google.type.ExprB\x04\xe2A\x01\x01R\tcondition\"\x97\x14\n" +
+	"\aDataset\x12\x18\n" +
+	"\x04kind\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04kind\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12\x14\n" +
+	"\x02id\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\x02id\x12!\n" +
+	"\tself_link\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\bselfLink\x12]\n" +
+	"\x11dataset_reference\x18\x05 \x01(\v2*.google.cloud.bigquery.v2.DatasetReferenceB\x04\xe2A\x01\x02R\x10datasetReference\x12G\n" +
+	"\rfriendly_name\x18\x06 \x01(\v2\x1c.google.protobuf.StringValueB\x04\xe2A\x01\x01R\ffriendlyName\x12D\n" +
+	"\vdescription\x18\a \x01(\v2\x1c.google.protobuf.StringValueB\x04\xe2A\x01\x01R\vdescription\x12`\n" +
+	"\x1bdefault_table_expiration_ms\x18\b \x01(\v2\x1b.google.protobuf.Int64ValueB\x04\xe2A\x01\x01R\x18defaultTableExpirationMs\x12b\n" +
 	"\x1fdefault_partition_expiration_ms\x18\x0e \x01(\v2\x1b.google.protobuf.Int64ValueR\x1cdefaultPartitionExpirationMs\x12E\n" +
-	"\x06labels\x18\t \x03(\v2-.google.cloud.bigquery.v2.Dataset.LabelsEntryR\x06labels\x12=\n" +
+	"\x06labels\x18\t \x03(\v2-.google.cloud.bigquery.v2.Dataset.LabelsEntryR\x06labels\x12>\n" +
 	"\x06access\x18\n" +
-	" \x03(\v2 .google.cloud.bigquery.v2.AccessB\x03\xe0A\x01R\x06access\x12(\n" +
-	"\rcreation_time\x18\v \x01(\x03B\x03\xe0A\x03R\fcreationTime\x121\n" +
-	"\x12last_modified_time\x18\f \x01(\x03B\x03\xe0A\x03R\x10lastModifiedTime\x12\x1a\n" +
+	" \x03(\v2 .google.cloud.bigquery.v2.AccessB\x04\xe2A\x01\x01R\x06access\x12)\n" +
+	"\rcreation_time\x18\v \x01(\x03B\x04\xe2A\x01\x03R\fcreationTime\x122\n" +
+	"\x12last_modified_time\x18\f \x01(\x03B\x04\xe2A\x01\x03R\x10lastModifiedTime\x12\x1a\n" +
 	"\blocation\x18\r \x01(\tR\blocation\x12{\n" +
-	" default_encryption_configuration\x18\x10 \x01(\v21.google.cloud.bigquery.v2.EncryptionConfigurationR\x1edefaultEncryptionConfiguration\x12D\n" +
-	"\rsatisfies_pzs\x18\x11 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x03R\fsatisfiesPzs\x12D\n" +
-	"\rsatisfies_pzi\x18\x1f \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x03R\fsatisfiesPzi\x12\x17\n" +
-	"\x04type\x18\x12 \x01(\tB\x03\xe0A\x03R\x04type\x12/\n" +
-	"\x0ecatalog_source\x18( \x01(\tB\x03\xe0A\x03H\x00R\rcatalogSource\x88\x01\x01\x12f\n" +
-	"\x15linked_dataset_source\x18\x13 \x01(\v2-.google.cloud.bigquery.v2.LinkedDatasetSourceB\x03\xe0A\x01R\x13linkedDatasetSource\x12l\n" +
-	"\x17linked_dataset_metadata\x18\x1d \x01(\v2/.google.cloud.bigquery.v2.LinkedDatasetMetadataB\x03\xe0A\x03R\x15linkedDatasetMetadata\x12u\n" +
-	"\x1aexternal_dataset_reference\x18\x14 \x01(\v22.google.cloud.bigquery.v2.ExternalDatasetReferenceB\x03\xe0A\x01R\x18externalDatasetReference\x12\x85\x01\n" +
-	" external_catalog_dataset_options\x18  \x01(\v27.google.cloud.bigquery.v2.ExternalCatalogDatasetOptionsB\x03\xe0A\x01R\x1dexternalCatalogDatasetOptions\x12O\n" +
-	"\x13is_case_insensitive\x18\x15 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x11isCaseInsensitive\x12N\n" +
-	"\x11default_collation\x18\x16 \x01(\v2\x1c.google.protobuf.StringValueB\x03\xe0A\x01R\x10defaultCollation\x12p\n" +
-	"\x15default_rounding_mode\x18\x1a \x01(\x0e27.google.cloud.bigquery.v2.TableFieldSchema.RoundingModeB\x03\xe0A\x01R\x13defaultRoundingMode\x12S\n" +
-	"\x15max_time_travel_hours\x18\x17 \x01(\v2\x1b.google.protobuf.Int64ValueB\x03\xe0A\x01R\x12maxTimeTravelHours\x12;\n" +
-	"\x04tags\x18\x18 \x03(\v2 .google.cloud.bigquery.v2.GcpTagB\x05\xe0A\x03\x18\x01R\x04tags\x12n\n" +
-	"\x15storage_billing_model\x18\x19 \x01(\x0e25.google.cloud.bigquery.v2.Dataset.StorageBillingModelB\x03\xe0A\x01R\x13storageBillingModel\x12W\n" +
-	"\frestrictions\x18\x1b \x01(\v2+.google.cloud.bigquery.v2.RestrictionConfigB\x06\xe0A\x01\xe0A\x03R\frestrictions\x12]\n" +
-	"\rresource_tags\x18\x1e \x03(\v23.google.cloud.bigquery.v2.Dataset.ResourceTagsEntryB\x03\xe0A\x01R\fresourceTags\x1a9\n" +
+	" default_encryption_configuration\x18\x10 \x01(\v21.google.cloud.bigquery.v2.EncryptionConfigurationR\x1edefaultEncryptionConfiguration\x12E\n" +
+	"\rsatisfies_pzs\x18\x11 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x03R\fsatisfiesPzs\x12E\n" +
+	"\rsatisfies_pzi\x18\x1f \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x03R\fsatisfiesPzi\x12\x18\n" +
+	"\x04type\x18\x12 \x01(\tB\x04\xe2A\x01\x03R\x04type\x120\n" +
+	"\x0ecatalog_source\x18( \x01(\tB\x04\xe2A\x01\x03H\x00R\rcatalogSource\x88\x01\x01\x12g\n" +
+	"\x15linked_dataset_source\x18\x13 \x01(\v2-.google.cloud.bigquery.v2.LinkedDatasetSourceB\x04\xe2A\x01\x01R\x13linkedDatasetSource\x12m\n" +
+	"\x17linked_dataset_metadata\x18\x1d \x01(\v2/.google.cloud.bigquery.v2.LinkedDatasetMetadataB\x04\xe2A\x01\x03R\x15linkedDatasetMetadata\x12v\n" +
+	"\x1aexternal_dataset_reference\x18\x14 \x01(\v22.google.cloud.bigquery.v2.ExternalDatasetReferenceB\x04\xe2A\x01\x01R\x18externalDatasetReference\x12\x86\x01\n" +
+	" external_catalog_dataset_options\x18  \x01(\v27.google.cloud.bigquery.v2.ExternalCatalogDatasetOptionsB\x04\xe2A\x01\x01R\x1dexternalCatalogDatasetOptions\x12P\n" +
+	"\x13is_case_insensitive\x18\x15 \x01(\v2\x1a.google.protobuf.BoolValueB\x04\xe2A\x01\x01R\x11isCaseInsensitive\x12O\n" +
+	"\x11default_collation\x18\x16 \x01(\v2\x1c.google.protobuf.StringValueB\x04\xe2A\x01\x01R\x10defaultCollation\x12q\n" +
+	"\x15default_rounding_mode\x18\x1a \x01(\x0e27.google.cloud.bigquery.v2.TableFieldSchema.RoundingModeB\x04\xe2A\x01\x01R\x13defaultRoundingMode\x12T\n" +
+	"\x15max_time_travel_hours\x18\x17 \x01(\v2\x1b.google.protobuf.Int64ValueB\x04\xe2A\x01\x01R\x12maxTimeTravelHours\x12<\n" +
+	"\x04tags\x18\x18 \x03(\v2 .google.cloud.bigquery.v2.GcpTagB\x06\xe2A\x01\x03\x18\x01R\x04tags\x12o\n" +
+	"\x15storage_billing_model\x18\x19 \x01(\x0e25.google.cloud.bigquery.v2.Dataset.StorageBillingModelB\x04\xe2A\x01\x01R\x13storageBillingModel\x12V\n" +
+	"\frestrictions\x18\x1b \x01(\v2+.google.cloud.bigquery.v2.RestrictionConfigB\x05\xe2A\x02\x01\x03R\frestrictions\x12^\n" +
+	"\rresource_tags\x18\x1e \x03(\v23.google.cloud.bigquery.v2.Dataset.ResourceTagsEntryB\x04\xe2A\x01\x01R\fresourceTags\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a?\n" +
@@ -1924,94 +1924,94 @@ const file_google_cloud_bigquery_v2_dataset_proto_rawDesc = "" +
 	"!STORAGE_BILLING_MODEL_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aLOGICAL\x10\x01\x12\f\n" +
 	"\bPHYSICAL\x10\x02B\x11\n" +
-	"\x0f_catalog_source\"H\n" +
-	"\x06GcpTag\x12\x1c\n" +
-	"\atag_key\x18\x01 \x01(\tB\x03\xe0A\x02R\x06tagKey\x12 \n" +
-	"\ttag_value\x18\x02 \x01(\tB\x03\xe0A\x02R\btagValue\"h\n" +
+	"\x0f_catalog_source\"J\n" +
+	"\x06GcpTag\x12\x1d\n" +
+	"\atag_key\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06tagKey\x12!\n" +
+	"\ttag_value\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\btagValue\"h\n" +
 	"\x13LinkedDatasetSource\x12Q\n" +
-	"\x0esource_dataset\x18\x01 \x01(\v2*.google.cloud.bigquery.v2.DatasetReferenceR\rsourceDataset\"\xb9\x01\n" +
-	"\x15LinkedDatasetMetadata\x12]\n" +
+	"\x0esource_dataset\x18\x01 \x01(\v2*.google.cloud.bigquery.v2.DatasetReferenceR\rsourceDataset\"\xba\x01\n" +
+	"\x15LinkedDatasetMetadata\x12^\n" +
 	"\n" +
-	"link_state\x18\x01 \x01(\x0e29.google.cloud.bigquery.v2.LinkedDatasetMetadata.LinkStateB\x03\xe0A\x03R\tlinkState\"A\n" +
+	"link_state\x18\x01 \x01(\x0e29.google.cloud.bigquery.v2.LinkedDatasetMetadata.LinkStateB\x04\xe2A\x01\x03R\tlinkState\"A\n" +
 	"\tLinkState\x12\x1a\n" +
 	"\x16LINK_STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06LINKED\x10\x01\x12\f\n" +
-	"\bUNLINKED\x10\x02\"\xc3\x02\n" +
-	"\x11GetDatasetRequest\x12\"\n" +
+	"\bUNLINKED\x10\x02\"\xc7\x02\n" +
+	"\x11GetDatasetRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12_\n" +
-	"\fdataset_view\x18\x03 \x01(\x0e27.google.cloud.bigquery.v2.GetDatasetRequest.DatasetViewB\x03\xe0A\x01R\vdatasetView\x127\n" +
-	"\x15access_policy_version\x18\x04 \x01(\x05B\x03\xe0A\x01R\x13accessPolicyVersion\"L\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12`\n" +
+	"\fdataset_view\x18\x03 \x01(\x0e27.google.cloud.bigquery.v2.GetDatasetRequest.DatasetViewB\x04\xe2A\x01\x01R\vdatasetView\x128\n" +
+	"\x15access_policy_version\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x13accessPolicyVersion\"L\n" +
 	"\vDatasetView\x12\x1c\n" +
 	"\x18DATASET_VIEW_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bMETADATA\x10\x01\x12\a\n" +
 	"\x03ACL\x10\x02\x12\b\n" +
-	"\x04FULL\x10\x03\"\xb5\x01\n" +
-	"\x14InsertDatasetRequest\x12\"\n" +
+	"\x04FULL\x10\x03\"\xb8\x01\n" +
+	"\x14InsertDatasetRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12@\n" +
-	"\adataset\x18\x02 \x01(\v2!.google.cloud.bigquery.v2.DatasetB\x03\xe0A\x02R\adataset\x127\n" +
-	"\x15access_policy_version\x18\x04 \x01(\x05B\x03\xe0A\x01R\x13accessPolicyVersion\"\xa9\x03\n" +
-	"\x1bUpdateOrPatchDatasetRequest\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12A\n" +
+	"\adataset\x18\x02 \x01(\v2!.google.cloud.bigquery.v2.DatasetB\x04\xe2A\x01\x02R\adataset\x128\n" +
+	"\x15access_policy_version\x18\x04 \x01(\x05B\x04\xe2A\x01\x01R\x13accessPolicyVersion\"\xae\x03\n" +
+	"\x1bUpdateOrPatchDatasetRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12@\n" +
-	"\adataset\x18\x03 \x01(\v2!.google.cloud.bigquery.v2.DatasetB\x03\xe0A\x02R\adataset\x12f\n" +
-	"\vupdate_mode\x18\x04 \x01(\x0e2@.google.cloud.bigquery.v2.UpdateOrPatchDatasetRequest.UpdateModeB\x03\xe0A\x01R\n" +
-	"updateMode\x127\n" +
-	"\x15access_policy_version\x18\x05 \x01(\x05B\x03\xe0A\x01R\x13accessPolicyVersion\"_\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12A\n" +
+	"\adataset\x18\x03 \x01(\v2!.google.cloud.bigquery.v2.DatasetB\x04\xe2A\x01\x02R\adataset\x12g\n" +
+	"\vupdate_mode\x18\x04 \x01(\x0e2@.google.cloud.bigquery.v2.UpdateOrPatchDatasetRequest.UpdateModeB\x04\xe2A\x01\x01R\n" +
+	"updateMode\x128\n" +
+	"\x15access_policy_version\x18\x05 \x01(\x05B\x04\xe2A\x01\x01R\x13accessPolicyVersion\"_\n" +
 	"\n" +
 	"UpdateMode\x12\x1b\n" +
 	"\x17UPDATE_MODE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fUPDATE_METADATA\x10\x01\x12\x0e\n" +
 	"\n" +
 	"UPDATE_ACL\x10\x02\x12\x0f\n" +
-	"\vUPDATE_FULL\x10\x03\"\x87\x01\n" +
-	"\x14DeleteDatasetRequest\x12\"\n" +
+	"\vUPDATE_FULL\x10\x03\"\x89\x01\n" +
+	"\x14DeleteDatasetRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12'\n" +
-	"\x0fdelete_contents\x18\x03 \x01(\bR\x0edeleteContents\"\xc1\x01\n" +
-	"\x13ListDatasetsRequest\x12\"\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12'\n" +
+	"\x0fdelete_contents\x18\x03 \x01(\bR\x0edeleteContents\"\xc2\x01\n" +
+	"\x13ListDatasetsRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12=\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12=\n" +
 	"\vmax_results\x18\x02 \x01(\v2\x1c.google.protobuf.UInt32ValueR\n" +
 	"maxResults\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x10\n" +
 	"\x03all\x18\x04 \x01(\bR\x03all\x12\x16\n" +
-	"\x06filter\x18\x05 \x01(\tR\x06filter\"\xcf\x04\n" +
+	"\x06filter\x18\x05 \x01(\tR\x06filter\"\xd2\x04\n" +
 	"\x11ListFormatDataset\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12W\n" +
 	"\x11dataset_reference\x18\x03 \x01(\v2*.google.cloud.bigquery.v2.DatasetReferenceR\x10datasetReference\x12O\n" +
 	"\x06labels\x18\x04 \x03(\v27.google.cloud.bigquery.v2.ListFormatDataset.LabelsEntryR\x06labels\x12A\n" +
 	"\rfriendly_name\x18\x05 \x01(\v2\x1c.google.protobuf.StringValueR\ffriendlyName\x12\x1a\n" +
-	"\blocation\x18\x06 \x01(\tR\blocation\x12\x17\n" +
-	"\x04type\x18\a \x01(\tB\x03\xe0A\x03R\x04type\x12/\n" +
-	"\x0ecatalog_source\x18\f \x01(\tB\x03\xe0A\x03H\x00R\rcatalogSource\x88\x01\x01\x12u\n" +
-	"\x1aexternal_dataset_reference\x18\v \x01(\v22.google.cloud.bigquery.v2.ExternalDatasetReferenceB\x03\xe0A\x03R\x18externalDatasetReference\x1a9\n" +
+	"\blocation\x18\x06 \x01(\tR\blocation\x12\x18\n" +
+	"\x04type\x18\a \x01(\tB\x04\xe2A\x01\x03R\x04type\x120\n" +
+	"\x0ecatalog_source\x18\f \x01(\tB\x04\xe2A\x01\x03H\x00R\rcatalogSource\x88\x01\x01\x12v\n" +
+	"\x1aexternal_dataset_reference\x18\v \x01(\v22.google.cloud.bigquery.v2.ExternalDatasetReferenceB\x04\xe2A\x01\x03R\x18externalDatasetReference\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x11\n" +
-	"\x0f_catalog_source\"\xd2\x01\n" +
-	"\vDatasetList\x12\x17\n" +
-	"\x04kind\x18\x01 \x01(\tB\x03\xe0A\x03R\x04kind\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x03R\x04etag\x12&\n" +
+	"\x0f_catalog_source\"\xd4\x01\n" +
+	"\vDatasetList\x12\x18\n" +
+	"\x04kind\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04kind\x12\x18\n" +
+	"\x04etag\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x04etag\x12&\n" +
 	"\x0fnext_page_token\x18\x03 \x01(\tR\rnextPageToken\x12G\n" +
 	"\bdatasets\x18\x04 \x03(\v2+.google.cloud.bigquery.v2.ListFormatDatasetR\bdatasets\x12 \n" +
-	"\vunreachable\x18\x05 \x03(\tR\vunreachable\"\xa6\x01\n" +
-	"\x16UndeleteDatasetRequest\x12\"\n" +
+	"\vunreachable\x18\x05 \x03(\tR\vunreachable\"\xa9\x01\n" +
+	"\x16UndeleteDatasetRequest\x12#\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
+	"project_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\tprojectId\x12#\n" +
 	"\n" +
-	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12D\n" +
-	"\rdeletion_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\fdeletionTime2\xf9\n" +
+	"dataset_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\tdatasetId\x12E\n" +
+	"\rdeletion_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x01R\fdeletionTime2\xf9\n" +
 	"\n" +
 	"\x0eDatasetService\x12\xa2\x01\n" +
 	"\n" +

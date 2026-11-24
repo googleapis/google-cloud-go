@@ -248,9 +248,9 @@ var File_google_cloud_discoveryengine_v1beta_grounding_proto protoreflect.FileDe
 
 const file_google_cloud_discoveryengine_v1beta_grounding_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/discoveryengine/v1beta/grounding.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xad\x01\n" +
-	"\x0fGroundingConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name:\x80\x01\xeaA}\n" +
+	"3google/cloud/discoveryengine/v1beta/grounding.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xae\x01\n" +
+	"\x0fGroundingConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name:\x80\x01\xeaA}\n" +
 	".discoveryengine.googleapis.com/GroundingConfig\x12Kprojects/{project}/locations/{location}/groundingConfigs/{grounding_config}\"\xcf\x01\n" +
 	"\rGroundingFact\x12\x1b\n" +
 	"\tfact_text\x18\x01 \x01(\tR\bfactText\x12b\n" +

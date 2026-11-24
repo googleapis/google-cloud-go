@@ -1564,71 +1564,71 @@ var File_google_cloud_ces_v1_common_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1_common_proto_rawDesc = "" +
 	"\n" +
-	" google/cloud/ces/v1/common.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcb\x01\n" +
-	"\bCallback\x12&\n" +
-	"\vpython_code\x18\x01 \x01(\tB\x03\xe0A\x02H\x00R\n" +
-	"pythonCode\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x1f\n" +
-	"\bdisabled\x18\x02 \x01(\bB\x03\xe0A\x01R\bdisabled\x12C\n" +
-	"\x1bproactive_execution_enabled\x18\x04 \x01(\bB\x03\xe0A\x01R\x19proactiveExecutionEnabledB\n" +
+	" google/cloud/ces/v1/common.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcf\x01\n" +
+	"\bCallback\x12'\n" +
+	"\vpython_code\x18\x01 \x01(\tB\x04\xe2A\x01\x02H\x00R\n" +
+	"pythonCode\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vdescription\x12 \n" +
+	"\bdisabled\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\bdisabled\x12D\n" +
+	"\x1bproactive_execution_enabled\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x19proactiveExecutionEnabledB\n" +
 	"\n" +
-	"\bcallback\"f\n" +
-	"\rModelSettings\x12\x19\n" +
-	"\x05model\x18\x01 \x01(\tB\x03\xe0A\x01R\x05model\x12*\n" +
-	"\vtemperature\x18\x02 \x01(\x01B\x03\xe0A\x01H\x00R\vtemperature\x88\x01\x01B\x0e\n" +
-	"\f_temperature\"\xf7\x04\n" +
-	"\rTriggerAction\x12m\n" +
-	"\x13respond_immediately\x18\x01 \x01(\v25.google.cloud.ces.v1.TriggerAction.RespondImmediatelyB\x03\xe0A\x01H\x00R\x12respondImmediately\x12^\n" +
-	"\x0etransfer_agent\x18\x02 \x01(\v20.google.cloud.ces.v1.TriggerAction.TransferAgentB\x03\xe0A\x01H\x00R\rtransferAgent\x12g\n" +
-	"\x11generative_answer\x18\x03 \x01(\v23.google.cloud.ces.v1.TriggerAction.GenerativeAnswerB\x03\xe0A\x01H\x00R\x10generativeAnswer\x1aD\n" +
-	"\bResponse\x12\x17\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x02R\x04text\x12\x1f\n" +
-	"\bdisabled\x18\x02 \x01(\bB\x03\xe0A\x01R\bdisabled\x1ad\n" +
-	"\x12RespondImmediately\x12N\n" +
-	"\tresponses\x18\x01 \x03(\v2+.google.cloud.ces.v1.TriggerAction.ResponseB\x03\xe0A\x02R\tresponses\x1a/\n" +
-	"\x10GenerativeAnswer\x12\x1b\n" +
-	"\x06prompt\x18\x01 \x01(\tB\x03\xe0A\x02R\x06prompt\x1aG\n" +
-	"\rTransferAgent\x126\n" +
-	"\x05agent\x18\x01 \x01(\tB \xe0A\x02\xfaA\x1a\n" +
+	"\bcallback\"h\n" +
+	"\rModelSettings\x12\x1a\n" +
+	"\x05model\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\x05model\x12+\n" +
+	"\vtemperature\x18\x02 \x01(\x01B\x04\xe2A\x01\x01H\x00R\vtemperature\x88\x01\x01B\x0e\n" +
+	"\f_temperature\"\xff\x04\n" +
+	"\rTriggerAction\x12n\n" +
+	"\x13respond_immediately\x18\x01 \x01(\v25.google.cloud.ces.v1.TriggerAction.RespondImmediatelyB\x04\xe2A\x01\x01H\x00R\x12respondImmediately\x12_\n" +
+	"\x0etransfer_agent\x18\x02 \x01(\v20.google.cloud.ces.v1.TriggerAction.TransferAgentB\x04\xe2A\x01\x01H\x00R\rtransferAgent\x12h\n" +
+	"\x11generative_answer\x18\x03 \x01(\v23.google.cloud.ces.v1.TriggerAction.GenerativeAnswerB\x04\xe2A\x01\x01H\x00R\x10generativeAnswer\x1aF\n" +
+	"\bResponse\x12\x18\n" +
+	"\x04text\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04text\x12 \n" +
+	"\bdisabled\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\bdisabled\x1ae\n" +
+	"\x12RespondImmediately\x12O\n" +
+	"\tresponses\x18\x01 \x03(\v2+.google.cloud.ces.v1.TriggerAction.ResponseB\x04\xe2A\x01\x02R\tresponses\x1a0\n" +
+	"\x10GenerativeAnswer\x12\x1c\n" +
+	"\x06prompt\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06prompt\x1aH\n" +
+	"\rTransferAgent\x127\n" +
+	"\x05agent\x18\x01 \x01(\tB!\xe2A\x01\x02\xfaA\x1a\n" +
 	"\x18ces.googleapis.com/AgentR\x05agentB\b\n" +
-	"\x06action\"\x9d\x01\n" +
-	"\tTlsConfig\x12E\n" +
-	"\bca_certs\x18\x01 \x03(\v2%.google.cloud.ces.v1.TlsConfig.CaCertB\x03\xe0A\x02R\acaCerts\x1aI\n" +
-	"\x06CaCert\x12&\n" +
-	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12\x17\n" +
-	"\x04cert\x18\x02 \x01(\fB\x03\xe0A\x02R\x04cert\"c\n" +
-	"\x16ServiceDirectoryConfig\x12I\n" +
-	"\aservice\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'servicedirectory.googleapis.com/ServiceR\aservice\"\x89\x12\n" +
-	"\x0eChannelProfile\x12\"\n" +
+	"\x06action\"\xa0\x01\n" +
+	"\tTlsConfig\x12F\n" +
+	"\bca_certs\x18\x01 \x03(\v2%.google.cloud.ces.v1.TlsConfig.CaCertB\x04\xe2A\x01\x02R\acaCerts\x1aK\n" +
+	"\x06CaCert\x12'\n" +
+	"\fdisplay_name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12\x18\n" +
+	"\x04cert\x18\x02 \x01(\fB\x04\xe2A\x01\x02R\x04cert\"d\n" +
+	"\x16ServiceDirectoryConfig\x12J\n" +
+	"\aservice\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'servicedirectory.googleapis.com/ServiceR\aservice\"\xa5\x12\n" +
+	"\x0eChannelProfile\x12#\n" +
 	"\n" +
-	"profile_id\x18\x01 \x01(\tB\x03\xe0A\x01R\tprofileId\x12W\n" +
-	"\fchannel_type\x18\x03 \x01(\x0e2/.google.cloud.ces.v1.ChannelProfile.ChannelTypeB\x03\xe0A\x01R\vchannelType\x12c\n" +
-	"\x10persona_property\x18\x02 \x01(\v23.google.cloud.ces.v1.ChannelProfile.PersonaPropertyB\x03\xe0A\x01R\x0fpersonaProperty\x12&\n" +
-	"\fdisable_dtmf\x18\x04 \x01(\bB\x03\xe0A\x01R\vdisableDtmf\x12<\n" +
-	"\x18disable_barge_in_control\x18\x05 \x01(\bB\x03\xe0A\x01R\x15disableBargeInControl\x12d\n" +
-	"\x11web_widget_config\x18\a \x01(\v23.google.cloud.ces.v1.ChannelProfile.WebWidgetConfigB\x03\xe0A\x01R\x0fwebWidgetConfig\x12;\n" +
-	"\x17noise_suppression_level\x18\b \x01(\tB\x03\xe0A\x01R\x15noiseSuppressionLevel\x12`\n" +
-	"\x0fwhatsapp_config\x18\t \x01(\v22.google.cloud.ces.v1.ChannelProfile.WhatsAppConfigB\x03\xe0A\x01R\x0ewhatsappConfig\x12c\n" +
+	"profile_id\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\tprofileId\x12X\n" +
+	"\fchannel_type\x18\x03 \x01(\x0e2/.google.cloud.ces.v1.ChannelProfile.ChannelTypeB\x04\xe2A\x01\x01R\vchannelType\x12d\n" +
+	"\x10persona_property\x18\x02 \x01(\v23.google.cloud.ces.v1.ChannelProfile.PersonaPropertyB\x04\xe2A\x01\x01R\x0fpersonaProperty\x12'\n" +
+	"\fdisable_dtmf\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\vdisableDtmf\x12=\n" +
+	"\x18disable_barge_in_control\x18\x05 \x01(\bB\x04\xe2A\x01\x01R\x15disableBargeInControl\x12e\n" +
+	"\x11web_widget_config\x18\a \x01(\v23.google.cloud.ces.v1.ChannelProfile.WebWidgetConfigB\x04\xe2A\x01\x01R\x0fwebWidgetConfig\x12<\n" +
+	"\x17noise_suppression_level\x18\b \x01(\tB\x04\xe2A\x01\x01R\x15noiseSuppressionLevel\x12a\n" +
+	"\x0fwhatsapp_config\x18\t \x01(\v22.google.cloud.ces.v1.ChannelProfile.WhatsAppConfigB\x04\xe2A\x01\x01R\x0ewhatsappConfig\x12d\n" +
 	"\x10instagram_config\x18\n" +
-	" \x01(\v23.google.cloud.ces.v1.ChannelProfile.InstagramConfigB\x03\xe0A\x01R\x0finstagramConfig\x1a\x9e\x01\n" +
-	"\x0fPersonaProperty\x12Z\n" +
-	"\apersona\x18\x01 \x01(\x0e2;.google.cloud.ces.v1.ChannelProfile.PersonaProperty.PersonaB\x03\xe0A\x01R\apersona\"/\n" +
+	" \x01(\v23.google.cloud.ces.v1.ChannelProfile.InstagramConfigB\x04\xe2A\x01\x01R\x0finstagramConfig\x1a\x9f\x01\n" +
+	"\x0fPersonaProperty\x12[\n" +
+	"\apersona\x18\x01 \x01(\x0e2;.google.cloud.ces.v1.ChannelProfile.PersonaProperty.PersonaB\x04\xe2A\x01\x01R\apersona\"/\n" +
 	"\aPersona\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\v\n" +
 	"\aCONCISE\x10\x01\x12\n" +
 	"\n" +
-	"\x06CHATTY\x10\x02\x1a\xf4\x05\n" +
-	"\x0fWebWidgetConfig\x12]\n" +
-	"\bmodality\x18\x01 \x01(\x0e2<.google.cloud.ces.v1.ChannelProfile.WebWidgetConfig.ModalityB\x03\xe0A\x01R\bmodality\x12T\n" +
-	"\x05theme\x18\x02 \x01(\x0e29.google.cloud.ces.v1.ChannelProfile.WebWidgetConfig.ThemeB\x03\xe0A\x01R\x05theme\x12-\n" +
-	"\x10web_widget_title\x18\x03 \x01(\tB\x03\xe0A\x01R\x0ewebWidgetTitle\x12v\n" +
-	"\x11security_settings\x18\x04 \x01(\v2D.google.cloud.ces.v1.ChannelProfile.WebWidgetConfig.SecuritySettingsB\x03\xe0A\x01R\x10securitySettings\x1a\xdc\x01\n" +
-	"\x10SecuritySettings\x125\n" +
-	"\x14enable_public_access\x18\x01 \x01(\bB\x03\xe0A\x01R\x12enablePublicAccess\x123\n" +
-	"\x13enable_origin_check\x18\x04 \x01(\bB\x03\xe0A\x01R\x11enableOriginCheck\x12,\n" +
-	"\x0fallowed_origins\x18\x02 \x03(\tB\x03\xe0A\x01R\x0eallowedOrigins\x12.\n" +
-	"\x10enable_recaptcha\x18\x03 \x01(\bB\x03\xe0A\x01R\x0fenableRecaptcha\"q\n" +
+	"\x06CHATTY\x10\x02\x1a\xfc\x05\n" +
+	"\x0fWebWidgetConfig\x12^\n" +
+	"\bmodality\x18\x01 \x01(\x0e2<.google.cloud.ces.v1.ChannelProfile.WebWidgetConfig.ModalityB\x04\xe2A\x01\x01R\bmodality\x12U\n" +
+	"\x05theme\x18\x02 \x01(\x0e29.google.cloud.ces.v1.ChannelProfile.WebWidgetConfig.ThemeB\x04\xe2A\x01\x01R\x05theme\x12.\n" +
+	"\x10web_widget_title\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\x0ewebWidgetTitle\x12w\n" +
+	"\x11security_settings\x18\x04 \x01(\v2D.google.cloud.ces.v1.ChannelProfile.WebWidgetConfig.SecuritySettingsB\x04\xe2A\x01\x01R\x10securitySettings\x1a\xe0\x01\n" +
+	"\x10SecuritySettings\x126\n" +
+	"\x14enable_public_access\x18\x01 \x01(\bB\x04\xe2A\x01\x01R\x12enablePublicAccess\x124\n" +
+	"\x13enable_origin_check\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x11enableOriginCheck\x12-\n" +
+	"\x0fallowed_origins\x18\x02 \x03(\tB\x04\xe2A\x01\x01R\x0eallowedOrigins\x12/\n" +
+	"\x10enable_recaptcha\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x0fenableRecaptcha\"q\n" +
 	"\bModality\x12\x18\n" +
 	"\x14MODALITY_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eCHAT_AND_VOICE\x10\x01\x12\x0e\n" +
@@ -1639,19 +1639,19 @@ const file_google_cloud_ces_v1_common_proto_rawDesc = "" +
 	"\x05Theme\x12\x15\n" +
 	"\x11THEME_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05LIGHT\x10\x01\x12\b\n" +
-	"\x04DARK\x10\x02\x1a\xfc\x01\n" +
-	"\x0eWhatsAppConfig\x12\x1c\n" +
-	"\awaba_id\x18\x01 \x01(\tB\x03\xe0A\x02R\x06wabaId\x12+\n" +
-	"\x0fphone_number_id\x18\x02 \x01(\tB\x03\xe0A\x02R\rphoneNumberId\x12&\n" +
-	"\fphone_number\x18\x03 \x01(\tB\x03\xe0A\x01R\vphoneNumber\x12&\n" +
-	"\fdisplay_name\x18\x04 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12(\n" +
-	"\rthumbnail_url\x18\x05 \x01(\tB\x03\xe0A\x03R\fthumbnailUrl\x12%\n" +
-	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x03R\vdescription\x1a\xc1\x01\n" +
-	"\x0fInstagramConfig\x125\n" +
-	"\x14instagram_account_id\x18\x01 \x01(\tB\x03\xe0A\x02R\x12instagramAccountId\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12(\n" +
-	"\rthumbnail_url\x18\x03 \x01(\tB\x03\xe0A\x03R\fthumbnailUrl\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x03R\vdescription\"\xe9\x01\n" +
+	"\x04DARK\x10\x02\x1a\x82\x02\n" +
+	"\x0eWhatsAppConfig\x12\x1d\n" +
+	"\awaba_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x06wabaId\x12,\n" +
+	"\x0fphone_number_id\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\rphoneNumberId\x12'\n" +
+	"\fphone_number\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\vphoneNumber\x12'\n" +
+	"\fdisplay_name\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12)\n" +
+	"\rthumbnail_url\x18\x05 \x01(\tB\x04\xe2A\x01\x03R\fthumbnailUrl\x12&\n" +
+	"\vdescription\x18\x06 \x01(\tB\x04\xe2A\x01\x03R\vdescription\x1a\xc5\x01\n" +
+	"\x0fInstagramConfig\x126\n" +
+	"\x14instagram_account_id\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x12instagramAccountId\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\vdisplayName\x12)\n" +
+	"\rthumbnail_url\x18\x03 \x01(\tB\x04\xe2A\x01\x03R\fthumbnailUrl\x12&\n" +
+	"\vdescription\x18\x04 \x01(\tB\x04\xe2A\x01\x03R\vdescription\"\xe9\x01\n" +
 	"\vChannelType\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\n" +
 	"\n" +
@@ -1666,17 +1666,17 @@ const file_google_cloud_ces_v1_common_proto_rawDesc = "" +
 	"\x1aCONTACT_CENTER_INTEGRATION\x10\b\x12\f\n" +
 	"\bWHATSAPP\x10\t\x12\r\n" +
 	"\tINSTAGRAM\x10\n" +
-	"\"\xd6\x02\n" +
-	"\x04Span\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12>\n" +
+	"\"\xdc\x02\n" +
+	"\x04Span\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x04name\x12?\n" +
 	"\n" +
-	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
-	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12:\n" +
-	"\bduration\x18\x06 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\bduration\x12<\n" +
+	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tstartTime\x12;\n" +
+	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\aendTime\x12;\n" +
+	"\bduration\x18\x06 \x01(\v2\x19.google.protobuf.DurationB\x04\xe2A\x01\x03R\bduration\x12=\n" +
 	"\n" +
-	"attributes\x18\x04 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x03R\n" +
-	"attributes\x12?\n" +
-	"\vchild_spans\x18\x05 \x03(\v2\x19.google.cloud.ces.v1.SpanB\x03\xe0A\x03R\n" +
+	"attributes\x18\x04 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x03R\n" +
+	"attributes\x12@\n" +
+	"\vchild_spans\x18\x05 \x03(\v2\x19.google.cloud.ces.v1.SpanB\x04\xe2A\x01\x03R\n" +
 	"childSpans*R\n" +
 	"\rExecutionType\x12\x1e\n" +
 	"\x1aEXECUTION_TYPE_UNSPECIFIED\x10\x00\x12\x0f\n" +

@@ -41,14 +41,20 @@ var newRolloutsClientHook clientHook
 
 // RolloutsCallOptions contains the retry settings for each method of RolloutsClient.
 type RolloutsCallOptions struct {
-	Cancel []gax.CallOption
-	Delete []gax.CallOption
-	Get    []gax.CallOption
-	List   []gax.CallOption
+	Advance []gax.CallOption
+	Cancel  []gax.CallOption
+	Delete  []gax.CallOption
+	Get     []gax.CallOption
+	List    []gax.CallOption
+	Pause   []gax.CallOption
+	Resume  []gax.CallOption
 }
 
 func defaultRolloutsRESTCallOptions() *RolloutsCallOptions {
 	return &RolloutsCallOptions{
+		Advance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Cancel: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -79,24 +85,35 @@ func defaultRolloutsRESTCallOptions() *RolloutsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		Pause: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Resume: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
-// internalRolloutsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRolloutsClient is an interface that defines the methods available from Compute Engine API.
 type internalRolloutsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
+	Advance(context.Context, *computepb.AdvanceRolloutRequest, ...gax.CallOption) (*Operation, error)
 	Cancel(context.Context, *computepb.CancelRolloutRequest, ...gax.CallOption) (*Operation, error)
 	Delete(context.Context, *computepb.DeleteRolloutRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetRolloutRequest, ...gax.CallOption) (*computepb.Rollout, error)
 	List(context.Context, *computepb.ListRolloutsRequest, ...gax.CallOption) *RolloutIterator
+	Pause(context.Context, *computepb.PauseRolloutRequest, ...gax.CallOption) (*Operation, error)
+	Resume(context.Context, *computepb.ResumeRolloutRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// RolloutsClient is a client for interacting with Google Compute Engine API.
+// RolloutsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The Rollouts API.
+//
+// This client uses Rollouts version 2026-09-01.
 type RolloutsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalRolloutsClient
@@ -128,6 +145,11 @@ func (c *RolloutsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
+// Advance advances a Rollout to the next wave, or completes it if no waves remain.
+func (c *RolloutsClient) Advance(ctx context.Context, req *computepb.AdvanceRolloutRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.Advance(ctx, req, opts...)
+}
+
 // Cancel cancels a Rollout.
 func (c *RolloutsClient) Cancel(ctx context.Context, req *computepb.CancelRolloutRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Cancel(ctx, req, opts...)
@@ -146,6 +168,16 @@ func (c *RolloutsClient) Get(ctx context.Context, req *computepb.GetRolloutReque
 // List lists Rollouts in a given project and location.
 func (c *RolloutsClient) List(ctx context.Context, req *computepb.ListRolloutsRequest, opts ...gax.CallOption) *RolloutIterator {
 	return c.internalClient.List(ctx, req, opts...)
+}
+
+// Pause pauses a Rollout.
+func (c *RolloutsClient) Pause(ctx context.Context, req *computepb.PauseRolloutRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.Pause(ctx, req, opts...)
+}
+
+// Resume resumes a Rollout.
+func (c *RolloutsClient) Resume(ctx context.Context, req *computepb.ResumeRolloutRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.Resume(ctx, req, opts...)
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -209,10 +241,52 @@ func NewRolloutsRESTClient(ctx context.Context, opts ...option.ClientOption) (*R
 			}),
 		)
 
+		callOpts.Advance = append(callOpts.Advance, gax.WithClientMetrics(metrics))
 		callOpts.Cancel = append(callOpts.Cancel, gax.WithClientMetrics(metrics))
 		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
 		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
 		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.Pause = append(callOpts.Pause, gax.WithClientMetrics(metrics))
+		callOpts.Resume = append(callOpts.Resume, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Advance = append(callOpts.Advance, gax.WithClientTracing(tracing))
+		callOpts.Cancel = append(callOpts.Cancel, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.Pause = append(callOpts.Pause, gax.WithClientTracing(tracing))
+		callOpts.Resume = append(callOpts.Resume, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Advance = append(callOpts.Advance, gax.WithClientLogging(logging))
+		callOpts.Cancel = append(callOpts.Cancel, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.Pause = append(callOpts.Pause, gax.WithClientLogging(logging))
+		callOpts.Resume = append(callOpts.Resume, gax.WithClientLogging(logging))
 	}
 
 	o := []option.ClientOption{
@@ -248,6 +322,7 @@ func (c *rolloutsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
@@ -269,10 +344,88 @@ func (c *rolloutsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
+// Advance advances a Rollout to the next wave, or completes it if no waves remain.
+func (c *rolloutsRESTClient) Advance(ctx context.Context, req *computepb.AdvanceRolloutRequest, opts ...gax.CallOption) (*Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRollout(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/rollouts/%v/advance", req.GetProject(), req.GetRollout())
+
+	params := url.Values{}
+	if req != nil && req.CurrentWaveNumber != nil {
+		params.Add("currentWaveNumber", fmt.Sprintf("%v", req.GetCurrentWaveNumber()))
+	}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "rollout", url.QueryEscape(req.GetRollout()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Rollouts/Advance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/rollouts/{rollout}/advance")
+	}
+	opts = append((*c.CallOptions).Advance[0:len((*c.CallOptions).Advance):len((*c.CallOptions).Advance)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "Advance")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
+}
+
 // Cancel cancels a Rollout.
 func (c *rolloutsRESTClient) Cancel(ctx context.Context, req *computepb.CancelRolloutRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRollout(),
+	); err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/rollouts/%v", req.GetProject(), req.GetRollout())
@@ -293,9 +446,6 @@ func (c *rolloutsRESTClient) Cancel(ctx context.Context, req *computepb.CancelRo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/rollouts/%v", req.GetProject(), req.GetRollout()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Rollouts/Cancel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/rollouts/{rollout}")
@@ -344,6 +494,12 @@ func (c *rolloutsRESTClient) Delete(ctx context.Context, req *computepb.DeleteRo
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRollout(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/rollouts/%v", req.GetProject(), req.GetRollout())
 
 	params := url.Values{}
@@ -359,9 +515,6 @@ func (c *rolloutsRESTClient) Delete(ctx context.Context, req *computepb.DeleteRo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/rollouts/%v", req.GetProject(), req.GetRollout()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Rollouts/Delete")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/rollouts/{rollout}")
@@ -410,6 +563,12 @@ func (c *rolloutsRESTClient) Get(ctx context.Context, req *computepb.GetRolloutR
 	if err != nil {
 		return nil, err
 	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRollout(),
+	); err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/rollouts/%v", req.GetProject(), req.GetRollout())
 
 	// Build HTTP headers from client and context metadata.
@@ -418,9 +577,6 @@ func (c *rolloutsRESTClient) Get(ctx context.Context, req *computepb.GetRolloutR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/rollouts/%v", req.GetProject(), req.GetRollout()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Rollouts/Get")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/rollouts/{rollout}")
@@ -475,6 +631,11 @@ func (c *rolloutsRESTClient) List(ctx context.Context, req *computepb.ListRollou
 		if err != nil {
 			return nil, "", err
 		}
+		if err = gax.ValidatePathExpressions(
+			req.GetProject(),
+		); err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/rollouts", req.GetProject())
 
 		params := url.Values{}
@@ -489,9 +650,6 @@ func (c *rolloutsRESTClient) List(ctx context.Context, req *computepb.ListRollou
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -540,4 +698,148 @@ func (c *rolloutsRESTClient) List(ctx context.Context, req *computepb.ListRollou
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// Pause pauses a Rollout.
+func (c *rolloutsRESTClient) Pause(ctx context.Context, req *computepb.PauseRolloutRequest, opts ...gax.CallOption) (*Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRollout(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/rollouts/%v/pause", req.GetProject(), req.GetRollout())
+
+	params := url.Values{}
+	if req != nil && req.Etag != nil {
+		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
+	}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "rollout", url.QueryEscape(req.GetRollout()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Rollouts/Pause")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/rollouts/{rollout}/pause")
+	}
+	opts = append((*c.CallOptions).Pause[0:len((*c.CallOptions).Pause):len((*c.CallOptions).Pause)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "Pause")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
+}
+
+// Resume resumes a Rollout.
+func (c *rolloutsRESTClient) Resume(ctx context.Context, req *computepb.ResumeRolloutRequest, opts ...gax.CallOption) (*Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if err = gax.ValidatePathExpressions(
+		req.GetProject(),
+		req.GetRollout(),
+	); err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/rollouts/%v/resume", req.GetProject(), req.GetRollout())
+
+	params := url.Values{}
+	if req != nil && req.Etag != nil {
+		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
+	}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "rollout", url.QueryEscape(req.GetRollout()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Rollouts/Resume")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/rollouts/{rollout}/resume")
+	}
+	opts = append((*c.CallOptions).Resume[0:len((*c.CallOptions).Resume):len((*c.CallOptions).Resume)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "Resume")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
 }

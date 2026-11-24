@@ -598,23 +598,23 @@ var File_google_cloud_discoveryengine_v1alpha_serving_config_proto protoreflect.
 
 const file_google_cloud_discoveryengine_v1alpha_serving_config_proto_rawDesc = "" +
 	"\n" +
-	"9google/cloud/discoveryengine/v1alpha/serving_config.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/discoveryengine/v1alpha/common.proto\x1a9google/cloud/discoveryengine/v1alpha/search_service.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xaa\x11\n" +
+	"9google/cloud/discoveryengine/v1alpha/serving_config.proto\x12$google.cloud.discoveryengine.v1alpha\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a1google/cloud/discoveryengine/v1alpha/common.proto\x1a9google/cloud/discoveryengine/v1alpha/search_service.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xad\x11\n" +
 	"\rServingConfig\x12d\n" +
 	"\fmedia_config\x18\a \x01(\v2?.google.cloud.discoveryengine.v1alpha.ServingConfig.MediaConfigH\x00R\vmediaConfig\x12j\n" +
 	"\x0egeneric_config\x18\n" +
-	" \x01(\v2A.google.cloud.discoveryengine.v1alpha.ServingConfig.GenericConfigH\x00R\rgenericConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12_\n" +
-	"\rsolution_type\x18\x03 \x01(\x0e22.google.cloud.discoveryengine.v1alpha.SolutionTypeB\x06\xe0A\x02\xe0A\x05R\fsolutionType\x12\x19\n" +
+	" \x01(\v2A.google.cloud.discoveryengine.v1alpha.ServingConfig.GenericConfigH\x00R\rgenericConfig\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x05R\x04name\x12'\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\vdisplayName\x12^\n" +
+	"\rsolution_type\x18\x03 \x01(\x0e22.google.cloud.discoveryengine.v1alpha.SolutionTypeB\x05\xe2A\x02\x02\x05R\fsolutionType\x12\x19\n" +
 	"\bmodel_id\x18\x04 \x01(\tR\amodelId\x12'\n" +
 	"\x0fdiversity_level\x18\x05 \x01(\tR\x0ediversityLevel\x12`\n" +
 	"\x10embedding_config\x18\x14 \x01(\v25.google.cloud.discoveryengine.v1alpha.EmbeddingConfigR\x0fembeddingConfig\x12-\n" +
 	"\x12ranking_expression\x18\x15 \x01(\tR\x11rankingExpression\x12d\n" +
 	"\x12guided_search_spec\x18\x16 \x01(\v26.google.cloud.discoveryengine.v1alpha.GuidedSearchSpecR\x10guidedSearchSpec\x12q\n" +
-	"\x17custom_fine_tuning_spec\x18\x18 \x01(\v2:.google.cloud.discoveryengine.v1alpha.CustomFineTuningSpecR\x14customFineTuningSpec\x12@\n" +
-	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\x17custom_fine_tuning_spec\x18\x18 \x01(\v2:.google.cloud.discoveryengine.v1alpha.CustomFineTuningSpecR\x14customFineTuningSpec\x12A\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
+	"createTime\x12A\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\n" +
 	"updateTime\x12,\n" +
 	"\x12filter_control_ids\x18\v \x03(\tR\x10filterControlIds\x12*\n" +
 	"\x11boost_control_ids\x18\f \x03(\tR\x0fboostControlIds\x120\n" +

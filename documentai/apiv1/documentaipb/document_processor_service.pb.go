@@ -3895,43 +3895,44 @@ var File_google_cloud_documentai_v1_document_processor_service_proto protoreflec
 
 const file_google_cloud_documentai_v1_document_processor_service_proto_rawDesc = "" +
 	"\n" +
-	";google/cloud/documentai/v1/document_processor_service.proto\x12\x1agoogle.cloud.documentai.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/documentai/v1/document.proto\x1a,google/cloud/documentai/v1/document_io.proto\x1a0google/cloud/documentai/v1/document_schema.proto\x1a+google/cloud/documentai/v1/evaluation.proto\x1a3google/cloud/documentai/v1/operation_metadata.proto\x1a*google/cloud/documentai/v1/processor.proto\x1a/google/cloud/documentai/v1/processor_type.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xee\a\n" +
+	";google/cloud/documentai/v1/document_processor_service.proto\x12\x1agoogle.cloud.documentai.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a)google/cloud/documentai/v1/document.proto\x1a,google/cloud/documentai/v1/document_io.proto\x1a0google/cloud/documentai/v1/document_schema.proto\x1a+google/cloud/documentai/v1/evaluation.proto\x1a3google/cloud/documentai/v1/operation_metadata.proto\x1a*google/cloud/documentai/v1/processor.proto\x1a/google/cloud/documentai/v1/processor_type.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xf8\a\n" +
 	"\x0eProcessOptions\x12}\n" +
 	"\x18individual_page_selector\x18\x05 \x01(\v2A.google.cloud.documentai.v1.ProcessOptions.IndividualPageSelectorH\x00R\x16individualPageSelector\x12\x1f\n" +
 	"\n" +
 	"from_start\x18\x06 \x01(\x05H\x00R\tfromStart\x12\x1b\n" +
 	"\bfrom_end\x18\a \x01(\x05H\x00R\afromEnd\x12D\n" +
 	"\n" +
-	"ocr_config\x18\x01 \x01(\v2%.google.cloud.documentai.v1.OcrConfigR\tocrConfig\x12a\n" +
-	"\rlayout_config\x18\t \x01(\v27.google.cloud.documentai.v1.ProcessOptions.LayoutConfigB\x03\xe0A\x01R\flayoutConfig\x12X\n" +
-	"\x0fschema_override\x18\b \x01(\v2*.google.cloud.documentai.v1.DocumentSchemaB\x03\xe0A\x01R\x0eschemaOverride\x1a\xd8\x03\n" +
-	"\fLayoutConfig\x12t\n" +
-	"\x0fchunking_config\x18\x01 \x01(\v2F.google.cloud.documentai.v1.ProcessOptions.LayoutConfig.ChunkingConfigB\x03\xe0A\x01R\x0echunkingConfig\x12(\n" +
-	"\rreturn_images\x18\x02 \x01(\bB\x03\xe0A\x01R\freturnImages\x127\n" +
-	"\x15return_bounding_boxes\x18\x03 \x01(\bB\x03\xe0A\x01R\x13returnBoundingBoxes\x12;\n" +
-	"\x17enable_image_annotation\x18\x04 \x01(\bB\x03\xe0A\x01R\x15enableImageAnnotation\x12;\n" +
-	"\x17enable_table_annotation\x18\x06 \x01(\bB\x03\xe0A\x01R\x15enableTableAnnotation\x1au\n" +
-	"\x0eChunkingConfig\x12\"\n" +
+	"ocr_config\x18\x01 \x01(\v2%.google.cloud.documentai.v1.OcrConfigR\tocrConfig\x12b\n" +
+	"\rlayout_config\x18\t \x01(\v27.google.cloud.documentai.v1.ProcessOptions.LayoutConfigB\x04\xe2A\x01\x01R\flayoutConfig\x12Y\n" +
+	"\x0fschema_override\x18\b \x01(\v2*.google.cloud.documentai.v1.DocumentSchemaB\x04\xe2A\x01\x01R\x0eschemaOverride\x1a\xdf\x03\n" +
+	"\fLayoutConfig\x12u\n" +
+	"\x0fchunking_config\x18\x01 \x01(\v2F.google.cloud.documentai.v1.ProcessOptions.LayoutConfig.ChunkingConfigB\x04\xe2A\x01\x01R\x0echunkingConfig\x12)\n" +
+	"\rreturn_images\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\freturnImages\x128\n" +
+	"\x15return_bounding_boxes\x18\x03 \x01(\bB\x04\xe2A\x01\x01R\x13returnBoundingBoxes\x12<\n" +
+	"\x17enable_image_annotation\x18\x04 \x01(\bB\x04\xe2A\x01\x01R\x15enableImageAnnotation\x12<\n" +
+	"\x17enable_table_annotation\x18\x06 \x01(\bB\x04\xe2A\x01\x01R\x15enableTableAnnotation\x1aw\n" +
+	"\x0eChunkingConfig\x12#\n" +
 	"\n" +
-	"chunk_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\tchunkSize\x12?\n" +
-	"\x19include_ancestor_headings\x18\x02 \x01(\bB\x03\xe0A\x01R\x17includeAncestorHeadings\x1a3\n" +
-	"\x16IndividualPageSelector\x12\x19\n" +
-	"\x05pages\x18\x01 \x03(\x05B\x03\xe0A\x01R\x05pagesB\f\n" +
+	"chunk_size\x18\x01 \x01(\x05B\x04\xe2A\x01\x01R\tchunkSize\x12@\n" +
+	"\x19include_ancestor_headings\x18\x02 \x01(\bB\x04\xe2A\x01\x01R\x17includeAncestorHeadings\x1a4\n" +
+	"\x16IndividualPageSelector\x12\x1a\n" +
+	"\x05pages\x18\x01 \x03(\x05B\x04\xe2A\x01\x01R\x05pagesB\f\n" +
 	"\n" +
-	"page_range\"\x9e\x05\n" +
+	"page_range\"\xa1\x05\n" +
 	"\x0eProcessRequest\x12O\n" +
 	"\x0finline_document\x18\x04 \x01(\v2$.google.cloud.documentai.v1.DocumentH\x00R\x0einlineDocument\x12L\n" +
 	"\fraw_document\x18\x05 \x01(\v2'.google.cloud.documentai.v1.RawDocumentH\x00R\vrawDocument\x12L\n" +
-	"\fgcs_document\x18\b \x01(\v2'.google.cloud.documentai.v1.GcsDocumentH\x00R\vgcsDocument\x12\x1d\n" +
-	"\x04name\x18\x01 \x01(\tB\t\xe0A\x02\xfaA\x03\n" +
+	"\fgcs_document\x18\b \x01(\v2'.google.cloud.documentai.v1.GcsDocumentH\x00R\vgcsDocument\x12\x1e\n" +
+	"\x04name\x18\x01 \x01(\tB\n" +
+	"\xe2A\x01\x02\xfaA\x03\n" +
 	"\x01*R\x04name\x12*\n" +
 	"\x11skip_human_review\x18\x03 \x01(\bR\x0fskipHumanReview\x129\n" +
 	"\n" +
 	"field_mask\x18\x06 \x01(\v2\x1a.google.protobuf.FieldMaskR\tfieldMask\x12S\n" +
-	"\x0fprocess_options\x18\a \x01(\v2*.google.cloud.documentai.v1.ProcessOptionsR\x0eprocessOptions\x12S\n" +
+	"\x0fprocess_options\x18\a \x01(\v2*.google.cloud.documentai.v1.ProcessOptionsR\x0eprocessOptions\x12T\n" +
 	"\x06labels\x18\n" +
-	" \x03(\v26.google.cloud.documentai.v1.ProcessRequest.LabelsEntryB\x03\xe0A\x01R\x06labels\x12*\n" +
-	"\x0eimageless_mode\x18\v \x01(\bB\x03\xe0A\x01R\rimagelessMode\x1a9\n" +
+	" \x03(\v26.google.cloud.documentai.v1.ProcessRequest.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x12+\n" +
+	"\x0eimageless_mode\x18\v \x01(\bB\x04\xe2A\x01\x01R\rimagelessMode\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\b\n" +
@@ -3948,15 +3949,16 @@ const file_google_cloud_documentai_v1_document_processor_service_proto_rawDesc =
 	"\x05ERROR\x10\x04\"\xb2\x01\n" +
 	"\x0fProcessResponse\x12@\n" +
 	"\bdocument\x18\x01 \x01(\v2$.google.cloud.documentai.v1.DocumentR\bdocument\x12]\n" +
-	"\x13human_review_status\x18\x03 \x01(\v2-.google.cloud.documentai.v1.HumanReviewStatusR\x11humanReviewStatus\"\x92\x04\n" +
-	"\x13BatchProcessRequest\x12\x1d\n" +
-	"\x04name\x18\x01 \x01(\tB\t\xe0A\x02\xfaA\x03\n" +
+	"\x13human_review_status\x18\x03 \x01(\v2-.google.cloud.documentai.v1.HumanReviewStatusR\x11humanReviewStatus\"\x94\x04\n" +
+	"\x13BatchProcessRequest\x12\x1e\n" +
+	"\x04name\x18\x01 \x01(\tB\n" +
+	"\xe2A\x01\x02\xfaA\x03\n" +
 	"\x01*R\x04name\x12^\n" +
 	"\x0finput_documents\x18\x05 \x01(\v25.google.cloud.documentai.v1.BatchDocumentsInputConfigR\x0einputDocuments\x12f\n" +
 	"\x16document_output_config\x18\x06 \x01(\v20.google.cloud.documentai.v1.DocumentOutputConfigR\x14documentOutputConfig\x12*\n" +
 	"\x11skip_human_review\x18\x04 \x01(\bR\x0fskipHumanReview\x12S\n" +
-	"\x0fprocess_options\x18\a \x01(\v2*.google.cloud.documentai.v1.ProcessOptionsR\x0eprocessOptions\x12X\n" +
-	"\x06labels\x18\t \x03(\v2;.google.cloud.documentai.v1.BatchProcessRequest.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a9\n" +
+	"\x0fprocess_options\x18\a \x01(\v2*.google.cloud.documentai.v1.ProcessOptionsR\x0eprocessOptions\x12Y\n" +
+	"\x06labels\x18\t \x03(\v2;.google.cloud.documentai.v1.BatchProcessRequest.LabelsEntryB\x04\xe2A\x01\x01R\x06labels\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x16\n" +
@@ -3983,21 +3985,21 @@ const file_google_cloud_documentai_v1_document_processor_service_proto_rawDesc =
 	"CANCELLING\x10\x04\x12\r\n" +
 	"\tCANCELLED\x10\x05\x12\n" +
 	"\n" +
-	"\x06FAILED\x10\x06\"e\n" +
-	"\x1aFetchProcessorTypesRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'documentai.googleapis.com/ProcessorTypeR\x06parent\"q\n" +
+	"\x06FAILED\x10\x06\"f\n" +
+	"\x1aFetchProcessorTypesRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'documentai.googleapis.com/ProcessorTypeR\x06parent\"q\n" +
 	"\x1bFetchProcessorTypesResponse\x12R\n" +
-	"\x0fprocessor_types\x18\x01 \x03(\v2).google.cloud.documentai.v1.ProcessorTypeR\x0eprocessorTypes\"\xa0\x01\n" +
-	"\x19ListProcessorTypesRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'documentai.googleapis.com/ProcessorTypeR\x06parent\x12\x1b\n" +
+	"\x0fprocessor_types\x18\x01 \x03(\v2).google.cloud.documentai.v1.ProcessorTypeR\x0eprocessorTypes\"\xa1\x01\n" +
+	"\x19ListProcessorTypesRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\x12'documentai.googleapis.com/ProcessorTypeR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x98\x01\n" +
 	"\x1aListProcessorTypesResponse\x12R\n" +
 	"\x0fprocessor_types\x18\x01 \x03(\v2).google.cloud.documentai.v1.ProcessorTypeR\x0eprocessorTypes\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x98\x01\n" +
-	"\x15ListProcessorsRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#documentai.googleapis.com/ProcessorR\x06parent\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x99\x01\n" +
+	"\x15ListProcessorsRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#documentai.googleapis.com/ProcessorR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x87\x01\n" +
@@ -4005,93 +4007,93 @@ const file_google_cloud_documentai_v1_document_processor_service_proto_rawDesc =
 	"\n" +
 	"processors\x18\x01 \x03(\v2%.google.cloud.documentai.v1.ProcessorR\n" +
 	"processors\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"^\n" +
-	"\x17GetProcessorTypeRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'documentai.googleapis.com/ProcessorTypeR\x04name\"V\n" +
-	"\x13GetProcessorRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#documentai.googleapis.com/ProcessorR\x04name\"d\n" +
-	"\x1aGetProcessorVersionRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*documentai.googleapis.com/ProcessorVersionR\x04name\"\xa6\x01\n" +
-	"\x1cListProcessorVersionsRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*documentai.googleapis.com/ProcessorVersionR\x06parent\x12\x1b\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"_\n" +
+	"\x17GetProcessorTypeRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
+	"'documentai.googleapis.com/ProcessorTypeR\x04name\"W\n" +
+	"\x13GetProcessorRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#documentai.googleapis.com/ProcessorR\x04name\"e\n" +
+	"\x1aGetProcessorVersionRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*documentai.googleapis.com/ProcessorVersionR\x04name\"\xa7\x01\n" +
+	"\x1cListProcessorVersionsRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\x12*documentai.googleapis.com/ProcessorVersionR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\xa4\x01\n" +
 	"\x1dListProcessorVersionsResponse\x12[\n" +
 	"\x12processor_versions\x18\x01 \x03(\v2,.google.cloud.documentai.v1.ProcessorVersionR\x11processorVersions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"g\n" +
-	"\x1dDeleteProcessorVersionRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"h\n" +
+	"\x1dDeleteProcessorVersionRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*documentai.googleapis.com/ProcessorVersionR\x04name\"~\n" +
 	"\x1eDeleteProcessorVersionMetadata\x12\\\n" +
-	"\x0fcommon_metadata\x18\x01 \x01(\v23.google.cloud.documentai.v1.CommonOperationMetadataR\x0ecommonMetadata\"g\n" +
-	"\x1dDeployProcessorVersionRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"\x0fcommon_metadata\x18\x01 \x01(\v23.google.cloud.documentai.v1.CommonOperationMetadataR\x0ecommonMetadata\"h\n" +
+	"\x1dDeployProcessorVersionRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*documentai.googleapis.com/ProcessorVersionR\x04name\" \n" +
 	"\x1eDeployProcessorVersionResponse\"~\n" +
 	"\x1eDeployProcessorVersionMetadata\x12\\\n" +
-	"\x0fcommon_metadata\x18\x01 \x01(\v23.google.cloud.documentai.v1.CommonOperationMetadataR\x0ecommonMetadata\"i\n" +
-	"\x1fUndeployProcessorVersionRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"\x0fcommon_metadata\x18\x01 \x01(\v23.google.cloud.documentai.v1.CommonOperationMetadataR\x0ecommonMetadata\"j\n" +
+	"\x1fUndeployProcessorVersionRequest\x12G\n" +
+	"\x04name\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*documentai.googleapis.com/ProcessorVersionR\x04name\"\"\n" +
 	" UndeployProcessorVersionResponse\"\x80\x01\n" +
 	" UndeployProcessorVersionMetadata\x12\\\n" +
-	"\x0fcommon_metadata\x18\x01 \x01(\v23.google.cloud.documentai.v1.CommonOperationMetadataR\x0ecommonMetadata\"\xa7\x01\n" +
-	"\x16CreateProcessorRequest\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\x12#documentai.googleapis.com/ProcessorR\x06parent\x12H\n" +
-	"\tprocessor\x18\x02 \x01(\v2%.google.cloud.documentai.v1.ProcessorB\x03\xe0A\x02R\tprocessor\"Y\n" +
-	"\x16DeleteProcessorRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"\x0fcommon_metadata\x18\x01 \x01(\v23.google.cloud.documentai.v1.CommonOperationMetadataR\x0ecommonMetadata\"\xa9\x01\n" +
+	"\x16CreateProcessorRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\x12#documentai.googleapis.com/ProcessorR\x06parent\x12I\n" +
+	"\tprocessor\x18\x02 \x01(\v2%.google.cloud.documentai.v1.ProcessorB\x04\xe2A\x01\x02R\tprocessor\"Z\n" +
+	"\x16DeleteProcessorRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#documentai.googleapis.com/ProcessorR\x04name\"w\n" +
 	"\x17DeleteProcessorMetadata\x12\\\n" +
-	"\x0fcommon_metadata\x18\x05 \x01(\v23.google.cloud.documentai.v1.CommonOperationMetadataR\x0ecommonMetadata\"Y\n" +
-	"\x16EnableProcessorRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"\x0fcommon_metadata\x18\x05 \x01(\v23.google.cloud.documentai.v1.CommonOperationMetadataR\x0ecommonMetadata\"Z\n" +
+	"\x16EnableProcessorRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#documentai.googleapis.com/ProcessorR\x04name\"\x19\n" +
 	"\x17EnableProcessorResponse\"w\n" +
 	"\x17EnableProcessorMetadata\x12\\\n" +
-	"\x0fcommon_metadata\x18\x05 \x01(\v23.google.cloud.documentai.v1.CommonOperationMetadataR\x0ecommonMetadata\"Z\n" +
-	"\x17DisableProcessorRequest\x12?\n" +
-	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"\x0fcommon_metadata\x18\x05 \x01(\v23.google.cloud.documentai.v1.CommonOperationMetadataR\x0ecommonMetadata\"[\n" +
+	"\x17DisableProcessorRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
 	"#documentai.googleapis.com/ProcessorR\x04name\"\x1a\n" +
 	"\x18DisableProcessorResponse\"x\n" +
 	"\x18DisableProcessorMetadata\x12\\\n" +
-	"\x0fcommon_metadata\x18\x05 \x01(\v23.google.cloud.documentai.v1.CommonOperationMetadataR\x0ecommonMetadata\"\xde\x01\n" +
-	"!SetDefaultProcessorVersionRequest\x12I\n" +
-	"\tprocessor\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#documentai.googleapis.com/ProcessorR\tprocessor\x12n\n" +
-	"\x19default_processor_version\x18\x02 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"\x0fcommon_metadata\x18\x05 \x01(\v23.google.cloud.documentai.v1.CommonOperationMetadataR\x0ecommonMetadata\"\xe0\x01\n" +
+	"!SetDefaultProcessorVersionRequest\x12J\n" +
+	"\tprocessor\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#documentai.googleapis.com/ProcessorR\tprocessor\x12o\n" +
+	"\x19default_processor_version\x18\x02 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*documentai.googleapis.com/ProcessorVersionR\x17defaultProcessorVersion\"$\n" +
 	"\"SetDefaultProcessorVersionResponse\"\x82\x01\n" +
 	"\"SetDefaultProcessorVersionMetadata\x12\\\n" +
-	"\x0fcommon_metadata\x18\x01 \x01(\v23.google.cloud.documentai.v1.CommonOperationMetadataR\x0ecommonMetadata\"\x8a\v\n" +
+	"\x0fcommon_metadata\x18\x01 \x01(\v23.google.cloud.documentai.v1.CommonOperationMetadataR\x0ecommonMetadata\"\x92\v\n" +
 	"\x1cTrainProcessorVersionRequest\x12\xa7\x01\n" +
 	"\"custom_document_extraction_options\x18\x05 \x01(\v2X.google.cloud.documentai.v1.TrainProcessorVersionRequest.CustomDocumentExtractionOptionsH\x00R\x1fcustomDocumentExtractionOptions\x12\x9e\x01\n" +
-	"\x1ffoundation_model_tuning_options\x18\f \x01(\v2U.google.cloud.documentai.v1.TrainProcessorVersionRequest.FoundationModelTuningOptionsH\x00R\x1cfoundationModelTuningOptions\x12C\n" +
-	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#documentai.googleapis.com/ProcessorR\x06parent\x12^\n" +
-	"\x11processor_version\x18\x02 \x01(\v2,.google.cloud.documentai.v1.ProcessorVersionB\x03\xe0A\x02R\x10processorVersion\x12X\n" +
+	"\x1ffoundation_model_tuning_options\x18\f \x01(\v2U.google.cloud.documentai.v1.TrainProcessorVersionRequest.FoundationModelTuningOptionsH\x00R\x1cfoundationModelTuningOptions\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#documentai.googleapis.com/ProcessorR\x06parent\x12_\n" +
+	"\x11processor_version\x18\x02 \x01(\v2,.google.cloud.documentai.v1.ProcessorVersionB\x04\xe2A\x01\x02R\x10processorVersion\x12Y\n" +
 	"\x0fdocument_schema\x18\n" +
-	" \x01(\v2*.google.cloud.documentai.v1.DocumentSchemaB\x03\xe0A\x01R\x0edocumentSchema\x12f\n" +
+	" \x01(\v2*.google.cloud.documentai.v1.DocumentSchemaB\x04\xe2A\x01\x01R\x0edocumentSchema\x12g\n" +
 	"\n" +
-	"input_data\x18\x04 \x01(\v2B.google.cloud.documentai.v1.TrainProcessorVersionRequest.InputDataB\x03\xe0A\x01R\tinputData\x129\n" +
-	"\x16base_processor_version\x18\b \x01(\tB\x03\xe0A\x01R\x14baseProcessorVersion\x1a\xcf\x01\n" +
+	"input_data\x18\x04 \x01(\v2B.google.cloud.documentai.v1.TrainProcessorVersionRequest.InputDataB\x04\xe2A\x01\x01R\tinputData\x12:\n" +
+	"\x16base_processor_version\x18\b \x01(\tB\x04\xe2A\x01\x01R\x14baseProcessorVersion\x1a\xcf\x01\n" +
 	"\tInputData\x12d\n" +
 	"\x12training_documents\x18\x03 \x01(\v25.google.cloud.documentai.v1.BatchDocumentsInputConfigR\x11trainingDocuments\x12\\\n" +
-	"\x0etest_documents\x18\x04 \x01(\v25.google.cloud.documentai.v1.BatchDocumentsInputConfigR\rtestDocuments\x1a\x91\x02\n" +
-	"\x1fCustomDocumentExtractionOptions\x12\x95\x01\n" +
-	"\x0ftraining_method\x18\x03 \x01(\x0e2g.google.cloud.documentai.v1.TrainProcessorVersionRequest.CustomDocumentExtractionOptions.TrainingMethodB\x03\xe0A\x01R\x0etrainingMethod\"V\n" +
+	"\x0etest_documents\x18\x04 \x01(\v25.google.cloud.documentai.v1.BatchDocumentsInputConfigR\rtestDocuments\x1a\x92\x02\n" +
+	"\x1fCustomDocumentExtractionOptions\x12\x96\x01\n" +
+	"\x0ftraining_method\x18\x03 \x01(\x0e2g.google.cloud.documentai.v1.TrainProcessorVersionRequest.CustomDocumentExtractionOptions.TrainingMethodB\x04\xe2A\x01\x01R\x0etrainingMethod\"V\n" +
 	"\x0eTrainingMethod\x12\x1f\n" +
 	"\x1bTRAINING_METHOD_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vMODEL_BASED\x10\x01\x12\x12\n" +
-	"\x0eTEMPLATE_BASED\x10\x02\x1a\x83\x01\n" +
-	"\x1cFoundationModelTuningOptions\x12$\n" +
-	"\vtrain_steps\x18\x02 \x01(\x05B\x03\xe0A\x01R\n" +
-	"trainSteps\x12=\n" +
-	"\x18learning_rate_multiplier\x18\x03 \x01(\x02B\x03\xe0A\x01R\x16learningRateMultiplierB\x11\n" +
+	"\x0eTEMPLATE_BASED\x10\x02\x1a\x85\x01\n" +
+	"\x1cFoundationModelTuningOptions\x12%\n" +
+	"\vtrain_steps\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\n" +
+	"trainSteps\x12>\n" +
+	"\x18learning_rate_multiplier\x18\x03 \x01(\x02B\x04\xe2A\x01\x01R\x16learningRateMultiplierB\x11\n" +
 	"\x0fprocessor_flags\"L\n" +
 	"\x1dTrainProcessorVersionResponse\x12+\n" +
 	"\x11processor_version\x18\x01 \x01(\tR\x10processorVersion\"\x81\x05\n" +
@@ -4103,10 +4105,10 @@ const file_google_cloud_documentai_v1_document_processor_service_proto_rawDesc =
 	"\x14document_error_count\x18\x03 \x01(\x05R\x12documentErrorCount\x12.\n" +
 	"\x13dataset_error_count\x18\x04 \x01(\x05R\x11datasetErrorCount\x12;\n" +
 	"\x0fdocument_errors\x18\x01 \x03(\v2\x12.google.rpc.StatusR\x0edocumentErrors\x129\n" +
-	"\x0edataset_errors\x18\x02 \x03(\v2\x12.google.rpc.StatusR\rdatasetErrors\"\xe3\x03\n" +
+	"\x0edataset_errors\x18\x02 \x03(\v2\x12.google.rpc.StatusR\rdatasetErrors\"\xe4\x03\n" +
 	"\x15ReviewDocumentRequest\x12O\n" +
-	"\x0finline_document\x18\x04 \x01(\v2$.google.cloud.documentai.v1.DocumentH\x00R\x0einlineDocument\x12c\n" +
-	"\x13human_review_config\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
+	"\x0finline_document\x18\x04 \x01(\v2$.google.cloud.documentai.v1.DocumentH\x00R\x0einlineDocument\x12d\n" +
+	"\x13human_review_config\x18\x01 \x01(\tB4\xe2A\x01\x02\xfaA-\n" +
 	"+documentai.googleapis.com/HumanReviewConfigR\x11humanReviewConfig\x128\n" +
 	"\x18enable_schema_validation\x18\x03 \x01(\bR\x16enableSchemaValidation\x12V\n" +
 	"\bpriority\x18\x05 \x01(\x0e2:.google.cloud.documentai.v1.ReviewDocumentRequest.PriorityR\bpriority\x12S\n" +
@@ -4127,22 +4129,22 @@ const file_google_cloud_documentai_v1_document_processor_service_proto_rawDesc =
 	"\x1fReviewDocumentOperationMetadata\x12\\\n" +
 	"\x0fcommon_metadata\x18\x05 \x01(\v23.google.cloud.documentai.v1.CommonOperationMetadataR\x0ecommonMetadata\x12\x1f\n" +
 	"\vquestion_id\x18\x06 \x01(\tR\n" +
-	"questionId\"\xf1\x01\n" +
-	"\x1fEvaluateProcessorVersionRequest\x12_\n" +
-	"\x11processor_version\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*documentai.googleapis.com/ProcessorVersionR\x10processorVersion\x12m\n" +
-	"\x14evaluation_documents\x18\x03 \x01(\v25.google.cloud.documentai.v1.BatchDocumentsInputConfigB\x03\xe0A\x01R\x13evaluationDocuments\"\x80\x01\n" +
+	"questionId\"\xf3\x01\n" +
+	"\x1fEvaluateProcessorVersionRequest\x12`\n" +
+	"\x11processor_version\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
+	"*documentai.googleapis.com/ProcessorVersionR\x10processorVersion\x12n\n" +
+	"\x14evaluation_documents\x18\x03 \x01(\v25.google.cloud.documentai.v1.BatchDocumentsInputConfigB\x04\xe2A\x01\x01R\x13evaluationDocuments\"\x80\x01\n" +
 	" EvaluateProcessorVersionMetadata\x12\\\n" +
 	"\x0fcommon_metadata\x18\x01 \x01(\v23.google.cloud.documentai.v1.CommonOperationMetadataR\x0ecommonMetadata\"B\n" +
 	" EvaluateProcessorVersionResponse\x12\x1e\n" +
 	"\n" +
 	"evaluation\x18\x02 \x01(\tR\n" +
-	"evaluation\"X\n" +
-	"\x14GetEvaluationRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$documentai.googleapis.com/EvaluationR\x04name\"\xa0\x01\n" +
-	"\x16ListEvaluationsRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"evaluation\"Y\n" +
+	"\x14GetEvaluationRequest\x12A\n" +
+	"\x04name\x18\x01 \x01(\tB-\xe2A\x01\x02\xfaA&\n" +
+	"$documentai.googleapis.com/EvaluationR\x04name\"\xa1\x01\n" +
+	"\x16ListEvaluationsRequest\x12K\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe2A\x01\x02\xfaA,\n" +
 	"*documentai.googleapis.com/ProcessorVersionR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +

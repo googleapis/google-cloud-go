@@ -741,6 +741,77 @@ func NewAdminClient(ctx context.Context, opts ...option.ClientOption) (*AdminCli
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "pubsublite",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/pubsublite/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "pubsublite.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateTopic = append(client.CallOptions.CreateTopic, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTopic = append(client.CallOptions.GetTopic, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTopicPartitions = append(client.CallOptions.GetTopicPartitions, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTopics = append(client.CallOptions.ListTopics, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTopic = append(client.CallOptions.UpdateTopic, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTopic = append(client.CallOptions.DeleteTopic, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTopicSubscriptions = append(client.CallOptions.ListTopicSubscriptions, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateSubscription = append(client.CallOptions.CreateSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSubscription = append(client.CallOptions.GetSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSubscriptions = append(client.CallOptions.ListSubscriptions, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSubscription = append(client.CallOptions.UpdateSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSubscription = append(client.CallOptions.DeleteSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.SeekSubscription = append(client.CallOptions.SeekSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateReservation = append(client.CallOptions.CreateReservation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetReservation = append(client.CallOptions.GetReservation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListReservations = append(client.CallOptions.ListReservations, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateReservation = append(client.CallOptions.UpdateReservation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteReservation = append(client.CallOptions.DeleteReservation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListReservationTopics = append(client.CallOptions.ListReservationTopics, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "pubsublite",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/pubsublite/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "pubsublite.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateTopic = append(client.CallOptions.CreateTopic, gax.WithClientLogging(logging))
+		client.CallOptions.GetTopic = append(client.CallOptions.GetTopic, gax.WithClientLogging(logging))
+		client.CallOptions.GetTopicPartitions = append(client.CallOptions.GetTopicPartitions, gax.WithClientLogging(logging))
+		client.CallOptions.ListTopics = append(client.CallOptions.ListTopics, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTopic = append(client.CallOptions.UpdateTopic, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTopic = append(client.CallOptions.DeleteTopic, gax.WithClientLogging(logging))
+		client.CallOptions.ListTopicSubscriptions = append(client.CallOptions.ListTopicSubscriptions, gax.WithClientLogging(logging))
+		client.CallOptions.CreateSubscription = append(client.CallOptions.CreateSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.GetSubscription = append(client.CallOptions.GetSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.ListSubscriptions = append(client.CallOptions.ListSubscriptions, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSubscription = append(client.CallOptions.UpdateSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSubscription = append(client.CallOptions.DeleteSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.SeekSubscription = append(client.CallOptions.SeekSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.CreateReservation = append(client.CallOptions.CreateReservation, gax.WithClientLogging(logging))
+		client.CallOptions.GetReservation = append(client.CallOptions.GetReservation, gax.WithClientLogging(logging))
+		client.CallOptions.ListReservations = append(client.CallOptions.ListReservations, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateReservation = append(client.CallOptions.UpdateReservation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteReservation = append(client.CallOptions.DeleteReservation, gax.WithClientLogging(logging))
+		client.CallOptions.ListReservationTopics = append(client.CallOptions.ListReservationTopics, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -788,9 +859,6 @@ func (c *adminGRPCClient) CreateTopic(ctx context.Context, req *pubsublitepb.Cre
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsublite.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.pubsublite.v1.AdminService/CreateTopic")
 	}
@@ -812,9 +880,6 @@ func (c *adminGRPCClient) GetTopic(ctx context.Context, req *pubsublitepb.GetTop
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsublite.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.pubsublite.v1.AdminService/GetTopic")
 	}
@@ -836,9 +901,6 @@ func (c *adminGRPCClient) GetTopicPartitions(ctx context.Context, req *pubsublit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsublite.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.pubsublite.v1.AdminService/GetTopicPartitions")
 	}
@@ -860,9 +922,6 @@ func (c *adminGRPCClient) ListTopics(ctx context.Context, req *pubsublitepb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsublite.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.pubsublite.v1.AdminService/ListTopics")
 	}
@@ -933,9 +992,6 @@ func (c *adminGRPCClient) DeleteTopic(ctx context.Context, req *pubsublitepb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsublite.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.pubsublite.v1.AdminService/DeleteTopic")
 	}
@@ -953,9 +1009,6 @@ func (c *adminGRPCClient) ListTopicSubscriptions(ctx context.Context, req *pubsu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsublite.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.pubsublite.v1.AdminService/ListTopicSubscriptions")
 	}
@@ -1005,9 +1058,6 @@ func (c *adminGRPCClient) CreateSubscription(ctx context.Context, req *pubsublit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsublite.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.pubsublite.v1.AdminService/CreateSubscription")
 	}
@@ -1029,9 +1079,6 @@ func (c *adminGRPCClient) GetSubscription(ctx context.Context, req *pubsublitepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsublite.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.pubsublite.v1.AdminService/GetSubscription")
 	}
@@ -1053,9 +1100,6 @@ func (c *adminGRPCClient) ListSubscriptions(ctx context.Context, req *pubsublite
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsublite.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.pubsublite.v1.AdminService/ListSubscriptions")
 	}
@@ -1126,9 +1170,6 @@ func (c *adminGRPCClient) DeleteSubscription(ctx context.Context, req *pubsublit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsublite.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.pubsublite.v1.AdminService/DeleteSubscription")
 	}
@@ -1146,9 +1187,6 @@ func (c *adminGRPCClient) SeekSubscription(ctx context.Context, req *pubsublitep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsublite.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.pubsublite.v1.AdminService/SeekSubscription")
 	}
@@ -1176,9 +1214,6 @@ func (c *adminGRPCClient) CreateReservation(ctx context.Context, req *pubsublite
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsublite.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.pubsublite.v1.AdminService/CreateReservation")
 	}
@@ -1200,9 +1235,6 @@ func (c *adminGRPCClient) GetReservation(ctx context.Context, req *pubsublitepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsublite.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.pubsublite.v1.AdminService/GetReservation")
 	}
@@ -1224,9 +1256,6 @@ func (c *adminGRPCClient) ListReservations(ctx context.Context, req *pubsublitep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsublite.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.pubsublite.v1.AdminService/ListReservations")
 	}
@@ -1297,9 +1326,6 @@ func (c *adminGRPCClient) DeleteReservation(ctx context.Context, req *pubsublite
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsublite.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.pubsublite.v1.AdminService/DeleteReservation")
 	}
@@ -1317,9 +1343,6 @@ func (c *adminGRPCClient) ListReservationTopics(ctx context.Context, req *pubsub
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsublite.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.pubsublite.v1.AdminService/ListReservationTopics")
 	}

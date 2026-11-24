@@ -213,9 +213,9 @@ var File_google_ai_generativelanguage_v1_model_service_proto protoreflect.FileDe
 
 const file_google_ai_generativelanguage_v1_model_service_proto_rawDesc = "" +
 	"\n" +
-	"3google/ai/generativelanguage/v1/model_service.proto\x12\x1fgoogle.ai.generativelanguage.v1\x1a+google/ai/generativelanguage/v1/model.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"V\n" +
-	"\x0fGetModelRequest\x12C\n" +
-	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
+	"3google/ai/generativelanguage/v1/model_service.proto\x12\x1fgoogle.ai.generativelanguage.v1\x1a+google/ai/generativelanguage/v1/model.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"W\n" +
+	"\x0fGetModelRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe2A\x01\x02\xfaA)\n" +
 	"'generativelanguage.googleapis.com/ModelR\x04name\"O\n" +
 	"\x11ListModelsRequest\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +

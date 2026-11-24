@@ -17,9 +17,18 @@
 package admin
 
 import (
+	"iter"
+
 	adminpb "cloud.google.com/go/analytics/admin/apiv1alpha/adminpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AccessBindingIterator) All() iter.Seq2[*adminpb.AccessBinding, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // AccessBindingIterator manages a stream of *adminpb.AccessBinding.
 type AccessBindingIterator struct {
@@ -66,6 +75,12 @@ func (it *AccessBindingIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AccountIterator) All() iter.Seq2[*adminpb.Account, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AccountIterator manages a stream of *adminpb.Account.
@@ -115,6 +130,12 @@ func (it *AccountIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AccountSummaryIterator) All() iter.Seq2[*adminpb.AccountSummary, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AccountSummaryIterator manages a stream of *adminpb.AccountSummary.
 type AccountSummaryIterator struct {
 	items    []*adminpb.AccountSummary
@@ -160,6 +181,12 @@ func (it *AccountSummaryIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AdSenseLinkIterator) All() iter.Seq2[*adminpb.AdSenseLink, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AdSenseLinkIterator manages a stream of *adminpb.AdSenseLink.
@@ -209,6 +236,12 @@ func (it *AdSenseLinkIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AudienceIterator) All() iter.Seq2[*adminpb.Audience, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AudienceIterator manages a stream of *adminpb.Audience.
 type AudienceIterator struct {
 	items    []*adminpb.Audience
@@ -254,6 +287,12 @@ func (it *AudienceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BigQueryLinkIterator) All() iter.Seq2[*adminpb.BigQueryLink, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // BigQueryLinkIterator manages a stream of *adminpb.BigQueryLink.
@@ -303,6 +342,12 @@ func (it *BigQueryLinkIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CalculatedMetricIterator) All() iter.Seq2[*adminpb.CalculatedMetric, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CalculatedMetricIterator manages a stream of *adminpb.CalculatedMetric.
 type CalculatedMetricIterator struct {
 	items    []*adminpb.CalculatedMetric
@@ -348,6 +393,12 @@ func (it *CalculatedMetricIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ChangeHistoryEventIterator) All() iter.Seq2[*adminpb.ChangeHistoryEvent, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ChangeHistoryEventIterator manages a stream of *adminpb.ChangeHistoryEvent.
@@ -397,6 +448,12 @@ func (it *ChangeHistoryEventIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ChannelGroupIterator) All() iter.Seq2[*adminpb.ChannelGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ChannelGroupIterator manages a stream of *adminpb.ChannelGroup.
 type ChannelGroupIterator struct {
 	items    []*adminpb.ChannelGroup
@@ -442,6 +499,12 @@ func (it *ChannelGroupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConversionEventIterator) All() iter.Seq2[*adminpb.ConversionEvent, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ConversionEventIterator manages a stream of *adminpb.ConversionEvent.
@@ -491,6 +554,12 @@ func (it *ConversionEventIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CustomDimensionIterator) All() iter.Seq2[*adminpb.CustomDimension, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CustomDimensionIterator manages a stream of *adminpb.CustomDimension.
 type CustomDimensionIterator struct {
 	items    []*adminpb.CustomDimension
@@ -536,6 +605,12 @@ func (it *CustomDimensionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CustomMetricIterator) All() iter.Seq2[*adminpb.CustomMetric, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // CustomMetricIterator manages a stream of *adminpb.CustomMetric.
@@ -585,6 +660,12 @@ func (it *CustomMetricIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataStreamIterator) All() iter.Seq2[*adminpb.DataStream, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DataStreamIterator manages a stream of *adminpb.DataStream.
 type DataStreamIterator struct {
 	items    []*adminpb.DataStream
@@ -630,6 +711,12 @@ func (it *DataStreamIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DisplayVideo360AdvertiserLinkIterator) All() iter.Seq2[*adminpb.DisplayVideo360AdvertiserLink, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DisplayVideo360AdvertiserLinkIterator manages a stream of *adminpb.DisplayVideo360AdvertiserLink.
@@ -679,6 +766,12 @@ func (it *DisplayVideo360AdvertiserLinkIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DisplayVideo360AdvertiserLinkProposalIterator) All() iter.Seq2[*adminpb.DisplayVideo360AdvertiserLinkProposal, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DisplayVideo360AdvertiserLinkProposalIterator manages a stream of *adminpb.DisplayVideo360AdvertiserLinkProposal.
 type DisplayVideo360AdvertiserLinkProposalIterator struct {
 	items    []*adminpb.DisplayVideo360AdvertiserLinkProposal
@@ -724,6 +817,12 @@ func (it *DisplayVideo360AdvertiserLinkProposalIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EventCreateRuleIterator) All() iter.Seq2[*adminpb.EventCreateRule, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // EventCreateRuleIterator manages a stream of *adminpb.EventCreateRule.
@@ -773,6 +872,12 @@ func (it *EventCreateRuleIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EventEditRuleIterator) All() iter.Seq2[*adminpb.EventEditRule, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EventEditRuleIterator manages a stream of *adminpb.EventEditRule.
 type EventEditRuleIterator struct {
 	items    []*adminpb.EventEditRule
@@ -818,6 +923,12 @@ func (it *EventEditRuleIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ExpandedDataSetIterator) All() iter.Seq2[*adminpb.ExpandedDataSet, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ExpandedDataSetIterator manages a stream of *adminpb.ExpandedDataSet.
@@ -867,6 +978,12 @@ func (it *ExpandedDataSetIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FirebaseLinkIterator) All() iter.Seq2[*adminpb.FirebaseLink, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // FirebaseLinkIterator manages a stream of *adminpb.FirebaseLink.
 type FirebaseLinkIterator struct {
 	items    []*adminpb.FirebaseLink
@@ -912,6 +1029,12 @@ func (it *FirebaseLinkIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GoogleAdsLinkIterator) All() iter.Seq2[*adminpb.GoogleAdsLink, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // GoogleAdsLinkIterator manages a stream of *adminpb.GoogleAdsLink.
@@ -961,6 +1084,12 @@ func (it *GoogleAdsLinkIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *KeyEventIterator) All() iter.Seq2[*adminpb.KeyEvent, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // KeyEventIterator manages a stream of *adminpb.KeyEvent.
 type KeyEventIterator struct {
 	items    []*adminpb.KeyEvent
@@ -1006,6 +1135,12 @@ func (it *KeyEventIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MeasurementProtocolSecretIterator) All() iter.Seq2[*adminpb.MeasurementProtocolSecret, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // MeasurementProtocolSecretIterator manages a stream of *adminpb.MeasurementProtocolSecret.
@@ -1055,6 +1190,12 @@ func (it *MeasurementProtocolSecretIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PropertyIterator) All() iter.Seq2[*adminpb.Property, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // PropertyIterator manages a stream of *adminpb.Property.
 type PropertyIterator struct {
 	items    []*adminpb.Property
@@ -1100,6 +1241,12 @@ func (it *PropertyIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReportingDataAnnotationIterator) All() iter.Seq2[*adminpb.ReportingDataAnnotation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ReportingDataAnnotationIterator manages a stream of *adminpb.ReportingDataAnnotation.
@@ -1149,6 +1296,12 @@ func (it *ReportingDataAnnotationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RollupPropertySourceLinkIterator) All() iter.Seq2[*adminpb.RollupPropertySourceLink, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RollupPropertySourceLinkIterator manages a stream of *adminpb.RollupPropertySourceLink.
 type RollupPropertySourceLinkIterator struct {
 	items    []*adminpb.RollupPropertySourceLink
@@ -1194,6 +1347,12 @@ func (it *RollupPropertySourceLinkIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SKAdNetworkConversionValueSchemaIterator) All() iter.Seq2[*adminpb.SKAdNetworkConversionValueSchema, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SKAdNetworkConversionValueSchemaIterator manages a stream of *adminpb.SKAdNetworkConversionValueSchema.
@@ -1243,6 +1402,12 @@ func (it *SKAdNetworkConversionValueSchemaIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SearchAds360LinkIterator) All() iter.Seq2[*adminpb.SearchAds360Link, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SearchAds360LinkIterator manages a stream of *adminpb.SearchAds360Link.
 type SearchAds360LinkIterator struct {
 	items    []*adminpb.SearchAds360Link
@@ -1290,6 +1455,12 @@ func (it *SearchAds360LinkIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SubpropertyEventFilterIterator) All() iter.Seq2[*adminpb.SubpropertyEventFilter, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SubpropertyEventFilterIterator manages a stream of *adminpb.SubpropertyEventFilter.
 type SubpropertyEventFilterIterator struct {
 	items    []*adminpb.SubpropertyEventFilter
@@ -1335,6 +1506,12 @@ func (it *SubpropertyEventFilterIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SubpropertySyncConfigIterator) All() iter.Seq2[*adminpb.SubpropertySyncConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SubpropertySyncConfigIterator manages a stream of *adminpb.SubpropertySyncConfig.

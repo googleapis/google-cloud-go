@@ -26,10 +26,12 @@ import (
 	unsafe "unsafe"
 
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	anypb "google.golang.org/protobuf/types/known/anypb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -148,6 +150,535 @@ func (x MockConfig_UnmatchedToolCallBehavior) Number() protoreflect.EnumNumber {
 // Deprecated: Use MockConfig_UnmatchedToolCallBehavior.Descriptor instead.
 func (MockConfig_UnmatchedToolCallBehavior) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{0, 0}
+}
+
+// What the app has decided may be recorded and logged.
+//
+// This enum is extensible; new values may be added in the future.
+type SessionInput_RecordingControl int32
+
+const (
+	// The app is not controlling recording. The app's logging settings decide,
+	// as they do for every session that never sets this field.
+	SessionInput_RECORDING_CONTROL_UNSPECIFIED SessionInput_RecordingControl = 0
+	// The conversation may be recorded and logged from here on.
+	SessionInput_RECORDING_ENABLED SessionInput_RecordingControl = 1
+	// The conversation may not be recorded or logged from here on.
+	SessionInput_RECORDING_DISABLED SessionInput_RecordingControl = 2
+)
+
+// Enum value maps for SessionInput_RecordingControl.
+var (
+	SessionInput_RecordingControl_name = map[int32]string{
+		0: "RECORDING_CONTROL_UNSPECIFIED",
+		1: "RECORDING_ENABLED",
+		2: "RECORDING_DISABLED",
+	}
+	SessionInput_RecordingControl_value = map[string]int32{
+		"RECORDING_CONTROL_UNSPECIFIED": 0,
+		"RECORDING_ENABLED":             1,
+		"RECORDING_DISABLED":            2,
+	}
+)
+
+func (x SessionInput_RecordingControl) Enum() *SessionInput_RecordingControl {
+	p := new(SessionInput_RecordingControl)
+	*p = x
+	return p
+}
+
+func (x SessionInput_RecordingControl) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SessionInput_RecordingControl) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_ces_v1beta_session_service_proto_enumTypes[2].Descriptor()
+}
+
+func (SessionInput_RecordingControl) Type() protoreflect.EnumType {
+	return &file_google_cloud_ces_v1beta_session_service_proto_enumTypes[2]
+}
+
+func (x SessionInput_RecordingControl) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SessionInput_RecordingControl.Descriptor instead.
+func (SessionInput_RecordingControl) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{8, 0}
+}
+
+// Response features a client can declare.
+type StreamChatAiAssistantRequest_ClientCapability int32
+
+const (
+	// Unspecified capability; ignored.
+	StreamChatAiAssistantRequest_CLIENT_CAPABILITY_UNSPECIFIED StreamChatAiAssistantRequest_ClientCapability = 0
+	// The client renders
+	// [AssistantConfirmationRequest][google.cloud.ces.v1beta.AssistantConfirmationRequest]
+	// cards and answers them via `confirmation_response`.
+	StreamChatAiAssistantRequest_CONFIRMATION_CARDS StreamChatAiAssistantRequest_ClientCapability = 1
+	// The client manages long-running operations out-of-band by polling the
+	// operation and sending `operation_completed_event` to resume the turn.
+	// If not declared, the server manages LRO polling and completes the turn
+	// inline.
+	StreamChatAiAssistantRequest_CLIENT_MANAGED_LRO StreamChatAiAssistantRequest_ClientCapability = 2
+)
+
+// Enum value maps for StreamChatAiAssistantRequest_ClientCapability.
+var (
+	StreamChatAiAssistantRequest_ClientCapability_name = map[int32]string{
+		0: "CLIENT_CAPABILITY_UNSPECIFIED",
+		1: "CONFIRMATION_CARDS",
+		2: "CLIENT_MANAGED_LRO",
+	}
+	StreamChatAiAssistantRequest_ClientCapability_value = map[string]int32{
+		"CLIENT_CAPABILITY_UNSPECIFIED": 0,
+		"CONFIRMATION_CARDS":            1,
+		"CLIENT_MANAGED_LRO":            2,
+	}
+)
+
+func (x StreamChatAiAssistantRequest_ClientCapability) Enum() *StreamChatAiAssistantRequest_ClientCapability {
+	p := new(StreamChatAiAssistantRequest_ClientCapability)
+	*p = x
+	return p
+}
+
+func (x StreamChatAiAssistantRequest_ClientCapability) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (StreamChatAiAssistantRequest_ClientCapability) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_ces_v1beta_session_service_proto_enumTypes[3].Descriptor()
+}
+
+func (StreamChatAiAssistantRequest_ClientCapability) Type() protoreflect.EnumType {
+	return &file_google_cloud_ces_v1beta_session_service_proto_enumTypes[3]
+}
+
+func (x StreamChatAiAssistantRequest_ClientCapability) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use StreamChatAiAssistantRequest_ClientCapability.Descriptor instead.
+func (StreamChatAiAssistantRequest_ClientCapability) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{18, 0}
+}
+
+// Icon hint for the chip.
+type AssistantSuggestion_Icon int32
+
+const (
+	// Unspecified icon.
+	AssistantSuggestion_ICON_UNSPECIFIED AssistantSuggestion_Icon = 0
+	// Resume a previous session.
+	AssistantSuggestion_RESUME AssistantSuggestion_Icon = 1
+	// Build something new.
+	AssistantSuggestion_BUILD AssistantSuggestion_Icon = 2
+	// Evaluation-related suggestion.
+	AssistantSuggestion_EVALUATE AssistantSuggestion_Icon = 3
+	// Deployment-related suggestion.
+	AssistantSuggestion_DEPLOY AssistantSuggestion_Icon = 4
+	// Exploration / discovery suggestion.
+	AssistantSuggestion_EXPLORE AssistantSuggestion_Icon = 5
+	// Fix an error or failing state.
+	AssistantSuggestion_FIX AssistantSuggestion_Icon = 6
+)
+
+// Enum value maps for AssistantSuggestion_Icon.
+var (
+	AssistantSuggestion_Icon_name = map[int32]string{
+		0: "ICON_UNSPECIFIED",
+		1: "RESUME",
+		2: "BUILD",
+		3: "EVALUATE",
+		4: "DEPLOY",
+		5: "EXPLORE",
+		6: "FIX",
+	}
+	AssistantSuggestion_Icon_value = map[string]int32{
+		"ICON_UNSPECIFIED": 0,
+		"RESUME":           1,
+		"BUILD":            2,
+		"EVALUATE":         3,
+		"DEPLOY":           4,
+		"EXPLORE":          5,
+		"FIX":              6,
+	}
+)
+
+func (x AssistantSuggestion_Icon) Enum() *AssistantSuggestion_Icon {
+	p := new(AssistantSuggestion_Icon)
+	*p = x
+	return p
+}
+
+func (x AssistantSuggestion_Icon) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AssistantSuggestion_Icon) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_ces_v1beta_session_service_proto_enumTypes[4].Descriptor()
+}
+
+func (AssistantSuggestion_Icon) Type() protoreflect.EnumType {
+	return &file_google_cloud_ces_v1beta_session_service_proto_enumTypes[4]
+}
+
+func (x AssistantSuggestion_Icon) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AssistantSuggestion_Icon.Descriptor instead.
+func (AssistantSuggestion_Icon) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{19, 0}
+}
+
+// How this suggestion was produced.
+type AssistantSuggestion_Source int32
+
+const (
+	// Unspecified source.
+	AssistantSuggestion_SOURCE_UNSPECIFIED AssistantSuggestion_Source = 0
+	// Deterministic rule-table candidate with template phrasing.
+	AssistantSuggestion_RULE AssistantSuggestion_Source = 1
+	// Rule-table candidate re-ranked and phrased by the LLM phrasing step.
+	AssistantSuggestion_LLM_RANKED AssistantSuggestion_Source = 2
+)
+
+// Enum value maps for AssistantSuggestion_Source.
+var (
+	AssistantSuggestion_Source_name = map[int32]string{
+		0: "SOURCE_UNSPECIFIED",
+		1: "RULE",
+		2: "LLM_RANKED",
+	}
+	AssistantSuggestion_Source_value = map[string]int32{
+		"SOURCE_UNSPECIFIED": 0,
+		"RULE":               1,
+		"LLM_RANKED":         2,
+	}
+)
+
+func (x AssistantSuggestion_Source) Enum() *AssistantSuggestion_Source {
+	p := new(AssistantSuggestion_Source)
+	*p = x
+	return p
+}
+
+func (x AssistantSuggestion_Source) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AssistantSuggestion_Source) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_ces_v1beta_session_service_proto_enumTypes[5].Descriptor()
+}
+
+func (AssistantSuggestion_Source) Type() protoreflect.EnumType {
+	return &file_google_cloud_ces_v1beta_session_service_proto_enumTypes[5]
+}
+
+func (x AssistantSuggestion_Source) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AssistantSuggestion_Source.Descriptor instead.
+func (AssistantSuggestion_Source) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{19, 1}
+}
+
+// Classification of the requesting user's history with the assistant in
+// this app.
+type GenerateOnboardingSuggestionsResponse_UserProfile int32
+
+const (
+	// Unspecified profile.
+	GenerateOnboardingSuggestionsResponse_USER_PROFILE_UNSPECIFIED GenerateOnboardingSuggestionsResponse_UserProfile = 0
+	// No assistant sessions containing messages.
+	GenerateOnboardingSuggestionsResponse_NEW GenerateOnboardingSuggestionsResponse_UserProfile = 1
+	// One or two assistant sessions containing messages.
+	GenerateOnboardingSuggestionsResponse_EXPLORING GenerateOnboardingSuggestionsResponse_UserProfile = 2
+	// More than two assistant sessions containing messages.
+	GenerateOnboardingSuggestionsResponse_RETURNING GenerateOnboardingSuggestionsResponse_UserProfile = 3
+)
+
+// Enum value maps for GenerateOnboardingSuggestionsResponse_UserProfile.
+var (
+	GenerateOnboardingSuggestionsResponse_UserProfile_name = map[int32]string{
+		0: "USER_PROFILE_UNSPECIFIED",
+		1: "NEW",
+		2: "EXPLORING",
+		3: "RETURNING",
+	}
+	GenerateOnboardingSuggestionsResponse_UserProfile_value = map[string]int32{
+		"USER_PROFILE_UNSPECIFIED": 0,
+		"NEW":                      1,
+		"EXPLORING":                2,
+		"RETURNING":                3,
+	}
+)
+
+func (x GenerateOnboardingSuggestionsResponse_UserProfile) Enum() *GenerateOnboardingSuggestionsResponse_UserProfile {
+	p := new(GenerateOnboardingSuggestionsResponse_UserProfile)
+	*p = x
+	return p
+}
+
+func (x GenerateOnboardingSuggestionsResponse_UserProfile) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (GenerateOnboardingSuggestionsResponse_UserProfile) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_ces_v1beta_session_service_proto_enumTypes[6].Descriptor()
+}
+
+func (GenerateOnboardingSuggestionsResponse_UserProfile) Type() protoreflect.EnumType {
+	return &file_google_cloud_ces_v1beta_session_service_proto_enumTypes[6]
+}
+
+func (x GenerateOnboardingSuggestionsResponse_UserProfile) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use GenerateOnboardingSuggestionsResponse_UserProfile.Descriptor instead.
+func (GenerateOnboardingSuggestionsResponse_UserProfile) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{21, 0}
+}
+
+// Lifecycle position of this chunk within the artifact's stream.
+type ArtifactChunk_State int32
+
+const (
+	// Unused default.
+	ArtifactChunk_STATE_UNSPECIFIED ArtifactChunk_State = 0
+	// The assistant started generating the artifact.
+	ArtifactChunk_STARTED ArtifactChunk_State = 1
+	// A content increment; content_delta is set.
+	ArtifactChunk_DELTA ArtifactChunk_State = 2
+	// The artifact was persisted; gcs_uri is set.
+	ArtifactChunk_FINALIZED ArtifactChunk_State = 3
+	// Generation or persistence failed; the artifact was not saved.
+	ArtifactChunk_FAILED ArtifactChunk_State = 4
+	// The document finished streaming: its content was fully delivered via
+	// content_delta chunks. Persistence may still follow; a FINALIZED chunk
+	// with a gcs_uri is sent if and when the artifact is saved.
+	ArtifactChunk_CLOSED ArtifactChunk_State = 5
+)
+
+// Enum value maps for ArtifactChunk_State.
+var (
+	ArtifactChunk_State_name = map[int32]string{
+		0: "STATE_UNSPECIFIED",
+		1: "STARTED",
+		2: "DELTA",
+		3: "FINALIZED",
+		4: "FAILED",
+		5: "CLOSED",
+	}
+	ArtifactChunk_State_value = map[string]int32{
+		"STATE_UNSPECIFIED": 0,
+		"STARTED":           1,
+		"DELTA":             2,
+		"FINALIZED":         3,
+		"FAILED":            4,
+		"CLOSED":            5,
+	}
+)
+
+func (x ArtifactChunk_State) Enum() *ArtifactChunk_State {
+	p := new(ArtifactChunk_State)
+	*p = x
+	return p
+}
+
+func (x ArtifactChunk_State) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ArtifactChunk_State) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_ces_v1beta_session_service_proto_enumTypes[7].Descriptor()
+}
+
+func (ArtifactChunk_State) Type() protoreflect.EnumType {
+	return &file_google_cloud_ces_v1beta_session_service_proto_enumTypes[7]
+}
+
+func (x ArtifactChunk_State) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ArtifactChunk_State.Descriptor instead.
+func (ArtifactChunk_State) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{22, 0}
+}
+
+// Streaming phase of the contract progress payload.
+type TurnMetadata_ContractStreamingPhase int32
+
+const (
+	// The payload is authoritative (computed from a complete contract
+	// document, a persisted snapshot, or the pre-draft state). Clients must
+	// replace any previously received progress with it.
+	TurnMetadata_CONTRACT_STREAMING_PHASE_UNSPECIFIED TurnMetadata_ContractStreamingPhase = 0
+	// An initial contract draft is streaming. contract_progress is an
+	// in-flight estimate: non-decreasing within one artifact fence, capped
+	// below the authoritative range, with pillar_breakdowns carrying
+	// total_item_count == 0 to mark estimated pillar states.
+	TurnMetadata_DRAFTING TurnMetadata_ContractStreamingPhase = 1
+	// A revision of an existing contract is streaming (for example after an
+	// annotation submission). Same estimate semantics as DRAFTING.
+	TurnMetadata_REVISING TurnMetadata_ContractStreamingPhase = 2
+)
+
+// Enum value maps for TurnMetadata_ContractStreamingPhase.
+var (
+	TurnMetadata_ContractStreamingPhase_name = map[int32]string{
+		0: "CONTRACT_STREAMING_PHASE_UNSPECIFIED",
+		1: "DRAFTING",
+		2: "REVISING",
+	}
+	TurnMetadata_ContractStreamingPhase_value = map[string]int32{
+		"CONTRACT_STREAMING_PHASE_UNSPECIFIED": 0,
+		"DRAFTING":                             1,
+		"REVISING":                             2,
+	}
+)
+
+func (x TurnMetadata_ContractStreamingPhase) Enum() *TurnMetadata_ContractStreamingPhase {
+	p := new(TurnMetadata_ContractStreamingPhase)
+	*p = x
+	return p
+}
+
+func (x TurnMetadata_ContractStreamingPhase) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (TurnMetadata_ContractStreamingPhase) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_ces_v1beta_session_service_proto_enumTypes[8].Descriptor()
+}
+
+func (TurnMetadata_ContractStreamingPhase) Type() protoreflect.EnumType {
+	return &file_google_cloud_ces_v1beta_session_service_proto_enumTypes[8]
+}
+
+func (x TurnMetadata_ContractStreamingPhase) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use TurnMetadata_ContractStreamingPhase.Descriptor instead.
+func (TurnMetadata_ContractStreamingPhase) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{27, 0}
+}
+
+// Why the stream is handing off.
+type TurnHandoffEvent_Reason int32
+
+const (
+	// Unspecified.
+	TurnHandoffEvent_REASON_UNSPECIFIED TurnHandoffEvent_Reason = 0
+	// The serving task is shutting down (release push or rescheduling).
+	TurnHandoffEvent_SERVER_RESTART TurnHandoffEvent_Reason = 1
+)
+
+// Enum value maps for TurnHandoffEvent_Reason.
+var (
+	TurnHandoffEvent_Reason_name = map[int32]string{
+		0: "REASON_UNSPECIFIED",
+		1: "SERVER_RESTART",
+	}
+	TurnHandoffEvent_Reason_value = map[string]int32{
+		"REASON_UNSPECIFIED": 0,
+		"SERVER_RESTART":     1,
+	}
+)
+
+func (x TurnHandoffEvent_Reason) Enum() *TurnHandoffEvent_Reason {
+	p := new(TurnHandoffEvent_Reason)
+	*p = x
+	return p
+}
+
+func (x TurnHandoffEvent_Reason) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (TurnHandoffEvent_Reason) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_ces_v1beta_session_service_proto_enumTypes[9].Descriptor()
+}
+
+func (TurnHandoffEvent_Reason) Type() protoreflect.EnumType {
+	return &file_google_cloud_ces_v1beta_session_service_proto_enumTypes[9]
+}
+
+func (x TurnHandoffEvent_Reason) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use TurnHandoffEvent_Reason.Descriptor instead.
+func (TurnHandoffEvent_Reason) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{32, 0}
+}
+
+// Why the turn ended, so a client that attached late can word the outcome
+// instead of guessing from an empty stream.
+type TurnCompletedEvent_Reason int32
+
+const (
+	// Unspecified.
+	TurnCompletedEvent_REASON_UNSPECIFIED TurnCompletedEvent_Reason = 0
+	// The turn ran to completion; the session holds its committed output.
+	TurnCompletedEvent_COMPLETED TurnCompletedEvent_Reason = 1
+	// No task was driving the turn any more; it was sealed to a committed
+	// partial and cannot be continued.
+	TurnCompletedEvent_ABANDONED TurnCompletedEvent_Reason = 2
+	// This server does not serve attach or resume for the session, so nothing
+	// was tailed; the client should reload the session instead.
+	TurnCompletedEvent_RESUME_UNAVAILABLE TurnCompletedEvent_Reason = 3
+)
+
+// Enum value maps for TurnCompletedEvent_Reason.
+var (
+	TurnCompletedEvent_Reason_name = map[int32]string{
+		0: "REASON_UNSPECIFIED",
+		1: "COMPLETED",
+		2: "ABANDONED",
+		3: "RESUME_UNAVAILABLE",
+	}
+	TurnCompletedEvent_Reason_value = map[string]int32{
+		"REASON_UNSPECIFIED": 0,
+		"COMPLETED":          1,
+		"ABANDONED":          2,
+		"RESUME_UNAVAILABLE": 3,
+	}
+)
+
+func (x TurnCompletedEvent_Reason) Enum() *TurnCompletedEvent_Reason {
+	p := new(TurnCompletedEvent_Reason)
+	*p = x
+	return p
+}
+
+func (x TurnCompletedEvent_Reason) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (TurnCompletedEvent_Reason) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_ces_v1beta_session_service_proto_enumTypes[10].Descriptor()
+}
+
+func (TurnCompletedEvent_Reason) Type() protoreflect.EnumType {
+	return &file_google_cloud_ces_v1beta_session_service_proto_enumTypes[10]
+}
+
+func (x TurnCompletedEvent_Reason) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use TurnCompletedEvent_Reason.Descriptor instead.
+func (TurnCompletedEvent_Reason) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{33, 0}
 }
 
 // Mock tool calls configuration for the session.
@@ -371,15 +902,30 @@ type SessionConfig struct {
 	// [Dialogflow](https://cloud.google.com/dialogflow/cx/docs/concept/console-conversational-agents)
 	// agent when the session control is transferred to the remote agent.
 	RemoteDialogflowQueryParameters *SessionConfig_RemoteDialogflowQueryParameters `protobuf:"bytes,15,opt,name=remote_dialogflow_query_parameters,json=remoteDialogflowQueryParameters,proto3" json:"remote_dialogflow_query_parameters,omitempty"`
-	// Optional. Whether to enable streaming text outputs from the model.
-	// By default, text outputs from the model are collected before sending to the
-	// client.
-	// NOTE: This is only supported for text (non-voice) sessions via
+	// Optional. Whether to stream text output from the model to the client
+	// incrementally as it is generated. Defaults to `false`.
+	//
+	//   - When disabled, the model's text output is buffered, and each text output
+	//     sent to the client is a complete sentence. Clients can render each text
+	//     output on a new line.
+	//   - When enabled, each text output may contain only part of a sentence.
+	//     Clients should concatenate consecutive text outputs to render the
+	//     complete response.
+	//
+	// NOTE: This is only supported for text (non-voice) sessions using
 	// [StreamRunSession][google.cloud.ces.v1beta.SessionService.StreamRunSession]
 	// or [BidiRunSession][google.cloud.ces.v1beta.SessionService.BidiRunSession].
 	EnableTextStreaming bool `protobuf:"varint,18,opt,name=enable_text_streaming,json=enableTextStreaming,proto3" json:"enable_text_streaming,omitempty"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	// Optional. Whether to include LLM thought summaries in the session outputs.
+	IncludeLlmThoughtSummary bool `protobuf:"varint,21,opt,name=include_llm_thought_summary,json=includeLlmThoughtSummary,proto3" json:"include_llm_thought_summary,omitempty"`
+	// Optional. Whether to exclude diagnostic info from the session output.
+	ExcludeDiagnosticInfo bool `protobuf:"varint,24,opt,name=exclude_diagnostic_info,json=excludeDiagnosticInfo,proto3" json:"exclude_diagnostic_info,omitempty"`
+	// Optional. Whether to include intermediate processing update to the client.
+	// If enabled, the update will be sent back in
+	// [SessionOutput.progress][google.cloud.ces.v1beta.SessionOutput.progress].
+	IncludeProgressUpdate bool `protobuf:"varint,28,opt,name=include_progress_update,json=includeProgressUpdate,proto3" json:"include_progress_update,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *SessionConfig) Reset() {
@@ -482,6 +1028,27 @@ func (x *SessionConfig) GetEnableTextStreaming() bool {
 	return false
 }
 
+func (x *SessionConfig) GetIncludeLlmThoughtSummary() bool {
+	if x != nil {
+		return x.IncludeLlmThoughtSummary
+	}
+	return false
+}
+
+func (x *SessionConfig) GetExcludeDiagnosticInfo() bool {
+	if x != nil {
+		return x.ExcludeDiagnosticInfo
+	}
+	return false
+}
+
+func (x *SessionConfig) GetIncludeProgressUpdate() bool {
+	if x != nil {
+		return x.IncludeProgressUpdate
+	}
+	return false
+}
+
 // Request for the client to execute the tools and return the execution results
 // before continuing the session.
 type ToolCalls struct {
@@ -579,9 +1146,11 @@ func (x *ToolResponses) GetToolResponses() []*ToolResponse {
 type Citations struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// List of cited pieces of information.
-	CitedChunks   []*Citations_CitedChunk `protobuf:"bytes,1,rep,name=cited_chunks,json=citedChunks,proto3" json:"cited_chunks,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	CitedChunks []*Citations_CitedChunk `protobuf:"bytes,1,rep,name=cited_chunks,json=citedChunks,proto3" json:"cited_chunks,omitempty"`
+	// Optional. List of inline citations in the agent response.
+	InlineCitations []*Citations_InlineCitation `protobuf:"bytes,2,rep,name=inline_citations,json=inlineCitations,proto3" json:"inline_citations,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *Citations) Reset() {
@@ -621,11 +1190,20 @@ func (x *Citations) GetCitedChunks() []*Citations_CitedChunk {
 	return nil
 }
 
+func (x *Citations) GetInlineCitations() []*Citations_InlineCitation {
+	if x != nil {
+		return x.InlineCitations
+	}
+	return nil
+}
+
 // Event input.
 type Event struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The name of the event.
-	Event         string `protobuf:"bytes,1,opt,name=event,proto3" json:"event,omitempty"`
+	Event string `protobuf:"bytes,1,opt,name=event,proto3" json:"event,omitempty"`
+	// Optional. Additional variables associated with the event.
+	Variables     *structpb.Struct `protobuf:"bytes,2,opt,name=variables,proto3" json:"variables,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -667,6 +1245,13 @@ func (x *Event) GetEvent() string {
 	return ""
 }
 
+func (x *Event) GetVariables() *structpb.Struct {
+	if x != nil {
+		return x.Variables
+	}
+	return nil
+}
+
 // Input for the session.
 type SessionInput struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -692,9 +1277,28 @@ type SessionInput struct {
 	//
 	// NOTE: This field does not apply to audio and DTMF inputs, as they are
 	// always processed automatically based on the endpointing signal.
-	WillContinue  bool `protobuf:"varint,8,opt,name=will_continue,json=willContinue,proto3" json:"will_continue,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	WillContinue bool `protobuf:"varint,8,opt,name=will_continue,json=willContinue,proto3" json:"will_continue,omitempty"`
+	// Optional. Whether the conversation may be recorded and logged from here on.
+	//
+	// Use this when the app, rather than the agent, decides what may be kept:
+	// for example when the end user has to consent to being recorded before
+	// anything about the call can be stored.
+	//
+	// The value stays in effect until the client sends a different one, so it
+	// only needs to be sent when the answer changes. Whatever is in effect when
+	// a turn completes decides that turn, both whether its audio reaches the
+	// recording bucket and whether its transcript reaches conversation history,
+	// BigQuery and Cloud Logging. It covers the agent's side of the turn as well
+	// as the end user's.
+	//
+	// Turns that complete before the client first sends this are recorded
+	// according to the app's logging settings, as though the field did not
+	// exist.
+	//
+	// If more than one input in the same request sets it, the last one wins.
+	RecordingControl SessionInput_RecordingControl `protobuf:"varint,10,opt,name=recording_control,json=recordingControl,proto3,enum=google.cloud.ces.v1beta.SessionInput_RecordingControl" json:"recording_control,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *SessionInput) Reset() {
@@ -813,6 +1417,13 @@ func (x *SessionInput) GetWillContinue() bool {
 	return false
 }
 
+func (x *SessionInput) GetRecordingControl() SessionInput_RecordingControl {
+	if x != nil {
+		return x.RecordingControl
+	}
+	return SessionInput_RECORDING_CONTROL_UNSPECIFIED
+}
+
 type isSessionInput_InputType interface {
 	isSessionInput_InputType()
 }
@@ -891,6 +1502,8 @@ type SessionOutput struct {
 	//	*SessionOutput_GoogleSearchSuggestions
 	//	*SessionOutput_EndSession
 	//	*SessionOutput_Payload
+	//	*SessionOutput_Image
+	//	*SessionOutput_Progress
 	OutputType isSessionOutput_OutputType `protobuf_oneof:"output_type"`
 	// Indicates the sequential order of conversation turn to which this output
 	// belongs to, starting from 1.
@@ -1008,6 +1621,24 @@ func (x *SessionOutput) GetPayload() *structpb.Struct {
 	return nil
 }
 
+func (x *SessionOutput) GetImage() *Image {
+	if x != nil {
+		if x, ok := x.OutputType.(*SessionOutput_Image); ok {
+			return x.Image
+		}
+	}
+	return nil
+}
+
+func (x *SessionOutput) GetProgress() string {
+	if x != nil {
+		if x, ok := x.OutputType.(*SessionOutput_Progress); ok {
+			return x.Progress
+		}
+	}
+	return ""
+}
+
 func (x *SessionOutput) GetTurnIndex() int32 {
 	if x != nil {
 		return x.TurnIndex
@@ -1077,6 +1708,16 @@ type SessionOutput_Payload struct {
 	Payload *structpb.Struct `protobuf:"bytes,11,opt,name=payload,proto3,oneof"`
 }
 
+type SessionOutput_Image struct {
+	// Output image from the CES agent.
+	Image *Image `protobuf:"bytes,13,opt,name=image,proto3,oneof"`
+}
+
+type SessionOutput_Progress struct {
+	// Intermediate progress update from the CES agent.
+	Progress string `protobuf:"bytes,14,opt,name=progress,proto3,oneof"`
+}
+
 func (*SessionOutput_Text) isSessionOutput_OutputType() {}
 
 func (*SessionOutput_Audio) isSessionOutput_OutputType() {}
@@ -1090,6 +1731,10 @@ func (*SessionOutput_GoogleSearchSuggestions) isSessionOutput_OutputType() {}
 func (*SessionOutput_EndSession) isSessionOutput_OutputType() {}
 
 func (*SessionOutput_Payload) isSessionOutput_OutputType() {}
+
+func (*SessionOutput_Image) isSessionOutput_OutputType() {}
+
+func (*SessionOutput_Progress) isSessionOutput_OutputType() {}
 
 // Speech recognition result for the audio input.
 type RecognitionResult struct {
@@ -1609,6 +2254,1622 @@ func (*BidiSessionServerMessage_EndSession) isBidiSessionServerMessage_MessageTy
 
 func (*BidiSessionServerMessage_GoAway) isBidiSessionServerMessage_MessageType() {}
 
+// Request message for
+// [SessionService.StreamChatAiAssistant][google.cloud.ces.v1beta.SessionService.StreamChatAiAssistant].
+type StreamChatAiAssistantRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The assistant session to be used to run the assistant.
+	// Format:
+	// `projects/{project}/locations/{location}/apps/{app}/assistantSessions/{assistant_session}`
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. The message to send to the assistant agent. May be empty when
+	// `confirmation_response` is set (answering a pending confirmation without
+	// adding a new message); at least one of the two must be provided.
+	Message string `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	// Optional. Cloud Storage URIs for files uploaded by the user during this
+	// turn. Example: "gs://cxas-transient-uploads/uuid/prd.pdf"
+	AttachedGcsUris []string `protobuf:"bytes,5,rep,name=attached_gcs_uris,json=attachedGcsUris,proto3" json:"attached_gcs_uris,omitempty"`
+	// Optional. Opaque onboarding context token returned by
+	// [SessionService.GenerateOnboardingSuggestions][google.cloud.ces.v1beta.SessionService.GenerateOnboardingSuggestions].
+	// When set and still fresh, the server reuses the onboarding snapshot
+	// computed for the zero state instead of recomputing it for the first
+	// conversation turn.
+	ContextToken string `protobuf:"bytes,6,opt,name=context_token,json=contextToken,proto3" json:"context_token,omitempty"`
+	// Optional. The user's answer to a pending
+	// [AssistantConfirmationRequest][google.cloud.ces.v1beta.AssistantConfirmationRequest].
+	// When set, the server resumes the paused agent with this answer instead of
+	// (or in addition to) starting a new prompt turn.
+	ConfirmationResponse *AssistantConfirmationResponse `protobuf:"bytes,7,opt,name=confirmation_response,json=confirmationResponse,proto3" json:"confirmation_response,omitempty"`
+	// Optional. Response features this client can render. The server only emits
+	// events that need a capability (e.g. `confirmation_request`) when the
+	// capability is declared, so older clients never receive events they would
+	// silently drop.
+	ClientCapabilities []StreamChatAiAssistantRequest_ClientCapability `protobuf:"varint,8,rep,packed,name=client_capabilities,json=clientCapabilities,proto3,enum=google.cloud.ces.v1beta.StreamChatAiAssistantRequest_ClientCapability" json:"client_capabilities,omitempty"`
+	// Optional. Resumes an assistant session paused waiting for a client-managed
+	// long-running operation to complete.
+	OperationCompletedEvent *OperationCompletedEvent `protobuf:"bytes,9,opt,name=operation_completed_event,json=operationCompletedEvent,proto3" json:"operation_completed_event,omitempty"`
+	// Optional. Optional cursor to resume and replay events from an in-flight or
+	// completed turn.
+	ResumeFromSequenceNumber int64 `protobuf:"varint,11,opt,name=resume_from_sequence_number,json=resumeFromSequenceNumber,proto3" json:"resume_from_sequence_number,omitempty"`
+	// Optional. Optional flag to attach to an existing in-flight turn without
+	// submitting a new message.
+	AttachOnly    bool `protobuf:"varint,12,opt,name=attach_only,json=attachOnly,proto3" json:"attach_only,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StreamChatAiAssistantRequest) Reset() {
+	*x = StreamChatAiAssistantRequest{}
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StreamChatAiAssistantRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StreamChatAiAssistantRequest) ProtoMessage() {}
+
+func (x *StreamChatAiAssistantRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StreamChatAiAssistantRequest.ProtoReflect.Descriptor instead.
+func (*StreamChatAiAssistantRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *StreamChatAiAssistantRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *StreamChatAiAssistantRequest) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *StreamChatAiAssistantRequest) GetAttachedGcsUris() []string {
+	if x != nil {
+		return x.AttachedGcsUris
+	}
+	return nil
+}
+
+func (x *StreamChatAiAssistantRequest) GetContextToken() string {
+	if x != nil {
+		return x.ContextToken
+	}
+	return ""
+}
+
+func (x *StreamChatAiAssistantRequest) GetConfirmationResponse() *AssistantConfirmationResponse {
+	if x != nil {
+		return x.ConfirmationResponse
+	}
+	return nil
+}
+
+func (x *StreamChatAiAssistantRequest) GetClientCapabilities() []StreamChatAiAssistantRequest_ClientCapability {
+	if x != nil {
+		return x.ClientCapabilities
+	}
+	return nil
+}
+
+func (x *StreamChatAiAssistantRequest) GetOperationCompletedEvent() *OperationCompletedEvent {
+	if x != nil {
+		return x.OperationCompletedEvent
+	}
+	return nil
+}
+
+func (x *StreamChatAiAssistantRequest) GetResumeFromSequenceNumber() int64 {
+	if x != nil {
+		return x.ResumeFromSequenceNumber
+	}
+	return 0
+}
+
+func (x *StreamChatAiAssistantRequest) GetAttachOnly() bool {
+	if x != nil {
+		return x.AttachOnly
+	}
+	return false
+}
+
+// A single personalized onboarding suggestion chip for Arc's
+// zero state.
+type AssistantSuggestion struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// What activating the chip does.
+	//
+	// Types that are valid to be assigned to Action:
+	//
+	//	*AssistantSuggestion_SeedPrompt
+	//	*AssistantSuggestion_LoadSession_
+	//	*AssistantSuggestion_SendMessage
+	Action isAssistantSuggestion_Action `protobuf_oneof:"action"`
+	// Stable identifier for this suggestion, round-tripped by clients in
+	// interaction logging.
+	SuggestionId string `protobuf:"bytes,1,opt,name=suggestion_id,json=suggestionId,proto3" json:"suggestion_id,omitempty"`
+	// Chip label shown to the user (at most 60 characters).
+	Label string `protobuf:"bytes,2,opt,name=label,proto3" json:"label,omitempty"`
+	// Optional short explanation of why this suggestion is shown (tooltip /
+	// rationale popover).
+	Rationale string `protobuf:"bytes,3,opt,name=rationale,proto3" json:"rationale,omitempty"`
+	// Icon hint for the chip.
+	Icon AssistantSuggestion_Icon `protobuf:"varint,4,opt,name=icon,proto3,enum=google.cloud.ces.v1beta.AssistantSuggestion_Icon" json:"icon,omitempty"`
+	// How this suggestion was produced.
+	Source AssistantSuggestion_Source `protobuf:"varint,8,opt,name=source,proto3,enum=google.cloud.ces.v1beta.AssistantSuggestion_Source" json:"source,omitempty"`
+	// Rule-table candidate type in kebab-case (e.g. "resume-pending-review"),
+	// for metrics.
+	CandidateType string `protobuf:"bytes,9,opt,name=candidate_type,json=candidateType,proto3" json:"candidate_type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AssistantSuggestion) Reset() {
+	*x = AssistantSuggestion{}
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssistantSuggestion) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssistantSuggestion) ProtoMessage() {}
+
+func (x *AssistantSuggestion) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AssistantSuggestion.ProtoReflect.Descriptor instead.
+func (*AssistantSuggestion) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *AssistantSuggestion) GetAction() isAssistantSuggestion_Action {
+	if x != nil {
+		return x.Action
+	}
+	return nil
+}
+
+func (x *AssistantSuggestion) GetSeedPrompt() string {
+	if x != nil {
+		if x, ok := x.Action.(*AssistantSuggestion_SeedPrompt); ok {
+			return x.SeedPrompt
+		}
+	}
+	return ""
+}
+
+func (x *AssistantSuggestion) GetLoadSession() *AssistantSuggestion_LoadSession {
+	if x != nil {
+		if x, ok := x.Action.(*AssistantSuggestion_LoadSession_); ok {
+			return x.LoadSession
+		}
+	}
+	return nil
+}
+
+func (x *AssistantSuggestion) GetSendMessage() string {
+	if x != nil {
+		if x, ok := x.Action.(*AssistantSuggestion_SendMessage); ok {
+			return x.SendMessage
+		}
+	}
+	return ""
+}
+
+func (x *AssistantSuggestion) GetSuggestionId() string {
+	if x != nil {
+		return x.SuggestionId
+	}
+	return ""
+}
+
+func (x *AssistantSuggestion) GetLabel() string {
+	if x != nil {
+		return x.Label
+	}
+	return ""
+}
+
+func (x *AssistantSuggestion) GetRationale() string {
+	if x != nil {
+		return x.Rationale
+	}
+	return ""
+}
+
+func (x *AssistantSuggestion) GetIcon() AssistantSuggestion_Icon {
+	if x != nil {
+		return x.Icon
+	}
+	return AssistantSuggestion_ICON_UNSPECIFIED
+}
+
+func (x *AssistantSuggestion) GetSource() AssistantSuggestion_Source {
+	if x != nil {
+		return x.Source
+	}
+	return AssistantSuggestion_SOURCE_UNSPECIFIED
+}
+
+func (x *AssistantSuggestion) GetCandidateType() string {
+	if x != nil {
+		return x.CandidateType
+	}
+	return ""
+}
+
+type isAssistantSuggestion_Action interface {
+	isAssistantSuggestion_Action()
+}
+
+type AssistantSuggestion_SeedPrompt struct {
+	// Prefill the composer with this text; the user reviews and sends.
+	SeedPrompt string `protobuf:"bytes,5,opt,name=seed_prompt,json=seedPrompt,proto3,oneof"`
+}
+
+type AssistantSuggestion_LoadSession_ struct {
+	// Open an existing assistant session.
+	LoadSession *AssistantSuggestion_LoadSession `protobuf:"bytes,6,opt,name=load_session,json=loadSession,proto3,oneof"`
+}
+
+type AssistantSuggestion_SendMessage struct {
+	// Prefill the composer with this text and submit immediately. Only used
+	// for quick-reply chips inside an active onboarding conversation.
+	SendMessage string `protobuf:"bytes,7,opt,name=send_message,json=sendMessage,proto3,oneof"`
+}
+
+func (*AssistantSuggestion_SeedPrompt) isAssistantSuggestion_Action() {}
+
+func (*AssistantSuggestion_LoadSession_) isAssistantSuggestion_Action() {}
+
+func (*AssistantSuggestion_SendMessage) isAssistantSuggestion_Action() {}
+
+// Request message for
+// [SessionService.GenerateOnboardingSuggestions][google.cloud.ces.v1beta.SessionService.GenerateOnboardingSuggestions].
+type GenerateOnboardingSuggestionsRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The app whose zero state is being rendered.
+	// Format: `projects/{project}/locations/{location}/apps/{app}`
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. Maximum number of suggestions to return. Defaults to 4 when
+	// unset.
+	MaxSuggestions int32 `protobuf:"varint,2,opt,name=max_suggestions,json=maxSuggestions,proto3" json:"max_suggestions,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *GenerateOnboardingSuggestionsRequest) Reset() {
+	*x = GenerateOnboardingSuggestionsRequest{}
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GenerateOnboardingSuggestionsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GenerateOnboardingSuggestionsRequest) ProtoMessage() {}
+
+func (x *GenerateOnboardingSuggestionsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GenerateOnboardingSuggestionsRequest.ProtoReflect.Descriptor instead.
+func (*GenerateOnboardingSuggestionsRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *GenerateOnboardingSuggestionsRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *GenerateOnboardingSuggestionsRequest) GetMaxSuggestions() int32 {
+	if x != nil {
+		return x.MaxSuggestions
+	}
+	return 0
+}
+
+// Response message for
+// [SessionService.GenerateOnboardingSuggestions][google.cloud.ces.v1beta.SessionService.GenerateOnboardingSuggestions].
+type GenerateOnboardingSuggestionsResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Classification of the requesting user's history.
+	UserProfile GenerateOnboardingSuggestionsResponse_UserProfile `protobuf:"varint,1,opt,name=user_profile,json=userProfile,proto3,enum=google.cloud.ces.v1beta.GenerateOnboardingSuggestionsResponse_UserProfile" json:"user_profile,omitempty"`
+	// Personalized suggestions, ranked most relevant first.
+	Suggestions []*AssistantSuggestion `protobuf:"bytes,2,rep,name=suggestions,proto3" json:"suggestions,omitempty"`
+	// Opaque token capturing the onboarding snapshot used to generate these
+	// suggestions. Clients echo it on the first
+	// [StreamChatAiAssistantRequest][google.cloud.ces.v1beta.StreamChatAiAssistantRequest]
+	// so the server can reuse the snapshot.
+	ContextToken  string `protobuf:"bytes,3,opt,name=context_token,json=contextToken,proto3" json:"context_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GenerateOnboardingSuggestionsResponse) Reset() {
+	*x = GenerateOnboardingSuggestionsResponse{}
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GenerateOnboardingSuggestionsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GenerateOnboardingSuggestionsResponse) ProtoMessage() {}
+
+func (x *GenerateOnboardingSuggestionsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GenerateOnboardingSuggestionsResponse.ProtoReflect.Descriptor instead.
+func (*GenerateOnboardingSuggestionsResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *GenerateOnboardingSuggestionsResponse) GetUserProfile() GenerateOnboardingSuggestionsResponse_UserProfile {
+	if x != nil {
+		return x.UserProfile
+	}
+	return GenerateOnboardingSuggestionsResponse_USER_PROFILE_UNSPECIFIED
+}
+
+func (x *GenerateOnboardingSuggestionsResponse) GetSuggestions() []*AssistantSuggestion {
+	if x != nil {
+		return x.Suggestions
+	}
+	return nil
+}
+
+func (x *GenerateOnboardingSuggestionsResponse) GetContextToken() string {
+	if x != nil {
+		return x.ContextToken
+	}
+	return ""
+}
+
+// A streamed fragment of a document artifact (e.g. a markdown TDD) that the
+// assistant is generating. Content deltas stream while the document is being
+// written so clients can render a live preview; the FINALIZED chunk carries
+// the GCS URI once the file has been persisted.
+type ArtifactChunk struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Identifier of the artifact, stable across all chunks of one artifact
+	// within the stream.
+	ArtifactId string `protobuf:"bytes,1,opt,name=artifact_id,json=artifactId,proto3" json:"artifact_id,omitempty"`
+	// The file name shown to the user, e.g. "hotel_booking_tdd.md". Set on
+	// STARTED (and repeated on FINALIZED).
+	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
+	// The IANA media type of the artifact content, e.g. "text/markdown".
+	MimeType string `protobuf:"bytes,3,opt,name=mime_type,json=mimeType,proto3" json:"mime_type,omitempty"`
+	// Incremental artifact content. Set on DELTA chunks.
+	ContentDelta string `protobuf:"bytes,4,opt,name=content_delta,json=contentDelta,proto3" json:"content_delta,omitempty"`
+	// The GCS object the artifact was persisted to. Set on FINALIZED chunks.
+	GcsUri string `protobuf:"bytes,5,opt,name=gcs_uri,json=gcsUri,proto3" json:"gcs_uri,omitempty"`
+	// Lifecycle position of this chunk.
+	State         ArtifactChunk_State `protobuf:"varint,6,opt,name=state,proto3,enum=google.cloud.ces.v1beta.ArtifactChunk_State" json:"state,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ArtifactChunk) Reset() {
+	*x = ArtifactChunk{}
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ArtifactChunk) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ArtifactChunk) ProtoMessage() {}
+
+func (x *ArtifactChunk) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ArtifactChunk.ProtoReflect.Descriptor instead.
+func (*ArtifactChunk) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *ArtifactChunk) GetArtifactId() string {
+	if x != nil {
+		return x.ArtifactId
+	}
+	return ""
+}
+
+func (x *ArtifactChunk) GetDisplayName() string {
+	if x != nil {
+		return x.DisplayName
+	}
+	return ""
+}
+
+func (x *ArtifactChunk) GetMimeType() string {
+	if x != nil {
+		return x.MimeType
+	}
+	return ""
+}
+
+func (x *ArtifactChunk) GetContentDelta() string {
+	if x != nil {
+		return x.ContentDelta
+	}
+	return ""
+}
+
+func (x *ArtifactChunk) GetGcsUri() string {
+	if x != nil {
+		return x.GcsUri
+	}
+	return ""
+}
+
+func (x *ArtifactChunk) GetState() ArtifactChunk_State {
+	if x != nil {
+		return x.State
+	}
+	return ArtifactChunk_STATE_UNSPECIFIED
+}
+
+// Structured clarification options the assistant asks the user to choose
+// among, transduced server-side out of the model's turn (the option block is
+// stripped from the streamed and persisted text). The console renders a
+// keyboard-navigable option list docked above the composer.
+type OptionQuestionsChunk struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The questions asked this turn. More than one entry drives the console's
+	// "1 of N" pager.
+	Questions     []*OptionQuestionsChunk_Question `protobuf:"bytes,1,rep,name=questions,proto3" json:"questions,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OptionQuestionsChunk) Reset() {
+	*x = OptionQuestionsChunk{}
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OptionQuestionsChunk) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OptionQuestionsChunk) ProtoMessage() {}
+
+func (x *OptionQuestionsChunk) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OptionQuestionsChunk.ProtoReflect.Descriptor instead.
+func (*OptionQuestionsChunk) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *OptionQuestionsChunk) GetQuestions() []*OptionQuestionsChunk_Question {
+	if x != nil {
+		return x.Questions
+	}
+	return nil
+}
+
+// A blocking question or confirmation the assistant needs answered before an
+// agent action can proceed. The requesting agent is paused and resumes only
+// when the answer arrives on a later
+// [StreamChatAiAssistantRequest.confirmation_response][google.cloud.ces.v1beta.StreamChatAiAssistantRequest.confirmation_response].
+type AssistantConfirmationRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Identifier correlating this request with its response. Opaque to
+	// clients; must be echoed verbatim on the answering request.
+	ConfirmationId string `protobuf:"bytes,1,opt,name=confirmation_id,json=confirmationId,proto3" json:"confirmation_id,omitempty"`
+	// Context describing what is being confirmed (e.g. the action the agent
+	// wants to take, or the question it needs answered). Rendered as plain
+	// text, not Markdown.
+	Context string `protobuf:"bytes,2,opt,name=context,proto3" json:"context,omitempty"`
+	// Label for the approving action of a binary confirmation (e.g. "Publish").
+	// Unset when `questions` is populated.
+	PositiveLabel string `protobuf:"bytes,3,opt,name=positive_label,json=positiveLabel,proto3" json:"positive_label,omitempty"`
+	// Label for the declining action of a binary confirmation (e.g. "Not yet").
+	// Unset when `questions` is populated.
+	NegativeLabel string `protobuf:"bytes,4,opt,name=negative_label,json=negativeLabel,proto3" json:"negative_label,omitempty"`
+	// Multi-choice form of the confirmation. When populated, the card renders
+	// a selectable option list and the chosen option's submit_text (or
+	// free-form user text) is returned as
+	// [AssistantConfirmationResponse.answer_text][google.cloud.ces.v1beta.AssistantConfirmationResponse.answer_text].
+	Questions []*OptionQuestionsChunk_Question `protobuf:"bytes,5,rep,name=questions,proto3" json:"questions,omitempty"`
+	// Name of the tool call the agent paused on (e.g. "update_app"), for the
+	// card header. Unset for pure questions.
+	Tool string `protobuf:"bytes,6,opt,name=tool,proto3" json:"tool,omitempty"`
+	// Display label of the agent that raised the confirmation (e.g.
+	// `"Contract Architect"`), for the card header.
+	AgentName string `protobuf:"bytes,7,opt,name=agent_name,json=agentName,proto3" json:"agent_name,omitempty"`
+	// Time after which this confirmation can no longer be answered. An expired
+	// card renders as inactive, and the server declines the confirmation on the
+	// next turn so the paused agent does not wait indefinitely.
+	ExpireTime    *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=expire_time,json=expireTime,proto3" json:"expire_time,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AssistantConfirmationRequest) Reset() {
+	*x = AssistantConfirmationRequest{}
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssistantConfirmationRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssistantConfirmationRequest) ProtoMessage() {}
+
+func (x *AssistantConfirmationRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AssistantConfirmationRequest.ProtoReflect.Descriptor instead.
+func (*AssistantConfirmationRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *AssistantConfirmationRequest) GetConfirmationId() string {
+	if x != nil {
+		return x.ConfirmationId
+	}
+	return ""
+}
+
+func (x *AssistantConfirmationRequest) GetContext() string {
+	if x != nil {
+		return x.Context
+	}
+	return ""
+}
+
+func (x *AssistantConfirmationRequest) GetPositiveLabel() string {
+	if x != nil {
+		return x.PositiveLabel
+	}
+	return ""
+}
+
+func (x *AssistantConfirmationRequest) GetNegativeLabel() string {
+	if x != nil {
+		return x.NegativeLabel
+	}
+	return ""
+}
+
+func (x *AssistantConfirmationRequest) GetQuestions() []*OptionQuestionsChunk_Question {
+	if x != nil {
+		return x.Questions
+	}
+	return nil
+}
+
+func (x *AssistantConfirmationRequest) GetTool() string {
+	if x != nil {
+		return x.Tool
+	}
+	return ""
+}
+
+func (x *AssistantConfirmationRequest) GetAgentName() string {
+	if x != nil {
+		return x.AgentName
+	}
+	return ""
+}
+
+func (x *AssistantConfirmationRequest) GetExpireTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ExpireTime
+	}
+	return nil
+}
+
+// The user's answer to an
+// [AssistantConfirmationRequest][google.cloud.ces.v1beta.AssistantConfirmationRequest],
+// sent on the next
+// [SessionService.StreamChatAiAssistant][google.cloud.ces.v1beta.SessionService.StreamChatAiAssistant]
+// call to resume the paused agent.
+type AssistantConfirmationResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The user's answer.
+	//
+	// Types that are valid to be assigned to Response:
+	//
+	//	*AssistantConfirmationResponse_Confirmed
+	//	*AssistantConfirmationResponse_AnswerText
+	Response isAssistantConfirmationResponse_Response `protobuf_oneof:"response"`
+	// The
+	// [AssistantConfirmationRequest.confirmation_id][google.cloud.ces.v1beta.AssistantConfirmationRequest.confirmation_id]
+	// being answered.
+	ConfirmationId string `protobuf:"bytes,1,opt,name=confirmation_id,json=confirmationId,proto3" json:"confirmation_id,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *AssistantConfirmationResponse) Reset() {
+	*x = AssistantConfirmationResponse{}
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssistantConfirmationResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssistantConfirmationResponse) ProtoMessage() {}
+
+func (x *AssistantConfirmationResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AssistantConfirmationResponse.ProtoReflect.Descriptor instead.
+func (*AssistantConfirmationResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *AssistantConfirmationResponse) GetResponse() isAssistantConfirmationResponse_Response {
+	if x != nil {
+		return x.Response
+	}
+	return nil
+}
+
+func (x *AssistantConfirmationResponse) GetConfirmed() bool {
+	if x != nil {
+		if x, ok := x.Response.(*AssistantConfirmationResponse_Confirmed); ok {
+			return x.Confirmed
+		}
+	}
+	return false
+}
+
+func (x *AssistantConfirmationResponse) GetAnswerText() string {
+	if x != nil {
+		if x, ok := x.Response.(*AssistantConfirmationResponse_AnswerText); ok {
+			return x.AnswerText
+		}
+	}
+	return ""
+}
+
+func (x *AssistantConfirmationResponse) GetConfirmationId() string {
+	if x != nil {
+		return x.ConfirmationId
+	}
+	return ""
+}
+
+type isAssistantConfirmationResponse_Response interface {
+	isAssistantConfirmationResponse_Response()
+}
+
+type AssistantConfirmationResponse_Confirmed struct {
+	// Binary answer: true approves the paused action, false declines it.
+	Confirmed bool `protobuf:"varint,2,opt,name=confirmed,proto3,oneof"`
+}
+
+type AssistantConfirmationResponse_AnswerText struct {
+	// The chosen option's submit_text, or free-form user text. The paused
+	// action is cancelled and the text is handed to the agent to act on.
+	AnswerText string `protobuf:"bytes,3,opt,name=answer_text,json=answerText,proto3,oneof"`
+}
+
+func (*AssistantConfirmationResponse_Confirmed) isAssistantConfirmationResponse_Response() {}
+
+func (*AssistantConfirmationResponse_AnswerText) isAssistantConfirmationResponse_Response() {}
+
+// Event sent by the client or background worker to resume an assistant session
+// after an asynchronous Long-Running Operation (LRO) completes.
+type OperationCompletedEvent struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The operation resource name (e.g. `operations/{op}`).
+	OperationName string `protobuf:"bytes,1,opt,name=operation_name,json=operationName,proto3" json:"operation_name,omitempty"`
+	// The primary resource targeted or produced by the operation
+	// (e.g. evaluation run ID, app ID, dataset ID).
+	TargetResourceName string `protobuf:"bytes,2,opt,name=target_resource_name,json=targetResourceName,proto3" json:"target_resource_name,omitempty"`
+	// The operation type or tool name (e.g. "run_evaluation", "copy_app",
+	// "export_app").
+	OperationType string `protobuf:"bytes,3,opt,name=operation_type,json=operationType,proto3" json:"operation_type,omitempty"`
+	// Status of the operation run (e.g. "SUCCEEDED", "FAILED", "CANCELLED").
+	Status string `protobuf:"bytes,4,opt,name=status,proto3" json:"status,omitempty"`
+	// Optional deduplication token (e.g. UUID) to prevent duplicate turn
+	// execution from concurrent browser tabs.
+	DeduplicationToken string `protobuf:"bytes,5,opt,name=deduplication_token,json=deduplicationToken,proto3" json:"deduplication_token,omitempty"`
+	// Optional canonical error status if the operation failed.
+	Error *status.Status `protobuf:"bytes,6,opt,name=error,proto3" json:"error,omitempty"`
+	// Optional structured result metadata (e.g. pass_rate, total_examples,
+	// export_uri).
+	Metadata      *structpb.Struct `protobuf:"bytes,7,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OperationCompletedEvent) Reset() {
+	*x = OperationCompletedEvent{}
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OperationCompletedEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OperationCompletedEvent) ProtoMessage() {}
+
+func (x *OperationCompletedEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OperationCompletedEvent.ProtoReflect.Descriptor instead.
+func (*OperationCompletedEvent) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *OperationCompletedEvent) GetOperationName() string {
+	if x != nil {
+		return x.OperationName
+	}
+	return ""
+}
+
+func (x *OperationCompletedEvent) GetTargetResourceName() string {
+	if x != nil {
+		return x.TargetResourceName
+	}
+	return ""
+}
+
+func (x *OperationCompletedEvent) GetOperationType() string {
+	if x != nil {
+		return x.OperationType
+	}
+	return ""
+}
+
+func (x *OperationCompletedEvent) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *OperationCompletedEvent) GetDeduplicationToken() string {
+	if x != nil {
+		return x.DeduplicationToken
+	}
+	return ""
+}
+
+func (x *OperationCompletedEvent) GetError() *status.Status {
+	if x != nil {
+		return x.Error
+	}
+	return nil
+}
+
+func (x *OperationCompletedEvent) GetMetadata() *structpb.Struct {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+// Turn-level metadata and intent categorization.
+type TurnMetadata struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Indicates whether this assistant turn was contract-related (e.g. contract
+	// drafting, alignment, extraction, or revision).
+	ContractRelated bool `protobuf:"varint,1,opt,name=contract_related,json=contractRelated,proto3" json:"contract_related,omitempty"`
+	// Set on the final artifact event of a turn whose contract draft was
+	// published (a revision was activated). Terminal for the clarification
+	// flow of this draft: contract_progress is authoritative and complete.
+	ContractFinalized bool `protobuf:"varint,3,opt,name=contract_finalized,json=contractFinalized,proto3" json:"contract_finalized,omitempty"`
+	// Set only on in-flight progress estimates emitted while a contract
+	// artifact fence is streaming, and on the revision-turn-start event.
+	// Unset on authoritative payloads.
+	ContractStreamingPhase TurnMetadata_ContractStreamingPhase `protobuf:"varint,4,opt,name=contract_streaming_phase,json=contractStreamingPhase,proto3,enum=google.cloud.ces.v1beta.TurnMetadata_ContractStreamingPhase" json:"contract_streaming_phase,omitempty"`
+	// Set on the terminal event of a contract draft whose every placeholder is
+	// resolved (contract_progress is 100%), whether or not the draft was
+	// published. Clients complete and dismiss the contract progress display on
+	// it; publication is reported separately by contract_finalized.
+	ContractDraftComplete bool `protobuf:"varint,5,opt,name=contract_draft_complete,json=contractDraftComplete,proto3" json:"contract_draft_complete,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *TurnMetadata) Reset() {
+	*x = TurnMetadata{}
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TurnMetadata) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TurnMetadata) ProtoMessage() {}
+
+func (x *TurnMetadata) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TurnMetadata.ProtoReflect.Descriptor instead.
+func (*TurnMetadata) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *TurnMetadata) GetContractRelated() bool {
+	if x != nil {
+		return x.ContractRelated
+	}
+	return false
+}
+
+func (x *TurnMetadata) GetContractFinalized() bool {
+	if x != nil {
+		return x.ContractFinalized
+	}
+	return false
+}
+
+func (x *TurnMetadata) GetContractStreamingPhase() TurnMetadata_ContractStreamingPhase {
+	if x != nil {
+		return x.ContractStreamingPhase
+	}
+	return TurnMetadata_CONTRACT_STREAMING_PHASE_UNSPECIFIED
+}
+
+func (x *TurnMetadata) GetContractDraftComplete() bool {
+	if x != nil {
+		return x.ContractDraftComplete
+	}
+	return false
+}
+
+// Response message for
+// [SessionService.StreamChatAiAssistant][google.cloud.ces.v1beta.SessionService.StreamChatAiAssistant].
+type StreamChatAiAssistantResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The event payload.
+	//
+	// Types that are valid to be assigned to Event:
+	//
+	//	*StreamChatAiAssistantResponse_TextChunk
+	//	*StreamChatAiAssistantResponse_Status
+	//	*StreamChatAiAssistantResponse_ThoughtChunk
+	//	*StreamChatAiAssistantResponse_ToolCall
+	//	*StreamChatAiAssistantResponse_ToolResponse
+	//	*StreamChatAiAssistantResponse_ArtifactChunk
+	//	*StreamChatAiAssistantResponse_OptionQuestionsChunk
+	//	*StreamChatAiAssistantResponse_ConfirmationRequest
+	//	*StreamChatAiAssistantResponse_SessionCheckpoint
+	//	*StreamChatAiAssistantResponse_ResumeSnapshot
+	//	*StreamChatAiAssistantResponse_Handoff
+	//	*StreamChatAiAssistantResponse_TurnCompleted
+	Event isStreamChatAiAssistantResponse_Event `protobuf_oneof:"event"`
+	// Unique identifier for the event.
+	EventId string `protobuf:"bytes,1,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
+	// Timestamp when the event occurred.
+	EventTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=event_time,json=eventTime,proto3" json:"event_time,omitempty"`
+	// Optional. UI event payload.
+	UiEvent *UiEvent `protobuf:"bytes,5,opt,name=ui_event,json=uiEvent,proto3" json:"ui_event,omitempty"`
+	// Optional. Turn-level metadata and intent categorization.
+	TurnMetadata *TurnMetadata `protobuf:"bytes,11,opt,name=turn_metadata,json=turnMetadata,proto3" json:"turn_metadata,omitempty"`
+	// Optional. Monotonically increasing sequence number for this session turn.
+	SequenceNumber int64 `protobuf:"varint,15,opt,name=sequence_number,json=sequenceNumber,proto3" json:"sequence_number,omitempty"`
+	// Optional. Indicates whether the turn is still actively running in the
+	// background.
+	TurnInProgress bool `protobuf:"varint,16,opt,name=turn_in_progress,json=turnInProgress,proto3" json:"turn_in_progress,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *StreamChatAiAssistantResponse) Reset() {
+	*x = StreamChatAiAssistantResponse{}
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StreamChatAiAssistantResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StreamChatAiAssistantResponse) ProtoMessage() {}
+
+func (x *StreamChatAiAssistantResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StreamChatAiAssistantResponse.ProtoReflect.Descriptor instead.
+func (*StreamChatAiAssistantResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *StreamChatAiAssistantResponse) GetEvent() isStreamChatAiAssistantResponse_Event {
+	if x != nil {
+		return x.Event
+	}
+	return nil
+}
+
+func (x *StreamChatAiAssistantResponse) GetTextChunk() string {
+	if x != nil {
+		if x, ok := x.Event.(*StreamChatAiAssistantResponse_TextChunk); ok {
+			return x.TextChunk
+		}
+	}
+	return ""
+}
+
+func (x *StreamChatAiAssistantResponse) GetStatus() *status.Status {
+	if x != nil {
+		if x, ok := x.Event.(*StreamChatAiAssistantResponse_Status); ok {
+			return x.Status
+		}
+	}
+	return nil
+}
+
+func (x *StreamChatAiAssistantResponse) GetThoughtChunk() string {
+	if x != nil {
+		if x, ok := x.Event.(*StreamChatAiAssistantResponse_ThoughtChunk); ok {
+			return x.ThoughtChunk
+		}
+	}
+	return ""
+}
+
+func (x *StreamChatAiAssistantResponse) GetToolCall() *ToolCall {
+	if x != nil {
+		if x, ok := x.Event.(*StreamChatAiAssistantResponse_ToolCall); ok {
+			return x.ToolCall
+		}
+	}
+	return nil
+}
+
+func (x *StreamChatAiAssistantResponse) GetToolResponse() *ToolResponse {
+	if x != nil {
+		if x, ok := x.Event.(*StreamChatAiAssistantResponse_ToolResponse); ok {
+			return x.ToolResponse
+		}
+	}
+	return nil
+}
+
+func (x *StreamChatAiAssistantResponse) GetArtifactChunk() *ArtifactChunk {
+	if x != nil {
+		if x, ok := x.Event.(*StreamChatAiAssistantResponse_ArtifactChunk); ok {
+			return x.ArtifactChunk
+		}
+	}
+	return nil
+}
+
+func (x *StreamChatAiAssistantResponse) GetOptionQuestionsChunk() *OptionQuestionsChunk {
+	if x != nil {
+		if x, ok := x.Event.(*StreamChatAiAssistantResponse_OptionQuestionsChunk); ok {
+			return x.OptionQuestionsChunk
+		}
+	}
+	return nil
+}
+
+func (x *StreamChatAiAssistantResponse) GetConfirmationRequest() *AssistantConfirmationRequest {
+	if x != nil {
+		if x, ok := x.Event.(*StreamChatAiAssistantResponse_ConfirmationRequest); ok {
+			return x.ConfirmationRequest
+		}
+	}
+	return nil
+}
+
+func (x *StreamChatAiAssistantResponse) GetSessionCheckpoint() *SessionCheckpoint {
+	if x != nil {
+		if x, ok := x.Event.(*StreamChatAiAssistantResponse_SessionCheckpoint); ok {
+			return x.SessionCheckpoint
+		}
+	}
+	return nil
+}
+
+func (x *StreamChatAiAssistantResponse) GetResumeSnapshot() *TurnResumeSnapshot {
+	if x != nil {
+		if x, ok := x.Event.(*StreamChatAiAssistantResponse_ResumeSnapshot); ok {
+			return x.ResumeSnapshot
+		}
+	}
+	return nil
+}
+
+func (x *StreamChatAiAssistantResponse) GetHandoff() *TurnHandoffEvent {
+	if x != nil {
+		if x, ok := x.Event.(*StreamChatAiAssistantResponse_Handoff); ok {
+			return x.Handoff
+		}
+	}
+	return nil
+}
+
+func (x *StreamChatAiAssistantResponse) GetTurnCompleted() *TurnCompletedEvent {
+	if x != nil {
+		if x, ok := x.Event.(*StreamChatAiAssistantResponse_TurnCompleted); ok {
+			return x.TurnCompleted
+		}
+	}
+	return nil
+}
+
+func (x *StreamChatAiAssistantResponse) GetEventId() string {
+	if x != nil {
+		return x.EventId
+	}
+	return ""
+}
+
+func (x *StreamChatAiAssistantResponse) GetEventTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.EventTime
+	}
+	return nil
+}
+
+func (x *StreamChatAiAssistantResponse) GetUiEvent() *UiEvent {
+	if x != nil {
+		return x.UiEvent
+	}
+	return nil
+}
+
+func (x *StreamChatAiAssistantResponse) GetTurnMetadata() *TurnMetadata {
+	if x != nil {
+		return x.TurnMetadata
+	}
+	return nil
+}
+
+func (x *StreamChatAiAssistantResponse) GetSequenceNumber() int64 {
+	if x != nil {
+		return x.SequenceNumber
+	}
+	return 0
+}
+
+func (x *StreamChatAiAssistantResponse) GetTurnInProgress() bool {
+	if x != nil {
+		return x.TurnInProgress
+	}
+	return false
+}
+
+type isStreamChatAiAssistantResponse_Event interface {
+	isStreamChatAiAssistantResponse_Event()
+}
+
+type StreamChatAiAssistantResponse_TextChunk struct {
+	// Text Token (for streaming Gemini responses word-by-word).
+	TextChunk string `protobuf:"bytes,3,opt,name=text_chunk,json=textChunk,proto3,oneof"`
+}
+
+type StreamChatAiAssistantResponse_Status struct {
+	// Simple status update.
+	Status *status.Status `protobuf:"bytes,4,opt,name=status,proto3,oneof"`
+}
+
+type StreamChatAiAssistantResponse_ThoughtChunk struct {
+	// Thought text chunk (agent's reasoning before generating response).
+	ThoughtChunk string `protobuf:"bytes,6,opt,name=thought_chunk,json=thoughtChunk,proto3,oneof"`
+}
+
+type StreamChatAiAssistantResponse_ToolCall struct {
+	// Tool call execution event.
+	ToolCall *ToolCall `protobuf:"bytes,7,opt,name=tool_call,json=toolCall,proto3,oneof"`
+}
+
+type StreamChatAiAssistantResponse_ToolResponse struct {
+	// Tool call response event.
+	ToolResponse *ToolResponse `protobuf:"bytes,8,opt,name=tool_response,json=toolResponse,proto3,oneof"`
+}
+
+type StreamChatAiAssistantResponse_ArtifactChunk struct {
+	// Generated-document artifact event (live preview deltas + final GCS
+	// pointer).
+	ArtifactChunk *ArtifactChunk `protobuf:"bytes,9,opt,name=artifact_chunk,json=artifactChunk,proto3,oneof"`
+}
+
+type StreamChatAiAssistantResponse_OptionQuestionsChunk struct {
+	// Structured clarification options parsed out of the model turn. The
+	// console renders these as a selectable option list instead of raw text.
+	OptionQuestionsChunk *OptionQuestionsChunk `protobuf:"bytes,10,opt,name=option_questions_chunk,json=optionQuestionsChunk,proto3,oneof"`
+}
+
+type StreamChatAiAssistantResponse_ConfirmationRequest struct {
+	// A blocking confirmation the agent paused on. The agent resumes when the
+	// answer arrives on a later request's `confirmation_response`. Only sent
+	// to clients that declared the CONFIRMATION_CARDS capability on the
+	// request.
+	ConfirmationRequest *AssistantConfirmationRequest `protobuf:"bytes,12,opt,name=confirmation_request,json=confirmationRequest,proto3,oneof"`
+}
+
+type StreamChatAiAssistantResponse_SessionCheckpoint struct {
+	// Session checkpoint/compaction recap event containing user intent and
+	// rolling summary.
+	SessionCheckpoint *SessionCheckpoint `protobuf:"bytes,13,opt,name=session_checkpoint,json=sessionCheckpoint,proto3,oneof"`
+}
+
+type StreamChatAiAssistantResponse_ResumeSnapshot struct {
+	// A compacted replay of an in-flight turn, sent as the first event of
+	// every attach or resume before any live event. The client replaces any
+	// locally rendered state for this turn with the snapshot's contents.
+	ResumeSnapshot *TurnResumeSnapshot `protobuf:"bytes,17,opt,name=resume_snapshot,json=resumeSnapshot,proto3,oneof"`
+}
+
+type StreamChatAiAssistantResponse_Handoff struct {
+	// Tells the client to silently reconnect with
+	// resume_from_sequence_number: the task serving this stream is going
+	// away and the turn will continue elsewhere. Not an error; the stream
+	// completes normally after this event.
+	Handoff *TurnHandoffEvent `protobuf:"bytes,18,opt,name=handoff,proto3,oneof"`
+}
+
+type StreamChatAiAssistantResponse_TurnCompleted struct {
+	// The turn has ended. Sent as the last event of every turn, on the original
+	// stream and on every attached or resumed stream, so clients can end the
+	// turn on an explicit signal instead of inferring it from stream closure.
+	TurnCompleted *TurnCompletedEvent `protobuf:"bytes,19,opt,name=turn_completed,json=turnCompleted,proto3,oneof"`
+}
+
+func (*StreamChatAiAssistantResponse_TextChunk) isStreamChatAiAssistantResponse_Event() {}
+
+func (*StreamChatAiAssistantResponse_Status) isStreamChatAiAssistantResponse_Event() {}
+
+func (*StreamChatAiAssistantResponse_ThoughtChunk) isStreamChatAiAssistantResponse_Event() {}
+
+func (*StreamChatAiAssistantResponse_ToolCall) isStreamChatAiAssistantResponse_Event() {}
+
+func (*StreamChatAiAssistantResponse_ToolResponse) isStreamChatAiAssistantResponse_Event() {}
+
+func (*StreamChatAiAssistantResponse_ArtifactChunk) isStreamChatAiAssistantResponse_Event() {}
+
+func (*StreamChatAiAssistantResponse_OptionQuestionsChunk) isStreamChatAiAssistantResponse_Event() {}
+
+func (*StreamChatAiAssistantResponse_ConfirmationRequest) isStreamChatAiAssistantResponse_Event() {}
+
+func (*StreamChatAiAssistantResponse_SessionCheckpoint) isStreamChatAiAssistantResponse_Event() {}
+
+func (*StreamChatAiAssistantResponse_ResumeSnapshot) isStreamChatAiAssistantResponse_Event() {}
+
+func (*StreamChatAiAssistantResponse_Handoff) isStreamChatAiAssistantResponse_Event() {}
+
+func (*StreamChatAiAssistantResponse_TurnCompleted) isStreamChatAiAssistantResponse_Event() {}
+
+// Request to cancel an assistant session's in-flight turn.
+type CancelAssistantTurnRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The assistant session whose in-flight turn to cancel.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. The turn to cancel; empty cancels whichever turn is running. A
+	// cancel naming a turn that is no longer the running one is a no-op.
+	TurnId        string `protobuf:"bytes,2,opt,name=turn_id,json=turnId,proto3" json:"turn_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CancelAssistantTurnRequest) Reset() {
+	*x = CancelAssistantTurnRequest{}
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CancelAssistantTurnRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CancelAssistantTurnRequest) ProtoMessage() {}
+
+func (x *CancelAssistantTurnRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CancelAssistantTurnRequest.ProtoReflect.Descriptor instead.
+func (*CancelAssistantTurnRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *CancelAssistantTurnRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CancelAssistantTurnRequest) GetTurnId() string {
+	if x != nil {
+		return x.TurnId
+	}
+	return ""
+}
+
+// Response for CancelAssistantTurn.
+type CancelAssistantTurnResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Whether an in-flight turn was found and asked to stop (directly on this
+	// task, or through an epoch preemption for a turn hosted elsewhere).
+	Cancelled     bool `protobuf:"varint,1,opt,name=cancelled,proto3" json:"cancelled,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CancelAssistantTurnResponse) Reset() {
+	*x = CancelAssistantTurnResponse{}
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CancelAssistantTurnResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CancelAssistantTurnResponse) ProtoMessage() {}
+
+func (x *CancelAssistantTurnResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CancelAssistantTurnResponse.ProtoReflect.Descriptor instead.
+func (*CancelAssistantTurnResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *CancelAssistantTurnResponse) GetCancelled() bool {
+	if x != nil {
+		return x.Cancelled
+	}
+	return false
+}
+
+// A compacted replay of an in-flight turn: everything needed to render the
+// turn's visible output so far, plus the position live events continue from.
+type TurnResumeSnapshot struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Identifies the turn being attached to.
+	TurnId string `protobuf:"bytes,1,opt,name=turn_id,json=turnId,proto3" json:"turn_id,omitempty"`
+	// The position this snapshot represents. Live events follow with
+	// sequence_number strictly greater than this. When lower than the
+	// resume_from_sequence_number the client requested, flushed progress lags
+	// what the client already rendered: the client must discard its rendered
+	// content of this turn beyond this position before applying the snapshot.
+	ResolvedSequenceNumber int64 `protobuf:"varint,2,opt,name=resolved_sequence_number,json=resolvedSequenceNumber,proto3" json:"resolved_sequence_number,omitempty"`
+	// Compacted events reconstructing the turn's visible output, in render
+	// order, using the same event shapes as live streaming.
+	Events []*StreamChatAiAssistantResponse `protobuf:"bytes,3,rep,name=events,proto3" json:"events,omitempty"`
+	// When the turn will be wound down if no client remains attached.
+	OrphanDeadlineTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=orphan_deadline_time,json=orphanDeadlineTime,proto3" json:"orphan_deadline_time,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *TurnResumeSnapshot) Reset() {
+	*x = TurnResumeSnapshot{}
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TurnResumeSnapshot) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TurnResumeSnapshot) ProtoMessage() {}
+
+func (x *TurnResumeSnapshot) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TurnResumeSnapshot.ProtoReflect.Descriptor instead.
+func (*TurnResumeSnapshot) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *TurnResumeSnapshot) GetTurnId() string {
+	if x != nil {
+		return x.TurnId
+	}
+	return ""
+}
+
+func (x *TurnResumeSnapshot) GetResolvedSequenceNumber() int64 {
+	if x != nil {
+		return x.ResolvedSequenceNumber
+	}
+	return 0
+}
+
+func (x *TurnResumeSnapshot) GetEvents() []*StreamChatAiAssistantResponse {
+	if x != nil {
+		return x.Events
+	}
+	return nil
+}
+
+func (x *TurnResumeSnapshot) GetOrphanDeadlineTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.OrphanDeadlineTime
+	}
+	return nil
+}
+
+// Emitted before this task stops serving the stream mid-turn (e.g. a server
+// restart). The turn's state is persisted; a reconnect carrying
+// resume_from_sequence_number continues it on another task.
+type TurnHandoffEvent struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Identifies the turn to resume.
+	TurnId string `protobuf:"bytes,1,opt,name=turn_id,json=turnId,proto3" json:"turn_id,omitempty"`
+	// Why the stream is handing off.
+	Reason        TurnHandoffEvent_Reason `protobuf:"varint,2,opt,name=reason,proto3,enum=google.cloud.ces.v1beta.TurnHandoffEvent_Reason" json:"reason,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TurnHandoffEvent) Reset() {
+	*x = TurnHandoffEvent{}
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TurnHandoffEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TurnHandoffEvent) ProtoMessage() {}
+
+func (x *TurnHandoffEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TurnHandoffEvent.ProtoReflect.Descriptor instead.
+func (*TurnHandoffEvent) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *TurnHandoffEvent) GetTurnId() string {
+	if x != nil {
+		return x.TurnId
+	}
+	return ""
+}
+
+func (x *TurnHandoffEvent) GetReason() TurnHandoffEvent_Reason {
+	if x != nil {
+		return x.Reason
+	}
+	return TurnHandoffEvent_REASON_UNSPECIFIED
+}
+
+// Terminal event of a turn (see StreamChatAiAssistantResponse.turn_completed).
+type TurnCompletedEvent struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Identifier of the turn that ended; matches
+	// TurnResumeSnapshot.turn_id and ActiveTurnInfo.turn_id.
+	TurnId string `protobuf:"bytes,1,opt,name=turn_id,json=turnId,proto3" json:"turn_id,omitempty"`
+	// Why the turn ended.
+	Reason TurnCompletedEvent_Reason `protobuf:"varint,2,opt,name=reason,proto3,enum=google.cloud.ces.v1beta.TurnCompletedEvent_Reason" json:"reason,omitempty"`
+	// Sequence number of the last event the turn produced. A client whose cursor
+	// is lower missed content and should reload the session to see it.
+	FinalSequenceNumber int64 `protobuf:"varint,3,opt,name=final_sequence_number,json=finalSequenceNumber,proto3" json:"final_sequence_number,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *TurnCompletedEvent) Reset() {
+	*x = TurnCompletedEvent{}
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TurnCompletedEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TurnCompletedEvent) ProtoMessage() {}
+
+func (x *TurnCompletedEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TurnCompletedEvent.ProtoReflect.Descriptor instead.
+func (*TurnCompletedEvent) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *TurnCompletedEvent) GetTurnId() string {
+	if x != nil {
+		return x.TurnId
+	}
+	return ""
+}
+
+func (x *TurnCompletedEvent) GetReason() TurnCompletedEvent_Reason {
+	if x != nil {
+		return x.Reason
+	}
+	return TurnCompletedEvent_REASON_UNSPECIFIED
+}
+
+func (x *TurnCompletedEvent) GetFinalSequenceNumber() int64 {
+	if x != nil {
+		return x.FinalSequenceNumber
+	}
+	return 0
+}
+
 // [QueryParameters](https://cloud.google.com/dialogflow/cx/docs/reference/rpc/google.cloud.dialogflow.cx.v3#queryparameters)
 // to send to the remote
 // [Dialogflow](https://cloud.google.com/dialogflow/cx/docs/concept/console-conversational-agents)
@@ -1630,7 +3891,7 @@ type SessionConfig_RemoteDialogflowQueryParameters struct {
 
 func (x *SessionConfig_RemoteDialogflowQueryParameters) Reset() {
 	*x = SessionConfig_RemoteDialogflowQueryParameters{}
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[18]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1642,7 +3903,7 @@ func (x *SessionConfig_RemoteDialogflowQueryParameters) String() string {
 func (*SessionConfig_RemoteDialogflowQueryParameters) ProtoMessage() {}
 
 func (x *SessionConfig_RemoteDialogflowQueryParameters) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[18]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1696,7 +3957,7 @@ type Citations_CitedChunk struct {
 
 func (x *Citations_CitedChunk) Reset() {
 	*x = Citations_CitedChunk{}
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[20]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1708,7 +3969,7 @@ func (x *Citations_CitedChunk) String() string {
 func (*Citations_CitedChunk) ProtoMessage() {}
 
 func (x *Citations_CitedChunk) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[20]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1752,6 +4013,71 @@ func (x *Citations_CitedChunk) GetRequiresAttribution() bool {
 	return false
 }
 
+// An inline citation in the response text.
+type Citations_InlineCitation struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The starting index (in bytes) of the text segment in the agent response.
+	StartIndex int32 `protobuf:"varint,1,opt,name=start_index,json=startIndex,proto3" json:"start_index,omitempty"`
+	// The ending index (in bytes) of the text segment in the agent response.
+	EndIndex int32 `protobuf:"varint,2,opt,name=end_index,json=endIndex,proto3" json:"end_index,omitempty"`
+	// The indices of the cited chunks that back this text segment.
+	// Indices refer to the elements in `cited_chunks`.
+	CitedChunkIndices []int32 `protobuf:"varint,3,rep,packed,name=cited_chunk_indices,json=citedChunkIndices,proto3" json:"cited_chunk_indices,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *Citations_InlineCitation) Reset() {
+	*x = Citations_InlineCitation{}
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[37]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Citations_InlineCitation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Citations_InlineCitation) ProtoMessage() {}
+
+func (x *Citations_InlineCitation) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[37]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Citations_InlineCitation.ProtoReflect.Descriptor instead.
+func (*Citations_InlineCitation) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{6, 1}
+}
+
+func (x *Citations_InlineCitation) GetStartIndex() int32 {
+	if x != nil {
+		return x.StartIndex
+	}
+	return 0
+}
+
+func (x *Citations_InlineCitation) GetEndIndex() int32 {
+	if x != nil {
+		return x.EndIndex
+	}
+	return 0
+}
+
+func (x *Citations_InlineCitation) GetCitedChunkIndices() []int32 {
+	if x != nil {
+		return x.CitedChunkIndices
+	}
+	return nil
+}
+
 // Contains execution details during the processing.
 type SessionOutput_DiagnosticInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1766,7 +4092,7 @@ type SessionOutput_DiagnosticInfo struct {
 
 func (x *SessionOutput_DiagnosticInfo) Reset() {
 	*x = SessionOutput_DiagnosticInfo{}
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[21]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1778,7 +4104,7 @@ func (x *SessionOutput_DiagnosticInfo) String() string {
 func (*SessionOutput_DiagnosticInfo) ProtoMessage() {}
 
 func (x *SessionOutput_DiagnosticInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[21]
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1808,76 +4134,260 @@ func (x *SessionOutput_DiagnosticInfo) GetRootSpan() *Span {
 	return nil
 }
 
+// Parameters for the load_session action.
+type AssistantSuggestion_LoadSession struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Identifier of the assistant session to open (the final segment of the
+	// AssistantSession resource name).
+	AssistantSessionId string `protobuf:"bytes,1,opt,name=assistant_session_id,json=assistantSessionId,proto3" json:"assistant_session_id,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *AssistantSuggestion_LoadSession) Reset() {
+	*x = AssistantSuggestion_LoadSession{}
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[39]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AssistantSuggestion_LoadSession) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssistantSuggestion_LoadSession) ProtoMessage() {}
+
+func (x *AssistantSuggestion_LoadSession) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[39]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AssistantSuggestion_LoadSession.ProtoReflect.Descriptor instead.
+func (*AssistantSuggestion_LoadSession) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{19, 0}
+}
+
+func (x *AssistantSuggestion_LoadSession) GetAssistantSessionId() string {
+	if x != nil {
+		return x.AssistantSessionId
+	}
+	return ""
+}
+
+// A single selectable option.
+type OptionQuestionsChunk_Option struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Short plain-text option title (no markdown, no numbering).
+	Title string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	// Optional trade-off details shown as secondary text.
+	Details string `protobuf:"bytes,2,opt,name=details,proto3" json:"details,omitempty"`
+	// Optional message text to send when the option is chosen; defaults to
+	// `title` when empty.
+	SubmitText    string `protobuf:"bytes,3,opt,name=submit_text,json=submitText,proto3" json:"submit_text,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OptionQuestionsChunk_Option) Reset() {
+	*x = OptionQuestionsChunk_Option{}
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[40]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OptionQuestionsChunk_Option) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OptionQuestionsChunk_Option) ProtoMessage() {}
+
+func (x *OptionQuestionsChunk_Option) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[40]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OptionQuestionsChunk_Option.ProtoReflect.Descriptor instead.
+func (*OptionQuestionsChunk_Option) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{23, 0}
+}
+
+func (x *OptionQuestionsChunk_Option) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *OptionQuestionsChunk_Option) GetDetails() string {
+	if x != nil {
+		return x.Details
+	}
+	return ""
+}
+
+func (x *OptionQuestionsChunk_Option) GetSubmitText() string {
+	if x != nil {
+		return x.SubmitText
+	}
+	return ""
+}
+
+// One question with its options.
+type OptionQuestionsChunk_Question struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The question header text.
+	Question string `protobuf:"bytes,1,opt,name=question,proto3" json:"question,omitempty"`
+	// The selectable options, in presentation order.
+	Options       []*OptionQuestionsChunk_Option `protobuf:"bytes,2,rep,name=options,proto3" json:"options,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OptionQuestionsChunk_Question) Reset() {
+	*x = OptionQuestionsChunk_Question{}
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[41]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OptionQuestionsChunk_Question) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OptionQuestionsChunk_Question) ProtoMessage() {}
+
+func (x *OptionQuestionsChunk_Question) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_session_service_proto_msgTypes[41]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OptionQuestionsChunk_Question.ProtoReflect.Descriptor instead.
+func (*OptionQuestionsChunk_Question) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP(), []int{23, 1}
+}
+
+func (x *OptionQuestionsChunk_Question) GetQuestion() string {
+	if x != nil {
+		return x.Question
+	}
+	return ""
+}
+
+func (x *OptionQuestionsChunk_Question) GetOptions() []*OptionQuestionsChunk_Option {
+	if x != nil {
+		return x.Options
+	}
+	return nil
+}
+
 var File_google_cloud_ces_v1beta_session_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_session_service_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/ces/v1beta/session_service.proto\x12\x17google.cloud.ces.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a%google/cloud/ces/v1beta/example.proto\x1a#google/cloud/ces/v1beta/mocks.proto\x1a0google/cloud/ces/v1beta/search_suggestions.proto\x1a\x19google/protobuf/any.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xd3\x02\n" +
+	"-google/cloud/ces/v1beta/session_service.proto\x12\x17google.cloud.ces.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a%google/cloud/ces/v1beta/example.proto\x1a#google/cloud/ces/v1beta/mocks.proto\x1a0google/cloud/ces/v1beta/search_suggestions.proto\x1a\x19google/protobuf/any.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xd5\x02\n" +
 	"\n" +
-	"MockConfig\x12X\n" +
-	"\x11mocked_tool_calls\x18\x01 \x03(\v2'.google.cloud.ces.v1beta.MockedToolCallB\x03\xe0A\x01R\x0fmockedToolCalls\x12\x83\x01\n" +
-	"\x1cunmatched_tool_call_behavior\x18\x02 \x01(\x0e2=.google.cloud.ces.v1beta.MockConfig.UnmatchedToolCallBehaviorB\x03\xe0A\x02R\x19unmatchedToolCallBehavior\"e\n" +
+	"MockConfig\x12Y\n" +
+	"\x11mocked_tool_calls\x18\x01 \x03(\v2'.google.cloud.ces.v1beta.MockedToolCallB\x04\xe2A\x01\x01R\x0fmockedToolCalls\x12\x84\x01\n" +
+	"\x1cunmatched_tool_call_behavior\x18\x02 \x01(\x0e2=.google.cloud.ces.v1beta.MockConfig.UnmatchedToolCallBehaviorB\x04\xe2A\x01\x02R\x19unmatchedToolCallBehavior\"e\n" +
 	"\x19UnmatchedToolCallBehavior\x12,\n" +
 	"(UNMATCHED_TOOL_CALL_BEHAVIOR_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04FAIL\x10\x01\x12\x10\n" +
-	"\fPASS_THROUGH\x10\x02\"\xd4\x01\n" +
-	"\x10InputAudioConfig\x12R\n" +
-	"\x0eaudio_encoding\x18\x01 \x01(\x0e2&.google.cloud.ces.v1beta.AudioEncodingB\x03\xe0A\x02R\raudioEncoding\x12/\n" +
-	"\x11sample_rate_hertz\x18\x02 \x01(\x05B\x03\xe0A\x02R\x0fsampleRateHertz\x12;\n" +
-	"\x17noise_suppression_level\x18\x06 \x01(\tB\x03\xe0A\x01R\x15noiseSuppressionLevel\"\x98\x01\n" +
-	"\x11OutputAudioConfig\x12R\n" +
-	"\x0eaudio_encoding\x18\x01 \x01(\x0e2&.google.cloud.ces.v1beta.AudioEncodingB\x03\xe0A\x02R\raudioEncoding\x12/\n" +
-	"\x11sample_rate_hertz\x18\x02 \x01(\x05B\x03\xe0A\x02R\x0fsampleRateHertz\"\xe1\b\n" +
-	"\rSessionConfig\x12<\n" +
-	"\asession\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1aces.googleapis.com/SessionR\asession\x12\\\n" +
-	"\x12input_audio_config\x18\x02 \x01(\v2).google.cloud.ces.v1beta.InputAudioConfigB\x03\xe0A\x01R\x10inputAudioConfig\x12_\n" +
-	"\x13output_audio_config\x18\x03 \x01(\v2*.google.cloud.ces.v1beta.OutputAudioConfigB\x03\xe0A\x01R\x11outputAudioConfig\x12V\n" +
-	"\x13historical_contexts\x18\x05 \x03(\v2 .google.cloud.ces.v1beta.MessageB\x03\xe0A\x01R\x12historicalContexts\x12A\n" +
-	"\ventry_agent\x18\f \x01(\tB \xe0A\x01\xfaA\x1a\n" +
-	"\x18ces.googleapis.com/AgentR\n" +
-	"entryAgent\x12#\n" +
+	"\fPASS_THROUGH\x10\x02\"\xd7\x01\n" +
+	"\x10InputAudioConfig\x12S\n" +
+	"\x0eaudio_encoding\x18\x01 \x01(\x0e2&.google.cloud.ces.v1beta.AudioEncodingB\x04\xe2A\x01\x02R\raudioEncoding\x120\n" +
+	"\x11sample_rate_hertz\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x0fsampleRateHertz\x12<\n" +
+	"\x17noise_suppression_level\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\x15noiseSuppressionLevel\"\x9a\x01\n" +
+	"\x11OutputAudioConfig\x12S\n" +
+	"\x0eaudio_encoding\x18\x01 \x01(\x0e2&.google.cloud.ces.v1beta.AudioEncodingB\x04\xe2A\x01\x02R\raudioEncoding\x120\n" +
+	"\x11sample_rate_hertz\x18\x02 \x01(\x05B\x04\xe2A\x01\x02R\x0fsampleRateHertz\"\xaf\n" +
 	"\n" +
-	"deployment\x18\b \x01(\tB\x03\xe0A\x01R\n" +
-	"deployment\x12 \n" +
-	"\ttime_zone\x18\v \x01(\tB\x03\xe0A\x01R\btimeZone\x12)\n" +
-	"\x0euse_tool_fakes\x18\x0e \x01(\bB\x03\xe0A\x01R\fuseToolFakes\x12\x98\x01\n" +
-	"\"remote_dialogflow_query_parameters\x18\x0f \x01(\v2F.google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParametersB\x03\xe0A\x01R\x1fremoteDialogflowQueryParameters\x127\n" +
-	"\x15enable_text_streaming\x18\x12 \x01(\bB\x03\xe0A\x01R\x13enableTextStreaming\x1a\xf1\x02\n" +
-	"\x1fRemoteDialogflowQueryParameters\x12\x88\x01\n" +
-	"\x0fwebhook_headers\x18\x01 \x03(\v2Z.google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.WebhookHeadersEntryB\x03\xe0A\x01R\x0ewebhookHeaders\x126\n" +
-	"\apayload\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\apayload\x12H\n" +
-	"\x11end_user_metadata\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x0fendUserMetadata\x1aA\n" +
+	"\rSessionConfig\x12=\n" +
+	"\asession\x18\x01 \x01(\tB#\xe2A\x01\x02\xfaA\x1c\n" +
+	"\x1aces.googleapis.com/SessionR\asession\x12]\n" +
+	"\x12input_audio_config\x18\x02 \x01(\v2).google.cloud.ces.v1beta.InputAudioConfigB\x04\xe2A\x01\x01R\x10inputAudioConfig\x12`\n" +
+	"\x13output_audio_config\x18\x03 \x01(\v2*.google.cloud.ces.v1beta.OutputAudioConfigB\x04\xe2A\x01\x01R\x11outputAudioConfig\x12W\n" +
+	"\x13historical_contexts\x18\x05 \x03(\v2 .google.cloud.ces.v1beta.MessageB\x04\xe2A\x01\x01R\x12historicalContexts\x12B\n" +
+	"\ventry_agent\x18\f \x01(\tB!\xe2A\x01\x01\xfaA\x1a\n" +
+	"\x18ces.googleapis.com/AgentR\n" +
+	"entryAgent\x12$\n" +
+	"\n" +
+	"deployment\x18\b \x01(\tB\x04\xe2A\x01\x01R\n" +
+	"deployment\x12!\n" +
+	"\ttime_zone\x18\v \x01(\tB\x04\xe2A\x01\x01R\btimeZone\x12*\n" +
+	"\x0euse_tool_fakes\x18\x0e \x01(\bB\x04\xe2A\x01\x01R\fuseToolFakes\x12\x99\x01\n" +
+	"\"remote_dialogflow_query_parameters\x18\x0f \x01(\v2F.google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParametersB\x04\xe2A\x01\x01R\x1fremoteDialogflowQueryParameters\x128\n" +
+	"\x15enable_text_streaming\x18\x12 \x01(\bB\x04\xe2A\x01\x01R\x13enableTextStreaming\x12C\n" +
+	"\x1binclude_llm_thought_summary\x18\x15 \x01(\bB\x04\xe2A\x01\x01R\x18includeLlmThoughtSummary\x12<\n" +
+	"\x17exclude_diagnostic_info\x18\x18 \x01(\bB\x04\xe2A\x01\x01R\x15excludeDiagnosticInfo\x12<\n" +
+	"\x17include_progress_update\x18\x1c \x01(\bB\x04\xe2A\x01\x01R\x15includeProgressUpdate\x1a\xf4\x02\n" +
+	"\x1fRemoteDialogflowQueryParameters\x12\x89\x01\n" +
+	"\x0fwebhook_headers\x18\x01 \x03(\v2Z.google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.WebhookHeadersEntryB\x04\xe2A\x01\x01R\x0ewebhookHeaders\x127\n" +
+	"\apayload\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\apayload\x12I\n" +
+	"\x11end_user_metadata\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\x0fendUserMetadata\x1aA\n" +
 	"\x13WebhookHeadersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"R\n" +
-	"\tToolCalls\x12E\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"S\n" +
+	"\tToolCalls\x12F\n" +
 	"\n" +
-	"tool_calls\x18\x01 \x03(\v2!.google.cloud.ces.v1beta.ToolCallB\x03\xe0A\x01R\ttoolCalls\"b\n" +
-	"\rToolResponses\x12Q\n" +
-	"\x0etool_responses\x18\x01 \x03(\v2%.google.cloud.ces.v1beta.ToolResponseB\x03\xe0A\x01R\rtoolResponses\"\xda\x01\n" +
+	"tool_calls\x18\x01 \x03(\v2!.google.cloud.ces.v1beta.ToolCallB\x04\xe2A\x01\x01R\ttoolCalls\"c\n" +
+	"\rToolResponses\x12R\n" +
+	"\x0etool_responses\x18\x01 \x03(\v2%.google.cloud.ces.v1beta.ToolResponseB\x04\xe2A\x01\x01R\rtoolResponses\"\xbe\x03\n" +
 	"\tCitations\x12P\n" +
-	"\fcited_chunks\x18\x01 \x03(\v2-.google.cloud.ces.v1beta.Citations.CitedChunkR\vcitedChunks\x1a{\n" +
+	"\fcited_chunks\x18\x01 \x03(\v2-.google.cloud.ces.v1beta.Citations.CitedChunkR\vcitedChunks\x12b\n" +
+	"\x10inline_citations\x18\x02 \x03(\v21.google.cloud.ces.v1beta.Citations.InlineCitationB\x04\xe2A\x01\x01R\x0finlineCitations\x1a{\n" +
 	"\n" +
 	"CitedChunk\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x12\n" +
 	"\x04text\x18\x03 \x01(\tR\x04text\x121\n" +
-	"\x14requires_attribution\x18\x04 \x01(\bR\x13requiresAttribution\"\"\n" +
-	"\x05Event\x12\x19\n" +
-	"\x05event\x18\x01 \x01(\tB\x03\xe0A\x02R\x05event\"\xe1\x03\n" +
-	"\fSessionInput\x12\x19\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\x04text\x12\x19\n" +
-	"\x04dtmf\x18\x06 \x01(\tB\x03\xe0A\x01H\x00R\x04dtmf\x12\x1b\n" +
-	"\x05audio\x18\x02 \x01(\fB\x03\xe0A\x01H\x00R\x05audio\x12T\n" +
-	"\x0etool_responses\x18\x03 \x01(\v2&.google.cloud.ces.v1beta.ToolResponsesB\x03\xe0A\x01H\x00R\rtoolResponses\x12;\n" +
-	"\x05image\x18\x04 \x01(\v2\x1e.google.cloud.ces.v1beta.ImageB\x03\xe0A\x01H\x00R\x05image\x128\n" +
-	"\x04blob\x18\a \x01(\v2\x1d.google.cloud.ces.v1beta.BlobB\x03\xe0A\x01H\x00R\x04blob\x12<\n" +
-	"\tvariables\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01H\x00R\tvariables\x12;\n" +
-	"\x05event\x18\t \x01(\v2\x1e.google.cloud.ces.v1beta.EventB\x03\xe0A\x01H\x00R\x05event\x12(\n" +
-	"\rwill_continue\x18\b \x01(\bB\x03\xe0A\x01R\fwillContinueB\f\n" +
+	"\x14requires_attribution\x18\x04 \x01(\bR\x13requiresAttribution\x1a~\n" +
+	"\x0eInlineCitation\x12\x1f\n" +
+	"\vstart_index\x18\x01 \x01(\x05R\n" +
+	"startIndex\x12\x1b\n" +
+	"\tend_index\x18\x02 \x01(\x05R\bendIndex\x12.\n" +
+	"\x13cited_chunk_indices\x18\x03 \x03(\x05R\x11citedChunkIndices\"`\n" +
+	"\x05Event\x12\x1a\n" +
+	"\x05event\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x05event\x12;\n" +
+	"\tvariables\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\tvariables\"\xbb\x05\n" +
+	"\fSessionInput\x12\x1a\n" +
+	"\x04text\x18\x01 \x01(\tB\x04\xe2A\x01\x01H\x00R\x04text\x12\x1a\n" +
+	"\x04dtmf\x18\x06 \x01(\tB\x04\xe2A\x01\x01H\x00R\x04dtmf\x12\x1c\n" +
+	"\x05audio\x18\x02 \x01(\fB\x04\xe2A\x01\x01H\x00R\x05audio\x12U\n" +
+	"\x0etool_responses\x18\x03 \x01(\v2&.google.cloud.ces.v1beta.ToolResponsesB\x04\xe2A\x01\x01H\x00R\rtoolResponses\x12<\n" +
+	"\x05image\x18\x04 \x01(\v2\x1e.google.cloud.ces.v1beta.ImageB\x04\xe2A\x01\x01H\x00R\x05image\x129\n" +
+	"\x04blob\x18\a \x01(\v2\x1d.google.cloud.ces.v1beta.BlobB\x04\xe2A\x01\x01H\x00R\x04blob\x12=\n" +
+	"\tvariables\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01H\x00R\tvariables\x12<\n" +
+	"\x05event\x18\t \x01(\v2\x1e.google.cloud.ces.v1beta.EventB\x04\xe2A\x01\x01H\x00R\x05event\x12)\n" +
+	"\rwill_continue\x18\b \x01(\bB\x04\xe2A\x01\x01R\fwillContinue\x12i\n" +
+	"\x11recording_control\x18\n" +
+	" \x01(\x0e26.google.cloud.ces.v1beta.SessionInput.RecordingControlB\x04\xe2A\x01\x01R\x10recordingControl\"d\n" +
+	"\x10RecordingControl\x12!\n" +
+	"\x1dRECORDING_CONTROL_UNSPECIFIED\x10\x00\x12\x15\n" +
+	"\x11RECORDING_ENABLED\x10\x01\x12\x16\n" +
+	"\x12RECORDING_DISABLED\x10\x02B\f\n" +
 	"\n" +
-	"input_type\"\xaa\x06\n" +
+	"input_type\"\x81\a\n" +
 	"\rSessionOutput\x12\x14\n" +
 	"\x04text\x18\x01 \x01(\tH\x00R\x04text\x12\x16\n" +
 	"\x05audio\x18\x02 \x01(\fH\x00R\x05audio\x12C\n" +
@@ -1888,54 +4398,227 @@ const file_google_cloud_ces_v1beta_session_service_proto_rawDesc = "" +
 	" \x01(\v20.google.cloud.ces.v1beta.GoogleSearchSuggestionsH\x00R\x17googleSearchSuggestions\x12F\n" +
 	"\vend_session\x18\t \x01(\v2#.google.cloud.ces.v1beta.EndSessionH\x00R\n" +
 	"endSession\x123\n" +
-	"\apayload\x18\v \x01(\v2\x17.google.protobuf.StructH\x00R\apayload\x12\x1d\n" +
+	"\apayload\x18\v \x01(\v2\x17.google.protobuf.StructH\x00R\apayload\x126\n" +
+	"\x05image\x18\r \x01(\v2\x1e.google.cloud.ces.v1beta.ImageH\x00R\x05image\x12\x1c\n" +
+	"\bprogress\x18\x0e \x01(\tH\x00R\bprogress\x12\x1d\n" +
 	"\n" +
 	"turn_index\x18\x06 \x01(\x05R\tturnIndex\x12%\n" +
-	"\x0eturn_completed\x18\x04 \x01(\bR\rturnCompleted\x12c\n" +
-	"\x0fdiagnostic_info\x18\a \x01(\v25.google.cloud.ces.v1beta.SessionOutput.DiagnosticInfoB\x03\xe0A\x01R\x0ediagnosticInfo\x12.\n" +
+	"\x0eturn_completed\x18\x04 \x01(\bR\rturnCompleted\x12d\n" +
+	"\x0fdiagnostic_info\x18\a \x01(\v25.google.cloud.ces.v1beta.SessionOutput.DiagnosticInfoB\x04\xe2A\x01\x01R\x0ediagnosticInfo\x12.\n" +
 	"\acontext\x18\f \x03(\v2\x14.google.protobuf.AnyR\acontext\x1a\x8a\x01\n" +
 	"\x0eDiagnosticInfo\x12<\n" +
 	"\bmessages\x18\x01 \x03(\v2 .google.cloud.ces.v1beta.MessageR\bmessages\x12:\n" +
 	"\troot_span\x18\x03 \x01(\v2\x1d.google.cloud.ces.v1beta.SpanR\brootSpanB\r\n" +
-	"\voutput_type\"8\n" +
-	"\x11RecognitionResult\x12#\n" +
+	"\voutput_type\"9\n" +
+	"\x11RecognitionResult\x12$\n" +
 	"\n" +
-	"transcript\x18\x01 \x01(\tB\x03\xe0A\x01R\n" +
+	"transcript\x18\x01 \x01(\tB\x04\xe2A\x01\x01R\n" +
 	"transcript\"/\n" +
 	"\x12InterruptionSignal\x12\x19\n" +
-	"\bbarge_in\x18\x01 \x01(\bR\abargeIn\"F\n" +
+	"\bbarge_in\x18\x01 \x01(\bR\abargeIn\"G\n" +
 	"\n" +
-	"EndSession\x128\n" +
-	"\bmetadata\x18\x01 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\bmetadata\"\b\n" +
-	"\x06GoAway\"\x9c\x01\n" +
-	"\x11RunSessionRequest\x12C\n" +
-	"\x06config\x18\x01 \x01(\v2&.google.cloud.ces.v1beta.SessionConfigB\x03\xe0A\x02R\x06config\x12B\n" +
-	"\x06inputs\x18\x03 \x03(\v2%.google.cloud.ces.v1beta.SessionInputB\x03\xe0A\x02R\x06inputs\"V\n" +
+	"EndSession\x129\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x17.google.protobuf.StructB\x04\xe2A\x01\x01R\bmetadata\"\b\n" +
+	"\x06GoAway\"\x9e\x01\n" +
+	"\x11RunSessionRequest\x12D\n" +
+	"\x06config\x18\x01 \x01(\v2&.google.cloud.ces.v1beta.SessionConfigB\x04\xe2A\x01\x02R\x06config\x12C\n" +
+	"\x06inputs\x18\x03 \x03(\v2%.google.cloud.ces.v1beta.SessionInputB\x04\xe2A\x01\x02R\x06inputs\"V\n" +
 	"\x12RunSessionResponse\x12@\n" +
-	"\aoutputs\x18\x01 \x03(\v2&.google.cloud.ces.v1beta.SessionOutputR\aoutputs\"\xc6\x01\n" +
-	"\x18BidiSessionClientMessage\x12E\n" +
-	"\x06config\x18\x01 \x01(\v2&.google.cloud.ces.v1beta.SessionConfigB\x03\xe0A\x01H\x00R\x06config\x12S\n" +
-	"\x0erealtime_input\x18\x02 \x01(\v2%.google.cloud.ces.v1beta.SessionInputB\x03\xe0A\x01H\x00R\rrealtimeInputB\x0e\n" +
-	"\fmessage_type\"\xd5\x03\n" +
-	"\x18BidiSessionServerMessage\x12T\n" +
-	"\x0esession_output\x18\x01 \x01(\v2&.google.cloud.ces.v1beta.SessionOutputB\x03\xe0A\x01H\x00R\rsessionOutput\x12`\n" +
-	"\x12recognition_result\x18\x02 \x01(\v2*.google.cloud.ces.v1beta.RecognitionResultB\x03\xe0A\x01H\x00R\x11recognitionResult\x12c\n" +
-	"\x13interruption_signal\x18\x03 \x01(\v2+.google.cloud.ces.v1beta.InterruptionSignalB\x03\xe0A\x01H\x00R\x12interruptionSignal\x12K\n" +
-	"\vend_session\x18\x05 \x01(\v2#.google.cloud.ces.v1beta.EndSessionB\x03\xe0A\x01H\x00R\n" +
-	"endSession\x12?\n" +
-	"\ago_away\x18\x06 \x01(\v2\x1f.google.cloud.ces.v1beta.GoAwayB\x03\xe0A\x01H\x00R\x06goAwayB\x0e\n" +
-	"\fmessage_type*R\n" +
+	"\aoutputs\x18\x01 \x03(\v2&.google.cloud.ces.v1beta.SessionOutputR\aoutputs\"\xc8\x01\n" +
+	"\x18BidiSessionClientMessage\x12F\n" +
+	"\x06config\x18\x01 \x01(\v2&.google.cloud.ces.v1beta.SessionConfigB\x04\xe2A\x01\x01H\x00R\x06config\x12T\n" +
+	"\x0erealtime_input\x18\x02 \x01(\v2%.google.cloud.ces.v1beta.SessionInputB\x04\xe2A\x01\x01H\x00R\rrealtimeInputB\x0e\n" +
+	"\fmessage_type\"\xda\x03\n" +
+	"\x18BidiSessionServerMessage\x12U\n" +
+	"\x0esession_output\x18\x01 \x01(\v2&.google.cloud.ces.v1beta.SessionOutputB\x04\xe2A\x01\x01H\x00R\rsessionOutput\x12a\n" +
+	"\x12recognition_result\x18\x02 \x01(\v2*.google.cloud.ces.v1beta.RecognitionResultB\x04\xe2A\x01\x01H\x00R\x11recognitionResult\x12d\n" +
+	"\x13interruption_signal\x18\x03 \x01(\v2+.google.cloud.ces.v1beta.InterruptionSignalB\x04\xe2A\x01\x01H\x00R\x12interruptionSignal\x12L\n" +
+	"\vend_session\x18\x05 \x01(\v2#.google.cloud.ces.v1beta.EndSessionB\x04\xe2A\x01\x01H\x00R\n" +
+	"endSession\x12@\n" +
+	"\ago_away\x18\x06 \x01(\v2\x1f.google.cloud.ces.v1beta.GoAwayB\x04\xe2A\x01\x01H\x00R\x06goAwayB\x0e\n" +
+	"\fmessage_type\"\x96\x06\n" +
+	"\x1cStreamChatAiAssistantRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe2A\x01\x02\xfaA%\n" +
+	"#ces.googleapis.com/AssistantSessionR\x04name\x12\x1e\n" +
+	"\amessage\x18\x03 \x01(\tB\x04\xe2A\x01\x01R\amessage\x120\n" +
+	"\x11attached_gcs_uris\x18\x05 \x03(\tB\x04\xe2A\x01\x01R\x0fattachedGcsUris\x12)\n" +
+	"\rcontext_token\x18\x06 \x01(\tB\x04\xe2A\x01\x01R\fcontextToken\x12q\n" +
+	"\x15confirmation_response\x18\a \x01(\v26.google.cloud.ces.v1beta.AssistantConfirmationResponseB\x04\xe2A\x01\x01R\x14confirmationResponse\x12}\n" +
+	"\x13client_capabilities\x18\b \x03(\x0e2F.google.cloud.ces.v1beta.StreamChatAiAssistantRequest.ClientCapabilityB\x04\xe2A\x01\x01R\x12clientCapabilities\x12r\n" +
+	"\x19operation_completed_event\x18\t \x01(\v20.google.cloud.ces.v1beta.OperationCompletedEventB\x04\xe2A\x01\x01R\x17operationCompletedEvent\x12C\n" +
+	"\x1bresume_from_sequence_number\x18\v \x01(\x03B\x04\xe2A\x01\x01R\x18resumeFromSequenceNumber\x12%\n" +
+	"\vattach_only\x18\f \x01(\bB\x04\xe2A\x01\x01R\n" +
+	"attachOnly\"e\n" +
+	"\x10ClientCapability\x12!\n" +
+	"\x1dCLIENT_CAPABILITY_UNSPECIFIED\x10\x00\x12\x16\n" +
+	"\x12CONFIRMATION_CARDS\x10\x01\x12\x16\n" +
+	"\x12CLIENT_MANAGED_LRO\x10\x02\"\xbc\x05\n" +
+	"\x13AssistantSuggestion\x12!\n" +
+	"\vseed_prompt\x18\x05 \x01(\tH\x00R\n" +
+	"seedPrompt\x12]\n" +
+	"\fload_session\x18\x06 \x01(\v28.google.cloud.ces.v1beta.AssistantSuggestion.LoadSessionH\x00R\vloadSession\x12#\n" +
+	"\fsend_message\x18\a \x01(\tH\x00R\vsendMessage\x12#\n" +
+	"\rsuggestion_id\x18\x01 \x01(\tR\fsuggestionId\x12\x14\n" +
+	"\x05label\x18\x02 \x01(\tR\x05label\x12\x1c\n" +
+	"\trationale\x18\x03 \x01(\tR\trationale\x12E\n" +
+	"\x04icon\x18\x04 \x01(\x0e21.google.cloud.ces.v1beta.AssistantSuggestion.IconR\x04icon\x12K\n" +
+	"\x06source\x18\b \x01(\x0e23.google.cloud.ces.v1beta.AssistantSuggestion.SourceR\x06source\x12%\n" +
+	"\x0ecandidate_type\x18\t \x01(\tR\rcandidateType\x1a?\n" +
+	"\vLoadSession\x120\n" +
+	"\x14assistant_session_id\x18\x01 \x01(\tR\x12assistantSessionId\"c\n" +
+	"\x04Icon\x12\x14\n" +
+	"\x10ICON_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06RESUME\x10\x01\x12\t\n" +
+	"\x05BUILD\x10\x02\x12\f\n" +
+	"\bEVALUATE\x10\x03\x12\n" +
+	"\n" +
+	"\x06DEPLOY\x10\x04\x12\v\n" +
+	"\aEXPLORE\x10\x05\x12\a\n" +
+	"\x03FIX\x10\x06\":\n" +
+	"\x06Source\x12\x16\n" +
+	"\x12SOURCE_UNSPECIFIED\x10\x00\x12\b\n" +
+	"\x04RULE\x10\x01\x12\x0e\n" +
+	"\n" +
+	"LLM_RANKED\x10\x02B\b\n" +
+	"\x06action\"\x8a\x01\n" +
+	"$GenerateOnboardingSuggestionsRequest\x123\n" +
+	"\x04name\x18\x01 \x01(\tB\x1f\xe2A\x01\x02\xfaA\x18\n" +
+	"\x16ces.googleapis.com/AppR\x04name\x12-\n" +
+	"\x0fmax_suggestions\x18\x02 \x01(\x05B\x04\xe2A\x01\x01R\x0emaxSuggestions\"\xdf\x02\n" +
+	"%GenerateOnboardingSuggestionsResponse\x12m\n" +
+	"\fuser_profile\x18\x01 \x01(\x0e2J.google.cloud.ces.v1beta.GenerateOnboardingSuggestionsResponse.UserProfileR\vuserProfile\x12N\n" +
+	"\vsuggestions\x18\x02 \x03(\v2,.google.cloud.ces.v1beta.AssistantSuggestionR\vsuggestions\x12#\n" +
+	"\rcontext_token\x18\x03 \x01(\tR\fcontextToken\"R\n" +
+	"\vUserProfile\x12\x1c\n" +
+	"\x18USER_PROFILE_UNSPECIFIED\x10\x00\x12\a\n" +
+	"\x03NEW\x10\x01\x12\r\n" +
+	"\tEXPLORING\x10\x02\x12\r\n" +
+	"\tRETURNING\x10\x03\"\xd1\x02\n" +
+	"\rArtifactChunk\x12\x1f\n" +
+	"\vartifact_id\x18\x01 \x01(\tR\n" +
+	"artifactId\x12!\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x1b\n" +
+	"\tmime_type\x18\x03 \x01(\tR\bmimeType\x12#\n" +
+	"\rcontent_delta\x18\x04 \x01(\tR\fcontentDelta\x12\x17\n" +
+	"\agcs_uri\x18\x05 \x01(\tR\x06gcsUri\x12B\n" +
+	"\x05state\x18\x06 \x01(\x0e2,.google.cloud.ces.v1beta.ArtifactChunk.StateR\x05state\"]\n" +
+	"\x05State\x12\x15\n" +
+	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
+	"\aSTARTED\x10\x01\x12\t\n" +
+	"\x05DELTA\x10\x02\x12\r\n" +
+	"\tFINALIZED\x10\x03\x12\n" +
+	"\n" +
+	"\x06FAILED\x10\x04\x12\n" +
+	"\n" +
+	"\x06CLOSED\x10\x05\"\xbf\x02\n" +
+	"\x14OptionQuestionsChunk\x12T\n" +
+	"\tquestions\x18\x01 \x03(\v26.google.cloud.ces.v1beta.OptionQuestionsChunk.QuestionR\tquestions\x1aY\n" +
+	"\x06Option\x12\x14\n" +
+	"\x05title\x18\x01 \x01(\tR\x05title\x12\x18\n" +
+	"\adetails\x18\x02 \x01(\tR\adetails\x12\x1f\n" +
+	"\vsubmit_text\x18\x03 \x01(\tR\n" +
+	"submitText\x1av\n" +
+	"\bQuestion\x12\x1a\n" +
+	"\bquestion\x18\x01 \x01(\tR\bquestion\x12N\n" +
+	"\aoptions\x18\x02 \x03(\v24.google.cloud.ces.v1beta.OptionQuestionsChunk.OptionR\aoptions\"\xf5\x02\n" +
+	"\x1cAssistantConfirmationRequest\x12'\n" +
+	"\x0fconfirmation_id\x18\x01 \x01(\tR\x0econfirmationId\x12\x18\n" +
+	"\acontext\x18\x02 \x01(\tR\acontext\x12%\n" +
+	"\x0epositive_label\x18\x03 \x01(\tR\rpositiveLabel\x12%\n" +
+	"\x0enegative_label\x18\x04 \x01(\tR\rnegativeLabel\x12T\n" +
+	"\tquestions\x18\x05 \x03(\v26.google.cloud.ces.v1beta.OptionQuestionsChunk.QuestionR\tquestions\x12\x12\n" +
+	"\x04tool\x18\x06 \x01(\tR\x04tool\x12\x1d\n" +
+	"\n" +
+	"agent_name\x18\a \x01(\tR\tagentName\x12;\n" +
+	"\vexpire_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"expireTime\"\x97\x01\n" +
+	"\x1dAssistantConfirmationResponse\x12\x1e\n" +
+	"\tconfirmed\x18\x02 \x01(\bH\x00R\tconfirmed\x12!\n" +
+	"\vanswer_text\x18\x03 \x01(\tH\x00R\n" +
+	"answerText\x12'\n" +
+	"\x0fconfirmation_id\x18\x01 \x01(\tR\x0econfirmationIdB\n" +
+	"\n" +
+	"\bresponse\"\xc1\x02\n" +
+	"\x17OperationCompletedEvent\x12%\n" +
+	"\x0eoperation_name\x18\x01 \x01(\tR\roperationName\x120\n" +
+	"\x14target_resource_name\x18\x02 \x01(\tR\x12targetResourceName\x12%\n" +
+	"\x0eoperation_type\x18\x03 \x01(\tR\roperationType\x12\x16\n" +
+	"\x06status\x18\x04 \x01(\tR\x06status\x12/\n" +
+	"\x13deduplication_token\x18\x05 \x01(\tR\x12deduplicationToken\x12(\n" +
+	"\x05error\x18\x06 \x01(\v2\x12.google.rpc.StatusR\x05error\x123\n" +
+	"\bmetadata\x18\a \x01(\v2\x17.google.protobuf.StructR\bmetadata\"\xf8\x02\n" +
+	"\fTurnMetadata\x12)\n" +
+	"\x10contract_related\x18\x01 \x01(\bR\x0fcontractRelated\x12-\n" +
+	"\x12contract_finalized\x18\x03 \x01(\bR\x11contractFinalized\x12v\n" +
+	"\x18contract_streaming_phase\x18\x04 \x01(\x0e2<.google.cloud.ces.v1beta.TurnMetadata.ContractStreamingPhaseR\x16contractStreamingPhase\x126\n" +
+	"\x17contract_draft_complete\x18\x05 \x01(\bR\x15contractDraftComplete\"^\n" +
+	"\x16ContractStreamingPhase\x12(\n" +
+	"$CONTRACT_STREAMING_PHASE_UNSPECIFIED\x10\x00\x12\f\n" +
+	"\bDRAFTING\x10\x01\x12\f\n" +
+	"\bREVISING\x10\x02\"\xee\t\n" +
+	"\x1dStreamChatAiAssistantResponse\x12\x1f\n" +
+	"\n" +
+	"text_chunk\x18\x03 \x01(\tH\x00R\ttextChunk\x12,\n" +
+	"\x06status\x18\x04 \x01(\v2\x12.google.rpc.StatusH\x00R\x06status\x12%\n" +
+	"\rthought_chunk\x18\x06 \x01(\tH\x00R\fthoughtChunk\x12@\n" +
+	"\ttool_call\x18\a \x01(\v2!.google.cloud.ces.v1beta.ToolCallH\x00R\btoolCall\x12L\n" +
+	"\rtool_response\x18\b \x01(\v2%.google.cloud.ces.v1beta.ToolResponseH\x00R\ftoolResponse\x12O\n" +
+	"\x0eartifact_chunk\x18\t \x01(\v2&.google.cloud.ces.v1beta.ArtifactChunkH\x00R\rartifactChunk\x12e\n" +
+	"\x16option_questions_chunk\x18\n" +
+	" \x01(\v2-.google.cloud.ces.v1beta.OptionQuestionsChunkH\x00R\x14optionQuestionsChunk\x12j\n" +
+	"\x14confirmation_request\x18\f \x01(\v25.google.cloud.ces.v1beta.AssistantConfirmationRequestH\x00R\x13confirmationRequest\x12[\n" +
+	"\x12session_checkpoint\x18\r \x01(\v2*.google.cloud.ces.v1beta.SessionCheckpointH\x00R\x11sessionCheckpoint\x12V\n" +
+	"\x0fresume_snapshot\x18\x11 \x01(\v2+.google.cloud.ces.v1beta.TurnResumeSnapshotH\x00R\x0eresumeSnapshot\x12E\n" +
+	"\ahandoff\x18\x12 \x01(\v2).google.cloud.ces.v1beta.TurnHandoffEventH\x00R\ahandoff\x12T\n" +
+	"\x0eturn_completed\x18\x13 \x01(\v2+.google.cloud.ces.v1beta.TurnCompletedEventH\x00R\rturnCompleted\x12\x19\n" +
+	"\bevent_id\x18\x01 \x01(\tR\aeventId\x129\n" +
+	"\n" +
+	"event_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\teventTime\x12A\n" +
+	"\bui_event\x18\x05 \x01(\v2 .google.cloud.ces.v1beta.UiEventB\x04\xe2A\x01\x01R\auiEvent\x12P\n" +
+	"\rturn_metadata\x18\v \x01(\v2%.google.cloud.ces.v1beta.TurnMetadataB\x04\xe2A\x01\x01R\fturnMetadata\x12-\n" +
+	"\x0fsequence_number\x18\x0f \x01(\x03B\x04\xe2A\x01\x01R\x0esequenceNumber\x12.\n" +
+	"\x10turn_in_progress\x18\x10 \x01(\bB\x04\xe2A\x01\x01R\x0eturnInProgressB\a\n" +
+	"\x05event\"U\n" +
+	"\x1aCancelAssistantTurnRequest\x12\x18\n" +
+	"\x04name\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\x04name\x12\x1d\n" +
+	"\aturn_id\x18\x02 \x01(\tB\x04\xe2A\x01\x01R\x06turnId\";\n" +
+	"\x1bCancelAssistantTurnResponse\x12\x1c\n" +
+	"\tcancelled\x18\x01 \x01(\bR\tcancelled\"\x85\x02\n" +
+	"\x12TurnResumeSnapshot\x12\x17\n" +
+	"\aturn_id\x18\x01 \x01(\tR\x06turnId\x128\n" +
+	"\x18resolved_sequence_number\x18\x02 \x01(\x03R\x16resolvedSequenceNumber\x12N\n" +
+	"\x06events\x18\x03 \x03(\v26.google.cloud.ces.v1beta.StreamChatAiAssistantResponseR\x06events\x12L\n" +
+	"\x14orphan_deadline_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x12orphanDeadlineTime\"\xab\x01\n" +
+	"\x10TurnHandoffEvent\x12\x17\n" +
+	"\aturn_id\x18\x01 \x01(\tR\x06turnId\x12H\n" +
+	"\x06reason\x18\x02 \x01(\x0e20.google.cloud.ces.v1beta.TurnHandoffEvent.ReasonR\x06reason\"4\n" +
+	"\x06Reason\x12\x16\n" +
+	"\x12REASON_UNSPECIFIED\x10\x00\x12\x12\n" +
+	"\x0eSERVER_RESTART\x10\x01\"\x85\x02\n" +
+	"\x12TurnCompletedEvent\x12\x17\n" +
+	"\aturn_id\x18\x01 \x01(\tR\x06turnId\x12J\n" +
+	"\x06reason\x18\x02 \x01(\x0e22.google.cloud.ces.v1beta.TurnCompletedEvent.ReasonR\x06reason\x122\n" +
+	"\x15final_sequence_number\x18\x03 \x01(\x03R\x13finalSequenceNumber\"V\n" +
+	"\x06Reason\x12\x16\n" +
+	"\x12REASON_UNSPECIFIED\x10\x00\x12\r\n" +
+	"\tCOMPLETED\x10\x01\x12\r\n" +
+	"\tABANDONED\x10\x02\x12\x16\n" +
+	"\x12RESUME_UNAVAILABLE\x10\x03*R\n" +
 	"\rAudioEncoding\x12\x1e\n" +
 	"\x1aAUDIO_ENCODING_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bLINEAR16\x10\x01\x12\t\n" +
 	"\x05MULAW\x10\x02\x12\b\n" +
-	"\x04ALAW\x10\x032\xd7\x05\n" +
+	"\x04ALAW\x10\x032\xa1\v\n" +
 	"\x0eSessionService\x12\xbe\x01\n" +
 	"\n" +
 	"RunSession\x12*.google.cloud.ces.v1beta.RunSessionRequest\x1a+.google.cloud.ces.v1beta.RunSessionResponse\"W\x82\xd3\xe4\x93\x02Q:\x01*\"L/v1beta/{config.session=projects/*/locations/*/apps/*/sessions/*}:runSession\x12\xcc\x01\n" +
 	"\x10StreamRunSession\x12*.google.cloud.ces.v1beta.RunSessionRequest\x1a+.google.cloud.ces.v1beta.RunSessionResponse\"]\x82\xd3\xe4\x93\x02W:\x01*\"R/v1beta/{config.session=projects/*/locations/*/apps/*/sessions/*}:streamRunSession0\x01\x12\xc8\x01\n" +
 	"\x0eBidiRunSession\x121.google.cloud.ces.v1beta.BidiSessionClientMessage\x1a1.google.cloud.ces.v1beta.BidiSessionServerMessage\"L\x8a\xd3\xe4\x93\x02F\x12D\n" +
-	"\x0econfig.session\x122{session=projects/*/locations/*/apps/*/sessions/*}(\x010\x01\x1aj\xcaA\x12ces.googleapis.com\xd2ARhttps://www.googleapis.com/auth/ces,https://www.googleapis.com/auth/cloud-platformB\xc9\x01\xeaAc\n" +
+	"\x0econfig.session\x122{session=projects/*/locations/*/apps/*/sessions/*}(\x010\x01\x12\xeb\x01\n" +
+	"\x15StreamChatAiAssistant\x125.google.cloud.ces.v1beta.StreamChatAiAssistantRequest\x1a6.google.cloud.ces.v1beta.StreamChatAiAssistantResponse\"a\x82\xd3\xe4\x93\x02[:\x01*\"V/v1beta/{name=projects/*/locations/*/apps/*/assistantSessions/*}:streamChatAiAssistant0\x01\x12\xe1\x01\n" +
+	"\x13CancelAssistantTurn\x123.google.cloud.ces.v1beta.CancelAssistantTurnRequest\x1a4.google.cloud.ces.v1beta.CancelAssistantTurnResponse\"_\x82\xd3\xe4\x93\x02Y:\x01*\"T/v1beta/{name=projects/*/locations/*/apps/*/assistantSessions/*}:cancelAssistantTurn\x12\xf5\x01\n" +
+	"\x1dGenerateOnboardingSuggestions\x12=.google.cloud.ces.v1beta.GenerateOnboardingSuggestionsRequest\x1a>.google.cloud.ces.v1beta.GenerateOnboardingSuggestionsResponse\"U\x82\xd3\xe4\x93\x02O:\x01*\"J/v1beta/{name=projects/*/locations/*/apps/*}:generateOnboardingSuggestions\x1aj\xcaA\x12ces.googleapis.com\xd2ARhttps://www.googleapis.com/auth/ces,https://www.googleapis.com/auth/cloud-platformB\xc9\x01\xeaAc\n" +
 	"\x1aces.googleapis.com/Session\x12Eprojects/{project}/locations/{location}/apps/{app}/sessions/{session}\n" +
 	"\x1bcom.google.cloud.ces.v1betaB\x13SessionServiceProtoP\x01Z-cloud.google.com/go/ces/apiv1beta/cespb;cespbb\x06proto3"
 
@@ -1951,95 +4634,171 @@ func file_google_cloud_ces_v1beta_session_service_proto_rawDescGZIP() []byte {
 	return file_google_cloud_ces_v1beta_session_service_proto_rawDescData
 }
 
-var file_google_cloud_ces_v1beta_session_service_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_google_cloud_ces_v1beta_session_service_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_google_cloud_ces_v1beta_session_service_proto_enumTypes = make([]protoimpl.EnumInfo, 11)
+var file_google_cloud_ces_v1beta_session_service_proto_msgTypes = make([]protoimpl.MessageInfo, 42)
 var file_google_cloud_ces_v1beta_session_service_proto_goTypes = []any{
-	(AudioEncoding)(0),                                    // 0: google.cloud.ces.v1beta.AudioEncoding
-	(MockConfig_UnmatchedToolCallBehavior)(0),             // 1: google.cloud.ces.v1beta.MockConfig.UnmatchedToolCallBehavior
-	(*MockConfig)(nil),                                    // 2: google.cloud.ces.v1beta.MockConfig
-	(*InputAudioConfig)(nil),                              // 3: google.cloud.ces.v1beta.InputAudioConfig
-	(*OutputAudioConfig)(nil),                             // 4: google.cloud.ces.v1beta.OutputAudioConfig
-	(*SessionConfig)(nil),                                 // 5: google.cloud.ces.v1beta.SessionConfig
-	(*ToolCalls)(nil),                                     // 6: google.cloud.ces.v1beta.ToolCalls
-	(*ToolResponses)(nil),                                 // 7: google.cloud.ces.v1beta.ToolResponses
-	(*Citations)(nil),                                     // 8: google.cloud.ces.v1beta.Citations
-	(*Event)(nil),                                         // 9: google.cloud.ces.v1beta.Event
-	(*SessionInput)(nil),                                  // 10: google.cloud.ces.v1beta.SessionInput
-	(*SessionOutput)(nil),                                 // 11: google.cloud.ces.v1beta.SessionOutput
-	(*RecognitionResult)(nil),                             // 12: google.cloud.ces.v1beta.RecognitionResult
-	(*InterruptionSignal)(nil),                            // 13: google.cloud.ces.v1beta.InterruptionSignal
-	(*EndSession)(nil),                                    // 14: google.cloud.ces.v1beta.EndSession
-	(*GoAway)(nil),                                        // 15: google.cloud.ces.v1beta.GoAway
-	(*RunSessionRequest)(nil),                             // 16: google.cloud.ces.v1beta.RunSessionRequest
-	(*RunSessionResponse)(nil),                            // 17: google.cloud.ces.v1beta.RunSessionResponse
-	(*BidiSessionClientMessage)(nil),                      // 18: google.cloud.ces.v1beta.BidiSessionClientMessage
-	(*BidiSessionServerMessage)(nil),                      // 19: google.cloud.ces.v1beta.BidiSessionServerMessage
-	(*SessionConfig_RemoteDialogflowQueryParameters)(nil), // 20: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters
-	nil,                                  // 21: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.WebhookHeadersEntry
-	(*Citations_CitedChunk)(nil),         // 22: google.cloud.ces.v1beta.Citations.CitedChunk
-	(*SessionOutput_DiagnosticInfo)(nil), // 23: google.cloud.ces.v1beta.SessionOutput.DiagnosticInfo
-	(*MockedToolCall)(nil),               // 24: google.cloud.ces.v1beta.MockedToolCall
-	(*Message)(nil),                      // 25: google.cloud.ces.v1beta.Message
-	(*ToolCall)(nil),                     // 26: google.cloud.ces.v1beta.ToolCall
-	(*ToolResponse)(nil),                 // 27: google.cloud.ces.v1beta.ToolResponse
-	(*Image)(nil),                        // 28: google.cloud.ces.v1beta.Image
-	(*Blob)(nil),                         // 29: google.cloud.ces.v1beta.Blob
-	(*structpb.Struct)(nil),              // 30: google.protobuf.Struct
-	(*GoogleSearchSuggestions)(nil),      // 31: google.cloud.ces.v1beta.GoogleSearchSuggestions
-	(*anypb.Any)(nil),                    // 32: google.protobuf.Any
-	(*Span)(nil),                         // 33: google.cloud.ces.v1beta.Span
+	(AudioEncoding)(0),                                     // 0: google.cloud.ces.v1beta.AudioEncoding
+	(MockConfig_UnmatchedToolCallBehavior)(0),              // 1: google.cloud.ces.v1beta.MockConfig.UnmatchedToolCallBehavior
+	(SessionInput_RecordingControl)(0),                     // 2: google.cloud.ces.v1beta.SessionInput.RecordingControl
+	(StreamChatAiAssistantRequest_ClientCapability)(0),     // 3: google.cloud.ces.v1beta.StreamChatAiAssistantRequest.ClientCapability
+	(AssistantSuggestion_Icon)(0),                          // 4: google.cloud.ces.v1beta.AssistantSuggestion.Icon
+	(AssistantSuggestion_Source)(0),                        // 5: google.cloud.ces.v1beta.AssistantSuggestion.Source
+	(GenerateOnboardingSuggestionsResponse_UserProfile)(0), // 6: google.cloud.ces.v1beta.GenerateOnboardingSuggestionsResponse.UserProfile
+	(ArtifactChunk_State)(0),                               // 7: google.cloud.ces.v1beta.ArtifactChunk.State
+	(TurnMetadata_ContractStreamingPhase)(0),               // 8: google.cloud.ces.v1beta.TurnMetadata.ContractStreamingPhase
+	(TurnHandoffEvent_Reason)(0),                           // 9: google.cloud.ces.v1beta.TurnHandoffEvent.Reason
+	(TurnCompletedEvent_Reason)(0),                         // 10: google.cloud.ces.v1beta.TurnCompletedEvent.Reason
+	(*MockConfig)(nil),                                     // 11: google.cloud.ces.v1beta.MockConfig
+	(*InputAudioConfig)(nil),                               // 12: google.cloud.ces.v1beta.InputAudioConfig
+	(*OutputAudioConfig)(nil),                              // 13: google.cloud.ces.v1beta.OutputAudioConfig
+	(*SessionConfig)(nil),                                  // 14: google.cloud.ces.v1beta.SessionConfig
+	(*ToolCalls)(nil),                                      // 15: google.cloud.ces.v1beta.ToolCalls
+	(*ToolResponses)(nil),                                  // 16: google.cloud.ces.v1beta.ToolResponses
+	(*Citations)(nil),                                      // 17: google.cloud.ces.v1beta.Citations
+	(*Event)(nil),                                          // 18: google.cloud.ces.v1beta.Event
+	(*SessionInput)(nil),                                   // 19: google.cloud.ces.v1beta.SessionInput
+	(*SessionOutput)(nil),                                  // 20: google.cloud.ces.v1beta.SessionOutput
+	(*RecognitionResult)(nil),                              // 21: google.cloud.ces.v1beta.RecognitionResult
+	(*InterruptionSignal)(nil),                             // 22: google.cloud.ces.v1beta.InterruptionSignal
+	(*EndSession)(nil),                                     // 23: google.cloud.ces.v1beta.EndSession
+	(*GoAway)(nil),                                         // 24: google.cloud.ces.v1beta.GoAway
+	(*RunSessionRequest)(nil),                              // 25: google.cloud.ces.v1beta.RunSessionRequest
+	(*RunSessionResponse)(nil),                             // 26: google.cloud.ces.v1beta.RunSessionResponse
+	(*BidiSessionClientMessage)(nil),                       // 27: google.cloud.ces.v1beta.BidiSessionClientMessage
+	(*BidiSessionServerMessage)(nil),                       // 28: google.cloud.ces.v1beta.BidiSessionServerMessage
+	(*StreamChatAiAssistantRequest)(nil),                   // 29: google.cloud.ces.v1beta.StreamChatAiAssistantRequest
+	(*AssistantSuggestion)(nil),                            // 30: google.cloud.ces.v1beta.AssistantSuggestion
+	(*GenerateOnboardingSuggestionsRequest)(nil),           // 31: google.cloud.ces.v1beta.GenerateOnboardingSuggestionsRequest
+	(*GenerateOnboardingSuggestionsResponse)(nil),          // 32: google.cloud.ces.v1beta.GenerateOnboardingSuggestionsResponse
+	(*ArtifactChunk)(nil),                                  // 33: google.cloud.ces.v1beta.ArtifactChunk
+	(*OptionQuestionsChunk)(nil),                           // 34: google.cloud.ces.v1beta.OptionQuestionsChunk
+	(*AssistantConfirmationRequest)(nil),                   // 35: google.cloud.ces.v1beta.AssistantConfirmationRequest
+	(*AssistantConfirmationResponse)(nil),                  // 36: google.cloud.ces.v1beta.AssistantConfirmationResponse
+	(*OperationCompletedEvent)(nil),                        // 37: google.cloud.ces.v1beta.OperationCompletedEvent
+	(*TurnMetadata)(nil),                                   // 38: google.cloud.ces.v1beta.TurnMetadata
+	(*StreamChatAiAssistantResponse)(nil),                  // 39: google.cloud.ces.v1beta.StreamChatAiAssistantResponse
+	(*CancelAssistantTurnRequest)(nil),                     // 40: google.cloud.ces.v1beta.CancelAssistantTurnRequest
+	(*CancelAssistantTurnResponse)(nil),                    // 41: google.cloud.ces.v1beta.CancelAssistantTurnResponse
+	(*TurnResumeSnapshot)(nil),                             // 42: google.cloud.ces.v1beta.TurnResumeSnapshot
+	(*TurnHandoffEvent)(nil),                               // 43: google.cloud.ces.v1beta.TurnHandoffEvent
+	(*TurnCompletedEvent)(nil),                             // 44: google.cloud.ces.v1beta.TurnCompletedEvent
+	(*SessionConfig_RemoteDialogflowQueryParameters)(nil),  // 45: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters
+	nil,                                     // 46: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.WebhookHeadersEntry
+	(*Citations_CitedChunk)(nil),            // 47: google.cloud.ces.v1beta.Citations.CitedChunk
+	(*Citations_InlineCitation)(nil),        // 48: google.cloud.ces.v1beta.Citations.InlineCitation
+	(*SessionOutput_DiagnosticInfo)(nil),    // 49: google.cloud.ces.v1beta.SessionOutput.DiagnosticInfo
+	(*AssistantSuggestion_LoadSession)(nil), // 50: google.cloud.ces.v1beta.AssistantSuggestion.LoadSession
+	(*OptionQuestionsChunk_Option)(nil),     // 51: google.cloud.ces.v1beta.OptionQuestionsChunk.Option
+	(*OptionQuestionsChunk_Question)(nil),   // 52: google.cloud.ces.v1beta.OptionQuestionsChunk.Question
+	(*MockedToolCall)(nil),                  // 53: google.cloud.ces.v1beta.MockedToolCall
+	(*Message)(nil),                         // 54: google.cloud.ces.v1beta.Message
+	(*ToolCall)(nil),                        // 55: google.cloud.ces.v1beta.ToolCall
+	(*ToolResponse)(nil),                    // 56: google.cloud.ces.v1beta.ToolResponse
+	(*structpb.Struct)(nil),                 // 57: google.protobuf.Struct
+	(*Image)(nil),                           // 58: google.cloud.ces.v1beta.Image
+	(*Blob)(nil),                            // 59: google.cloud.ces.v1beta.Blob
+	(*GoogleSearchSuggestions)(nil),         // 60: google.cloud.ces.v1beta.GoogleSearchSuggestions
+	(*anypb.Any)(nil),                       // 61: google.protobuf.Any
+	(*timestamppb.Timestamp)(nil),           // 62: google.protobuf.Timestamp
+	(*status.Status)(nil),                   // 63: google.rpc.Status
+	(*SessionCheckpoint)(nil),               // 64: google.cloud.ces.v1beta.SessionCheckpoint
+	(*UiEvent)(nil),                         // 65: google.cloud.ces.v1beta.UiEvent
+	(*Span)(nil),                            // 66: google.cloud.ces.v1beta.Span
 }
 var file_google_cloud_ces_v1beta_session_service_proto_depIdxs = []int32{
-	24, // 0: google.cloud.ces.v1beta.MockConfig.mocked_tool_calls:type_name -> google.cloud.ces.v1beta.MockedToolCall
+	53, // 0: google.cloud.ces.v1beta.MockConfig.mocked_tool_calls:type_name -> google.cloud.ces.v1beta.MockedToolCall
 	1,  // 1: google.cloud.ces.v1beta.MockConfig.unmatched_tool_call_behavior:type_name -> google.cloud.ces.v1beta.MockConfig.UnmatchedToolCallBehavior
 	0,  // 2: google.cloud.ces.v1beta.InputAudioConfig.audio_encoding:type_name -> google.cloud.ces.v1beta.AudioEncoding
 	0,  // 3: google.cloud.ces.v1beta.OutputAudioConfig.audio_encoding:type_name -> google.cloud.ces.v1beta.AudioEncoding
-	3,  // 4: google.cloud.ces.v1beta.SessionConfig.input_audio_config:type_name -> google.cloud.ces.v1beta.InputAudioConfig
-	4,  // 5: google.cloud.ces.v1beta.SessionConfig.output_audio_config:type_name -> google.cloud.ces.v1beta.OutputAudioConfig
-	25, // 6: google.cloud.ces.v1beta.SessionConfig.historical_contexts:type_name -> google.cloud.ces.v1beta.Message
-	20, // 7: google.cloud.ces.v1beta.SessionConfig.remote_dialogflow_query_parameters:type_name -> google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters
-	26, // 8: google.cloud.ces.v1beta.ToolCalls.tool_calls:type_name -> google.cloud.ces.v1beta.ToolCall
-	27, // 9: google.cloud.ces.v1beta.ToolResponses.tool_responses:type_name -> google.cloud.ces.v1beta.ToolResponse
-	22, // 10: google.cloud.ces.v1beta.Citations.cited_chunks:type_name -> google.cloud.ces.v1beta.Citations.CitedChunk
-	7,  // 11: google.cloud.ces.v1beta.SessionInput.tool_responses:type_name -> google.cloud.ces.v1beta.ToolResponses
-	28, // 12: google.cloud.ces.v1beta.SessionInput.image:type_name -> google.cloud.ces.v1beta.Image
-	29, // 13: google.cloud.ces.v1beta.SessionInput.blob:type_name -> google.cloud.ces.v1beta.Blob
-	30, // 14: google.cloud.ces.v1beta.SessionInput.variables:type_name -> google.protobuf.Struct
-	9,  // 15: google.cloud.ces.v1beta.SessionInput.event:type_name -> google.cloud.ces.v1beta.Event
-	6,  // 16: google.cloud.ces.v1beta.SessionOutput.tool_calls:type_name -> google.cloud.ces.v1beta.ToolCalls
-	8,  // 17: google.cloud.ces.v1beta.SessionOutput.citations:type_name -> google.cloud.ces.v1beta.Citations
-	31, // 18: google.cloud.ces.v1beta.SessionOutput.google_search_suggestions:type_name -> google.cloud.ces.v1beta.GoogleSearchSuggestions
-	14, // 19: google.cloud.ces.v1beta.SessionOutput.end_session:type_name -> google.cloud.ces.v1beta.EndSession
-	30, // 20: google.cloud.ces.v1beta.SessionOutput.payload:type_name -> google.protobuf.Struct
-	23, // 21: google.cloud.ces.v1beta.SessionOutput.diagnostic_info:type_name -> google.cloud.ces.v1beta.SessionOutput.DiagnosticInfo
-	32, // 22: google.cloud.ces.v1beta.SessionOutput.context:type_name -> google.protobuf.Any
-	30, // 23: google.cloud.ces.v1beta.EndSession.metadata:type_name -> google.protobuf.Struct
-	5,  // 24: google.cloud.ces.v1beta.RunSessionRequest.config:type_name -> google.cloud.ces.v1beta.SessionConfig
-	10, // 25: google.cloud.ces.v1beta.RunSessionRequest.inputs:type_name -> google.cloud.ces.v1beta.SessionInput
-	11, // 26: google.cloud.ces.v1beta.RunSessionResponse.outputs:type_name -> google.cloud.ces.v1beta.SessionOutput
-	5,  // 27: google.cloud.ces.v1beta.BidiSessionClientMessage.config:type_name -> google.cloud.ces.v1beta.SessionConfig
-	10, // 28: google.cloud.ces.v1beta.BidiSessionClientMessage.realtime_input:type_name -> google.cloud.ces.v1beta.SessionInput
-	11, // 29: google.cloud.ces.v1beta.BidiSessionServerMessage.session_output:type_name -> google.cloud.ces.v1beta.SessionOutput
-	12, // 30: google.cloud.ces.v1beta.BidiSessionServerMessage.recognition_result:type_name -> google.cloud.ces.v1beta.RecognitionResult
-	13, // 31: google.cloud.ces.v1beta.BidiSessionServerMessage.interruption_signal:type_name -> google.cloud.ces.v1beta.InterruptionSignal
-	14, // 32: google.cloud.ces.v1beta.BidiSessionServerMessage.end_session:type_name -> google.cloud.ces.v1beta.EndSession
-	15, // 33: google.cloud.ces.v1beta.BidiSessionServerMessage.go_away:type_name -> google.cloud.ces.v1beta.GoAway
-	21, // 34: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.webhook_headers:type_name -> google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.WebhookHeadersEntry
-	30, // 35: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.payload:type_name -> google.protobuf.Struct
-	30, // 36: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.end_user_metadata:type_name -> google.protobuf.Struct
-	25, // 37: google.cloud.ces.v1beta.SessionOutput.DiagnosticInfo.messages:type_name -> google.cloud.ces.v1beta.Message
-	33, // 38: google.cloud.ces.v1beta.SessionOutput.DiagnosticInfo.root_span:type_name -> google.cloud.ces.v1beta.Span
-	16, // 39: google.cloud.ces.v1beta.SessionService.RunSession:input_type -> google.cloud.ces.v1beta.RunSessionRequest
-	16, // 40: google.cloud.ces.v1beta.SessionService.StreamRunSession:input_type -> google.cloud.ces.v1beta.RunSessionRequest
-	18, // 41: google.cloud.ces.v1beta.SessionService.BidiRunSession:input_type -> google.cloud.ces.v1beta.BidiSessionClientMessage
-	17, // 42: google.cloud.ces.v1beta.SessionService.RunSession:output_type -> google.cloud.ces.v1beta.RunSessionResponse
-	17, // 43: google.cloud.ces.v1beta.SessionService.StreamRunSession:output_type -> google.cloud.ces.v1beta.RunSessionResponse
-	19, // 44: google.cloud.ces.v1beta.SessionService.BidiRunSession:output_type -> google.cloud.ces.v1beta.BidiSessionServerMessage
-	42, // [42:45] is the sub-list for method output_type
-	39, // [39:42] is the sub-list for method input_type
-	39, // [39:39] is the sub-list for extension type_name
-	39, // [39:39] is the sub-list for extension extendee
-	0,  // [0:39] is the sub-list for field type_name
+	12, // 4: google.cloud.ces.v1beta.SessionConfig.input_audio_config:type_name -> google.cloud.ces.v1beta.InputAudioConfig
+	13, // 5: google.cloud.ces.v1beta.SessionConfig.output_audio_config:type_name -> google.cloud.ces.v1beta.OutputAudioConfig
+	54, // 6: google.cloud.ces.v1beta.SessionConfig.historical_contexts:type_name -> google.cloud.ces.v1beta.Message
+	45, // 7: google.cloud.ces.v1beta.SessionConfig.remote_dialogflow_query_parameters:type_name -> google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters
+	55, // 8: google.cloud.ces.v1beta.ToolCalls.tool_calls:type_name -> google.cloud.ces.v1beta.ToolCall
+	56, // 9: google.cloud.ces.v1beta.ToolResponses.tool_responses:type_name -> google.cloud.ces.v1beta.ToolResponse
+	47, // 10: google.cloud.ces.v1beta.Citations.cited_chunks:type_name -> google.cloud.ces.v1beta.Citations.CitedChunk
+	48, // 11: google.cloud.ces.v1beta.Citations.inline_citations:type_name -> google.cloud.ces.v1beta.Citations.InlineCitation
+	57, // 12: google.cloud.ces.v1beta.Event.variables:type_name -> google.protobuf.Struct
+	16, // 13: google.cloud.ces.v1beta.SessionInput.tool_responses:type_name -> google.cloud.ces.v1beta.ToolResponses
+	58, // 14: google.cloud.ces.v1beta.SessionInput.image:type_name -> google.cloud.ces.v1beta.Image
+	59, // 15: google.cloud.ces.v1beta.SessionInput.blob:type_name -> google.cloud.ces.v1beta.Blob
+	57, // 16: google.cloud.ces.v1beta.SessionInput.variables:type_name -> google.protobuf.Struct
+	18, // 17: google.cloud.ces.v1beta.SessionInput.event:type_name -> google.cloud.ces.v1beta.Event
+	2,  // 18: google.cloud.ces.v1beta.SessionInput.recording_control:type_name -> google.cloud.ces.v1beta.SessionInput.RecordingControl
+	15, // 19: google.cloud.ces.v1beta.SessionOutput.tool_calls:type_name -> google.cloud.ces.v1beta.ToolCalls
+	17, // 20: google.cloud.ces.v1beta.SessionOutput.citations:type_name -> google.cloud.ces.v1beta.Citations
+	60, // 21: google.cloud.ces.v1beta.SessionOutput.google_search_suggestions:type_name -> google.cloud.ces.v1beta.GoogleSearchSuggestions
+	23, // 22: google.cloud.ces.v1beta.SessionOutput.end_session:type_name -> google.cloud.ces.v1beta.EndSession
+	57, // 23: google.cloud.ces.v1beta.SessionOutput.payload:type_name -> google.protobuf.Struct
+	58, // 24: google.cloud.ces.v1beta.SessionOutput.image:type_name -> google.cloud.ces.v1beta.Image
+	49, // 25: google.cloud.ces.v1beta.SessionOutput.diagnostic_info:type_name -> google.cloud.ces.v1beta.SessionOutput.DiagnosticInfo
+	61, // 26: google.cloud.ces.v1beta.SessionOutput.context:type_name -> google.protobuf.Any
+	57, // 27: google.cloud.ces.v1beta.EndSession.metadata:type_name -> google.protobuf.Struct
+	14, // 28: google.cloud.ces.v1beta.RunSessionRequest.config:type_name -> google.cloud.ces.v1beta.SessionConfig
+	19, // 29: google.cloud.ces.v1beta.RunSessionRequest.inputs:type_name -> google.cloud.ces.v1beta.SessionInput
+	20, // 30: google.cloud.ces.v1beta.RunSessionResponse.outputs:type_name -> google.cloud.ces.v1beta.SessionOutput
+	14, // 31: google.cloud.ces.v1beta.BidiSessionClientMessage.config:type_name -> google.cloud.ces.v1beta.SessionConfig
+	19, // 32: google.cloud.ces.v1beta.BidiSessionClientMessage.realtime_input:type_name -> google.cloud.ces.v1beta.SessionInput
+	20, // 33: google.cloud.ces.v1beta.BidiSessionServerMessage.session_output:type_name -> google.cloud.ces.v1beta.SessionOutput
+	21, // 34: google.cloud.ces.v1beta.BidiSessionServerMessage.recognition_result:type_name -> google.cloud.ces.v1beta.RecognitionResult
+	22, // 35: google.cloud.ces.v1beta.BidiSessionServerMessage.interruption_signal:type_name -> google.cloud.ces.v1beta.InterruptionSignal
+	23, // 36: google.cloud.ces.v1beta.BidiSessionServerMessage.end_session:type_name -> google.cloud.ces.v1beta.EndSession
+	24, // 37: google.cloud.ces.v1beta.BidiSessionServerMessage.go_away:type_name -> google.cloud.ces.v1beta.GoAway
+	36, // 38: google.cloud.ces.v1beta.StreamChatAiAssistantRequest.confirmation_response:type_name -> google.cloud.ces.v1beta.AssistantConfirmationResponse
+	3,  // 39: google.cloud.ces.v1beta.StreamChatAiAssistantRequest.client_capabilities:type_name -> google.cloud.ces.v1beta.StreamChatAiAssistantRequest.ClientCapability
+	37, // 40: google.cloud.ces.v1beta.StreamChatAiAssistantRequest.operation_completed_event:type_name -> google.cloud.ces.v1beta.OperationCompletedEvent
+	50, // 41: google.cloud.ces.v1beta.AssistantSuggestion.load_session:type_name -> google.cloud.ces.v1beta.AssistantSuggestion.LoadSession
+	4,  // 42: google.cloud.ces.v1beta.AssistantSuggestion.icon:type_name -> google.cloud.ces.v1beta.AssistantSuggestion.Icon
+	5,  // 43: google.cloud.ces.v1beta.AssistantSuggestion.source:type_name -> google.cloud.ces.v1beta.AssistantSuggestion.Source
+	6,  // 44: google.cloud.ces.v1beta.GenerateOnboardingSuggestionsResponse.user_profile:type_name -> google.cloud.ces.v1beta.GenerateOnboardingSuggestionsResponse.UserProfile
+	30, // 45: google.cloud.ces.v1beta.GenerateOnboardingSuggestionsResponse.suggestions:type_name -> google.cloud.ces.v1beta.AssistantSuggestion
+	7,  // 46: google.cloud.ces.v1beta.ArtifactChunk.state:type_name -> google.cloud.ces.v1beta.ArtifactChunk.State
+	52, // 47: google.cloud.ces.v1beta.OptionQuestionsChunk.questions:type_name -> google.cloud.ces.v1beta.OptionQuestionsChunk.Question
+	52, // 48: google.cloud.ces.v1beta.AssistantConfirmationRequest.questions:type_name -> google.cloud.ces.v1beta.OptionQuestionsChunk.Question
+	62, // 49: google.cloud.ces.v1beta.AssistantConfirmationRequest.expire_time:type_name -> google.protobuf.Timestamp
+	63, // 50: google.cloud.ces.v1beta.OperationCompletedEvent.error:type_name -> google.rpc.Status
+	57, // 51: google.cloud.ces.v1beta.OperationCompletedEvent.metadata:type_name -> google.protobuf.Struct
+	8,  // 52: google.cloud.ces.v1beta.TurnMetadata.contract_streaming_phase:type_name -> google.cloud.ces.v1beta.TurnMetadata.ContractStreamingPhase
+	63, // 53: google.cloud.ces.v1beta.StreamChatAiAssistantResponse.status:type_name -> google.rpc.Status
+	55, // 54: google.cloud.ces.v1beta.StreamChatAiAssistantResponse.tool_call:type_name -> google.cloud.ces.v1beta.ToolCall
+	56, // 55: google.cloud.ces.v1beta.StreamChatAiAssistantResponse.tool_response:type_name -> google.cloud.ces.v1beta.ToolResponse
+	33, // 56: google.cloud.ces.v1beta.StreamChatAiAssistantResponse.artifact_chunk:type_name -> google.cloud.ces.v1beta.ArtifactChunk
+	34, // 57: google.cloud.ces.v1beta.StreamChatAiAssistantResponse.option_questions_chunk:type_name -> google.cloud.ces.v1beta.OptionQuestionsChunk
+	35, // 58: google.cloud.ces.v1beta.StreamChatAiAssistantResponse.confirmation_request:type_name -> google.cloud.ces.v1beta.AssistantConfirmationRequest
+	64, // 59: google.cloud.ces.v1beta.StreamChatAiAssistantResponse.session_checkpoint:type_name -> google.cloud.ces.v1beta.SessionCheckpoint
+	42, // 60: google.cloud.ces.v1beta.StreamChatAiAssistantResponse.resume_snapshot:type_name -> google.cloud.ces.v1beta.TurnResumeSnapshot
+	43, // 61: google.cloud.ces.v1beta.StreamChatAiAssistantResponse.handoff:type_name -> google.cloud.ces.v1beta.TurnHandoffEvent
+	44, // 62: google.cloud.ces.v1beta.StreamChatAiAssistantResponse.turn_completed:type_name -> google.cloud.ces.v1beta.TurnCompletedEvent
+	62, // 63: google.cloud.ces.v1beta.StreamChatAiAssistantResponse.event_time:type_name -> google.protobuf.Timestamp
+	65, // 64: google.cloud.ces.v1beta.StreamChatAiAssistantResponse.ui_event:type_name -> google.cloud.ces.v1beta.UiEvent
+	38, // 65: google.cloud.ces.v1beta.StreamChatAiAssistantResponse.turn_metadata:type_name -> google.cloud.ces.v1beta.TurnMetadata
+	39, // 66: google.cloud.ces.v1beta.TurnResumeSnapshot.events:type_name -> google.cloud.ces.v1beta.StreamChatAiAssistantResponse
+	62, // 67: google.cloud.ces.v1beta.TurnResumeSnapshot.orphan_deadline_time:type_name -> google.protobuf.Timestamp
+	9,  // 68: google.cloud.ces.v1beta.TurnHandoffEvent.reason:type_name -> google.cloud.ces.v1beta.TurnHandoffEvent.Reason
+	10, // 69: google.cloud.ces.v1beta.TurnCompletedEvent.reason:type_name -> google.cloud.ces.v1beta.TurnCompletedEvent.Reason
+	46, // 70: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.webhook_headers:type_name -> google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.WebhookHeadersEntry
+	57, // 71: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.payload:type_name -> google.protobuf.Struct
+	57, // 72: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.end_user_metadata:type_name -> google.protobuf.Struct
+	54, // 73: google.cloud.ces.v1beta.SessionOutput.DiagnosticInfo.messages:type_name -> google.cloud.ces.v1beta.Message
+	66, // 74: google.cloud.ces.v1beta.SessionOutput.DiagnosticInfo.root_span:type_name -> google.cloud.ces.v1beta.Span
+	51, // 75: google.cloud.ces.v1beta.OptionQuestionsChunk.Question.options:type_name -> google.cloud.ces.v1beta.OptionQuestionsChunk.Option
+	25, // 76: google.cloud.ces.v1beta.SessionService.RunSession:input_type -> google.cloud.ces.v1beta.RunSessionRequest
+	25, // 77: google.cloud.ces.v1beta.SessionService.StreamRunSession:input_type -> google.cloud.ces.v1beta.RunSessionRequest
+	27, // 78: google.cloud.ces.v1beta.SessionService.BidiRunSession:input_type -> google.cloud.ces.v1beta.BidiSessionClientMessage
+	29, // 79: google.cloud.ces.v1beta.SessionService.StreamChatAiAssistant:input_type -> google.cloud.ces.v1beta.StreamChatAiAssistantRequest
+	40, // 80: google.cloud.ces.v1beta.SessionService.CancelAssistantTurn:input_type -> google.cloud.ces.v1beta.CancelAssistantTurnRequest
+	31, // 81: google.cloud.ces.v1beta.SessionService.GenerateOnboardingSuggestions:input_type -> google.cloud.ces.v1beta.GenerateOnboardingSuggestionsRequest
+	26, // 82: google.cloud.ces.v1beta.SessionService.RunSession:output_type -> google.cloud.ces.v1beta.RunSessionResponse
+	26, // 83: google.cloud.ces.v1beta.SessionService.StreamRunSession:output_type -> google.cloud.ces.v1beta.RunSessionResponse
+	28, // 84: google.cloud.ces.v1beta.SessionService.BidiRunSession:output_type -> google.cloud.ces.v1beta.BidiSessionServerMessage
+	39, // 85: google.cloud.ces.v1beta.SessionService.StreamChatAiAssistant:output_type -> google.cloud.ces.v1beta.StreamChatAiAssistantResponse
+	41, // 86: google.cloud.ces.v1beta.SessionService.CancelAssistantTurn:output_type -> google.cloud.ces.v1beta.CancelAssistantTurnResponse
+	32, // 87: google.cloud.ces.v1beta.SessionService.GenerateOnboardingSuggestions:output_type -> google.cloud.ces.v1beta.GenerateOnboardingSuggestionsResponse
+	82, // [82:88] is the sub-list for method output_type
+	76, // [76:82] is the sub-list for method input_type
+	76, // [76:76] is the sub-list for extension type_name
+	76, // [76:76] is the sub-list for extension extendee
+	0,  // [0:76] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_ces_v1beta_session_service_proto_init() }
@@ -2069,6 +4828,8 @@ func file_google_cloud_ces_v1beta_session_service_proto_init() {
 		(*SessionOutput_GoogleSearchSuggestions)(nil),
 		(*SessionOutput_EndSession)(nil),
 		(*SessionOutput_Payload)(nil),
+		(*SessionOutput_Image)(nil),
+		(*SessionOutput_Progress)(nil),
 	}
 	file_google_cloud_ces_v1beta_session_service_proto_msgTypes[16].OneofWrappers = []any{
 		(*BidiSessionClientMessage_Config)(nil),
@@ -2081,13 +4842,36 @@ func file_google_cloud_ces_v1beta_session_service_proto_init() {
 		(*BidiSessionServerMessage_EndSession)(nil),
 		(*BidiSessionServerMessage_GoAway)(nil),
 	}
+	file_google_cloud_ces_v1beta_session_service_proto_msgTypes[19].OneofWrappers = []any{
+		(*AssistantSuggestion_SeedPrompt)(nil),
+		(*AssistantSuggestion_LoadSession_)(nil),
+		(*AssistantSuggestion_SendMessage)(nil),
+	}
+	file_google_cloud_ces_v1beta_session_service_proto_msgTypes[25].OneofWrappers = []any{
+		(*AssistantConfirmationResponse_Confirmed)(nil),
+		(*AssistantConfirmationResponse_AnswerText)(nil),
+	}
+	file_google_cloud_ces_v1beta_session_service_proto_msgTypes[28].OneofWrappers = []any{
+		(*StreamChatAiAssistantResponse_TextChunk)(nil),
+		(*StreamChatAiAssistantResponse_Status)(nil),
+		(*StreamChatAiAssistantResponse_ThoughtChunk)(nil),
+		(*StreamChatAiAssistantResponse_ToolCall)(nil),
+		(*StreamChatAiAssistantResponse_ToolResponse)(nil),
+		(*StreamChatAiAssistantResponse_ArtifactChunk)(nil),
+		(*StreamChatAiAssistantResponse_OptionQuestionsChunk)(nil),
+		(*StreamChatAiAssistantResponse_ConfirmationRequest)(nil),
+		(*StreamChatAiAssistantResponse_SessionCheckpoint)(nil),
+		(*StreamChatAiAssistantResponse_ResumeSnapshot)(nil),
+		(*StreamChatAiAssistantResponse_Handoff)(nil),
+		(*StreamChatAiAssistantResponse_TurnCompleted)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_ces_v1beta_session_service_proto_rawDesc), len(file_google_cloud_ces_v1beta_session_service_proto_rawDesc)),
-			NumEnums:      2,
-			NumMessages:   22,
+			NumEnums:      11,
+			NumMessages:   42,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

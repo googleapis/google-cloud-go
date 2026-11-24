@@ -2068,26 +2068,26 @@ var File_google_cloud_talent_v4beta1_job_service_proto protoreflect.FileDescript
 
 const file_google_cloud_talent_v4beta1_job_service_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/talent/v4beta1/job_service.proto\x12\x1bgoogle.cloud.talent.v4beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/talent/v4beta1/common.proto\x1a)google/cloud/talent/v4beta1/filters.proto\x1a+google/cloud/talent/v4beta1/histogram.proto\x1a%google/cloud/talent/v4beta1/job.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x17google/rpc/status.proto\"\x84\x01\n" +
-	"\x10CreateJobRequest\x127\n" +
-	"\x06parent\x18\x01 \x01(\tB\x1f\xe0A\x02\xfaA\x19\x12\x17jobs.googleapis.com/JobR\x06parent\x127\n" +
-	"\x03job\x18\x02 \x01(\v2 .google.cloud.talent.v4beta1.JobB\x03\xe0A\x02R\x03job\"D\n" +
-	"\rGetJobRequest\x123\n" +
-	"\x04name\x18\x01 \x01(\tB\x1f\xe0A\x02\xfaA\x19\n" +
-	"\x17jobs.googleapis.com/JobR\x04name\"\x88\x01\n" +
-	"\x10UpdateJobRequest\x127\n" +
-	"\x03job\x18\x01 \x01(\v2 .google.cloud.talent.v4beta1.JobB\x03\xe0A\x02R\x03job\x12;\n" +
+	"-google/cloud/talent/v4beta1/job_service.proto\x12\x1bgoogle.cloud.talent.v4beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a(google/cloud/talent/v4beta1/common.proto\x1a)google/cloud/talent/v4beta1/filters.proto\x1a+google/cloud/talent/v4beta1/histogram.proto\x1a%google/cloud/talent/v4beta1/job.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x17google/rpc/status.proto\"\x86\x01\n" +
+	"\x10CreateJobRequest\x128\n" +
+	"\x06parent\x18\x01 \x01(\tB \xe2A\x01\x02\xfaA\x19\x12\x17jobs.googleapis.com/JobR\x06parent\x128\n" +
+	"\x03job\x18\x02 \x01(\v2 .google.cloud.talent.v4beta1.JobB\x04\xe2A\x01\x02R\x03job\"E\n" +
+	"\rGetJobRequest\x124\n" +
+	"\x04name\x18\x01 \x01(\tB \xe2A\x01\x02\xfaA\x19\n" +
+	"\x17jobs.googleapis.com/JobR\x04name\"\x89\x01\n" +
+	"\x10UpdateJobRequest\x128\n" +
+	"\x03job\x18\x01 \x01(\v2 .google.cloud.talent.v4beta1.JobB\x04\xe2A\x01\x02R\x03job\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"G\n" +
-	"\x10DeleteJobRequest\x123\n" +
-	"\x04name\x18\x01 \x01(\tB\x1f\xe0A\x02\xfaA\x19\n" +
-	"\x17jobs.googleapis.com/JobR\x04name\"n\n" +
-	"\x16BatchDeleteJobsRequest\x127\n" +
-	"\x06parent\x18\x01 \x01(\tB\x1f\xe0A\x02\xfaA\x19\x12\x17jobs.googleapis.com/JobR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x02R\x06filter\"\xe4\x01\n" +
-	"\x0fListJobsRequest\x127\n" +
-	"\x06parent\x18\x01 \x01(\tB\x1f\xe0A\x02\xfaA\x19\x12\x17jobs.googleapis.com/JobR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x02R\x06filter\x12\x1d\n" +
+	"updateMask\"H\n" +
+	"\x10DeleteJobRequest\x124\n" +
+	"\x04name\x18\x01 \x01(\tB \xe2A\x01\x02\xfaA\x19\n" +
+	"\x17jobs.googleapis.com/JobR\x04name\"p\n" +
+	"\x16BatchDeleteJobsRequest\x128\n" +
+	"\x06parent\x18\x01 \x01(\tB \xe2A\x01\x02\xfaA\x19\x12\x17jobs.googleapis.com/JobR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06filter\"\xe6\x01\n" +
+	"\x0fListJobsRequest\x128\n" +
+	"\x06parent\x18\x01 \x01(\tB \xe2A\x01\x02\xfaA\x19\x12\x17jobs.googleapis.com/JobR\x06parent\x12\x1c\n" +
+	"\x06filter\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x06filter\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1b\n" +
 	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\x12?\n" +
@@ -2095,12 +2095,12 @@ const file_google_cloud_talent_v4beta1_job_service_proto_rawDesc = "" +
 	"\x10ListJobsResponse\x124\n" +
 	"\x04jobs\x18\x01 \x03(\v2 .google.cloud.talent.v4beta1.JobR\x04jobs\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12I\n" +
-	"\bmetadata\x18\x03 \x01(\v2-.google.cloud.talent.v4beta1.ResponseMetadataR\bmetadata\"\xab\x0f\n" +
-	"\x11SearchJobsRequest\x127\n" +
-	"\x06parent\x18\x01 \x01(\tB\x1f\xe0A\x02\xfaA\x19\x12\x17jobs.googleapis.com/JobR\x06parent\x12Z\n" +
+	"\bmetadata\x18\x03 \x01(\v2-.google.cloud.talent.v4beta1.ResponseMetadataR\bmetadata\"\xb0\x0f\n" +
+	"\x11SearchJobsRequest\x128\n" +
+	"\x06parent\x18\x01 \x01(\tB \xe2A\x01\x02\xfaA\x19\x12\x17jobs.googleapis.com/JobR\x06parent\x12Z\n" +
 	"\vsearch_mode\x18\x02 \x01(\x0e29.google.cloud.talent.v4beta1.SearchJobsRequest.SearchModeR\n" +
-	"searchMode\x12\\\n" +
-	"\x10request_metadata\x18\x03 \x01(\v2,.google.cloud.talent.v4beta1.RequestMetadataB\x03\xe0A\x02R\x0frequestMetadata\x12B\n" +
+	"searchMode\x12]\n" +
+	"\x10request_metadata\x18\x03 \x01(\v2,.google.cloud.talent.v4beta1.RequestMetadataB\x04\xe2A\x01\x02R\x0frequestMetadata\x12B\n" +
 	"\tjob_query\x18\x04 \x01(\v2%.google.cloud.talent.v4beta1.JobQueryR\bjobQuery\x12+\n" +
 	"\x11enable_broadening\x18\x05 \x01(\bR\x10enableBroadening\x12A\n" +
 	"\x1brequire_precise_result_size\x18\x06 \x01(\bB\x02\x18\x01R\x18requirePreciseResultSize\x12X\n" +
@@ -2115,11 +2115,11 @@ const file_google_cloud_talent_v4beta1_job_service_proto_rawDesc = "" +
 	"\x15diversification_level\x18\r \x01(\x0e2C.google.cloud.talent.v4beta1.SearchJobsRequest.DiversificationLevelR\x14diversificationLevel\x12p\n" +
 	"\x13custom_ranking_info\x18\x0e \x01(\v2@.google.cloud.talent.v4beta1.SearchJobsRequest.CustomRankingInfoR\x11customRankingInfo\x122\n" +
 	"\x15disable_keyword_match\x18\x10 \x01(\bR\x13disableKeywordMatch\x12m\n" +
-	"\x12keyword_match_mode\x18\x12 \x01(\x0e2?.google.cloud.talent.v4beta1.SearchJobsRequest.KeywordMatchModeR\x10keywordMatchMode\x12w\n" +
-	"\x13relevance_threshold\x18\x13 \x01(\x0e2A.google.cloud.talent.v4beta1.SearchJobsRequest.RelevanceThresholdB\x03\xe0A\x01R\x12relevanceThreshold\x1a\xbf\x02\n" +
-	"\x11CustomRankingInfo\x12\x80\x01\n" +
-	"\x10importance_level\x18\x01 \x01(\x0e2P.google.cloud.talent.v4beta1.SearchJobsRequest.CustomRankingInfo.ImportanceLevelB\x03\xe0A\x02R\x0fimportanceLevel\x122\n" +
-	"\x12ranking_expression\x18\x02 \x01(\tB\x03\xe0A\x02R\x11rankingExpression\"s\n" +
+	"\x12keyword_match_mode\x18\x12 \x01(\x0e2?.google.cloud.talent.v4beta1.SearchJobsRequest.KeywordMatchModeR\x10keywordMatchMode\x12x\n" +
+	"\x13relevance_threshold\x18\x13 \x01(\x0e2A.google.cloud.talent.v4beta1.SearchJobsRequest.RelevanceThresholdB\x04\xe2A\x01\x01R\x12relevanceThreshold\x1a\xc1\x02\n" +
+	"\x11CustomRankingInfo\x12\x81\x01\n" +
+	"\x10importance_level\x18\x01 \x01(\x0e2P.google.cloud.talent.v4beta1.SearchJobsRequest.CustomRankingInfo.ImportanceLevelB\x04\xe2A\x01\x02R\x0fimportanceLevel\x123\n" +
+	"\x12ranking_expression\x18\x02 \x01(\tB\x04\xe2A\x01\x02R\x11rankingExpression\"s\n" +
 	"\x0fImportanceLevel\x12 \n" +
 	"\x1cIMPORTANCE_LEVEL_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04NONE\x10\x01\x12\a\n" +
@@ -2173,13 +2173,13 @@ const file_google_cloud_talent_v4beta1_job_service_proto_rawDesc = "" +
 	"\fcommute_info\x18\x05 \x01(\v2;.google.cloud.talent.v4beta1.SearchJobsResponse.CommuteInfoR\vcommuteInfo\x1a\x9b\x01\n" +
 	"\vCommuteInfo\x12H\n" +
 	"\fjob_location\x18\x01 \x01(\v2%.google.cloud.talent.v4beta1.LocationR\vjobLocation\x12B\n" +
-	"\x0ftravel_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x0etravelDuration\"\x8c\x01\n" +
-	"\x16BatchCreateJobsRequest\x127\n" +
-	"\x06parent\x18\x01 \x01(\tB\x1f\xe0A\x02\xfaA\x19\x12\x17jobs.googleapis.com/JobR\x06parent\x129\n" +
-	"\x04jobs\x18\x02 \x03(\v2 .google.cloud.talent.v4beta1.JobB\x03\xe0A\x02R\x04jobs\"\xc9\x01\n" +
-	"\x16BatchUpdateJobsRequest\x127\n" +
-	"\x06parent\x18\x01 \x01(\tB\x1f\xe0A\x02\xfaA\x19\x12\x17jobs.googleapis.com/JobR\x06parent\x129\n" +
-	"\x04jobs\x18\x02 \x03(\v2 .google.cloud.talent.v4beta1.JobB\x03\xe0A\x02R\x04jobs\x12;\n" +
+	"\x0ftravel_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x0etravelDuration\"\x8e\x01\n" +
+	"\x16BatchCreateJobsRequest\x128\n" +
+	"\x06parent\x18\x01 \x01(\tB \xe2A\x01\x02\xfaA\x19\x12\x17jobs.googleapis.com/JobR\x06parent\x12:\n" +
+	"\x04jobs\x18\x02 \x03(\v2 .google.cloud.talent.v4beta1.JobB\x04\xe2A\x01\x02R\x04jobs\"\xcb\x01\n" +
+	"\x16BatchUpdateJobsRequest\x128\n" +
+	"\x06parent\x18\x01 \x01(\tB \xe2A\x01\x02\xfaA\x19\x12\x17jobs.googleapis.com/JobR\x06parent\x12:\n" +
+	"\x04jobs\x18\x02 \x03(\v2 .google.cloud.talent.v4beta1.JobB\x04\xe2A\x01\x02R\x04jobs\x12;\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\"\xdd\x01\n" +
 	"\x12JobOperationResult\x12Z\n" +
