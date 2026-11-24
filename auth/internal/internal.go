@@ -186,21 +186,25 @@ func (p StaticProperty) GetProperty(context.Context) (string, error) {
 // ComputeUniverseDomainProvider fetches the credentials universe domain from
 // the google cloud metadata service.
 type ComputeUniverseDomainProvider struct {
-	MetadataClient     *metadata.Client
-	universeDomainOnce sync.Once
-	universeDomain     string
-	universeDomainErr  error
+	MetadataClient *metadata.Client
+	mu             sync.Mutex
+	universeDomain string
 }
 
 // GetProperty fetches the credentials universe domain from the google cloud
-// metadata service.
+// metadata service. Successful lookups are cached for the lifetime of the
+// provider; errors are not cached so subsequent calls may retry.
 func (c *ComputeUniverseDomainProvider) GetProperty(ctx context.Context) (string, error) {
-	c.universeDomainOnce.Do(func() {
-		c.universeDomain, c.universeDomainErr = getMetadataUniverseDomain(ctx, c.MetadataClient)
-	})
-	if c.universeDomainErr != nil {
-		return "", c.universeDomainErr
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.universeDomain != "" {
+		return c.universeDomain, nil
 	}
+	ud, err := getMetadataUniverseDomain(ctx, c.MetadataClient)
+	if err != nil {
+		return "", err
+	}
+	c.universeDomain = ud
 	return c.universeDomain, nil
 }
 

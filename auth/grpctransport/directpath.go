@@ -24,6 +24,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/auth"
@@ -43,7 +44,9 @@ const (
 	directPathInterconnectStoragePreprodHost  = "storage-preprod-direct.sandbox.googleapis.com"
 	directPathNotEnabledReason                = "DirectPath is disabled. To enable, please set the EnableDirectPath option along with the EnableDirectPathXds option."
 	directPathUnsupportedUniverseReason       = "DirectPath is disabled. Non-default universe domain is not supported."
+	directPathUDLookupErrReason               = "DirectPath is disabled. Failed to determine universe domain"
 	directPathInterconnectUnsupportedUDReason = "DirectPath over Interconnect is disabled. Non-default universe domain is not supported."
+	directPathInterconnectUDLookupErrReason   = "DirectPath over Interconnect is disabled. Failed to determine universe domain"
 	directPathInterconnectInvalidCredsReason  = "DirectPath over Interconnect is disabled. Valid credentials are required."
 	directPathIncompatibleCredReason          = "DirectPath is disabled. Please make sure the token source is fetched from GCE metadata server and the default service account is used."
 	directPathNotOnGCEReason                  = "DirectPath is disabled. DirectPath is only available in a GCE environment."
@@ -60,23 +63,55 @@ var (
 
 	// Assign to var for unit test replacement.
 	metadataUniverseDomainTimeout = time.Second
+
+	// Single-entry cache of successful metadata universe domain lookups keyed
+	// by GCE_METADATA_HOST. Errors are not cached so transient failures retry.
+	metadataUDCacheMu   sync.Mutex
+	metadataUDCacheHost string
+	metadataUDCacheVal  string
+	metadataUDCached    bool
 )
 
+func resetMetadataUniverseDomainCache() {
+	metadataUDCacheMu.Lock()
+	metadataUDCacheHost = ""
+	metadataUDCacheVal = ""
+	metadataUDCached = false
+	metadataUDCacheMu.Unlock()
+}
+
 func fetchMetadataUniverseDomain(ctx context.Context) (string, error) {
+	host := os.Getenv("GCE_METADATA_HOST")
+	metadataUDCacheMu.Lock()
+	if metadataUDCached && metadataUDCacheHost == host {
+		ud := metadataUDCacheVal
+		metadataUDCacheMu.Unlock()
+		return ud, nil
+	}
+	metadataUDCacheMu.Unlock()
+
 	ctx, cancel := context.WithTimeout(ctx, metadataUniverseDomainTimeout)
 	defer cancel()
 	ud, err := metadata.GetWithContext(ctx, "universe/universe-domain")
 	if err != nil {
 		var notDefined metadata.NotDefinedError
 		if errors.As(err, &notDefined) {
-			return internal.DefaultUniverseDomain, nil
+			ud = internal.DefaultUniverseDomain
+		} else {
+			return "", err
 		}
-		return "", err
+	} else {
+		ud = strings.TrimSpace(ud)
+		if ud == "" {
+			ud = internal.DefaultUniverseDomain
+		}
 	}
-	ud = strings.TrimSpace(ud)
-	if ud == "" {
-		return internal.DefaultUniverseDomain, nil
-	}
+
+	metadataUDCacheMu.Lock()
+	metadataUDCacheHost = host
+	metadataUDCacheVal = ud
+	metadataUDCached = true
+	metadataUDCacheMu.Unlock()
 	return ud, nil
 }
 
@@ -90,6 +125,7 @@ func fetchMetadataUniverseDomain(ctx context.Context) (string, error) {
 // sent with the non-direct host as regular traffic, so no override is
 // returned for those hosts. Other hosts keep their non-direct authority.
 func interconnectHostAndAuthority(host string) (targetHost, authorityOverride string) {
+	host = strings.ToLower(host)
 	switch {
 	case strings.HasSuffix(host, ".googleapis.com") && !strings.Contains(host, directPathInterconnectInfix):
 		targetHost = strings.Replace(host, ".", directPathInterconnectInfix, 1)
@@ -139,6 +175,10 @@ func parseTarget(endpoint string) (host string, query url.Values, err error) {
 		return "", nil, fmt.Errorf("grpctransport: invalid target %q", endpoint)
 	}
 	if h, _, splitErr := net.SplitHostPort(target); splitErr == nil {
+		if strings.HasPrefix(target, "[") {
+			// Reject IPv6 literals and bracketed hostnames.
+			return "", nil, fmt.Errorf("grpctransport: invalid host in endpoint %q", endpoint)
+		}
 		host = h
 	} else if strings.Contains(target, ":") {
 		// Reject malformed host:port targets and bare IPv6 literals.
@@ -149,7 +189,7 @@ func parseTarget(endpoint string) (host string, query url.Values, err error) {
 	if host == "" {
 		return "", nil, fmt.Errorf("grpctransport: empty host in endpoint %q", endpoint)
 	}
-	return host, query, nil
+	return strings.ToLower(host), query, nil
 }
 
 func encodeQuery(v url.Values) string {
@@ -195,10 +235,38 @@ func isDirectPathXdsOverInterconnectUsed(endpoint string, o *Options) bool {
 	if o != nil && o.InternalOptions != nil && o.InternalOptions.EnableDirectPathXdsOverInterconnect {
 		return true
 	}
-	if strings.Contains(endpoint, directPathInterconnectInfix) || strings.Contains(endpoint, "force-xds") {
+	if strings.Contains(strings.ToLower(endpoint), directPathInterconnectInfix) || strings.Contains(endpoint, "force-xds") {
 		return true
 	}
 	return false
+}
+
+func isGoogleC2PEndpoint(endpoint string) bool {
+	return strings.HasPrefix(strings.ToLower(endpoint), "google-c2p:")
+}
+
+// validateGoogleC2PEndpoint ensures an explicit google-c2p endpoint is never
+// dialed outside verified GDU or when DirectPath is disabled.
+func validateGoogleC2PEndpoint(ctx context.Context, endpoint string, opts *Options) error {
+	if !isGoogleC2PEndpoint(endpoint) {
+		return nil
+	}
+	if reason, ok := checkDirectPathEnabled(endpoint, opts); !ok {
+		if reason != "" {
+			return fmt.Errorf("grpctransport: %s", reason)
+		}
+		return fmt.Errorf("grpctransport: DirectPath is disabled for endpoint %q", endpoint)
+	}
+	if onComputeEngine() {
+		mdUD, err := metadataUniverseDomain(ctx)
+		if err != nil {
+			return fmt.Errorf("grpctransport: %s: %w", directPathUDLookupErrReason, err)
+		}
+		if strings.TrimSpace(mdUD) != internal.DefaultUniverseDomain {
+			return fmt.Errorf("grpctransport: %s", directPathUnsupportedUniverseReason)
+		}
+	}
+	return nil
 }
 
 func hasUniverseDomainHost(endpoint, universeDomain string) bool {
@@ -209,7 +277,6 @@ func hasUniverseDomainHost(endpoint, universeDomain string) bool {
 	if err != nil {
 		return false
 	}
-	host = strings.ToLower(host)
 	ud := strings.ToLower(universeDomain)
 	if host == ud {
 		return true
@@ -235,6 +302,12 @@ func checkDirectPathEnabled(endpoint string, opts *Options) (string, bool) {
 		return "", false
 	}
 	if !canUseDirectPathWithUniverseDomain(endpoint, opts) {
+		if opts.clientUniverseDomain() == internal.DefaultUniverseDomain {
+			host, _, err := parseTarget(endpoint)
+			if err != nil || host == "localhost" || net.ParseIP(host) != nil {
+				return "", false
+			}
+		}
 		if isDirectPathXdsOverInterconnectUsed(endpoint, opts) {
 			return directPathInterconnectUnsupportedUDReason, false
 		}
@@ -318,32 +391,59 @@ func isDirectPathBoundTokenEnabled(opts *InternalOptions) bool {
 // When DirectPath cannot be used, it optionally returns a human-readable
 // warning reason explaining the rejection.
 func canUseDirectPath(ctx context.Context, endpoint string, opts *Options, creds *auth.Credentials) (string, bool) {
+	reason, ok, _ := evaluateDirectPath(ctx, endpoint, opts, creds)
+	return reason, ok
+}
+
+func evaluateDirectPath(ctx context.Context, endpoint string, opts *Options, creds *auth.Credentials) (reason string, ok bool, isComputeToken bool) {
 	if reason, ok := checkDirectPathEnabled(endpoint, opts); !ok {
-		return reason, false
+		return reason, false, false
 	}
 	interconnect := isDirectPathXdsOverInterconnectUsed(endpoint, opts)
 	if creds == nil || creds.TokenProvider == nil {
 		if interconnect {
-			return directPathInterconnectInvalidCredsReason, false
+			return directPathInterconnectInvalidCredsReason, false, false
 		}
-		return directPathIncompatibleCredReason, false
+		return directPathIncompatibleCredReason, false, false
 	}
 	if interconnect {
 		ud, err := creds.UniverseDomain(ctx)
-		if err != nil || strings.TrimSpace(ud) != internal.DefaultUniverseDomain {
-			return directPathInterconnectUnsupportedUDReason, false
+		if err != nil {
+			return fmt.Sprintf("%s: %v", directPathInterconnectUDLookupErrReason, err), false, false
 		}
-		return "", true
+		if strings.TrimSpace(ud) != internal.DefaultUniverseDomain {
+			return directPathInterconnectUnsupportedUDReason, false, false
+		}
+		// When running on a GCE VM, also verify the VM's metadata server
+		// universe domain directly: google-c2p uses ambient ADC (google_default)
+		// for its xDS control-plane connection, and credentials without a
+		// UniverseDomainProvider default to googleapis.com.
+		if onComputeEngine() {
+			mdUD, err := metadataUniverseDomain(ctx)
+			if err != nil {
+				return fmt.Sprintf("%s: %v", directPathInterconnectUDLookupErrReason, err), false, false
+			}
+			if strings.TrimSpace(mdUD) != internal.DefaultUniverseDomain {
+				return directPathInterconnectUnsupportedUDReason, false, false
+			}
+		}
+		return "", true, false
 	}
 	if !onComputeEngine() {
-		return directPathNotOnGCEReason, false
+		return directPathNotOnGCEReason, false, false
 	}
 	ud, err := creds.UniverseDomain(ctx)
-	if err != nil || strings.TrimSpace(ud) != internal.DefaultUniverseDomain {
-		return directPathUnsupportedUniverseReason, false
+	if err != nil {
+		return fmt.Sprintf("%s: %v", directPathUDLookupErrReason, err), false, false
 	}
-	if !isTokenProviderDirectPathCompatible(ctx, creds, opts) {
-		return directPathIncompatibleCredReason, false
+	if strings.TrimSpace(ud) != internal.DefaultUniverseDomain {
+		return directPathUnsupportedUniverseReason, false, false
+	}
+	if opts == nil || opts.InternalOptions == nil || !opts.InternalOptions.EnableNonDefaultSAForDirectPath {
+		if !isTokenProviderComputeEngine(ctx, creds) {
+			return directPathIncompatibleCredReason, false, false
+		}
+		isComputeToken = true
 	}
 	// Verify the GCE metadata server universe domain directly and fail closed
 	// on error. Even when creds.UniverseDomain returns googleapis.com (for
@@ -353,10 +453,13 @@ func canUseDirectPath(ctx context.Context, endpoint string, opts *Options, creds
 	// or a GDU SA key with EnableNonDefaultSAForDirectPath on a non-GDU VM),
 	// GCE DirectPath must never be enabled on a non-GDU GCE VM.
 	mdUD, err := metadataUniverseDomain(ctx)
-	if err != nil || strings.TrimSpace(mdUD) != internal.DefaultUniverseDomain {
-		return directPathUnsupportedUniverseReason, false
+	if err != nil {
+		return fmt.Sprintf("%s: %v", directPathUDLookupErrReason, err), false, false
 	}
-	return "", true
+	if strings.TrimSpace(mdUD) != internal.DefaultUniverseDomain {
+		return directPathUnsupportedUniverseReason, false, false
+	}
+	return "", true, isComputeToken
 }
 
 // interconnectCredentials is a grpccreds.Bundle that negotiates TLS in every
@@ -403,13 +506,17 @@ func (c *interconnectCredentials) NewWithMode(string) (grpccreds.Bundle, error) 
 // channel: TLS-only credentials over Interconnect, or the Google Default bundle
 // (with ALTS hard-bound tokens when enabled) otherwise.
 func directPathCredentialsBundle(ctx context.Context, interconnect bool, opts *Options, endpoint string, creds *auth.Credentials, perRPCCreds grpccreds.PerRPCCredentials) (grpccreds.Bundle, error) {
+	return directPathCredentialsBundleWithComputeCheck(ctx, interconnect, opts, endpoint, creds, perRPCCreds, false)
+}
+
+func directPathCredentialsBundleWithComputeCheck(ctx context.Context, interconnect bool, opts *Options, endpoint string, creds *auth.Credentials, perRPCCreds grpccreds.PerRPCCredentials, knownComputeToken bool) (grpccreds.Bundle, error) {
 	if interconnect {
 		return newInterconnectCredentials(perRPCCreds), nil
 	}
 	defaultCredentialsOptions := grpcgoogle.DefaultCredentialsOptions{
 		PerRPCCreds: perRPCCreds,
 	}
-	if opts != nil && isDirectPathBoundTokenEnabled(opts.InternalOptions) && creds != nil && creds.TokenProvider != nil && isTokenProviderComputeEngine(ctx, creds) {
+	if opts != nil && isDirectPathBoundTokenEnabled(opts.InternalOptions) && creds != nil && creds.TokenProvider != nil && (knownComputeToken || isTokenProviderComputeEngine(ctx, creds)) {
 		optsClone := opts.resolveDetectOptions()
 		optsClone.TokenBindingType = credentials.ALTSHardBinding
 		altsCreds, err := credentials.DetectDefault(optsClone)
@@ -427,14 +534,22 @@ func directPathCredentialsBundle(ctx context.Context, interconnect bool, opts *O
 
 // configureDirectPath returns some dial options and an endpoint to use if the
 // configuration allows the use of direct path. If it does not the provided
-// grpcOpts and endpoint are returned.
+// grpcOpts and endpoint are returned, except that an explicit google-c2p
+// endpoint returns an error so it is never dialed without passing DirectPath
+// gating.
 func configureDirectPath(ctx context.Context, grpcOpts []grpc.DialOption, opts *Options, endpoint string, creds *auth.Credentials, metadata map[string]string) ([]grpc.DialOption, string, error) {
-	reason, ok := canUseDirectPath(ctx, endpoint, opts, creds)
+	reason, ok, isComputeToken := evaluateDirectPath(ctx, endpoint, opts, creds)
 	if !ok {
 		if reason != "" && opts != nil && (isDirectPathXdsUsed(opts) || isDirectPathXdsOverInterconnectUsed(endpoint, opts)) {
 			logRateLimiter.Do(func() {
 				logDirectPathMisconfig(opts, endpoint, reason)
 			})
+		}
+		if isGoogleC2PEndpoint(endpoint) {
+			if reason != "" {
+				return nil, "", fmt.Errorf("grpctransport: %s", reason)
+			}
+			return nil, "", fmt.Errorf("grpctransport: DirectPath is disabled for endpoint %q", endpoint)
 		}
 		return grpcOpts, endpoint, nil
 	}
@@ -448,7 +563,7 @@ func configureDirectPath(ctx context.Context, grpcOpts []grpc.DialOption, opts *
 	if opts != nil {
 		perRPCCreds.clientUniverseDomain = opts.UniverseDomain
 	}
-	bundle, err := directPathCredentialsBundle(ctx, interconnect, opts, endpoint, creds, perRPCCreds)
+	bundle, err := directPathCredentialsBundleWithComputeCheck(ctx, interconnect, opts, endpoint, creds, perRPCCreds, isComputeToken)
 	if err != nil {
 		return nil, "", err
 	}

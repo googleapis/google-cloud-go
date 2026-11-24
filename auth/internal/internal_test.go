@@ -111,6 +111,41 @@ func TestComputeUniverseDomainProvider(t *testing.T) {
 	}
 }
 
+func TestComputeUniverseDomainProvider_CachingAndRetry(t *testing.T) {
+	oldGet := httpGetMetadataUniverseDomain
+	t.Cleanup(func() {
+		httpGetMetadataUniverseDomain = oldGet
+	})
+
+	transientErr := errors.New("transient mds error")
+	calls := 0
+	httpGetMetadataUniverseDomain = func(context.Context, *metadata.Client) (string, error) {
+		calls++
+		if calls == 1 {
+			return "", transientErr
+		}
+		return "example.com\n", nil
+	}
+
+	c := &ComputeUniverseDomainProvider{}
+
+	// First call fails and must not poison subsequent lookups.
+	if got, err := c.GetProperty(context.Background()); !errors.Is(err, transientErr) || got != "" {
+		t.Fatalf("first GetProperty() = (%q, %v), want (\"\", %v)", got, err, transientErr)
+	}
+	// Second call succeeds and caches the result.
+	if got, err := c.GetProperty(context.Background()); err != nil || got != "example.com" {
+		t.Fatalf("second GetProperty() = (%q, %v), want (%q, nil)", got, err, "example.com")
+	}
+	// Third call hits the cache without invoking MDS again.
+	if got, err := c.GetProperty(context.Background()); err != nil || got != "example.com" {
+		t.Fatalf("third GetProperty() = (%q, %v), want (%q, nil)", got, err, "example.com")
+	}
+	if calls != 2 {
+		t.Errorf("httpGetMetadataUniverseDomain calls = %d, want 2", calls)
+	}
+}
+
 type fakeClonableTransport struct {
 	clone *http.Transport
 }

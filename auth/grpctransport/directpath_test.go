@@ -166,6 +166,7 @@ func token(metadata map[string]interface{}) *auth.Token {
 
 func TestLogDirectPathMisconfigDirectPathNotSet(t *testing.T) {
 	t.Setenv(disableDirectPathEnvVar, "")
+	t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, "")
 	t.Setenv(internal.UniverseDomainEnvVar, "")
 	opts := &Options{InternalOptions: &InternalOptions{}}
 	opts.InternalOptions.EnableDirectPathXds = true
@@ -189,6 +190,7 @@ func TestLogDirectPathMisconfigDirectPathNotSet(t *testing.T) {
 
 func TestLogDirectPathMisconfigWrongCredential(t *testing.T) {
 	t.Setenv(disableDirectPathEnvVar, "")
+	t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, "")
 	t.Setenv(internal.UniverseDomainEnvVar, "")
 	stubGCEState(t, true, internal.DefaultUniverseDomain, nil)
 	opts := &Options{InternalOptions: &InternalOptions{
@@ -215,6 +217,7 @@ func TestLogDirectPathMisconfigWrongCredential(t *testing.T) {
 
 func TestLogDirectPathMisconfigNotOnGCE(t *testing.T) {
 	t.Setenv(disableDirectPathEnvVar, "")
+	t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, "")
 	t.Setenv(internal.UniverseDomainEnvVar, "")
 	stubGCEState(t, false, "", nil)
 	opts := &Options{InternalOptions: &InternalOptions{}}
@@ -242,6 +245,7 @@ func TestConfigureDirectPath_Interconnect(t *testing.T) {
 	t.Setenv(disableDirectPathEnvVar, "")
 	t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, "")
 	t.Setenv(internal.UniverseDomainEnvVar, "")
+	stubGCEState(t, false, "", nil)
 	opts := &Options{
 		InternalOptions: &InternalOptions{
 			EnableDirectPath:                    true,
@@ -264,6 +268,11 @@ func TestConfigureDirectPath_Interconnect(t *testing.T) {
 		{
 			name:     "standard googleapis.com endpoint is rewritten to -direct.googleapis.com",
 			endpoint: "storage.googleapis.com:443",
+			want:     "google-c2p:///storage-direct.googleapis.com?force-xds",
+		},
+		{
+			name:     "uppercase googleapis.com endpoint is normalized and rewritten to -direct.googleapis.com",
+			endpoint: "STORAGE.GOOGLEAPIS.COM:443",
 			want:     "google-c2p:///storage-direct.googleapis.com?force-xds",
 		},
 		{
@@ -423,6 +432,7 @@ func TestInterconnectCredentials_NewWithMode(t *testing.T) {
 func TestConfigureDirectPath_Interconnect_EnvOverride(t *testing.T) {
 	t.Setenv(disableDirectPathEnvVar, "")
 	t.Setenv(internal.UniverseDomainEnvVar, "")
+	stubGCEState(t, false, "", nil)
 	creds := auth.NewCredentials(&auth.CredentialsOptions{
 		TokenProvider: &staticTP{tok: &auth.Token{Value: "fakeToken"}},
 	})
@@ -473,6 +483,7 @@ func TestConfigureDirectPath_Interconnect_CustomURI(t *testing.T) {
 	t.Setenv(disableDirectPathEnvVar, "")
 	t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, "")
 	t.Setenv(internal.UniverseDomainEnvVar, "")
+	stubGCEState(t, false, "", nil)
 	opts := &Options{
 		InternalOptions: &InternalOptions{
 			EnableDirectPath:                    true,
@@ -570,6 +581,17 @@ func TestInterconnectHostAndAuthority(t *testing.T) {
 			wantAuthorityOverride: "foo.sandbox.googleapis.com",
 		},
 		{
+			name:           "uppercase storage host is normalized and keeps derived authority",
+			host:           "STORAGE.GOOGLEAPIS.COM",
+			wantTargetHost: "storage-direct.googleapis.com",
+		},
+		{
+			name:                  "uppercase other service host is normalized, rewritten, and overridden",
+			host:                  "SPANNER.GOOGLEAPIS.COM",
+			wantTargetHost:        "spanner-direct.googleapis.com",
+			wantAuthorityOverride: "spanner.googleapis.com",
+		},
+		{
 			name:           "non-googleapis host is unchanged",
 			host:           "localhost",
 			wantTargetHost: "localhost",
@@ -593,6 +615,7 @@ func TestInterconnectHostAndAuthority(t *testing.T) {
 func TestConfigureDirectPath_Interconnect_Authority(t *testing.T) {
 	t.Setenv(disableDirectPathEnvVar, "")
 	t.Setenv(internal.UniverseDomainEnvVar, "")
+	stubGCEState(t, false, "", nil)
 	creds := auth.NewCredentials(&auth.CredentialsOptions{
 		TokenProvider: &staticTP{tok: &auth.Token{Value: "fakeToken"}},
 	})
@@ -658,6 +681,17 @@ func TestConfigureDirectPath_Interconnect_Authority(t *testing.T) {
 			endpoint: "storage-direct.googleapis.com:443",
 		},
 		{
+			name:     "application-supplied uppercase storage-direct endpoint",
+			opts:     nonInterconnectOpts,
+			endpoint: "STORAGE-DIRECT.GOOGLEAPIS.COM:443",
+		},
+		{
+			name:                  "uppercase other service keeps authority override",
+			opts:                  interconnectOpts,
+			endpoint:              "SPANNER.GOOGLEAPIS.COM:443",
+			wantAuthorityOverride: true,
+		},
+		{
 			name:     "application-supplied dns scheme storage-direct endpoint",
 			opts:     nonInterconnectOpts,
 			endpoint: "dns:///storage-direct.googleapis.com:443",
@@ -716,6 +750,7 @@ func TestConfigureDirectPath_Interconnect_Authority(t *testing.T) {
 }
 
 func TestConfigureDirectPath_Interconnect_FallbackPreservesEndpoint(t *testing.T) {
+	stubGCEState(t, false, "", nil)
 	creds := auth.NewCredentials(&auth.CredentialsOptions{
 		TokenProvider: &staticTP{tok: &auth.Token{Value: "fakeToken"}},
 	})
@@ -829,6 +864,7 @@ func TestLogDirectPathMisconfig_Interconnect(t *testing.T) {
 	t.Setenv(disableDirectPathEnvVar, "")
 	t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, "")
 	t.Setenv(internal.UniverseDomainEnvVar, "")
+	stubGCEState(t, false, "", nil)
 	opts := &Options{
 		InternalOptions: &InternalOptions{
 			EnableDirectPath:                    true,
@@ -973,6 +1009,7 @@ func TestConfigureDirectPath_PropagatesMetadataAndUniverseDomain(t *testing.T) {
 	t.Setenv(disableDirectPathEnvVar, "")
 	t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, "")
 	t.Setenv(internal.UniverseDomainEnvVar, "")
+	stubGCEState(t, false, "", nil)
 	opts := &Options{
 		UniverseDomain: "googleapis.com",
 		InternalOptions: &InternalOptions{
@@ -1055,10 +1092,16 @@ func TestParseTarget(t *testing.T) {
 				"force-xds": {""},
 			},
 		},
+		{
+			input:    "STORAGE.GOOGLEAPIS.COM:443",
+			wantHost: "storage.googleapis.com",
+		},
 		{input: "", wantErr: true},
 		{input: "dns:///", wantErr: true},
 		{input: "google-c2p:///", wantErr: true},
 		{input: ":443", wantErr: true},
+		{input: "[storage.googleapis.com]:443", wantErr: true},
+		{input: "[::1]:8080", wantErr: true},
 		{input: "https://storage.googleapis.com:443", wantErr: true},
 		{input: "dns://8.8.8.8/storage.googleapis.com:443", wantErr: true},
 		{input: "evil.com@storage.googleapis.com:443", wantErr: true},
@@ -1094,6 +1137,7 @@ func TestLogDirectPathMisconfig_Interconnect_SpecificWarnings(t *testing.T) {
 	t.Setenv(disableDirectPathEnvVar, "")
 	t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, "")
 	t.Setenv(internal.UniverseDomainEnvVar, "")
+	stubGCEState(t, false, "", nil)
 
 	t.Run("non-default universe domain warning", func(t *testing.T) {
 		opts := &Options{
@@ -1163,7 +1207,7 @@ func TestLogDirectPathMisconfig_Interconnect_SpecificWarnings(t *testing.T) {
 		endpoint := "storage-direct.googleapis.com:443"
 		reason, _ := canUseDirectPath(t.Context(), endpoint, opts, creds)
 		logDirectPathMisconfig(opts, endpoint, reason)
-		wantMsg := directPathInterconnectUnsupportedUDReason
+		wantMsg := directPathInterconnectUDLookupErrReason
 		if !strings.Contains(logOutput.String(), wantMsg) {
 			t.Errorf("got log %q, want containing %q", logOutput.String(), wantMsg)
 		}
@@ -1313,6 +1357,7 @@ func TestHasUniverseDomainHost(t *testing.T) {
 		{name: "dns_query_string", endpoint: "dns:///storage.googleapis.com:443?foo=bar", universeDomain: "googleapis.com", want: false},
 		{name: "google_c2p_fragment", endpoint: "google-c2p:///storage.googleapis.com?force-xds#frag", universeDomain: "googleapis.com", want: false},
 		{name: "malformed_host_port", endpoint: "foo:bar:baz.googleapis.com", universeDomain: "googleapis.com", want: false},
+		{name: "bracketed_host", endpoint: "[storage.googleapis.com]:443", universeDomain: "googleapis.com", want: false},
 		{name: "bare_host_no_dot", endpoint: "localhost", universeDomain: "googleapis.com", want: false},
 		{name: "localhost_port", endpoint: "localhost:8080", universeDomain: "googleapis.com", want: false},
 		{name: "ipv4_loopback", endpoint: "127.0.0.1:8080", universeDomain: "googleapis.com", want: false},
@@ -1400,6 +1445,33 @@ func TestCanUseDirectPath(t *testing.T) {
 			want:     false,
 		},
 		{
+			name:     "localhost_emulator_no_warning",
+			endpoint: "localhost:8080",
+			opts:     &Options{InternalOptions: &InternalOptions{EnableDirectPath: true}},
+			creds:    auth.NewCredentials(&auth.CredentialsOptions{TokenProvider: defaultComputeTokenProvider()}),
+			gce:      true,
+			mdsUD:    "googleapis.com",
+			want:     false,
+		},
+		{
+			name:     "ipv4_emulator_no_warning",
+			endpoint: "127.0.0.1:8080",
+			opts:     &Options{InternalOptions: &InternalOptions{EnableDirectPath: true}},
+			creds:    auth.NewCredentials(&auth.CredentialsOptions{TokenProvider: defaultComputeTokenProvider()}),
+			gce:      true,
+			mdsUD:    "googleapis.com",
+			want:     false,
+		},
+		{
+			name:     "ipv6_emulator_no_warning",
+			endpoint: "[::1]:8080",
+			opts:     &Options{InternalOptions: &InternalOptions{EnableDirectPath: true}},
+			creds:    auth.NewCredentials(&auth.CredentialsOptions{TokenProvider: defaultComputeTokenProvider()}),
+			gce:      true,
+			mdsUD:    "googleapis.com",
+			want:     false,
+		},
+		{
 			name:     "tpc_gce_adc_without_client_universe_domain",
 			endpoint: "storage.googleapis.com:443",
 			opts:     &Options{InternalOptions: &InternalOptions{EnableDirectPath: true}},
@@ -1438,7 +1510,7 @@ func TestCanUseDirectPath(t *testing.T) {
 			gce:        true,
 			mdsUD:      "googleapis.com",
 			want:       false,
-			wantReason: directPathUnsupportedUniverseReason,
+			wantReason: directPathUDLookupErrReason + ": mds unavailable",
 		},
 		{
 			name:       "creds_without_ud_provider_blocked_by_tpc_mds",
@@ -1458,7 +1530,7 @@ func TestCanUseDirectPath(t *testing.T) {
 			gce:        true,
 			mdsErr:     errors.New("mds error"),
 			want:       false,
-			wantReason: directPathUnsupportedUniverseReason,
+			wantReason: directPathUDLookupErrReason + ": mds error",
 		},
 		{
 			name:     "creds_without_ud_provider_allowed_by_gdu_mds",
@@ -1644,7 +1716,7 @@ func TestCanUseDirectPath(t *testing.T) {
 			}),
 			gce:        false,
 			want:       false,
-			wantReason: directPathInterconnectUnsupportedUDReason,
+			wantReason: directPathInterconnectUDLookupErrReason + ": ud error",
 		},
 		{
 			name:     "interconnect_gdu_creds_off_gce_allowed",
@@ -1662,6 +1734,77 @@ func TestCanUseDirectPath(t *testing.T) {
 			}),
 			gce:  false,
 			want: true,
+		},
+		{
+			name:     "interconnect_on_tpc_gce_vm_raw_creds_rejected",
+			endpoint: "storage.googleapis.com:443",
+			opts: &Options{
+				InternalOptions: &InternalOptions{
+					EnableDirectPath:                    true,
+					EnableDirectPathXds:                 true,
+					EnableDirectPathXdsOverInterconnect: true,
+				},
+			},
+			creds:      auth.NewCredentials(&auth.CredentialsOptions{TokenProvider: defaultComputeTokenProvider()}),
+			gce:        true,
+			mdsUD:      "example.com",
+			want:       false,
+			wantReason: directPathInterconnectUnsupportedUDReason,
+		},
+		{
+			name:     "interconnect_on_tpc_gce_vm_gdu_sa_rejected",
+			endpoint: "storage-direct.googleapis.com:443",
+			opts: &Options{
+				InternalOptions: &InternalOptions{
+					EnableDirectPath:    true,
+					EnableDirectPathXds: true,
+				},
+			},
+			creds: auth.NewCredentials(&auth.CredentialsOptions{
+				TokenProvider:          nonComputeTokenProvider(),
+				UniverseDomainProvider: internal.StaticCredentialsProperty("googleapis.com"),
+			}),
+			gce:        true,
+			mdsUD:      "example.com",
+			want:       false,
+			wantReason: directPathInterconnectUnsupportedUDReason,
+		},
+		{
+			name:     "interconnect_on_gce_vm_mds_error_fails_closed",
+			endpoint: "storage.googleapis.com:443",
+			opts: &Options{
+				InternalOptions: &InternalOptions{
+					EnableDirectPath:                    true,
+					EnableDirectPathXds:                 true,
+					EnableDirectPathXdsOverInterconnect: true,
+				},
+			},
+			creds: auth.NewCredentials(&auth.CredentialsOptions{
+				TokenProvider:          nonComputeTokenProvider(),
+				UniverseDomainProvider: internal.StaticCredentialsProperty("googleapis.com"),
+			}),
+			gce:        true,
+			mdsErr:     errors.New("mds error"),
+			want:       false,
+			wantReason: directPathInterconnectUDLookupErrReason + ": mds error",
+		},
+		{
+			name:     "interconnect_on_gdu_gce_vm_allowed",
+			endpoint: "storage.googleapis.com:443",
+			opts: &Options{
+				InternalOptions: &InternalOptions{
+					EnableDirectPath:                    true,
+					EnableDirectPathXds:                 true,
+					EnableDirectPathXdsOverInterconnect: true,
+				},
+			},
+			creds: auth.NewCredentials(&auth.CredentialsOptions{
+				TokenProvider:          nonComputeTokenProvider(),
+				UniverseDomainProvider: internal.StaticCredentialsProperty("googleapis.com"),
+			}),
+			gce:   true,
+			mdsUD: "googleapis.com",
+			want:  true,
 		},
 	}
 
@@ -1852,6 +1995,25 @@ func TestDial_DirectPathUniverseDomainGating(t *testing.T) {
 			wantNumOpts: 2,
 		},
 		{
+			name: "tpc_env_var_with_template_resolves_tpc_endpoint_and_blocks_directpath",
+			opts: &Options{
+				DisableTelemetry: true,
+				Credentials: auth.NewCredentials(&auth.CredentialsOptions{
+					TokenProvider:          defaultComputeTokenProvider(),
+					UniverseDomainProvider: internal.StaticCredentialsProperty("example.com"),
+				}),
+				InternalOptions: &InternalOptions{
+					DefaultEndpointTemplate: "storage.UNIVERSE_DOMAIN:443",
+					EnableDirectPath:        true,
+					EnableDirectPathXds:     true,
+				},
+			},
+			udEnv:       "example.com",
+			mdsUD:       "example.com",
+			wantTarget:  "storage.example.com:443",
+			wantNumOpts: 2,
+		},
+		{
 			name: "tpc_endpoint_without_universe_domain_blocks_directpath",
 			opts: &Options{
 				Endpoint:         "storage.example.com:443",
@@ -1958,6 +2120,24 @@ func TestDial_DirectPathUniverseDomainGating(t *testing.T) {
 			wantTarget:  "storage.googleapis.com:443",
 			wantNumOpts: 2,
 		},
+		{
+			name: "interconnect_on_tpc_gce_vm_blocks_directpath",
+			opts: &Options{
+				DisableTelemetry: true,
+				Credentials: auth.NewCredentials(&auth.CredentialsOptions{
+					TokenProvider: defaultComputeTokenProvider(),
+				}),
+				InternalOptions: &InternalOptions{
+					DefaultEndpointTemplate:             "storage.UNIVERSE_DOMAIN:443",
+					EnableDirectPath:                    true,
+					EnableDirectPathXds:                 true,
+					EnableDirectPathXdsOverInterconnect: true,
+				},
+			},
+			mdsUD:       "example.com",
+			wantTarget:  "storage.googleapis.com:443",
+			wantNumOpts: 2,
+		},
 	}
 
 	for _, tc := range tests {
@@ -1998,6 +2178,211 @@ func TestDial_DirectPathUniverseDomainGating(t *testing.T) {
 	}
 }
 
+func TestDial_ExplicitGoogleC2PEndpointGating(t *testing.T) {
+	tests := []struct {
+		name       string
+		opts       *Options
+		disableEnv string
+		udEnv      string
+		gce        bool
+		mdsUD      string
+		mdsErr     error
+		wantErr    bool
+		wantTarget string
+	}{
+		{
+			name: "gdu_gce_allowed",
+			opts: &Options{
+				Endpoint:         "google-c2p:///storage.googleapis.com",
+				DisableTelemetry: true,
+				Credentials: auth.NewCredentials(&auth.CredentialsOptions{
+					TokenProvider:          defaultComputeTokenProvider(),
+					UniverseDomainProvider: internal.StaticCredentialsProperty("googleapis.com"),
+				}),
+				InternalOptions: &InternalOptions{
+					EnableDirectPath:    true,
+					EnableDirectPathXds: true,
+				},
+			},
+			gce:        true,
+			mdsUD:      "googleapis.com",
+			wantErr:    false,
+			wantTarget: "google-c2p:///storage.googleapis.com",
+		},
+		{
+			name: "tpc_gce_vm_rejected",
+			opts: &Options{
+				Endpoint:         "google-c2p:///storage.googleapis.com",
+				DisableTelemetry: true,
+				Credentials: auth.NewCredentials(&auth.CredentialsOptions{
+					TokenProvider: defaultComputeTokenProvider(),
+				}),
+				InternalOptions: &InternalOptions{
+					EnableDirectPath:    true,
+					EnableDirectPathXds: true,
+				},
+			},
+			gce:     true,
+			mdsUD:   "example.com",
+			wantErr: true,
+		},
+		{
+			name: "tpc_endpoint_rejected",
+			opts: &Options{
+				Endpoint:         "google-c2p:///storage.example.com",
+				DisableTelemetry: true,
+				Credentials: auth.NewCredentials(&auth.CredentialsOptions{
+					TokenProvider:          defaultComputeTokenProvider(),
+					UniverseDomainProvider: internal.StaticCredentialsProperty("googleapis.com"),
+				}),
+				InternalOptions: &InternalOptions{
+					EnableDirectPath:    true,
+					EnableDirectPathXds: true,
+				},
+			},
+			gce:     true,
+			mdsUD:   "googleapis.com",
+			wantErr: true,
+		},
+		{
+			name: "tpc_force_xds_off_gce_rejected",
+			opts: &Options{
+				Endpoint:         "google-c2p:///storage-direct.example.com?force-xds",
+				DisableTelemetry: true,
+				Credentials: auth.NewCredentials(&auth.CredentialsOptions{
+					TokenProvider:          nonComputeTokenProvider(),
+					UniverseDomainProvider: internal.StaticCredentialsProperty("example.com"),
+				}),
+				InternalOptions: &InternalOptions{
+					EnableDirectPath:                    true,
+					EnableDirectPathXds:                 true,
+					EnableDirectPathXdsOverInterconnect: true,
+				},
+			},
+			gce:     false,
+			wantErr: true,
+		},
+		{
+			name: "disabled_by_env_rejected",
+			opts: &Options{
+				Endpoint:         "google-c2p:///storage.googleapis.com",
+				DisableTelemetry: true,
+				Credentials: auth.NewCredentials(&auth.CredentialsOptions{
+					TokenProvider:          defaultComputeTokenProvider(),
+					UniverseDomainProvider: internal.StaticCredentialsProperty("googleapis.com"),
+				}),
+				InternalOptions: &InternalOptions{
+					EnableDirectPath:    true,
+					EnableDirectPathXds: true,
+				},
+			},
+			disableEnv: "true",
+			gce:        true,
+			mdsUD:      "googleapis.com",
+			wantErr:    true,
+		},
+		{
+			name: "enable_direct_path_false_on_tpc_vm_rejected",
+			opts: &Options{
+				Endpoint:         "google-c2p:///storage.googleapis.com",
+				DisableTelemetry: true,
+				Credentials: auth.NewCredentials(&auth.CredentialsOptions{
+					TokenProvider: defaultComputeTokenProvider(),
+				}),
+				InternalOptions: &InternalOptions{
+					EnableDirectPath: false,
+				},
+			},
+			gce:     true,
+			mdsUD:   "example.com",
+			wantErr: true,
+		},
+		{
+			name: "disable_authentication_on_tpc_vm_rejected",
+			opts: &Options{
+				Endpoint:              "google-c2p:///storage.googleapis.com",
+				DisableTelemetry:      true,
+				DisableAuthentication: true,
+				InternalOptions: &InternalOptions{
+					EnableDirectPath:    true,
+					EnableDirectPathXds: true,
+				},
+			},
+			gce:     true,
+			mdsUD:   "example.com",
+			wantErr: true,
+		},
+		{
+			name: "api_key_on_tpc_vm_rejected",
+			opts: &Options{
+				Endpoint:         "google-c2p:///storage.googleapis.com",
+				DisableTelemetry: true,
+				APIKey:           "fake-api-key",
+				InternalOptions: &InternalOptions{
+					EnableDirectPath:    true,
+					EnableDirectPathXds: true,
+				},
+			},
+			gce:     true,
+			mdsUD:   "example.com",
+			wantErr: true,
+		},
+		{
+			name: "uppercase_scheme_on_tpc_vm_rejected",
+			opts: &Options{
+				Endpoint:         "GOOGLE-C2P:///storage.googleapis.com",
+				DisableTelemetry: true,
+				Credentials: auth.NewCredentials(&auth.CredentialsOptions{
+					TokenProvider: defaultComputeTokenProvider(),
+				}),
+				InternalOptions: &InternalOptions{
+					EnableDirectPath:    true,
+					EnableDirectPathXds: true,
+				},
+			},
+			gce:     true,
+			mdsUD:   "example.com",
+			wantErr: true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv(disableDirectPathEnvVar, tc.disableEnv)
+			t.Setenv(enableDirectPathXdsEnvVar, "")
+			t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, "")
+			t.Setenv(internal.UniverseDomainEnvVar, tc.udEnv)
+			t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
+			t.Setenv("EXPERIMENTAL_GOOGLE_API_USE_S2A", "false")
+			stubGCEState(t, tc.gce, tc.mdsUD, tc.mdsErr)
+
+			origDialContext := grpcDialContext
+			dialCalled := false
+			var gotTarget string
+			grpcDialContext = func(_ context.Context, target string, _ ...grpc.DialOption) (*grpc.ClientConn, error) {
+				dialCalled = true
+				gotTarget = target
+				return nil, nil
+			}
+			t.Cleanup(func() { grpcDialContext = origDialContext })
+
+			_, err := dial(t.Context(), true, tc.opts)
+			if (err != nil) != tc.wantErr {
+				t.Fatalf("dial() err = %v, wantErr = %v", err, tc.wantErr)
+			}
+			if tc.wantErr {
+				if dialCalled {
+					t.Errorf("grpcDialContext was called with %q despite rejected google-c2p endpoint", gotTarget)
+				}
+				return
+			}
+			if !dialCalled || gotTarget != tc.wantTarget {
+				t.Errorf("dial() called=%v target=%q, want called=true target=%q", dialCalled, gotTarget, tc.wantTarget)
+			}
+		})
+	}
+}
+
 func TestFetchMetadataUniverseDomain(t *testing.T) {
 	tests := []struct {
 		name       string
@@ -2015,6 +2400,8 @@ func TestFetchMetadataUniverseDomain(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			resetMetadataUniverseDomainCache()
+			t.Cleanup(resetMetadataUniverseDomainCache)
 			srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				if r.URL.Path != "/computeMetadata/v1/universe/universe-domain" {
 					w.WriteHeader(http.StatusBadRequest)
@@ -2041,7 +2428,45 @@ func TestFetchMetadataUniverseDomain(t *testing.T) {
 	}
 }
 
+func TestFetchMetadataUniverseDomain_CachingAndRetry(t *testing.T) {
+	resetMetadataUniverseDomainCache()
+	t.Cleanup(resetMetadataUniverseDomainCache)
+
+	calls := 0
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls++
+		if calls == 1 {
+			w.WriteHeader(http.StatusForbidden)
+			_, _ = w.Write([]byte("forbidden"))
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("googleapis.com\n"))
+	}))
+	t.Cleanup(srv.Close)
+
+	t.Setenv("GCE_METADATA_HOST", strings.TrimPrefix(srv.URL, "http://"))
+
+	// First call returns error and must not be cached.
+	if got, err := fetchMetadataUniverseDomain(t.Context()); err == nil || got != "" {
+		t.Fatalf("first fetchMetadataUniverseDomain() = (%q, %v), want error", got, err)
+	}
+	// Second call succeeds and caches the result.
+	if got, err := fetchMetadataUniverseDomain(t.Context()); err != nil || got != "googleapis.com" {
+		t.Fatalf("second fetchMetadataUniverseDomain() = (%q, %v), want (%q, nil)", got, err, "googleapis.com")
+	}
+	// Third call hits the cache without contacting the server again.
+	if got, err := fetchMetadataUniverseDomain(t.Context()); err != nil || got != "googleapis.com" {
+		t.Fatalf("third fetchMetadataUniverseDomain() = (%q, %v), want (%q, nil)", got, err, "googleapis.com")
+	}
+	if calls != 2 {
+		t.Errorf("metadata server hits = %d, want 2", calls)
+	}
+}
+
 func TestFetchMetadataUniverseDomain_Timeout(t *testing.T) {
+	resetMetadataUniverseDomainCache()
+	t.Cleanup(resetMetadataUniverseDomainCache)
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		<-r.Context().Done()
 	}))
@@ -2067,6 +2492,7 @@ func TestLogDirectPathMisconfig_NonDefaultUniverseDomain(t *testing.T) {
 		creds    *auth.Credentials
 		mdsUD    string
 		mdsErr   error
+		wantLog  string
 	}{
 		{
 			name:     "non_gdu_universe_domain_option",
@@ -2078,7 +2504,8 @@ func TestLogDirectPathMisconfig_NonDefaultUniverseDomain(t *testing.T) {
 					EnableDirectPathXds: true,
 				},
 			},
-			creds: auth.NewCredentials(&auth.CredentialsOptions{TokenProvider: defaultComputeTokenProvider()}),
+			creds:   auth.NewCredentials(&auth.CredentialsOptions{TokenProvider: defaultComputeTokenProvider()}),
+			wantLog: directPathUnsupportedUniverseReason,
 		},
 		{
 			name:     "non_gdu_endpoint_host",
@@ -2089,7 +2516,8 @@ func TestLogDirectPathMisconfig_NonDefaultUniverseDomain(t *testing.T) {
 					EnableDirectPathXds: true,
 				},
 			},
-			creds: auth.NewCredentials(&auth.CredentialsOptions{TokenProvider: defaultComputeTokenProvider()}),
+			creds:   auth.NewCredentials(&auth.CredentialsOptions{TokenProvider: defaultComputeTokenProvider()}),
+			wantLog: directPathUnsupportedUniverseReason,
 		},
 		{
 			name:     "non_gdu_credentials_universe_domain",
@@ -2104,6 +2532,7 @@ func TestLogDirectPathMisconfig_NonDefaultUniverseDomain(t *testing.T) {
 				TokenProvider:          defaultComputeTokenProvider(),
 				UniverseDomainProvider: internal.StaticCredentialsProperty("example.com"),
 			}),
+			wantLog: directPathUnsupportedUniverseReason,
 		},
 		{
 			name:     "credentials_universe_domain_error",
@@ -2120,6 +2549,7 @@ func TestLogDirectPathMisconfig_NonDefaultUniverseDomain(t *testing.T) {
 					return "", errors.New("mds error")
 				}),
 			}),
+			wantLog: directPathUDLookupErrReason,
 		},
 		{
 			name:     "non_gdu_mds_without_provider",
@@ -2130,8 +2560,9 @@ func TestLogDirectPathMisconfig_NonDefaultUniverseDomain(t *testing.T) {
 					EnableDirectPathXds: true,
 				},
 			},
-			creds: auth.NewCredentials(&auth.CredentialsOptions{TokenProvider: defaultComputeTokenProvider()}),
-			mdsUD: "example.com",
+			creds:   auth.NewCredentials(&auth.CredentialsOptions{TokenProvider: defaultComputeTokenProvider()}),
+			mdsUD:   "example.com",
+			wantLog: directPathUnsupportedUniverseReason,
 		},
 		{
 			name:     "mds_error_without_provider",
@@ -2142,8 +2573,9 @@ func TestLogDirectPathMisconfig_NonDefaultUniverseDomain(t *testing.T) {
 					EnableDirectPathXds: true,
 				},
 			},
-			creds:  auth.NewCredentials(&auth.CredentialsOptions{TokenProvider: defaultComputeTokenProvider()}),
-			mdsErr: errors.New("mds error"),
+			creds:   auth.NewCredentials(&auth.CredentialsOptions{TokenProvider: defaultComputeTokenProvider()}),
+			mdsErr:  errors.New("mds error"),
+			wantLog: directPathUDLookupErrReason,
 		},
 	}
 
@@ -2160,8 +2592,8 @@ func TestLogDirectPathMisconfig_NonDefaultUniverseDomain(t *testing.T) {
 			reason, _ := canUseDirectPath(t.Context(), tc.endpoint, tc.opts, tc.creds)
 			logDirectPathMisconfig(tc.opts, tc.endpoint, reason)
 
-			if !strings.Contains(logOutput.String(), directPathUnsupportedUniverseReason) {
-				t.Errorf("logDirectPathMisconfig(%q) logged %q, want substring %q", tc.endpoint, logOutput.String(), directPathUnsupportedUniverseReason)
+			if !strings.Contains(logOutput.String(), tc.wantLog) {
+				t.Errorf("logDirectPathMisconfig(%q) logged %q, want substring %q", tc.endpoint, logOutput.String(), tc.wantLog)
 			}
 		})
 	}
@@ -2216,11 +2648,13 @@ func TestLogDirectPathMisconfig_ValidGDU(t *testing.T) {
 
 func TestDial_DirectPathDoesNotDuplicateLookups(t *testing.T) {
 	tests := []struct {
-		name        string
-		mdsUD       string
-		wantWarning string
+		name                 string
+		mdsUD                string
+		allowHardBoundTokens []string
+		wantWarning          string
 	}{
 		{name: "healthy_gdu", mdsUD: "googleapis.com"},
+		{name: "healthy_gdu_with_alts_bound_tokens", mdsUD: "googleapis.com", allowHardBoundTokens: []string{"ALTS"}},
 		{name: "rejected_non_gdu_mds", mdsUD: "example.com", wantWarning: directPathUnsupportedUniverseReason},
 	}
 
@@ -2259,10 +2693,14 @@ func TestDial_DirectPathDoesNotDuplicateLookups(t *testing.T) {
 				DisableTelemetry: true,
 				Logger:           slog.New(slog.NewTextHandler(&logOutput, nil)),
 				Credentials:      auth.NewCredentials(&auth.CredentialsOptions{TokenProvider: tp}),
+				DetectOpts: &credentials.DetectOptions{
+					CredentialsFile: "../internal/testdata/sa.json",
+				},
 				InternalOptions: &InternalOptions{
 					DefaultEndpointTemplate: "storage.UNIVERSE_DOMAIN:443",
 					EnableDirectPath:        true,
 					EnableDirectPathXds:     true,
+					AllowHardBoundTokens:    tc.allowHardBoundTokens,
 				},
 			}
 
@@ -2283,5 +2721,63 @@ func TestDial_DirectPathDoesNotDuplicateLookups(t *testing.T) {
 				t.Errorf("dial() logged %q, want substring %q", logOutput.String(), tc.wantWarning)
 			}
 		})
+	}
+}
+
+func TestDial_PoolCachesMetadataUniverseDomain(t *testing.T) {
+	resetMetadataUniverseDomainCache()
+	t.Cleanup(resetMetadataUniverseDomainCache)
+
+	t.Setenv(disableDirectPathEnvVar, "")
+	t.Setenv(enableDirectPathXdsEnvVar, "")
+	t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, "")
+	t.Setenv(internal.UniverseDomainEnvVar, "")
+	t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
+	t.Setenv("EXPERIMENTAL_GOOGLE_API_USE_S2A", "false")
+
+	mdsHits := 0
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		mdsHits++
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("googleapis.com"))
+	}))
+	t.Cleanup(srv.Close)
+	t.Setenv("GCE_METADATA_HOST", strings.TrimPrefix(srv.URL, "http://"))
+
+	origOnComputeEngine := onComputeEngine
+	origDialContext := grpcDialContext
+	onComputeEngine = func() bool { return true }
+	dialCount := 0
+	grpcDialContext = func(_ context.Context, target string, _ ...grpc.DialOption) (*grpc.ClientConn, error) {
+		dialCount++
+		if target != "google-c2p:///storage.googleapis.com" {
+			t.Errorf("dial %d target = %q, want google-c2p:///storage.googleapis.com", dialCount, target)
+		}
+		return nil, nil
+	}
+	t.Cleanup(func() {
+		onComputeEngine = origOnComputeEngine
+		grpcDialContext = origDialContext
+	})
+
+	opts := &Options{
+		PoolSize:         3,
+		DisableTelemetry: true,
+		Credentials:      auth.NewCredentials(&auth.CredentialsOptions{TokenProvider: defaultComputeTokenProvider()}),
+		InternalOptions: &InternalOptions{
+			DefaultEndpointTemplate: "storage.UNIVERSE_DOMAIN:443",
+			EnableDirectPath:        true,
+			EnableDirectPathXds:     true,
+		},
+	}
+
+	if _, err := Dial(t.Context(), true, opts); err != nil {
+		t.Fatalf("Dial() unexpected error: %v", err)
+	}
+	if dialCount != 3 {
+		t.Errorf("dialCount = %d, want 3", dialCount)
+	}
+	if mdsHits != 1 {
+		t.Errorf("metadata server hits across PoolSize=3 = %d, want 1", mdsHits)
 	}
 }
