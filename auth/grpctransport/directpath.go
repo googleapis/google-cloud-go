@@ -328,15 +328,15 @@ func canUseDirectPath(ctx context.Context, endpoint string, opts *Options, creds
 		}
 		return directPathIncompatibleCredReason, false
 	}
-	if !onComputeEngine() {
-		return directPathNotOnGCEReason, false
-	}
 	if interconnect {
 		ud, err := creds.UniverseDomain(ctx)
 		if err != nil || strings.TrimSpace(ud) != internal.DefaultUniverseDomain {
 			return directPathInterconnectUnsupportedUDReason, false
 		}
 		return "", true
+	}
+	if !onComputeEngine() {
+		return directPathNotOnGCEReason, false
 	}
 	ud, err := creds.UniverseDomain(ctx)
 	if err != nil || strings.TrimSpace(ud) != internal.DefaultUniverseDomain {
