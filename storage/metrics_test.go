@@ -26,10 +26,12 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/auth"
+	gcemetadata "cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/storage/internal"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/uuid"
@@ -39,9 +41,12 @@ import (
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
+	"google.golang.org/api/transport"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/connectivity"
@@ -1949,5 +1954,113 @@ func TestMetricUnits(t *testing.T) {
 		if units[name] != wantUnit {
 			t.Errorf("metric %s unit = %q, want %q", name, units[name], wantUnit)
 		}
+	}
+}
+
+func TestMonitoringClientOptions(t *testing.T) {
+	t.Run("disabled_without_authentication", func(t *testing.T) {
+		if _, ok := monitoringClientOptions([]option.ClientOption{option.WithoutAuthentication()}, nil, nil); ok {
+			t.Fatal("monitoringClientOptions() ok = true, want false with WithoutAuthentication")
+		}
+	})
+
+	t.Run("disabled_on_custom_transport_even_with_ambient_creds", func(t *testing.T) {
+		ambientCreds := &auth.Credentials{TokenProvider: &staticAuthTokenProvider{token: &auth.Token{Value: "ambient"}}}
+		if _, ok := monitoringClientOptions([]option.ClientOption{option.WithHTTPClient(http.DefaultClient)}, ambientCreds, nil); ok {
+			t.Fatal("monitoringClientOptions() ok = true, want false with custom HTTP client")
+		}
+		if _, ok := monitoringClientOptions([]option.ClientOption{option.WithGRPCConn(&grpc.ClientConn{})}, ambientCreds, nil); ok {
+			t.Fatal("monitoringClientOptions() ok = true, want false with custom gRPC conn")
+		}
+	})
+
+	t.Run("forwards_universe_domain_and_cloned_auth_creds", func(t *testing.T) {
+		t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", "")
+		t.Setenv("GOOGLE_API_USE_MTLS_ENDPOINT", "")
+
+		parentCreds := &auth.Credentials{TokenProvider: &staticAuthTokenProvider{token: &auth.Token{Value: "tok"}}}
+		clientOpts := []option.ClientOption{
+			option.WithUniverseDomain("custom.example.com"),
+			option.WithEndpoint("https://storage.custom.example.com/storage/v1/"),
+		}
+
+		mOpts, ok := monitoringClientOptions(clientOpts, parentCreds, nil)
+		if !ok {
+			t.Fatal("monitoringClientOptions() ok = false, want true")
+		}
+
+		// Verify Monitoring resolves to monitoring.<universe>:443, not monitoring.googleapis.com
+		// and not the Storage endpoint.
+		res, err := internaloption.NewUnsafeResolver(append(mOpts,
+			internaloption.WithDefaultEndpointTemplate("monitoring.UNIVERSE_DOMAIN:443"),
+			internaloption.WithDefaultUniverseDomain("googleapis.com"),
+		)...)
+		if err != nil {
+			t.Fatalf("NewUnsafeResolver: %v", err)
+		}
+		ep, err := res.ResolvedGRPCEndpoint()
+		if err != nil {
+			t.Fatalf("ResolvedGRPCEndpoint: %v", err)
+		}
+		if ep != "monitoring.custom.example.com:443" {
+			t.Errorf("resolved monitoring endpoint = %q, want %q", ep, "monitoring.custom.example.com:443")
+		}
+
+		// Mutate parentCreds in place (as http_client.go does when wrapping) and ensure
+		// the forwarded Monitoring credentials remain untouched.
+		parentCreds.TokenProvider = nil
+		gotCreds, err := internaloption.AuthCreds(context.Background(), mOpts)
+		if err != nil {
+			t.Fatalf("internaloption.AuthCreds: %v", err)
+		}
+		if gotCreds == nil || gotCreds.TokenProvider == nil {
+			t.Fatal("forwarded auth credentials were nil or mutated by parent in-place update")
+		}
+	})
+
+	t.Run("forwards_legacy_google_creds", func(t *testing.T) {
+		t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", "")
+		t.Setenv("GOOGLE_API_USE_MTLS_ENDPOINT", "")
+
+		gCreds := &google.Credentials{
+			ProjectID:   "test-proj",
+			TokenSource: oauth2.StaticTokenSource(&oauth2.Token{AccessToken: "legacy-tok"}),
+		}
+		mOpts, ok := monitoringClientOptions([]option.ClientOption{option.WithUniverseDomain("custom.example.com")}, nil, gCreds)
+		if !ok {
+			t.Fatal("monitoringClientOptions() ok = false, want true")
+		}
+		res, err := internaloption.NewUnsafeResolver(append(mOpts,
+			internaloption.WithDefaultEndpointTemplate("monitoring.UNIVERSE_DOMAIN:443"),
+			internaloption.WithDefaultUniverseDomain("googleapis.com"),
+		)...)
+		if err != nil {
+			t.Fatalf("NewUnsafeResolver: %v", err)
+		}
+		if ep, err := res.ResolvedGRPCEndpoint(); err != nil || ep != "monitoring.custom.example.com:443" {
+			t.Errorf("resolved monitoring endpoint = (%q, %v), want (%q, nil)", ep, err, "monitoring.custom.example.com:443")
+		}
+		gotCreds, err := transport.Creds(context.Background(), mOpts...)
+		if err != nil {
+			t.Fatalf("transport.Creds: %v", err)
+		}
+		if gotCreds != gCreds {
+			t.Errorf("resolved credentials = %v, want caller's legacy credentials", gotCreds)
+		}
+	})
+}
+
+func TestInitMetrics_EmptyProjectIDReturnsError(t *testing.T) {
+	if gcemetadata.OnGCE() {
+		t.Skip("skipping on GCE where metadata detector populates project ID")
+	}
+	// Ensure initMetrics fails fast instead of passing an empty project ID to
+	// mexporter.New (which would fall back to google.FindDefaultCredentials).
+	_, _, err := initMetrics(context.Background(), "", &storageConfig{})
+	if err == nil {
+		t.Fatal("initMetrics() with empty projectID = nil, want error")
+	}
+	if !strings.Contains(err.Error(), "project is required") {
+		t.Errorf("initMetrics() error = %q, want substring %q", err.Error(), "project is required")
 	}
 }

@@ -154,46 +154,20 @@ func isOtelDebugMetricsEnabled(config *storageConfig) bool {
 	return config.enableOtelDebugMetrics
 }
 
-// resolveMetricsUniverseDomain returns the universe domain configured via
-// client options, GOOGLE_CLOUD_UNIVERSE_DOMAIN, or the default "googleapis.com".
-func resolveMetricsUniverseDomain(opts []option.ClientOption) string {
-	const prefix = "https://placeholder/"
-	resolveOpts := make([]option.ClientOption, 0, len(opts)+4)
-	resolveOpts = append(resolveOpts, opts...)
-	resolveOpts = append(resolveOpts,
-		option.WithEndpoint("placeholder"),
-		internaloption.WithDefaultEndpointTemplate(prefix+"UNIVERSE_DOMAIN"),
-		internaloption.WithDefaultMTLSEndpoint(""),
-		internaloption.WithDefaultUniverseDomain("googleapis.com"),
-	)
-	if res, err := internaloption.NewUnsafeResolver(resolveOpts...); err == nil {
-		if ep, err := res.ResolvedGRPCEndpoint(); err == nil {
-			if ud := strings.TrimPrefix(ep, prefix); ud != "" && ud != ep {
-				return ud
-			}
-		}
-	}
-	if ud := os.Getenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN"); ud != "" {
-		return ud
-	}
-	return "googleapis.com"
-}
-
 // monitoringClientOptions extracts safe Cloud Monitoring client options from
 // the parent Storage client's options. It returns ok=false when Cloud
-// Monitoring export should be skipped (emulator env vars, unauthenticated
-// clients, or custom HTTP/gRPC transports).
+// Monitoring export should be skipped (unauthenticated clients, custom
+// HTTP/gRPC transports, or invalid options).
 func monitoringClientOptions(clientOpts []option.ClientOption, authCreds *auth.Credentials, googleCreds *google.Credentials) (opts []option.ClientOption, ok bool) {
-	if os.Getenv("STORAGE_EMULATOR_HOST") != "" || os.Getenv("STORAGE_EMULATOR_HOST_GRPC") != "" {
+	res, err := internaloption.NewUnsafeResolver(clientOpts...)
+	if err != nil {
 		return nil, false
 	}
-	if res, err := internaloption.NewUnsafeResolver(clientOpts...); err == nil {
-		if res.ResolvedWithoutAuthentication() || res.ResolvedGRPCConnIsCustom() || res.ResolvedHTTPClientIsCustom() {
-			return nil, false
-		}
+	if res.ResolvedWithoutAuthentication() || res.ResolvedGRPCConnIsCustom() || res.ResolvedHTTPClientIsCustom() {
+		return nil, false
 	}
 
-	opts = append(opts, option.WithUniverseDomain(resolveMetricsUniverseDomain(clientOpts)))
+	opts = append(opts, option.WithUniverseDomain(res.ResolvedUniverseDomain()))
 	if authCreds != nil {
 		// Clone the struct value so subsequent in-place wrapping on the parent
 		// client's credentials does not affect the Cloud Monitoring exporter.

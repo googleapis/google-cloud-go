@@ -144,16 +144,13 @@ type grpcStorageClient struct {
 	configFeatureAttributes uint32
 }
 
-func enableClientMetrics(ctx context.Context, project string, config storageConfig, mOpts []option.ClientOption, exportOK bool) (*metricsContext, error) {
-	if !exportOK && config.meterProvider == nil && config.manualReader == nil {
-		return nil, nil
-	}
+func enableClientMetrics(ctx context.Context, project string, config storageConfig, mOpts []option.ClientOption, disableExporter bool) (*metricsContext, error) {
 	metricsContext, err := newGRPCMetricContext(ctx, metricsConfig{
 		project:         project,
 		interval:        config.metricInterval,
 		manualReader:    config.manualReader,
 		meterProvider:   config.meterProvider,
-		disableExporter: !exportOK,
+		disableExporter: disableExporter,
 		monitoringOpts:  mOpts,
 	},
 	)
@@ -195,17 +192,17 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 	var project string
 	var mOpts []option.ClientOption
 	var exportOK bool
-	if !config.disableClientMetrics || metricsEnabled || tracingEnabled {
+	if !config.disableClientMetrics || tracingEnabled {
 		authCreds, googleCreds, project = resolveGRPCAuthCredentials(ctx, s)
 		mOpts, exportOK = monitoringClientOptions(s.clientOption, authCreds, googleCreds)
 	}
 
-	if !config.disableClientMetrics {
+	if !config.disableClientMetrics && (exportOK || config.meterProvider != nil || config.manualReader != nil) {
 		// Do not fail client creation if enabling metrics fails.
-		if metricsContext, err := enableClientMetrics(ctx, project, config, mOpts, exportOK); err == nil && metricsContext != nil {
+		if metricsContext, err := enableClientMetrics(ctx, project, config, mOpts, !exportOK); err == nil {
 			s.metricsContext = metricsContext
 			s.clientOption = append(s.clientOption, metricsContext.clientOpts...)
-		} else if err != nil {
+		} else {
 			log.Printf("Failed to enable client metrics: %v", err)
 		}
 	}
