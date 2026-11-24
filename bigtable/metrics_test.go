@@ -40,7 +40,6 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"google.golang.org/api/option"
-	"google.golang.org/api/option/internaloption"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -780,11 +779,7 @@ func TestCreateExporterOptionsFiltering(t *testing.T) {
 	audiencesOpt := option.WithAudiences("test.audience")
 
 	inputOpts := []option.ClientOption{
-		internaloption.WithDefaultEndpointTemplate("bigtable.UNIVERSE_DOMAIN:443"),
-		internaloption.WithDefaultMTLSEndpoint("bigtable.mtls.googleapis.com:443"),
-		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		option.WithScopes(Scope),
-		option.WithUserAgent("cbt-test"),
 		option.WithGRPCConnectionPool(10),
 		endpointOpt,
 		universeDomainOpt,

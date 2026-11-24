@@ -79,36 +79,22 @@ var (
 		return "go-" + uuid.NewString() + "@" + hostname, nil
 	}
 
-	// Exporter-relevant client options forwarded from Bigtable client options to
-	// Cloud Monitoring exporters (TPC routing and auth/credentials). Bigtable-
-	// specific options (default endpoints, scopes, user agent, dial options,
-	// connection pool) are excluded so Cloud Monitoring keeps its own defaults.
-	allowedExporterOptionTypes = map[reflect.Type]bool{
-		reflect.TypeOf(option.WithUniverseDomain("")):           true,
-		reflect.TypeOf(option.WithEndpoint("")):                 true,
-		reflect.TypeOf(option.WithCredentials(nil)):             true,
-		reflect.TypeOf(option.WithCredentialsFile("")):          true,
-		reflect.TypeOf(option.WithCredentialsJSON(nil)):         true,
-		reflect.TypeOf(option.WithAuthCredentials(nil)):         true,
-		reflect.TypeOf(option.WithAuthCredentialsFile("", "")):  true,
-		reflect.TypeOf(option.WithAuthCredentialsJSON("", nil)): true,
-		reflect.TypeOf(option.WithTokenSource(nil)):             true,
-		reflect.TypeOf(option.WithAPIKey("")):                   true,
-		reflect.TypeOf(option.WithAudiences()):                  true,
-		reflect.TypeOf(option.WithQuotaProject("")):             true,
-		reflect.TypeOf(option.WithoutAuthentication()):          true,
-		reflect.TypeOf(option.WithClientCertSource(nil)):        true,
-		reflect.TypeOf(option.ImpersonateCredentials("")):       true,
-	}
+	scopesOptionType       = reflect.TypeOf(option.WithScopes())
+	grpcConnPoolOptionType = reflect.TypeOf(option.WithGRPCConnectionPool(0))
 
-	// CreateExporterOptions takes Bigtable client options and returns only the
-	// options relevant to the Cloud Monitoring exporter (TPC universe domain,
-	// endpoint, and auth/credentials). Overridden in tests to redirect the
+	// CreateExporterOptions takes Bigtable client options and returns exporter
+	// options for Cloud Monitoring, filtering out Bigtable-specific scopes and
+	// connection pool sizing while preserving TPC options (WithUniverseDomain,
+	// WithEndpoint) and credentials. Overridden in tests to redirect the
 	// exporter to a fake Cloud Monitoring server.
 	CreateExporterOptions = func(btOpts ...option.ClientOption) []option.ClientOption {
 		filteredOptions := make([]option.ClientOption, 0, len(btOpts))
 		for _, opt := range btOpts {
-			if opt != nil && allowedExporterOptionTypes[reflect.TypeOf(opt)] {
+			if opt == nil {
+				continue
+			}
+			t := reflect.TypeOf(opt)
+			if t != scopesOptionType && t != grpcConnPoolOptionType {
 				filteredOptions = append(filteredOptions, opt)
 			}
 		}
@@ -202,13 +188,13 @@ func NewFactory(ctx context.Context, project, instance, appProfile, clientNameOv
 	meterProvider := sdkmetric.NewMeterProvider(mpOptions...)
 	// Enable Otel metrics collection
 	otelContext, err := newOtelMetricsContext(ctx, metricsConfig{
-		project:              project,
-		instance:             instance,
-		appProfile:           appProfile,
-		clientName:           effectiveClientName,
-		clientUID:            clientUID,
-		interval:             DefaultSamplePeriod,
-		monitoringClientOpts: exporterOpts,
+		project:    project,
+		instance:   instance,
+		appProfile: appProfile,
+		clientName: effectiveClientName,
+		clientUID:  clientUID,
+		interval:   DefaultSamplePeriod,
+		clientOpts: exporterOpts,
 	})
 
 	// the error from newOtelMetricsContext is silently ignored since metrics are not critical to client creation.

@@ -637,43 +637,28 @@ func TestNewClient_ForwardsClientOptionsToMetricsFactory(t *testing.T) {
 	var captured []option.ClientOption
 	orig := metrics.CreateExporterOptions
 	metrics.CreateExporterOptions = func(btOpts ...option.ClientOption) []option.ClientOption {
-		captured = append([]option.ClientOption(nil), btOpts...)
+		captured = btOpts
 		return orig(btOpts...)
 	}
 	t.Cleanup(func() { metrics.CreateExporterOptions = orig })
 
 	udOpt := option.WithUniverseDomain("tpc.example.test")
 	epOpt := option.WithEndpoint("127.0.0.1:1")
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	c, err := NewClient(
-		ctx,
-		"test-project",
-		"test-instance",
-		"test-profile",
-		"",
-		nil,
-		&btpb.FeatureFlags{},
-		udOpt,
-		epOpt,
-		option.WithoutAuthentication(),
+	exporterOpts := []option.ClientOption{
+		udOpt, epOpt, option.WithoutAuthentication(),
 		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
-	)
+	}
+	c, err := NewClient(context.Background(), "proj", "inst", "prof", "", nil, &btpb.FeatureFlags{}, exporterOpts, exporterOpts...)
 	if err == nil && c != nil {
 		defer c.Close()
 	}
 
 	var sawUD, sawEP bool
 	for _, opt := range captured {
-		if reflect.TypeOf(opt) == reflect.TypeOf(udOpt) {
-			sawUD = true
-		}
-		if reflect.TypeOf(opt) == reflect.TypeOf(epOpt) {
-			sawEP = true
-		}
+		sawUD = sawUD || reflect.TypeOf(opt) == reflect.TypeOf(udOpt)
+		sawEP = sawEP || reflect.TypeOf(opt) == reflect.TypeOf(epOpt)
 	}
 	if !sawUD || !sawEP {
-		t.Errorf("session.NewClient did not forward TPC options to metrics.NewFactory: sawUniverseDomain=%v, sawEndpoint=%v", sawUD, sawEP)
+		t.Errorf("session.NewClient did not forward TPC options: universeDomain=%v, endpoint=%v", sawUD, sawEP)
 	}
 }
