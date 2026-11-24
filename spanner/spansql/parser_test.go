@@ -2857,6 +2857,23 @@ func TestParseDDLUnclosedPrimaryKey(t *testing.T) {
 	}
 }
 
+func TestParseInvalidTypeToken(t *testing.T) {
+	for _, in := range []string{
+		"CREATE TABLE T (A 123) PRIMARY KEY (A)",
+		"CREATE TABLE T (A ARRAY<123>) PRIMARY KEY (A)",
+		"ALTER TABLE T ADD COLUMN A 123",
+	} {
+		if _, err := ParseDDLStmt(in); err == nil || !strings.Contains(err.Error(), "want type name") {
+			t.Errorf("ParseDDLStmt(%q) error = %v, want invalid type error", in, err)
+		}
+	}
+
+	const query = "SELECT CAST(1 AS 123)"
+	if _, err := ParseQuery(query); err == nil || !strings.Contains(err.Error(), "want type name") {
+		t.Errorf("ParseQuery(%q) error = %v, want invalid type error", query, err)
+	}
+}
+
 func TestParseFailures(t *testing.T) {
 	expr := func(p *parser) error {
 		if _, pe := p.parseExpr(); pe != nil {

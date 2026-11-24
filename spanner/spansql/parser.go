@@ -3567,6 +3567,7 @@ func (p *parser) parseBaseOrParameterizedType(withParam bool) (Type, *parseError
 		t.ProtoRef = pbTypeName
 		t.Base = Proto
 	default:
+		return Type{}, p.errorf("got %q, want type name", tok.value)
 	}
 	if withParam && (t.Base == String || t.Base == Bytes) {
 		if err := p.expect("("); err != nil {
