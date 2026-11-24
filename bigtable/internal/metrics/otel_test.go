@@ -25,6 +25,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
+	"google.golang.org/api/option"
 )
 
 func TestMetricFormatter(t *testing.T) {
@@ -215,4 +216,24 @@ func TestOtelMetricsSchema(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestOtelExporterForwardsMonitoringClientOptions(t *testing.T) {
+	bmr := &bigtableClientMonitoredResource{project: "test-project"}
+
+	// Conflicting auth options are rejected only if monitoringClientOpts are
+	// forwarded to mexporter.New via WithMonitoringClientOptions.
+	if _, err := bmr.exporter(option.WithoutAuthentication(), option.WithAPIKey("k")); err == nil {
+		t.Fatal("exporter() succeeded with conflicting auth options, want error")
+	}
+
+	// TPC options with WithoutAuthentication should construct the exporter cleanly.
+	exp, err := bmr.exporter(
+		option.WithUniverseDomain("tpc.example.test"),
+		option.WithoutAuthentication(),
+	)
+	if err != nil {
+		t.Fatalf("exporter() with TPC universe domain failed: %v", err)
+	}
+	_ = exp.Shutdown(context.Background())
 }

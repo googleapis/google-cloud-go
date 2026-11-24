@@ -33,7 +33,6 @@ import (
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
-	"google.golang.org/api/option/internaloption"
 
 	"cloud.google.com/go/bigtable/internal"
 )
@@ -80,33 +79,36 @@ var (
 		return "go-" + uuid.NewString() + "@" + hostname, nil
 	}
 
-	// Bigtable-specific default and transport options that must not override
-	// Cloud Monitoring's own endpoint template, auth scopes, user agent, or
-	// connection pool when merged Bigtable options are passed (e.g. from
-	// session.NewClient or accelerator.NewChannel).
-	excludedExporterOptionTypes = map[reflect.Type]bool{
-		reflect.TypeOf(internaloption.WithDefaultEndpoint("")):         true,
-		reflect.TypeOf(internaloption.WithDefaultEndpointTemplate("")): true,
-		reflect.TypeOf(internaloption.WithDefaultMTLSEndpoint("")):     true,
-		reflect.TypeOf(internaloption.WithDefaultUniverseDomain("")):   true,
-		reflect.TypeOf(internaloption.WithDefaultScopes()):             true,
-		reflect.TypeOf(option.WithScopes()):                            true,
-		reflect.TypeOf(option.WithUserAgent("")):                       true,
-		reflect.TypeOf(option.WithGRPCConnectionPool(0)):               true,
+	// Exporter-relevant client options forwarded from Bigtable client options to
+	// Cloud Monitoring exporters (TPC routing and auth/credentials). Bigtable-
+	// specific options (default endpoints, scopes, user agent, dial options,
+	// connection pool) are excluded so Cloud Monitoring keeps its own defaults.
+	allowedExporterOptionTypes = map[reflect.Type]bool{
+		reflect.TypeOf(option.WithUniverseDomain("")):           true,
+		reflect.TypeOf(option.WithEndpoint("")):                 true,
+		reflect.TypeOf(option.WithCredentials(nil)):             true,
+		reflect.TypeOf(option.WithCredentialsFile("")):          true,
+		reflect.TypeOf(option.WithCredentialsJSON(nil)):         true,
+		reflect.TypeOf(option.WithAuthCredentials(nil)):         true,
+		reflect.TypeOf(option.WithAuthCredentialsFile("", "")):  true,
+		reflect.TypeOf(option.WithAuthCredentialsJSON("", nil)): true,
+		reflect.TypeOf(option.WithTokenSource(nil)):             true,
+		reflect.TypeOf(option.WithAPIKey("")):                   true,
+		reflect.TypeOf(option.WithAudiences()):                  true,
+		reflect.TypeOf(option.WithQuotaProject("")):             true,
+		reflect.TypeOf(option.WithoutAuthentication()):          true,
+		reflect.TypeOf(option.WithClientCertSource(nil)):        true,
+		reflect.TypeOf(option.ImpersonateCredentials("")):       true,
 	}
 
-	// CreateExporterOptions takes Bigtable client options and returns exporter
-	// options for Cloud Monitoring, preserving caller TPC options
-	// (WithUniverseDomain, WithEndpoint) and credentials while filtering out
-	// Bigtable-specific default options. Overridden in tests to redirect the
+	// CreateExporterOptions takes Bigtable client options and returns only the
+	// options relevant to the Cloud Monitoring exporter (TPC universe domain,
+	// endpoint, and auth/credentials). Overridden in tests to redirect the
 	// exporter to a fake Cloud Monitoring server.
 	CreateExporterOptions = func(btOpts ...option.ClientOption) []option.ClientOption {
 		filteredOptions := make([]option.ClientOption, 0, len(btOpts))
 		for _, opt := range btOpts {
-			if opt == nil {
-				continue
-			}
-			if !excludedExporterOptionTypes[reflect.TypeOf(opt)] {
+			if opt != nil && allowedExporterOptionTypes[reflect.TypeOf(opt)] {
 				filteredOptions = append(filteredOptions, opt)
 			}
 		}
