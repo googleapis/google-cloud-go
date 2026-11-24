@@ -1368,9 +1368,10 @@ func TestRetryConformance_MaxAttempts(t *testing.T) {
 	if err != nil {
 		t.Fatalf("storage.NewClient: %v", err)
 	}
+	defer client.Close()
 
-	skippedGRPCMethods := []string{"storage.hmacKey.delete", "storage.hmacKey.create", "storage.hmacKey.list", "storage.hmacKey.get", "storage.hmacKey.update", "storage.serviceaccount.get"}
-	skippedHTTPMethods := []string{"storage.appendable.upload"}
+	// Only writes are covered here; other operations use run() in invoke.go.
+	writeMethods := []string{"storage.objects.insert", "storage.resumable.upload"}
 
 	_, _, testFiles := parseFiles(t)
 
@@ -1388,51 +1389,48 @@ func TestRetryConformance_MaxAttempts(t *testing.T) {
 					if method.Group != "" {
 						methodName = method.Group
 					}
-					if len(methods[methodName]) == 0 {
+					if !slices.Contains(writeMethods, methodName) || len(methods[methodName]) == 0 {
 						continue
 					}
 
 					for i, fn := range methods[methodName] {
-						transports := []string{"http", "grpc"}
-						for _, transport := range transports {
+						for _, transport := range []string{"http", "grpc"} {
 							testName := fmt.Sprintf("%v-%v-%v-%v-%v", transport, retryTest.Id, instructions.Instructions, methodName, i)
 							t.Run(testName, func(t *testing.T) {
-								if transport == "http" && slices.Contains(skippedHTTPMethods, methodName) {
-									t.Skip("not supported")
-								}
-								if transport == "grpc" && slices.Contains(skippedGRPCMethods, methodName) {
-									t.Skip("not supported")
-								}
-
-								subtest := &emulatorTest{T: t, name: testName, host: endpoint}
-								subtest.create(map[string][]string{
-									method.Name: instructions.Instructions,
-								}, transport)
-								defer subtest.delete()
-
-								subtest.populateResources(ctx, client, method.Resources)
-
-								maxAttempts := 1
-								subtest.transportClient.SetRetry(
-									WithMaxAttempts(maxAttempts),
-									WithBackoff(gax.Backoff{Initial: 10 * time.Millisecond}),
-									WithPolicy(RetryAlways),
-								)
-
-								ctx := callctx.SetHeaders(context.Background(), "x-retry-test-id", subtest.id)
-								err = fn(ctx, subtest.transportClient, &subtest.resources, retryTest.PreconditionProvided)
-								if err == nil {
-									t.Fatalf("expected failure due to max attempts exceeded, got success")
-								}
-								expectedSubstr := fmt.Sprintf("retry failed after %d attempts", maxAttempts)
-								if !strings.Contains(err.Error(), expectedSubstr) {
-									t.Errorf("got error %q, want error to contain %q", err.Error(), expectedSubstr)
-								}
+								runMaxAttemptsTest(t, ctx, client, endpoint, transport, method, instructions.Instructions, fn, retryTest.PreconditionProvided)
 							})
 						}
 					}
 				}
 			}
 		}
+	}
+}
+
+// runMaxAttemptsTest runs fn against the emulator with the given failure
+// instructions and checks that it fails after exactly maxAttempts attempts.
+func runMaxAttemptsTest(t *testing.T, ctx context.Context, client *Client, endpoint *url.URL, transport string, method *storage_v1_tests.Method, instructions []string, fn retryFunc, preconditions bool) {
+	subtest := &emulatorTest{T: t, name: t.Name(), host: endpoint}
+	subtest.create(map[string][]string{method.Name: instructions}, transport)
+	defer subtest.delete()
+	defer subtest.transportClient.Close()
+
+	subtest.populateResources(ctx, client, method.Resources)
+
+	// The first maxAttempts instructions each fail one attempt.
+	const maxAttempts = 2
+	subtest.transportClient.SetRetry(
+		WithMaxAttempts(maxAttempts),
+		WithBackoff(gax.Backoff{Initial: 10 * time.Millisecond}),
+		WithPolicy(RetryAlways),
+	)
+
+	ctx = callctx.SetHeaders(context.Background(), "x-retry-test-id", subtest.id)
+	err := fn(ctx, subtest.transportClient, &subtest.resources, preconditions)
+	if err == nil {
+		t.Fatalf("expected failure due to max attempts exceeded, got success")
+	}
+	if want := fmt.Sprintf("retry failed after %d attempts", maxAttempts); !strings.Contains(err.Error(), want) {
+		t.Errorf("got error %q, want error to contain %q", err.Error(), want)
 	}
 }

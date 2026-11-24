@@ -1195,8 +1195,8 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 
 			// The internals that perform call.Do automatically retry both the initial
 			// call to set up the upload as well as calls to upload individual chunks
-			// for a resumable upload (as long as the chunk size is non-zero). Hence
-			// there is no need to add retries here.
+			// for a resumable upload (as long as the chunk size is non-zero). Below,
+			// the retry policy overrides these default retries.
 
 			// Retry only when the operation is idempotent or the retry policy is RetryAlways.
 			var useRetry bool
@@ -1232,12 +1232,14 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 					return retryable
 				}
 				call.WithRetry(bo, retryFunc)
+			} else if s.retry != nil && s.retry.policy == RetryNever {
+				// Without WithRetry, the underlying upload library retries resumable
+				// chunks by default. Disable that to honor RetryNever.
+				call.WithRetry(s.retry.backoff, func(error) bool { return false })
 			}
 			resp, err = call.Do()
-			if err != nil && s.retry != nil {
-				if maxAttemptsReached && s.retry.maxAttempts != nil {
-					err = fmt.Errorf("storage: retry failed after %v attempts; last error: %w", *s.retry.maxAttempts, err)
-				}
+			if err != nil && maxAttemptsReached {
+				err = fmt.Errorf("storage: retry failed after %v attempts; last error: %w", *s.retry.maxAttempts, err)
 			}
 		}
 		if err != nil {
