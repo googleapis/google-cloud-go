@@ -173,6 +173,7 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 	if config.readAPIWasSet {
 		return nil, errors.New("storage: GRPC is incompatible with any option that specifies an API for reads")
 	}
+	config.metricExporter = wrapCustomExporter(config.metricExporter)
 
 	if config.grpcKeepalive != nil {
 		// Pings are only sent while at least one RPC is in flight

@@ -2991,7 +2991,7 @@ func TestInitMetrics_EmptyProjectIDReturnsError(t *testing.T) {
 		t.Skip("skipping on GCE where metadata detector populates project ID")
 	}
 	// Ensure initMetrics fails fast instead of passing an empty project ID to
-	// mexporter.New (which would fall back to google.FindDefaultCredentials).
+	// newMonitoringExporter.
 	_, _, err := initMetrics(context.Background(), "", &storageConfig{})
 	if err == nil {
 		t.Fatal("initMetrics() with empty projectID = nil, want error")

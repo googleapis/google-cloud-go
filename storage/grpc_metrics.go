@@ -21,7 +21,6 @@ import (
 	"strings"
 	"time"
 
-	mexporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
 	"github.com/google/uuid"
 	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel/attribute"
@@ -50,16 +49,17 @@ type storageMonitoredResource struct {
 	resource      *resource.Resource
 }
 
-func (smr *storageMonitoredResource) exporter(monitoringOpts ...option.ClientOption) (metric.Exporter, error) {
-	exporter, err := mexporter.New(
-		mexporter.WithProjectID(smr.project),
-		mexporter.WithMetricDescriptorTypeFormatter(func(m metricdata.Metrics) string {
+func (smr *storageMonitoredResource) exporter(ctx context.Context, monitoringOpts ...option.ClientOption) (metric.Exporter, error) {
+	exporter, err := newMonitoringExporter(ctx, &monitoringExporterOptions{
+		projectID: smr.project,
+		metricDescriptorTypeFormatter: func(m metricdata.Metrics) string {
 			return formatMetricWithPrefix(m, metricPrefix)
-		}),
-		mexporter.WithCreateServiceTimeSeries(),
-		mexporter.WithMonitoredResourceDescription(monitoredResourceName, []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"}),
-		mexporter.WithMonitoringClientOptions(monitoringOpts...),
-	)
+		},
+		createServiceTimeSeries: true,
+		monitoredResourceType:   monitoredResourceName,
+		monitoredResourceLabels: []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"},
+		monitoringClientOptions: monitoringOpts,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("storage: creating metrics exporter: %w", err)
 	}
@@ -102,7 +102,7 @@ func newStorageMonitoredResource(ctx context.Context, project, api string, opts 
 		smr.host = "unknown"
 	}
 	smr.resource, err = resource.New(ctx, resource.WithAttributes([]attribute.KeyValue{
-		{Key: "gcp.resource_type", Value: attribute.StringValue(monitoredResourceName)},
+		{Key: platformMappingMonitoredResourceKey, Value: attribute.StringValue(monitoredResourceName)},
 		{Key: "project_id", Value: attribute.StringValue(smr.project)},
 		{Key: "api", Value: attribute.StringValue(smr.api)},
 		{Key: "instance_id", Value: attribute.StringValue(smr.instance)},
@@ -142,7 +142,7 @@ func newGRPCMetricContext(ctx context.Context, cfg metricsConfig) (*metricsConte
 	if provider == nil {
 		var exporter metric.Exporter
 		meterOpts := []metric.Option{}
-		if cfg.customExporter == nil || *cfg.customExporter == nil {
+		if wrapped := wrapCustomExporter(cfg.customExporter); wrapped == nil {
 			var ropts []resource.Option
 			if cfg.resourceOpts != nil {
 				ropts = cfg.resourceOpts
@@ -156,7 +156,7 @@ func newGRPCMetricContext(ctx context.Context, cfg metricsConfig) (*metricsConte
 				}
 			} else {
 				if !cfg.disableExporter {
-					exporter, err = smr.exporter(cfg.monitoringOpts...)
+					exporter, err = smr.exporter(ctx, cfg.monitoringOpts...)
 					if err != nil {
 						return nil, err
 					}
@@ -164,7 +164,7 @@ func newGRPCMetricContext(ctx context.Context, cfg metricsConfig) (*metricsConte
 				meterOpts = append(meterOpts, metric.WithResource(smr.resource))
 			}
 		} else {
-			exporter = *cfg.customExporter
+			exporter = *wrapped
 		}
 		interval := time.Minute
 		if cfg.interval > 0 {
