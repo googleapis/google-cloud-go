@@ -2424,8 +2424,6 @@ func (p *parser) parseColumnOptions() (ColumnOptions, *parseError) {
 		return ColumnOptions{}, err
 	}
 
-	// TODO: Figure out if column options are case insensitive.
-	// We ignore case for the key (because it is easier) but not the value.
 	var co ColumnOptions
 	if p.eat("allow_commit_timestamp", "=") {
 		tok := p.next()
@@ -2433,10 +2431,10 @@ func (p *parser) parseColumnOptions() (ColumnOptions, *parseError) {
 			return ColumnOptions{}, tok.err
 		}
 		allowCommitTimestamp := new(bool)
-		switch tok.value {
-		case "true":
+		switch {
+		case tok.caseEqual("true"):
 			*allowCommitTimestamp = true
-		case "null":
+		case tok.caseEqual("null"):
 			*allowCommitTimestamp = false
 		default:
 			return ColumnOptions{}, p.errorf("got %q, want true or null", tok.value)

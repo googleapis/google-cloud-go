@@ -2874,6 +2874,24 @@ func TestParseInvalidTypeToken(t *testing.T) {
 	}
 }
 
+func TestParseColumnOptionsCaseInsensitive(t *testing.T) {
+	for _, test := range []struct {
+		in, want string
+	}{
+		{"CREATE TABLE T (At TIMESTAMP OPTIONS (allow_commit_timestamp = TRUE)) PRIMARY KEY (At)", "OPTIONS (allow_commit_timestamp = true)"},
+		{"ALTER TABLE T ALTER COLUMN At SET OPTIONS (ALLOW_COMMIT_TIMESTAMP = NuLl)", "OPTIONS (allow_commit_timestamp = null)"},
+	} {
+		stmt, err := ParseDDLStmt(test.in)
+		if err != nil {
+			t.Errorf("ParseDDLStmt(%q): %v", test.in, err)
+			continue
+		}
+		if got := stmt.SQL(); !strings.Contains(got, test.want) {
+			t.Errorf("ParseDDLStmt(%q).SQL() = %q, want %q", test.in, got, test.want)
+		}
+	}
+}
+
 func TestParseFailures(t *testing.T) {
 	expr := func(p *parser) error {
 		if _, pe := p.parseExpr(); pe != nil {
