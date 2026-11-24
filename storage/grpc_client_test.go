@@ -1555,6 +1555,9 @@ func TestReadDecoders_ContentEndsAtBufferBoundary(t *testing.T) {
 			t.Errorf("crc = %d, want %d", gotCRC, wantCRC)
 		}
 		dec.databufs.Free()
+		if frees != len(databufs) {
+			t.Errorf("buffer frees = %d, want %d", frees, len(databufs))
+		}
 	})
 
 	t.Run("empty_content_at_buffer_end", func(t *testing.T) {
@@ -1617,5 +1620,8 @@ func TestReadDecoders_ContentEndsAtBufferBoundary(t *testing.T) {
 			t.Error("bidiDec.done = false, want true")
 		}
 		bidiDec.databufs.Free()
+		if bidiFrees != len(bidiBufs) {
+			t.Errorf("bidi buffer frees = %d, want %d", bidiFrees, len(bidiBufs))
+		}
 	})
 }
