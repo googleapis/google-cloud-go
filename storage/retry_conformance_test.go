@@ -1352,6 +1352,9 @@ func (et *emulatorTest) delete() {
 	}
 }
 
+// conformanceMaxAttempts is the max attempts used by TestRetryConformance_MaxAttempts.
+const conformanceMaxAttempts = 2
+
 func TestRetryConformance_MaxAttempts(t *testing.T) {
 	host := os.Getenv("STORAGE_EMULATOR_HOST")
 	if host == "" {
@@ -1379,7 +1382,7 @@ func TestRetryConformance_MaxAttempts(t *testing.T) {
 				continue
 			}
 			for _, instructions := range retryTest.Cases {
-				if len(instructions.Instructions) < 2 {
+				if len(instructions.Instructions) < conformanceMaxAttempts {
 					continue
 				}
 				// Skip cases with partial-progress (-after-NK) instructions: persisting
@@ -1413,8 +1416,7 @@ func TestRetryConformance_MaxAttempts(t *testing.T) {
 	}
 }
 
-// runMaxAttemptsTest runs fn against the emulator with the given failure
-// instructions and checks that it fails after exactly maxAttempts attempts.
+// runMaxAttemptsTest checks that fn fails with the max attempts error.
 func runMaxAttemptsTest(t *testing.T, client *Client, endpoint *url.URL, transport string, method *storage_v1_tests.Method, instructions []string, fn retryFunc, preconditions bool) {
 	t.Helper()
 	subtest := &emulatorTest{T: t, name: t.Name(), host: endpoint}
@@ -1424,10 +1426,8 @@ func runMaxAttemptsTest(t *testing.T, client *Client, endpoint *url.URL, transpo
 
 	subtest.populateResources(t.Context(), client, method.Resources)
 
-	// The first maxAttempts instructions each fail one attempt.
-	const maxAttempts = 2
 	subtest.transportClient.SetRetry(
-		WithMaxAttempts(maxAttempts),
+		WithMaxAttempts(conformanceMaxAttempts),
 		WithBackoff(gax.Backoff{Initial: 10 * time.Millisecond}),
 		WithPolicy(RetryAlways),
 	)
@@ -1437,7 +1437,7 @@ func runMaxAttemptsTest(t *testing.T, client *Client, endpoint *url.URL, transpo
 	if err == nil {
 		t.Fatalf("%s(%s) err = nil, want max attempts exceeded error", method.Name, transport)
 	}
-	if want := fmt.Sprintf("retry failed after %d attempts", maxAttempts); !strings.Contains(err.Error(), want) {
-		t.Errorf("got error %q, want error to contain %q", err.Error(), want)
+	if want := fmt.Sprintf("retry failed after %d attempts", conformanceMaxAttempts); !strings.Contains(err.Error(), want) {
+		t.Errorf("got error %q, want error containing %q", err.Error(), want)
 	}
 }

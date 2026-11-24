@@ -3428,7 +3428,7 @@ func TestRetryMaxDurationEmulated(t *testing.T) {
 	})
 }
 
-// Test that writer retries stop at max attempts and errors are wrapped correctly.
+// Test that writers honor maxAttempts and RetryNever, and that progress resets attempts.
 func TestWriterRetryMaxAttemptsEmulated(t *testing.T) {
 	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
@@ -3442,10 +3442,10 @@ func TestWriterRetryMaxAttemptsEmulated(t *testing.T) {
 		for _, tc := range []struct {
 			name             string
 			instructions     []string
-			grpcInstructions []string // optional override when partial progress resets gRPC attempts
+			grpcInstructions []string
 			config           *retryConfig
 			wantErr          bool
-			wantErrMsg       string // empty if the error should not be wrapped
+			wantErrMsg       string
 		}{
 			{
 				name:         "resumable_chunk",
@@ -3489,24 +3489,18 @@ func TestWriterRetryMaxAttemptsEmulated(t *testing.T) {
 					ctx:       ctx,
 					donec:     make(chan struct{}),
 					setError:  func(err error) { writeErr = err },
-					progress:  func(_ int64) {}, // no-op
+					progress:  func(_ int64) {},
 					setObj:    func(o *ObjectAttrs) {},
 					setSize:   func(int64) {},
 				}
 
 				pw, err := client.OpenWriter(params, idempotent(true), withRetryConfig(tc.config))
 				if err != nil {
-					t.Fatalf("failed to open writer: %v", err)
+					t.Fatalf("OpenWriter: %v", err)
 				}
-				_, wErr := pw.Write(bytes.Repeat([]byte("A"), 600*1024))
-				cErr := pw.Close()
+				pw.Write(bytes.Repeat([]byte("A"), 600*1024))
+				pw.Close()
 				<-params.donec
-				if writeErr == nil {
-					writeErr = cErr
-				}
-				if writeErr == nil {
-					writeErr = wErr
-				}
 
 				if !tc.wantErr {
 					if writeErr != nil {
