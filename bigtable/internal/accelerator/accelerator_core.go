@@ -28,6 +28,7 @@ package accelerator
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"strings"
 
@@ -161,6 +162,10 @@ func NewChannel(
 	project, instance, appProfile, clientName string,
 	opts ...option.ClientOption,
 ) (*Channel, error) {
+	if ud := metrics.ResolvedUniverseDomain(opts...); ud != metrics.DefaultUniverseDomain {
+		return nil, fmt.Errorf("accelerator: not supported for non-default universe domain %q", ud)
+	}
+
 	// session.NewClient forwards opts straight to gtransport.Dial
 	// without supplying a default endpoint, so without these the dial target
 	// is empty ("received empty target in Build()"). Establish the standard

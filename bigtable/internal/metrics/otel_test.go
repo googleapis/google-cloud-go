@@ -267,6 +267,7 @@ func TestHasCustomTargetWithoutUniverseDomain(t *testing.T) {
 		{name: "endpoint only", opts: []option.ClientOption{endpoint}, want: true},
 		{name: "grpc conn only", opts: []option.ClientOption{option.WithGRPCConn(nil)}, want: true},
 		{name: "endpoint with empty universe domain", opts: []option.ClientOption{endpoint, option.WithUniverseDomain("")}, want: true},
+		{name: "endpoint with universe domain cleared by empty", opts: []option.ClientOption{endpoint, universe, option.WithUniverseDomain("")}, want: true},
 		{name: "endpoint with universe domain", opts: []option.ClientOption{endpoint, universe}},
 		{name: "grpc conn with universe domain", opts: []option.ClientOption{option.WithGRPCConn(nil), universe}},
 		{name: "endpoint with universe domain env var", envVar: "tpc.example.test", opts: []option.ClientOption{endpoint}},
@@ -286,5 +287,29 @@ func TestWithoutCredentialOptions(t *testing.T) {
 	got := WithoutCredentialOptions(universe, option.WithCredentials(nil), option.WithAPIKey("k"))
 	if len(got) != 1 || got[0] != universe {
 		t.Errorf("WithoutCredentialOptions() = %v, want only the universe domain option", got)
+	}
+}
+
+func TestResolvedUniverseDomain(t *testing.T) {
+	tests := []struct {
+		name   string
+		envVar string
+		opts   []option.ClientOption
+		want   string
+	}{
+		{name: "default", want: DefaultUniverseDomain},
+		{name: "env var", envVar: "tpc.example.test", want: "tpc.example.test"},
+		{name: "option overrides env var", envVar: "tpc.example.test", opts: []option.ClientOption{option.WithUniverseDomain("googleapis.com")}, want: "googleapis.com"},
+		{name: "last option wins", opts: []option.ClientOption{option.WithUniverseDomain("first.test"), option.WithUniverseDomain("second.test")}, want: "second.test"},
+		{name: "empty option falls back to env var", envVar: "env.test", opts: []option.ClientOption{option.WithUniverseDomain("first.test"), option.WithUniverseDomain("")}, want: "env.test"},
+		{name: "empty option falls back to default", opts: []option.ClientOption{option.WithUniverseDomain("first.test"), option.WithUniverseDomain("")}, want: DefaultUniverseDomain},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", tc.envVar)
+			if got := ResolvedUniverseDomain(tc.opts...); got != tc.want {
+				t.Errorf("ResolvedUniverseDomain() = %q, want %q", got, tc.want)
+			}
+		})
 	}
 }

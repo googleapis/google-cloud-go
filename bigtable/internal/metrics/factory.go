@@ -286,6 +286,28 @@ func WithoutCredentialOptions(opts ...option.ClientOption) []option.ClientOption
 	return filtered
 }
 
+// DefaultUniverseDomain is the Google Default Universe (GDU) domain.
+const DefaultUniverseDomain = "googleapis.com"
+
+// ResolvedUniverseDomain returns the effective universe domain for opts,
+// matching google.golang.org/api precedence: the last option.WithUniverseDomain
+// if non-empty, then GOOGLE_CLOUD_UNIVERSE_DOMAIN, then DefaultUniverseDomain.
+func ResolvedUniverseDomain(opts ...option.ClientOption) string {
+	var ud string
+	for _, opt := range opts {
+		if opt != nil && reflect.TypeOf(opt) == universeDomainOptionType {
+			ud = reflect.ValueOf(opt).String()
+		}
+	}
+	if ud != "" {
+		return ud
+	}
+	if envUD := os.Getenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN"); envUD != "" {
+		return envUD
+	}
+	return DefaultUniverseDomain
+}
+
 // hasCustomTargetWithoutUniverseDomain reports whether opts point the client
 // at a custom endpoint or connection without naming a universe domain.
 func hasCustomTargetWithoutUniverseDomain(opts []option.ClientOption) bool {
@@ -301,10 +323,8 @@ func hasCustomTargetWithoutUniverseDomain(opts []option.ClientOption) bool {
 		case endpointOptionType, grpcConnOptionType:
 			hasCustomTarget = true
 		case universeDomainOptionType:
-			// An empty universe domain is the same as not setting one.
-			if reflect.ValueOf(opt).String() != "" {
-				hasUniverseDomain = true
-			}
+			// Last WithUniverseDomain wins; an empty value clears any prior one.
+			hasUniverseDomain = reflect.ValueOf(opt).String() != ""
 		}
 	}
 	return hasCustomTarget && !hasUniverseDomain
