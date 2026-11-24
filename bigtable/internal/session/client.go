@@ -383,6 +383,7 @@ func NewClient(
 	project, instance, appProfile, clientName string,
 	metricsProvider metrics.MetricsProvider,
 	featureFlagsProto *btpb.FeatureFlags,
+	exporterOpts []option.ClientOption,
 	opts ...option.ClientOption,
 ) (Client, error) {
 	if ctx != nil {
@@ -398,7 +399,7 @@ func NewClient(
 		defer stopPropagation()
 	}
 
-	factory, err := newMetricsFactory(backgroundCtx, project, instance, appProfile, clientName, metricsProvider)
+	factory, err := newMetricsFactory(backgroundCtx, project, instance, appProfile, clientName, metricsProvider, exporterOpts...)
 	if err != nil {
 		cancel()
 		return nil, fmt.Errorf("session.NewClient: metrics.NewFactory: %w", err)

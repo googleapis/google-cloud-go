@@ -111,6 +111,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to resolve credentials: %v", err)
 	}
+	if ud, err := creds.GetUniverseDomain(); err == nil && ud != "" && ud != "googleapis.com" {
+		log.Fatalf("accelerator: not supported for non-default universe domain %q", ud)
+	}
 	// Appended last so it overrides the channel's default credential resolution;
 	// the dial can no longer re-resolve to a different principal than the one we
 	// publish in identity.json.

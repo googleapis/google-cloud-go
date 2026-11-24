@@ -1029,3 +1029,45 @@ func TestChannel_SingleFlightAndMultiClientClose(t *testing.T) {
 			created[clientKey{instance: "inst-2", appProfile: ""}].closeCalled)
 	}
 }
+
+func TestNewChannel_DisabledForTPC(t *testing.T) {
+	tests := []struct {
+		name    string
+		envVar  string
+		opts    []option.ClientOption
+		wantErr bool
+	}{
+		{name: "default GDU"},
+		{name: "explicit GDU overrides TPC env", envVar: "tpc.example.test", opts: []option.ClientOption{option.WithUniverseDomain("googleapis.com")}},
+		{name: "TPC option", opts: []option.ClientOption{option.WithUniverseDomain("tpc.example.test")}, wantErr: true},
+		{name: "TPC env var", envVar: "tpc.example.test", wantErr: true},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", tc.envVar)
+			called := false
+			orig := newSessionClient
+			newSessionClient = func(_ context.Context, _, _, _, _ string, _ ...option.ClientOption) (session.Client, error) {
+				called = true
+				return &mockSessionClient{table: &mockSessionTableAPI{}}, nil
+			}
+			t.Cleanup(func() { newSessionClient = orig })
+
+			ch, err := NewChannel(context.Background(), "p", "i", "ap", "", tc.opts...)
+			if tc.wantErr {
+				if err == nil {
+					_ = ch.Close()
+					t.Fatal("NewChannel() succeeded for TPC; want error")
+				}
+				if called {
+					t.Error("newSessionClient was called despite TPC rejection")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("NewChannel() error: %v", err)
+			}
+			_ = ch.Close()
+		})
+	}
+}

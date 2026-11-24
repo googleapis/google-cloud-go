@@ -19,6 +19,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"net"
+	"reflect"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -652,7 +653,7 @@ func TestNewClient_CancelledConstructorCtxFailsFast(t *testing.T) {
 	cancel()
 
 	ff := btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{})
-	_, err := NewClient(ctx, "p", "i", "ap", "", metrics.NoopMetricsProvider{}, ff)
+	_, err := NewClient(ctx, "p", "i", "ap", "", metrics.NoopMetricsProvider{}, ff, nil)
 	if !errors.Is(err, context.Canceled) {
 		t.Fatalf("NewClient with cancelled ctx = %v, want context.Canceled", err)
 	}
@@ -686,7 +687,7 @@ func TestNewClient_ShutsDownFactoryAndCancelsBackgroundCtxOnInitError(t *testing
 	ff := btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{})
 	// Passing no endpoint option causes gtransport.Dial inside
 	// NewBigtableChannelPool to fail with an empty target error.
-	_, err := NewClient(context.Background(), "p", "i", "ap", "", metrics.NoopMetricsProvider{}, ff)
+	_, err := NewClient(context.Background(), "p", "i", "ap", "", metrics.NoopMetricsProvider{}, ff, nil)
 	if err == nil {
 		t.Fatal("NewClient with no endpoint opts succeeded, want error")
 	}
@@ -739,7 +740,7 @@ func TestNewClient_DecouplesFromConstructorCtx(t *testing.T) {
 	initCtx, initCancel := context.WithCancel(context.Background())
 	ff := btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{})
 	c, err := NewClient(
-		initCtx, "p", "i", "ap", "", metrics.NoopMetricsProvider{}, ff,
+		initCtx, "p", "i", "ap", "", metrics.NoopMetricsProvider{}, ff, nil,
 		option.WithEndpoint(lis.Addr().String()),
 		option.WithoutAuthentication(),
 		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
@@ -820,7 +821,7 @@ func TestNewClient_MidInitConstructorCtxCancelAborts(t *testing.T) {
 
 	ff := btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{})
 	_, err = NewClient(
-		initCtx, "p", "i", "ap", "", metrics.NoopMetricsProvider{}, ff,
+		initCtx, "p", "i", "ap", "", metrics.NoopMetricsProvider{}, ff, nil,
 		option.WithEndpoint(lis.Addr().String()),
 		option.WithoutAuthentication(),
 		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
@@ -860,7 +861,7 @@ func TestNewClient_DirectAccessProbeSendsRoutingHeaders(t *testing.T) {
 
 	ff := btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{EnableDirectAccess: true})
 	c, err := NewClient(
-		context.Background(), "p", "i", "profile with spaces", "", metrics.NoopMetricsProvider{}, ff,
+		context.Background(), "p", "i", "profile with spaces", "", metrics.NoopMetricsProvider{}, ff, nil,
 		option.WithEndpoint(lis.Addr().String()),
 		option.WithoutAuthentication(),
 		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
@@ -884,5 +885,33 @@ func TestNewClient_DirectAccessProbeSendsRoutingHeaders(t *testing.T) {
 		}
 	case <-time.After(2 * time.Second):
 		t.Fatal("timed out waiting for initial GetClientConfiguration probe")
+	}
+}
+
+func TestNewClient_ForwardsClientOptionsToMetricsFactory(t *testing.T) {
+	var captured []option.ClientOption
+	orig := metrics.CreateExporterOptions
+	metrics.CreateExporterOptions = func(btOpts ...option.ClientOption) []option.ClientOption {
+		captured = btOpts
+		return orig(btOpts...)
+	}
+	t.Cleanup(func() { metrics.CreateExporterOptions = orig })
+
+	udOpt := option.WithUniverseDomain("tpc.example.test")
+	epOpt := option.WithEndpoint("127.0.0.1:1")
+	opts := []option.ClientOption{udOpt, epOpt, option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials()))}
+	c, err := NewClient(context.Background(), "proj", "inst", "prof", "", nil, &btpb.FeatureFlags{}, opts, opts...)
+	if err == nil && c != nil {
+		defer c.Close()
+	}
+
+	var sawUD, sawEP bool
+	for _, opt := range captured {
+		sawUD = sawUD || reflect.TypeOf(opt) == reflect.TypeOf(udOpt)
+		sawEP = sawEP || reflect.TypeOf(opt) == reflect.TypeOf(epOpt)
+	}
+	if !sawUD || !sawEP {
+		t.Errorf("session.NewClient did not forward TPC options: universeDomain=%v, endpoint=%v", sawUD, sawEP)
 	}
 }

@@ -57,12 +57,13 @@ type bigtableClientMonitoredResource struct {
 	resource      *resource.Resource
 }
 
-func (bmr *bigtableClientMonitoredResource) exporter() (metric.Exporter, error) {
+func (bmr *bigtableClientMonitoredResource) exporter(clientOpts ...option.ClientOption) (metric.Exporter, error) {
 	exporter, err := mexporter.New(
 		mexporter.WithProjectID(bmr.project),
 		mexporter.WithMetricDescriptorTypeFormatter(metricFormatter),
 		mexporter.WithCreateServiceTimeSeries(),
 		mexporter.WithMonitoredResourceDescription(bigtableClientMonitoredResourceName, []string{"project_id", "instance", "app_profile", "client_project", "cloud_platform", "host_id", "host_name", "client_name", "uuid", "region"}),
+		mexporter.WithMonitoringClientOptions(clientOpts...),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("bigtable: creating metrics exporter: %w", err)
@@ -170,6 +171,7 @@ type metricsConfig struct {
 	clientName      string // client_name
 	clientUID       string // uuid
 	interval        time.Duration
+	clientOpts      []option.ClientOption
 	manualReader    *metric.ManualReader // used by tests
 	disableExporter bool                 // used by tests disables exports
 	resourceOpts    []resource.Option    // used by tests
@@ -186,7 +188,7 @@ func newOtelMetricsContext(ctx context.Context, cfg metricsConfig) (*otelMetrics
 	if err != nil {
 		return nil, err
 	}
-	exporter, err := smr.exporter()
+	exporter, err := smr.exporter(cfg.clientOpts...)
 	if err != nil {
 		return nil, err
 	}

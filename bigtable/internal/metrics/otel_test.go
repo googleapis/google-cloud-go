@@ -25,6 +25,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
+	"google.golang.org/api/option"
 )
 
 func TestMetricFormatter(t *testing.T) {
@@ -212,6 +213,102 @@ func TestOtelMetricsSchema(t *testing.T) {
 			}
 			if gotAttrs["host_name"] != tc.wantHostName {
 				t.Errorf("host_name: got %q, want %q", gotAttrs["host_name"], tc.wantHostName)
+			}
+		})
+	}
+}
+
+func TestOtelExporterForwardsMonitoringClientOptions(t *testing.T) {
+	bmr := &bigtableClientMonitoredResource{project: "test-project"}
+
+	// Conflicting auth options are rejected only if monitoringClientOpts are
+	// forwarded to mexporter.New via WithMonitoringClientOptions.
+	if _, err := bmr.exporter(option.WithoutAuthentication(), option.WithAPIKey("k")); err == nil {
+		t.Fatal("exporter() succeeded with conflicting auth options, want error")
+	}
+
+	// TPC options with WithoutAuthentication should construct the exporter cleanly.
+	exp, err := bmr.exporter(
+		option.WithUniverseDomain("tpc.example.test"),
+		option.WithoutAuthentication(),
+	)
+	if err != nil {
+		t.Fatalf("exporter() with TPC universe domain failed: %v", err)
+	}
+	_ = exp.Shutdown(context.Background())
+}
+
+func TestNewFactory_DisablesMetricsOnEndpointWithoutUniverseDomain(t *testing.T) {
+	t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", "")
+
+	f, err := NewFactory(context.Background(), "proj", "inst", "prof", "", nil,
+		option.WithEndpoint("bigtable.tpc.example.test:443"),
+		option.WithoutAuthentication(),
+	)
+	if err != nil {
+		t.Fatalf("NewFactory: %v", err)
+	}
+	if f.Enabled {
+		f.Shutdown()
+		t.Error("NewFactory enabled metrics with WithEndpoint and no universe domain; want disabled")
+	}
+}
+
+func TestHasCustomTargetWithoutUniverseDomain(t *testing.T) {
+	endpoint := option.WithEndpoint("bigtable.tpc.example.test:443")
+	universe := option.WithUniverseDomain("tpc.example.test")
+	tests := []struct {
+		name   string
+		envVar string
+		opts   []option.ClientOption
+		want   bool
+	}{
+		{name: "no custom target"},
+		{name: "endpoint only", opts: []option.ClientOption{endpoint}, want: true},
+		{name: "grpc conn only", opts: []option.ClientOption{option.WithGRPCConn(nil)}, want: true},
+		{name: "endpoint with empty universe domain", opts: []option.ClientOption{endpoint, option.WithUniverseDomain("")}, want: true},
+		{name: "endpoint with universe domain cleared by empty", opts: []option.ClientOption{endpoint, universe, option.WithUniverseDomain("")}, want: true},
+		{name: "endpoint with universe domain", opts: []option.ClientOption{endpoint, universe}},
+		{name: "grpc conn with universe domain", opts: []option.ClientOption{option.WithGRPCConn(nil), universe}},
+		{name: "endpoint with universe domain env var", envVar: "tpc.example.test", opts: []option.ClientOption{endpoint}},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", tc.envVar)
+			if got := hasCustomTargetWithoutUniverseDomain(tc.opts); got != tc.want {
+				t.Errorf("hasCustomTargetWithoutUniverseDomain() = %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestWithoutCredentialOptions(t *testing.T) {
+	universe := option.WithUniverseDomain("tpc.example.test")
+	got := WithoutCredentialOptions(universe, option.WithCredentials(nil), option.WithAPIKey("k"))
+	if len(got) != 1 || got[0] != universe {
+		t.Errorf("WithoutCredentialOptions() = %v, want only the universe domain option", got)
+	}
+}
+
+func TestResolvedUniverseDomain(t *testing.T) {
+	tests := []struct {
+		name   string
+		envVar string
+		opts   []option.ClientOption
+		want   string
+	}{
+		{name: "default", want: DefaultUniverseDomain},
+		{name: "env var", envVar: "tpc.example.test", want: "tpc.example.test"},
+		{name: "option overrides env var", envVar: "tpc.example.test", opts: []option.ClientOption{option.WithUniverseDomain("googleapis.com")}, want: "googleapis.com"},
+		{name: "last option wins", opts: []option.ClientOption{option.WithUniverseDomain("first.test"), option.WithUniverseDomain("second.test")}, want: "second.test"},
+		{name: "empty option falls back to env var", envVar: "env.test", opts: []option.ClientOption{option.WithUniverseDomain("first.test"), option.WithUniverseDomain("")}, want: "env.test"},
+		{name: "empty option falls back to default", opts: []option.ClientOption{option.WithUniverseDomain("first.test"), option.WithUniverseDomain("")}, want: DefaultUniverseDomain},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", tc.envVar)
+			if got := ResolvedUniverseDomain(tc.opts...); got != tc.want {
+				t.Errorf("ResolvedUniverseDomain() = %q, want %q", got, tc.want)
 			}
 		})
 	}
