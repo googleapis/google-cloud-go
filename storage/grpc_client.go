@@ -85,13 +85,18 @@ const (
 func hasCustomGRPCEndpointOrConn(opts []option.ClientOption) bool {
 	res, err := internaloption.NewUnsafeResolver(opts...)
 	if err != nil {
-		return false
+		// Fail closed so we do not fall through to insecure emulator defaults;
+		// gapic.NewClient will surface the underlying option error.
+		return true
 	}
 	if res.ResolvedGRPCConnIsCustom() {
 		return true
 	}
 	ep, err := res.ResolvedGRPCEndpoint()
-	return err == nil && ep != ""
+	if err != nil {
+		return true
+	}
+	return ep != ""
 }
 
 // defaultGRPCOptions returns a set of the default client options

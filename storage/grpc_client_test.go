@@ -1408,12 +1408,14 @@ func TestReadDecoders_MalformedPayloadsReturnError(t *testing.T) {
 	}
 
 	bidiCases := []struct {
-		name string
-		wire []byte
+		name    string
+		wire    []byte
+		wantErr string
 	}{
 		{
-			name: "overflow_object_range_data_length",
-			wire: appendRawLenField(nil, objectRangeDataField, math.MaxUint64, []byte{1, 2}),
+			name:    "overflow_object_range_data_length",
+			wire:    appendRawLenField(nil, objectRangeDataField, math.MaxUint64, []byte{1, 2}),
+			wantErr: "ObjectRangeData length exceeds remaining data",
 		},
 		{
 			name: "truncated_checksummed_data_in_object_range_data",
@@ -1421,6 +1423,7 @@ func TestReadDecoders_MalformedPayloadsReturnError(t *testing.T) {
 				inner := appendRawLenField(nil, checksummedDataField, 100, []byte{1, 2})
 				return appendRawLenField(nil, objectRangeDataField, uint64(len(inner)), inner)
 			}(),
+			wantErr: "ChecksummedData length exceeds ObjectRangeData",
 		},
 		{
 			name: "truncated_content_bytes",
@@ -1429,14 +1432,17 @@ func TestReadDecoders_MalformedPayloadsReturnError(t *testing.T) {
 				cd := appendRawLenField(nil, checksummedDataField, uint64(len(content)), content)
 				return appendRawLenField(nil, objectRangeDataField, uint64(len(cd)), cd)
 			}(),
+			wantErr: "invalid BidiReadObjectResponse.ChecksummedData.Content",
 		},
 		{
-			name: "overflow_metadata_bytes_copy",
-			wire: appendRawLenField(nil, metadataField, math.MaxUint64, []byte{1}),
+			name:    "overflow_metadata_bytes_copy",
+			wire:    appendRawLenField(nil, metadataField, math.MaxUint64, []byte{1}),
+			wantErr: "invalid BidiReadObjectResponse.Metadata",
 		},
 		{
-			name: "truncated_metadata_bytes_copy",
-			wire: appendRawLenField(nil, metadataField, 50, []byte("short")),
+			name:    "truncated_metadata_bytes_copy",
+			wire:    appendRawLenField(nil, metadataField, 50, []byte("short")),
+			wantErr: "invalid BidiReadObjectResponse.Metadata",
 		},
 		{
 			name: "checksummed_data_overruns_submessage_into_trailing_bytes",
@@ -1448,25 +1454,43 @@ func TestReadDecoders_MalformedPayloadsReturnError(t *testing.T) {
 				ord := appendRawLenField(nil, objectRangeDataField, uint64(len(cd)), cd)
 				return append(ord, []byte("trailing")...)
 			}(),
+			wantErr: "ChecksummedData field exceeded submessage boundary",
+		},
+		{
+			name: "object_range_data_overruns_submessage_into_trailing_bytes",
+			wire: func() []byte {
+				// ReadRange claims 6 bytes while ObjectRangeData submessage is only 4 bytes;
+				// trailing bytes exist in the outer buffer so databufs.Len() check alone would pass.
+				rr := appendRawLenField(nil, readRangeField, 6, []byte{0x18, 0x01})
+				ord := appendRawLenField(nil, objectRangeDataField, uint64(len(rr)), rr)
+				return append(ord, []byte{0x18, 0x02, 0x18, 0x03, 0x18, 0x04}...)
+			}(),
+			wantErr: "ObjectRangeData field exceeded submessage boundary",
 		},
 	}
 
 	for _, tc := range bidiCases {
 		t.Run("bidi/"+tc.name, func(t *testing.T) {
 			dec := &readResponseDecoder{databufs: mem.BufferSlice{mem.SliceBuffer(tc.wire)}}
-			if err := dec.readFullObjectResponse(); err == nil {
-				t.Fatalf("readFullObjectResponse() = nil, want error for malformed input")
+			err := dec.readFullObjectResponse()
+			if err == nil {
+				t.Fatalf("readFullObjectResponse() = nil, want error containing %q", tc.wantErr)
+			}
+			if !strings.Contains(err.Error(), tc.wantErr) {
+				t.Errorf("readFullObjectResponse() error = %q, want substring %q", err.Error(), tc.wantErr)
 			}
 		})
 	}
 
 	readObjCases := []struct {
-		name string
-		wire []byte
+		name    string
+		wire    []byte
+		wantErr string
 	}{
 		{
-			name: "overflow_checksummed_data_length",
-			wire: appendRawLenField(nil, checksummedDataFieldReadObject, math.MaxUint64, []byte{1, 2}),
+			name:    "overflow_checksummed_data_length",
+			wire:    appendRawLenField(nil, checksummedDataFieldReadObject, math.MaxUint64, []byte{1, 2}),
+			wantErr: "ChecksummedData length exceeds remaining data",
 		},
 		{
 			name: "truncated_content_bytes",
@@ -1474,14 +1498,17 @@ func TestReadDecoders_MalformedPayloadsReturnError(t *testing.T) {
 				content := appendRawLenField(nil, checksummedDataContentFieldReadObject, 100, []byte("abc"))
 				return appendRawLenField(nil, checksummedDataFieldReadObject, uint64(len(content)), content)
 			}(),
+			wantErr: "invalid ReadObjectResponse.ChecksummedData.Content",
 		},
 		{
-			name: "overflow_metadata_bytes_copy",
-			wire: appendRawLenField(nil, metadataFieldReadObject, math.MaxUint64, []byte{1}),
+			name:    "overflow_metadata_bytes_copy",
+			wire:    appendRawLenField(nil, metadataFieldReadObject, math.MaxUint64, []byte{1}),
+			wantErr: "invalid ReadObjectResponse.Metadata",
 		},
 		{
-			name: "truncated_metadata_bytes_copy",
-			wire: appendRawLenField(nil, metadataFieldReadObject, 50, []byte("short")),
+			name:    "truncated_metadata_bytes_copy",
+			wire:    appendRawLenField(nil, metadataFieldReadObject, 50, []byte("short")),
+			wantErr: "invalid ReadObjectResponse.Metadata",
 		},
 		{
 			name: "checksummed_data_overruns_submessage_into_trailing_bytes",
@@ -1490,14 +1517,19 @@ func TestReadDecoders_MalformedPayloadsReturnError(t *testing.T) {
 				cd := appendRawLenField(nil, checksummedDataFieldReadObject, uint64(len(content)), content)
 				return append(cd, []byte("trailing")...)
 			}(),
+			wantErr: "ChecksummedData field exceeded submessage boundary",
 		},
 	}
 
 	for _, tc := range readObjCases {
 		t.Run("read_object/"+tc.name, func(t *testing.T) {
 			dec := &readObjectResponseDecoder{databufs: mem.BufferSlice{mem.SliceBuffer(tc.wire)}}
-			if err := dec.readFullObjectResponse(); err == nil {
-				t.Fatalf("readFullObjectResponse() = nil, want error for malformed input")
+			err := dec.readFullObjectResponse()
+			if err == nil {
+				t.Fatalf("readFullObjectResponse() = nil, want error containing %q", tc.wantErr)
+			}
+			if !strings.Contains(err.Error(), tc.wantErr) {
+				t.Errorf("readFullObjectResponse() error = %q, want substring %q", err.Error(), tc.wantErr)
 			}
 		})
 	}
@@ -1566,8 +1598,12 @@ func TestReadResponseDecoder_DuplicateReadIDReturnsError(t *testing.T) {
 				t.Fatalf("proto.Marshal: %v", err)
 			}
 			dec := &readResponseDecoder{databufs: mem.BufferSlice{mem.SliceBuffer(wire)}}
-			if err := dec.readFullObjectResponse(); err == nil {
+			err = dec.readFullObjectResponse()
+			if err == nil {
 				t.Fatal("readFullObjectResponse() = nil, want duplicate read_id error")
+			}
+			if !strings.Contains(err.Error(), "duplicate read_id") {
+				t.Errorf("readFullObjectResponse() error = %q, want substring %q", err.Error(), "duplicate read_id")
 			}
 		})
 	}
