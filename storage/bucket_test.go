@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
@@ -1695,14 +1696,14 @@ func TestDefaultSignBlob_UniverseDomain(t *testing.T) {
 	ctx := context.Background()
 
 	tests := []struct {
-		desc         string
-		universeEnv  string
-		mtlsEnv      string
-		clientOpts   []option.ClientOption
-		credsUD      string
-		keepCustomHC bool
-		wantHost     string
-		wantErr      bool
+		desc          string
+		universeEnv   string
+		mtlsEnv       string
+		clientOpts    []option.ClientOption
+		credsUD       string
+		keepCustomHC  bool
+		wantHost      string
+		wantErrSubstr string
 	}{
 		{
 			desc:       "WithUniverseDomain and nil creds routes to custom iamcredentials",
@@ -1723,8 +1724,8 @@ func TestDefaultSignBlob_UniverseDomain(t *testing.T) {
 				option.WithUniverseDomain("universe.example.com"),
 				option.WithEndpoint("https://storage.universe.example.com/storage/v1/"),
 			},
-			mtlsEnv: "always",
-			wantErr: true,
+			mtlsEnv:       "always",
+			wantErrSubstr: "mTLS",
 		},
 		{
 			desc:        "WithUniverseDomain overrides GOOGLE_CLOUD_UNIVERSE_DOMAIN",
@@ -1751,10 +1752,10 @@ func TestDefaultSignBlob_UniverseDomain(t *testing.T) {
 			wantHost:   "iamcredentials.universe.example.com",
 		},
 		{
-			desc:       "mismatched creds universe domain fails closed without sending request",
-			clientOpts: []option.ClientOption{option.WithUniverseDomain("universe.example.com")},
-			credsUD:    "googleapis.com",
-			wantErr:    true,
+			desc:          "mismatched creds universe domain fails closed without sending request",
+			clientOpts:    []option.ClientOption{option.WithUniverseDomain("universe.example.com")},
+			credsUD:       "googleapis.com",
+			wantErrSubstr: "does not match",
 		},
 		{
 			desc:     "defaults to iamcredentials.googleapis.com when unset",
@@ -1801,12 +1802,15 @@ func TestDefaultSignBlob_UniverseDomain(t *testing.T) {
 
 			signFn := client.Bucket("fakebucket").defaultSignBytesFunc("example@example.com")
 			_, err = signFn([]byte("payload"))
-			if tc.wantErr {
+			if tc.wantErrSubstr != "" {
 				if err == nil {
-					t.Fatalf("defaultSignBytesFunc() = nil, want universe domain mismatch error")
+					t.Fatalf("defaultSignBytesFunc() = nil, want error containing %q", tc.wantErrSubstr)
+				}
+				if !strings.Contains(err.Error(), tc.wantErrSubstr) {
+					t.Fatalf("defaultSignBytesFunc() error = %q, want substring %q", err.Error(), tc.wantErrSubstr)
 				}
 				if calls != 0 {
-					t.Errorf("made %d HTTP calls to %q on mismatch, want 0", calls, gotHost)
+					t.Errorf("made %d HTTP calls to %q on error, want 0", calls, gotHost)
 				}
 				return
 			}

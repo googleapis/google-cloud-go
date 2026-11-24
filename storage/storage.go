@@ -162,11 +162,12 @@ func (c Client) credsJSON() ([]byte, bool) {
 // package. You may also use options defined in this package, such as [WithJSONReads].
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	var creds *auth.Credentials
-	universeDomain := resolveUniverseDomain(ctx, opts)
-	var customHTTPClient bool
-	if ur, err := internaloption.NewUnsafeResolver(opts...); err == nil {
-		customHTTPClient = ur.ResolvedHTTPClientIsCustom()
+	ur, err := internaloption.NewUnsafeResolver(opts...)
+	if err != nil {
+		return nil, fmt.Errorf("storage: %w", err)
 	}
+	universeDomain := ur.ResolvedUniverseDomain()
+	customHTTPClient := ur.ResolvedHTTPClientIsCustom()
 
 	// In general, it is recommended to use raw.NewService instead of htransport.NewClient
 	// since raw.NewService configures the correct default endpoints when initializing the
@@ -181,7 +182,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 		opts = append(opts, internaloption.WithDefaultEndpointTemplate("https://storage.UNIVERSE_DOMAIN/storage/v1/"),
 			internaloption.WithDefaultMTLSEndpoint("https://storage.mtls.googleapis.com/storage/v1/"),
-			internaloption.WithDefaultUniverseDomain("googleapis.com"),
+			internaloption.WithDefaultUniverseDomain(defaultUniverseDomain),
 			internaloption.EnableNewAuthLibrary(),
 		)
 
@@ -426,29 +427,6 @@ func defaultUniverseDomainFromEnv() string {
 	return defaultUniverseDomain
 }
 
-// resolveUniverseDomain determines the configured universe domain from client
-// options, falling back to GOOGLE_CLOUD_UNIVERSE_DOMAIN and then "googleapis.com".
-func resolveUniverseDomain(ctx context.Context, opts []option.ClientOption) string {
-	const placeholderPrefix = "https://placeholder/"
-	resolveOpts := make([]option.ClientOption, 0, len(opts)+6)
-	resolveOpts = append(resolveOpts, opts...)
-	resolveOpts = append(resolveOpts,
-		option.WithEndpoint("placeholder"),
-		option.WithHTTPClient(http.DefaultClient),
-		internaloption.WithDefaultEndpointTemplate(placeholderPrefix+"UNIVERSE_DOMAIN"),
-		internaloption.WithDefaultMTLSEndpoint(""),
-		internaloption.WithDefaultUniverseDomain(defaultUniverseDomain),
-		internaloption.SkipDialSettingsValidation(),
-	)
-	_, ep, err := htransport.NewClient(ctx, resolveOpts...)
-	if err == nil {
-		if ud := strings.TrimPrefix(ep, placeholderPrefix); ud != "" && ud != ep {
-			return ud
-		}
-	}
-	return defaultUniverseDomainFromEnv()
-}
-
 func (s pathStyle) host(hostname, bucket string) string {
 	if hostname != "" {
 		return stripScheme(hostname)
@@ -496,14 +474,17 @@ func (s bucketBoundHostname) path(bucket, object string) string {
 // PathStyle is the default style, and will generate a URL of the form
 // "{host-name}/{bucket-name}/{object-name}". By default, {host-name} is
 // storage.googleapis.com, but setting an endpoint on the storage Client or
-// through STORAGE_EMULATOR_HOST overrides this. Setting Hostname on
+// through STORAGE_EMULATOR_HOST overrides this. If GOOGLE_CLOUD_UNIVERSE_DOMAIN
+// is set, the default host is storage.{universe-domain}. Setting Hostname on
 // SignedURLOptions or PostPolicyV4Options overrides everything else.
 func PathStyle() URLStyle {
 	return pathStyle{}
 }
 
 // VirtualHostedStyle generates a URL relative to the bucket's virtual
-// hostname, e.g. "{bucket-name}.storage.googleapis.com/{object-name}".
+// hostname, e.g. "{bucket-name}.storage.googleapis.com/{object-name}". If
+// GOOGLE_CLOUD_UNIVERSE_DOMAIN is set, the default host is
+// storage.{universe-domain}.
 func VirtualHostedStyle() URLStyle {
 	return virtualHostedStyle{}
 }
