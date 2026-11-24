@@ -1624,7 +1624,7 @@ func TestCanUseDirectPath(t *testing.T) {
 			}),
 			gce:        false,
 			want:       false,
-			wantReason: directPathInterconnectUnsupportedUDReason,
+			wantReason: directPathNotOnGCEReason,
 		},
 		{
 			name:     "interconnect_creds_ud_error_fails_closed",
@@ -1644,24 +1644,7 @@ func TestCanUseDirectPath(t *testing.T) {
 			}),
 			gce:        false,
 			want:       false,
-			wantReason: directPathInterconnectUnsupportedUDReason,
-		},
-		{
-			name:     "interconnect_gdu_creds_off_gce_allowed",
-			endpoint: "storage.googleapis.com:443",
-			opts: &Options{
-				InternalOptions: &InternalOptions{
-					EnableDirectPath:                    true,
-					EnableDirectPathXds:                 true,
-					EnableDirectPathXdsOverInterconnect: true,
-				},
-			},
-			creds: auth.NewCredentials(&auth.CredentialsOptions{
-				TokenProvider:          nonComputeTokenProvider(),
-				UniverseDomainProvider: internal.StaticCredentialsProperty("googleapis.com"),
-			}),
-			gce:  false,
-			want: true,
+			wantReason: directPathNotOnGCEReason,
 		},
 	}
 

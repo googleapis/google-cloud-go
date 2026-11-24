@@ -299,7 +299,7 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 		Endpoint:           opts.Endpoint,
 		ClientCertProvider: opts.ClientCertProvider,
 		Client:             opts.client(),
-		UniverseDomain:     opts.UniverseDomain,
+		UniverseDomain:     opts.clientUniverseDomain(),
 		Logger:             opts.logger(),
 	}
 	if io := opts.InternalOptions; io != nil {
