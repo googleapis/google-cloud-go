@@ -636,7 +636,8 @@ func createFixedConnPool(
 	})
 	sc := newSessionClient(nil, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
 	sc.metricsTracerFactory = metricsTracerFactory
-	pool, err := newFixedChannelPool(ctx, sc, dialedPool, fallback)
+	builtinMetricsCfg := newChannelPoolBuiltinMetricsConfig(metricsTracerFactory, transport.ResolveDirectPathEnabled(config.EnableDirectAccess))
+	pool, err := newFixedChannelPool(ctx, sc, dialedPool, builtinMetricsCfg, fallback)
 	if err != nil {
 		fallback.close()
 		dialedPool.Close()

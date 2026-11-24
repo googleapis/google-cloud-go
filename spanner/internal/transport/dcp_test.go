@@ -17,7 +17,9 @@ package transport
 import (
 	"context"
 	"errors"
+	"io"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -25,6 +27,7 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -658,24 +661,273 @@ func TestDynamicChannelPoolOnCallStart(t *testing.T) {
 	}
 }
 
-func TestFixedChannelPoolSkipsOnCallStart(t *testing.T) {
-	var calls atomic.Int32
-	underlying := &fakeFixedUnderlyingPool{conns: []*grpc.ClientConn{nil}}
+// callCountingFixedPool is the underlying pool of a fixed pool whose entries
+// route their calls to it.
+type callCountingFixedPool struct {
+	fakeFixedUnderlyingPool
+	invokeErr error
+	streamErr error
+	stream    *scriptedFixedStream
+	duringRPC func()
+}
+
+func newCallCountingFixedPool(n int) *callCountingFixedPool {
+	return &callCountingFixedPool{fakeFixedUnderlyingPool: fakeFixedUnderlyingPool{conns: make([]*grpc.ClientConn, n)}}
+}
+
+func (f *callCountingFixedPool) Invoke(context.Context, string, any, any, ...grpc.CallOption) error {
+	if f.duringRPC != nil {
+		f.duringRPC()
+	}
+	return f.invokeErr
+}
+
+func (f *callCountingFixedPool) NewStream(context.Context, *grpc.StreamDesc, string, ...grpc.CallOption) (grpc.ClientStream, error) {
+	if f.duringRPC != nil {
+		f.duringRPC()
+	}
+	if f.streamErr != nil {
+		return nil, f.streamErr
+	}
+	if f.stream != nil {
+		return f.stream, nil
+	}
+	return &scriptedFixedStream{recvErr: io.EOF}, nil
+}
+
+type scriptedFixedStream struct {
+	grpc.ClientStream
+	headerErr, sendErr, recvErr, closeSendErr error
+}
+
+func (s *scriptedFixedStream) Header() (metadata.MD, error) { return nil, s.headerErr }
+func (s *scriptedFixedStream) SendMsg(any) error            { return s.sendErr }
+func (s *scriptedFixedStream) RecvMsg(any) error            { return s.recvErr }
+func (s *scriptedFixedStream) CloseSend() error             { return s.closeSendErr }
+
+func newCallCountingFixedChannelPool(t *testing.T, underlying gtransport.ConnPool, onCallStart func(context.Context, int32)) *DynamicChannelPool[*fakeDCPClient] {
+	t.Helper()
 	pool, err := NewFixedChannelPool(context.Background(), underlying, DCPHooks[*fakeDCPClient]{
 		NewEntryClient: func(_ context.Context, e *DCPEntry[*fakeDCPClient]) error {
 			e.Client = &fakeDCPClient{}
 			return nil
 		},
-		OnCallStart: func(context.Context, int32) { calls.Add(1) },
+		OnCallStart: onCallStart,
 	})
 	if err != nil {
 		t.Fatalf("NewFixedChannelPool failed: %v", err)
 	}
-	defer pool.Close()
-	pool.Invoke(context.Background(), "/test/Method", nil, nil)
-	pool.NewStream(context.Background(), &grpc.StreamDesc{}, "/test/Method")
-	if got := calls.Load(); got != 0 {
-		t.Fatalf("OnCallStart calls on a fixed pool mismatch:\n Got: %d\nWant: 0", got)
+	t.Cleanup(func() { pool.Close() })
+	return pool
+}
+
+func TestFixedChannelPoolOnCallStart(t *testing.T) {
+	ctx := context.Background()
+	var loads []int32
+	underlying := newCallCountingFixedPool(1)
+	pool := newCallCountingFixedChannelPool(t, underlying, func(_ context.Context, load int32) { loads = append(loads, load) })
+	e := pool.GetEntries()[0]
+	unavailable := status.Error(codes.Unavailable, "unavailable")
+
+	for _, op := range []struct {
+		name  string
+		start func() error
+	}{
+		{"pool Invoke", func() error { return pool.Invoke(ctx, "/test/Method", nil, nil) }},
+		{"pool NewStream", func() error {
+			stream, err := pool.NewStream(ctx, &grpc.StreamDesc{}, "/test/Method")
+			if err != nil {
+				return err
+			}
+			return stream.RecvMsg(nil)
+		}},
+		{"entry Invoke", func() error { return e.Invoke(ctx, "/test/Method", nil, nil) }},
+		{"entry NewStream", func() error {
+			stream, err := e.NewStream(ctx, &grpc.StreamDesc{}, "/test/Method")
+			if err != nil {
+				return err
+			}
+			return stream.RecvMsg(nil)
+		}},
+	} {
+		t.Run(op.name, func(t *testing.T) {
+			loads = nil
+			var loadDuringRPC int32
+			underlying.duringRPC = func() { loadDuringRPC = e.RPCLoad() }
+			underlying.invokeErr = unavailable
+			underlying.stream = &scriptedFixedStream{recvErr: unavailable}
+			e.UnaryLoad.Store(1)
+			e.StreamLoad.Store(1)
+			op.start()
+			if len(loads) != 1 || loads[0] != 3 {
+				t.Fatalf("OnCallStart loads mismatch:\n Got: %v\nWant: [3]", loads)
+			}
+			if loadDuringRPC != 3 {
+				t.Fatalf("entry load during the call mismatch:\n Got: %d\nWant: 3", loadDuringRPC)
+			}
+			if got := e.RPCLoad(); got != 2 {
+				t.Fatalf("entry load after the call mismatch:\n Got: %d\nWant: 2", got)
+			}
+			if got := pool.TotalRPCLoad.Load(); got != 0 {
+				t.Fatalf("pool load mismatch:\n Got: %d\nWant: 0", got)
+			}
+			if got := e.CurrentPenalty(); got != 0 {
+				t.Fatalf("error penalty mismatch:\n Got: %d\nWant: 0", got)
+			}
+			if got := e.LastActivity.Load(); got != e.CreatedAt.Load() {
+				t.Fatalf("activity time changed by the call:\n Got: %d\nWant: %d", got, e.CreatedAt.Load())
+			}
+		})
+	}
+	if pool.ScaleUpSignal != nil {
+		t.Fatal("fixed pool has a scale-up signal")
+	}
+}
+
+func TestFixedChannelPoolWithoutOnCallStartCountsNothing(t *testing.T) {
+	ctx := context.Background()
+	underlying := newCallCountingFixedPool(1)
+	pool := newCallCountingFixedChannelPool(t, underlying, nil)
+	e := pool.GetEntries()[0]
+	underlying.duringRPC = func() {
+		if got := e.RPCLoad(); got != 0 {
+			t.Errorf("entry load during the call mismatch:\n Got: %d\nWant: 0", got)
+		}
+	}
+	pool.Invoke(ctx, "/test/Method", nil, nil)
+	stream, err := pool.NewStream(ctx, &grpc.StreamDesc{}, "/test/Method")
+	if err != nil {
+		t.Fatalf("NewStream failed: %v", err)
+	}
+	if _, ok := stream.(*scriptedFixedStream); !ok {
+		t.Fatalf("stream type mismatch:\n Got: %T\nWant: *scriptedFixedStream", stream)
+	}
+	e.Invoke(ctx, "/test/Method", nil, nil)
+	if _, err := e.NewStream(ctx, &grpc.StreamDesc{}, "/test/Method"); err != nil {
+		t.Fatalf("entry NewStream failed: %v", err)
+	}
+}
+
+func TestFixedChannelPoolCountedStreamEnds(t *testing.T) {
+	failed := errors.New("failed")
+	for _, tc := range []struct {
+		name      string
+		stream    *scriptedFixedStream
+		streamErr error
+		end       func(s grpc.ClientStream, cancel context.CancelFunc)
+	}{
+		{name: "RecvMsg returns io.EOF", stream: &scriptedFixedStream{recvErr: io.EOF}, end: func(s grpc.ClientStream, _ context.CancelFunc) { s.RecvMsg(nil) }},
+		{name: "RecvMsg fails", stream: &scriptedFixedStream{recvErr: failed}, end: func(s grpc.ClientStream, _ context.CancelFunc) { s.RecvMsg(nil) }},
+		{name: "SendMsg fails", stream: &scriptedFixedStream{sendErr: io.EOF}, end: func(s grpc.ClientStream, _ context.CancelFunc) { s.SendMsg(nil) }},
+		{name: "CloseSend fails", stream: &scriptedFixedStream{closeSendErr: failed}, end: func(s grpc.ClientStream, _ context.CancelFunc) { s.CloseSend() }},
+		{name: "Header fails", stream: &scriptedFixedStream{headerErr: failed}, end: func(s grpc.ClientStream, _ context.CancelFunc) { s.Header() }},
+		{name: "context canceled", stream: &scriptedFixedStream{}, end: func(_ grpc.ClientStream, cancel context.CancelFunc) { cancel() }},
+		{name: "NewStream fails", streamErr: failed},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			underlying := newCallCountingFixedPool(1)
+			underlying.stream = tc.stream
+			underlying.streamErr = tc.streamErr
+			pool := newCallCountingFixedChannelPool(t, underlying, func(context.Context, int32) {})
+			e := pool.GetEntries()[0]
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			s, err := pool.NewStream(ctx, &grpc.StreamDesc{ServerStreams: true}, "/test/Method")
+			if tc.streamErr != nil {
+				if !errors.Is(err, tc.streamErr) {
+					t.Fatalf("NewStream error mismatch:\n Got: %v\nWant: %v", err, tc.streamErr)
+				}
+			} else {
+				if err != nil {
+					t.Fatalf("NewStream failed: %v", err)
+				}
+				if got := e.StreamLoad.Load(); got != 1 {
+					t.Fatalf("stream load while open mismatch:\n Got: %d\nWant: 1", got)
+				}
+				tc.end(s, cancel)
+			}
+			waitForStreamLoad(t, e, 0)
+			if s != nil {
+				s.RecvMsg(nil)
+				s.CloseSend()
+			}
+			cancel()
+			time.Sleep(10 * time.Millisecond)
+			if got := e.StreamLoad.Load(); got != 0 {
+				t.Fatalf("stream load after more ends mismatch:\n Got: %d\nWant: 0", got)
+			}
+		})
+	}
+}
+
+func waitForStreamLoad(t *testing.T, e *DCPEntry[*fakeDCPClient], want int32) {
+	t.Helper()
+	deadline := time.Now().Add(5 * time.Second)
+	for e.StreamLoad.Load() != want {
+		if time.Now().After(deadline) {
+			t.Fatalf("stream load mismatch:\n Got: %d\nWant: %d", e.StreamLoad.Load(), want)
+		}
+		time.Sleep(time.Millisecond)
+	}
+}
+
+func TestFixedChannelPoolOnCallStartConcurrent(t *testing.T) {
+	ctx := context.Background()
+	var calls atomic.Int32
+	var maxLoad atomic.Int32
+	pool := newCallCountingFixedChannelPool(t, newCallCountingFixedPool(2), func(_ context.Context, load int32) {
+		calls.Add(1)
+		for {
+			cur := maxLoad.Load()
+			if load <= cur || maxLoad.CompareAndSwap(cur, load) {
+				return
+			}
+		}
+	})
+
+	const goroutines, perGoroutine = 8, 100
+	var wg sync.WaitGroup
+	for i := 0; i < goroutines; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < perGoroutine; j++ {
+				pool.Invoke(ctx, "/test/Method", nil, nil)
+				if s, err := pool.NewStream(ctx, &grpc.StreamDesc{}, "/test/Method"); err == nil {
+					s.RecvMsg(nil)
+				}
+			}
+		}()
+	}
+	wg.Wait()
+	if got, want := calls.Load(), int32(2*goroutines*perGoroutine); got != want {
+		t.Fatalf("OnCallStart calls mismatch:\n Got: %d\nWant: %d", got, want)
+	}
+	if got := maxLoad.Load(); got < 1 || got > goroutines {
+		t.Fatalf("OnCallStart max load mismatch:\n Got: %d\nWant: 1..%d", got, goroutines)
+	}
+	for i, e := range pool.GetEntries() {
+		if got := e.RPCLoad(); got != 0 {
+			t.Fatalf("entry %d load after all calls mismatch:\n Got: %d\nWant: 0", i, got)
+		}
+	}
+}
+
+func TestFixedChannelPoolCountedInvokeAllocations(t *testing.T) {
+	ctx := context.Background()
+	for _, tc := range []struct {
+		name        string
+		onCallStart func(context.Context, int32)
+	}{
+		{"without OnCallStart", nil},
+		{"with OnCallStart", func(context.Context, int32) {}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			pool := newCallCountingFixedChannelPool(t, newCallCountingFixedPool(2), tc.onCallStart)
+			if allocs := testing.AllocsPerRun(100, func() { pool.Invoke(ctx, "/test/Method", nil, nil) }); allocs != 0 {
+				t.Fatalf("allocations per Invoke mismatch:\n Got: %v\nWant: 0", allocs)
+			}
+		})
 	}
 }
 
