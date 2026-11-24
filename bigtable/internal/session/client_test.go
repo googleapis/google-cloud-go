@@ -18,6 +18,7 @@ import (
 	"context"
 	"encoding/base64"
 	"errors"
+	"reflect"
 	"sync/atomic"
 	"testing"
 
@@ -25,6 +26,9 @@ import (
 	metrics "cloud.google.com/go/bigtable/internal/metrics"
 	btransport "cloud.google.com/go/bigtable/internal/transport"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
@@ -626,5 +630,50 @@ func TestCreateSessionPool_SingleOwnership_SameKeyDistinctPools(t *testing.T) {
 	}
 	if got := len(sc.sessionPools); got != 0 {
 		t.Errorf("after releaseB, sessionPools has %d entries, want 0", got)
+	}
+}
+
+func TestNewClient_ForwardsClientOptionsToMetricsFactory(t *testing.T) {
+	var captured []option.ClientOption
+	orig := metrics.CreateExporterOptions
+	metrics.CreateExporterOptions = func(btOpts ...option.ClientOption) []option.ClientOption {
+		captured = append([]option.ClientOption(nil), btOpts...)
+		return orig(btOpts...)
+	}
+	t.Cleanup(func() { metrics.CreateExporterOptions = orig })
+
+	udOpt := option.WithUniverseDomain("tpc.example.test")
+	epOpt := option.WithEndpoint("127.0.0.1:1")
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	c, err := NewClient(
+		ctx,
+		"test-project",
+		"test-instance",
+		"test-profile",
+		"",
+		nil,
+		&btpb.FeatureFlags{},
+		udOpt,
+		epOpt,
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+	)
+	if err == nil && c != nil {
+		defer c.Close()
+	}
+
+	var sawUD, sawEP bool
+	for _, opt := range captured {
+		if reflect.TypeOf(opt) == reflect.TypeOf(udOpt) {
+			sawUD = true
+		}
+		if reflect.TypeOf(opt) == reflect.TypeOf(epOpt) {
+			sawEP = true
+		}
+	}
+	if !sawUD || !sawEP {
+		t.Errorf("session.NewClient did not forward TPC options to metrics.NewFactory: sawUniverseDomain=%v, sawEndpoint=%v", sawUD, sawEP)
 	}
 }

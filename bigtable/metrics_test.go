@@ -40,6 +40,7 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -774,47 +775,44 @@ func TestToOtelMetricAttrs(t *testing.T) {
 
 func TestCreateExporterOptionsFiltering(t *testing.T) {
 	endpointOpt := option.WithEndpoint("test.endpoint")
+	universeDomainOpt := option.WithUniverseDomain("tpc.example.test")
 	apiKeyOpt := option.WithAPIKey("test.apikey")
 	audiencesOpt := option.WithAudiences("test.audience")
 
 	inputOpts := []option.ClientOption{
+		internaloption.WithDefaultEndpointTemplate("bigtable.UNIVERSE_DOMAIN:443"),
+		internaloption.WithDefaultMTLSEndpoint("bigtable.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
+		option.WithScopes(Scope),
+		option.WithUserAgent("cbt-test"),
+		option.WithGRPCConnectionPool(10),
 		endpointOpt,
+		universeDomainOpt,
 		apiKeyOpt,
 		audiencesOpt,
 	}
 
 	filteredOpts := metrics.CreateExporterOptions(inputOpts...)
 
-	foundEndpointOpt := false
-	foundAPIKeyOpt := false
-	foundAudiencesOpt := false
-
+	wantTypes := map[reflect.Type]string{
+		reflect.TypeOf(endpointOpt):       "option.WithEndpoint",
+		reflect.TypeOf(universeDomainOpt): "option.WithUniverseDomain",
+		reflect.TypeOf(apiKeyOpt):         "option.WithAPIKey",
+		reflect.TypeOf(audiencesOpt):      "option.WithAudiences",
+	}
+	found := make(map[reflect.Type]bool)
 	for _, opt := range filteredOpts {
-		if reflect.TypeOf(opt) == reflect.TypeOf(endpointOpt) {
-			foundEndpointOpt = true
-		}
-		if reflect.TypeOf(opt) == reflect.TypeOf(apiKeyOpt) {
-			foundAPIKeyOpt = true
-		}
-		if reflect.TypeOf(opt) == reflect.TypeOf(audiencesOpt) {
-			foundAudiencesOpt = true
+		found[reflect.TypeOf(opt)] = true
+	}
+
+	for optType, name := range wantTypes {
+		if !found[optType] {
+			t.Errorf("%s was not found in filtered options, but it should have been preserved", name)
 		}
 	}
 
-	if foundEndpointOpt {
-		t.Errorf("option.WithEndpoint was found in filtered options, but it should have been filtered out")
-	}
-
-	if !foundAPIKeyOpt {
-		t.Errorf("option.WithAPIKey was not found in filtered options, but it should have been preserved")
-	}
-
-	if !foundAudiencesOpt {
-		t.Errorf("option.WithAudiences was not found in filtered options, but it should have been preserved")
-	}
-
-	if len(filteredOpts) != 2 {
-		t.Errorf("Expected 2 options to be returned, got %d", len(filteredOpts))
+	if len(filteredOpts) != len(wantTypes) {
+		t.Errorf("Expected %d options to be returned, got %d", len(wantTypes), len(filteredOpts))
 	}
 }
 

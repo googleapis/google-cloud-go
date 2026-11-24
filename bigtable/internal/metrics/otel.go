@@ -57,13 +57,17 @@ type bigtableClientMonitoredResource struct {
 	resource      *resource.Resource
 }
 
-func (bmr *bigtableClientMonitoredResource) exporter() (metric.Exporter, error) {
-	exporter, err := mexporter.New(
+func (bmr *bigtableClientMonitoredResource) exporter(monitoringClientOpts ...option.ClientOption) (metric.Exporter, error) {
+	exporterOpts := []mexporter.Option{
 		mexporter.WithProjectID(bmr.project),
 		mexporter.WithMetricDescriptorTypeFormatter(metricFormatter),
 		mexporter.WithCreateServiceTimeSeries(),
 		mexporter.WithMonitoredResourceDescription(bigtableClientMonitoredResourceName, []string{"project_id", "instance", "app_profile", "client_project", "cloud_platform", "host_id", "host_name", "client_name", "uuid", "region"}),
-	)
+	}
+	if len(monitoringClientOpts) > 0 {
+		exporterOpts = append(exporterOpts, mexporter.WithMonitoringClientOptions(monitoringClientOpts...))
+	}
+	exporter, err := mexporter.New(exporterOpts...)
 	if err != nil {
 		return nil, fmt.Errorf("bigtable: creating metrics exporter: %w", err)
 	}
@@ -164,15 +168,16 @@ type otelMetricsContext struct {
 }
 
 type metricsConfig struct {
-	project         string // project_id
-	instance        string // instance
-	appProfile      string // app_profile
-	clientName      string // client_name
-	clientUID       string // uuid
-	interval        time.Duration
-	manualReader    *metric.ManualReader // used by tests
-	disableExporter bool                 // used by tests disables exports
-	resourceOpts    []resource.Option    // used by tests
+	project              string // project_id
+	instance             string // instance
+	appProfile           string // app_profile
+	clientName           string // client_name
+	clientUID            string // uuid
+	interval             time.Duration
+	monitoringClientOpts []option.ClientOption
+	manualReader         *metric.ManualReader // used by tests
+	disableExporter      bool                 // used by tests disables exports
+	resourceOpts         []resource.Option    // used by tests
 }
 
 func newOtelMetricsContext(ctx context.Context, cfg metricsConfig) (*otelMetricsContext, error) {
@@ -186,7 +191,7 @@ func newOtelMetricsContext(ctx context.Context, cfg metricsConfig) (*otelMetrics
 	if err != nil {
 		return nil, err
 	}
-	exporter, err := smr.exporter()
+	exporter, err := smr.exporter(cfg.monitoringClientOpts...)
 	if err != nil {
 		return nil, err
 	}

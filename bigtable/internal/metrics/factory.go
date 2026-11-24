@@ -33,6 +33,7 @@ import (
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 
 	"cloud.google.com/go/bigtable/internal"
 )
@@ -79,16 +80,33 @@ var (
 		return "go-" + uuid.NewString() + "@" + hostname, nil
 	}
 
-	endpointOptionType = reflect.TypeOf(option.WithEndpoint(""))
+	// Bigtable-specific default and transport options that must not override
+	// Cloud Monitoring's own endpoint template, auth scopes, user agent, or
+	// connection pool when merged Bigtable options are passed (e.g. from
+	// session.NewClient or accelerator.NewChannel).
+	excludedExporterOptionTypes = map[reflect.Type]bool{
+		reflect.TypeOf(internaloption.WithDefaultEndpoint("")):         true,
+		reflect.TypeOf(internaloption.WithDefaultEndpointTemplate("")): true,
+		reflect.TypeOf(internaloption.WithDefaultMTLSEndpoint("")):     true,
+		reflect.TypeOf(internaloption.WithDefaultUniverseDomain("")):   true,
+		reflect.TypeOf(internaloption.WithDefaultScopes()):             true,
+		reflect.TypeOf(option.WithScopes()):                            true,
+		reflect.TypeOf(option.WithUserAgent("")):                       true,
+		reflect.TypeOf(option.WithGRPCConnectionPool(0)):               true,
+	}
 
 	// CreateExporterOptions takes Bigtable client options and returns exporter
-	// options, filtering out any WithEndpoint option to ensure the metrics
-	// exporter uses its default endpoint. Overridden in tests to redirect
-	// the exporter to a fake Cloud Monitoring server.
+	// options for Cloud Monitoring, preserving caller TPC options
+	// (WithUniverseDomain, WithEndpoint) and credentials while filtering out
+	// Bigtable-specific default options. Overridden in tests to redirect the
+	// exporter to a fake Cloud Monitoring server.
 	CreateExporterOptions = func(btOpts ...option.ClientOption) []option.ClientOption {
-		filteredOptions := []option.ClientOption{}
+		filteredOptions := make([]option.ClientOption, 0, len(btOpts))
 		for _, opt := range btOpts {
-			if reflect.TypeOf(opt) != endpointOptionType {
+			if opt == nil {
+				continue
+			}
+			if !excludedExporterOptionTypes[reflect.TypeOf(opt)] {
 				filteredOptions = append(filteredOptions, opt)
 			}
 		}
@@ -171,8 +189,10 @@ func NewFactory(ctx context.Context, project, instance, appProfile, clientNameOv
 		Shutdown: func() {},
 	}
 
+	exporterOpts := CreateExporterOptions(opts...)
+
 	// Create default meter provider
-	mpOptions, err := builtInMeterProviderOptions(project, opts...)
+	mpOptions, err := builtInMeterProviderOptions(project, exporterOpts...)
 	if err != nil {
 		// Swallow the error and disable metrics
 		return disabledMetricsTracerFactory, nil
@@ -180,12 +200,13 @@ func NewFactory(ctx context.Context, project, instance, appProfile, clientNameOv
 	meterProvider := sdkmetric.NewMeterProvider(mpOptions...)
 	// Enable Otel metrics collection
 	otelContext, err := newOtelMetricsContext(ctx, metricsConfig{
-		project:    project,
-		instance:   instance,
-		appProfile: appProfile,
-		clientName: effectiveClientName,
-		clientUID:  clientUID,
-		interval:   DefaultSamplePeriod,
+		project:              project,
+		instance:             instance,
+		appProfile:           appProfile,
+		clientName:           effectiveClientName,
+		clientUID:            clientUID,
+		interval:             DefaultSamplePeriod,
+		monitoringClientOpts: exporterOpts,
 	})
 
 	// the error from newOtelMetricsContext is silently ignored since metrics are not critical to client creation.
@@ -239,9 +260,8 @@ func NewFactoryForTest(project, instance, appProfile string, mp metric.MeterProv
 	return tf, nil
 }
 
-func builtInMeterProviderOptions(project string, opts ...option.ClientOption) ([]sdkmetric.Option, error) {
-	allOpts := CreateExporterOptions(opts...)
-	defaultExporter, err := newMonitoringExporter(context.Background(), project, allOpts...)
+func builtInMeterProviderOptions(project string, exporterOpts ...option.ClientOption) ([]sdkmetric.Option, error) {
+	defaultExporter, err := newMonitoringExporter(context.Background(), project, exporterOpts...)
 	if err != nil {
 		return nil, err
 	}
