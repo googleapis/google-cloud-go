@@ -1420,7 +1420,8 @@ func TestRetryConformance_MaxAttempts(t *testing.T) {
 func runMaxAttemptsTest(t *testing.T, client *Client, endpoint *url.URL, transport string, method *storage_v1_tests.Method, instructions []string, fn retryFunc, preconditions bool) {
 	t.Helper()
 	subtest := &emulatorTest{T: t, name: t.Name(), host: endpoint}
-	subtest.create(map[string][]string{method.Name: instructions}, transport)
+	// Use exactly conformanceMaxAttempts failures, so check() confirms every attempt was made.
+	subtest.create(map[string][]string{method.Name: instructions[:conformanceMaxAttempts]}, transport)
 	defer subtest.delete()
 	defer subtest.transportClient.Close()
 
@@ -1440,4 +1441,5 @@ func runMaxAttemptsTest(t *testing.T, client *Client, endpoint *url.URL, transpo
 	if want := fmt.Sprintf("retry failed after %d attempts", conformanceMaxAttempts); !strings.Contains(err.Error(), want) {
 		t.Errorf("got error %q, want error containing %q", err.Error(), want)
 	}
+	subtest.check()
 }

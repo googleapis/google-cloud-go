@@ -3515,11 +3515,12 @@ func TestWriterRetryMaxAttemptsEmulated(t *testing.T) {
 				pw.Close()
 				<-params.donec
 
+				// All instructions must be used, so the writer did not stop early.
+				checkRetryTestCompleted(t, testID)
 				if !tc.wantErr {
 					if writeErr != nil {
 						t.Fatalf("OpenWriter err = %v, want nil", writeErr)
 					}
-					checkRetryTestCompleted(t, testID)
 					return
 				}
 				if writeErr == nil {
