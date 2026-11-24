@@ -17,6 +17,7 @@ package internal
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -55,6 +56,38 @@ func TestComputeUniverseDomainProvider(t *testing.T) {
 				return "example.com", nil
 			},
 			want:    "example.com",
+			wantErr: nil,
+		},
+		{
+			name: "test wrapped error 404",
+			getFunc: func(context.Context, *metadata.Client) (string, error) {
+				return "", fmt.Errorf("wrapped: %w", notDefinedError)
+			},
+			want:    DefaultUniverseDomain,
+			wantErr: nil,
+		},
+		{
+			name: "test valid with trailing newline",
+			getFunc: func(context.Context, *metadata.Client) (string, error) {
+				return "example.com\n", nil
+			},
+			want:    "example.com",
+			wantErr: nil,
+		},
+		{
+			name: "test empty defaults to GDU",
+			getFunc: func(context.Context, *metadata.Client) (string, error) {
+				return "", nil
+			},
+			want:    DefaultUniverseDomain,
+			wantErr: nil,
+		},
+		{
+			name: "test whitespace defaults to GDU",
+			getFunc: func(context.Context, *metadata.Client) (string, error) {
+				return "  \n", nil
+			},
+			want:    DefaultUniverseDomain,
 			wantErr: nil,
 		},
 	}

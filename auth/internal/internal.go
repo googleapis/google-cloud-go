@@ -25,6 +25,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -212,14 +213,19 @@ var httpGetMetadataUniverseDomain = func(ctx context.Context, client *metadata.C
 
 func getMetadataUniverseDomain(ctx context.Context, client *metadata.Client) (string, error) {
 	universeDomain, err := httpGetMetadataUniverseDomain(ctx, client)
-	if err == nil {
-		return universeDomain, nil
+	if err != nil {
+		var notDefined metadata.NotDefinedError
+		if errors.As(err, &notDefined) {
+			// http.StatusNotFound (404)
+			return DefaultUniverseDomain, nil
+		}
+		return "", err
 	}
-	if _, ok := err.(metadata.NotDefinedError); ok {
-		// http.StatusNotFound (404)
+	universeDomain = strings.TrimSpace(universeDomain)
+	if universeDomain == "" {
 		return DefaultUniverseDomain, nil
 	}
-	return "", err
+	return universeDomain, nil
 }
 
 // FormatIAMServiceAccountResource sets a service account name in an IAM resource
