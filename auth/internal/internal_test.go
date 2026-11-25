@@ -17,6 +17,7 @@ package internal
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -57,6 +58,38 @@ func TestComputeUniverseDomainProvider(t *testing.T) {
 			want:    "example.com",
 			wantErr: nil,
 		},
+		{
+			name: "test wrapped error 404",
+			getFunc: func(context.Context, *metadata.Client) (string, error) {
+				return "", fmt.Errorf("wrapped: %w", notDefinedError)
+			},
+			want:    DefaultUniverseDomain,
+			wantErr: nil,
+		},
+		{
+			name: "test valid with trailing newline",
+			getFunc: func(context.Context, *metadata.Client) (string, error) {
+				return "example.com\n", nil
+			},
+			want:    "example.com",
+			wantErr: nil,
+		},
+		{
+			name: "test empty defaults to GDU",
+			getFunc: func(context.Context, *metadata.Client) (string, error) {
+				return "", nil
+			},
+			want:    DefaultUniverseDomain,
+			wantErr: nil,
+		},
+		{
+			name: "test whitespace defaults to GDU",
+			getFunc: func(context.Context, *metadata.Client) (string, error) {
+				return "  \n", nil
+			},
+			want:    DefaultUniverseDomain,
+			wantErr: nil,
+		},
 	}
 
 	oldGet := httpGetMetadataUniverseDomain
@@ -75,6 +108,41 @@ func TestComputeUniverseDomainProvider(t *testing.T) {
 				t.Errorf("got %v; want %v", got, tc.want)
 			}
 		})
+	}
+}
+
+func TestComputeUniverseDomainProvider_CachingAndRetry(t *testing.T) {
+	oldGet := httpGetMetadataUniverseDomain
+	t.Cleanup(func() {
+		httpGetMetadataUniverseDomain = oldGet
+	})
+
+	transientErr := errors.New("transient mds error")
+	calls := 0
+	httpGetMetadataUniverseDomain = func(context.Context, *metadata.Client) (string, error) {
+		calls++
+		if calls == 1 {
+			return "", transientErr
+		}
+		return "example.com\n", nil
+	}
+
+	c := &ComputeUniverseDomainProvider{}
+
+	// First call fails and must not poison subsequent lookups.
+	if got, err := c.GetProperty(context.Background()); !errors.Is(err, transientErr) || got != "" {
+		t.Fatalf("first GetProperty() = (%q, %v), want (\"\", %v)", got, err, transientErr)
+	}
+	// Second call succeeds and caches the result.
+	if got, err := c.GetProperty(context.Background()); err != nil || got != "example.com" {
+		t.Fatalf("second GetProperty() = (%q, %v), want (%q, nil)", got, err, "example.com")
+	}
+	// Third call hits the cache without invoking MDS again.
+	if got, err := c.GetProperty(context.Background()); err != nil || got != "example.com" {
+		t.Fatalf("third GetProperty() = (%q, %v), want (%q, nil)", got, err, "example.com")
+	}
+	if calls != 2 {
+		t.Errorf("httpGetMetadataUniverseDomain calls = %d, want 2", calls)
 	}
 }
 

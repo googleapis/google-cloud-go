@@ -1,5 +1,12 @@
 # Changes
 
+## [0.7.2](https://github.com/googleapis/google-cloud-go/compare/profiler/v0.7.1...profiler/v0.7.2) (2026-11-25)
+
+
+### Bug Fixes
+
+* **profiler:** Universe resolution improvements ([#20991](https://github.com/googleapis/google-cloud-go/issues/20991)) ([5cec789](https://github.com/googleapis/google-cloud-go/commit/5cec7890511fc056a8510a8403352b0c0a4ab7e8))
+
 ## [0.7.1](https://github.com/googleapis/google-cloud-go/compare/profiler/v0.7.0...profiler/v0.7.1) (2026-10-28)
 
 

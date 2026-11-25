@@ -46,6 +46,7 @@ import (
 	"github.com/googleapis/gax-go/v2/callctx"
 	otcodes "go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
@@ -3424,6 +3425,140 @@ func TestRetryMaxDurationEmulated(t *testing.T) {
 		}
 		if got, want := err.Error(), "200ms"; !strings.Contains(got, want) {
 			t.Errorf("got error: %q, want to contain duration: %q", got, want)
+		}
+	})
+}
+
+// Test that writers honor maxAttempts and RetryNever, and that progress resets attempts.
+func TestWriterRetryMaxAttemptsEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
+		if err != nil {
+			t.Fatalf("creating bucket: %v", err)
+		}
+		backoff := &gax.Backoff{Initial: 10 * time.Millisecond}
+
+		// Failure cases have exactly as many failure instructions as the attempts
+		// expected, so an extra attempt would succeed and fail the test.
+		for _, tc := range []struct {
+			name             string
+			instructions     []string
+			grpcInstructions []string
+			httpOnly         bool
+			singleShot       bool
+			config           *retryConfig
+			wantErr          bool
+			wantErrMsg       string
+		}{
+			{
+				name:         "single_shot",
+				instructions: []string{"return-503", "return-503"},
+				singleShot:   true,
+				config:       &retryConfig{maxAttempts: intPointer(2), backoff: backoff},
+				wantErr:      true,
+				wantErrMsg:   "retry failed after 2 attempts",
+			},
+			{
+				name:         "session_init_exhausted",
+				instructions: []string{"return-503", "return-503"},
+				config:       &retryConfig{maxAttempts: intPointer(2), backoff: backoff},
+				wantErr:      true,
+				wantErrMsg:   "retry failed after 2 attempts",
+			},
+			{
+				name:         "resumable_chunk",
+				instructions: []string{"return-503-after-257K", "return-503", "return-503"},
+				// On gRPC, return-503-after-257K persists 1 KiB past chunk 1; QueryWriteStatus
+				// observes that progress and resets attempts, so 3 further failures are needed.
+				grpcInstructions: []string{"return-503-after-257K", "return-503", "return-503", "return-503"},
+				config:           &retryConfig{maxAttempts: intPointer(3), backoff: backoff},
+				wantErr:          true,
+				wantErrMsg:       "retry failed after 3 attempts",
+			},
+			{
+				// Session init retries must not use up chunk 1's retry budget.
+				name:         "session_init_retry_does_not_consume_chunk_budget",
+				instructions: []string{"return-503", "return-503-after-128K"},
+				config:       &retryConfig{maxAttempts: intPointer(2), backoff: backoff},
+				// gRPC resets attempts only on persisted progress, so this is HTTP only.
+				httpOnly: true,
+			},
+			{
+				name:         "resumable_chunk_progress_resets_attempts",
+				instructions: []string{"return-503-after-257K", "return-503-after-513K"},
+				config:       &retryConfig{maxAttempts: intPointer(2), backoff: backoff},
+			},
+			{
+				name:         "resumable_chunk_retry_never",
+				instructions: []string{"return-503-after-257K"},
+				config:       &retryConfig{policy: RetryNever, maxAttempts: intPointer(3), backoff: backoff},
+				wantErr:      true,
+			},
+		} {
+			t.Run(tc.name, func(t *testing.T) {
+				_, isHTTP := client.(*httpStorageClient)
+				if tc.httpOnly && !isHTTP {
+					t.Skip("HTTP only")
+				}
+				instructions := tc.instructions
+				if !isHTTP && len(tc.grpcInstructions) > 0 {
+					instructions = tc.grpcInstructions
+				}
+				testID := createRetryTest(t, client, map[string][]string{"storage.objects.insert": instructions})
+				ctx := callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+
+				chunkSize := 256 * 1024
+				if tc.singleShot {
+					// The data fits in one chunk, so it is sent in a single request.
+					chunkSize = googleapi.DefaultUploadChunkSize
+				}
+				var writeErr error
+				params := &openWriterParams{
+					attrs: &ObjectAttrs{
+						Bucket:     bucket,
+						Name:       fmt.Sprintf("object-%d", time.Now().Nanosecond()),
+						Generation: defaultGen,
+					},
+					bucket:    bucket,
+					chunkSize: chunkSize,
+					ctx:       ctx,
+					donec:     make(chan struct{}),
+					setError:  func(err error) { writeErr = err },
+					progress:  func(_ int64) {},
+					setObj:    func(o *ObjectAttrs) {},
+					setSize:   func(int64) {},
+				}
+
+				pw, err := client.OpenWriter(params, idempotent(true), withRetryConfig(tc.config))
+				if err != nil {
+					t.Fatalf("OpenWriter: %v", err)
+				}
+				pw.Write(bytes.Repeat([]byte("A"), 600*1024))
+				pw.Close()
+				<-params.donec
+
+				// All instructions must be used, so the writer did not stop early.
+				checkRetryTestCompleted(t, testID)
+				if !tc.wantErr {
+					if writeErr != nil {
+						t.Fatalf("OpenWriter err = %v, want nil", writeErr)
+					}
+					return
+				}
+				if writeErr == nil {
+					t.Fatal("OpenWriter err = nil, want 503/Unavailable error")
+				}
+				if !errorIsStatusCode(writeErr, 503, codes.Unavailable) {
+					t.Fatalf("OpenWriter err = %v, want 503/Unavailable API error", writeErr)
+				}
+				gotMsg := writeErr.Error()
+				if tc.wantErrMsg != "" && !strings.Contains(gotMsg, tc.wantErrMsg) {
+					t.Errorf("OpenWriter err = %q, want error containing %q", gotMsg, tc.wantErrMsg)
+				}
+				if tc.wantErrMsg == "" && strings.Contains(gotMsg, "retry failed after") {
+					t.Errorf("OpenWriter err = %q, want unwrapped error", gotMsg)
+				}
+			})
 		}
 	})
 }

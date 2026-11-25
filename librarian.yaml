@@ -197,7 +197,7 @@ libraries:
     apis:
       - path: google/cloud/auditmanager/v1
   - name: auth
-    version: 0.24.4
+    version: 0.24.5
     keep:
       - README.md
       - internal/version.go
@@ -251,7 +251,7 @@ libraries:
       - path: google/cloud/biglake/hive/v1beta
     copyright_year: "2026"
   - name: bigquery
-    version: 1.86.3
+    version: 1.86.4
     apis:
       - path: google/cloud/bigquery/migration/v2
         go:
@@ -1119,7 +1119,7 @@ libraries:
       - path: google/cloud/productregistry/v1
     copyright_year: "2026"
   - name: profiler
-    version: 0.7.1
+    version: 0.7.2
     keep:
       - README.md
       - internal/version.go

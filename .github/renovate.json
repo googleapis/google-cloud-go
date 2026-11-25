@@ -17,7 +17,8 @@
     ],
     "ignorePaths": [
         ".github/workflows/librarian_tidy.yml",
-        ".github/workflows/generation_check.yaml"
+        ".github/workflows/generation_check.yaml",
+	".github/workflows/vet.yml"
     ],
     "packageRules": [
     	{

@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
@@ -1688,6 +1689,143 @@ func TestDefaultSignBlobRetry(t *testing.T) {
 		GoogleAccessID: "example@example.com",
 	}); err != nil {
 		t.Fatalf("BucketHandle.SignedURL: %v", err)
+	}
+}
+
+func TestDefaultSignBlob_UniverseDomain(t *testing.T) {
+	ctx := context.Background()
+
+	tests := []struct {
+		desc          string
+		universeEnv   string
+		mtlsEnv       string
+		clientOpts    []option.ClientOption
+		credsUD       string
+		keepCustomHC  bool
+		wantHost      string
+		wantErrSubstr string
+	}{
+		{
+			desc:       "WithUniverseDomain and nil creds routes to custom iamcredentials",
+			clientOpts: []option.ClientOption{option.WithUniverseDomain("universe.example.com")},
+			wantHost:   "iamcredentials.universe.example.com",
+		},
+		{
+			desc: "WithUniverseDomain and custom WithEndpoint still routes to custom iamcredentials",
+			clientOpts: []option.ClientOption{
+				option.WithUniverseDomain("universe.example.com"),
+				option.WithEndpoint("https://custom.proxy/storage/v1/"),
+			},
+			wantHost: "iamcredentials.universe.example.com",
+		},
+		{
+			desc: "WithUniverseDomain fails closed on mTLS instead of falling back to googleapis.com",
+			clientOpts: []option.ClientOption{
+				option.WithUniverseDomain("universe.example.com"),
+				option.WithEndpoint("https://storage.universe.example.com/storage/v1/"),
+			},
+			mtlsEnv:       "always",
+			wantErrSubstr: "mTLS",
+		},
+		{
+			desc:        "WithUniverseDomain overrides GOOGLE_CLOUD_UNIVERSE_DOMAIN",
+			universeEnv: "env.example.com",
+			clientOpts:  []option.ClientOption{option.WithUniverseDomain("opt.example.com")},
+			wantHost:    "iamcredentials.opt.example.com",
+		},
+		{
+			desc:        "GOOGLE_CLOUD_UNIVERSE_DOMAIN and nil creds routes to custom iamcredentials",
+			universeEnv: "universe.example.com",
+			wantHost:    "iamcredentials.universe.example.com",
+		},
+		{
+			desc:         "custom HTTP client ignores ambient creds universe domain",
+			clientOpts:   []option.ClientOption{option.WithUniverseDomain("universe.example.com")},
+			credsUD:      "googleapis.com",
+			keepCustomHC: true,
+			wantHost:     "iamcredentials.universe.example.com",
+		},
+		{
+			desc:       "matching creds universe domain succeeds",
+			clientOpts: []option.ClientOption{option.WithUniverseDomain("universe.example.com")},
+			credsUD:    "universe.example.com",
+			wantHost:   "iamcredentials.universe.example.com",
+		},
+		{
+			desc:          "mismatched creds universe domain fails closed without sending request",
+			clientOpts:    []option.ClientOption{option.WithUniverseDomain("universe.example.com")},
+			credsUD:       "googleapis.com",
+			wantErrSubstr: "does not match",
+		},
+		{
+			desc:          "unset universe domain fails closed on non-default creds universe",
+			credsUD:       "universe.example.com",
+			wantErrSubstr: "does not match",
+		},
+		{
+			desc:     "defaults to iamcredentials.googleapis.com when unset",
+			wantHost: "iamcredentials.googleapis.com",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", tc.universeEnv)
+			t.Setenv("GOOGLE_API_USE_MTLS_ENDPOINT", tc.mtlsEnv)
+			t.Setenv("STORAGE_EMULATOR_HOST", "")
+
+			var gotHost string
+			var calls int
+			hc := &http.Client{
+				Transport: roundTripFunc(func(req *http.Request) (*http.Response, error) {
+					calls++
+					gotHost = req.URL.Host
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       bodyReader(`{"signedBlob":"c2ln"}`),
+					}, nil
+				}),
+			}
+
+			opts := append([]option.ClientOption{option.WithHTTPClient(hc)}, tc.clientOpts...)
+			client, err := NewClient(ctx, opts...)
+			if err != nil {
+				t.Fatalf("NewClient: %v", err)
+			}
+			if tc.credsUD != "" {
+				if !tc.keepCustomHC {
+					client.customHTTPClient = false
+				}
+				client.creds = auth.NewCredentials(&auth.CredentialsOptions{
+					UniverseDomainProvider: auth.CredentialsPropertyFunc(func(context.Context) (string, error) {
+						return tc.credsUD, nil
+					}),
+				})
+			} else {
+				client.creds = nil
+			}
+
+			signFn := client.Bucket("fakebucket").defaultSignBytesFunc("example@example.com")
+			_, err = signFn([]byte("payload"))
+			if tc.wantErrSubstr != "" {
+				if err == nil {
+					t.Fatalf("defaultSignBytesFunc() = nil, want error containing %q", tc.wantErrSubstr)
+				}
+				if !strings.Contains(err.Error(), tc.wantErrSubstr) {
+					t.Fatalf("defaultSignBytesFunc() error = %q, want substring %q", err.Error(), tc.wantErrSubstr)
+				}
+				if calls != 0 {
+					t.Errorf("made %d HTTP calls to %q on error, want 0", calls, gotHost)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("defaultSignBytesFunc(): %v", err)
+			}
+			if gotHost != tc.wantHost {
+				t.Errorf("SignBlob host = %q, want %q", gotHost, tc.wantHost)
+			}
+		})
 	}
 }
 
