@@ -368,3 +368,36 @@ func TestTrackingTransport_CloseIdleConnections(t *testing.T) {
 		t.Errorf("CloseIdleConnections was not called on base transport")
 	}
 }
+
+func TestNewRangeReaderXML_EscapesBucketName(t *testing.T) {
+	mock := &mockTransport{}
+	mock.addResult(&http.Response{
+		Status:     "200 OK",
+		StatusCode: http.StatusOK,
+		Body:       bodyReader("hello"),
+	}, nil)
+	hc := &httpStorageClient{
+		hc:      &http.Client{Transport: mock},
+		scheme:  "https",
+		xmlHost: "storage.googleapis.com",
+		config:  &storageConfig{},
+		settings: &settings{
+			retry: defaultRetry,
+		},
+	}
+	r, err := hc.newRangeReaderXML(context.Background(), &newRangeReaderParams{
+		bucket: "bucket/injected",
+		object: "obj",
+		length: -1,
+	}, hc.settings)
+	if err != nil {
+		t.Fatalf("newRangeReaderXML: %v", err)
+	}
+	_ = r.Close()
+	if mock.gotReq == nil {
+		t.Fatal("expected HTTP request, got nil")
+	}
+	if got, want := mock.gotReq.URL.EscapedPath(), "/bucket%2Finjected/obj"; got != want {
+		t.Errorf("request EscapedPath() = %q, want %q", got, want)
+	}
+}

@@ -15,7 +15,9 @@
 package storage
 
 import (
+	"encoding/base64"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -67,5 +69,42 @@ func TestPostPolicyV4OptionsClone(t *testing.T) {
 	if diff := cmp.Diff(opts, optsClone, cmp.Comparer(signBytesComp),
 		cmp.AllowUnexported(PostPolicyV4Options{})); diff != "" {
 		t.Errorf("clone does not match (original: -, cloned: +):\n%s", diff)
+	}
+}
+
+func TestConditionContentLengthRange_ZeroRangeIncluded(t *testing.T) {
+	t.Parallel()
+
+	policy, err := GenerateSignedPostPolicyV4("my-bucket", "my-object", &PostPolicyV4Options{
+		GoogleAccessID: "xxx@clientid",
+		SignBytes:      func(b []byte) ([]byte, error) { return []byte("sig"), nil },
+		Expires:        time.Now().Add(time.Hour),
+		Conditions:     []PostPolicyV4Condition{ConditionContentLengthRange(0, 0)},
+	})
+	if err != nil {
+		t.Fatalf("GenerateSignedPostPolicyV4: %v", err)
+	}
+	rawPolicy, err := base64.StdEncoding.DecodeString(policy.Fields["policy"])
+	if err != nil {
+		t.Fatalf("DecodeString: %v", err)
+	}
+	if !strings.Contains(string(rawPolicy), `["content-length-range",0,0]`) {
+		t.Errorf("policy = %s, want condition [\"content-length-range\",0,0]", string(rawPolicy))
+	}
+}
+
+func TestGenerateSignedPostPolicyV4_RejectsSlashInBucket(t *testing.T) {
+	t.Parallel()
+
+	_, err := GenerateSignedPostPolicyV4("other-bucket/prefix", "my-object", &PostPolicyV4Options{
+		GoogleAccessID: "xxx@clientid",
+		SignBytes:      func(b []byte) ([]byte, error) { return []byte("sig"), nil },
+		Expires:        time.Now().Add(time.Hour),
+	})
+	if err == nil {
+		t.Fatal("GenerateSignedPostPolicyV4() = nil, want error for bucket containing '/'")
+	}
+	if !strings.Contains(err.Error(), "must not contain '/'") {
+		t.Errorf("GenerateSignedPostPolicyV4() err = %q, want substring %q", err.Error(), "must not contain '/'")
 	}
 }

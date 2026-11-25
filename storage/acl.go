@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"errors"
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	raw "google.golang.org/api/storage/v1"
@@ -70,6 +71,7 @@ type ACLHandle struct {
 	bucket      string
 	object      string
 	isDefault   bool
+	isObject    bool
 	userProject string // for requester-pays buckets
 	retry       *retryConfig
 }
@@ -79,7 +81,10 @@ func (a *ACLHandle) Delete(ctx context.Context, entity ACLEntity) (err error) {
 	ctx, _ = startSpanWithObject(ctx, a.c, a.bucket, a.object, "ACL.Delete")
 	defer func() { endSpan(ctx, err) }()
 
-	if a.object != "" {
+	if a.isObject || a.object != "" {
+		if a.object == "" {
+			return errors.New("storage: object name is empty")
+		}
 		return a.objectDelete(ctx, entity)
 	}
 	if a.isDefault {
@@ -93,7 +98,10 @@ func (a *ACLHandle) Set(ctx context.Context, entity ACLEntity, role ACLRole) (er
 	ctx, _ = startSpanWithObject(ctx, a.c, a.bucket, a.object, "ACL.Set")
 	defer func() { endSpan(ctx, err) }()
 
-	if a.object != "" {
+	if a.isObject || a.object != "" {
+		if a.object == "" {
+			return errors.New("storage: object name is empty")
+		}
 		return a.objectSet(ctx, entity, role, false)
 	}
 	if a.isDefault {
@@ -107,7 +115,10 @@ func (a *ACLHandle) List(ctx context.Context) (rules []ACLRule, err error) {
 	ctx, _ = startSpanWithObject(ctx, a.c, a.bucket, a.object, "ACL.List")
 	defer func() { endSpan(ctx, err) }()
 
-	if a.object != "" {
+	if a.isObject || a.object != "" {
+		if a.object == "" {
+			return nil, errors.New("storage: object name is empty")
+		}
 		return a.objectList(ctx)
 	}
 	if a.isDefault {

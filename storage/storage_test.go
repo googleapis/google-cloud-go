@@ -638,6 +638,28 @@ func TestSignedURL_UniverseDomain(t *testing.T) {
 	})
 }
 
+func TestSignedURL_RejectsSlashInBucket(t *testing.T) {
+	t.Parallel()
+
+	for _, scheme := range []SigningScheme{SigningSchemeV2, SigningSchemeV4} {
+		t.Run(fmt.Sprintf("scheme_%d", scheme), func(t *testing.T) {
+			_, err := SignedURL("other-bucket/prefix", "obj", &SignedURLOptions{
+				GoogleAccessID: "xxx@clientid",
+				SignBytes:      func(b []byte) ([]byte, error) { return []byte("sig"), nil },
+				Method:         "GET",
+				Expires:        time.Now().Add(time.Hour),
+				Scheme:         scheme,
+			})
+			if err == nil {
+				t.Fatal("SignedURL() = nil, want error for bucket containing '/'")
+			}
+			if !strings.Contains(err.Error(), "must not contain '/'") {
+				t.Errorf("SignedURL() err = %q, want substring %q", err.Error(), "must not contain '/'")
+			}
+		})
+	}
+}
+
 func TestSignedURL_MissingOptions(t *testing.T) {
 	now, _ := time.Parse(time.RFC3339, "2002-10-01T00:00:00-05:00")
 	expires, _ := time.Parse(time.RFC3339, "2002-10-15T00:00:00-05:00")

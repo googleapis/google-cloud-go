@@ -17,6 +17,7 @@ package storage
 import (
 	"context"
 	"net/http"
+	"strings"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
@@ -110,5 +111,35 @@ func TestFromProtoToObjectACLRules(t *testing.T) {
 		if diff := testutil.Diff(got, tst.want); diff != "" {
 			t.Errorf("#%d: got(-),want(+):\n%s", i, diff)
 		}
+	}
+}
+
+func TestObjectACL_EmptyObjectNameReturnsError(t *testing.T) {
+	ctx := context.Background()
+	mt := &mockTransport{}
+	client := mockClient(t, mt)
+	acl := client.Bucket("my-bucket").Object("").ACL()
+
+	tests := []struct {
+		name string
+		fn   func() error
+	}{
+		{name: "Set", fn: func() error { return acl.Set(ctx, AllUsers, RoleReader) }},
+		{name: "Delete", fn: func() error { return acl.Delete(ctx, AllUsers) }},
+		{name: "List", fn: func() error { _, err := acl.List(ctx); return err }},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			err := tc.fn()
+			if err == nil {
+				t.Fatalf("Object(\"\").ACL().%s() = nil, want error", tc.name)
+			}
+			if !strings.Contains(err.Error(), "object name is empty") {
+				t.Errorf("Object(\"\").ACL().%s() err = %q, want substring %q", tc.name, err.Error(), "object name is empty")
+			}
+			if mt.gotReq != nil {
+				t.Errorf("Object(\"\").ACL().%s() sent unexpected HTTP request %s %s", tc.name, mt.gotReq.Method, mt.gotReq.URL)
+			}
+		})
 	}
 }
