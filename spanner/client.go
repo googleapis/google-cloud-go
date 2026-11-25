@@ -566,7 +566,8 @@ func createDCPConnPool(
 		first := firstDialed.Load()
 		return first != nil && sameConnPool(pool, *first)
 	})
-	dcp, err := newDynamicChannelPool(ctx, sc, config.DynamicChannelPoolConfig, config.OpenTelemetryMeterProvider, dial, fallback)
+	builtinMetricsCfg := newChannelPoolBuiltinMetricsConfig(metricsTracerFactory, transport.ResolveDirectPathEnabled(config.EnableDirectAccess))
+	dcp, err := newDynamicChannelPool(ctx, sc, config.DynamicChannelPoolConfig, config.OpenTelemetryMeterProvider, builtinMetricsCfg, dial, fallback)
 	if err != nil {
 		fallback.close()
 		return nil, nil, err

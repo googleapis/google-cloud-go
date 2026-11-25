@@ -507,6 +507,137 @@ func TestSignedURL_EmulatorHost(t *testing.T) {
 	}
 }
 
+func TestSignedURL_UniverseDomain(t *testing.T) {
+	expires := time.Now().Add(time.Hour)
+	key := dummyKey("rsa")
+
+	t.Run("SignedURL", func(t *testing.T) {
+		tests := []struct {
+			desc        string
+			universeEnv string
+			emulatorEnv string
+			hostname    string
+			style       URLStyle
+			scheme      SigningScheme
+			wantHost    string
+		}{
+			{
+				desc:        "path style V4 honors GOOGLE_CLOUD_UNIVERSE_DOMAIN",
+				universeEnv: "universe.example.com",
+				style:       PathStyle(),
+				scheme:      SigningSchemeV4,
+				wantHost:    "storage.universe.example.com",
+			},
+			{
+				desc:        "path style V2 honors GOOGLE_CLOUD_UNIVERSE_DOMAIN",
+				universeEnv: "universe.example.com",
+				style:       PathStyle(),
+				scheme:      SigningSchemeV2,
+				wantHost:    "storage.universe.example.com",
+			},
+			{
+				desc:        "virtual hosted style honors GOOGLE_CLOUD_UNIVERSE_DOMAIN",
+				universeEnv: "universe.example.com",
+				style:       VirtualHostedStyle(),
+				scheme:      SigningSchemeV4,
+				wantHost:    "bucket-name.storage.universe.example.com",
+			},
+			{
+				desc:        "emulator host overrides GOOGLE_CLOUD_UNIVERSE_DOMAIN",
+				universeEnv: "universe.example.com",
+				emulatorEnv: "localhost:9000",
+				style:       PathStyle(),
+				scheme:      SigningSchemeV4,
+				wantHost:    "localhost:9000",
+			},
+			{
+				desc:        "explicit Hostname overrides emulator and universe domain",
+				universeEnv: "universe.example.com",
+				emulatorEnv: "localhost:9000",
+				hostname:    "custom.example.com",
+				style:       PathStyle(),
+				scheme:      SigningSchemeV4,
+				wantHost:    "custom.example.com",
+			},
+			{
+				desc:     "defaults to storage.googleapis.com when unset",
+				style:    PathStyle(),
+				scheme:   SigningSchemeV4,
+				wantHost: "storage.googleapis.com",
+			},
+		}
+		for _, tc := range tests {
+			t.Run(tc.desc, func(t *testing.T) {
+				t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", tc.universeEnv)
+				t.Setenv("STORAGE_EMULATOR_HOST", tc.emulatorEnv)
+				got, err := SignedURL("bucket-name", "obj-name", &SignedURLOptions{
+					GoogleAccessID: "xxx@clientid",
+					PrivateKey:     key,
+					Method:         "GET",
+					Expires:        expires,
+					Scheme:         tc.scheme,
+					Style:          tc.style,
+					Hostname:       tc.hostname,
+				})
+				if err != nil {
+					t.Fatalf("SignedURL: %v", err)
+				}
+				u, err := url.Parse(got)
+				if err != nil {
+					t.Fatalf("url.Parse(%q): %v", got, err)
+				}
+				if u.Host != tc.wantHost {
+					t.Errorf("SignedURL host = %q, want %q (url=%q)", u.Host, tc.wantHost, got)
+				}
+			})
+		}
+	})
+
+	t.Run("GenerateSignedPostPolicyV4", func(t *testing.T) {
+		tests := []struct {
+			desc        string
+			universeEnv string
+			style       URLStyle
+			wantHost    string
+		}{
+			{
+				desc:        "path style honors GOOGLE_CLOUD_UNIVERSE_DOMAIN",
+				universeEnv: "universe.example.com",
+				style:       PathStyle(),
+				wantHost:    "storage.universe.example.com",
+			},
+			{
+				desc:        "virtual hosted style honors GOOGLE_CLOUD_UNIVERSE_DOMAIN",
+				universeEnv: "universe.example.com",
+				style:       VirtualHostedStyle(),
+				wantHost:    "bucket-name.storage.universe.example.com",
+			},
+		}
+		for _, tc := range tests {
+			t.Run(tc.desc, func(t *testing.T) {
+				t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", tc.universeEnv)
+				t.Setenv("STORAGE_EMULATOR_HOST", "")
+				policy, err := GenerateSignedPostPolicyV4("bucket-name", "obj-name", &PostPolicyV4Options{
+					GoogleAccessID: "xxx@clientid",
+					PrivateKey:     key,
+					Expires:        expires,
+					Style:          tc.style,
+				})
+				if err != nil {
+					t.Fatalf("GenerateSignedPostPolicyV4: %v", err)
+				}
+				u, err := url.Parse(policy.URL)
+				if err != nil {
+					t.Fatalf("url.Parse(%q): %v", policy.URL, err)
+				}
+				if u.Host != tc.wantHost {
+					t.Errorf("PostPolicyV4 URL host = %q, want %q (url=%q)", u.Host, tc.wantHost, policy.URL)
+				}
+			})
+		}
+	})
+}
+
 func TestSignedURL_MissingOptions(t *testing.T) {
 	now, _ := time.Parse(time.RFC3339, "2002-10-01T00:00:00-05:00")
 	expires, _ := time.Parse(time.RFC3339, "2002-10-15T00:00:00-05:00")

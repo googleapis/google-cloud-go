@@ -455,6 +455,17 @@ func NewClient(
 		return btransport.NewBigtableConn(grpcConn), nil
 	}
 
+	// See b/588877681.
+	var directAccessChecker btransport.DirectAccessChecker
+	if featureFlagsProto.GetDirectAccessRequested() {
+		directAccessChecker = btransport.NewSessionClientDirectAccessChecker(
+			daDial, fullInstance, appProfile, configMD,
+			factory.OtelMeterProvider, nil,
+		)
+	} else {
+		directAccessChecker = btransport.NewDisabledDirectAccessChecker(factory.OtelMeterProvider, nil)
+	}
+
 	disableSessionAware := btopt.DisableSessionAwareChannelPool()
 	if disableSessionAware {
 		if err := btransport.ValidateDynamicConfig(btopt.DefaultDynamicChannelPoolConfig(), poolSize); err != nil {
@@ -471,10 +482,7 @@ func NewClient(
 		btransport.WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig()),
 		btransport.WithMeterProvider(factory.OtelMeterProvider),
 		btransport.WithChannelPrimer(btransport.NoOpChannelPrimer{}),
-		btransport.WithDirectAccessChecker(btransport.NewSessionClientDirectAccessChecker(
-			daDial, fullInstance, appProfile, configMD,
-			factory.OtelMeterProvider, nil,
-		)),
+		btransport.WithDirectAccessChecker(directAccessChecker),
 	)
 	if err != nil {
 		cleanupOnErr()

@@ -39,6 +39,8 @@ import (
 
 // xdsCdsURITemplate names the Multi-Region AFE frontend pool. We send the
 // request to the same client region.
+//
+//lint:ignore U1000 temporarily disabled
 const xdsCdsURITemplate = "xdstp://traffic-director-c2p.xds.googleapis.com/envoy.config.cluster.v3.Cluster/%s-bigtable.googleapis.com/eds_cluster"
 
 // DirectAccessChecker decides whether the runtime environment is compatible
@@ -215,7 +217,8 @@ func (c *pingAndWarmDirectAccessChecker) reportFailure(reason string) {
 // to determine why Direct Access was not usable, and reports the specific
 // reason to the metric.
 func (c *pingAndWarmDirectAccessChecker) investigateFailure(originalErr error) {
-	investigateDirectAccessFailure(c.logger, c.reportFailure, c.probeSingleEndpoint, originalErr)
+	// Currently disabled. See b/588877681.
+	c.reportFailure("unknown")
 }
 
 // investigateDirectAccessFailure walks the GCE-environment preconditions in
@@ -224,6 +227,8 @@ func (c *pingAndWarmDirectAccessChecker) investigateFailure(originalErr error) {
 // end-to-end check is delegated to probeSingle so each checker (pingAndWarm,
 // GetClientConfiguration) can wire its own RPC verb without duplicating the
 // precondition walk.
+//
+//lint:ignore U1000 temporarily disabled
 func investigateDirectAccessFailure(
 	logger *log.Logger,
 	reportFailure func(reason string),
@@ -339,6 +344,8 @@ func investigateDirectAccessFailure(
 // credentials. Used by the direct-access investigation flow to isolate
 // per-endpoint failures from the load-balancer path. Returns the connection
 // wrapped as *BigtableConn plus a cleanup that closes it.
+//
+//lint:ignore U1000 temporarily disabled
 func newAltsProbeChannel(ctx context.Context, targetEndpoint string) (*BigtableConn, func(), error) {
 	altsCreds := alts.NewClientCreds(alts.DefaultClientOptions())
 	scopes := []string{
@@ -367,6 +374,8 @@ func newAltsProbeChannel(ctx context.Context, targetEndpoint string) (*BigtableC
 // probeSingleEndpoint attempts an ALTS-authenticated Prime() request directly
 // against a specific xDS endpoint, isolating whether the failure was at the
 // load-balancer level vs the endpoint itself.
+//
+//lint:ignore U1000 temporarily disabled
 func (c *pingAndWarmDirectAccessChecker) probeSingleEndpoint(ctx context.Context, targetEndpoint string) error {
 	btopt.Debugf(c.logger, "bigtable_direct_access: investigation: Creating ALTS channel to %s...", targetEndpoint)
 
@@ -407,6 +416,12 @@ func newDisabledDirectAccessChecker(meterProvider metric.MeterProvider, logger *
 	}
 }
 
+// NewDisabledDirectAccessChecker constructs the always-disabled checker for
+// callers outside this package.
+func NewDisabledDirectAccessChecker(meterProvider metric.MeterProvider, logger *log.Logger) DirectAccessChecker {
+	return newDisabledDirectAccessChecker(meterProvider, logger)
+}
+
 // CheckCompatibility always returns (nil, false) and records the
 // manually_disabled metric exactly once — the pool calls it exactly once at
 // startup, with the pool ctx.
@@ -434,6 +449,8 @@ func (c *disabledDirectAccessChecker) LastProbeConfig() *bigtablepb.ClientConfig
 
 // checkIPPlumbing verifies whether the IPs assigned by the metadata server are
 // actually plumbed onto a local network interface.
+//
+//lint:ignore U1000 temporarily disabled
 func checkIPPlumbing(logger *log.Logger, ipv4, ipv6 *net.IP) (v4Plumbed, v6Plumbed bool) {
 	if ipv4 != nil {
 		if _, err := directaccess.CheckLocalIPv4Addresses(ipv4); err == nil {
@@ -457,6 +474,8 @@ func checkIPPlumbing(logger *log.Logger, ipv4, ipv6 *net.IP) (v4Plumbed, v6Plumb
 // checkKernelRoutes determines the IP family of the target endpoint and
 // verifies a valid route exists to it — used to detect misconfigured routing
 // tables before blaming the handshake.
+//
+//lint:ignore U1000 temporarily disabled
 func checkKernelRoutes(ipv4, ipv6 *net.IP, v4Plumbed, v6Plumbed bool, host, endpoint string) error {
 	ip := net.ParseIP(host)
 	if ip == nil {

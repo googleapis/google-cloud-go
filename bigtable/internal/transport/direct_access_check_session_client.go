@@ -198,12 +198,15 @@ func (c *sessionClientDirectAccessChecker) reportFailure(reason string) {
 // probeSingleEndpoint so the end-to-end check speaks the same RPC verb the
 // session pool uses in production.
 func (c *sessionClientDirectAccessChecker) investigateFailure(originalErr error) {
-	investigateDirectAccessFailure(c.logger, c.reportFailure, c.probeSingleEndpoint, originalErr)
+	// Currently disabled. See b/588877681.
+	c.reportFailure("unknown")
 }
 
 // probeSingleEndpoint dials targetEndpoint over ALTS and issues
 // GetClientConfiguration — the direct-endpoint counterpart to the
 // load-balanced probe in CheckCompatibility.
+//
+//lint:ignore U1000 temporarily disabled
 func (c *sessionClientDirectAccessChecker) probeSingleEndpoint(ctx context.Context, targetEndpoint string) error {
 	btopt.Debugf(c.logger, "bigtable_direct_access: investigation: Creating ALTS channel to %s...", targetEndpoint)
 

@@ -602,3 +602,134 @@ func TestDynamicChannelPoolOnClose(t *testing.T) {
 		})
 	}
 }
+
+func TestDynamicChannelPoolOnCallStart(t *testing.T) {
+	ctx := context.Background()
+	var loads []int32
+	pool, err := NewDynamicChannelPool[*fakeDCPClient](
+		ctx,
+		DCPConfig{DCPEnabled: true, DCPInitialChannels: 1, DCPMinChannels: 1, DCPMaxChannels: 1},
+		DCPHooks[*fakeDCPClient]{
+			Dial: func(context.Context) (gtransport.ConnPool, error) {
+				return &scriptedDCPConnPool{onCall: func() error { return nil }}, nil
+			},
+			NewEntryClient: func(_ context.Context, e *DCPEntry[*fakeDCPClient]) error {
+				e.Client = &fakeDCPClient{}
+				return nil
+			},
+			PrimeRPC:    func(context.Context, *DCPEntry[*fakeDCPClient], string) error { return nil },
+			OnCallStart: func(_ context.Context, load int32) { loads = append(loads, load) },
+		},
+	)
+	if err != nil {
+		t.Fatalf("NewDynamicChannelPool failed: %v", err)
+	}
+	defer pool.Close()
+	e := pool.GetEntries()[0]
+
+	for _, op := range []struct {
+		name  string
+		start func()
+	}{
+		{"Invoke", func() { pool.Invoke(ctx, "/test/Method", nil, nil) }},
+		{"NewStream", func() {
+			stream, err := pool.NewStream(ctx, &grpc.StreamDesc{}, "/test/Method")
+			if err != nil {
+				t.Fatalf("NewStream failed: %v", err)
+			}
+			stream.RecvMsg(nil)
+		}},
+		{"StartUnary", func() { e.StartUnary(ctx)(nil) }},
+		{"StartStream", func() { e.StartStream(ctx).Done(nil) }},
+	} {
+		t.Run(op.name, func(t *testing.T) {
+			loads = nil
+			e.UnaryLoad.Store(1)
+			e.StreamLoad.Store(1)
+			defer func() {
+				e.UnaryLoad.Store(0)
+				e.StreamLoad.Store(0)
+			}()
+			op.start()
+			if len(loads) != 1 || loads[0] != 3 {
+				t.Fatalf("OnCallStart loads mismatch:\n Got: %v\nWant: [3]", loads)
+			}
+		})
+	}
+}
+
+func TestFixedChannelPoolSkipsOnCallStart(t *testing.T) {
+	var calls atomic.Int32
+	underlying := &fakeFixedUnderlyingPool{conns: []*grpc.ClientConn{nil}}
+	pool, err := NewFixedChannelPool(context.Background(), underlying, DCPHooks[*fakeDCPClient]{
+		NewEntryClient: func(_ context.Context, e *DCPEntry[*fakeDCPClient]) error {
+			e.Client = &fakeDCPClient{}
+			return nil
+		},
+		OnCallStart: func(context.Context, int32) { calls.Add(1) },
+	})
+	if err != nil {
+		t.Fatalf("NewFixedChannelPool failed: %v", err)
+	}
+	defer pool.Close()
+	pool.Invoke(context.Background(), "/test/Method", nil, nil)
+	pool.NewStream(context.Background(), &grpc.StreamDesc{}, "/test/Method")
+	if got := calls.Load(); got != 0 {
+		t.Fatalf("OnCallStart calls on a fixed pool mismatch:\n Got: %d\nWant: 0", got)
+	}
+}
+
+func TestDynamicChannelPoolOnCallStartConcurrent(t *testing.T) {
+	ctx := context.Background()
+	var calls atomic.Int32
+	var maxLoad atomic.Int32
+	pool, err := NewDynamicChannelPool[*fakeDCPClient](
+		ctx,
+		DCPConfig{DCPEnabled: true, DCPInitialChannels: 2, DCPMinChannels: 2, DCPMaxChannels: 2},
+		DCPHooks[*fakeDCPClient]{
+			Dial: func(context.Context) (gtransport.ConnPool, error) {
+				return &scriptedDCPConnPool{onCall: func() error { return nil }}, nil
+			},
+			NewEntryClient: func(_ context.Context, e *DCPEntry[*fakeDCPClient]) error {
+				e.Client = &fakeDCPClient{}
+				return nil
+			},
+			PrimeRPC: func(context.Context, *DCPEntry[*fakeDCPClient], string) error { return nil },
+			OnCallStart: func(_ context.Context, load int32) {
+				calls.Add(1)
+				for {
+					cur := maxLoad.Load()
+					if load <= cur || maxLoad.CompareAndSwap(cur, load) {
+						return
+					}
+				}
+			},
+		},
+	)
+	if err != nil {
+		t.Fatalf("NewDynamicChannelPool failed: %v", err)
+	}
+	defer pool.Close()
+	entries := pool.GetEntries()
+
+	const goroutines, perGoroutine = 8, 100
+	done := make(chan struct{})
+	for i := 0; i < goroutines; i++ {
+		e := entries[i%len(entries)]
+		go func() {
+			defer func() { done <- struct{}{} }()
+			for j := 0; j < perGoroutine; j++ {
+				e.StartUnary(ctx)(nil)
+			}
+		}()
+	}
+	for i := 0; i < goroutines; i++ {
+		<-done
+	}
+	if got := calls.Load(); got != goroutines*perGoroutine {
+		t.Fatalf("OnCallStart calls mismatch:\n Got: %d\nWant: %d", got, goroutines*perGoroutine)
+	}
+	if got, want := maxLoad.Load(), int32(goroutines/len(entries)); got < 1 || got > want {
+		t.Fatalf("OnCallStart max load mismatch:\n Got: %d\nWant: 1..%d", got, want)
+	}
+}

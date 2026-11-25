@@ -204,26 +204,38 @@ func TestNewGRPCMetricContextWithCustomProvider(t *testing.T) {
 	ctx := context.Background()
 
 	cfg := metricsConfig{
-		project:         "project-id",
-		meterProvider:   customProvider, // use custom provider
-		disableExporter: true,           // disable since this is a unit test
+		// Empty project and no resourceOpts verify the default GCM exporter
+		// is skipped when a custom MeterProvider is supplied.
+		project:       "",
+		meterProvider: customProvider, // use custom provider
 	}
 
 	mc, err := newGRPCMetricContext(ctx, cfg)
 	if err != nil {
 		t.Errorf("newGRPCMetricContext: %v", err)
 	}
-	defer mc.close()
 
 	// Verify the provider in metricsContext is our custom provider.
 	if mc.provider != customProvider {
 		t.Errorf("metricsContext.provider = %v, want %v", mc.provider, customProvider)
 	}
 
-	// Now we can collect metrics from the manual reader that's registered with our custom provider.
+	// Closing metricsContext must not shut down a caller-owned MeterProvider.
+	mc.close()
 	rm := metricdata.ResourceMetrics{}
 	if err := mr.Collect(ctx, &rm); err != nil {
-		t.Errorf("ManualReader.Collect: %v", err)
+		t.Errorf("ManualReader.Collect after mc.close(): %v", err)
+	}
+
+	// disableExporter with empty project must also succeed off-GCE for in-memory tests.
+	mcNoProj, err := newGRPCMetricContext(ctx, metricsConfig{
+		manualReader:    metric.NewManualReader(),
+		disableExporter: true,
+	})
+	if err != nil {
+		t.Errorf("newGRPCMetricContext(disableExporter, empty project): %v", err)
+	} else {
+		mcNoProj.close()
 	}
 }
 

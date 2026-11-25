@@ -556,7 +556,11 @@ func (s *pcuState) composeParts() error {
 				compName := path.Join(tmpObjectPrefix, fmt.Sprintf("int-%s-lv%d-%d", h, level, idx))
 
 				interHandle := s.w.o.c.Bucket(s.w.o.bucket).Object(compName)
-				composer := interHandle.Key(s.w.o.encryptionKey).ComposerFrom(finalComps[start:end]...)
+				// DoesNotExist makes the compose idempotent so transient errors are retried.
+				// It's set on a copy so interHandle (later used as a compose source and
+				// cleanup target) carries no precondition.
+				dst := interHandle.If(Conditions{DoesNotExist: true}).Key(s.w.o.encryptionKey)
+				composer := dst.ComposerFrom(finalComps[start:end]...)
 				composer.KMSKeyName = s.w.ObjectAttrs.KMSKeyName
 				composer.DeleteSourceObjects = true
 

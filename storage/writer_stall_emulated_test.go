@@ -51,10 +51,16 @@ const (
 	stallEmuObjectSize = 5 * 1024 * 1024
 )
 
+// stallFor returns a testbench instruction that stalls the upload for d
+// (in whole seconds) once kib KiB of the object have been received.
+func stallFor(d time.Duration, kib int) string {
+	return fmt.Sprintf("stall-for-%ds-after-%dK", int(d/time.Second), kib)
+}
+
 // stallAfter returns a testbench instruction that stalls the upload for
 // stallEmuStall once kib KiB of the object have been received.
 func stallAfter(kib int) string {
-	return fmt.Sprintf("stall-for-%ds-after-%dK", int(stallEmuStall/time.Second), kib)
+	return stallFor(stallEmuStall, kib)
 }
 
 func isDeadlineErr(err error) bool {
@@ -118,6 +124,9 @@ func TestGRPCWriterStallEmulated(t *testing.T) {
 		// minStreams is a lower bound on BidiWriteObject streams, for cases
 		// where the retry count depends on timing.
 		minStreams int32
+		// wantNoQueryStatus asserts QueryWriteStatus was never called, proving
+		// additional streams came from proactive rotation rather than stall retry.
+		wantNoQueryStatus bool
 		// skipConsumedCheck skips asserting that all instructions were used.
 		skipConsumedCheck bool
 	}{
@@ -132,6 +141,30 @@ func TestGRPCWriterStallEmulated(t *testing.T) {
 			instructions: []string{stallAfter(3072)},
 			budget:       stallEmuRecoverBudget,
 			wantStreams:  2,
+		},
+		{
+			// A 1s delay on chunk 2 is well below the 2.5s watchdog so no
+			// stall retry fires, but well above the warm-up threshold from
+			// chunk 1. Write one chunk at a time rather than a single 8 MiB
+			// Write: a single Write enters the multi-buffer fast path and
+			// pushes all 4 chunks onto stream 1 before chunk 2's delayed ack
+			// returns, whereas chunk-sized Writes pipeline chunk 3 and wait
+			// for chunk 2's ack before sending chunk 4 on the rotated stream.
+			name:         "SubWatchdogSlowChunk_RotatesStream",
+			instructions: []string{stallFor(time.Second, 3072)},
+			budget:       5 * time.Second,
+			configure:    func(w *Writer) { w.ChunkTransferTimeout = 2500 * time.Millisecond },
+			size:         8 * 1024 * 1024,
+			write: func(w *Writer) error {
+				for off := 0; off < 8*1024*1024; off += stallEmuChunkSize {
+					if _, err := w.Write(data[off : off+stallEmuChunkSize]); err != nil {
+						return err
+					}
+				}
+				return nil
+			},
+			minStreams:        2,
+			wantNoQueryStatus: true,
 		},
 		{
 			// The 1 MiB tail is sent by Close as the final request.
@@ -355,13 +388,20 @@ func TestGRPCWriterStallEmulated(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			var streams atomic.Int32
-			interceptor := grpc.WithStreamInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+			var queryStatusCalls atomic.Int32
+			streamInterceptor := grpc.WithStreamInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 				if method == "/google.storage.v2.Storage/BidiWriteObject" {
 					streams.Add(1)
 				}
 				return streamer(ctx, desc, cc, method, opts...)
 			})
-			client, err := NewGRPCClient(context.Background(), option.WithGRPCDialOption(interceptor))
+			unaryInterceptor := grpc.WithUnaryInterceptor(func(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+				if method == "/google.storage.v2.Storage/QueryWriteStatus" {
+					queryStatusCalls.Add(1)
+				}
+				return invoker(ctx, method, req, reply, cc, opts...)
+			})
+			client, err := NewGRPCClient(context.Background(), option.WithGRPCDialOption(streamInterceptor), option.WithGRPCDialOption(unaryInterceptor))
 			if err != nil {
 				t.Fatalf("NewGRPCClient: %v", err)
 			}
@@ -419,6 +459,9 @@ func TestGRPCWriterStallEmulated(t *testing.T) {
 			}
 			if nStreams < tc.minStreams {
 				t.Errorf("BidiWriteObject streams = %d, want at least %d", nStreams, tc.minStreams)
+			}
+			if tc.wantNoQueryStatus && queryStatusCalls.Load() != 0 {
+				t.Errorf("QueryWriteStatus calls = %d, want 0", queryStatusCalls.Load())
 			}
 			if testID != "" && !tc.skipConsumedCheck {
 				checkRetryTestCompleted(t, testID)
