@@ -1,5 +1,13 @@
 # Changes
 
+## [1.58.2](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.58.1...bigtable/v1.58.2) (2026-11-25)
+
+
+### Bug Fixes
+
+* **bigtable:** Forward TPC options to metrics exporters ([#21000](https://github.com/googleapis/google-cloud-go/issues/21000)) ([3ffe3de](https://github.com/googleapis/google-cloud-go/commit/3ffe3dec5f787fa45e32393dd0614b50fac119fd))
+* **bigtable:** Improve accelerator TPC and auth checks ([c250dcc](https://github.com/googleapis/google-cloud-go/commit/c250dcc7ee8270ac949e7241560b80573d9b75c9))
+
 ## [1.58.1](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.58.0...bigtable/v1.58.1) (2026-11-23)
 
 
