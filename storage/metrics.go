@@ -2117,10 +2117,30 @@ func grpcNetworkMetricsRawDialOptions(host string, metrics *clientMetrics) []grp
 		host:      cleanHost,
 	}
 
+	// Installing a custom grpc.WithContextDialer disables gRPC's built-in HTTP
+	// proxy handling, so omit it when a proxy is configured for the target host.
+	if hasProxyForHost(cleanHost) {
+		return []grpc.DialOption{grpc.WithStatsHandler(sh)}
+	}
+
 	return []grpc.DialOption{
 		grpc.WithContextDialer(dialer),
 		grpc.WithStatsHandler(sh),
 	}
+}
+
+func hasProxyForHost(host string) bool {
+	if host == "" {
+		return false
+	}
+	// Check proxy environment variables directly (http.ProxyFromEnvironment
+	// caches env vars via sync.Once) and also consult http.ProxyFromEnvironment.
+	if os.Getenv("HTTPS_PROXY") != "" || os.Getenv("https_proxy") != "" || os.Getenv("HTTP_PROXY") != "" || os.Getenv("http_proxy") != "" {
+		return true
+	}
+	u := &url.URL{Scheme: "https", Host: host}
+	proxyURL, err := http.ProxyFromEnvironment(&http.Request{URL: u})
+	return err == nil && proxyURL != nil
 }
 
 // metricsTokenProvider wraps an auth.TokenProvider and records

@@ -19,6 +19,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -905,4 +906,51 @@ func TestDownloadDirectoryCleanupNonExistentDirNoPanic(t *testing.T) {
 		t.Fatal("DownloadDirectory = nil, want error when parent path is a regular file")
 	}
 	_, _ = d.WaitAndClose()
+}
+
+func TestDownloaderMaxShards(t *testing.T) {
+	t.Parallel()
+
+	// Serve an object whose declared size exceeds maxDownloadShards * partSize.
+	const partSize = 1024
+	hugeSize := int64(maxDownloadShards+5) * partSize
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Range", fmt.Sprintf("bytes 0-%d/%d", partSize-1, hugeSize))
+		w.WriteHeader(http.StatusPartialContent)
+		_, _ = w.Write(bytes.Repeat([]byte("a"), partSize))
+	}))
+	t.Cleanup(srv.Close)
+
+	c, err := storage.NewClient(context.Background(),
+		option.WithEndpoint(srv.URL),
+		option.WithHTTPClient(srv.Client()),
+		option.WithoutAuthentication(),
+	)
+	if err != nil {
+		t.Fatalf("storage.NewClient: %v", err)
+	}
+	t.Cleanup(func() { _ = c.Close() })
+
+	d, err := NewDownloader(c, WithWorkers(1), WithPartSize(partSize))
+	if err != nil {
+		t.Fatalf("NewDownloader: %v", err)
+	}
+	err = d.DownloadObject(context.Background(), &DownloadObjectInput{
+		Bucket:      "test-bucket",
+		Object:      "huge-object",
+		Destination: NewDownloadBuffer(nil),
+	})
+	if err != nil {
+		t.Fatalf("DownloadObject: %v", err)
+	}
+	results, err := d.WaitAndClose()
+	if err == nil {
+		t.Fatalf("WaitAndClose = nil, want error for exceeding maxDownloadShards (results=%+v)", results)
+	}
+	if len(results) != 1 || results[0].Err == nil {
+		t.Fatalf("results = %+v, want 1 failed DownloadOutput", results)
+	}
+	if !strings.Contains(results[0].Err.Error(), "exceeding maximum") {
+		t.Errorf("error = %v, want substring %q", results[0].Err, "exceeding maximum")
+	}
 }

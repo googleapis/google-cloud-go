@@ -16,8 +16,12 @@ package storage
 
 import (
 	"context"
+	"crypto/rand"
+	"crypto/rsa"
 	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
+	"encoding/pem"
 	"errors"
 	"fmt"
 	"io"
@@ -2940,5 +2944,52 @@ func isZeroValue(v reflect.Value) (bool, error) {
 		return true, nil
 	default:
 		return false, fmt.Errorf("unable to check kind %s", v.Kind())
+	}
+}
+
+func TestGRPCClientSignedURLUsesClientCredentials(t *testing.T) {
+	t.Parallel()
+
+	key, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		t.Fatalf("rsa.GenerateKey: %v", err)
+	}
+	pemKey := pem.EncodeToMemory(&pem.Block{
+		Type:  "RSA PRIVATE KEY",
+		Bytes: x509.MarshalPKCS1PrivateKey(key),
+	})
+	saJSON, err := json.Marshal(map[string]string{
+		"type":         "service_account",
+		"client_email": "grpc-signer@example.iam.gserviceaccount.com",
+		"private_key":  string(pemKey),
+		"token_uri":    "https://oauth2.googleapis.com/token",
+	})
+	if err != nil {
+		t.Fatalf("json.Marshal: %v", err)
+	}
+
+	c, err := NewGRPCClient(context.Background(),
+		option.WithAuthCredentialsJSON(option.ServiceAccount, saJSON),
+		WithDisabledClientMetrics(),
+	)
+	if err != nil {
+		t.Fatalf("NewGRPCClient: %v", err)
+	}
+	defer c.Close()
+
+	if c.creds == nil {
+		t.Fatal("NewGRPCClient did not populate Client.creds")
+	}
+
+	u, err := c.Bucket("test-bucket").SignedURL("test-obj", &SignedURLOptions{
+		Scheme:  SigningSchemeV4,
+		Method:  "GET",
+		Expires: time.Now().Add(15 * time.Minute),
+	})
+	if err != nil {
+		t.Fatalf("Bucket.SignedURL: %v", err)
+	}
+	if !strings.Contains(u, "grpc-signer%40example.iam.gserviceaccount.com") {
+		t.Errorf("SignedURL = %q, want credential email grpc-signer@example.iam.gserviceaccount.com", u)
 	}
 }

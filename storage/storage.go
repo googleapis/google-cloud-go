@@ -303,6 +303,7 @@ func NewGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 	}
 	c := &Client{
 		tc:                    tcWrapped,
+		creds:                 tc.creds,
 		grpcAppendableUploads: tc.config.grpcAppendableUploads,
 		rpcSystem:             rpcSystemGRPC,
 	}

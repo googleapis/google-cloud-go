@@ -2122,3 +2122,35 @@ func TestNewClient_PreservesDefaultHTTPMonitoringOptions(t *testing.T) {
 		t.Error("expected default OTel metrics to be skipped when caller supplies option.WithHTTPClient")
 	}
 }
+
+func TestGRPCNetworkMetricsDialOptionsRespectsProxy(t *testing.T) {
+	ctx := context.Background()
+	mr := sdkmetric.NewManualReader()
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+	defer provider.Shutdown(ctx)
+
+	cfg := storageConfig{
+		enableOtelMetrics:      true,
+		enableOtelDebugMetrics: true,
+		meterProvider:          provider,
+	}
+	cm, _, err := initMetrics(ctx, "project-id", &cfg)
+	if err != nil {
+		t.Fatalf("initMetrics: %v", err)
+	}
+
+	t.Setenv("HTTPS_PROXY", "")
+	t.Setenv("https_proxy", "")
+	t.Setenv("HTTP_PROXY", "")
+	t.Setenv("http_proxy", "")
+	optsNoProxy := grpcNetworkMetricsRawDialOptions("storage.googleapis.com:443", cm)
+	if len(optsNoProxy) != 2 {
+		t.Fatalf("without proxy: got %d dial options, want 2 (dialer + stats handler)", len(optsNoProxy))
+	}
+
+	t.Setenv("HTTPS_PROXY", "http://proxy.example.com:8080")
+	optsWithProxy := grpcNetworkMetricsRawDialOptions("storage.googleapis.com:443", cm)
+	if len(optsWithProxy) != 1 {
+		t.Fatalf("with HTTPS_PROXY: got %d dial options, want 1 (stats handler only)", len(optsWithProxy))
+	}
+}
