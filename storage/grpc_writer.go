@@ -327,6 +327,7 @@ type gRPCWriter struct {
 	// are rejected before indexing into local buffers.
 	maxSentOffset int64
 	protocolErr   error
+	gotResource   bool
 	// awaitingFirstAck is true until the server has confirmed any offset,
 	// including offset 0. Flush waits for that first confirmation.
 	awaitingFirstAck bool
@@ -557,8 +558,11 @@ func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 		}
 		return
 	}
-	if c.resource != nil && w.setObj != nil {
-		w.setObj(newObjectFromProto(c.resource))
+	if c.resource != nil {
+		w.gotResource = true
+		if w.setObj != nil {
+			w.setObj(newObjectFromProto(c.resource))
+		}
 	}
 
 	// prevConfirmed is the highest offset GCS had confirmed before this
@@ -792,13 +796,6 @@ Loop:
 	}
 
 	finalOffset := int64(-1)
-	gotFinalResource := false
-	handleCloseCompletion := func(c gRPCBidiWriteCompletion) {
-		w.handleCompletion(c)
-		if c.resource != nil {
-			gotFinalResource = true
-		}
-	}
 	if closeErr.err == nil {
 		// Clean shutdown. Send any remaining tail.
 		w.budget.start()
@@ -814,7 +811,7 @@ Loop:
 		}
 		finalOffset = req.offset + int64(len(req.buf))
 		w.recordSentOffset(finalOffset)
-		if !chcs.deliverRequestUnlessCompleted(req, handleCloseCompletion) {
+		if !chcs.deliverRequestUnlessCompleted(req, w.handleCompletion) {
 			return w.streamEndedErr()
 		}
 		if w.protocolErr != nil {
@@ -828,7 +825,7 @@ Loop:
 	close(requests)
 	finalizes := !w.append || w.finalizeOnClose
 	for c := range completions {
-		handleCloseCompletion(c)
+		w.handleCompletion(c)
 		// Once every byte is acknowledged and, if the close finalizes, the
 		// object has been returned, only stream teardown remains.
 		if w.watchdog != nil && c.flushOffset >= finalOffset && (c.resource != nil || !finalizes) {
@@ -846,7 +843,7 @@ Loop:
 		if confirmedOffset < finalOffset {
 			return fmt.Errorf("storage: write stream ended before all bytes were acknowledged (%d of %d): %w", confirmedOffset, finalOffset, io.ErrUnexpectedEOF)
 		}
-		if finalizes && !gotFinalResource {
+		if finalizes && !w.gotResource {
 			return fmt.Errorf("storage: write stream ended before receiving finalized object metadata: %w", io.ErrUnexpectedEOF)
 		}
 		return nil
