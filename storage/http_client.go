@@ -89,13 +89,14 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (client st
 		)
 		// Don't error out here. The user may have passed in their own HTTP
 		// client which does not auth with ADC or other common conventions.
-		c, err := internaloption.AuthCreds(ctx, o)
-		if err == nil {
-			creds = c
-			o = append(o, option.WithAuthCredentials(creds))
-		} else if gc, err := transport.Creds(ctx, o...); err == nil {
-			googleCreds = gc
-			o = append(o, option.WithCredentials(googleCreds))
+		if res, rErr := internaloption.NewUnsafeResolver(o...); rErr == nil && !res.ResolvedWithAPIKeyIsCustom() {
+			if c, err := internaloption.AuthCreds(ctx, o); err == nil {
+				creds = c
+				o = append(o, option.WithAuthCredentials(creds))
+			} else if gc, err := transport.Creds(ctx, o...); err == nil {
+				googleCreds = gc
+				o = append(o, option.WithCredentials(googleCreds))
+			}
 		}
 	} else {
 		var hostURL *url.URL
@@ -132,7 +133,15 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (client st
 		} else if googleCreds != nil {
 			project = googleCreds.ProjectID
 		}
-		clientMetrics, metricsCleanup = initClientMetrics(ctx, project, &config)
+		monSourceOpts := s.clientOption
+		if len(s.monitoringSourceOption) > 0 {
+			monSourceOpts = s.monitoringSourceOption
+		}
+		mOpts, exportOK := monitoringClientOptions(monSourceOpts, creds, googleCreds)
+		if exportOK || config.meterProvider != nil || config.metricExporter != nil {
+			config.monitoringOpts = mOpts
+			clientMetrics, metricsCleanup = initClientMetrics(ctx, project, &config)
+		}
 	}
 	if metricsCleanup != nil {
 		defer func() {

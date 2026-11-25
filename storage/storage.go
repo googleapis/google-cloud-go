@@ -188,13 +188,14 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 		// Don't error out here. The user may have passed in their own HTTP
 		// client which does not auth with ADC or other common conventions.
-		c, err := internaloption.AuthCreds(ctx, opts)
-		if err == nil && c != nil {
-			// Clone so that credential wrapping in newHTTPStorageClient never
-			// mutates caller-owned credentials passed via WithAuthCredentials.
-			clone := *c
-			creds = &clone
-			opts = append(opts, option.WithAuthCredentials(creds))
+		if res, rErr := internaloption.NewUnsafeResolver(opts...); rErr == nil && !res.ResolvedWithAPIKeyIsCustom() {
+			if c, err := internaloption.AuthCreds(ctx, opts); err == nil && c != nil {
+				// Clone so that credential wrapping in newHTTPStorageClient never
+				// mutates caller-owned credentials passed via WithAuthCredentials.
+				clone := *c
+				creds = &clone
+				opts = append(opts, option.WithAuthCredentials(creds))
+			}
 		}
 	} else {
 		var hostURL *url.URL
@@ -229,7 +230,10 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		return nil, fmt.Errorf("dialing: %w", err)
 	}
 	// RawService should be created with the chosen endpoint to take account of user override.
-	// Preserve other user-supplied options as well.
+	// Preserve other user-supplied options as well. Capture pre-transport options
+	// before appending internal WithHTTPClient(hc) so monitoringClientOptions only
+	// disables Cloud Monitoring export when the caller supplied WithHTTPClient.
+	monitoringSourceOpts := opts[:len(opts):len(opts)]
 	opts = append(opts, option.WithEndpoint(ep), option.WithHTTPClient(hc))
 	rawService, err := raw.NewService(ctx, opts...)
 	if err != nil {
@@ -241,7 +245,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		return nil, fmt.Errorf("supplied endpoint %q is not valid: %w", ep, err)
 	}
 
-	tc, err := newHTTPStorageClient(ctx, withClientOptions(opts...))
+	tc, err := newHTTPStorageClient(ctx, withClientOptions(opts...), withMonitoringSourceOptions(monitoringSourceOpts...))
 	if err != nil {
 		return nil, fmt.Errorf("storage: %w", err)
 	}
