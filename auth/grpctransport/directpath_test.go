@@ -2446,10 +2446,6 @@ func TestFetchMetadataUniverseDomain_Timeout(t *testing.T) {
 	}))
 	t.Cleanup(srv.Close)
 
-	origTimeout := metadataUniverseDomainTimeout
-	metadataUniverseDomainTimeout = 50 * time.Millisecond
-	t.Cleanup(func() { metadataUniverseDomainTimeout = origTimeout })
-
 	t.Setenv("GCE_METADATA_HOST", strings.TrimPrefix(srv.URL, "http://"))
 
 	got, err := fetchMetadataUniverseDomain(t.Context())

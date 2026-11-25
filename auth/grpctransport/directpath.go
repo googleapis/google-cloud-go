@@ -61,58 +61,33 @@ var (
 	// Assign to var for unit test replacement.
 	metadataUniverseDomain = fetchMetadataUniverseDomain
 
-	// Assign to var for unit test replacement.
-	metadataUniverseDomainTimeout = time.Second
-
-	// Single-entry cache of successful metadata universe domain lookups keyed
-	// by GCE_METADATA_HOST. Errors are not cached so transient failures retry.
-	metadataUDCacheMu   sync.Mutex
-	metadataUDCacheHost string
-	metadataUDCacheVal  string
-	metadataUDCached    bool
+	// Single-entry cache of ComputeUniverseDomainProvider keyed by
+	// GCE_METADATA_HOST. Successful lookups are cached by the provider; errors
+	// are not cached so transient failures retry.
+	metadataUDProviderMu   sync.Mutex
+	metadataUDProviderHost string
+	metadataUDProvider     *internal.ComputeUniverseDomainProvider
 )
 
 func resetMetadataUniverseDomainCache() {
-	metadataUDCacheMu.Lock()
-	metadataUDCacheHost = ""
-	metadataUDCacheVal = ""
-	metadataUDCached = false
-	metadataUDCacheMu.Unlock()
+	metadataUDProviderMu.Lock()
+	metadataUDProviderHost = ""
+	metadataUDProvider = nil
+	metadataUDProviderMu.Unlock()
 }
 
 func fetchMetadataUniverseDomain(ctx context.Context) (string, error) {
 	host := os.Getenv("GCE_METADATA_HOST")
-	metadataUDCacheMu.Lock()
-	if metadataUDCached && metadataUDCacheHost == host {
-		ud := metadataUDCacheVal
-		metadataUDCacheMu.Unlock()
-		return ud, nil
-	}
-	metadataUDCacheMu.Unlock()
-
-	ctx, cancel := context.WithTimeout(ctx, metadataUniverseDomainTimeout)
-	defer cancel()
-	ud, err := metadata.GetWithContext(ctx, "universe/universe-domain")
-	if err != nil {
-		var notDefined metadata.NotDefinedError
-		if errors.As(err, &notDefined) {
-			ud = internal.DefaultUniverseDomain
-		} else {
-			return "", err
-		}
-	} else {
-		ud = strings.TrimSpace(ud)
-		if ud == "" {
-			ud = internal.DefaultUniverseDomain
+	metadataUDProviderMu.Lock()
+	if metadataUDProvider == nil || metadataUDProviderHost != host {
+		metadataUDProviderHost = host
+		metadataUDProvider = &internal.ComputeUniverseDomainProvider{
+			MetadataClient: metadata.NewClient(nil),
 		}
 	}
-
-	metadataUDCacheMu.Lock()
-	metadataUDCacheHost = host
-	metadataUDCacheVal = ud
-	metadataUDCached = true
-	metadataUDCacheMu.Unlock()
-	return ud, nil
+	provider := metadataUDProvider
+	metadataUDProviderMu.Unlock()
+	return provider.GetProperty(ctx)
 }
 
 // interconnectHostAndAuthority returns the DirectPath over Interconnect host
