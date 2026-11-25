@@ -2134,13 +2134,51 @@ func hasProxyForHost(host string) bool {
 		return false
 	}
 	// Check proxy environment variables directly (http.ProxyFromEnvironment
-	// caches env vars via sync.Once) and also consult http.ProxyFromEnvironment.
-	if os.Getenv("HTTPS_PROXY") != "" || os.Getenv("https_proxy") != "" || os.Getenv("HTTP_PROXY") != "" || os.Getenv("http_proxy") != "" {
+	// caches env vars via sync.Once) while respecting NO_PROXY / no_proxy.
+	hasProxyEnv := os.Getenv("HTTPS_PROXY") != "" || os.Getenv("https_proxy") != "" || os.Getenv("HTTP_PROXY") != "" || os.Getenv("http_proxy") != ""
+	if hasProxyEnv {
+		noProxy := os.Getenv("NO_PROXY")
+		if noProxy == "" {
+			noProxy = os.Getenv("no_proxy")
+		}
+		if matchesNoProxy(host, noProxy) {
+			return false
+		}
 		return true
 	}
 	u := &url.URL{Scheme: "https", Host: host}
 	proxyURL, err := http.ProxyFromEnvironment(&http.Request{URL: u})
 	return err == nil && proxyURL != nil
+}
+
+func matchesNoProxy(host, noProxy string) bool {
+	if noProxy == "" {
+		return false
+	}
+	h := strings.ToLower(strings.TrimSuffix(stripPort(host), "."))
+	for _, entry := range strings.Split(noProxy, ",") {
+		p := strings.ToLower(strings.TrimSpace(entry))
+		if p == "" {
+			continue
+		}
+		if p == "*" {
+			return true
+		}
+		p = strings.TrimSuffix(stripPort(p), ".")
+		if p == "" {
+			continue
+		}
+		if strings.HasPrefix(p, ".") {
+			if strings.HasSuffix(h, p) || h == p[1:] {
+				return true
+			}
+			continue
+		}
+		if h == p || strings.HasSuffix(h, "."+p) {
+			return true
+		}
+	}
+	return false
 }
 
 // metricsTokenProvider wraps an auth.TokenProvider and records

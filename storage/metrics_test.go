@@ -2149,8 +2149,16 @@ func TestGRPCNetworkMetricsDialOptionsRespectsProxy(t *testing.T) {
 	}
 
 	t.Setenv("HTTPS_PROXY", "http://proxy.example.com:8080")
+	t.Setenv("NO_PROXY", "")
+	t.Setenv("no_proxy", "")
 	optsWithProxy := grpcNetworkMetricsRawDialOptions("storage.googleapis.com:443", cm)
 	if len(optsWithProxy) != 1 {
 		t.Fatalf("with HTTPS_PROXY: got %d dial options, want 1 (stats handler only)", len(optsWithProxy))
+	}
+
+	t.Setenv("NO_PROXY", "googleapis.com")
+	optsWithNoProxy := grpcNetworkMetricsRawDialOptions("storage.googleapis.com:443", cm)
+	if len(optsWithNoProxy) != 2 {
+		t.Fatalf("with NO_PROXY matching host: got %d dial options, want 2 (dialer + stats handler)", len(optsWithNoProxy))
 	}
 }
