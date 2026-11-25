@@ -107,6 +107,10 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 		req.Generation = params.gen
 	}
 
+	// Pin the generation discovered on the initial open so subsequent stream
+	// reopens cannot silently read from a newer object generation.
+	pinnedGen := params.gen
+
 	// Define a function that initiates a Read with offset and length, assuming
 	// we have already read seen bytes.
 	reopen := func(seen int64) (*readStreamResponseReadObject, context.CancelFunc, error) {
@@ -126,7 +130,7 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 			req.ReadLimit = params.length - seen
 		}
 
-		if err := applyCondsProto("gRPCReadObjectReader.reopen", params.gen, params.conds, req); err != nil {
+		if err := applyCondsProto("gRPCReadObjectReader.reopen", pinnedGen, params.conds, req); err != nil {
 			cancel()
 			return nil, nil, err
 		}
@@ -195,6 +199,9 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 	// object metadata.
 	msg := res.decoder.msg
 	obj := msg.GetMetadata()
+	if pinnedGen < 0 && obj.GetGeneration() != 0 {
+		pinnedGen = obj.GetGeneration()
+	}
 	// This is the size of the entire object, even if only a range was requested.
 	size := obj.GetSize()
 	var chunkCRC uint32
