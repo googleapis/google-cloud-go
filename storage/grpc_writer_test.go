@@ -315,15 +315,17 @@ func (m *mockSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ..
 			if req.flush || respondToAllData {
 				completionWg.Add(1)
 				// Send completions asynchronously to avoid blocking the request loop.
-				go func(offset int64) {
+				go func(offset int64, finish bool) {
 					defer completionWg.Done()
+					c := gRPCBidiWriteCompletion{flushOffset: offset}
+					if finish {
+						c.resource = &storagepb.Object{Size: offset}
+					}
 					select {
-					case cs.completions <- gRPCBidiWriteCompletion{
-						flushOffset: offset,
-					}:
+					case cs.completions <- c:
 					case <-ctx.Done():
 					}
-				}(req.offset + int64(len(req.buf)))
+				}(req.offset+int64(len(req.buf)), req.finishWrite)
 			}
 		}
 	}()
@@ -2089,7 +2091,11 @@ type slowAckSender struct {
 }
 
 func (s *slowAckSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
-	flushed := make(chan int64, 64)
+	type ackItem struct {
+		offset int64
+		finish bool
+	}
+	flushed := make(chan ackItem, 64)
 	go func() {
 		defer close(flushed)
 		for {
@@ -2104,22 +2110,26 @@ func (s *slowAckSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts
 					cs.requestAcks <- struct{}{}
 				}
 				if r.flush {
-					flushed <- r.offset + int64(len(r.buf))
+					flushed <- ackItem{offset: r.offset + int64(len(r.buf)), finish: r.finishWrite}
 				}
 			}
 		}
 	}()
 	go func() {
 		defer close(cs.completions)
-		for off := range flushed {
+		for item := range flushed {
 			select {
 			case <-time.After(s.ackDelay):
 			case <-ctx.Done():
 				s.errResult = ctx.Err()
 				return
 			}
+			c := gRPCBidiWriteCompletion{flushOffset: item.offset}
+			if item.finish {
+				c.resource = &storagepb.Object{Size: item.offset}
+			}
 			select {
-			case cs.completions <- gRPCBidiWriteCompletion{flushOffset: off}:
+			case cs.completions <- c:
 			case <-ctx.Done():
 				s.errResult = ctx.Err()
 				return
@@ -2272,8 +2282,12 @@ func (s *flushOnlyAckSender) connect(ctx context.Context, cs gRPCBufSenderChans,
 				if !r.flush {
 					continue
 				}
+				c := gRPCBidiWriteCompletion{flushOffset: r.offset + int64(len(r.buf))}
+				if r.finishWrite {
+					c.resource = &storagepb.Object{Size: c.flushOffset}
+				}
 				select {
-				case cs.completions <- gRPCBidiWriteCompletion{flushOffset: r.offset + int64(len(r.buf))}:
+				case cs.completions <- c:
 				case <-ctx.Done():
 					setErr()
 					return
@@ -2683,10 +2697,14 @@ func (s *scriptedStallSender) connect(ctx context.Context, cs gRPCBufSenderChans
 						return
 					}
 				}
-				select {
-				case cs.completions <- gRPCBidiWriteCompletion{
+				c := gRPCBidiWriteCompletion{
 					flushOffset: r.offset + int64(len(r.buf)),
-				}:
+				}
+				if r.finishWrite {
+					c.resource = &storagepb.Object{Size: c.flushOffset}
+				}
+				select {
+				case cs.completions <- c:
 				case <-ctx.Done():
 					s.mu.Lock()
 					s.errResult = ctx.Err()
@@ -2864,8 +2882,12 @@ func TestGRPCWriter_TwoLayerStallAndRetryDeadline(t *testing.T) {
 							<-ctx.Done()
 							return ctx.Err()
 						}
+						c := gRPCBidiWriteCompletion{flushOffset: endOffset}
+						if r.finishWrite {
+							c.resource = &storagepb.Object{Size: endOffset}
+						}
 						select {
-						case cs.completions <- gRPCBidiWriteCompletion{flushOffset: endOffset}:
+						case cs.completions <- c:
 							if endOffset == 100 {
 								chunk1Once.Do(func() { close(chunk1Acked) })
 							}
@@ -3625,4 +3647,215 @@ func TestGRPCResumableBidiWriteBufferSender_AdaptiveStreamRotation(t *testing.T)
 		assertRotationCalls(t, srv, 1, 2)
 		assertReceivedOffsets(t, srv, []int64{0, 100, 100, 200, 300})
 	})
+}
+
+func TestGRPCWriter_PersistedSizeOutOfRange(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	sender := &funcSender{
+		connectFn: func(ctx context.Context, cs gRPCBufSenderChans) error {
+			for req := range cs.requests {
+				if req.requestAck {
+					cs.requestAcks <- struct{}{}
+					continue
+				}
+				// Report a persisted offset larger than the total bytes written.
+				select {
+				case cs.completions <- gRPCBidiWriteCompletion{flushOffset: req.offset + int64(len(req.buf)) + 1024}:
+				case <-ctx.Done():
+					return ctx.Err()
+				}
+			}
+			return nil
+		},
+	}
+
+	w := &gRPCWriter{
+		streamSender:     sender,
+		settings:         &settings{},
+		chunkSize:        100,
+		writeQuantum:     50,
+		sendableUnits:    2,
+		awaitingFirstAck: true,
+		writesChan:       make(chan gRPCWriterCommand, 2),
+		setSize:          func(int64) {},
+		progress:         func(int64) {},
+		setObj:           func(*ObjectAttrs) {},
+	}
+
+	errCh := make(chan error, 1)
+	go func() {
+		errCh <- w.writeLoop(ctx)
+	}()
+
+	// Write more than one full chunk so the multi-chunk cmdBuf slicing path is exercised.
+	w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 250), done: make(chan struct{})}
+
+	err := <-errCh
+	if err == nil {
+		t.Fatal("writeLoop succeeded with out-of-range persisted_size, want error")
+	}
+	if !strings.Contains(err.Error(), "invalid offset") {
+		t.Errorf("writeLoop error = %v, want substring %q", err, "invalid offset")
+	}
+}
+
+func TestGRPCWriter_StreamEndsBeforeFinalAck(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name         string
+		sendAck      bool
+		sendResource bool
+		wantSubstr   string
+	}{
+		{
+			name:         "EOF before final bytes acknowledged",
+			sendAck:      false,
+			sendResource: false,
+			wantSubstr:   "before all bytes were acknowledged",
+		},
+		{
+			name:         "EOF after bytes acknowledged but without finalized resource",
+			sendAck:      true,
+			sendResource: false,
+			wantSubstr:   "before receiving finalized object metadata",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			ctx := context.Background()
+			sender := &funcSender{
+				connectFn: func(ctx context.Context, cs gRPCBufSenderChans) error {
+					for req := range cs.requests {
+						if req.requestAck {
+							cs.requestAcks <- struct{}{}
+							continue
+						}
+						if req.finishWrite && tc.sendAck {
+							c := gRPCBidiWriteCompletion{flushOffset: req.offset + int64(len(req.buf))}
+							if tc.sendResource {
+								c.resource = &storagepb.Object{Size: c.flushOffset}
+							}
+							cs.completions <- c
+						}
+					}
+					return nil
+				},
+			}
+
+			w := &gRPCWriter{
+				streamSender:     sender,
+				settings:         &settings{},
+				chunkSize:        100,
+				writeQuantum:     50,
+				sendableUnits:    2,
+				awaitingFirstAck: true,
+				writesChan:       make(chan gRPCWriterCommand, 2),
+				setSize:          func(int64) {},
+				progress:         func(int64) {},
+				setObj:           func(*ObjectAttrs) {},
+			}
+
+			errCh := make(chan error, 1)
+			go func() {
+				errCh <- w.writeLoop(ctx)
+			}()
+
+			writeDone := make(chan struct{})
+			w.writesChan <- &gRPCWriterCommandWrite{p: []byte("hello world"), done: writeDone}
+			<-writeDone
+			w.writesChan <- &gRPCWriterCommandClose{}
+
+			err := <-errCh
+			if !errors.Is(err, io.ErrUnexpectedEOF) {
+				t.Fatalf("writeLoop error = %v, want wrapping io.ErrUnexpectedEOF", err)
+			}
+			if !strings.Contains(err.Error(), tc.wantSubstr) {
+				t.Errorf("writeLoop error = %v, want substring %q", err, tc.wantSubstr)
+			}
+		})
+	}
+}
+
+type noopBidiWriteStream struct {
+	storagepb.Storage_BidiWriteObjectClient
+}
+
+func (*noopBidiWriteStream) Send(*storagepb.BidiWriteObjectRequest) error { return nil }
+
+func TestGRPCAppendBidiWriteBufferSender_ConcurrentFirstMessage(t *testing.T) {
+	t.Parallel()
+
+	s := &gRPCAppendBidiWriteBufferSender{
+		firstMessage: &storagepb.BidiWriteObjectRequest{
+			FirstMessage: &storagepb.BidiWriteObjectRequest_WriteObjectSpec{
+				WriteObjectSpec: &storagepb.WriteObjectSpec{
+					Resource: &storagepb.Object{Bucket: "b", Name: "o"},
+				},
+			},
+		},
+		disableAutoChecksum: true,
+		fullObjectChecksum:  func() *uint32 { return nil },
+	}
+
+	var wg sync.WaitGroup
+	wg.Add(3)
+	go func() {
+		defer wg.Done()
+		for i := 0; i < 100; i++ {
+			_ = s.send(&noopBidiWriteStream{}, []byte("x"), int64(i), false, false, true)
+		}
+	}()
+	go func() {
+		defer wg.Done()
+		for i := 0; i < 100; i++ {
+			s.maybeUpdateFirstMessage(&storagepb.BidiWriteObjectResponse{
+				WriteStatus: &storagepb.BidiWriteObjectResponse_Resource{
+					Resource: &storagepb.Object{Bucket: "b", Name: "o", Generation: int64(i + 1)},
+				},
+				WriteHandle: &storagepb.BidiWriteHandle{Handle: []byte("h")},
+			})
+		}
+	}()
+	go func() {
+		defer wg.Done()
+		for i := 0; i < 100; i++ {
+			_ = s.canResumeSession()
+		}
+	}()
+	wg.Wait()
+}
+
+func TestGRPCAppendTakeoverWriter_PreservesEncryptionKey(t *testing.T) {
+	t.Parallel()
+
+	key := make([]byte, 32)
+	for i := range key {
+		key[i] = byte(i + 1)
+	}
+	w := &gRPCWriter{
+		c:             &grpcStorageClient{},
+		bucket:        "test-bucket",
+		appendGen:     42,
+		encryptionKey: key,
+		spec: &storagepb.WriteObjectSpec{
+			Resource: &storagepb.Object{Bucket: "projects/_/buckets/test-bucket", Name: "obj"},
+		},
+	}
+
+	sender := w.newGRPCAppendTakeoverWriteBufferSender()
+	params := sender.firstMessage.GetCommonObjectRequestParams()
+	if params == nil {
+		t.Fatal("firstMessage.CommonObjectRequestParams is nil, want CSEK params")
+	}
+	if params.GetEncryptionAlgorithm() != "AES256" {
+		t.Errorf("EncryptionAlgorithm = %q, want %q", params.GetEncryptionAlgorithm(), "AES256")
+	}
+	if len(params.GetEncryptionKeyBytes()) != 32 {
+		t.Errorf("len(EncryptionKeyBytes) = %d, want 32", len(params.GetEncryptionKeyBytes()))
+	}
 }

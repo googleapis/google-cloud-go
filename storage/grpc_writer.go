@@ -322,6 +322,11 @@ type gRPCWriter struct {
 	bufUnsentIdx     int
 	bufFlushedIdx    int
 	bufBaseOffset    int64
+	// maxSentOffset tracks the highest byte offset sent on the stream (or
+	// discovered during takeover) so out-of-range server persisted_size values
+	// are rejected before indexing into local buffers.
+	maxSentOffset int64
+	protocolErr   error
 	// awaitingFirstAck is true until the server has confirmed any offset,
 	// including offset 0. Flush waits for that first confirmation.
 	awaitingFirstAck bool
@@ -493,13 +498,33 @@ func (w *gRPCWriter) sendBufferToTarget(cs gRPCWriterCommandHandleChans, buf []b
 		if req.flush && w.watchdog != nil {
 			w.watchdog.resume()
 		}
+		w.recordSentOffset(req.offset + int64(len(req.buf)))
 		if !cs.deliverRequestUnlessCompleted(req, handleCompletion) {
+			return baseOffset + int64(sent), false
+		}
+		if w.protocolErr != nil {
 			return baseOffset + int64(sent), false
 		}
 		buf = buf[q:]
 		sent += q
 	}
 	return baseOffset + int64(sent), true
+}
+
+func (w *gRPCWriter) recordSentOffset(offset int64) {
+	if offset > w.maxSentOffset {
+		w.maxSentOffset = offset
+	}
+}
+
+func (w *gRPCWriter) streamEndedErr() error {
+	if w.protocolErr != nil {
+		return w.protocolErr
+	}
+	if err := w.streamSender.err(); err != nil {
+		return err
+	}
+	return io.ErrUnexpectedEOF
 }
 
 func (w *gRPCWriter) isActive() bool {
@@ -512,8 +537,27 @@ func (w *gRPCWriter) isActive() bool {
 	return w.currentCommand != nil || hasUnackedData || hasReadyData || len(w.writesChan) > 0
 }
 
+func (w *gRPCWriter) maxKnownOffset() int64 {
+	known := w.bufBaseOffset + int64(len(w.buf))
+	if w.maxSentOffset > known {
+		known = w.maxSentOffset
+	}
+	if cmd, ok := w.currentCommand.(*gRPCWriterCommandWrite); ok {
+		if end := cmd.initialOffset + int64(len(cmd.p)); end > known {
+			known = end
+		}
+	}
+	return known
+}
+
 func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
-	if c.resource != nil {
+	if maxOff := w.maxKnownOffset(); c.flushOffset < 0 || c.flushOffset > maxOff {
+		if w.protocolErr == nil {
+			w.protocolErr = fmt.Errorf("storage: server acknowledged invalid offset %d (max %d)", c.flushOffset, maxOff)
+		}
+		return
+	}
+	if c.resource != nil && w.setObj != nil {
 		w.setObj(newObjectFromProto(c.resource))
 	}
 
@@ -666,9 +710,12 @@ Loop:
 		select {
 		case c, ok := <-completions:
 			if !ok {
-				return w.streamSender.err()
+				return w.streamEndedErr()
 			}
 			w.handleCompletion(c)
+			if w.protocolErr != nil {
+				return w.protocolErr
+			}
 		default:
 			break Loop
 		}
@@ -692,7 +739,7 @@ Loop:
 	sentOffset, ok := w.sendBufferToTarget(chcs, w.buf, w.bufBaseOffset, cap(w.buf),
 		w.handleCompletion)
 	if !ok {
-		return w.streamSender.err()
+		return w.streamEndedErr()
 	}
 	w.bufUnsentIdx = int(sentOffset - w.bufBaseOffset)
 	// We may have observed a completion that is after all of w.buf if we also
@@ -720,9 +767,12 @@ Loop:
 			select {
 			case c, ok := <-completions:
 				if !ok {
-					return w.streamSender.err()
+					return w.streamEndedErr()
 				}
 				w.handleCompletion(c)
+				if w.protocolErr != nil {
+					return w.protocolErr
+				}
 			case cmd, ok := <-w.writesChan:
 				if !ok {
 					// Nothing should ever close w.writesChan, so we should never get here
@@ -742,6 +792,13 @@ Loop:
 	}
 
 	finalOffset := int64(-1)
+	gotFinalResource := false
+	handleCloseCompletion := func(c gRPCBidiWriteCompletion) {
+		w.handleCompletion(c)
+		if c.resource != nil {
+			gotFinalResource = true
+		}
+	}
 	if closeErr.err == nil {
 		// Clean shutdown. Send any remaining tail.
 		w.budget.start()
@@ -756,8 +813,12 @@ Loop:
 			finishWrite: true,
 		}
 		finalOffset = req.offset + int64(len(req.buf))
-		if !chcs.deliverRequestUnlessCompleted(req, w.handleCompletion) {
-			return w.streamSender.err()
+		w.recordSentOffset(finalOffset)
+		if !chcs.deliverRequestUnlessCompleted(req, handleCloseCompletion) {
+			return w.streamEndedErr()
+		}
+		if w.protocolErr != nil {
+			return w.protocolErr
 		}
 	} else {
 		// Unclean shutdown. Cancel the context so we clean up expeditiously.
@@ -767,7 +828,7 @@ Loop:
 	close(requests)
 	finalizes := !w.append || w.finalizeOnClose
 	for c := range completions {
-		w.handleCompletion(c)
+		handleCloseCompletion(c)
 		// Once every byte is acknowledged and, if the close finalizes, the
 		// object has been returned, only stream teardown remains.
 		if w.watchdog != nil && c.flushOffset >= finalOffset && (c.resource != nil || !finalizes) {
@@ -775,7 +836,20 @@ Loop:
 		}
 	}
 	if closeErr.err == nil {
-		return w.streamSender.err()
+		if w.protocolErr != nil {
+			return w.protocolErr
+		}
+		if err := w.streamSender.err(); err != nil {
+			return err
+		}
+		confirmedOffset := w.bufBaseOffset + int64(w.bufFlushedIdx)
+		if confirmedOffset < finalOffset {
+			return fmt.Errorf("storage: write stream ended before all bytes were acknowledged (%d of %d): %w", confirmedOffset, finalOffset, io.ErrUnexpectedEOF)
+		}
+		if finalizes && !gotFinalResource {
+			return fmt.Errorf("storage: write stream ended before receiving finalized object metadata: %w", io.ErrUnexpectedEOF)
+		}
+		return nil
 	}
 	return closeErr.err
 }
@@ -1012,9 +1086,12 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 		sentOffset, ok := w.sendBufferToTarget(cs, sending, w.bufBaseOffset+int64(w.bufUnsentIdx), cap(sending),
 			w.handleCompletion)
 		if !ok {
-			return w.streamSender.err()
+			return w.streamEndedErr()
 		}
 		w.bufUnsentIdx = int(sentOffset - w.bufBaseOffset)
+		if w.bufUnsentIdx < 0 {
+			w.bufUnsentIdx = 0
+		}
 		c.markDone()
 		return nil
 	}
@@ -1041,7 +1118,7 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	sending := w.buf[w.bufUnsentIdx:]
 	if _, ok := w.sendBufferToTarget(cs, sending, w.bufBaseOffset+int64(w.bufUnsentIdx), cap(sending),
 		w.handleCompletion); !ok {
-		return w.streamSender.err()
+		return w.streamEndedErr()
 	}
 
 	// ...then send the prefix of c.p which could fill w.buf
@@ -1049,6 +1126,9 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	cmdBuf := c.p
 	trimCommandBuf := func(cmp gRPCBidiWriteCompletion) {
 		w.handleCompletion(cmp)
+		if w.protocolErr != nil {
+			return
+		}
 		// After a completion, keep c.p up to date with w.buf's tail.
 		bufTail := w.bufBaseOffset + int64(len(w.buf))
 		if bufTail <= cmdBaseOffset {
@@ -1066,7 +1146,7 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	sentOffset, ok := w.sendBufferToTarget(cs, cmdBuf, offset, firstFullBufFromCmd,
 		trimCommandBuf)
 	if !ok {
-		return w.streamSender.err()
+		return w.streamEndedErr()
 	}
 	cmdBuf = cmdBuf[int(sentOffset-offset):]
 	offset = sentOffset
@@ -1076,7 +1156,7 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 		sentOffset, ok = w.sendBufferToTarget(cs, cmdBuf, offset, cap(w.buf),
 			trimCommandBuf)
 		if !ok {
-			return w.streamSender.err()
+			return w.streamEndedErr()
 		}
 		cmdBuf = cmdBuf[int(sentOffset-offset):]
 		offset = sentOffset
@@ -1087,28 +1167,41 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	sentOffset, ok = w.sendBufferToTarget(cs, cmdBuf, offset, cap(w.buf),
 		trimCommandBuf)
 	if !ok {
-		return w.streamSender.err()
+		return w.streamEndedErr()
 	}
 	// Finally, we need the sender to ack to let us know c.p can be released.
 	if !cs.deliverRequestUnlessCompleted(gRPCBidiWriteRequest{requestAck: true}, trimCommandBuf) {
-		return w.streamSender.err()
+		return w.streamEndedErr()
+	}
+	if w.protocolErr != nil {
+		return w.protocolErr
 	}
 	ackOutstanding := true
 	for ackOutstanding || w.awaitingFirstAck || (w.bufBaseOffset+int64(w.bufFlushedIdx)) < offset {
 		select {
 		case cmp, ok := <-cs.completions:
 			if !ok {
-				return w.streamSender.err()
+				return w.streamEndedErr()
 			}
 			trimCommandBuf(cmp)
+			if w.protocolErr != nil {
+				return w.protocolErr
+			}
 		case <-cs.requestAcks:
 			ackOutstanding = false
 		}
 	}
-	toCopyIn := cmdBuf[int(w.bufBaseOffset-offset):]
+	copyStart := int(w.bufBaseOffset - offset)
+	if copyStart < 0 || copyStart > len(cmdBuf) {
+		return fmt.Errorf("storage: server acknowledged offset %d outside pending buffer range [%d, %d]", w.bufBaseOffset, offset, offset+int64(len(cmdBuf)))
+	}
+	toCopyIn := cmdBuf[copyStart:]
 	w.buf = w.buf[:len(toCopyIn)]
 	copy(w.buf, toCopyIn)
 	w.bufUnsentIdx = int(sentOffset - w.bufBaseOffset)
+	if w.bufUnsentIdx < 0 {
+		w.bufUnsentIdx = 0
+	}
 	c.markDone()
 	return nil
 }
@@ -1120,13 +1213,16 @@ func (c *gRPCWriterCommandWrite) zeroCopyWrite(w *gRPCWriter, cs gRPCWriterComma
 	// sendBufferToTarget handles the quantum breakdown.
 	newOffset, ok := w.sendBufferToTarget(cs, c.p, w.bufBaseOffset, len(c.p), w.handleCompletion)
 	if !ok {
-		return w.streamSender.err()
+		return w.streamEndedErr()
 	}
 
 	// Request an ack from the sender goroutine to ensure the buffer has been
 	// dispatched to gRPC and is safe for the user to reuse.
 	if !cs.deliverRequestUnlessCompleted(gRPCBidiWriteRequest{requestAck: true}, w.handleCompletion) {
-		return w.streamSender.err()
+		return w.streamEndedErr()
+	}
+	if w.protocolErr != nil {
+		return w.protocolErr
 	}
 
 	ackOutstanding := true
@@ -1136,9 +1232,12 @@ func (c *gRPCWriterCommandWrite) zeroCopyWrite(w *gRPCWriter, cs gRPCWriterComma
 		select {
 		case completion, ok := <-cs.completions:
 			if !ok {
-				return w.streamSender.err()
+				return w.streamEndedErr()
 			}
 			w.handleCompletion(completion)
+			if w.protocolErr != nil {
+				return w.protocolErr
+			}
 		case <-cs.requestAcks:
 			ackOutstanding = false
 		case <-ctxDone:
@@ -1176,17 +1275,24 @@ func (c *gRPCWriterCommandFlush) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 		flush:       true,
 		finishWrite: false,
 	}
+	w.recordSentOffset(req.offset + int64(len(req.buf)))
 	if !cs.deliverRequestUnlessCompleted(req, w.handleCompletion) {
-		return w.streamSender.err()
+		return w.streamEndedErr()
+	}
+	if w.protocolErr != nil {
+		return w.protocolErr
 	}
 	// Successful flushes will clear w.buf.
 	for w.awaitingFirstAck || (w.bufBaseOffset+int64(w.bufFlushedIdx)) < flushTarget {
 		c, ok := <-cs.completions
 		if !ok {
 			// Stream failure
-			return w.streamSender.err()
+			return w.streamEndedErr()
 		}
 		w.handleCompletion(c)
+		if w.protocolErr != nil {
+			return w.protocolErr
+		}
 	}
 	// handleCompletion has cleared w.buf and updated w.bufUnsentIdx by now.
 	c.done <- flushTarget
@@ -1823,6 +1929,7 @@ type gRPCAppendBidiWriteBufferSender struct {
 	bucket       string
 	routingToken *string
 
+	firstMessageMu  sync.Mutex
 	firstMessage    *storagepb.BidiWriteObjectRequest
 	finalizeOnClose bool
 
@@ -1839,6 +1946,8 @@ type gRPCAppendBidiWriteBufferSender struct {
 
 func (s *gRPCAppendBidiWriteBufferSender) err() error { return s.streamErr }
 func (s *gRPCAppendBidiWriteBufferSender) canResumeSession() bool {
+	s.firstMessageMu.Lock()
+	defer s.firstMessageMu.Unlock()
 	return s.firstMessage.GetAppendObjectSpec().GetWriteHandle() != nil || s.takeoverWriter
 }
 
@@ -1971,6 +2080,7 @@ func (w *gRPCWriter) newGRPCAppendTakeoverWriteBufferSender() *gRPCAppendTakeove
 				FirstMessage: &storagepb.BidiWriteObjectRequest_AppendObjectSpec{
 					AppendObjectSpec: writeObjectSpecAsAppendObjectSpec(w.spec, w.appendGen),
 				},
+				CommonObjectRequestParams: toProtoCommonObjectRequestParams(w.encryptionKey),
 			},
 			finalizeOnClose:     w.finalizeOnClose,
 			takeoverWriter:      true,
@@ -1987,6 +2097,9 @@ func (w *gRPCWriter) newGRPCAppendTakeoverWriteBufferSender() *gRPCAppendTakeove
 		},
 		takeoverReported: false,
 		handleTakeoverCompletion: func(c gRPCBidiWriteCompletion) {
+			if c.flushOffset >= 0 {
+				w.recordSentOffset(c.flushOffset)
+			}
 			w.handleCompletion(c)
 			w.setTakeoverOffset(c.flushOffset)
 		},
@@ -2038,6 +2151,7 @@ func (s *gRPCAppendTakeoverBidiWriteBufferSender) connect(ctx context.Context, c
 	go s.handleStream(stream, cs, firstSend)
 }
 
+// Caller must hold s.firstMessageMu.
 func (s *gRPCAppendBidiWriteBufferSender) ensureFirstMessageAppendObjectSpec() {
 	if s.firstMessage.GetWriteObjectSpec() != nil {
 		w := s.firstMessage.GetWriteObjectSpec()
@@ -2053,6 +2167,9 @@ func (s *gRPCAppendBidiWriteBufferSender) ensureFirstMessageAppendObjectSpec() {
 }
 
 func (s *gRPCAppendBidiWriteBufferSender) maybeUpdateFirstMessage(resp *storagepb.BidiWriteObjectResponse) {
+	s.firstMessageMu.Lock()
+	defer s.firstMessageMu.Unlock()
+
 	// Any affirmative response should switch us to an AppendObjectSpec.
 	s.ensureFirstMessageAppendObjectSpec()
 
@@ -2087,6 +2204,7 @@ func (s *gRPCAppendBidiWriteBufferSender) maybeHandleRedirectionError(err error)
 				if e.WriteHandle != nil {
 					// If we get back a write handle, we should use it. We can only use it
 					// on an append object spec.
+					s.firstMessageMu.Lock()
 					s.ensureFirstMessageAppendObjectSpec()
 					s.firstMessage.GetAppendObjectSpec().WriteHandle = e.WriteHandle
 					// Generation is meant to only come with the WriteHandle, so ignore it
@@ -2094,6 +2212,7 @@ func (s *gRPCAppendBidiWriteBufferSender) maybeHandleRedirectionError(err error)
 					if e.Generation != nil {
 						s.firstMessage.GetAppendObjectSpec().Generation = e.GetGeneration()
 					}
+					s.firstMessageMu.Unlock()
 				}
 
 				s.routingToken = e.RoutingToken
@@ -2128,7 +2247,9 @@ func (s *gRPCAppendBidiWriteBufferSender) send(stream storagepb.Storage_BidiWrit
 	})
 	req := bidiWriteObjectRequest(r, bufChecksum, objectChecksums)
 	if sendFirstMessage {
+		s.firstMessageMu.Lock()
 		proto.Merge(req, s.firstMessage)
+		s.firstMessageMu.Unlock()
 	}
 
 	return stream.Send(req)
