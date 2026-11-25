@@ -2032,6 +2032,23 @@ func TestMonitoringClientOptions(t *testing.T) {
 			t.Errorf("resolved credentials = %v, want caller's legacy credentials", gotCreds)
 		}
 	})
+
+	t.Run("disabled_on_endpoint_only_non_googleapis_without_universe", func(t *testing.T) {
+		ambientCreds := &auth.Credentials{TokenProvider: &staticAuthTokenProvider{token: &auth.Token{Value: "ambient"}}}
+		if _, ok := monitoringClientOptions([]option.ClientOption{option.WithEndpoint("storage.custom-tpc.goog:443")}, ambientCreds, nil); ok {
+			t.Fatal("monitoringClientOptions() ok = true, want false for endpoint-only non-googleapis.com host")
+		}
+		if _, ok := monitoringClientOptions([]option.ClientOption{option.WithEndpoint("https://storage.custom-tpc.goog/storage/v1/")}, ambientCreds, nil); ok {
+			t.Fatal("monitoringClientOptions() ok = true, want false for HTTPS endpoint-only non-googleapis.com host")
+		}
+	})
+
+	t.Run("enabled_on_regional_googleapis_endpoint", func(t *testing.T) {
+		ambientCreds := &auth.Credentials{TokenProvider: &staticAuthTokenProvider{token: &auth.Token{Value: "ambient"}}}
+		if _, ok := monitoringClientOptions([]option.ClientOption{option.WithEndpoint("https://us-central1-storage.googleapis.com/storage/v1/")}, ambientCreds, nil); !ok {
+			t.Fatal("monitoringClientOptions() ok = false, want true for regional googleapis.com endpoint")
+		}
+	})
 }
 
 func TestInitMetrics_EmptyProjectIDReturnsError(t *testing.T) {

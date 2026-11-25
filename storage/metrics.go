@@ -157,7 +157,8 @@ func isOtelDebugMetricsEnabled(config *storageConfig) bool {
 // monitoringClientOptions extracts safe Cloud Monitoring client options from
 // the parent Storage client's options. It returns ok=false when Cloud
 // Monitoring export should be skipped (unauthenticated/API-key clients, custom
-// HTTP/gRPC transports, missing resolved credentials, or invalid options).
+// HTTP/gRPC transports, endpoint-only non-googleapis.com configs without a
+// configured universe domain, missing resolved credentials, or invalid options).
 func monitoringClientOptions(clientOpts []option.ClientOption, authCreds *auth.Credentials, googleCreds *google.Credentials) (opts []option.ClientOption, ok bool) {
 	res, err := internaloption.NewUnsafeResolver(clientOpts...)
 	if err != nil {
@@ -170,7 +171,18 @@ func monitoringClientOptions(clientOpts []option.ClientOption, authCreds *auth.C
 		return nil, false
 	}
 
-	opts = append(opts, option.WithUniverseDomain(res.ResolvedUniverseDomain()))
+	universeDomain := res.ResolvedUniverseDomain()
+	if universeDomain == "googleapis.com" {
+		ep, err := res.ResolvedGRPCEndpoint()
+		if err != nil {
+			return nil, false
+		}
+		if host := endpointHost(ep); host != "" && host != "googleapis.com" && !strings.HasSuffix(host, ".googleapis.com") {
+			return nil, false
+		}
+	}
+
+	opts = append(opts, option.WithUniverseDomain(universeDomain))
 	if authCreds != nil {
 		// Clone the struct value so subsequent in-place wrapping on the parent
 		// client's credentials does not affect the Cloud Monitoring exporter.
@@ -180,6 +192,21 @@ func monitoringClientOptions(clientOpts []option.ClientOption, authCreds *auth.C
 		opts = append(opts, option.WithCredentials(googleCreds))
 	}
 	return opts, true
+}
+
+func endpointHost(ep string) string {
+	if ep == "" {
+		return ""
+	}
+	if strings.Contains(ep, "://") {
+		if u, err := url.Parse(ep); err == nil {
+			ep = u.Host
+		}
+	}
+	if h, _, err := net.SplitHostPort(ep); err == nil {
+		return h
+	}
+	return ep
 }
 
 // newMetricsGCMExporter creates a Google Cloud Monitoring exporter.
