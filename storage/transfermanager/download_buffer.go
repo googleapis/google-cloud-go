@@ -15,6 +15,7 @@
 package transfermanager
 
 import (
+	"errors"
 	"sync"
 )
 
@@ -40,23 +41,27 @@ type DownloadBuffer struct {
 // WriteAt is thread-safe as long as the ranges being written to do not overlap.
 // The supplied slice p is not retained.
 func (db *DownloadBuffer) WriteAt(p []byte, off int64) (n int, err error) {
+	if off < 0 {
+		return 0, errors.New("transfermanager: negative offset")
+	}
 	requiredLength := int64(len(p)) + off
 
-	// Our buffer isn't big enough, let's grow it.
-	if int64(cap(db.bytes)) < requiredLength {
-		expandedBuff := make([]byte, requiredLength)
+	db.mu.Lock()
+	defer db.mu.Unlock()
 
-		db.mu.Lock()
-		copy(expandedBuff, db.bytes)
-		db.bytes = expandedBuff
-	} else {
-		db.mu.Lock()
+	// Grow the buffer while holding db.mu so concurrent writes cannot race on
+	// capacity or overwrite a larger buffer with a smaller allocation.
+	if int64(len(db.bytes)) < requiredLength {
+		if int64(cap(db.bytes)) < requiredLength {
+			expandedBuff := make([]byte, requiredLength)
+			copy(expandedBuff, db.bytes)
+			db.bytes = expandedBuff
+		} else {
+			db.bytes = db.bytes[:requiredLength]
+		}
 	}
 
-	// Buffer should now have the capacity to hold the new bytes, if it didn't
-	// before, so we can copy directly to it.
 	copy(db.bytes[off:], p)
-	db.mu.Unlock()
 
 	return len(p), nil
 }

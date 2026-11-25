@@ -15,6 +15,8 @@
 package dataflux
 
 import (
+	"fmt"
+	"sync"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -343,4 +345,35 @@ func TestCharPosition(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestSplitRangeConcurrent(t *testing.T) {
+	t.Parallel()
+
+	rs, err := newRangeSplitter("ab")
+	if err != nil {
+		t.Fatalf("newRangeSplitter: %v", err)
+	}
+
+	var wg sync.WaitGroup
+	for i := 0; i < 16; i++ {
+		i := i
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			start := fmt.Sprintf("a%c0", 'a'+rune(i%26))
+			end := fmt.Sprintf("z%c9", 'a'+rune((i+13)%26))
+			splits, err := rs.splitRange(start, end, 2)
+			if err != nil {
+				t.Errorf("splitRange(%q, %q): %v", start, end, err)
+				return
+			}
+			for _, sp := range splits {
+				if sp <= start || sp >= end {
+					t.Errorf("split point %q outside (%q, %q)", sp, start, end)
+				}
+			}
+		}()
+	}
+	wg.Wait()
 }
