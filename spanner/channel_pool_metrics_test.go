@@ -38,6 +38,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -265,9 +266,9 @@ func TestChannelPoolBuiltinMetricsLaneFollowsFallback(t *testing.T) {
 	}
 }
 
-func newFixedPoolForMetricsTest(t *testing.T, cfg channelPoolBuiltinMetricsConfig, fallback *directPathFallback) *dynamicChannelPool {
+func newFixedPoolForMetricsTest(t *testing.T, cfg channelPoolBuiltinMetricsConfig, fallback *directPathFallback) (*dynamicChannelPool, *MockedSpannerInMemTestServer) {
 	t.Helper()
-	_, opts, teardown := NewMockedSpannerInMemTestServer(t)
+	server, opts, teardown := NewMockedSpannerInMemTestServer(t)
 	t.Cleanup(teardown)
 	database := "projects/p/instances/i/databases/d"
 	sc := newSessionClient(nil, database, "", nil, "", false, metadata.Pairs(resourcePrefixHeader, database), 0, nil, nil)
@@ -281,17 +282,21 @@ func newFixedPoolForMetricsTest(t *testing.T, cfg channelPoolBuiltinMetricsConfi
 		t.Fatalf("newFixedChannelPool() failed: %v", err)
 	}
 	t.Cleanup(func() { p.Close() })
-	return p
+	return p, server
 }
 
 func TestChannelPoolBuiltinMetricsFixedPoolWiring(t *testing.T) {
 	reader, mp := newDCPManualReader()
-	p := newFixedPoolForMetricsTest(t, channelPoolBuiltinMetricsConfig{meterProvider: mp, lane: laneCloudPath}, nil)
+	p, _ := newFixedPoolForMetricsTest(t, channelPoolBuiltinMetricsConfig{meterProvider: mp, lane: laneCloudPath}, nil)
 
 	requireChannelCounts(t, channelCountByState(t, collectDCPMetrics(t, reader), poolModeStatic, laneCloudPath), 2, 0)
 	ctx := context.Background()
-	p.Invoke(ctx, "/google.spanner.v1.Spanner/GetSession", &spannerpb.GetSessionRequest{Name: "s"}, &spannerpb.Session{})
-	p.GetEntries()[1].Client.GetSession(ctx, &spannerpb.GetSessionRequest{Name: "s"})
+	if err := p.Invoke(ctx, "/google.spanner.v1.Spanner/GetSession", &spannerpb.GetSessionRequest{Name: "s"}, &spannerpb.Session{}); status.Code(err) != codes.NotFound {
+		t.Fatalf("GetSession through the pool error mismatch:\n Got: %v\nWant: NotFound", err)
+	}
+	if _, err := p.GetEntries()[1].Client.GetSession(ctx, &spannerpb.GetSessionRequest{Name: "s"}); status.Code(err) != codes.NotFound {
+		t.Fatalf("GetSession through the entry client error mismatch:\n Got: %v\nWant: NotFound", err)
+	}
 	if dp := channelLoadPoint(t, collectDCPMetrics(t, reader), poolModeStatic, laneCloudPath); dp.Count != 2 || dp.Sum != 2 {
 		t.Fatalf("channel_load mismatch:\n Got: count %d, sum %v\nWant: count 2, sum 2", dp.Count, dp.Sum)
 	}
@@ -320,8 +325,22 @@ func TestChannelPoolBuiltinMetricsFixedPoolLaneFollowsFallback(t *testing.T) {
 	requireChannelCounts(t, channelCountByState(t, collectDCPMetrics(t, reader), poolModeStatic, laneCloudPath), 2, 0)
 }
 
+func TestChannelPoolBuiltinMetricsFixedPoolRecordsEachRetryAttempt(t *testing.T) {
+	reader, mp := newDCPManualReader()
+	p, server := newFixedPoolForMetricsTest(t, channelPoolBuiltinMetricsConfig{meterProvider: mp, lane: laneCloudPath}, nil)
+	server.TestSpanner.PutExecutionTime(MethodGetSession, SimulatedExecutionTime{
+		Errors: []error{status.Error(codes.Unavailable, "unavailable")},
+	})
+	if _, err := p.GetEntries()[0].Client.GetSession(context.Background(), &spannerpb.GetSessionRequest{Name: "s"}); status.Code(err) != codes.NotFound {
+		t.Fatalf("GetSession error after the retry mismatch:\n Got: %v\nWant: NotFound", err)
+	}
+	if dp := channelLoadPoint(t, collectDCPMetrics(t, reader), poolModeStatic, laneCloudPath); dp.Count != 2 || dp.Sum != 2 {
+		t.Fatalf("channel_load for one retried call mismatch:\n Got: count %d, sum %v\nWant: count 2, sum 2", dp.Count, dp.Sum)
+	}
+}
+
 func TestChannelPoolBuiltinMetricsFixedPoolWithoutMetricsCountsNothing(t *testing.T) {
-	p := newFixedPoolForMetricsTest(t, channelPoolBuiltinMetricsConfig{lane: laneCloudPath}, nil)
+	p, _ := newFixedPoolForMetricsTest(t, channelPoolBuiltinMetricsConfig{lane: laneCloudPath}, nil)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	if _, err := p.NewStream(ctx, &grpc.StreamDesc{ServerStreams: true}, "/google.spanner.v1.Spanner/ExecuteStreamingSql"); err != nil {

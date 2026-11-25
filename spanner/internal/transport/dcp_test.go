@@ -758,7 +758,9 @@ func TestFixedChannelPoolOnCallStart(t *testing.T) {
 			underlying.stream = &scriptedFixedStream{recvErr: unavailable}
 			e.UnaryLoad.Store(1)
 			e.StreamLoad.Store(1)
-			op.start()
+			if err := op.start(); status.Code(err) != codes.Unavailable {
+				t.Fatalf("call error mismatch:\n Got: %v\nWant: Unavailable", err)
+			}
 			if len(loads) != 1 || loads[0] != 3 {
 				t.Fatalf("OnCallStart loads mismatch:\n Got: %v\nWant: [3]", loads)
 			}
@@ -794,7 +796,9 @@ func TestFixedChannelPoolWithoutOnCallStartCountsNothing(t *testing.T) {
 			t.Errorf("entry load during the call mismatch:\n Got: %d\nWant: 0", got)
 		}
 	}
-	pool.Invoke(ctx, "/test/Method", nil, nil)
+	if err := pool.Invoke(ctx, "/test/Method", nil, nil); err != nil {
+		t.Fatalf("Invoke failed: %v", err)
+	}
 	stream, err := pool.NewStream(ctx, &grpc.StreamDesc{}, "/test/Method")
 	if err != nil {
 		t.Fatalf("NewStream failed: %v", err)
@@ -802,7 +806,9 @@ func TestFixedChannelPoolWithoutOnCallStartCountsNothing(t *testing.T) {
 	if _, ok := stream.(*scriptedFixedStream); !ok {
 		t.Fatalf("stream type mismatch:\n Got: %T\nWant: *scriptedFixedStream", stream)
 	}
-	e.Invoke(ctx, "/test/Method", nil, nil)
+	if err := e.Invoke(ctx, "/test/Method", nil, nil); err != nil {
+		t.Fatalf("entry Invoke failed: %v", err)
+	}
 	if _, err := e.NewStream(ctx, &grpc.StreamDesc{}, "/test/Method"); err != nil {
 		t.Fatalf("entry NewStream failed: %v", err)
 	}
@@ -815,13 +821,14 @@ func TestFixedChannelPoolCountedStreamEnds(t *testing.T) {
 		stream    *scriptedFixedStream
 		streamErr error
 		end       func(s grpc.ClientStream, cancel context.CancelFunc)
+		async     bool
 	}{
 		{name: "RecvMsg returns io.EOF", stream: &scriptedFixedStream{recvErr: io.EOF}, end: func(s grpc.ClientStream, _ context.CancelFunc) { s.RecvMsg(nil) }},
 		{name: "RecvMsg fails", stream: &scriptedFixedStream{recvErr: failed}, end: func(s grpc.ClientStream, _ context.CancelFunc) { s.RecvMsg(nil) }},
 		{name: "SendMsg fails", stream: &scriptedFixedStream{sendErr: io.EOF}, end: func(s grpc.ClientStream, _ context.CancelFunc) { s.SendMsg(nil) }},
 		{name: "CloseSend fails", stream: &scriptedFixedStream{closeSendErr: failed}, end: func(s grpc.ClientStream, _ context.CancelFunc) { s.CloseSend() }},
 		{name: "Header fails", stream: &scriptedFixedStream{headerErr: failed}, end: func(s grpc.ClientStream, _ context.CancelFunc) { s.Header() }},
-		{name: "context canceled", stream: &scriptedFixedStream{}, end: func(_ grpc.ClientStream, cancel context.CancelFunc) { cancel() }},
+		{name: "context canceled", stream: &scriptedFixedStream{}, end: func(_ grpc.ClientStream, cancel context.CancelFunc) { cancel() }, async: true},
 		{name: "NewStream fails", streamErr: failed},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -837,22 +844,28 @@ func TestFixedChannelPoolCountedStreamEnds(t *testing.T) {
 				if !errors.Is(err, tc.streamErr) {
 					t.Fatalf("NewStream error mismatch:\n Got: %v\nWant: %v", err, tc.streamErr)
 				}
-			} else {
-				if err != nil {
-					t.Fatalf("NewStream failed: %v", err)
+				if got := e.StreamLoad.Load(); got != 0 {
+					t.Fatalf("stream load after a failed NewStream mismatch:\n Got: %d\nWant: 0", got)
 				}
-				if got := e.StreamLoad.Load(); got != 1 {
-					t.Fatalf("stream load while open mismatch:\n Got: %d\nWant: 1", got)
-				}
-				tc.end(s, cancel)
+				return
 			}
-			waitForStreamLoad(t, e, 0)
-			if s != nil {
-				s.RecvMsg(nil)
-				s.CloseSend()
+			if err != nil {
+				t.Fatalf("NewStream failed: %v", err)
 			}
-			cancel()
-			time.Sleep(10 * time.Millisecond)
+			if got := e.StreamLoad.Load(); got != 1 {
+				t.Fatalf("stream load while open mismatch:\n Got: %d\nWant: 1", got)
+			}
+			tc.end(s, cancel)
+			if tc.async {
+				waitForStreamLoad(t, e, 0)
+			} else if got := e.StreamLoad.Load(); got != 0 {
+				t.Fatalf("stream load after the stream ended mismatch:\n Got: %d\nWant: 0", got)
+			}
+			if s.(*dcpCountedStream[*fakeDCPClient]).stop() {
+				t.Fatal("context callback still registered after the stream ended")
+			}
+			s.RecvMsg(nil)
+			s.CloseSend()
 			if got := e.StreamLoad.Load(); got != 0 {
 				t.Fatalf("stream load after more ends mismatch:\n Got: %d\nWant: 0", got)
 			}
@@ -892,7 +905,9 @@ func TestFixedChannelPoolOnCallStartConcurrent(t *testing.T) {
 		go func() {
 			defer wg.Done()
 			for j := 0; j < perGoroutine; j++ {
-				pool.Invoke(ctx, "/test/Method", nil, nil)
+				if err := pool.Invoke(ctx, "/test/Method", nil, nil); err != nil {
+					t.Errorf("Invoke failed: %v", err)
+				}
 				if s, err := pool.NewStream(ctx, &grpc.StreamDesc{}, "/test/Method"); err == nil {
 					s.RecvMsg(nil)
 				}
