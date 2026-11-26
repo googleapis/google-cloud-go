@@ -28,6 +28,8 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
+	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp"
+	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp/multiendpoint"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.opentelemetry.io/otel/attribute"
 	"golang.org/x/oauth2"
@@ -93,6 +95,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	}
 	go monitoringServer.Serve()
 	defer monitoringServer.Shutdown()
+	t.Setenv("SPANNER_MONITORING_HOST", monitoringServer.Endpoint)
 
 	// Override exporter options
 	origCreateExporterOptions := createExporterOptions
@@ -1108,6 +1111,776 @@ func TestMonitoringExporterUniverseDomainMismatch(t *testing.T) {
 			}
 			if w, g := 0, len(monitoringServer.AuthHeaders()); w != g {
 				t.Errorf("received authorization headers on universe mismatch:\n Want: %v\n  Got: %v", w, g)
+			}
+		})
+	}
+}
+
+func TestMonitoringExporterIsDefaultSpannerEndpoint(t *testing.T) {
+	tests := []struct {
+		name           string
+		endpoint       string
+		universeDomain string
+		want           bool
+	}{
+		// Accepted default endpoints.
+		{name: "empty endpoint in GDU", endpoint: "", universeDomain: "googleapis.com", want: true},
+		{name: "empty endpoint in custom universe", endpoint: "", universeDomain: "example-universe.test", want: true},
+		{name: "bare default GDU host", endpoint: "spanner.googleapis.com", universeDomain: "googleapis.com", want: true},
+		{name: "default GDU host with port 443", endpoint: "spanner.googleapis.com:443", universeDomain: "googleapis.com", want: true},
+		{name: "uppercase default GDU host with port 443", endpoint: "SPANNER.GOOGLEAPIS.COM:443", universeDomain: "googleapis.com", want: true},
+		{name: "https default GDU host", endpoint: "https://spanner.googleapis.com", universeDomain: "googleapis.com", want: true},
+		{name: "https default GDU host with trailing slash", endpoint: "https://spanner.googleapis.com/", universeDomain: "googleapis.com", want: true},
+		{name: "https default GDU host with port 443", endpoint: "https://spanner.googleapis.com:443", universeDomain: "googleapis.com", want: true},
+		{name: "https default GDU host with port 443 and trailing slash", endpoint: "https://spanner.googleapis.com:443/", universeDomain: "googleapis.com", want: true},
+		{name: "uppercase https default GDU host", endpoint: "HTTPS://SPANNER.GOOGLEAPIS.COM:443/", universeDomain: "googleapis.com", want: true},
+		{name: "dns empty authority default GDU host", endpoint: "dns:///spanner.googleapis.com", universeDomain: "googleapis.com", want: true},
+		{name: "dns empty authority default GDU host with port 443", endpoint: "dns:///spanner.googleapis.com:443", universeDomain: "googleapis.com", want: true},
+		{name: "uppercase dns default GDU host", endpoint: "DNS:///SPANNER.GOOGLEAPIS.COM:443", universeDomain: "googleapis.com", want: true},
+		{name: "bare default custom universe host", endpoint: "spanner.example-universe.test", universeDomain: "example-universe.test", want: true},
+		{name: "default custom universe host with port 443", endpoint: "spanner.example-universe.test:443", universeDomain: "example-universe.test", want: true},
+		{name: "https default custom universe host", endpoint: "https://spanner.example-universe.test:443/", universeDomain: "example-universe.test", want: true},
+		{name: "dns default custom universe host", endpoint: "dns:///spanner.example-universe.test:443", universeDomain: "example-universe.test", want: true},
+
+		// Rejected non-default and malformed endpoints.
+		{name: "regional endpoint GDU with port 443", endpoint: "spanner.us-central1.rep.googleapis.com:443", universeDomain: "googleapis.com", want: false},
+		{name: "regional endpoint GDU bare", endpoint: "spanner.us-central1.rep.googleapis.com", universeDomain: "googleapis.com", want: false},
+		{name: "regional endpoint custom universe", endpoint: "spanner.us-central1.rep.example-universe.test:443", universeDomain: "example-universe.test", want: false},
+		{name: "explicit mTLS endpoint GDU", endpoint: "spanner.mtls.googleapis.com:443", universeDomain: "googleapis.com", want: false},
+		{name: "custom PSC or proxy host", endpoint: "psc-spanner.internal:443", universeDomain: "googleapis.com", want: false},
+		{name: "localhost custom port", endpoint: "localhost:9010", universeDomain: "googleapis.com", want: false},
+		{name: "default host with non-443 port", endpoint: "spanner.googleapis.com:8443", universeDomain: "googleapis.com", want: false},
+		{name: "default host with empty port", endpoint: "spanner.googleapis.com:", universeDomain: "googleapis.com", want: false},
+		{name: "insecure http scheme", endpoint: "http://spanner.googleapis.com:443", universeDomain: "googleapis.com", want: false},
+		{name: "passthrough scheme", endpoint: "passthrough:///spanner.googleapis.com:443", universeDomain: "googleapis.com", want: false},
+		{name: "triple slash https scheme", endpoint: "https:///spanner.googleapis.com:443", universeDomain: "googleapis.com", want: false},
+		{name: "https double trailing slash", endpoint: "https://spanner.googleapis.com:443//", universeDomain: "googleapis.com", want: false},
+		{name: "dns with custom authority", endpoint: "dns://8.8.8.8/spanner.googleapis.com:443", universeDomain: "googleapis.com", want: false},
+		{name: "dns with extra leading slash", endpoint: "dns:////spanner.googleapis.com:443", universeDomain: "googleapis.com", want: false},
+		{name: "https with non-root path", endpoint: "https://spanner.googleapis.com/v1", universeDomain: "googleapis.com", want: false},
+		{name: "https with query", endpoint: "https://spanner.googleapis.com?a=1", universeDomain: "googleapis.com", want: false},
+		{name: "https with empty query", endpoint: "https://spanner.googleapis.com?", universeDomain: "googleapis.com", want: false},
+		{name: "https with fragment", endpoint: "https://spanner.googleapis.com#frag", universeDomain: "googleapis.com", want: false},
+		{name: "https with userinfo", endpoint: "https://user@spanner.googleapis.com:443", universeDomain: "googleapis.com", want: false},
+		{name: "bracketed host", endpoint: "[spanner.googleapis.com]:443", universeDomain: "googleapis.com", want: false},
+		{name: "whitespace endpoint", endpoint: "   ", universeDomain: "googleapis.com", want: false},
+		{name: "untrimmed endpoint", endpoint: " spanner.googleapis.com:443 ", universeDomain: "googleapis.com", want: false},
+		{name: "suffix spoofed host", endpoint: "spanner.googleapis.com.evil.com:443", universeDomain: "googleapis.com", want: false},
+		{name: "cross-universe mismatch", endpoint: "spanner.googleapis.com:443", universeDomain: "example-universe.test", want: false},
+		{name: "empty universe with explicit endpoint", endpoint: "spanner.googleapis.com:443", universeDomain: "", want: false},
+		{name: "untrimmed universe with explicit endpoint", endpoint: "spanner.googleapis.com:443", universeDomain: " googleapis.com ", want: false},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := isDefaultSpannerEndpoint(tc.endpoint, tc.universeDomain); got != tc.want {
+				t.Errorf("isDefaultSpannerEndpoint(%q, %q) = %v, want %v", tc.endpoint, tc.universeDomain, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestMonitoringExporterShouldEnableDefault(t *testing.T) {
+	conn, err := grpc.NewClient("passthrough:///unused", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		t.Fatalf("grpc.NewClient() failed: %v", err)
+	}
+	defer conn.Close()
+
+	tests := []struct {
+		name               string
+		envUniverseDomain  string
+		envMonitoringHost  string
+		envUseClientCert   string
+		envUseMTLSEndpoint string
+		opts               []option.ClientOption
+		want               bool
+	}{
+		{
+			name: "unset endpoint in default GDU",
+			want: true,
+		},
+		{
+			name: "explicit default GDU endpoint",
+			opts: []option.ClientOption{option.WithEndpoint("spanner.googleapis.com:443")},
+			want: true,
+		},
+		{
+			name: "custom endpoint disables default export",
+			opts: []option.ClientOption{option.WithEndpoint("psc-spanner.internal:443")},
+			want: false,
+		},
+		{
+			name: "wrapped custom endpoint disables default export",
+			opts: []option.ClientOption{wrappedEndpointOption{option.WithEndpoint("psc-spanner.internal:443")}},
+			want: false,
+		},
+		{
+			name: "last WithEndpoint wins when default overrides custom",
+			opts: []option.ClientOption{
+				option.WithEndpoint("psc-spanner.internal:443"),
+				option.WithEndpoint("spanner.googleapis.com:443"),
+			},
+			want: true,
+		},
+		{
+			name: "last WithEndpoint wins when custom overrides default",
+			opts: []option.ClientOption{
+				option.WithEndpoint("spanner.googleapis.com:443"),
+				option.WithEndpoint("psc-spanner.internal:443"),
+			},
+			want: false,
+		},
+		{
+			name: "empty WithEndpoint resets prior custom endpoint",
+			opts: []option.ClientOption{
+				option.WithEndpoint("psc-spanner.internal:443"),
+				option.WithEndpoint(""),
+			},
+			want: true,
+		},
+		{
+			name: "nil option is safely ignored",
+			opts: []option.ClientOption{nil, option.WithEndpoint("spanner.googleapis.com:443")},
+			want: true,
+		},
+		{
+			name: "custom WithGRPCConn disables default export",
+			opts: []option.ClientOption{option.WithGRPCConn(conn)},
+			want: false,
+		},
+		{
+			name: "WithGRPCConn(nil) resets prior custom conn",
+			opts: []option.ClientOption{option.WithGRPCConn(conn), option.WithGRPCConn(nil)},
+			want: true,
+		},
+		{
+			name:              "WithUniverseDomain overrides env and matches explicit default",
+			envUniverseDomain: "env-universe.test",
+			opts: []option.ClientOption{
+				option.WithUniverseDomain("opt-universe.test"),
+				option.WithEndpoint("spanner.opt-universe.test:443"),
+			},
+			want: true,
+		},
+		{
+			name:              "WithUniverseDomain overrides env and rejects mismatched endpoint",
+			envUniverseDomain: "env-universe.test",
+			opts: []option.ClientOption{
+				option.WithUniverseDomain("opt-universe.test"),
+				option.WithEndpoint("spanner.env-universe.test:443"),
+			},
+			want: false,
+		},
+		{
+			name:              "GOOGLE_CLOUD_UNIVERSE_DOMAIN matches explicit default",
+			envUniverseDomain: "example-universe.test",
+			opts:              []option.ClientOption{option.WithEndpoint("spanner.example-universe.test:443")},
+			want:              true,
+		},
+		{
+			name:               "non-GDU with unset endpoint stays enabled under mTLS always mode",
+			envUseMTLSEndpoint: "always",
+			opts:               []option.ClientOption{option.WithUniverseDomain("example-universe.test")},
+			want:               true,
+		},
+		{
+			name:             "client certificate enabled with custom endpoint still fails closed",
+			envUseClientCert: "true",
+			opts:             []option.ClientOption{option.WithEndpoint("psc-spanner.internal:443")},
+			want:             false,
+		},
+		{
+			name:              "SPANNER_MONITORING_HOST enables export for custom endpoint",
+			envMonitoringHost: "custom-monitoring.local:443",
+			opts:              []option.ClientOption{option.WithEndpoint("psc-spanner.internal:443")},
+			want:              true,
+		},
+		{
+			name:              "SPANNER_MONITORING_HOST enables export for custom WithGRPCConn",
+			envMonitoringHost: "custom-monitoring.local:443",
+			opts:              []option.ClientOption{option.WithGRPCConn(conn)},
+			want:              true,
+		},
+		{
+			name:              "whitespace-only SPANNER_MONITORING_HOST does not override custom endpoint",
+			envMonitoringHost: "   ",
+			opts:              []option.ClientOption{option.WithEndpoint("psc-spanner.internal:443")},
+			want:              false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", tc.envUniverseDomain)
+			t.Setenv("SPANNER_MONITORING_HOST", tc.envMonitoringHost)
+			if tc.envUseClientCert == "" {
+				t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
+			} else {
+				t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", tc.envUseClientCert)
+			}
+			if tc.envUseMTLSEndpoint == "" {
+				t.Setenv("GOOGLE_API_USE_MTLS_ENDPOINT", "auto")
+			} else {
+				t.Setenv("GOOGLE_API_USE_MTLS_ENDPOINT", tc.envUseMTLSEndpoint)
+			}
+
+			if got := shouldEnableDefaultMonitoringExporter(tc.opts...); got != tc.want {
+				t.Errorf("shouldEnableDefaultMonitoringExporter() = %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestBuiltinMetricsExporterCustomEndpointDisablesDefaultCloudMonitoring(t *testing.T) {
+	origDetectClientLocation := detectClientLocation
+	detectClientLocation = func(context.Context) string { return "global" }
+	defer func() { detectClientLocation = origDetectClientLocation }()
+
+	tests := []struct {
+		name           string
+		universeDomain string
+		spannerAddr    string
+		useWrapped     bool
+		useCustomConn  bool
+	}{
+		{
+			name:           "custom PSC endpoint in GDU",
+			universeDomain: "googleapis.com",
+			spannerAddr:    "psc-spanner.internal:443",
+		},
+		{
+			name:           "regional endpoint in GDU",
+			universeDomain: "googleapis.com",
+			spannerAddr:    "spanner.us-central1.rep.googleapis.com:443",
+		},
+		{
+			name:           "wrapped custom endpoint in GDU",
+			universeDomain: "googleapis.com",
+			spannerAddr:    "psc-spanner.internal:443",
+			useWrapped:     true,
+		},
+		{
+			name:           "cross-universe endpoint mismatch",
+			universeDomain: "example-universe.test",
+			spannerAddr:    "spanner.googleapis.com:443",
+		},
+		{
+			name:           "custom pre-dialed WithGRPCConn",
+			universeDomain: "googleapis.com",
+			useCustomConn:  true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv("SPANNER_EMULATOR_HOST", "")
+			t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
+			t.Setenv("SPANNER_MONITORING_HOST", "")
+			t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
+			t.Setenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS", "false")
+			t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
+			t.Setenv("GOOGLE_API_USE_MTLS_ENDPOINT", "auto")
+			t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", "")
+
+			spannerServer, _, teardownSpanner := NewMockedSpannerInMemTestServer(t)
+			defer teardownSpanner()
+
+			monitoringServer, err := NewMetricTestServer()
+			if err != nil {
+				t.Fatalf("NewMetricTestServer() failed: %v", err)
+			}
+			go monitoringServer.Serve()
+			defer monitoringServer.Shutdown()
+
+			var mu sync.Mutex
+			dialedAddrs := map[string]int{}
+			unexpectedAddrs := []string{}
+			monitoringAddr := "monitoring." + tc.universeDomain + ":443"
+
+			dialer := func(ctx context.Context, addr string) (net.Conn, error) {
+				mu.Lock()
+				dialedAddrs[addr]++
+				mu.Unlock()
+				if tc.spannerAddr != "" && addr == tc.spannerAddr {
+					return (&net.Dialer{}).DialContext(ctx, "tcp", spannerServer.ServerAddress)
+				}
+				if addr == monitoringAddr {
+					return (&net.Dialer{}).DialContext(ctx, "tcp", monitoringServer.Endpoint)
+				}
+				mu.Lock()
+				unexpectedAddrs = append(unexpectedAddrs, addr)
+				mu.Unlock()
+				return nil, fmt.Errorf("unexpected dial to %q", addr)
+			}
+
+			creds := &google.Credentials{
+				ProjectID:              "test-project",
+				TokenSource:            oauth2.StaticTokenSource(&oauth2.Token{AccessToken: "secret-token"}),
+				UniverseDomainProvider: func() (string, error) { return tc.universeDomain, nil },
+			}
+
+			var opts []option.ClientOption
+			if tc.useCustomConn {
+				conn, err := grpc.NewClient(
+					spannerServer.ServerAddress,
+					grpc.WithTransportCredentials(insecure.NewCredentials()),
+				)
+				if err != nil {
+					t.Fatalf("grpc.NewClient() failed: %v", err)
+				}
+				defer conn.Close()
+				opts = []option.ClientOption{
+					option.WithGRPCConn(conn),
+				}
+			} else {
+				opts = []option.ClientOption{
+					option.WithCredentials(creds),
+					option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+					option.WithGRPCDialOption(grpc.WithResolvers(staticDNSResolverBuilder{})),
+					option.WithGRPCDialOption(grpc.WithContextDialer(dialer)),
+				}
+				if tc.universeDomain != "googleapis.com" {
+					opts = append(opts, option.WithUniverseDomain(tc.universeDomain))
+				}
+				epOpt := option.WithEndpoint(tc.spannerAddr)
+				if tc.useWrapped {
+					epOpt = wrappedEndpointOption{epOpt}
+				}
+				opts = append(opts, epOpt)
+			}
+
+			ctx := context.Background()
+			client, err := NewClientWithConfig(ctx, "projects/test-project/instances/test-instance/databases/test-db", ClientConfig{
+				NumChannels: 1,
+			}, opts...)
+			if err != nil {
+				t.Fatalf("NewClientWithConfig() failed: %v", err)
+			}
+
+			if client.metricsTracerFactory.enabled {
+				client.Close()
+				t.Fatal("metricsTracerFactory.enabled = true, want false")
+			}
+			if client.metricsTracerFactory.meterProvider != nil {
+				client.Close()
+				t.Fatal("metricsTracerFactory.meterProvider != nil, want nil")
+			}
+
+			iter := client.Single().Query(ctx, NewStatement(SelectFooFromBar))
+			if err := iter.Do(func(*Row) error { return nil }); err != nil {
+				client.Close()
+				t.Fatalf("Query() failed: %v", err)
+			}
+			client.Close()
+
+			mu.Lock()
+			gotMonitoringDials := dialedAddrs[monitoringAddr]
+			gotUnexpected := append([]string(nil), unexpectedAddrs...)
+			mu.Unlock()
+
+			if gotMonitoringDials != 0 {
+				t.Errorf("dialed %q %d times, want 0", monitoringAddr, gotMonitoringDials)
+			}
+			if len(gotUnexpected) != 0 {
+				t.Errorf("unexpected dialed endpoints: %v", gotUnexpected)
+			}
+			if reqs := monitoringServer.CreateServiceTimeSeriesRequests(); len(reqs) != 0 {
+				t.Errorf("received %d CreateServiceTimeSeries requests, want 0", len(reqs))
+			}
+		})
+	}
+}
+
+func TestBuiltinMetricsExporterCustomEndpointEnabledWithMonitoringHost(t *testing.T) {
+	const customSpannerAddr = "psc-spanner.internal:443"
+	const customMonitoringAddr = "custom-monitoring.local:443"
+	const wantToken = "custom-monitoring-token"
+
+	origDetectClientLocation := detectClientLocation
+	detectClientLocation = func(context.Context) string { return "global" }
+	defer func() { detectClientLocation = origDetectClientLocation }()
+
+	t.Setenv("SPANNER_EMULATOR_HOST", "")
+	t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
+	t.Setenv("SPANNER_MONITORING_HOST", customMonitoringAddr)
+	t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
+	t.Setenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS", "false")
+	t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
+	t.Setenv("GOOGLE_API_USE_MTLS_ENDPOINT", "auto")
+	t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", "")
+
+	spannerServer, _, teardownSpanner := NewMockedSpannerInMemTestServer(t)
+	defer teardownSpanner()
+
+	monitoringServer, err := NewMetricTestServer()
+	if err != nil {
+		t.Fatalf("NewMetricTestServer() failed: %v", err)
+	}
+	go monitoringServer.Serve()
+	defer monitoringServer.Shutdown()
+
+	var mu sync.Mutex
+	dialedAddrs := map[string]int{}
+	unexpectedAddrs := []string{}
+	dialer := func(ctx context.Context, addr string) (net.Conn, error) {
+		mu.Lock()
+		dialedAddrs[addr]++
+		mu.Unlock()
+		switch addr {
+		case customSpannerAddr:
+			return (&net.Dialer{}).DialContext(ctx, "tcp", spannerServer.ServerAddress)
+		case customMonitoringAddr:
+			return (&net.Dialer{}).DialContext(ctx, "tcp", monitoringServer.Endpoint)
+		default:
+			mu.Lock()
+			unexpectedAddrs = append(unexpectedAddrs, addr)
+			mu.Unlock()
+			return nil, fmt.Errorf("unexpected dial to %q", addr)
+		}
+	}
+
+	creds := &google.Credentials{
+		ProjectID:              "test-project",
+		TokenSource:            oauth2.StaticTokenSource(&oauth2.Token{AccessToken: wantToken}),
+		UniverseDomainProvider: func() (string, error) { return "googleapis.com", nil },
+	}
+
+	ctx := context.Background()
+	client, err := NewClientWithConfig(ctx, "projects/test-project/instances/test-instance/databases/test-db", ClientConfig{
+		NumChannels: 1,
+	},
+		option.WithCredentials(creds),
+		option.WithEndpoint(customSpannerAddr),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		option.WithGRPCDialOption(grpc.WithResolvers(staticDNSResolverBuilder{})),
+		option.WithGRPCDialOption(grpc.WithContextDialer(dialer)),
+	)
+	if err != nil {
+		t.Fatalf("NewClientWithConfig() failed: %v", err)
+	}
+
+	iter := client.Single().Query(ctx, NewStatement(SelectFooFromBar))
+	if err := iter.Do(func(*Row) error { return nil }); err != nil {
+		client.Close()
+		t.Fatalf("Query() failed: %v", err)
+	}
+	client.Close()
+
+	mu.Lock()
+	gotUnexpected := append([]string(nil), unexpectedAddrs...)
+	gotCustomMonDials := dialedAddrs[customMonitoringAddr]
+	gotDefaultMonDials := dialedAddrs["monitoring.googleapis.com:443"]
+	mu.Unlock()
+
+	if len(gotUnexpected) != 0 {
+		t.Errorf("unexpected dialed endpoints: %v", gotUnexpected)
+	}
+	if gotDefaultMonDials != 0 {
+		t.Errorf("dialed default monitoring.googleapis.com:443 %d times, want 0", gotDefaultMonDials)
+	}
+	if gotCustomMonDials == 0 {
+		t.Errorf("expected at least one dial to %q, got 0", customMonitoringAddr)
+	}
+	if len(monitoringServer.CreateServiceTimeSeriesRequests()) == 0 {
+		t.Fatalf("expected CreateServiceTimeSeries requests at %q, got 0", customMonitoringAddr)
+	}
+	wantAuth := "Bearer " + wantToken
+	if authHeaders := monitoringServer.AuthHeaders(); len(authHeaders) == 0 || authHeaders[0] != wantAuth {
+		t.Errorf("CreateServiceTimeSeries authorization header = %v, want [%q]", authHeaders, wantAuth)
+	}
+}
+
+func TestBuiltinMetricsExporterExplicitDefaultEndpointRemainsEnabled(t *testing.T) {
+	origDetectClientLocation := detectClientLocation
+	detectClientLocation = func(context.Context) string { return "global" }
+	defer func() { detectClientLocation = origDetectClientLocation }()
+
+	tests := []struct {
+		name           string
+		universeDomain string
+		spannerOptAddr string
+	}{
+		{
+			name:           "explicit default GDU endpoint with port 443",
+			universeDomain: "googleapis.com",
+			spannerOptAddr: "spanner.googleapis.com:443",
+		},
+		{
+			name:           "explicit bare default GDU endpoint",
+			universeDomain: "googleapis.com",
+			spannerOptAddr: "spanner.googleapis.com",
+		},
+		{
+			name:           "explicit default custom universe endpoint",
+			universeDomain: "example-universe.test",
+			spannerOptAddr: "spanner.example-universe.test:443",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv("SPANNER_EMULATOR_HOST", "")
+			t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
+			t.Setenv("SPANNER_MONITORING_HOST", "")
+			t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
+			t.Setenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS", "false")
+			t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
+			t.Setenv("GOOGLE_API_USE_MTLS_ENDPOINT", "auto")
+			t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", "")
+
+			spannerServer, _, teardownSpanner := NewMockedSpannerInMemTestServer(t)
+			defer teardownSpanner()
+
+			monitoringServer, err := NewMetricTestServer()
+			if err != nil {
+				t.Fatalf("NewMetricTestServer() failed: %v", err)
+			}
+			go monitoringServer.Serve()
+			defer monitoringServer.Shutdown()
+
+			wantMonitoringAddr := "monitoring." + tc.universeDomain + ":443"
+			wantSpannerHost := "spanner." + tc.universeDomain
+
+			var mu sync.Mutex
+			dialedAddrs := map[string]int{}
+			unexpectedAddrs := []string{}
+			dialer := func(ctx context.Context, addr string) (net.Conn, error) {
+				mu.Lock()
+				dialedAddrs[addr]++
+				mu.Unlock()
+				switch addr {
+				case wantSpannerHost, wantSpannerHost + ":443":
+					return (&net.Dialer{}).DialContext(ctx, "tcp", spannerServer.ServerAddress)
+				case wantMonitoringAddr:
+					return (&net.Dialer{}).DialContext(ctx, "tcp", monitoringServer.Endpoint)
+				default:
+					mu.Lock()
+					unexpectedAddrs = append(unexpectedAddrs, addr)
+					mu.Unlock()
+					return nil, fmt.Errorf("unexpected dial to %q", addr)
+				}
+			}
+
+			creds := &google.Credentials{
+				ProjectID:              "test-project",
+				TokenSource:            oauth2.StaticTokenSource(&oauth2.Token{AccessToken: "default-endpoint-token"}),
+				UniverseDomainProvider: func() (string, error) { return tc.universeDomain, nil },
+			}
+
+			opts := []option.ClientOption{
+				option.WithCredentials(creds),
+				option.WithEndpoint(tc.spannerOptAddr),
+				option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+				option.WithGRPCDialOption(grpc.WithResolvers(staticDNSResolverBuilder{})),
+				option.WithGRPCDialOption(grpc.WithContextDialer(dialer)),
+			}
+			if tc.universeDomain != "googleapis.com" {
+				opts = append(opts, option.WithUniverseDomain(tc.universeDomain))
+			}
+
+			ctx := context.Background()
+			client, err := NewClientWithConfig(ctx, "projects/test-project/instances/test-instance/databases/test-db", ClientConfig{
+				NumChannels: 1,
+			}, opts...)
+			if err != nil {
+				t.Fatalf("NewClientWithConfig() failed: %v", err)
+			}
+
+			if !client.metricsTracerFactory.enabled || client.metricsTracerFactory.meterProvider == nil {
+				client.Close()
+				t.Fatalf("expected enabled native metrics for explicit default endpoint %q", tc.spannerOptAddr)
+			}
+
+			iter := client.Single().Query(ctx, NewStatement(SelectFooFromBar))
+			if err := iter.Do(func(*Row) error { return nil }); err != nil {
+				client.Close()
+				t.Fatalf("Query() failed: %v", err)
+			}
+			client.Close()
+
+			mu.Lock()
+			gotUnexpected := append([]string(nil), unexpectedAddrs...)
+			gotMonitoringDials := dialedAddrs[wantMonitoringAddr]
+			mu.Unlock()
+
+			if len(gotUnexpected) != 0 {
+				t.Errorf("unexpected dialed endpoints: %v", gotUnexpected)
+			}
+			if gotMonitoringDials == 0 {
+				t.Errorf("expected at least one dial to %q, got 0", wantMonitoringAddr)
+			}
+			if len(monitoringServer.CreateServiceTimeSeriesRequests()) == 0 {
+				t.Fatalf("expected CreateServiceTimeSeries requests at %q, got 0", wantMonitoringAddr)
+			}
+		})
+	}
+}
+
+func TestBuiltinMetricsExporterMultiEndpointClientDisablesDefaultCloudMonitoring(t *testing.T) {
+	const defaultSpannerAddr = "spanner.googleapis.com:443"
+	const defaultMonitoringAddr = "monitoring.googleapis.com:443"
+	const customMonitoringAddr = "custom-monitoring.local:443"
+
+	origDetectClientLocation := detectClientLocation
+	detectClientLocation = func(context.Context) string { return "global" }
+	defer func() { detectClientLocation = origDetectClientLocation }()
+
+	tests := []struct {
+		name                 string
+		envMonitoringHost    string
+		withClientProvider   bool
+		wantEnabled          bool
+		wantNativeProvider   bool
+		wantMonitoringDials  bool
+		wantCustomMonitoring bool
+	}{
+		{
+			name:                "disabled by default without SPANNER_MONITORING_HOST even with default Spanner endpoint",
+			wantEnabled:         false,
+			wantNativeProvider:  false,
+			wantMonitoringDials: false,
+		},
+		{
+			name:                "preserves ClientMetricsProvider when default Cloud Monitoring is disabled",
+			withClientProvider:  true,
+			wantEnabled:         true,
+			wantNativeProvider:  false,
+			wantMonitoringDials: false,
+		},
+		{
+			name:                 "enabled when SPANNER_MONITORING_HOST is set",
+			envMonitoringHost:    customMonitoringAddr,
+			wantEnabled:          true,
+			wantNativeProvider:   true,
+			wantMonitoringDials:  true,
+			wantCustomMonitoring: true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv("SPANNER_EMULATOR_HOST", "")
+			t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
+			t.Setenv("SPANNER_MONITORING_HOST", tc.envMonitoringHost)
+			t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
+			t.Setenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS", "false")
+			t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
+			t.Setenv("GOOGLE_API_USE_MTLS_ENDPOINT", "auto")
+			t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", "")
+
+			spannerServer, _, teardownSpanner := NewMockedSpannerInMemTestServer(t)
+			defer teardownSpanner()
+
+			monitoringServer, err := NewMetricTestServer()
+			if err != nil {
+				t.Fatalf("NewMetricTestServer() failed: %v", err)
+			}
+			go monitoringServer.Serve()
+			defer monitoringServer.Shutdown()
+
+			var mu sync.Mutex
+			dialedAddrs := map[string]int{}
+			unexpectedAddrs := []string{}
+			dialer := func(ctx context.Context, addr string) (net.Conn, error) {
+				mu.Lock()
+				dialedAddrs[addr]++
+				mu.Unlock()
+				switch addr {
+				case defaultSpannerAddr:
+					return (&net.Dialer{}).DialContext(ctx, "tcp", spannerServer.ServerAddress)
+				case customMonitoringAddr:
+					if tc.wantCustomMonitoring {
+						return (&net.Dialer{}).DialContext(ctx, "tcp", monitoringServer.Endpoint)
+					}
+				case defaultMonitoringAddr:
+					return (&net.Dialer{}).DialContext(ctx, "tcp", monitoringServer.Endpoint)
+				}
+				mu.Lock()
+				unexpectedAddrs = append(unexpectedAddrs, addr)
+				mu.Unlock()
+				return nil, fmt.Errorf("unexpected dial to %q", addr)
+			}
+
+			creds := &google.Credentials{
+				ProjectID:              "test-project",
+				TokenSource:            oauth2.StaticTokenSource(&oauth2.Token{AccessToken: "gme-token"}),
+				UniverseDomainProvider: func() (string, error) { return "googleapis.com", nil },
+			}
+
+			gmeCfg := &grpcgcp.GCPMultiEndpointOptions{
+				MultiEndpoints: map[string]*multiendpoint.MultiEndpointOptions{
+					"default": {
+						Endpoints: []string{defaultSpannerAddr},
+					},
+				},
+				Default: "default",
+			}
+
+			cfg := ClientConfig{}
+			reader, provider := newTestMeterProvider()
+			defer provider.Shutdown(context.Background())
+			if tc.withClientProvider {
+				cfg.ClientMetricsProvider = provider
+			}
+
+			ctx := context.Background()
+			client, _, err := NewMultiEndpointClientWithConfig(
+				ctx,
+				"projects/test-project/instances/test-instance/databases/test-db",
+				cfg,
+				gmeCfg,
+				option.WithCredentials(creds),
+				option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+				option.WithGRPCDialOption(grpc.WithResolvers(staticDNSResolverBuilder{})),
+				option.WithGRPCDialOption(grpc.WithContextDialer(dialer)),
+			)
+			if err != nil {
+				t.Fatalf("NewMultiEndpointClientWithConfig() failed: %v", err)
+			}
+
+			if client.metricsTracerFactory.enabled != tc.wantEnabled {
+				client.Close()
+				t.Fatalf("metricsTracerFactory.enabled = %v, want %v", client.metricsTracerFactory.enabled, tc.wantEnabled)
+			}
+			if (client.metricsTracerFactory.meterProvider != nil) != tc.wantNativeProvider {
+				client.Close()
+				t.Fatalf("has native meterProvider = %v, want %v", client.metricsTracerFactory.meterProvider != nil, tc.wantNativeProvider)
+			}
+
+			iter := client.Single().Query(ctx, NewStatement(SelectFooFromBar))
+			if err := iter.Do(func(*Row) error { return nil }); err != nil {
+				client.Close()
+				t.Fatalf("Query() failed: %v", err)
+			}
+			client.Close()
+
+			mu.Lock()
+			gotDefaultMonDials := dialedAddrs[defaultMonitoringAddr]
+			gotCustomMonDials := dialedAddrs[customMonitoringAddr]
+			gotUnexpected := append([]string(nil), unexpectedAddrs...)
+			mu.Unlock()
+
+			if len(gotUnexpected) != 0 {
+				t.Errorf("unexpected dialed endpoints: %v", gotUnexpected)
+			}
+			if gotDefaultMonDials != 0 {
+				t.Errorf("dialed default %q %d times, want 0", defaultMonitoringAddr, gotDefaultMonDials)
+			}
+			if tc.wantMonitoringDials {
+				if gotCustomMonDials == 0 {
+					t.Errorf("expected at least one dial to %q, got 0", customMonitoringAddr)
+				}
+				if len(monitoringServer.CreateServiceTimeSeriesRequests()) == 0 {
+					t.Fatalf("expected CreateServiceTimeSeries requests at %q, got 0", customMonitoringAddr)
+				}
+			} else if reqs := monitoringServer.CreateServiceTimeSeriesRequests(); len(reqs) != 0 {
+				t.Errorf("received %d CreateServiceTimeSeries requests, want 0", len(reqs))
+			}
+
+			if tc.withClientProvider {
+				rm := collectTestMetrics(t, reader)
+				requireTestMetric(t, rm, clientMetricsPrefix+metricNameOperationCount)
 			}
 		})
 	}
