@@ -766,16 +766,28 @@ Loop:
 
 	close(requests)
 	finalizes := !w.append || w.finalizeOnClose
+	finalAcked := false
 	for c := range completions {
 		w.handleCompletion(c)
 		// Once every byte is acknowledged and, if the close finalizes, the
 		// object has been returned, only stream teardown remains.
-		if w.watchdog != nil && c.flushOffset >= finalOffset && (c.resource != nil || !finalizes) {
-			w.watchdog.pause()
+		if c.flushOffset >= finalOffset && (c.resource != nil || !finalizes) {
+			finalAcked = true
+			if w.watchdog != nil {
+				w.watchdog.pause()
+			}
 		}
 	}
 	if closeErr.err == nil {
-		return w.streamSender.err()
+		if err := w.streamSender.err(); err != nil {
+			return err
+		}
+		// A stream that ends cleanly without the final ack would otherwise
+		// let Close report success for an upload that may not have completed.
+		if !finalAcked {
+			return fmt.Errorf("storage.Writer: stream ended before final ack at offset %d", finalOffset)
+		}
+		return nil
 	}
 	return closeErr.err
 }
