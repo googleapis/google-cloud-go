@@ -232,7 +232,7 @@ func makeBidiReadObjectSpec(params *newMultiRangeDownloaderParams) (*storagepb.B
 		Object:                    params.object,
 		CommonObjectRequestParams: toProtoCommonObjectRequestParams(params.encryptionKey),
 	}
-	if err := applyCondsProto("NewMultiRangeDownloader", params.gen, params.conds, readSpec); err != nil {
+	if err := applyCondsProto("grpcStorageClient.NewMultiRangeDownloader", params.gen, params.conds, readSpec); err != nil {
 		return nil, err
 	}
 	if params.handle != nil && len(*params.handle) > 0 {
