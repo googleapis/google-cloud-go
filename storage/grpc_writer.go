@@ -55,6 +55,10 @@ const (
 // exceeds Writer.ChunkTransferTimeout without server acknowledgement.
 var errStallTimeout = errors.New("storage: chunk transfer timeout")
 
+// errPersistedSizeTooLarge is returned when the service reports more bytes
+// persisted than the writer has sent.
+var errPersistedSizeTooLarge = errors.New("storage: server reported persisted size larger than bytes sent")
+
 // RPCs a gRPC read or write stall can occur in. They name the stage in
 // stallTimeoutError and the rpc.method attribute of the stall metric.
 const (
@@ -325,12 +329,17 @@ type gRPCWriter struct {
 	// awaitingFirstAck is true until the server has confirmed any offset,
 	// including offset 0. Flush waits for that first confirmation.
 	awaitingFirstAck bool
+	// sentOffset is the highest object offset handed to streamSender. The
+	// service cannot have persisted more than this.
+	sentOffset int64
 
 	budget               chunkRetryBudget
 	chunkTransferTimeout time.Duration
 	lastErr              error
 	streamSender         gRPCBidiWriteBufferSender
 	watchdog             *writeStallWatchdog
+	// cancelAttempt ends the current writeLoop attempt.
+	cancelAttempt context.CancelCauseFunc
 
 	// Communication from the user goroutine to the stream management goroutines
 	writesChan     chan gRPCWriterCommand
@@ -496,6 +505,7 @@ func (w *gRPCWriter) sendBufferToTarget(cs gRPCWriterCommandHandleChans, buf []b
 		if !cs.deliverRequestUnlessCompleted(req, handleCompletion) {
 			return baseOffset + int64(sent), false
 		}
+		w.sentOffset = max(w.sentOffset, req.offset+int64(q))
 		buf = buf[q:]
 		sent += q
 	}
@@ -513,6 +523,11 @@ func (w *gRPCWriter) isActive() bool {
 }
 
 func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
+	if c.flushOffset > w.sentOffset {
+		// Applying this offset would move the buffer past data that was never sent.
+		w.cancelAttempt(fmt.Errorf("%w: persisted %d, sent %d", errPersistedSizeTooLarge, c.flushOffset, w.sentOffset))
+		return
+	}
 	if c.resource != nil {
 		w.setObj(newObjectFromProto(c.resource))
 	}
@@ -622,6 +637,12 @@ func (w *gRPCWriter) writeLoop(ctx context.Context) (retErr error) {
 	bscs := gRPCBufSenderChans{requests, requestAcks, completions}
 	attemptCtx, attemptCancel := context.WithCancelCause(ctx)
 	defer attemptCancel(nil)
+	w.cancelAttempt = attemptCancel
+	defer func() {
+		if cause := context.Cause(attemptCtx); errors.Is(cause, errPersistedSizeTooLarge) {
+			retErr = cause
+		}
+	}()
 
 	// Oneshot uploads are excluded: there is no upload session, so a commit
 	// abandoned by a stall-cancelled attempt could still land after the retry.
@@ -759,6 +780,7 @@ Loop:
 		if !chcs.deliverRequestUnlessCompleted(req, w.handleCompletion) {
 			return w.streamSender.err()
 		}
+		w.sentOffset = max(w.sentOffset, finalOffset)
 	} else {
 		// Unclean shutdown. Cancel the context so we clean up expeditiously.
 		attemptCancel(nil)
@@ -1179,6 +1201,7 @@ func (c *gRPCWriterCommandFlush) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	if !cs.deliverRequestUnlessCompleted(req, w.handleCompletion) {
 		return w.streamSender.err()
 	}
+	w.sentOffset = max(w.sentOffset, flushTarget)
 	// Successful flushes will clear w.buf.
 	for w.awaitingFirstAck || (w.bufBaseOffset+int64(w.bufFlushedIdx)) < flushTarget {
 		c, ok := <-cs.completions
@@ -1987,6 +2010,8 @@ func (w *gRPCWriter) newGRPCAppendTakeoverWriteBufferSender() *gRPCAppendTakeove
 		},
 		takeoverReported: false,
 		handleTakeoverCompletion: func(c gRPCBidiWriteCompletion) {
+			// The takeover offset counts bytes written before this writer started.
+			w.sentOffset = c.flushOffset
 			w.handleCompletion(c)
 			w.setTakeoverOffset(c.flushOffset)
 		},

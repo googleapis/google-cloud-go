@@ -613,6 +613,7 @@ func TestGRPCWriter_ChunkRetryDeadline_TimeoutResetOnProgress(t *testing.T) {
 		bufBaseOffset: 0,
 		bufUnsentIdx:  100,
 		bufFlushedIdx: 0,
+		sentOffset:    100,
 		buf:           make([]byte, 100),
 		sendableUnits: 1,
 		writeQuantum:  100,
@@ -1329,6 +1330,7 @@ func TestGRPCWriter_ChunkRetryDeadline_NoResetOnUnchangedOffsetAfterPartialShift
 		settings:         &settings{},
 		bufBaseOffset:    0,
 		bufUnsentIdx:     100,
+		sentOffset:       100,
 		awaitingFirstAck: true,
 		buf:              make([]byte, 100),
 		sendableUnits:    2,
@@ -1767,6 +1769,7 @@ func TestGRPCWriter_AwaitingFirstAck(t *testing.T) {
 	// Strict progress past the confirmed offset is still recorded.
 	w.buf = w.buf[:50]
 	w.bufUnsentIdx = 50
+	w.sentOffset = 50
 	w.handleCompletion(gRPCBidiWriteCompletion{flushOffset: 50})
 	if !w.budget.consumeProgress() {
 		t.Fatal("expected progress after the confirmed offset advanced 0 -> 50")
@@ -3625,4 +3628,89 @@ func TestGRPCResumableBidiWriteBufferSender_AdaptiveStreamRotation(t *testing.T)
 		assertRotationCalls(t, srv, 1, 2)
 		assertReceivedOffsets(t, srv, []int64{0, 100, 100, 200, 300})
 	})
+}
+
+func TestGRPCWriter_PersistedSizeBeyondSentData(t *testing.T) {
+	tests := []struct {
+		name string
+		// resumeSize, if non-zero, is reported on connect like a QueryWriteStatus reply.
+		resumeSize int64
+		// extra is added to the offset reported for every flush.
+		extra   int64
+		wantErr bool
+	}{
+		{name: "acks match sent data"},
+		{name: "flush ack beyond sent data", extra: 1000, wantErr: true},
+		{name: "resume status beyond sent data", resumeSize: 1000, wantErr: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sender := &funcSender{connectFn: func(ctx context.Context, cs gRPCBufSenderChans) error {
+				if tt.resumeSize > 0 {
+					cs.completions <- gRPCBidiWriteCompletion{flushOffset: tt.resumeSize}
+				}
+				for {
+					select {
+					case <-ctx.Done():
+						return ctx.Err()
+					case r, ok := <-cs.requests:
+						if !ok {
+							return nil
+						}
+						if r.requestAck {
+							select {
+							case cs.requestAcks <- struct{}{}:
+							case <-ctx.Done():
+								return ctx.Err()
+							}
+							continue
+						}
+						if !r.flush {
+							continue
+						}
+						select {
+						case cs.completions <- gRPCBidiWriteCompletion{flushOffset: r.offset + int64(len(r.buf)) + tt.extra}:
+						case <-ctx.Done():
+							return ctx.Err()
+						}
+					}
+				}
+			}}
+			w := &gRPCWriter{
+				preRunCtx:           context.Background(),
+				streamSender:        sender,
+				settings:            &settings{},
+				chunkSize:           100,
+				writeQuantum:        100,
+				lastSegmentStart:    100,
+				sendableUnits:       1,
+				awaitingFirstAck:    true,
+				disableAutoChecksum: true,
+				writesChan:          make(chan gRPCWriterCommand, 1),
+				donec:               make(chan struct{}),
+				setSize:             func(int64) {},
+				progress:            func(int64) {},
+				setObj:              func(*ObjectAttrs) {},
+			}
+
+			appDone := make(chan struct{})
+			go func() {
+				defer close(appDone)
+				// Spans several chunks so the write is sent from the caller's buffer.
+				w.Write(make([]byte, 250))
+				w.CloseWithError(nil)
+			}()
+			err := attemptWriteLoop(context.Background(), w)
+			w.streamResult = err
+			close(w.donec)
+			<-appDone
+
+			if tt.wantErr && !errors.Is(err, errPersistedSizeTooLarge) {
+				t.Errorf("writeLoop() = %v, want %v", err, errPersistedSizeTooLarge)
+			}
+			if !tt.wantErr && err != nil {
+				t.Errorf("writeLoop() = %v, want nil", err)
+			}
+		})
+	}
 }
