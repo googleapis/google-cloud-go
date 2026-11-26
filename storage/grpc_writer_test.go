@@ -2738,15 +2738,39 @@ func (f *funcSender) err() error {
 
 func (f *funcSender) canResumeSession() bool { return false }
 
+// closedStreamSender ends every stream cleanly as soon as it connects.
+type closedStreamSender struct{}
+
+func (closedStreamSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
+	close(cs.completions)
+}
+func (closedStreamSender) err() error             { return nil }
+func (closedStreamSender) canResumeSession() bool { return false }
+
 func TestGRPCWriter_CloseRequiresFinalAck(t *testing.T) {
 	const size = 50
 	obj := &storagepb.Object{Name: "obj", Size: size}
 	tests := []struct {
-		name        string
-		append      bool
+		name            string
+		append          bool
+		finalizeOnClose bool
+		// endOnConnect ends the stream before any request is sent.
+		endOnConnect bool
+		// skipFinal ends the stream without reading the final request.
+		skipFinal   bool
 		completions []gRPCBidiWriteCompletion
 		wantErr     bool
 	}{
+		{
+			name:         "stream ends on connect",
+			endOnConnect: true,
+			wantErr:      true,
+		},
+		{
+			name:      "stream ends before final request is read",
+			skipFinal: true,
+			wantErr:   true,
+		},
 		{
 			name:    "stream ends without ack",
 			wantErr: true,
@@ -2770,12 +2794,32 @@ func TestGRPCWriter_CloseRequiresFinalAck(t *testing.T) {
 			append:      true,
 			completions: []gRPCBidiWriteCompletion{{flushOffset: size}},
 		},
+		{
+			name:            "finalized append ack without object",
+			append:          true,
+			finalizeOnClose: true,
+			completions:     []gRPCBidiWriteCompletion{{flushOffset: size}},
+			wantErr:         true,
+		},
+		{
+			name:            "finalized append ack with object",
+			append:          true,
+			finalizeOnClose: true,
+			completions:     []gRPCBidiWriteCompletion{{flushOffset: size, resource: obj}},
+		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			// The sender ends the stream cleanly after answering the final
-			// request with tc.completions.
-			sender := &funcSender{connectFn: func(ctx context.Context, cs gRPCBufSenderChans) error {
+			// release lets a skipFinal sender end the stream once writeLoop
+			// is about to send the final request.
+			release := make(chan struct{})
+			var sender gRPCBidiWriteBufferSender = &funcSender{connectFn: func(ctx context.Context, cs gRPCBufSenderChans) error {
+				if tc.skipFinal {
+					<-release
+					return nil
+				}
+				// Answer the final request with tc.completions, then end the
+				// stream cleanly.
 				for req := range cs.requests {
 					if req.requestAck {
 						cs.requestAcks <- struct{}{}
@@ -2793,16 +2837,23 @@ func TestGRPCWriter_CloseRequiresFinalAck(t *testing.T) {
 				}
 				return nil
 			}}
+			if tc.endOnConnect {
+				sender = closedStreamSender{}
+			}
 			var gotObj *ObjectAttrs
+			// Unbuffered channels fix the order of events: once writeLoop
+			// receives the close command, the next thing it waits on is
+			// delivering the final request.
 			w := &gRPCWriter{
 				append:           tc.append,
+				finalizeOnClose:  tc.finalizeOnClose,
 				streamSender:     sender,
 				settings:         &settings{},
 				chunkSize:        100,
 				writeQuantum:     100,
 				awaitingFirstAck: true,
-				sendableUnits:    1,
-				writesChan:       make(chan gRPCWriterCommand, 1),
+				sendableUnits:    0,
+				writesChan:       make(chan gRPCWriterCommand),
 				setSize:          func(int64) {},
 				progress:         func(int64) {},
 				setObj:           func(o *ObjectAttrs) { gotObj = o },
@@ -2812,16 +2863,40 @@ func TestGRPCWriter_CloseRequiresFinalAck(t *testing.T) {
 			go func() {
 				errCh <- w.writeLoop(context.Background())
 			}()
-			done := make(chan struct{})
-			w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, size), done: done}
-			<-done
-			w.writesChan <- &gRPCWriterCommandClose{}
+			err := func() error {
+				done := make(chan struct{})
+				select {
+				case w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, size), done: done}:
+				case err := <-errCh:
+					return err
+				}
+				select {
+				case <-done:
+				case err := <-errCh:
+					return err
+				}
+				select {
+				case w.writesChan <- &gRPCWriterCommandClose{}:
+				case err := <-errCh:
+					return err
+				}
+				close(release)
+				return <-errCh
+			}()
 
-			err := <-errCh
-			if gotErr := err != nil; gotErr != tc.wantErr {
-				t.Fatalf("writeLoop() = %v, want error: %v", err, tc.wantErr)
+			if tc.wantErr {
+				if !errors.Is(err, io.ErrUnexpectedEOF) {
+					t.Fatalf("writeLoop() error = %v, wantErr %v", err, io.ErrUnexpectedEOF)
+				}
+				if gotObj != nil {
+					t.Errorf("writeLoop() failed but set object attrs %+v", gotObj)
+				}
+				return
 			}
-			if !tc.wantErr && !tc.append && gotObj == nil {
+			if err != nil {
+				t.Fatalf("writeLoop() error = %v, wantErr nil", err)
+			}
+			if len(tc.completions) > 0 && tc.completions[0].resource != nil && gotObj == nil {
 				t.Error("writeLoop() succeeded without setting object attrs")
 			}
 		})
@@ -3156,12 +3231,17 @@ type adaptiveRotationStorageServer struct {
 	// client half-closes stream n.
 	halfCloseErr map[int]error
 
+	// dropFinalAck makes the server finalize the object on finish_write but
+	// end the stream without returning it, as if the ack was lost.
+	dropFinalAck bool
+
 	mu               sync.Mutex
 	startCalls       int
 	queryStatusCalls int
 	bidiStreams      int
 	persistedSize    int64
 	receivedOffsets  []int64
+	finalized        *storagepb.Object
 }
 
 const testUploadID = "upload-adaptive-1"
@@ -3177,6 +3257,11 @@ func (s *adaptiveRotationStorageServer) QueryWriteStatus(ctx context.Context, re
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.queryStatusCalls++
+	if s.finalized != nil {
+		return &storagepb.QueryWriteStatusResponse{
+			WriteStatus: &storagepb.QueryWriteStatusResponse_Resource{Resource: s.finalized},
+		}, nil
+	}
 	return &storagepb.QueryWriteStatusResponse{
 		WriteStatus: &storagepb.QueryWriteStatusResponse_PersistedSize{
 			PersistedSize: s.persistedSize,
@@ -3278,10 +3363,15 @@ func (s *adaptiveRotationStorageServer) BidiWriteObject(stream storagepb.Storage
 		}
 
 		if req.GetFinishWrite() {
+			obj := &storagepb.Object{Bucket: "b", Name: "obj", Size: size}
+			if s.dropFinalAck {
+				s.mu.Lock()
+				s.finalized = obj
+				s.mu.Unlock()
+				return nil
+			}
 			return stream.Send(&storagepb.BidiWriteObjectResponse{
-				WriteStatus: &storagepb.BidiWriteObjectResponse_Resource{
-					Resource: &storagepb.Object{Bucket: "b", Name: "obj", Size: size},
-				},
+				WriteStatus: &storagepb.BidiWriteObjectResponse_Resource{Resource: obj},
 			})
 		}
 		if req.GetStateLookup() {
@@ -3308,6 +3398,7 @@ type rotationUploadOpts struct {
 	flushAfterChunk int
 	dialOpts        []grpc.DialOption
 	serverOpts      []grpc.ServerOption
+	setObj          func(*ObjectAttrs)
 }
 
 // runRotationUpload drives a gRPCWriter through run()/writeLoop against srv
@@ -3319,6 +3410,9 @@ func runRotationUpload(t *testing.T, srv *adaptiveRotationStorageServer, opts ro
 	}
 	if opts.writeQuantum == 0 {
 		opts.writeQuantum = opts.chunkSize
+	}
+	if opts.setObj == nil {
+		opts.setObj = func(*ObjectAttrs) {}
 	}
 	ctx := context.Background()
 	lis, err := net.Listen("tcp", "localhost:0")
@@ -3365,7 +3459,7 @@ func runRotationUpload(t *testing.T, srv *adaptiveRotationStorageServer, opts ro
 		writesChan:       make(chan gRPCWriterCommand, 4),
 		setSize:          func(int64) {},
 		progress:         progress.report,
-		setObj:           func(*ObjectAttrs) {},
+		setObj:           opts.setObj,
 	}
 	sender := w.newGRPCResumableBidiWriteBufferSender()
 	if opts.thresholdFloor > 0 && sender.chunkDelay != nil {
@@ -3492,6 +3586,29 @@ func failBidiOpen(n int, code codes.Code) grpc.DialOption {
 // above any threshold floor these tests use and far below their stall
 // timeouts, so a delayed ack rotates without tripping the watchdog.
 const slowAck = 150 * time.Millisecond
+
+func TestGRPCWriter_RetryAfterLostFinalAck(t *testing.T) {
+	// The first attempt finalizes the object but the stream ends before the
+	// object is returned. The retry must learn of the finalized object from
+	// QueryWriteStatus and succeed.
+	srv := &adaptiveRotationStorageServer{dropFinalAck: true}
+	var gotObj *ObjectAttrs
+	mustRunRotationUpload(t, srv, rotationUploadOpts{
+		chunks: 2,
+		setObj: func(o *ObjectAttrs) { gotObj = o },
+	})
+	if gotObj == nil || gotObj.Size != 200 {
+		t.Errorf("object attrs = %+v, want Size 200", gotObj)
+	}
+	srv.mu.Lock()
+	queryStatusCalls := srv.queryStatusCalls
+	srv.mu.Unlock()
+	if queryStatusCalls != 1 {
+		t.Errorf("QueryWriteStatus calls = %d, want 1", queryStatusCalls)
+	}
+	// The retry sends nothing: the object is already finalized.
+	assertReceivedOffsets(t, srv, []int64{0, 100, 200})
+}
 
 func TestGRPCResumableBidiWriteBufferSender_AdaptiveStreamRotation(t *testing.T) {
 	t.Run("FastChunks_SingleStream", func(t *testing.T) {

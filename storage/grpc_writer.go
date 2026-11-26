@@ -325,6 +325,9 @@ type gRPCWriter struct {
 	// awaitingFirstAck is true until the server has confirmed any offset,
 	// including offset 0. Flush waits for that first confirmation.
 	awaitingFirstAck bool
+	// gotResource is true once GCS has returned the object resource. Outside
+	// of appends, GCS only returns it once the upload is finalized.
+	gotResource bool
 
 	budget               chunkRetryBudget
 	chunkTransferTimeout time.Duration
@@ -514,6 +517,7 @@ func (w *gRPCWriter) isActive() bool {
 
 func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 	if c.resource != nil {
+		w.gotResource = true
 		w.setObj(newObjectFromProto(c.resource))
 	}
 
@@ -666,7 +670,7 @@ Loop:
 		select {
 		case c, ok := <-completions:
 			if !ok {
-				return w.streamSender.err()
+				return w.streamEndErr()
 			}
 			w.handleCompletion(c)
 		default:
@@ -692,7 +696,7 @@ Loop:
 	sentOffset, ok := w.sendBufferToTarget(chcs, w.buf, w.bufBaseOffset, cap(w.buf),
 		w.handleCompletion)
 	if !ok {
-		return w.streamSender.err()
+		return w.streamEndErr()
 	}
 	w.bufUnsentIdx = int(sentOffset - w.bufBaseOffset)
 	// We may have observed a completion that is after all of w.buf if we also
@@ -742,7 +746,18 @@ Loop:
 	}
 
 	finalOffset := int64(-1)
+	// committed is true if an earlier attempt already finalized the upload
+	// and only its ack was lost, so QueryWriteStatus returned the object.
+	var committed bool
 	if closeErr.err == nil {
+		finalOffset = w.bufBaseOffset + int64(len(w.buf))
+		committed = !w.append && w.gotResource && w.bufBaseOffset+int64(w.bufFlushedIdx) >= finalOffset
+	}
+	if closeErr.err != nil || committed {
+		// Unclean shutdown, or nothing left to send. Cancel the context so we
+		// clean up expeditiously.
+		attemptCancel(nil)
+	} else {
 		// Clean shutdown. Send any remaining tail.
 		w.budget.start()
 		if w.watchdog != nil {
@@ -755,18 +770,14 @@ Loop:
 			flush:       true,
 			finishWrite: true,
 		}
-		finalOffset = req.offset + int64(len(req.buf))
 		if !chcs.deliverRequestUnlessCompleted(req, w.handleCompletion) {
-			return w.streamSender.err()
+			return w.streamEndErr()
 		}
-	} else {
-		// Unclean shutdown. Cancel the context so we clean up expeditiously.
-		attemptCancel(nil)
 	}
 
 	close(requests)
 	finalizes := !w.append || w.finalizeOnClose
-	finalAcked := false
+	var finalAcked bool
 	for c := range completions {
 		w.handleCompletion(c)
 		// Once every byte is acknowledged and, if the close finalizes, the
@@ -778,18 +789,29 @@ Loop:
 			}
 		}
 	}
-	if closeErr.err == nil {
-		if err := w.streamSender.err(); err != nil {
-			return err
-		}
-		// A stream that ends cleanly without the final ack would otherwise
-		// let Close report success for an upload that may not have completed.
-		if !finalAcked {
-			return fmt.Errorf("storage.Writer: stream ended before final ack at offset %d", finalOffset)
-		}
+	if closeErr.err != nil {
+		return closeErr.err
+	}
+	if committed {
 		return nil
 	}
-	return closeErr.err
+	// A stream that ends cleanly without the final ack must not let Close
+	// report success for an upload that may not have completed.
+	if !finalAcked {
+		return w.streamEndErr()
+	}
+	return w.streamSender.err()
+}
+
+// streamEndErr returns the stream error that ended the attempt. If the stream
+// ended cleanly before GCS confirmed the upload, it returns an error wrapping
+// io.ErrUnexpectedEOF so that the attempt can be retried.
+func (w *gRPCWriter) streamEndErr() error {
+	if err := w.streamSender.err(); err != nil {
+		return err
+	}
+	confirmed := w.bufBaseOffset + int64(w.bufFlushedIdx)
+	return fmt.Errorf("storage.Writer: stream closed before the upload was confirmed (offset %d): %w", confirmed, io.ErrUnexpectedEOF)
 }
 
 type writeStallWatchdog struct {
@@ -1673,7 +1695,13 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 			close(cs.completions)
 			return
 		}
-		cs.completions <- gRPCBidiWriteCompletion{flushOffset: q.GetPersistedSize()}
+		c := gRPCBidiWriteCompletion{flushOffset: q.GetPersistedSize()}
+		// An upload finalized on an earlier attempt reports the object
+		// instead of a persisted size.
+		if r := q.GetResource(); r != nil {
+			c = gRPCBidiWriteCompletion{flushOffset: r.GetSize(), resource: r}
+		}
+		cs.completions <- c
 	}
 	// Record the upload ID for both new and resumed uploads.
 	recordUploadID(ctx, s.upid)
