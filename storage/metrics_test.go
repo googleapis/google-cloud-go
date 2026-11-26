@@ -24,8 +24,10 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"net/http/httptrace"
 	"net/url"
 	"os"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -55,6 +57,8 @@ import (
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/status"
+	"google.golang.org/grpc/test/bufconn"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestFormatMetricWithPrefix(t *testing.T) {
@@ -316,6 +320,10 @@ func TestHTTPMetricsRecording(t *testing.T) {
 	}
 
 	found := false
+	foundAttempts := false
+	foundServerDuration := false
+	foundTTFB := false
+	foundActive := false
 	for _, sm := range rm.ScopeMetrics {
 		for _, m := range sm.Metrics {
 			if m.Name == "http.client.request.duration" {
@@ -329,40 +337,78 @@ func TestHTTPMetricsRecording(t *testing.T) {
 				}
 				dp := hist.DataPoints[0]
 
-				// Verify dynamic attributes are present on the data point.
-				attrMap := make(map[string]string)
-				for _, kv := range dp.Attributes.ToSlice() {
-					attrMap[string(kv.Key)] = kv.Value.Emit()
+				assertExactAttrKeys(t, m.Name, dp.Attributes,
+					"error.type", "http.request.method", "http.response.status_code", "rpc.system.name", "server.address", "url.template")
+				if got := getHistAttr(dp, "rpc.system.name"); got != "http" {
+					t.Errorf("expected rpc.system.name http, got %q", got)
 				}
+				if got := getHistAttr(dp, "http.request.method"); got != "GET" {
+					t.Errorf("expected GET, got %q", got)
+				}
+				if got := getHistAttr(dp, "url.template"); got != "/storage/v1/b/{bucket}/o/{object}" {
+					t.Errorf("expected template /storage/v1/b/{bucket}/o/{object}, got %q", got)
+				}
+				if got := getHistAttr(dp, "http.response.status_code"); got != "200" {
+					t.Errorf("expected status_code 200, got %q", got)
+				}
+				if got := getHistAttr(dp, "error.type"); got != "OK" {
+					t.Errorf("expected error.type OK, got %q", got)
+				}
+			}
 
-				if attrMap["rpc.system.name"] != "http" {
-					t.Errorf("expected rpc.system.name http, got %q", attrMap["rpc.system.name"])
+			if m.Name == "gcp.storage.client.attempts" {
+				foundAttempts = true
+				sum, ok := m.Data.(metricdata.Sum[int64])
+				if !ok {
+					t.Fatalf("expected Sum data for attempts, got %T", m.Data)
 				}
-				if attrMap["http.request.method"] != "GET" {
-					t.Errorf("expected GET, got %q", attrMap["http.request.method"])
+				if len(sum.DataPoints) != 1 {
+					t.Fatalf("expected 1 attempts datapoint, got %d", len(sum.DataPoints))
 				}
-				if attrMap["url.template"] != "/storage/v1/b/{bucket}/o/{object}" {
-					t.Errorf("expected template /storage/v1/b/{bucket}/o/{object}, got %q", attrMap["url.template"])
-				}
-				if attrMap["http.response.status_code"] != "200" {
-					t.Errorf("expected status_code 200, got %q", attrMap["http.response.status_code"])
-				}
-				if attrMap["error.type"] != "OK" {
-					t.Errorf("expected error.type OK, got %q", attrMap["error.type"])
-				}
-				if attrMap["gcp.client.method"] != "storage.Object.Read" {
-					t.Errorf("expected gcp.client.method storage.Object.Read, got %q", attrMap["gcp.client.method"])
+				assertExactAttrKeys(t, m.Name, sum.DataPoints[0].Attributes,
+					"error.type", "gcp.storage.operation", "http.response.status_code", "rpc.system.name", "server.address")
+				if got := getAttr(sum.DataPoints[0], "gcp.storage.operation"); got != "Unknown" {
+					t.Errorf("attempts gcp.storage.operation = %q, want Unknown", got)
 				}
 			}
 
 			if m.Name == "gcp.storage.client.server.duration" {
+				foundServerDuration = true
 				hist, ok := m.Data.(metricdata.Histogram[float64])
 				if ok && len(hist.DataPoints) > 0 {
+					assertExactAttrKeys(t, m.Name, hist.DataPoints[0].Attributes,
+						"gcp.storage.operation", "rpc.system.name", "server.address")
 					if hist.DataPoints[0].Sum != 0.15 {
 						t.Errorf("expected server.duration 0.15s, got %v", hist.DataPoints[0].Sum)
 					}
+					if got := getHistAttr(hist.DataPoints[0], "gcp.storage.operation"); got != "Unknown" {
+						t.Errorf("server.duration gcp.storage.operation = %q, want Unknown", got)
+					}
 				} else {
 					t.Errorf("expected server.duration datapoints")
+				}
+			}
+
+			if m.Name == "gcp.storage.client.ttfb" {
+				foundTTFB = true
+				hist, ok := m.Data.(metricdata.Histogram[float64])
+				if !ok || len(hist.DataPoints) != 1 {
+					t.Fatalf("ttfb: got %T (len=%d), want 1 Histogram datapoint", m.Data, len(hist.DataPoints))
+				}
+				assertExactAttrKeys(t, m.Name, hist.DataPoints[0].Attributes,
+					"gcp.storage.operation", "rpc.system.name", "server.address")
+			}
+
+			if m.Name == "gcp.storage.client.request.active" {
+				foundActive = true
+				sum, ok := m.Data.(metricdata.Sum[int64])
+				if !ok || len(sum.DataPoints) != 1 {
+					t.Fatalf("request.active: got %T (len=%d), want 1 Sum datapoint", m.Data, len(sum.DataPoints))
+				}
+				assertExactAttrKeys(t, m.Name, sum.DataPoints[0].Attributes,
+					"gcp.storage.operation", "rpc.system.name", "server.address")
+				if sum.DataPoints[0].Value != 0 {
+					t.Errorf("request.active final value = %d, want 0", sum.DataPoints[0].Value)
 				}
 			}
 		}
@@ -370,6 +416,18 @@ func TestHTTPMetricsRecording(t *testing.T) {
 
 	if !found {
 		t.Errorf("metric http.client.request.duration not found")
+	}
+	if !foundAttempts {
+		t.Errorf("metric gcp.storage.client.attempts not found")
+	}
+	if !foundServerDuration {
+		t.Errorf("metric gcp.storage.client.server.duration not found")
+	}
+	if !foundTTFB {
+		t.Errorf("metric gcp.storage.client.ttfb not found")
+	}
+	if !foundActive {
+		t.Errorf("metric gcp.storage.client.request.active not found")
 	}
 }
 
@@ -478,11 +536,11 @@ func TestGRPCMetricsRecording(t *testing.T) {
 	}
 
 	// 1st Bidi stream.
-	clientStreamBidi.SendMsg(nil)
+	clientStreamBidi.SendMsg(&storagepb.BidiWriteObjectRequest{FinishWrite: true})
 	clientStreamBidi.RecvMsg(nil)
 
-	// Terminate stream.
-	clientStreamBidi.(*wrappedClientStream).record(io.EOF)
+	// Terminate stream with a wrapped io.EOF to verify errors.Is(err, io.EOF) handling.
+	clientStreamBidi.(*wrappedClientStream).record(fmt.Errorf("bidi stream done: %w", io.EOF))
 
 	// Collect metrics.
 	var rm metricdata.ResourceMetrics
@@ -490,130 +548,154 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		t.Fatalf("Collect: %v", err)
 	}
 
-	var unaryDp, streamDp, writeDp, bidiDp *metricdata.HistogramDataPoint[float64]
+	rpcDps := make(map[string]metricdata.HistogramDataPoint[float64])
+	var foundAttempts, foundErrors, foundServerDuration, foundTTFB, foundActive bool
 
 	for _, sm := range rm.ScopeMetrics {
 		for _, m := range sm.Metrics {
-			if m.Name == "rpc.client.call.duration" {
+			switch m.Name {
+			case "rpc.client.call.duration":
 				hist, ok := m.Data.(metricdata.Histogram[float64])
 				if !ok {
 					t.Fatalf("expected Histogram data, got %T", m.Data)
 				}
 				for _, dp := range hist.DataPoints {
-					dpCopy := dp
-					attrs := make(map[string]string)
-					for _, kv := range dp.Attributes.ToSlice() {
-						attrs[string(kv.Key)] = kv.Value.Emit()
-					}
-					if attrs["rpc.method"] == "GetObject" {
-						unaryDp = &dpCopy
-					} else if attrs["rpc.method"] == "ReadObject" {
-						streamDp = &dpCopy
-					} else if attrs["rpc.method"] == "WriteObject" {
-						writeDp = &dpCopy
-					} else if attrs["rpc.method"] == "BidiWriteObject" {
-						bidiDp = &dpCopy
-					}
+					assertExactAttrKeys(t, m.Name, dp.Attributes,
+						"error.type", "rpc.method", "rpc.response.status_code", "rpc.system.name", "server.address")
+					rpcDps[getHistAttr(dp, "rpc.method")] = dp
 				}
-			}
 
-			if m.Name == "gcp.storage.client.server.duration" {
+			case "gcp.storage.client.attempts":
+				foundAttempts = true
+				sum, ok := m.Data.(metricdata.Sum[int64])
+				if !ok {
+					t.Fatalf("attempts: got %T, want Sum[int64]", m.Data)
+				}
+				if len(sum.DataPoints) != 3 {
+					t.Fatalf("expected 3 attempts datapoints, got %d", len(sum.DataPoints))
+				}
+				ops := make(map[string]int64)
+				statusByOp := make(map[string]string)
+				for _, dp := range sum.DataPoints {
+					assertExactAttrKeys(t, m.Name, dp.Attributes,
+						"error.type", "gcp.storage.operation", "rpc.response.status_code", "rpc.system.name", "server.address")
+					op := getAttr(dp, "gcp.storage.operation")
+					ops[op] += dp.Value
+					statusByOp[op] = getAttr(dp, "rpc.response.status_code")
+				}
+				if ops["GetObject"] != 1 || ops["ReadObject"] != 1 || ops["WriteObject"] != 2 {
+					t.Errorf("unexpected attempts by gcp.storage.operation: %v", ops)
+				}
+				if statusByOp["GetObject"] != "NOT_FOUND" || statusByOp["ReadObject"] != "OK" || statusByOp["WriteObject"] != "OK" {
+					t.Errorf("unexpected rpc.response.status_code on attempts: %v", statusByOp)
+				}
+
+			case "gcp.storage.client.errors":
+				foundErrors = true
+				sum, ok := m.Data.(metricdata.Sum[int64])
+				if !ok {
+					t.Fatalf("errors: got %T, want Sum[int64]", m.Data)
+				}
+				if len(sum.DataPoints) != 1 {
+					t.Fatalf("expected 1 errors datapoint, got %d", len(sum.DataPoints))
+				}
+				assertExactAttrKeys(t, m.Name, sum.DataPoints[0].Attributes,
+					"error.type", "gcp.storage.operation", "rpc.system.name", "server.address")
+				if got := getAttr(sum.DataPoints[0], "gcp.storage.operation"); got != "GetObject" {
+					t.Errorf("errors gcp.storage.operation = %q, want GetObject", got)
+				}
+
+			case "gcp.storage.client.server.duration":
+				foundServerDuration = true
 				hist, ok := m.Data.(metricdata.Histogram[float64])
 				if ok && len(hist.DataPoints) > 0 {
-					foundServerDuration := false
+					foundVal := false
 					for _, dp := range hist.DataPoints {
+						assertExactAttrKeys(t, m.Name, dp.Attributes,
+							"gcp.storage.operation", "rpc.system.name", "server.address")
 						if dp.Sum == 0.12 {
-							foundServerDuration = true
+							foundVal = true
+						}
+						if got := getHistAttr(dp, "gcp.storage.operation"); got == "" {
+							t.Errorf("expected gcp.storage.operation on server.duration")
 						}
 					}
-					if !foundServerDuration {
+					if !foundVal {
 						t.Errorf("expected server.duration 0.12s from stream")
 					}
 				} else {
 					t.Errorf("expected server.duration datapoints")
 				}
+
+			case "gcp.storage.client.ttfb":
+				foundTTFB = true
+				hist, ok := m.Data.(metricdata.Histogram[float64])
+				if !ok || len(hist.DataPoints) == 0 {
+					t.Fatalf("expected ttfb Histogram datapoints")
+				}
+				for _, dp := range hist.DataPoints {
+					assertExactAttrKeys(t, m.Name, dp.Attributes,
+						"gcp.storage.operation", "rpc.system.name", "server.address")
+				}
+
+			case "gcp.storage.client.request.active":
+				foundActive = true
+				sum, ok := m.Data.(metricdata.Sum[int64])
+				if !ok || len(sum.DataPoints) == 0 {
+					t.Fatalf("expected request.active Sum datapoints")
+				}
+				for _, dp := range sum.DataPoints {
+					assertExactAttrKeys(t, m.Name, dp.Attributes,
+						"gcp.storage.operation", "rpc.system.name", "server.address")
+					if dp.Value != 0 {
+						t.Errorf("request.active (%s) = %d, want 0", getAttr(dp, "gcp.storage.operation"), dp.Value)
+					}
+				}
 			}
 		}
 	}
 
-	if unaryDp == nil {
-		t.Errorf("unary metric not recorded")
-	} else {
-		attrs := make(map[string]string)
-		for _, kv := range unaryDp.Attributes.ToSlice() {
-			attrs[string(kv.Key)] = kv.Value.Emit()
-		}
-		if attrs["rpc.system.name"] != "grpc" {
-			t.Errorf("expected rpc.system.name grpc, got %q", attrs["rpc.system.name"])
-		}
-		if attrs["rpc.service"] != "google.storage.v2.Storage" {
-			t.Errorf("expected rpc.service, got %q", attrs["rpc.service"])
-		}
-		if attrs["rpc.grpc.status_code"] != "5" { // codes.NotFound is 5.
-			t.Errorf("expected status_code 5, got %q", attrs["rpc.grpc.status_code"])
-		}
-		if attrs["error.type"] != "NOT_FOUND" {
-			t.Errorf("expected error.type NOT_FOUND, got %q", attrs["error.type"])
-		}
+	if !foundAttempts {
+		t.Errorf("metric gcp.storage.client.attempts not found")
+	}
+	if !foundErrors {
+		t.Errorf("metric gcp.storage.client.errors not found")
+	}
+	if !foundServerDuration {
+		t.Errorf("metric gcp.storage.client.server.duration not found")
+	}
+	if !foundTTFB {
+		t.Errorf("metric gcp.storage.client.ttfb not found")
+	}
+	if !foundActive {
+		t.Errorf("metric gcp.storage.client.request.active not found")
 	}
 
-	if streamDp == nil {
-		t.Errorf("streaming metric (ReadObject) not recorded")
-	} else {
-		attrs := make(map[string]string)
-		for _, kv := range streamDp.Attributes.ToSlice() {
-			attrs[string(kv.Key)] = kv.Value.Emit()
+	for _, tc := range []struct {
+		method     string
+		wantStatus string
+	}{
+		{method: "google.storage.v2.Storage/GetObject", wantStatus: "NOT_FOUND"},
+		{method: "google.storage.v2.Storage/ReadObject", wantStatus: "OK"},
+		{method: "google.storage.v2.Storage/WriteObject", wantStatus: "OK"},
+		{method: "google.storage.v2.Storage/BidiWriteObject", wantStatus: "OK"},
+	} {
+		dp, ok := rpcDps[tc.method]
+		if !ok {
+			t.Errorf("rpc.client.call.duration not recorded for %s", tc.method)
+			continue
 		}
-		if attrs["rpc.system.name"] != "grpc" {
-			t.Errorf("expected rpc.system.name grpc, got %q", attrs["rpc.system.name"])
+		if dp.Count != 1 {
+			t.Errorf("%s count = %d, want 1", tc.method, dp.Count)
 		}
-		if attrs["rpc.service"] != "google.storage.v2.Storage" {
-			t.Errorf("expected rpc.service, got %q", attrs["rpc.service"])
+		if got := getHistAttr(dp, "rpc.system.name"); got != "grpc" {
+			t.Errorf("%s rpc.system.name = %q, want grpc", tc.method, got)
 		}
-		if attrs["rpc.grpc.status_code"] != "0" { // codes.OK is 0 (io.EOF maps to OK).
-			t.Errorf("expected status_code 0, got %q", attrs["rpc.grpc.status_code"])
+		if got := getHistAttr(dp, "rpc.response.status_code"); got != tc.wantStatus {
+			t.Errorf("%s rpc.response.status_code = %q, want %q", tc.method, got, tc.wantStatus)
 		}
-		if attrs["error.type"] != "OK" {
-			t.Errorf("expected error.type OK, got %q", attrs["error.type"])
-		}
-	}
-
-	if writeDp == nil {
-		t.Errorf("streaming metric (WriteObject) not recorded")
-	} else {
-		attrs := make(map[string]string)
-		for _, kv := range writeDp.Attributes.ToSlice() {
-			attrs[string(kv.Key)] = kv.Value.Emit()
-		}
-		if attrs["rpc.system.name"] != "grpc" {
-			t.Errorf("expected rpc.system.name grpc, got %q", attrs["rpc.system.name"])
-		}
-		if attrs["rpc.service"] != "google.storage.v2.Storage" {
-			t.Errorf("expected rpc.service, got %q", attrs["rpc.service"])
-		}
-		if attrs["rpc.grpc.status_code"] != "0" { // codes.OK is 0.
-			t.Errorf("expected status_code 0, got %q", attrs["rpc.grpc.status_code"])
-		}
-		if attrs["error.type"] != "OK" {
-			t.Errorf("expected error.type OK, got %q", attrs["error.type"])
-		}
-	}
-
-	if bidiDp == nil {
-		t.Errorf("streaming metric (BidiWriteObject) not recorded")
-	} else {
-		if bidiDp.Count != 1 {
-			t.Errorf("Bidi stream count: expected 1, got %d", bidiDp.Count)
-		}
-		attrs := make(map[string]string)
-		for _, kv := range bidiDp.Attributes.ToSlice() {
-			attrs[string(kv.Key)] = kv.Value.Emit()
-		}
-		if attrs["rpc.system.name"] != "grpc" {
-			t.Errorf("expected rpc.system.name grpc, got %q", attrs["rpc.system.name"])
-		}
-		if attrs["rpc.service"] != "google.storage.v2.Storage" {
-			t.Errorf("expected rpc.service, got %q", attrs["rpc.service"])
+		if got := getHistAttr(dp, "error.type"); got != tc.wantStatus {
+			t.Errorf("%s error.type = %q, want %q", tc.method, got, tc.wantStatus)
 		}
 	}
 }
@@ -745,6 +827,16 @@ func TestStandardMetricsRecording(t *testing.T) {
 	}
 	r.Close()
 
+	// Test NewRangeReader directly (distinguishing Object.NewRangeReader from Object.NewReader).
+	rr, err := client.Bucket("my-bucket").Object("my-object").NewRangeReader(ctx, 0, 5)
+	if err != nil {
+		t.Fatalf("NewRangeReader: %v", err)
+	}
+	if _, err := rr.Read(buf); err != nil && err != io.EOF {
+		t.Fatalf("Range Read: %v", err)
+	}
+	rr.Close()
+
 	// Test Writer (WriteObject).
 	donec := make(chan struct{})
 	close(donec) // pre-close it so Close doesn't block
@@ -773,8 +865,16 @@ func TestStandardMetricsRecording(t *testing.T) {
 		t.Fatalf("Close: %v", err)
 	}
 
-	// Test MultiRangeDownloader.
+	// Test MultiRangeDownloader (exercising the real stream interceptor for BidiReadObject
+	// when closed before RecvMsg completes).
+	_, streamInterceptor := metricsInterceptors(cm)
 	mock.newMRDFn = func(ctx context.Context, params *newMultiRangeDownloaderParams, opts ...storageOption) (*MultiRangeDownloader, error) {
+		_, err := streamInterceptor(ctx, &grpc.StreamDesc{ServerStreams: true, ClientStreams: true}, nil, "/google.storage.v2.Storage/BidiReadObject", func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+			return &mockClientStream{}, nil
+		})
+		if err != nil {
+			return nil, err
+		}
 		return &MultiRangeDownloader{
 			impl: &mockInternalMRD{bytesRead: 42, ctx: ctx},
 		}, nil
@@ -805,20 +905,31 @@ func TestStandardMetricsRecording(t *testing.T) {
 	if m, ok := metricsMap["gcp.client.request.duration"]; !ok {
 		t.Errorf("metric gcp.client.request.duration not found")
 	} else {
-		hist := m.Data.(metricdata.Histogram[float64])
-		if len(hist.DataPoints) != 4 {
-			t.Errorf("expected 4 datapoints for gcp.client.request.duration, got %d", len(hist.DataPoints))
+		hist, ok := m.Data.(metricdata.Histogram[float64])
+		if !ok {
+			t.Fatalf("gcp.client.request.duration: got %T, want Histogram[float64]", m.Data)
 		}
+		if len(hist.DataPoints) != 5 {
+			t.Errorf("expected 5 datapoints for gcp.client.request.duration, got %d", len(hist.DataPoints))
+		}
+		ops := make(map[string]bool)
 		methods := make(map[string]bool)
+		clientMethods := make(map[string]bool)
 		for _, dp := range hist.DataPoints {
-			for _, kv := range dp.Attributes.ToSlice() {
-				if kv.Key == "rpc.method" {
-					methods[kv.Value.Emit()] = true
-				}
-			}
+			assertExactAttrKeys(t, m.Name, dp.Attributes,
+				"error.type", "gcp.client.method", "gcp.storage.operation", "rpc.method", "rpc.system.name", "server.address")
+			ops[getHistAttr(dp, "gcp.storage.operation")] = true
+			methods[getHistAttr(dp, "rpc.method")] = true
+			clientMethods[getHistAttr(dp, "gcp.client.method")] = true
 		}
-		if !methods["GetObject"] || !methods["ReadObject"] || !methods["WriteObject"] {
-			t.Errorf("expected GetObject, ReadObject, WriteObject, got %v", methods)
+		if !ops["GetObject"] || !ops["ReadObject"] || !ops["WriteObject"] {
+			t.Errorf("expected gcp.storage.operation GetObject, ReadObject, WriteObject, got %v", ops)
+		}
+		if !methods["google.storage.v2.Storage/GetObject"] || !methods["google.storage.v2.Storage/ReadObject"] || !methods["google.storage.v2.Storage/BidiReadObject"] || !methods["google.storage.v2.Storage/WriteObject"] {
+			t.Errorf("expected fully-qualified rpc.method (including BidiReadObject) on gcp.client.request.duration, got %v", methods)
+		}
+		if !clientMethods["Object.Attrs"] || !clientMethods["Object.NewReader"] || !clientMethods["Object.NewRangeReader"] || !clientMethods["Object.NewWriter"] || !clientMethods["Object.NewMultiRangeDownloader"] {
+			t.Errorf("expected gcp.client.method on gcp.client.request.duration, got %v", clientMethods)
 		}
 	}
 
@@ -826,9 +937,22 @@ func TestStandardMetricsRecording(t *testing.T) {
 	if m, ok := metricsMap["gcp.storage.client.operations"]; !ok {
 		t.Errorf("metric gcp.storage.client.operations not found")
 	} else {
-		sum := m.Data.(metricdata.Sum[int64])
-		if len(sum.DataPoints) != 4 {
-			t.Errorf("expected 4 datapoints for gcp.storage.client.operations, got %d", len(sum.DataPoints))
+		sum, ok := m.Data.(metricdata.Sum[int64])
+		if !ok {
+			t.Fatalf("gcp.storage.client.operations: got %T, want Sum[int64]", m.Data)
+		}
+		if len(sum.DataPoints) != 5 {
+			t.Errorf("expected 5 datapoints for gcp.storage.client.operations, got %d", len(sum.DataPoints))
+		}
+		for _, dp := range sum.DataPoints {
+			assertExactAttrKeys(t, m.Name, dp.Attributes,
+				"error.type", "gcp.client.method", "gcp.storage.operation", "rpc.system.name", "server.address")
+			if got := getAttr(dp, "gcp.storage.operation"); got == "" {
+				t.Errorf("expected gcp.storage.operation on gcp.storage.client.operations")
+			}
+			if got := getAttr(dp, "gcp.client.method"); got == "" {
+				t.Errorf("expected gcp.client.method on gcp.storage.client.operations")
+			}
 		}
 	}
 
@@ -836,12 +960,21 @@ func TestStandardMetricsRecording(t *testing.T) {
 	if m, ok := metricsMap["gcp.storage.client.response.body.size"]; !ok {
 		t.Errorf("metric gcp.storage.client.response.body.size not found")
 	} else {
-		hist := m.Data.(metricdata.Histogram[int64])
-		if len(hist.DataPoints) != 1 {
-			t.Fatalf("expected 1 datapoint for response body size, got %d", len(hist.DataPoints))
+		hist, ok := m.Data.(metricdata.Histogram[int64])
+		if !ok {
+			t.Fatalf("response.body.size: got %T, want Histogram[int64]", m.Data)
 		}
-		if hist.DataPoints[0].Sum != 47 {
-			t.Errorf("expected total sum 47, got %d", hist.DataPoints[0].Sum)
+		if len(hist.DataPoints) != 3 {
+			t.Fatalf("expected 3 datapoints for response body size (NewReader, NewRangeReader, and MRD), got %d", len(hist.DataPoints))
+		}
+		var totalSum int64
+		for _, dp := range hist.DataPoints {
+			totalSum += dp.Sum
+			assertExactAttrKeys(t, m.Name, dp.Attributes,
+				"gcp.client.method", "gcp.storage.operation", "rpc.system.name", "server.address")
+		}
+		if totalSum != 52 {
+			t.Errorf("expected total sum 52, got %d", totalSum)
 		}
 	}
 
@@ -849,7 +982,10 @@ func TestStandardMetricsRecording(t *testing.T) {
 	if m, ok := metricsMap["gcp.storage.client.request.body.size"]; !ok {
 		t.Errorf("metric gcp.storage.client.request.body.size not found")
 	} else {
-		hist := m.Data.(metricdata.Histogram[int64])
+		hist, ok := m.Data.(metricdata.Histogram[int64])
+		if !ok {
+			t.Fatalf("request.body.size: got %T, want Histogram[int64]", m.Data)
+		}
 		if len(hist.DataPoints) != 1 {
 			t.Fatalf("expected 1 datapoint for request body size, got %d", len(hist.DataPoints))
 		}
@@ -857,40 +993,824 @@ func TestStandardMetricsRecording(t *testing.T) {
 		if dp.Sum != 11 {
 			t.Errorf("expected sum 11, got %d", dp.Sum)
 		}
+		assertExactAttrKeys(t, m.Name, dp.Attributes,
+			"gcp.client.method", "gcp.storage.operation", "rpc.system.name", "server.address")
+		if v, _ := dp.Attributes.Value("gcp.storage.operation"); v.AsString() != "WriteObject" {
+			t.Errorf("expected gcp.storage.operation WriteObject, got %q", v.AsString())
+		}
+		if v, _ := dp.Attributes.Value("gcp.client.method"); v.AsString() != "Object.NewWriter" {
+			t.Errorf("expected gcp.client.method Object.NewWriter, got %q", v.AsString())
+		}
 	}
 }
 
-func TestRecordTTFB_MetadataOnly(t *testing.T) {
+func TestGetLogicalMethod(t *testing.T) {
+	var nilState *metricsState
+	nilState.setRPCMethod("google.storage.v2.Storage/GetObject") // nil receiver must be a no-op
+
+	for _, tc := range []struct {
+		in   string
+		want string
+	}{
+		{in: "GetObject", want: "GetObject"},
+		{in: "/google.storage.v2.Storage/GetObject", want: "GetObject"},
+		{in: "/google.storage.v2.Storage/BidiReadObject", want: "ReadObject"},
+		{in: "/google.storage.v2.Storage/BidiWriteObject", want: "WriteObject"},
+		{in: "/google.storage.v2.Storage/StartResumableWrite", want: "WriteObject"},
+		{in: "/google.storage.v2.Storage/QueryWriteStatus", want: "WriteObject"},
+		{in: "/google.storage.v2.Storage/CancelResumableWrite", want: "WriteObject"},
+	} {
+		if got := getLogicalMethod(tc.in); got != tc.want {
+			t.Errorf("getLogicalMethod(%q) = %q, want %q", tc.in, got, tc.want)
+		}
+	}
+}
+
+func TestOperationDuration_HTTPRPCMethodFallback(t *testing.T) {
 	ctx := context.Background()
 	mr := sdkmetric.NewManualReader()
 	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
 	defer provider.Shutdown(ctx)
 
-	cfg := storageConfig{
+	cm, _, err := initMetrics(ctx, "project-id", &storageConfig{
 		enableOtelMetrics: true,
 		meterProvider:     provider,
-	}
-
-	cm, _, err := initMetrics(ctx, "project-id", &cfg)
+	})
 	if err != nil {
 		t.Fatalf("initMetrics: %v", err)
 	}
 
-	w := &wrappedClientStream{
-		metrics:   cm,
-		ctx:       ctx,
-		method:    "/google.storage.v2.Storage/ReadObject",
-		startTime: time.Now(),
+	// An HTTP operation without an operation span falls back to the v2-qualified
+	// rpc.method and defaultClientMethods for gcp.client.method.
+	_, record := cm.startOperation(ctx, "GetHMACKey", true)
+	record(nil)
+
+	var rm metricdata.ResourceMetrics
+	if err := mr.Collect(ctx, &rm); err != nil {
+		t.Fatalf("Collect: %v", err)
+	}
+	found := false
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			if m.Name != "gcp.client.request.duration" {
+				continue
+			}
+			found = true
+			hist, ok := m.Data.(metricdata.Histogram[float64])
+			if !ok {
+				t.Fatalf("expected Histogram data, got %T", m.Data)
+			}
+			if len(hist.DataPoints) != 1 {
+				t.Fatalf("expected 1 datapoint, got %d", len(hist.DataPoints))
+			}
+			dp := hist.DataPoints[0]
+			assertExactAttrKeys(t, m.Name, dp.Attributes,
+				"error.type", "gcp.client.method", "gcp.storage.operation", "rpc.method", "rpc.system.name", "server.address")
+			for key, want := range map[string]string{
+				"rpc.system.name":       "http",
+				"gcp.storage.operation": "GetHMACKey",
+				"gcp.client.method":     "HMACKey.Get",
+				"rpc.method":            "google.storage.v2.Storage/GetHMACKey",
+			} {
+				if got := getHistAttr(dp, key); got != want {
+					t.Errorf("%s = %q, want %q", key, got, want)
+				}
+			}
+		}
+	}
+	if !found {
+		t.Errorf("metric gcp.client.request.duration not found")
+	}
+}
+
+func TestRecordTTFB_MetadataOnly(t *testing.T) {
+	for _, method := range []string{
+		"/google.storage.v2.Storage/ReadObject",
+		"/google.storage.v2.Storage/BidiReadObject",
+	} {
+		t.Run(method, func(t *testing.T) {
+			ctx := context.Background()
+			mr := sdkmetric.NewManualReader()
+			provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+			defer provider.Shutdown(ctx)
+
+			cm, _, err := initMetrics(ctx, "project-id", &storageConfig{
+				enableOtelMetrics: true,
+				meterProvider:     provider,
+			})
+			if err != nil {
+				t.Fatalf("initMetrics: %v", err)
+			}
+
+			w := &wrappedClientStream{
+				metrics:   cm,
+				ctx:       ctx,
+				method:    method,
+				startTime: time.Now(),
+			}
+
+			// First response with only metadata should trigger TTFB.
+			w.maybeRecordTTFB()
+
+			if !w.recordedTTFB.Load() {
+				t.Errorf("maybeRecordTTFB did not trigger TTFB for metadata-only ReadObjectResponse")
+			}
+
+			var rm metricdata.ResourceMetrics
+			if err := mr.Collect(ctx, &rm); err != nil {
+				t.Fatalf("Collect: %v", err)
+			}
+			foundTTFB := false
+			for _, sm := range rm.ScopeMetrics {
+				for _, m := range sm.Metrics {
+					if m.Name == "gcp.storage.client.ttfb" {
+						hist, ok := m.Data.(metricdata.Histogram[float64])
+						if !ok {
+							t.Fatalf("ttfb: got %T, want Histogram[float64]", m.Data)
+						}
+						if len(hist.DataPoints) == 1 {
+							foundTTFB = true
+							assertExactAttrKeys(t, m.Name, hist.DataPoints[0].Attributes,
+								"gcp.storage.operation", "rpc.system.name", "server.address")
+							if got := getHistAttr(hist.DataPoints[0], "gcp.storage.operation"); got != "ReadObject" {
+								t.Errorf("ttfb gcp.storage.operation = %q, want ReadObject", got)
+							}
+						}
+					}
+				}
+			}
+			if !foundTTFB {
+				t.Errorf("expected gcp.storage.client.ttfb datapoint")
+			}
+		})
+	}
+}
+
+type concurrentFlushMockStream struct {
+	mockClientStream
+	onFlushSend func()
+	sendErr     error
+}
+
+func (c *concurrentFlushMockStream) SendMsg(msg interface{}) error {
+	if req, ok := msg.(*storagepb.BidiWriteObjectRequest); ok && (req.GetFinishWrite() || req.GetStateLookup()) && c.onFlushSend != nil {
+		fn := c.onFlushSend
+		c.onFlushSend = nil
+		fn()
+	}
+	return c.sendErr
+}
+
+func (c *concurrentFlushMockStream) CloseSend() error {
+	return nil
+}
+
+func TestTTFB_ClientObservedReadsAndWrites(t *testing.T) {
+	setup := func(t *testing.T) (context.Context, *sdkmetric.ManualReader, *clientMetrics) {
+		t.Helper()
+		ctx := context.Background()
+		mr := sdkmetric.NewManualReader()
+		provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+		t.Cleanup(func() { _ = provider.Shutdown(ctx) })
+
+		cm, _, err := initMetrics(ctx, "project-id", &storageConfig{
+			enableOtelMetrics: true,
+			meterProvider:     provider,
+		})
+		if err != nil {
+			t.Fatalf("initMetrics: %v", err)
+		}
+		return ctx, mr, cm
 	}
 
-	// First response with only metadata should trigger TTFB.
-	resp := &storagepb.ReadObjectResponse{
-		Metadata: &storagepb.Object{Name: "test-object"},
+	collectTTFB := func(t *testing.T, ctx context.Context, mr *sdkmetric.ManualReader) []metricdata.HistogramDataPoint[float64] {
+		t.Helper()
+		var rm metricdata.ResourceMetrics
+		if err := mr.Collect(ctx, &rm); err != nil {
+			t.Fatalf("Collect: %v", err)
+		}
+		for _, sm := range rm.ScopeMetrics {
+			for _, m := range sm.Metrics {
+				if m.Name == "gcp.storage.client.ttfb" {
+					return m.Data.(metricdata.Histogram[float64]).DataPoints
+				}
+			}
+		}
+		return nil
 	}
-	w.recordTTFB(resp)
 
-	if !w.recordedTTFB.Load() {
-		t.Errorf("recordTTFB did not trigger TTFB for metadata-only ReadObjectResponse")
+	newWriteStream := func(ctx context.Context, cm *clientMetrics, method string, cs grpc.ClientStream, start time.Time) *wrappedClientStream {
+		return &wrappedClientStream{
+			ClientStream:  cs,
+			metrics:       cm,
+			ctx:           ctx,
+			method:        method,
+			isWrite:       isWriteStreamMethod(method),
+			target:        "storage.googleapis.com",
+			startTime:     start,
+			serverStreams: method == "/google.storage.v2.Storage/BidiWriteObject",
+			clientStreams: true,
+		}
+	}
+
+	t.Run("HTTP download records TTFB before body Read", func(t *testing.T) {
+		ctx, mr, cm := setup(t)
+
+		releaseBody := make(chan struct{})
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			if f, ok := w.(http.Flusher); ok {
+				f.Flush()
+			}
+			<-releaseBody
+			_, _ = w.Write([]byte("hello"))
+		}))
+		defer server.Close()
+
+		hc := &http.Client{Transport: &metricsRoundTripper{base: http.DefaultTransport, metrics: cm}}
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, server.URL+"/storage/v1/b/bkt/o/obj?alt=media", nil)
+		if err != nil {
+			t.Fatalf("NewRequest: %v", err)
+		}
+		resp, err := hc.Do(req)
+		if err != nil {
+			close(releaseBody)
+			t.Fatalf("Do: %v", err)
+		}
+
+		// TTFB must already be recorded upon receiving response headers, before Read() is called.
+		dps := collectTTFB(t, ctx, mr)
+		if len(dps) != 1 || dps[0].Count != 1 {
+			close(releaseBody)
+			_ = resp.Body.Close()
+			t.Fatalf("expected 1 ttfb sample before resp.Body.Read(), got %+v", dps)
+		}
+
+		close(releaseBody)
+		if _, err := io.ReadAll(resp.Body); err != nil {
+			t.Fatalf("ReadAll: %v", err)
+		}
+		_ = resp.Body.Close()
+
+		if dpsAfter := collectTTFB(t, ctx, mr); len(dpsAfter) != 1 || dpsAfter[0].Count != 1 {
+			t.Fatalf("expected ttfb count to remain 1 after body Close(), got %+v", dpsAfter)
+		}
+	})
+
+	t.Run("HTTP upload measures from WroteRequest to GotFirstResponseByte", func(t *testing.T) {
+		ctx, mr, cm := setup(t)
+
+		gotFirstChunk := make(chan struct{})
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			buf := make([]byte, 7)
+			if _, err := io.ReadFull(r.Body, buf); err == nil {
+				close(gotFirstChunk)
+			}
+			_, _ = io.ReadAll(r.Body)
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{"name":"obj"}`))
+		}))
+		defer server.Close()
+
+		pr, pw := io.Pipe()
+		const uploadInterval = 50 * time.Millisecond
+		go func() {
+			_, _ = pw.Write([]byte("chunk-1"))
+			<-gotFirstChunk
+			<-time.After(uploadInterval)
+			_, _ = pw.Write([]byte("chunk-2"))
+			_ = pw.Close()
+		}()
+
+		hc := &http.Client{Transport: &metricsRoundTripper{base: http.DefaultTransport, metrics: cm}}
+		req, err := http.NewRequestWithContext(ctx, http.MethodPut, server.URL+"/upload/storage/v1/b/bkt/o?uploadType=resumable&upload_id=123", pr)
+		if err != nil {
+			t.Fatalf("NewRequest: %v", err)
+		}
+		beforeDo := time.Now()
+		resp, err := hc.Do(req)
+		totalDo := time.Since(beforeDo).Seconds()
+		if err != nil {
+			t.Fatalf("Do: %v", err)
+		}
+		_, _ = io.ReadAll(resp.Body)
+		_ = resp.Body.Close()
+
+		dps := collectTTFB(t, ctx, mr)
+		if len(dps) != 1 || dps[0].Count != 1 {
+			t.Fatalf("expected 1 ttfb datapoint, got %+v", dps)
+		}
+		// Since WroteRequest occurs after uploadInterval elapses past startTime,
+		// totalDo - ttfb >= uploadInterval regardless of scheduler jitter.
+		if totalDo-dps[0].Sum < 0.045 {
+			t.Errorf("HTTP upload ttfb = %vs out of totalDo = %vs; expected upload streaming interval (>= 45ms) to be excluded", dps[0].Sum, totalDo)
+		}
+	})
+
+	t.Run("HTTP error response records TTFB while failed round trip omits TTFB", func(t *testing.T) {
+		ctx, mr, cm := setup(t)
+
+		hcFail := &http.Client{Transport: &metricsRoundTripper{base: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+			return nil, &url.Error{Op: "Get", URL: r.URL.String(), Err: errors.New("connection refused")}
+		}), metrics: cm}}
+		reqFail, _ := http.NewRequestWithContext(ctx, http.MethodGet, "https://storage.googleapis.com/storage/v1/b/bkt/o/obj", nil)
+		_, _ = hcFail.Do(reqFail)
+
+		if dps := collectTTFB(t, ctx, mr); len(dps) != 0 {
+			t.Fatalf("expected 0 ttfb datapoints on failed HTTP round trip, got %+v", dps)
+		}
+
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNotFound)
+			_, _ = w.Write([]byte(`{"error":{"code":404}}`))
+		}))
+		defer server.Close()
+
+		hc404 := &http.Client{Transport: &metricsRoundTripper{base: http.DefaultTransport, metrics: cm}}
+		req404, _ := http.NewRequestWithContext(ctx, http.MethodGet, server.URL+"/storage/v1/b/bkt/o/missing", nil)
+		resp, err := hc404.Do(req404)
+		if err != nil {
+			t.Fatalf("Do(404): %v", err)
+		}
+		_ = resp.Body.Close()
+
+		if dps := collectTTFB(t, ctx, mr); len(dps) != 1 || dps[0].Count != 1 {
+			t.Fatalf("expected 1 ttfb datapoint on HTTP 404 response, got %+v", dps)
+		}
+	})
+
+	t.Run("HTTP trace hook edge cases", func(t *testing.T) {
+		const (
+			uploadURL   = "https://storage.googleapis.com/upload/storage/v1/b/bkt/o?uploadType=resumable&upload_id=123"
+			downloadURL = "https://storage.googleapis.com/storage/v1/b/bkt/o/obj?alt=media"
+			hookDelay   = 50 * time.Millisecond
+		)
+		for _, tc := range []struct {
+			name        string
+			method      string
+			url         string
+			body        []byte
+			statusCode  int
+			fire        func(*httptrace.ClientTrace)
+			wantCount   uint64
+			wantZeroSum bool
+			wantMinSum  float64
+			wantMaxGap  float64 // require totalElapsed - ttfb >= wantMaxGap when > 0
+		}{
+			{
+				name:       "WroteRequest defer trails GotFirstResponseByte clamps to 0",
+				method:     http.MethodPut,
+				url:        uploadURL,
+				body:       []byte("payload"),
+				statusCode: http.StatusOK,
+				fire: func(tr *httptrace.ClientTrace) {
+					tr.GotFirstResponseByte()
+					tr.WroteRequest(httptrace.WroteRequestInfo{})
+				},
+				wantCount:   1,
+				wantZeroSum: true,
+			},
+			{
+				name:       "first byte before body was written skips sample",
+				method:     http.MethodPut,
+				url:        uploadURL,
+				body:       []byte("payload"),
+				statusCode: http.StatusOK,
+				fire: func(tr *httptrace.ClientTrace) {
+					tr.GotFirstResponseByte()
+				},
+				wantCount: 0,
+			},
+			{
+				name:       "failed body write clears earlier WroteRequest anchor",
+				method:     http.MethodPut,
+				url:        uploadURL,
+				body:       []byte("payload"),
+				statusCode: http.StatusOK,
+				fire: func(tr *httptrace.ClientTrace) {
+					tr.WroteRequest(httptrace.WroteRequestInfo{})
+					tr.GotFirstResponseByte()
+					tr.WroteRequest(httptrace.WroteRequestInfo{Err: errors.New("write: broken pipe")})
+				},
+				wantCount: 0,
+			},
+			{
+				name:       "transport without trace hooks skips upload sample",
+				method:     http.MethodPut,
+				url:        uploadURL,
+				body:       []byte("payload"),
+				statusCode: http.StatusOK,
+				wantCount:  0,
+			},
+			{
+				name:       "GetConn clears prior hop trace timestamps before early upload rejection",
+				method:     http.MethodPut,
+				url:        uploadURL,
+				body:       []byte("payload"),
+				statusCode: http.StatusPreconditionFailed,
+				fire: func(tr *httptrace.ClientTrace) {
+					tr.GetConn("oauth2.googleapis.com:443")
+					tr.WroteRequest(httptrace.WroteRequestInfo{})
+					tr.GotFirstResponseByte()
+					tr.GetConn("storage.googleapis.com:443")
+					tr.GotFirstResponseByte()
+				},
+				wantCount: 0,
+			},
+			{
+				name:       "GetConn anchors read TTFB after auth token refresh",
+				method:     http.MethodGet,
+				url:        downloadURL,
+				statusCode: http.StatusOK,
+				fire: func(tr *httptrace.ClientTrace) {
+					time.Sleep(hookDelay)
+					tr.GetConn("storage.googleapis.com:443")
+					tr.GotFirstResponseByte()
+				},
+				wantCount:  1,
+				wantMaxGap: 0.045,
+			},
+			{
+				name:       "GetConn clears prior hop firstByteTime on read",
+				method:     http.MethodGet,
+				url:        downloadURL,
+				statusCode: http.StatusOK,
+				fire: func(tr *httptrace.ClientTrace) {
+					tr.GetConn("oauth2.googleapis.com:443")
+					tr.GotFirstResponseByte()
+					time.Sleep(hookDelay)
+					tr.GetConn("storage.googleapis.com:443")
+					time.Sleep(hookDelay)
+				},
+				wantCount:  1,
+				wantMinSum: 0.045,
+			},
+		} {
+			t.Run(tc.name, func(t *testing.T) {
+				ctx, mr, cm := setup(t)
+				hc := &http.Client{Transport: &metricsRoundTripper{base: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+					if trace := httptrace.ContextClientTrace(r.Context()); trace != nil && tc.fire != nil {
+						tc.fire(trace)
+					}
+					return &http.Response{StatusCode: tc.statusCode, Body: io.NopCloser(bytes.NewReader(nil)), Header: make(http.Header)}, nil
+				}), metrics: cm}}
+				var body io.Reader
+				if tc.body != nil {
+					body = bytes.NewReader(tc.body)
+				}
+				req, err := http.NewRequestWithContext(ctx, tc.method, tc.url, body)
+				if err != nil {
+					t.Fatalf("NewRequest: %v", err)
+				}
+				beforeDo := time.Now()
+				resp, err := hc.Do(req)
+				totalElapsed := time.Since(beforeDo).Seconds()
+				if err != nil {
+					t.Fatalf("Do: %v", err)
+				}
+				_ = resp.Body.Close()
+
+				dps := collectTTFB(t, ctx, mr)
+				var got uint64
+				for _, dp := range dps {
+					got += dp.Count
+				}
+				if got != tc.wantCount {
+					t.Fatalf("ttfb sample count = %d, want %d", got, tc.wantCount)
+				}
+				if tc.wantZeroSum && dps[0].Sum != 0 {
+					t.Errorf("expected clamped ttfb = 0s, got %vs", dps[0].Sum)
+				}
+				if tc.wantMinSum > 0 && dps[0].Sum < tc.wantMinSum {
+					t.Errorf("ttfb = %vs, want >= %vs", dps[0].Sum, tc.wantMinSum)
+				}
+				if tc.wantMaxGap > 0 && totalElapsed-dps[0].Sum < tc.wantMaxGap {
+					t.Errorf("ttfb = %vs with totalElapsed = %vs; expected delay >= %vs to be excluded", dps[0].Sum, totalElapsed, tc.wantMaxGap)
+				}
+			})
+		}
+	})
+
+	t.Run("gRPC BidiWriteObject pipelined flush does not overwrite the first flush anchor", func(t *testing.T) {
+		ctx, mr, cm := setup(t)
+		w := newWriteStream(ctx, cm, "/google.storage.v2.Storage/BidiWriteObject", &concurrentFlushMockStream{}, time.Now())
+
+		if err := w.SendMsg(&storagepb.BidiWriteObjectRequest{WriteOffset: 0, StateLookup: true}); err != nil {
+			t.Fatalf("SendMsg first flush: %v", err)
+		}
+		firstAnchor := w.firstFlushSentAt.Load()
+		if firstAnchor == nil {
+			t.Fatalf("expected firstFlushSentAt to be set on first flush")
+		}
+		// Both flushes are sent before the first response is received.
+		if err := w.SendMsg(&storagepb.BidiWriteObjectRequest{WriteOffset: 1024, FinishWrite: true}); err != nil {
+			t.Fatalf("SendMsg second flush: %v", err)
+		}
+		if err := w.CloseSend(); err != nil {
+			t.Fatalf("CloseSend: %v", err)
+		}
+		if got := w.firstFlushSentAt.Load(); got != firstAnchor {
+			t.Errorf("pipelined FinishWrite or CloseSend overwrote the first flush anchor")
+		}
+		if err := w.RecvMsg(&storagepb.BidiWriteObjectResponse{}); err != nil {
+			t.Fatalf("RecvMsg: %v", err)
+		}
+		if dps := collectTTFB(t, ctx, mr); len(dps) != 1 || dps[0].Count != 1 {
+			t.Fatalf("expected 1 ttfb datapoint, got %+v", dps)
+		}
+	})
+
+	t.Run("gRPC BidiWriteObject anchors first flush when RecvMsg runs during SendMsg", func(t *testing.T) {
+		ctx, mr, cm := setup(t)
+
+		recvReady := make(chan struct{})
+		recvDone := make(chan error, 1)
+		mockStream := &concurrentFlushMockStream{
+			onFlushSend: func() {
+				// Unblock RecvMsg inside ClientStream.SendMsg before SendMsg returns
+				// so the anchor must already be stamped.
+				close(recvReady)
+				<-recvDone
+			},
+		}
+		w := newWriteStream(ctx, cm, "/google.storage.v2.Storage/BidiWriteObject", mockStream, time.Now().Add(-2*time.Second))
+
+		if err := w.SendMsg(&storagepb.BidiWriteObjectRequest{WriteOffset: 0}); err != nil {
+			t.Fatalf("SendMsg non-flush: %v", err)
+		}
+		if w.firstFlushSentAt.Load() != nil {
+			t.Fatalf("expected firstFlushSentAt to remain nil after non-flush frame")
+		}
+
+		go func() {
+			<-recvReady
+			recvDone <- w.RecvMsg(&storagepb.BidiWriteObjectResponse{})
+		}()
+
+		beforeFlush := time.Now()
+		if err := w.SendMsg(&storagepb.BidiWriteObjectRequest{WriteOffset: 1024, StateLookup: true}); err != nil {
+			t.Fatalf("SendMsg first flush: %v", err)
+		}
+		dps := collectTTFB(t, ctx, mr)
+		if len(dps) != 1 || dps[0].Count != 1 {
+			t.Fatalf("expected 1 ttfb datapoint, got %+v", dps)
+		}
+		if maxExpected := time.Since(beforeFlush).Seconds(); dps[0].Sum > maxExpected || dps[0].Sum >= 1.0 {
+			t.Errorf("BidiWriteObject ttfb = %vs, want <= %vs (and < 1.0s)", dps[0].Sum, maxExpected)
+		}
+	})
+
+	t.Run("gRPC BidiWriteObject re-stamps flush anchor after slow SendMsg", func(t *testing.T) {
+		ctx, mr, cm := setup(t)
+		const sendDelay = 50 * time.Millisecond
+		mockStream := &concurrentFlushMockStream{
+			onFlushSend: func() {
+				time.Sleep(sendDelay)
+			},
+		}
+		w := newWriteStream(ctx, cm, "/google.storage.v2.Storage/BidiWriteObject", mockStream, time.Now().Add(-2*time.Second))
+
+		beforeSend := time.Now()
+		if err := w.SendMsg(&storagepb.BidiWriteObjectRequest{WriteOffset: 1024, StateLookup: true}); err != nil {
+			t.Fatalf("SendMsg: %v", err)
+		}
+		if err := w.RecvMsg(&storagepb.BidiWriteObjectResponse{}); err != nil {
+			t.Fatalf("RecvMsg: %v", err)
+		}
+		totalElapsed := time.Since(beforeSend).Seconds()
+
+		dps := collectTTFB(t, ctx, mr)
+		if len(dps) != 1 || dps[0].Count != 1 {
+			t.Fatalf("expected 1 ttfb datapoint, got %+v", dps)
+		}
+		if totalElapsed-dps[0].Sum < 0.045 {
+			t.Errorf("BidiWriteObject ttfb = %vs with totalElapsed = %vs; expected SendMsg delay >= 0.045s to be excluded", dps[0].Sum, totalElapsed)
+		}
+	})
+
+	t.Run("gRPC BidiWriteObject clears flush anchor when SendMsg fails", func(t *testing.T) {
+		ctx, _, cm := setup(t)
+		sendErr := errors.New("send failed")
+		w := newWriteStream(ctx, cm, "/google.storage.v2.Storage/BidiWriteObject", &concurrentFlushMockStream{sendErr: sendErr}, time.Now())
+
+		if err := w.SendMsg(&storagepb.BidiWriteObjectRequest{WriteOffset: 0, StateLookup: true}); !errors.Is(err, sendErr) {
+			t.Fatalf("SendMsg err = %v, want %v", err, sendErr)
+		}
+		if got := w.firstFlushSentAt.Load(); got != nil {
+			t.Errorf("expected firstFlushSentAt to be cleared on send error, got %v", *got)
+		}
+	})
+
+	t.Run("gRPC BidiWriteObject append takeover with typed-nil Data anchors TTFB", func(t *testing.T) {
+		ctx, mr, cm := setup(t)
+
+		// Construct the takeover probe via bidiWriteObjectRequest with nil buf so
+		// req.Data holds a typed-nil *BidiWriteObjectRequest_ChecksummedData.
+		probe := bidiWriteObjectRequest(gRPCBidiWriteRequest{}, nil, nil)
+		proto.Merge(probe, &storagepb.BidiWriteObjectRequest{
+			FirstMessage: &storagepb.BidiWriteObjectRequest_AppendObjectSpec{
+				AppendObjectSpec: &storagepb.AppendObjectSpec{Bucket: "projects/_/buckets/bkt", Object: "obj", Generation: 42},
+			},
+		})
+		if !isWriteFlushMsg(probe) {
+			t.Fatalf("expected isWriteFlushMsg(probe) = true for append-takeover probe with typed-nil Data")
+		}
+
+		w := newWriteStream(ctx, cm, "/google.storage.v2.Storage/BidiWriteObject", &concurrentFlushMockStream{}, time.Now().Add(-2*time.Second))
+		beforeProbe := time.Now()
+		if err := w.SendMsg(probe); err != nil {
+			t.Fatalf("SendMsg(probe): %v", err)
+		}
+		if err := w.RecvMsg(&storagepb.BidiWriteObjectResponse{}); err != nil {
+			t.Fatalf("RecvMsg: %v", err)
+		}
+
+		dps := collectTTFB(t, ctx, mr)
+		if len(dps) != 1 || dps[0].Count != 1 {
+			t.Fatalf("expected 1 ttfb datapoint, got %+v", dps)
+		}
+		if maxExpected := time.Since(beforeProbe).Seconds(); dps[0].Sum > maxExpected || dps[0].Sum >= 1.0 {
+			t.Errorf("append takeover ttfb = %vs, want <= %vs (and < 1.0s)", dps[0].Sum, maxExpected)
+		}
+	})
+
+	t.Run("gRPC WriteObject CloseSend anchors TTFB when no prior FinishWrite was sent", func(t *testing.T) {
+		ctx, mr, cm := setup(t)
+		w := newWriteStream(ctx, cm, "/google.storage.v2.Storage/WriteObject", &concurrentFlushMockStream{}, time.Now().Add(-2*time.Second))
+
+		if err := w.SendMsg(&storagepb.WriteObjectRequest{WriteOffset: 0}); err != nil {
+			t.Fatalf("SendMsg: %v", err)
+		}
+		beforeClose := time.Now()
+		if err := w.CloseSend(); err != nil {
+			t.Fatalf("CloseSend: %v", err)
+		}
+		if err := w.RecvMsg(&storagepb.WriteObjectResponse{}); err != nil {
+			t.Fatalf("RecvMsg: %v", err)
+		}
+
+		dps := collectTTFB(t, ctx, mr)
+		if len(dps) != 1 || dps[0].Count != 1 {
+			t.Fatalf("expected 1 ttfb datapoint, got %+v", dps)
+		}
+		if maxExpected := time.Since(beforeClose).Seconds(); dps[0].Sum > maxExpected || dps[0].Sum >= 1.0 {
+			t.Errorf("WriteObject CloseSend ttfb = %vs, want <= %vs (and < 1.0s)", dps[0].Sum, maxExpected)
+		}
+	})
+
+	t.Run("gRPC write stream skips TTFB when server responds before any flush", func(t *testing.T) {
+		ctx, mr, cm := setup(t)
+		w := newWriteStream(ctx, cm, "/google.storage.v2.Storage/BidiWriteObject", &concurrentFlushMockStream{}, time.Now().Add(-2*time.Second))
+
+		if err := w.SendMsg(&storagepb.BidiWriteObjectRequest{WriteOffset: 0}); err != nil {
+			t.Fatalf("SendMsg non-flush: %v", err)
+		}
+		if err := w.RecvMsg(&storagepb.BidiWriteObjectResponse{}); err != nil {
+			t.Fatalf("RecvMsg: %v", err)
+		}
+		if dps := collectTTFB(t, ctx, mr); len(dps) != 0 {
+			t.Fatalf("expected 0 ttfb datapoints on unanchored write response, got %+v", dps)
+		}
+	})
+
+	t.Run("gRPC unary records TTFB only on genuine server responses", func(t *testing.T) {
+		t.Run("real server response over bufconn records TTFB", func(t *testing.T) {
+			ctx, mr, cm := setup(t)
+			unaryInt, _ := metricsInterceptors(cm)
+
+			lis := bufconn.Listen(1024 * 1024)
+			srv := grpc.NewServer()
+			storagepb.RegisterStorageServer(srv, &storagepb.UnimplementedStorageServer{})
+			go func() { _ = srv.Serve(lis) }()
+			t.Cleanup(srv.Stop)
+
+			conn, err := grpc.NewClient("passthrough:///bufnet",
+				grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) { return lis.Dial() }),
+				grpc.WithTransportCredentials(insecure.NewCredentials()),
+				grpc.WithUnaryInterceptor(unaryInt),
+			)
+			if err != nil {
+				t.Fatalf("grpc.NewClient: %v", err)
+			}
+			t.Cleanup(func() { _ = conn.Close() })
+
+			_, err = storagepb.NewStorageClient(conn).GetObject(ctx, &storagepb.GetObjectRequest{Bucket: "projects/_/buckets/bkt", Object: "obj"})
+			if status.Code(err) != codes.Unimplemented {
+				t.Fatalf("GetObject err = %v, want Unimplemented", err)
+			}
+			if dps := collectTTFB(t, ctx, mr); len(dps) != 1 || dps[0].Count != 1 {
+				t.Errorf("expected 1 ttfb datapoint from server Unimplemented response, got %+v", dps)
+			}
+		})
+
+		for _, tc := range []struct {
+			name        string
+			withHeader  bool
+			withTrailer bool
+			err         error
+			wantCount   uint64
+		}{
+			{name: "successful call without metadata", withHeader: false, err: nil, wantCount: 1},
+			{name: "server NotFound with headers", withHeader: true, err: status.Error(codes.NotFound, "object not found"), wantCount: 1},
+			{name: "server NotFound with trailers", withTrailer: true, err: status.Error(codes.NotFound, "object not found"), wantCount: 1},
+			{name: "local transport closing without metadata", withHeader: false, err: status.Error(codes.Unavailable, "transport is closing"), wantCount: 0},
+			{name: "local dial connection refused", withHeader: false, err: status.Error(codes.Unavailable, "connection error: desc = \"transport: Error while dialing: dial tcp: connection refused\""), wantCount: 0},
+			{name: "connection reset after server headers", withHeader: true, err: status.Error(codes.Unavailable, "connection error: desc = \"transport: read tcp: connection reset by peer\""), wantCount: 0},
+			{name: "client cancel after server headers", withHeader: true, err: status.Error(codes.Canceled, "context canceled"), wantCount: 0},
+			{name: "client deadline after server headers", withHeader: true, err: status.Error(codes.DeadlineExceeded, "context deadline exceeded"), wantCount: 0},
+		} {
+			t.Run(tc.name, func(t *testing.T) {
+				ctx, mr, cm := setup(t)
+				unaryInt, _ := metricsInterceptors(cm)
+				_ = unaryInt(ctx, "/google.storage.v2.Storage/GetObject", nil, nil, nil, func(_ context.Context, _ string, _, _ interface{}, _ *grpc.ClientConn, opts ...grpc.CallOption) error {
+					for _, o := range opts {
+						if tc.withHeader {
+							if h, ok := o.(grpc.HeaderCallOption); ok {
+								*h.HeaderAddr = metadata.Pairs(uploadIDHeader, "u-123")
+							}
+						}
+						if tc.withTrailer {
+							if tr, ok := o.(grpc.TrailerCallOption); ok {
+								*tr.TrailerAddr = metadata.Pairs(uploadIDHeader, "u-123")
+							}
+						}
+					}
+					return tc.err
+				})
+
+				var got uint64
+				for _, dp := range collectTTFB(t, ctx, mr) {
+					got += dp.Count
+				}
+				if got != tc.wantCount {
+					t.Errorf("ttfb sample count = %d, want %d", got, tc.wantCount)
+				}
+			})
+		}
+	})
+}
+
+func TestIsHTTPPayloadUpload(t *testing.T) {
+	for _, tc := range []struct {
+		name          string
+		method        string
+		url           string
+		body          io.Reader
+		logicalMethod string
+		want          bool
+	}{
+		{name: "resumable chunk PUT", method: http.MethodPut, url: "https://storage.googleapis.com/upload/storage/v1/b/bkt/o?uploadType=resumable&upload_id=1", body: bytes.NewReader([]byte("x")), logicalMethod: "WriteObject", want: true},
+		{name: "resumable chunk POST", method: http.MethodPost, url: "https://storage.googleapis.com/upload/storage/v1/b/bkt/o?uploadType=resumable&upload_id=1", body: bytes.NewReader([]byte("x")), logicalMethod: "WriteObject", want: true},
+		{name: "multipart upload POST", method: http.MethodPost, url: "https://storage.googleapis.com/upload/storage/v1/b/bkt/o?uploadType=multipart", body: bytes.NewReader([]byte("x")), logicalMethod: "WriteObject", want: true},
+		{name: "write operation PUT outside the upload path", method: http.MethodPut, url: "https://bkt.storage.googleapis.com/obj?partNumber=1&uploadId=1", body: bytes.NewReader([]byte("x")), logicalMethod: "WriteObject", want: true},
+		{name: "resumable session initiation POST", method: http.MethodPost, url: "https://storage.googleapis.com/upload/storage/v1/b/bkt/o?uploadType=resumable", body: bytes.NewReader([]byte("{}")), logicalMethod: "WriteObject", want: false},
+		{name: "compose POST with JSON body", method: http.MethodPost, url: "https://storage.googleapis.com/storage/v1/b/bkt/o/obj/compose", body: bytes.NewReader([]byte("{}")), logicalMethod: "ComposeObject", want: false},
+		{name: "bucket insert POST with JSON body", method: http.MethodPost, url: "https://storage.googleapis.com/storage/v1/b", body: bytes.NewReader([]byte("{}")), logicalMethod: "CreateBucket", want: false},
+		{name: "object PATCH with JSON body", method: http.MethodPatch, url: "https://storage.googleapis.com/storage/v1/b/bkt/o/obj", body: bytes.NewReader([]byte("{}")), logicalMethod: "UpdateObject", want: false},
+		{name: "upload PUT without body", method: http.MethodPut, url: "https://storage.googleapis.com/upload/storage/v1/b/bkt/o?uploadType=resumable&upload_id=1", logicalMethod: "WriteObject", want: false},
+		{name: "upload PUT with http.NoBody", method: http.MethodPut, url: "https://storage.googleapis.com/upload/storage/v1/b/bkt/o?uploadType=resumable&upload_id=1", body: http.NoBody, logicalMethod: "WriteObject", want: false},
+		{name: "download GET", method: http.MethodGet, url: "https://storage.googleapis.com/storage/v1/b/bkt/o/obj?alt=media", logicalMethod: "ReadObject", want: false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			req, err := http.NewRequest(tc.method, tc.url, tc.body)
+			if err != nil {
+				t.Fatalf("NewRequest: %v", err)
+			}
+			if got := isHTTPPayloadUpload(req, tc.logicalMethod); got != tc.want {
+				t.Errorf("isHTTPPayloadUpload = %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestIsWriteFlushMsg(t *testing.T) {
+	appendSpec := &storagepb.BidiWriteObjectRequest_AppendObjectSpec{AppendObjectSpec: &storagepb.AppendObjectSpec{Object: "obj"}}
+	appendableNewSpec := &storagepb.BidiWriteObjectRequest_WriteObjectSpec{WriteObjectSpec: &storagepb.WriteObjectSpec{Appendable: proto.Bool(true)}}
+	nonAppendableNewSpec := &storagepb.BidiWriteObjectRequest_WriteObjectSpec{WriteObjectSpec: &storagepb.WriteObjectSpec{Appendable: proto.Bool(false)}}
+	data := &storagepb.BidiWriteObjectRequest_ChecksummedData{ChecksummedData: &storagepb.ChecksummedData{Content: []byte("x")}}
+	for _, tc := range []struct {
+		name string
+		msg  interface{}
+		want bool
+	}{
+		{name: "bidi data only", msg: &storagepb.BidiWriteObjectRequest{Data: data}, want: false},
+		{name: "bidi flush without finish or lookup", msg: &storagepb.BidiWriteObjectRequest{Data: data, Flush: true}, want: false},
+		{name: "bidi finish_write", msg: &storagepb.BidiWriteObjectRequest{Data: data, FinishWrite: true}, want: true},
+		{name: "bidi state_lookup", msg: &storagepb.BidiWriteObjectRequest{StateLookup: true}, want: true},
+		{name: "bidi append spec without data", msg: &storagepb.BidiWriteObjectRequest{FirstMessage: appendSpec}, want: true},
+		{name: "bidi append spec with inline data", msg: &storagepb.BidiWriteObjectRequest{FirstMessage: appendSpec, Data: data}, want: true},
+		{name: "bidi new appendable write spec with inline data", msg: &storagepb.BidiWriteObjectRequest{FirstMessage: appendableNewSpec, Data: data}, want: true},
+		{name: "bidi non-appendable write spec without flush", msg: &storagepb.BidiWriteObjectRequest{FirstMessage: nonAppendableNewSpec, Data: data}, want: false},
+		{name: "write data only", msg: &storagepb.WriteObjectRequest{WriteOffset: 1}, want: false},
+		{name: "write finish_write", msg: &storagepb.WriteObjectRequest{FinishWrite: true}, want: true},
+		{name: "read request", msg: &storagepb.BidiReadObjectRequest{}, want: false},
+		{name: "nil message", msg: nil, want: false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := isWriteFlushMsg(tc.msg); got != tc.want {
+				t.Errorf("isWriteFlushMsg = %v, want %v", got, tc.want)
+			}
+		})
 	}
 }
 
@@ -1161,22 +2081,35 @@ func TestGRPCMetricsStatsHandler(t *testing.T) {
 	}
 }
 
-func getAttr(dp metricdata.DataPoint[int64], key string) string {
-	for _, kv := range dp.Attributes.ToSlice() {
-		if string(kv.Key) == key {
-			return kv.Value.Emit()
-		}
+func attrSetValueString(s attribute.Set, key string) string {
+	v, ok := s.Value(attribute.Key(key))
+	if !ok {
+		return ""
 	}
-	return ""
+	return v.String()
+}
+
+func assertExactAttrKeys(t *testing.T, metricName string, s attribute.Set, wantKeys ...string) {
+	t.Helper()
+	got := make([]string, 0, s.Len())
+	iter := s.Iter()
+	for iter.Next() {
+		got = append(got, string(iter.Attribute().Key))
+	}
+	slices.Sort(got)
+	want := slices.Clone(wantKeys)
+	slices.Sort(want)
+	if !slices.Equal(got, want) {
+		t.Errorf("%s attribute keys = %v, want %v", metricName, got, want)
+	}
+}
+
+func getAttr(dp metricdata.DataPoint[int64], key string) string {
+	return attrSetValueString(dp.Attributes, key)
 }
 
 func getHistAttr(dp metricdata.HistogramDataPoint[float64], key string) string {
-	for _, kv := range dp.Attributes.ToSlice() {
-		if string(kv.Key) == key {
-			return kv.Value.Emit()
-		}
-	}
-	return ""
+	return attrSetValueString(dp.Attributes, key)
 }
 
 func TestRecordCredentialRefreshDuration(t *testing.T) {
@@ -1733,7 +2666,7 @@ func TestRecordServerMetrics(t *testing.T) {
 	dpPeer := &peer.Peer{Addr: &net.TCPAddr{IP: net.ParseIP("34.126.0.10"), Port: 443}}
 	cpPeer := &peer.Peer{Addr: &net.TCPAddr{IP: net.ParseIP("142.250.1.1"), Port: 443}}
 	rpcAttrs := metric.WithAttributes(
-		attribute.String("rpc.method", "GetObject"),
+		attribute.String("gcp.storage.operation", "GetObject"),
 		attribute.String("rpc.system.name", "grpc"),
 		attribute.String("server.address", "storage.googleapis.com"),
 	)
@@ -1890,6 +2823,8 @@ func TestRecordServerMetrics(t *testing.T) {
 				for _, m := range sm.Metrics {
 					if m.Name == "gcp.storage.client.server.unreached" {
 						for _, dp := range m.Data.(metricdata.Sum[int64]).DataPoints {
+							assertExactAttrKeys(t, m.Name, dp.Attributes,
+								"error.type", "gcp.storage.operation", "rpc.system.name", "server.address")
 							gotUnreached += dp.Value
 						}
 					}
