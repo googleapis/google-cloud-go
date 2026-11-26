@@ -320,3 +320,300 @@ func TestInterconnectRequested(t *testing.T) {
 		})
 	}
 }
+
+// unsetEnvForTest ensures key is absent from the process environment for the
+// duration of t and restores the prior state on cleanup.
+func unsetEnvForTest(t *testing.T, key string) {
+	t.Helper()
+	t.Setenv(key, "")
+	if err := os.Unsetenv(key); err != nil {
+		t.Fatalf("os.Unsetenv(%q) failed: %v", key, err)
+	}
+}
+
+// setOnGCEForTest overrides the package-level GCE probe for the duration of t.
+func setOnGCEForTest(t *testing.T, v bool) {
+	t.Helper()
+	origOnGCE := onGCE
+	onGCE = func() bool { return v }
+	t.Cleanup(func() { onGCE = origOnGCE })
+}
+
+func TestDirectPathDiagnostic_DisableEnvVar(t *testing.T) {
+	setOnGCEForTest(t, false)
+
+	// Verify GOOGLE_CLOUD_DISABLE_DIRECT_PATH uses strconv.ParseBool semantics
+	// matching auth/grpctransport rather than only matching "true".
+	tests := []struct {
+		name   string
+		envVal string
+		want   string
+	}{
+		{name: "numeric_one", envVal: "1", want: reasonEnvVarDisabled},
+		{name: "short_lower_t", envVal: "t", want: reasonEnvVarDisabled},
+		{name: "short_upper_t", envVal: "T", want: reasonEnvVarDisabled},
+		{name: "lower_true", envVal: "true", want: reasonEnvVarDisabled},
+		{name: "upper_true", envVal: "TRUE", want: reasonEnvVarDisabled},
+		{name: "title_true", envVal: "True", want: reasonEnvVarDisabled},
+		{name: "numeric_zero", envVal: "0", want: reasonNotOnGCE},
+		{name: "lower_false", envVal: "false", want: reasonNotOnGCE},
+		{name: "mixed_case_true", envVal: "tRuE", want: reasonNotOnGCE},
+		{name: "invalid_value", envVal: "invalid", want: reasonNotOnGCE},
+		{name: "empty_value", envVal: "", want: reasonNotOnGCE},
+	}
+
+	opts := []option.ClientOption{
+		internaloption.EnableDirectPath(true),
+		internaloption.EnableDirectPathXds(),
+		option.WithEndpoint("storage.googleapis.com:443"),
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			unsetEnvForTest(t, enableDirectPathXdsOverInterconnectEnvVar)
+			unsetEnvForTest(t, universeDomainEnvVar)
+			t.Setenv(directPathDisableEnvVar, tc.envVal)
+
+			if got := directPathDiagnostic(t.Context(), opts...); got != tc.want {
+				t.Errorf("directPathDiagnostic(disableEnv=%q) = %q, want %q", tc.envVal, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestDirectPathDiagnostic_UniverseDomain(t *testing.T) {
+	setOnGCEForTest(t, false)
+
+	// Non-default universe domains disable DirectPath in auth/grpctransport and
+	// must report unsupported_endpoint rather than not_on_gce or undetermined.
+	tests := []struct {
+		name            string
+		universeEnv     string
+		interconnectEnv string
+		opts            []option.ClientOption
+		want            string
+	}{
+		{
+			name: "option_with_interconnect",
+			opts: []option.ClientOption{
+				internaloption.EnableDirectPath(true),
+				internaloption.EnableDirectPathXds(),
+				experimental.WithDirectPathXdsOverInterconnect(),
+				option.WithUniverseDomain("my-ud.net"),
+				option.WithEndpoint("storage.my-ud.net:443"),
+			},
+			want: reasonUnsupportedEndpoint,
+		},
+		{
+			name:            "env_with_interconnect",
+			universeEnv:     "my-ud.net",
+			interconnectEnv: "true",
+			opts: []option.ClientOption{
+				internaloption.EnableDirectPath(true),
+				internaloption.EnableDirectPathXds(),
+				option.WithEndpoint("storage.my-ud.net:443"),
+			},
+			want: reasonUnsupportedEndpoint,
+		},
+		{
+			name: "option_vanilla",
+			opts: []option.ClientOption{
+				internaloption.EnableDirectPath(true),
+				internaloption.EnableDirectPathXds(),
+				option.WithUniverseDomain("my-ud.net"),
+				option.WithEndpoint("storage.my-ud.net:443"),
+			},
+			want: reasonUnsupportedEndpoint,
+		},
+		{
+			name: "explicit_default",
+			opts: []option.ClientOption{
+				internaloption.EnableDirectPath(true),
+				internaloption.EnableDirectPathXds(),
+				option.WithUniverseDomain(defaultUniverseDomain),
+				option.WithEndpoint("storage.googleapis.com:443"),
+			},
+			want: reasonNotOnGCE,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv(directPathDisableEnvVar, "false")
+			if tc.universeEnv != "" {
+				t.Setenv(universeDomainEnvVar, tc.universeEnv)
+			} else {
+				unsetEnvForTest(t, universeDomainEnvVar)
+			}
+			if tc.interconnectEnv != "" {
+				t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, tc.interconnectEnv)
+			} else {
+				unsetEnvForTest(t, enableDirectPathXdsOverInterconnectEnvVar)
+			}
+
+			if got := directPathDiagnostic(t.Context(), tc.opts...); got != tc.want {
+				t.Errorf("directPathDiagnostic(%s) = %q, want %q", tc.name, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestDirectPathDiagnostic_DefaultEndpointNoOverride(t *testing.T) {
+	setOnGCEForTest(t, false)
+
+	// Matches newGRPCStorageClient calling directPathDiagnostic with
+	// defaultGRPCOptions() and no option.WithEndpoint override: diagnostic must
+	// resolve the default storage endpoint (including mTLS default) rather than
+	// returning unsupported_endpoint on an empty endpoint string.
+	tests := []struct {
+		name       string
+		mtlsEnvVal string
+		opts       []option.ClientOption
+		want       string
+	}{
+		{
+			name: "default_off_gce",
+			opts: []option.ClientOption{
+				internaloption.EnableDirectPath(true),
+				internaloption.EnableDirectPathXds(),
+			},
+			want: reasonNotOnGCE,
+		},
+		{
+			name:       "default_mtls_always",
+			mtlsEnvVal: "always",
+			opts: []option.ClientOption{
+				internaloption.EnableDirectPath(true),
+				internaloption.EnableDirectPathXds(),
+			},
+			want: reasonNotOnGCE,
+		},
+		{
+			name: "default_no_auth",
+			opts: []option.ClientOption{
+				internaloption.EnableDirectPath(true),
+				internaloption.EnableDirectPathXds(),
+				option.WithoutAuthentication(),
+			},
+			want: reasonNoAuth,
+		},
+		{
+			name: "default_api_key",
+			opts: []option.ClientOption{
+				internaloption.EnableDirectPath(true),
+				internaloption.EnableDirectPathXds(),
+				option.WithAPIKey("fake-api-key"),
+			},
+			want: reasonAPIKey,
+		},
+		{
+			name: "default_interconnect_option",
+			opts: []option.ClientOption{
+				internaloption.EnableDirectPath(true),
+				internaloption.EnableDirectPathXds(),
+				experimental.WithDirectPathXdsOverInterconnect(),
+			},
+			want: reasonUndetermined,
+		},
+		{
+			name: "default_non_default_universe",
+			opts: []option.ClientOption{
+				internaloption.EnableDirectPath(true),
+				internaloption.EnableDirectPathXds(),
+				option.WithUniverseDomain("my-ud.net"),
+			},
+			want: reasonUnsupportedEndpoint,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv(directPathDisableEnvVar, "false")
+			unsetEnvForTest(t, enableDirectPathXdsOverInterconnectEnvVar)
+			unsetEnvForTest(t, universeDomainEnvVar)
+			unsetEnvForTest(t, "GOOGLE_API_USE_MTLS")
+			unsetEnvForTest(t, "GOOGLE_API_USE_CLIENT_CERTIFICATE")
+			if tc.mtlsEnvVal != "" {
+				t.Setenv("GOOGLE_API_USE_MTLS_ENDPOINT", tc.mtlsEnvVal)
+			} else {
+				unsetEnvForTest(t, "GOOGLE_API_USE_MTLS_ENDPOINT")
+			}
+
+			if got := directPathDiagnostic(t.Context(), tc.opts...); got != tc.want {
+				t.Errorf("directPathDiagnostic(%s) = %q, want %q", tc.name, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestDirectPathDiagnostic_DefaultEndpointOnGCE(t *testing.T) {
+	setOnGCEForTest(t, true)
+
+	// Verify default NewGRPCClient options (no option.WithEndpoint) reach
+	// gceAuthDiagnostic when running on GCE rather than stopping early at
+	// unsupported_endpoint.
+	tests := []struct {
+		name        string
+		emailStatus int
+		tokenStatus int
+		want        string
+	}{
+		{
+			name:        "default_sa_and_token_ok",
+			emailStatus: http.StatusOK,
+			tokenStatus: http.StatusOK,
+			want:        reasonUndetermined,
+		},
+		{
+			name:        "missing_default_sa",
+			emailStatus: http.StatusNotFound,
+			tokenStatus: http.StatusOK,
+			want:        reasonNotDefaultServiceAccount,
+		},
+		{
+			name:        "token_fetch_error",
+			emailStatus: http.StatusOK,
+			tokenStatus: http.StatusForbidden,
+			want:        reasonTokenFetchError,
+		},
+	}
+
+	opts := []option.ClientOption{
+		internaloption.EnableDirectPath(true),
+		internaloption.EnableDirectPathXds(),
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				switch r.URL.Path {
+				case "/computeMetadata/v1/instance/service-accounts/" + defaultKey + "/email":
+					w.WriteHeader(tc.emailStatus)
+					if tc.emailStatus == http.StatusOK {
+						w.Write([]byte("default-compute@developer.gserviceaccount.com"))
+					}
+				case "/computeMetadata/v1/" + serviceAccountTokenKey:
+					w.WriteHeader(tc.tokenStatus)
+					if tc.tokenStatus == http.StatusOK {
+						w.Write([]byte(`{"access_token": "mock-token", "expires_in": 3600, "token_type": "Bearer"}`))
+					}
+				default:
+					w.WriteHeader(http.StatusNotFound)
+				}
+			}))
+			t.Cleanup(ts.Close)
+
+			t.Setenv("GCE_METADATA_HOST", ts.Listener.Addr().String())
+			t.Setenv(directPathDisableEnvVar, "false")
+			unsetEnvForTest(t, enableDirectPathXdsOverInterconnectEnvVar)
+			unsetEnvForTest(t, universeDomainEnvVar)
+			unsetEnvForTest(t, "GOOGLE_API_USE_MTLS_ENDPOINT")
+			unsetEnvForTest(t, "GOOGLE_API_USE_MTLS")
+			unsetEnvForTest(t, "GOOGLE_API_USE_CLIENT_CERTIFICATE")
+
+			if got := directPathDiagnostic(t.Context(), opts...); got != tc.want {
+				t.Errorf("directPathDiagnostic(%s) = %q, want %q", tc.name, got, tc.want)
+			}
+		})
+	}
+}
