@@ -1025,6 +1025,77 @@ func TestGRPCWriter_CanResumeSession(t *testing.T) {
 	}
 }
 
+// discardBidiWriteStream accepts and drops every request sent on it.
+type discardBidiWriteStream struct {
+	storagepb.Storage_BidiWriteObjectClient
+}
+
+func (discardBidiWriteStream) Send(*storagepb.BidiWriteObjectRequest) error { return nil }
+
+// TestGRPCAppendWriter_ConcurrentFirstMessageUpdate runs a first-message send
+// alongside each receive-side update, as handleStream's goroutines can. Run
+// with -race to catch unsynchronized access to firstMessage.
+func TestGRPCAppendWriter_ConcurrentFirstMessageUpdate(t *testing.T) {
+	handle := &storagepb.BidiWriteHandle{Handle: []byte("handle-1")}
+	redirect, err := status.New(codes.Aborted, "redirect").WithDetails(&storagepb.BidiWriteObjectRedirectedError{
+		RoutingToken: proto.String("token"),
+		WriteHandle:  handle,
+		Generation:   proto.Int64(5),
+	})
+	if err != nil {
+		t.Fatalf("WithDetails: %v", err)
+	}
+
+	for _, tc := range []struct {
+		name   string
+		update func(s *gRPCAppendBidiWriteBufferSender)
+	}{
+		{
+			name: "write handle in response",
+			update: func(s *gRPCAppendBidiWriteBufferSender) {
+				s.maybeUpdateFirstMessage(&storagepb.BidiWriteObjectResponse{WriteHandle: handle})
+			},
+		},
+		{
+			name: "redirect error with write handle",
+			update: func(s *gRPCAppendBidiWriteBufferSender) {
+				s.maybeHandleRedirectionError(redirect.Err())
+			},
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			s := &gRPCAppendBidiWriteBufferSender{
+				firstMessage: &storagepb.BidiWriteObjectRequest{
+					FirstMessage: &storagepb.BidiWriteObjectRequest_WriteObjectSpec{
+						WriteObjectSpec: &storagepb.WriteObjectSpec{
+							Resource: &storagepb.Object{Bucket: "bucket", Name: "object"},
+						},
+					},
+				},
+				disableAutoChecksum: true,
+			}
+
+			var wg sync.WaitGroup
+			wg.Add(2)
+			go func() {
+				defer wg.Done()
+				if err := s.send(discardBidiWriteStream{}, []byte("data"), 0, false, false, true); err != nil {
+					t.Errorf("send: %v", err)
+				}
+			}()
+			go func() {
+				defer wg.Done()
+				tc.update(s)
+			}()
+			wg.Wait()
+
+			if !s.canResumeSession() {
+				t.Errorf("canResumeSession() = false after receiving a write handle, want true")
+			}
+		})
+	}
+}
+
 func TestGRPCWriter_SessionRecoveryRetries(t *testing.T) {
 	transientErr := status.Error(codes.Unavailable, "transient unavailable")
 	redirectErr := fmt.Errorf("%w%w", bidiWriteObjectRedirectionError{}, status.Error(codes.Aborted, "redirect"))

@@ -1823,6 +1823,9 @@ type gRPCAppendBidiWriteBufferSender struct {
 	bucket       string
 	routingToken *string
 
+	// mu guards firstMessage, which the receive goroutine updates while the
+	// send goroutine may be reading it.
+	mu              sync.Mutex
 	firstMessage    *storagepb.BidiWriteObjectRequest
 	finalizeOnClose bool
 
@@ -1839,6 +1842,8 @@ type gRPCAppendBidiWriteBufferSender struct {
 
 func (s *gRPCAppendBidiWriteBufferSender) err() error { return s.streamErr }
 func (s *gRPCAppendBidiWriteBufferSender) canResumeSession() bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	return s.firstMessage.GetAppendObjectSpec().GetWriteHandle() != nil || s.takeoverWriter
 }
 
@@ -2053,6 +2058,8 @@ func (s *gRPCAppendBidiWriteBufferSender) ensureFirstMessageAppendObjectSpec() {
 }
 
 func (s *gRPCAppendBidiWriteBufferSender) maybeUpdateFirstMessage(resp *storagepb.BidiWriteObjectResponse) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	// Any affirmative response should switch us to an AppendObjectSpec.
 	s.ensureFirstMessageAppendObjectSpec()
 
@@ -2087,6 +2094,7 @@ func (s *gRPCAppendBidiWriteBufferSender) maybeHandleRedirectionError(err error)
 				if e.WriteHandle != nil {
 					// If we get back a write handle, we should use it. We can only use it
 					// on an append object spec.
+					s.mu.Lock()
 					s.ensureFirstMessageAppendObjectSpec()
 					s.firstMessage.GetAppendObjectSpec().WriteHandle = e.WriteHandle
 					// Generation is meant to only come with the WriteHandle, so ignore it
@@ -2094,6 +2102,7 @@ func (s *gRPCAppendBidiWriteBufferSender) maybeHandleRedirectionError(err error)
 					if e.Generation != nil {
 						s.firstMessage.GetAppendObjectSpec().Generation = e.GetGeneration()
 					}
+					s.mu.Unlock()
 				}
 
 				s.routingToken = e.RoutingToken
@@ -2128,7 +2137,9 @@ func (s *gRPCAppendBidiWriteBufferSender) send(stream storagepb.Storage_BidiWrit
 	})
 	req := bidiWriteObjectRequest(r, bufChecksum, objectChecksums)
 	if sendFirstMessage {
+		s.mu.Lock()
 		proto.Merge(req, s.firstMessage)
+		s.mu.Unlock()
 	}
 
 	return stream.Send(req)
