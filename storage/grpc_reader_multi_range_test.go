@@ -101,6 +101,7 @@ type mrdStallOnOpenServer struct {
 	streams       atomic.Int32
 	mu            sync.Mutex
 	xGoogHeaders  []string
+	specs         []*storagepb.BidiReadObjectSpec
 }
 
 func (s *mrdStallOnOpenServer) BidiReadObject(stream storagepb.Storage_BidiReadObjectServer) error {
@@ -111,9 +112,13 @@ func (s *mrdStallOnOpenServer) BidiReadObject(stream storagepb.Storage_BidiReadO
 	s.mu.Unlock()
 
 	attempt := s.streams.Add(1)
-	if _, err := stream.Recv(); err != nil {
+	first, err := stream.Recv()
+	if err != nil {
 		return err
 	}
+	s.mu.Lock()
+	s.specs = append(s.specs, first.GetReadObjectSpec())
+	s.mu.Unlock()
 	if s.redirectFirst && attempt == 1 {
 		st, err := status.New(codes.Aborted, "redirect").WithDetails(&storagepb.BidiReadObjectRedirectedError{
 			RoutingToken: proto.String("token-1"),
@@ -203,6 +208,69 @@ func TestMultiRangeDownloaderReadStallTimeout(t *testing.T) {
 	}
 	if !bytes.Equal(buf.Bytes(), data) {
 		t.Errorf("mrd.Add data = %q, want %q", buf.Bytes(), data)
+	}
+}
+
+func TestMultiRangeDownloaderSendsConditions(t *testing.T) {
+	for _, tc := range []struct {
+		name  string
+		conds Conditions
+		want  *storagepb.BidiReadObjectSpec
+	}{
+		{
+			name:  "match",
+			conds: Conditions{GenerationMatch: 5, MetagenerationMatch: 7},
+			want:  &storagepb.BidiReadObjectSpec{IfGenerationMatch: proto.Int64(5), IfMetagenerationMatch: proto.Int64(7)},
+		},
+		{
+			name:  "not match",
+			conds: Conditions{GenerationNotMatch: 5, MetagenerationNotMatch: 7},
+			want:  &storagepb.BidiReadObjectSpec{IfGenerationNotMatch: proto.Int64(5), IfMetagenerationNotMatch: proto.Int64(7)},
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			data := []byte("0123456789abcdef")
+			// The redirect and the second connection each open a stream from a copy of the spec.
+			srv := &mrdStallOnOpenServer{data: data, redirectFirst: true}
+			client := newBufconnGRPCClient(t, srv)
+			client.SetRetry(WithBackoff(gax.Backoff{Initial: 10 * time.Millisecond}))
+
+			ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
+			defer cancel()
+
+			mrd, err := client.Bucket("test-bucket").Object("test-object").If(tc.conds).NewMultiRangeDownloader(ctx, WithMinConnections(2))
+			if err != nil {
+				t.Fatalf("NewMultiRangeDownloader: %v", err)
+			}
+			// Any manager event lets it open the second connection.
+			var buf bytes.Buffer
+			mrd.Add(&buf, 0, int64(len(data)), func(int64, int64, error) {})
+			mrd.Wait()
+			for srv.streams.Load() < 3 && ctx.Err() == nil {
+				time.Sleep(10 * time.Millisecond)
+			}
+			if err := mrd.Close(); err != nil {
+				t.Errorf("mrd.Close() = %v, want nil", err)
+			}
+
+			srv.mu.Lock()
+			specs := append([]*storagepb.BidiReadObjectSpec(nil), srv.specs...)
+			srv.mu.Unlock()
+			if len(specs) < 3 {
+				t.Fatalf("len(srv.specs) = %d, want >= 3", len(specs))
+			}
+			for i, got := range specs {
+				g := &storagepb.BidiReadObjectSpec{
+					IfGenerationMatch:        got.IfGenerationMatch,
+					IfGenerationNotMatch:     got.IfGenerationNotMatch,
+					IfMetagenerationMatch:    got.IfMetagenerationMatch,
+					IfMetagenerationNotMatch: got.IfMetagenerationNotMatch,
+				}
+				if !proto.Equal(g, tc.want) {
+					t.Errorf("stream %d preconditions = %v, want %v", i, g, tc.want)
+				}
+			}
+		})
 	}
 }
 
