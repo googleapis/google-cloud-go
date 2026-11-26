@@ -209,10 +209,14 @@ func (l *propertyLoader) loadOneElement(codec fields.List, structValue reflect.V
 
 	prev[p.Name] = struct{}{}
 
-	if errReason := setVal(v, p); errReason != "" {
-		// Set the slice back to its zero value.
+	if errReason, fieldMismatch := setVal(v, p); errReason != "" {
 		if slice.IsValid() {
-			slice.Set(reflect.Zero(slice.Type()))
+			if fieldMismatch {
+				slice.Index(sliceIndex).Set(v)
+			} else {
+				// Set the slice back to its zero value.
+				slice.Set(reflect.Zero(slice.Type()))
+			}
 		}
 		return errReason
 	}
@@ -266,22 +270,22 @@ func plsFieldLoad(v reflect.Value, p Property, subfields []string) (ok bool, err
 }
 
 // setVal sets 'v' to the value of the Property 'p'.
-func setVal(v reflect.Value, p Property) (s string) {
+func setVal(v reflect.Value, p Property) (s string, fieldMismatch bool) {
 	pValue := p.Value
 	switch v.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		x, ok := pValue.(int64)
 		if !ok && pValue != nil {
-			return typeMismatchReason(p, v)
+			return typeMismatchReason(p, v), false
 		}
 		if v.OverflowInt(x) {
-			return overflowReason(x, v)
+			return overflowReason(x, v), false
 		}
 		v.SetInt(x)
 	case reflect.Bool:
 		x, ok := pValue.(bool)
 		if !ok && pValue != nil {
-			return typeMismatchReason(p, v)
+			return typeMismatchReason(p, v), false
 		}
 		v.SetBool(x)
 	case reflect.String:
@@ -289,24 +293,24 @@ func setVal(v reflect.Value, p Property) (s string) {
 		if !ok && pValue != nil {
 			if b, ok := pValue.([]byte); ok {
 				v.SetString(string(b))
-				return ""
+				return "", false
 			}
-			return typeMismatchReason(p, v)
+			return typeMismatchReason(p, v), false
 		}
 		v.SetString(x)
 	case reflect.Float32, reflect.Float64:
 		x, ok := pValue.(float64)
 		if !ok && pValue != nil {
-			return typeMismatchReason(p, v)
+			return typeMismatchReason(p, v), false
 		}
 		if v.OverflowFloat(x) {
-			return overflowReason(x, v)
+			return overflowReason(x, v), false
 		}
 		v.SetFloat(x)
 
 	case reflect.Interface:
 		if !v.CanSet() {
-			return fmt.Sprintf("%v is unsettable", v.Type())
+			return fmt.Sprintf("%v is unsettable", v.Type()), false
 		}
 
 		// When retrieved property value is untyped nil, its type cannot be determined
@@ -316,7 +320,7 @@ func setVal(v reflect.Value, p Property) (s string) {
 		} else {
 			rpValue := reflect.ValueOf(pValue)
 			if !rpValue.Type().AssignableTo(v.Type()) {
-				return fmt.Sprintf("%q is not assignable to %q", rpValue.Type(), v.Type())
+				return fmt.Sprintf("%q is not assignable to %q", rpValue.Type(), v.Type()), false
 			}
 			v.Set(rpValue)
 		}
@@ -324,7 +328,7 @@ func setVal(v reflect.Value, p Property) (s string) {
 	case reflect.Ptr:
 		// v must be a pointer to either a Key, an Entity, or one of the supported basic types.
 		if v.Type() != typeOfKeyPtr && v.Type().Elem().Kind() != reflect.Struct && !isValidPointerType(v.Type().Elem()) {
-			return typeMismatchReason(p, v)
+			return typeMismatchReason(p, v), false
 		}
 
 		if pValue == nil {
@@ -332,15 +336,15 @@ func setVal(v reflect.Value, p Property) (s string) {
 			if !v.IsNil() {
 				v.Set(reflect.New(v.Type()).Elem())
 			}
-			return ""
+			return "", false
 		}
 
 		if x, ok := p.Value.(*Key); ok {
 			if _, ok := v.Interface().(*Key); !ok {
-				return typeMismatchReason(p, v)
+				return typeMismatchReason(p, v), false
 			}
 			v.Set(reflect.ValueOf(x))
-			return ""
+			return "", false
 		}
 		if v.IsNil() {
 			v.Set(reflect.New(v.Type().Elem()))
@@ -349,62 +353,63 @@ func setVal(v reflect.Value, p Property) (s string) {
 		case *Entity:
 			err := loadEntity(v.Interface(), x)
 			if err != nil {
-				return err.Error()
+				_, isMismatch := err.(*ErrFieldMismatch)
+				return err.Error(), isMismatch
 			}
 		case int64:
 			if v.Elem().Type() == typeOfTime {
 				s := x / 1e6
 				ns := (x % 1e6) * 1e3
 				v.Elem().Set(reflect.ValueOf(time.Unix(s, ns).In(time.UTC)))
-				return ""
+				return "", false
 			}
 			if v.Elem().Kind() < reflect.Int || v.Elem().Kind() > reflect.Int64 {
-				return typeMismatchReason(p, v)
+				return typeMismatchReason(p, v), false
 			}
 			if v.Elem().OverflowInt(x) {
-				return overflowReason(x, v.Elem())
+				return overflowReason(x, v.Elem()), false
 			}
 			v.Elem().SetInt(x)
 		case float64:
 			if v.Elem().Kind() != reflect.Float32 && v.Elem().Kind() != reflect.Float64 {
-				return typeMismatchReason(p, v)
+				return typeMismatchReason(p, v), false
 			}
 			if v.Elem().OverflowFloat(x) {
-				return overflowReason(x, v.Elem())
+				return overflowReason(x, v.Elem()), false
 			}
 			v.Elem().SetFloat(x)
 		case bool:
 			if v.Elem().Kind() != reflect.Bool {
-				return typeMismatchReason(p, v)
+				return typeMismatchReason(p, v), false
 			}
 			v.Elem().SetBool(x)
 		case string:
 			if v.Elem().Kind() == reflect.String {
 				v.Elem().SetString(x)
-				return ""
+				return "", false
 			}
 			if v.Elem().Kind() == reflect.Slice && v.Elem().Type().Elem().Kind() == reflect.Uint8 {
 				v.Elem().SetBytes([]byte(x))
-				return ""
+				return "", false
 			}
-			return typeMismatchReason(p, v)
+			return typeMismatchReason(p, v), false
 		case []byte:
 			if v.Elem().Kind() == reflect.String {
 				v.Elem().SetString(string(x))
-				return ""
+				return "", false
 			}
 			if v.Elem().Kind() == reflect.Slice && v.Elem().Type().Elem().Kind() == reflect.Uint8 {
 				v.Elem().SetBytes(x)
-				return ""
+				return "", false
 			}
-			return typeMismatchReason(p, v)
+			return typeMismatchReason(p, v), false
 		case GeoPoint, time.Time:
 			if v.Elem().Type() != reflect.TypeOf(x) {
-				return typeMismatchReason(p, v)
+				return typeMismatchReason(p, v), false
 			}
 			v.Elem().Set(reflect.ValueOf(x))
 		default:
-			return typeMismatchReason(p, v)
+			return typeMismatchReason(p, v), false
 		}
 	case reflect.Struct:
 		switch v.Type() {
@@ -423,13 +428,13 @@ func setVal(v reflect.Value, p Property) (s string) {
 			}
 			x, ok := pValue.(time.Time)
 			if !ok && pValue != nil {
-				return typeMismatchReason(p, v)
+				return typeMismatchReason(p, v), false
 			}
 			v.Set(reflect.ValueOf(x))
 		case typeOfGeoPoint:
 			x, ok := pValue.(GeoPoint)
 			if !ok && pValue != nil {
-				return typeMismatchReason(p, v)
+				return typeMismatchReason(p, v), false
 			}
 			v.Set(reflect.ValueOf(x))
 		case typeOfCivilDate:
@@ -444,30 +449,31 @@ func setVal(v reflect.Value, p Property) (s string) {
 		default:
 			ent, ok := pValue.(*Entity)
 			if !ok {
-				return typeMismatchReason(p, v)
+				return typeMismatchReason(p, v), false
 			}
 			err := loadEntity(v.Addr().Interface(), ent)
 			if err != nil {
-				return err.Error()
+				_, isMismatch := err.(*ErrFieldMismatch)
+				return err.Error(), isMismatch
 			}
 		}
 	case reflect.Slice:
 		if v.Type().Elem().Kind() != reflect.Uint8 {
-			return typeMismatchReason(p, v)
+			return typeMismatchReason(p, v), false
 		}
 		x, ok := pValue.([]byte)
 		if !ok && pValue != nil {
 			if s, ok := pValue.(string); ok {
 				v.SetBytes([]byte(s))
-				return ""
+				return "", false
 			}
-			return typeMismatchReason(p, v)
+			return typeMismatchReason(p, v), false
 		}
 		v.SetBytes(x)
 	default:
-		return typeMismatchReason(p, v)
+		return typeMismatchReason(p, v), false
 	}
-	return ""
+	return "", false
 }
 
 // initField is similar to reflect's Value.FieldByIndex, in that it
