@@ -76,6 +76,9 @@ func setupMockedTestServerWithConfig(t *testing.T, config ClientConfig) (server 
 
 func setupAuthenticatedMockedTestServerWithConfig(t *testing.T, config ClientConfig) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
 	t.Helper()
+	// The mock server uses insecure transport credentials, which conflict with
+	// the DirectPath credentials bundle when tests run on GCE.
+	t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
 	return setupMockedTestServerWithConfigAndAuth(t, config, []option.ClientOption{}, nil, true)
 }
 
