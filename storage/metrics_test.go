@@ -26,6 +26,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"os"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -316,6 +317,10 @@ func TestHTTPMetricsRecording(t *testing.T) {
 	}
 
 	found := false
+	foundAttempts := false
+	foundServerDuration := false
+	foundTTFB := false
+	foundActive := false
 	for _, sm := range rm.ScopeMetrics {
 		for _, m := range sm.Metrics {
 			if m.Name == "http.client.request.duration" {
@@ -329,40 +334,78 @@ func TestHTTPMetricsRecording(t *testing.T) {
 				}
 				dp := hist.DataPoints[0]
 
-				// Verify dynamic attributes are present on the data point.
-				attrMap := make(map[string]string)
-				for _, kv := range dp.Attributes.ToSlice() {
-					attrMap[string(kv.Key)] = kv.Value.Emit()
+				assertExactAttrKeys(t, m.Name, dp.Attributes,
+					"error.type", "http.request.method", "http.response.status_code", "rpc.system.name", "server.address", "url.template")
+				if got := getHistAttr(dp, "rpc.system.name"); got != "http" {
+					t.Errorf("expected rpc.system.name http, got %q", got)
 				}
+				if got := getHistAttr(dp, "http.request.method"); got != "GET" {
+					t.Errorf("expected GET, got %q", got)
+				}
+				if got := getHistAttr(dp, "url.template"); got != "/storage/v1/b/{bucket}/o/{object}" {
+					t.Errorf("expected template /storage/v1/b/{bucket}/o/{object}, got %q", got)
+				}
+				if got := getHistAttr(dp, "http.response.status_code"); got != "200" {
+					t.Errorf("expected status_code 200, got %q", got)
+				}
+				if got := getHistAttr(dp, "error.type"); got != "OK" {
+					t.Errorf("expected error.type OK, got %q", got)
+				}
+			}
 
-				if attrMap["rpc.system.name"] != "http" {
-					t.Errorf("expected rpc.system.name http, got %q", attrMap["rpc.system.name"])
+			if m.Name == "gcp.storage.client.attempts" {
+				foundAttempts = true
+				sum, ok := m.Data.(metricdata.Sum[int64])
+				if !ok {
+					t.Fatalf("expected Sum data for attempts, got %T", m.Data)
 				}
-				if attrMap["http.request.method"] != "GET" {
-					t.Errorf("expected GET, got %q", attrMap["http.request.method"])
+				if len(sum.DataPoints) != 1 {
+					t.Fatalf("expected 1 attempts datapoint, got %d", len(sum.DataPoints))
 				}
-				if attrMap["url.template"] != "/storage/v1/b/{bucket}/o/{object}" {
-					t.Errorf("expected template /storage/v1/b/{bucket}/o/{object}, got %q", attrMap["url.template"])
-				}
-				if attrMap["http.response.status_code"] != "200" {
-					t.Errorf("expected status_code 200, got %q", attrMap["http.response.status_code"])
-				}
-				if attrMap["error.type"] != "OK" {
-					t.Errorf("expected error.type OK, got %q", attrMap["error.type"])
-				}
-				if attrMap["gcp.client.method"] != "storage.Object.Read" {
-					t.Errorf("expected gcp.client.method storage.Object.Read, got %q", attrMap["gcp.client.method"])
+				assertExactAttrKeys(t, m.Name, sum.DataPoints[0].Attributes,
+					"error.type", "gcp.storage.operation", "http.response.status_code", "rpc.system.name", "server.address")
+				if got := getAttr(sum.DataPoints[0], "gcp.storage.operation"); got != "Unknown" {
+					t.Errorf("attempts gcp.storage.operation = %q, want Unknown", got)
 				}
 			}
 
 			if m.Name == "gcp.storage.client.server.duration" {
+				foundServerDuration = true
 				hist, ok := m.Data.(metricdata.Histogram[float64])
 				if ok && len(hist.DataPoints) > 0 {
+					assertExactAttrKeys(t, m.Name, hist.DataPoints[0].Attributes,
+						"gcp.storage.operation", "rpc.system.name", "server.address")
 					if hist.DataPoints[0].Sum != 0.15 {
 						t.Errorf("expected server.duration 0.15s, got %v", hist.DataPoints[0].Sum)
 					}
+					if got := getHistAttr(hist.DataPoints[0], "gcp.storage.operation"); got != "Unknown" {
+						t.Errorf("server.duration gcp.storage.operation = %q, want Unknown", got)
+					}
 				} else {
 					t.Errorf("expected server.duration datapoints")
+				}
+			}
+
+			if m.Name == "gcp.storage.client.ttfb" {
+				foundTTFB = true
+				hist, ok := m.Data.(metricdata.Histogram[float64])
+				if !ok || len(hist.DataPoints) != 1 {
+					t.Fatalf("ttfb: got %T (len=%d), want 1 Histogram datapoint", m.Data, len(hist.DataPoints))
+				}
+				assertExactAttrKeys(t, m.Name, hist.DataPoints[0].Attributes,
+					"gcp.storage.operation", "rpc.system.name", "server.address")
+			}
+
+			if m.Name == "gcp.storage.client.request.active" {
+				foundActive = true
+				sum, ok := m.Data.(metricdata.Sum[int64])
+				if !ok || len(sum.DataPoints) != 1 {
+					t.Fatalf("request.active: got %T (len=%d), want 1 Sum datapoint", m.Data, len(sum.DataPoints))
+				}
+				assertExactAttrKeys(t, m.Name, sum.DataPoints[0].Attributes,
+					"gcp.storage.operation", "rpc.system.name", "server.address")
+				if sum.DataPoints[0].Value != 0 {
+					t.Errorf("request.active final value = %d, want 0", sum.DataPoints[0].Value)
 				}
 			}
 		}
@@ -370,6 +413,18 @@ func TestHTTPMetricsRecording(t *testing.T) {
 
 	if !found {
 		t.Errorf("metric http.client.request.duration not found")
+	}
+	if !foundAttempts {
+		t.Errorf("metric gcp.storage.client.attempts not found")
+	}
+	if !foundServerDuration {
+		t.Errorf("metric gcp.storage.client.server.duration not found")
+	}
+	if !foundTTFB {
+		t.Errorf("metric gcp.storage.client.ttfb not found")
+	}
+	if !foundActive {
+		t.Errorf("metric gcp.storage.client.request.active not found")
 	}
 }
 
@@ -481,8 +536,8 @@ func TestGRPCMetricsRecording(t *testing.T) {
 	clientStreamBidi.SendMsg(nil)
 	clientStreamBidi.RecvMsg(nil)
 
-	// Terminate stream.
-	clientStreamBidi.(*wrappedClientStream).record(io.EOF)
+	// Terminate stream with a wrapped io.EOF to verify errors.Is(err, io.EOF) handling.
+	clientStreamBidi.(*wrappedClientStream).record(fmt.Errorf("bidi stream done: %w", io.EOF))
 
 	// Collect metrics.
 	var rm metricdata.ResourceMetrics
@@ -490,130 +545,154 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		t.Fatalf("Collect: %v", err)
 	}
 
-	var unaryDp, streamDp, writeDp, bidiDp *metricdata.HistogramDataPoint[float64]
+	rpcDps := make(map[string]metricdata.HistogramDataPoint[float64])
+	var foundAttempts, foundErrors, foundServerDuration, foundTTFB, foundActive bool
 
 	for _, sm := range rm.ScopeMetrics {
 		for _, m := range sm.Metrics {
-			if m.Name == "rpc.client.call.duration" {
+			switch m.Name {
+			case "rpc.client.call.duration":
 				hist, ok := m.Data.(metricdata.Histogram[float64])
 				if !ok {
 					t.Fatalf("expected Histogram data, got %T", m.Data)
 				}
 				for _, dp := range hist.DataPoints {
-					dpCopy := dp
-					attrs := make(map[string]string)
-					for _, kv := range dp.Attributes.ToSlice() {
-						attrs[string(kv.Key)] = kv.Value.Emit()
-					}
-					if attrs["rpc.method"] == "GetObject" {
-						unaryDp = &dpCopy
-					} else if attrs["rpc.method"] == "ReadObject" {
-						streamDp = &dpCopy
-					} else if attrs["rpc.method"] == "WriteObject" {
-						writeDp = &dpCopy
-					} else if attrs["rpc.method"] == "BidiWriteObject" {
-						bidiDp = &dpCopy
-					}
+					assertExactAttrKeys(t, m.Name, dp.Attributes,
+						"error.type", "rpc.method", "rpc.response.status_code", "rpc.system.name", "server.address")
+					rpcDps[getHistAttr(dp, "rpc.method")] = dp
 				}
-			}
 
-			if m.Name == "gcp.storage.client.server.duration" {
+			case "gcp.storage.client.attempts":
+				foundAttempts = true
+				sum, ok := m.Data.(metricdata.Sum[int64])
+				if !ok {
+					t.Fatalf("attempts: got %T, want Sum[int64]", m.Data)
+				}
+				if len(sum.DataPoints) != 3 {
+					t.Fatalf("expected 3 attempts datapoints, got %d", len(sum.DataPoints))
+				}
+				ops := make(map[string]int64)
+				statusByOp := make(map[string]string)
+				for _, dp := range sum.DataPoints {
+					assertExactAttrKeys(t, m.Name, dp.Attributes,
+						"error.type", "gcp.storage.operation", "rpc.response.status_code", "rpc.system.name", "server.address")
+					op := getAttr(dp, "gcp.storage.operation")
+					ops[op] += dp.Value
+					statusByOp[op] = getAttr(dp, "rpc.response.status_code")
+				}
+				if ops["GetObject"] != 1 || ops["ReadObject"] != 1 || ops["WriteObject"] != 2 {
+					t.Errorf("unexpected attempts by gcp.storage.operation: %v", ops)
+				}
+				if statusByOp["GetObject"] != "NOT_FOUND" || statusByOp["ReadObject"] != "OK" || statusByOp["WriteObject"] != "OK" {
+					t.Errorf("unexpected rpc.response.status_code on attempts: %v", statusByOp)
+				}
+
+			case "gcp.storage.client.errors":
+				foundErrors = true
+				sum, ok := m.Data.(metricdata.Sum[int64])
+				if !ok {
+					t.Fatalf("errors: got %T, want Sum[int64]", m.Data)
+				}
+				if len(sum.DataPoints) != 1 {
+					t.Fatalf("expected 1 errors datapoint, got %d", len(sum.DataPoints))
+				}
+				assertExactAttrKeys(t, m.Name, sum.DataPoints[0].Attributes,
+					"error.type", "gcp.storage.operation", "rpc.system.name", "server.address")
+				if got := getAttr(sum.DataPoints[0], "gcp.storage.operation"); got != "GetObject" {
+					t.Errorf("errors gcp.storage.operation = %q, want GetObject", got)
+				}
+
+			case "gcp.storage.client.server.duration":
+				foundServerDuration = true
 				hist, ok := m.Data.(metricdata.Histogram[float64])
 				if ok && len(hist.DataPoints) > 0 {
-					foundServerDuration := false
+					foundVal := false
 					for _, dp := range hist.DataPoints {
+						assertExactAttrKeys(t, m.Name, dp.Attributes,
+							"gcp.storage.operation", "rpc.system.name", "server.address")
 						if dp.Sum == 0.12 {
-							foundServerDuration = true
+							foundVal = true
+						}
+						if got := getHistAttr(dp, "gcp.storage.operation"); got == "" {
+							t.Errorf("expected gcp.storage.operation on server.duration")
 						}
 					}
-					if !foundServerDuration {
+					if !foundVal {
 						t.Errorf("expected server.duration 0.12s from stream")
 					}
 				} else {
 					t.Errorf("expected server.duration datapoints")
 				}
+
+			case "gcp.storage.client.ttfb":
+				foundTTFB = true
+				hist, ok := m.Data.(metricdata.Histogram[float64])
+				if !ok || len(hist.DataPoints) == 0 {
+					t.Fatalf("expected ttfb Histogram datapoints")
+				}
+				for _, dp := range hist.DataPoints {
+					assertExactAttrKeys(t, m.Name, dp.Attributes,
+						"gcp.storage.operation", "rpc.system.name", "server.address")
+				}
+
+			case "gcp.storage.client.request.active":
+				foundActive = true
+				sum, ok := m.Data.(metricdata.Sum[int64])
+				if !ok || len(sum.DataPoints) == 0 {
+					t.Fatalf("expected request.active Sum datapoints")
+				}
+				for _, dp := range sum.DataPoints {
+					assertExactAttrKeys(t, m.Name, dp.Attributes,
+						"gcp.storage.operation", "rpc.system.name", "server.address")
+					if dp.Value != 0 {
+						t.Errorf("request.active (%s) = %d, want 0", getAttr(dp, "gcp.storage.operation"), dp.Value)
+					}
+				}
 			}
 		}
 	}
 
-	if unaryDp == nil {
-		t.Errorf("unary metric not recorded")
-	} else {
-		attrs := make(map[string]string)
-		for _, kv := range unaryDp.Attributes.ToSlice() {
-			attrs[string(kv.Key)] = kv.Value.Emit()
-		}
-		if attrs["rpc.system.name"] != "grpc" {
-			t.Errorf("expected rpc.system.name grpc, got %q", attrs["rpc.system.name"])
-		}
-		if attrs["rpc.service"] != "google.storage.v2.Storage" {
-			t.Errorf("expected rpc.service, got %q", attrs["rpc.service"])
-		}
-		if attrs["rpc.grpc.status_code"] != "5" { // codes.NotFound is 5.
-			t.Errorf("expected status_code 5, got %q", attrs["rpc.grpc.status_code"])
-		}
-		if attrs["error.type"] != "NOT_FOUND" {
-			t.Errorf("expected error.type NOT_FOUND, got %q", attrs["error.type"])
-		}
+	if !foundAttempts {
+		t.Errorf("metric gcp.storage.client.attempts not found")
+	}
+	if !foundErrors {
+		t.Errorf("metric gcp.storage.client.errors not found")
+	}
+	if !foundServerDuration {
+		t.Errorf("metric gcp.storage.client.server.duration not found")
+	}
+	if !foundTTFB {
+		t.Errorf("metric gcp.storage.client.ttfb not found")
+	}
+	if !foundActive {
+		t.Errorf("metric gcp.storage.client.request.active not found")
 	}
 
-	if streamDp == nil {
-		t.Errorf("streaming metric (ReadObject) not recorded")
-	} else {
-		attrs := make(map[string]string)
-		for _, kv := range streamDp.Attributes.ToSlice() {
-			attrs[string(kv.Key)] = kv.Value.Emit()
+	for _, tc := range []struct {
+		method     string
+		wantStatus string
+	}{
+		{method: "google.storage.v2.Storage/GetObject", wantStatus: "NOT_FOUND"},
+		{method: "google.storage.v2.Storage/ReadObject", wantStatus: "OK"},
+		{method: "google.storage.v2.Storage/WriteObject", wantStatus: "OK"},
+		{method: "google.storage.v2.Storage/BidiWriteObject", wantStatus: "OK"},
+	} {
+		dp, ok := rpcDps[tc.method]
+		if !ok {
+			t.Errorf("rpc.client.call.duration not recorded for %s", tc.method)
+			continue
 		}
-		if attrs["rpc.system.name"] != "grpc" {
-			t.Errorf("expected rpc.system.name grpc, got %q", attrs["rpc.system.name"])
+		if dp.Count != 1 {
+			t.Errorf("%s count = %d, want 1", tc.method, dp.Count)
 		}
-		if attrs["rpc.service"] != "google.storage.v2.Storage" {
-			t.Errorf("expected rpc.service, got %q", attrs["rpc.service"])
+		if got := getHistAttr(dp, "rpc.system.name"); got != "grpc" {
+			t.Errorf("%s rpc.system.name = %q, want grpc", tc.method, got)
 		}
-		if attrs["rpc.grpc.status_code"] != "0" { // codes.OK is 0 (io.EOF maps to OK).
-			t.Errorf("expected status_code 0, got %q", attrs["rpc.grpc.status_code"])
+		if got := getHistAttr(dp, "rpc.response.status_code"); got != tc.wantStatus {
+			t.Errorf("%s rpc.response.status_code = %q, want %q", tc.method, got, tc.wantStatus)
 		}
-		if attrs["error.type"] != "OK" {
-			t.Errorf("expected error.type OK, got %q", attrs["error.type"])
-		}
-	}
-
-	if writeDp == nil {
-		t.Errorf("streaming metric (WriteObject) not recorded")
-	} else {
-		attrs := make(map[string]string)
-		for _, kv := range writeDp.Attributes.ToSlice() {
-			attrs[string(kv.Key)] = kv.Value.Emit()
-		}
-		if attrs["rpc.system.name"] != "grpc" {
-			t.Errorf("expected rpc.system.name grpc, got %q", attrs["rpc.system.name"])
-		}
-		if attrs["rpc.service"] != "google.storage.v2.Storage" {
-			t.Errorf("expected rpc.service, got %q", attrs["rpc.service"])
-		}
-		if attrs["rpc.grpc.status_code"] != "0" { // codes.OK is 0.
-			t.Errorf("expected status_code 0, got %q", attrs["rpc.grpc.status_code"])
-		}
-		if attrs["error.type"] != "OK" {
-			t.Errorf("expected error.type OK, got %q", attrs["error.type"])
-		}
-	}
-
-	if bidiDp == nil {
-		t.Errorf("streaming metric (BidiWriteObject) not recorded")
-	} else {
-		if bidiDp.Count != 1 {
-			t.Errorf("Bidi stream count: expected 1, got %d", bidiDp.Count)
-		}
-		attrs := make(map[string]string)
-		for _, kv := range bidiDp.Attributes.ToSlice() {
-			attrs[string(kv.Key)] = kv.Value.Emit()
-		}
-		if attrs["rpc.system.name"] != "grpc" {
-			t.Errorf("expected rpc.system.name grpc, got %q", attrs["rpc.system.name"])
-		}
-		if attrs["rpc.service"] != "google.storage.v2.Storage" {
-			t.Errorf("expected rpc.service, got %q", attrs["rpc.service"])
+		if got := getHistAttr(dp, "error.type"); got != tc.wantStatus {
+			t.Errorf("%s error.type = %q, want %q", tc.method, got, tc.wantStatus)
 		}
 	}
 }
@@ -745,6 +824,16 @@ func TestStandardMetricsRecording(t *testing.T) {
 	}
 	r.Close()
 
+	// Test NewRangeReader directly (distinguishing Object.NewRangeReader from Object.NewReader).
+	rr, err := client.Bucket("my-bucket").Object("my-object").NewRangeReader(ctx, 0, 5)
+	if err != nil {
+		t.Fatalf("NewRangeReader: %v", err)
+	}
+	if _, err := rr.Read(buf); err != nil && err != io.EOF {
+		t.Fatalf("Range Read: %v", err)
+	}
+	rr.Close()
+
 	// Test Writer (WriteObject).
 	donec := make(chan struct{})
 	close(donec) // pre-close it so Close doesn't block
@@ -773,8 +862,16 @@ func TestStandardMetricsRecording(t *testing.T) {
 		t.Fatalf("Close: %v", err)
 	}
 
-	// Test MultiRangeDownloader.
+	// Test MultiRangeDownloader (exercising the real stream interceptor for BidiReadObject
+	// when closed before RecvMsg completes).
+	_, streamInterceptor := metricsInterceptors(cm)
 	mock.newMRDFn = func(ctx context.Context, params *newMultiRangeDownloaderParams, opts ...storageOption) (*MultiRangeDownloader, error) {
+		_, err := streamInterceptor(ctx, &grpc.StreamDesc{ServerStreams: true, ClientStreams: true}, nil, "/google.storage.v2.Storage/BidiReadObject", func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+			return &mockClientStream{}, nil
+		})
+		if err != nil {
+			return nil, err
+		}
 		return &MultiRangeDownloader{
 			impl: &mockInternalMRD{bytesRead: 42, ctx: ctx},
 		}, nil
@@ -805,20 +902,31 @@ func TestStandardMetricsRecording(t *testing.T) {
 	if m, ok := metricsMap["gcp.client.request.duration"]; !ok {
 		t.Errorf("metric gcp.client.request.duration not found")
 	} else {
-		hist := m.Data.(metricdata.Histogram[float64])
-		if len(hist.DataPoints) != 4 {
-			t.Errorf("expected 4 datapoints for gcp.client.request.duration, got %d", len(hist.DataPoints))
+		hist, ok := m.Data.(metricdata.Histogram[float64])
+		if !ok {
+			t.Fatalf("gcp.client.request.duration: got %T, want Histogram[float64]", m.Data)
 		}
+		if len(hist.DataPoints) != 5 {
+			t.Errorf("expected 5 datapoints for gcp.client.request.duration, got %d", len(hist.DataPoints))
+		}
+		ops := make(map[string]bool)
 		methods := make(map[string]bool)
+		clientMethods := make(map[string]bool)
 		for _, dp := range hist.DataPoints {
-			for _, kv := range dp.Attributes.ToSlice() {
-				if kv.Key == "rpc.method" {
-					methods[kv.Value.Emit()] = true
-				}
-			}
+			assertExactAttrKeys(t, m.Name, dp.Attributes,
+				"error.type", "gcp.client.method", "gcp.storage.operation", "rpc.method", "rpc.system.name", "server.address")
+			ops[getHistAttr(dp, "gcp.storage.operation")] = true
+			methods[getHistAttr(dp, "rpc.method")] = true
+			clientMethods[getHistAttr(dp, "gcp.client.method")] = true
 		}
-		if !methods["GetObject"] || !methods["ReadObject"] || !methods["WriteObject"] {
-			t.Errorf("expected GetObject, ReadObject, WriteObject, got %v", methods)
+		if !ops["GetObject"] || !ops["ReadObject"] || !ops["WriteObject"] {
+			t.Errorf("expected gcp.storage.operation GetObject, ReadObject, WriteObject, got %v", ops)
+		}
+		if !methods["google.storage.v2.Storage/GetObject"] || !methods["google.storage.v2.Storage/ReadObject"] || !methods["google.storage.v2.Storage/BidiReadObject"] || !methods["google.storage.v2.Storage/WriteObject"] {
+			t.Errorf("expected fully-qualified rpc.method (including BidiReadObject) on gcp.client.request.duration, got %v", methods)
+		}
+		if !clientMethods["Object.Attrs"] || !clientMethods["Object.NewReader"] || !clientMethods["Object.NewRangeReader"] || !clientMethods["Object.NewWriter"] || !clientMethods["Object.NewMultiRangeDownloader"] {
+			t.Errorf("expected gcp.client.method on gcp.client.request.duration, got %v", clientMethods)
 		}
 	}
 
@@ -826,9 +934,22 @@ func TestStandardMetricsRecording(t *testing.T) {
 	if m, ok := metricsMap["gcp.storage.client.operations"]; !ok {
 		t.Errorf("metric gcp.storage.client.operations not found")
 	} else {
-		sum := m.Data.(metricdata.Sum[int64])
-		if len(sum.DataPoints) != 4 {
-			t.Errorf("expected 4 datapoints for gcp.storage.client.operations, got %d", len(sum.DataPoints))
+		sum, ok := m.Data.(metricdata.Sum[int64])
+		if !ok {
+			t.Fatalf("gcp.storage.client.operations: got %T, want Sum[int64]", m.Data)
+		}
+		if len(sum.DataPoints) != 5 {
+			t.Errorf("expected 5 datapoints for gcp.storage.client.operations, got %d", len(sum.DataPoints))
+		}
+		for _, dp := range sum.DataPoints {
+			assertExactAttrKeys(t, m.Name, dp.Attributes,
+				"error.type", "gcp.client.method", "gcp.storage.operation", "rpc.system.name", "server.address")
+			if got := getAttr(dp, "gcp.storage.operation"); got == "" {
+				t.Errorf("expected gcp.storage.operation on gcp.storage.client.operations")
+			}
+			if got := getAttr(dp, "gcp.client.method"); got == "" {
+				t.Errorf("expected gcp.client.method on gcp.storage.client.operations")
+			}
 		}
 	}
 
@@ -836,12 +957,21 @@ func TestStandardMetricsRecording(t *testing.T) {
 	if m, ok := metricsMap["gcp.storage.client.response.body.size"]; !ok {
 		t.Errorf("metric gcp.storage.client.response.body.size not found")
 	} else {
-		hist := m.Data.(metricdata.Histogram[int64])
-		if len(hist.DataPoints) != 1 {
-			t.Fatalf("expected 1 datapoint for response body size, got %d", len(hist.DataPoints))
+		hist, ok := m.Data.(metricdata.Histogram[int64])
+		if !ok {
+			t.Fatalf("response.body.size: got %T, want Histogram[int64]", m.Data)
 		}
-		if hist.DataPoints[0].Sum != 47 {
-			t.Errorf("expected total sum 47, got %d", hist.DataPoints[0].Sum)
+		if len(hist.DataPoints) != 3 {
+			t.Fatalf("expected 3 datapoints for response body size (NewReader, NewRangeReader, and MRD), got %d", len(hist.DataPoints))
+		}
+		var totalSum int64
+		for _, dp := range hist.DataPoints {
+			totalSum += dp.Sum
+			assertExactAttrKeys(t, m.Name, dp.Attributes,
+				"gcp.client.method", "gcp.storage.operation", "rpc.system.name", "server.address")
+		}
+		if totalSum != 52 {
+			t.Errorf("expected total sum 52, got %d", totalSum)
 		}
 	}
 
@@ -849,7 +979,10 @@ func TestStandardMetricsRecording(t *testing.T) {
 	if m, ok := metricsMap["gcp.storage.client.request.body.size"]; !ok {
 		t.Errorf("metric gcp.storage.client.request.body.size not found")
 	} else {
-		hist := m.Data.(metricdata.Histogram[int64])
+		hist, ok := m.Data.(metricdata.Histogram[int64])
+		if !ok {
+			t.Fatalf("request.body.size: got %T, want Histogram[int64]", m.Data)
+		}
 		if len(hist.DataPoints) != 1 {
 			t.Fatalf("expected 1 datapoint for request body size, got %d", len(hist.DataPoints))
 		}
@@ -857,40 +990,159 @@ func TestStandardMetricsRecording(t *testing.T) {
 		if dp.Sum != 11 {
 			t.Errorf("expected sum 11, got %d", dp.Sum)
 		}
+		assertExactAttrKeys(t, m.Name, dp.Attributes,
+			"gcp.client.method", "gcp.storage.operation", "rpc.system.name", "server.address")
+		if v, _ := dp.Attributes.Value("gcp.storage.operation"); v.AsString() != "WriteObject" {
+			t.Errorf("expected gcp.storage.operation WriteObject, got %q", v.AsString())
+		}
+		if v, _ := dp.Attributes.Value("gcp.client.method"); v.AsString() != "Object.NewWriter" {
+			t.Errorf("expected gcp.client.method Object.NewWriter, got %q", v.AsString())
+		}
 	}
 }
 
-func TestRecordTTFB_MetadataOnly(t *testing.T) {
+func TestGetLogicalMethod(t *testing.T) {
+	var nilState *metricsState
+	nilState.setRPCMethod("google.storage.v2.Storage/GetObject") // nil receiver must be a no-op
+
+	for _, tc := range []struct {
+		in   string
+		want string
+	}{
+		{in: "GetObject", want: "GetObject"},
+		{in: "/google.storage.v2.Storage/GetObject", want: "GetObject"},
+		{in: "/google.storage.v2.Storage/BidiReadObject", want: "ReadObject"},
+		{in: "/google.storage.v2.Storage/BidiWriteObject", want: "WriteObject"},
+		{in: "/google.storage.v2.Storage/StartResumableWrite", want: "WriteObject"},
+		{in: "/google.storage.v2.Storage/QueryWriteStatus", want: "WriteObject"},
+		{in: "/google.storage.v2.Storage/CancelResumableWrite", want: "WriteObject"},
+	} {
+		if got := getLogicalMethod(tc.in); got != tc.want {
+			t.Errorf("getLogicalMethod(%q) = %q, want %q", tc.in, got, tc.want)
+		}
+	}
+}
+
+func TestOperationDuration_HTTPRPCMethodFallback(t *testing.T) {
 	ctx := context.Background()
 	mr := sdkmetric.NewManualReader()
 	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
 	defer provider.Shutdown(ctx)
 
-	cfg := storageConfig{
+	cm, _, err := initMetrics(ctx, "project-id", &storageConfig{
 		enableOtelMetrics: true,
 		meterProvider:     provider,
-	}
-
-	cm, _, err := initMetrics(ctx, "project-id", &cfg)
+	})
 	if err != nil {
 		t.Fatalf("initMetrics: %v", err)
 	}
 
-	w := &wrappedClientStream{
-		metrics:   cm,
-		ctx:       ctx,
-		method:    "/google.storage.v2.Storage/ReadObject",
-		startTime: time.Now(),
-	}
+	// An HTTP operation without an operation span falls back to the v2-qualified
+	// rpc.method and defaultClientMethods for gcp.client.method.
+	_, record := cm.startOperation(ctx, "GetHMACKey", true)
+	record(nil)
 
-	// First response with only metadata should trigger TTFB.
-	resp := &storagepb.ReadObjectResponse{
-		Metadata: &storagepb.Object{Name: "test-object"},
+	var rm metricdata.ResourceMetrics
+	if err := mr.Collect(ctx, &rm); err != nil {
+		t.Fatalf("Collect: %v", err)
 	}
-	w.recordTTFB(resp)
+	found := false
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			if m.Name != "gcp.client.request.duration" {
+				continue
+			}
+			found = true
+			hist, ok := m.Data.(metricdata.Histogram[float64])
+			if !ok {
+				t.Fatalf("expected Histogram data, got %T", m.Data)
+			}
+			if len(hist.DataPoints) != 1 {
+				t.Fatalf("expected 1 datapoint, got %d", len(hist.DataPoints))
+			}
+			dp := hist.DataPoints[0]
+			assertExactAttrKeys(t, m.Name, dp.Attributes,
+				"error.type", "gcp.client.method", "gcp.storage.operation", "rpc.method", "rpc.system.name", "server.address")
+			for key, want := range map[string]string{
+				"rpc.system.name":       "http",
+				"gcp.storage.operation": "GetHMACKey",
+				"gcp.client.method":     "HMACKey.Get",
+				"rpc.method":            "google.storage.v2.Storage/GetHMACKey",
+			} {
+				if got := getHistAttr(dp, key); got != want {
+					t.Errorf("%s = %q, want %q", key, got, want)
+				}
+			}
+		}
+	}
+	if !found {
+		t.Errorf("metric gcp.client.request.duration not found")
+	}
+}
 
-	if !w.recordedTTFB.Load() {
-		t.Errorf("recordTTFB did not trigger TTFB for metadata-only ReadObjectResponse")
+func TestRecordTTFB_MetadataOnly(t *testing.T) {
+	for _, method := range []string{
+		"/google.storage.v2.Storage/ReadObject",
+		"/google.storage.v2.Storage/BidiReadObject",
+	} {
+		t.Run(method, func(t *testing.T) {
+			ctx := context.Background()
+			mr := sdkmetric.NewManualReader()
+			provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+			defer provider.Shutdown(ctx)
+
+			cm, _, err := initMetrics(ctx, "project-id", &storageConfig{
+				enableOtelMetrics: true,
+				meterProvider:     provider,
+			})
+			if err != nil {
+				t.Fatalf("initMetrics: %v", err)
+			}
+
+			w := &wrappedClientStream{
+				metrics:   cm,
+				ctx:       ctx,
+				method:    method,
+				startTime: time.Now(),
+			}
+
+			// First response with only metadata should trigger TTFB.
+			resp := &storagepb.ReadObjectResponse{
+				Metadata: &storagepb.Object{Name: "test-object"},
+			}
+			w.recordTTFB(resp)
+
+			if !w.recordedTTFB.Load() {
+				t.Errorf("recordTTFB did not trigger TTFB for metadata-only ReadObjectResponse")
+			}
+
+			var rm metricdata.ResourceMetrics
+			if err := mr.Collect(ctx, &rm); err != nil {
+				t.Fatalf("Collect: %v", err)
+			}
+			foundTTFB := false
+			for _, sm := range rm.ScopeMetrics {
+				for _, m := range sm.Metrics {
+					if m.Name == "gcp.storage.client.ttfb" {
+						hist, ok := m.Data.(metricdata.Histogram[float64])
+						if !ok {
+							t.Fatalf("ttfb: got %T, want Histogram[float64]", m.Data)
+						}
+						if len(hist.DataPoints) == 1 {
+							foundTTFB = true
+							assertExactAttrKeys(t, m.Name, hist.DataPoints[0].Attributes,
+								"gcp.storage.operation", "rpc.system.name", "server.address")
+							if got := getHistAttr(hist.DataPoints[0], "gcp.storage.operation"); got != "ReadObject" {
+								t.Errorf("ttfb gcp.storage.operation = %q, want ReadObject", got)
+							}
+						}
+					}
+				}
+			}
+			if !foundTTFB {
+				t.Errorf("expected gcp.storage.client.ttfb datapoint")
+			}
+		})
 	}
 }
 
@@ -1161,22 +1413,35 @@ func TestGRPCMetricsStatsHandler(t *testing.T) {
 	}
 }
 
-func getAttr(dp metricdata.DataPoint[int64], key string) string {
-	for _, kv := range dp.Attributes.ToSlice() {
-		if string(kv.Key) == key {
-			return kv.Value.Emit()
-		}
+func attrSetValueString(s attribute.Set, key string) string {
+	v, ok := s.Value(attribute.Key(key))
+	if !ok {
+		return ""
 	}
-	return ""
+	return v.String()
+}
+
+func assertExactAttrKeys(t *testing.T, metricName string, s attribute.Set, wantKeys ...string) {
+	t.Helper()
+	got := make([]string, 0, s.Len())
+	iter := s.Iter()
+	for iter.Next() {
+		got = append(got, string(iter.Attribute().Key))
+	}
+	slices.Sort(got)
+	want := slices.Clone(wantKeys)
+	slices.Sort(want)
+	if !slices.Equal(got, want) {
+		t.Errorf("%s attribute keys = %v, want %v", metricName, got, want)
+	}
+}
+
+func getAttr(dp metricdata.DataPoint[int64], key string) string {
+	return attrSetValueString(dp.Attributes, key)
 }
 
 func getHistAttr(dp metricdata.HistogramDataPoint[float64], key string) string {
-	for _, kv := range dp.Attributes.ToSlice() {
-		if string(kv.Key) == key {
-			return kv.Value.Emit()
-		}
-	}
-	return ""
+	return attrSetValueString(dp.Attributes, key)
 }
 
 func TestRecordCredentialRefreshDuration(t *testing.T) {
@@ -1733,7 +1998,7 @@ func TestRecordServerMetrics(t *testing.T) {
 	dpPeer := &peer.Peer{Addr: &net.TCPAddr{IP: net.ParseIP("34.126.0.10"), Port: 443}}
 	cpPeer := &peer.Peer{Addr: &net.TCPAddr{IP: net.ParseIP("142.250.1.1"), Port: 443}}
 	rpcAttrs := metric.WithAttributes(
-		attribute.String("rpc.method", "GetObject"),
+		attribute.String("gcp.storage.operation", "GetObject"),
 		attribute.String("rpc.system.name", "grpc"),
 		attribute.String("server.address", "storage.googleapis.com"),
 	)
@@ -1890,6 +2155,8 @@ func TestRecordServerMetrics(t *testing.T) {
 				for _, m := range sm.Metrics {
 					if m.Name == "gcp.storage.client.server.unreached" {
 						for _, dp := range m.Data.(metricdata.Sum[int64]).DataPoints {
+							assertExactAttrKeys(t, m.Name, dp.Attributes,
+								"error.type", "gcp.storage.operation", "rpc.system.name", "server.address")
 							gotUnreached += dp.Value
 						}
 					}

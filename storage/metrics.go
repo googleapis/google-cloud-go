@@ -28,6 +28,7 @@ import (
 	"net/netip"
 	"net/url"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -837,66 +838,61 @@ func mapHTTPStatusCode(code int) string {
 }
 
 func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, duration float64, err error) {
-	statusCode := int64(codes.OK)
-	if err != nil && err != io.EOF {
-		statusCode = int64(status.Code(err))
+	code := codes.OK
+	if err != nil && !errors.Is(err, io.EOF) {
+		code = status.Code(err)
 	}
-
-	service := "google.storage.v2.Storage"
+	statusStr := grpcCodeToString(code)
+	rpcMethod := fullGRPCMethodName(method)
 	methodName := method
-	if idx := strings.LastIndex(methodName, "/"); idx != -1 && idx > 0 {
-		service = methodName[1:idx]
+	if idx := strings.LastIndex(methodName, "/"); idx > 0 {
 		methodName = methodName[idx+1:]
 	}
 
-	errorType := refineCancelled(ctx, computeErrorType(err, false, statusCode))
+	errorType := refineCancelled(ctx, computeErrorType(err, false, int64(code)))
+	host := stripPort(target)
 
 	attrs := []attribute.KeyValue{
 		attribute.String("rpc.system.name", "grpc"),
-		attribute.String("rpc.service", service),
-		attribute.String("rpc.method", methodName),
-		attribute.Int64("rpc.grpc.status_code", statusCode),
-		attribute.Int64("rpc.response.status_code", statusCode),
-		attribute.String("server.address", stripPort(target)),
+		attribute.String("rpc.method", rpcMethod),
+		attribute.String("rpc.response.status_code", statusStr),
+		attribute.String("server.address", host),
 		attribute.String("error.type", errorType),
 	}
 
-	cm.rpcClientCallDuration.Record(ctx, duration, metric.WithAttributes(injectAPIMethod(ctx, attrs)...))
+	cm.rpcClientCallDuration.Record(ctx, duration, metric.WithAttributes(attrs...))
 
 	// Record standard attempt metric: gcp.storage.client.attempts.
-	state := metricsStateFromContext(ctx)
-	logicalMethod := methodName
-	if state != nil {
-		logicalMethod = state.method
-		state.setTarget(target)
-	}
-	attemptAttrs := make([]attribute.KeyValue, 0, 5)
-	attemptAttrs = append(attemptAttrs,
+	logicalMethod := operationName(ctx, method)
+	attemptAttrs := []attribute.KeyValue{
 		attribute.String("rpc.system.name", "grpc"),
-		attribute.String("rpc.method", logicalMethod),
-		attribute.Int64("rpc.grpc.status_code", statusCode),
-		attribute.String("server.address", stripPort(target)),
+		attribute.String(storageOperationAttr, logicalMethod),
+		attribute.String("rpc.response.status_code", statusStr),
+		attribute.String("server.address", host),
 		attribute.String("error.type", errorType),
-	)
-	cm.attempts.Add(ctx, 1, metric.WithAttributes(injectAPIMethod(ctx, attemptAttrs)...))
+	}
+	cm.attempts.Add(ctx, 1, metric.WithAttributes(attemptAttrs...))
 
 	// Record standard error metric: gcp.storage.client.errors.
-	if err != nil && err != io.EOF {
-		errorAttrs := make([]attribute.KeyValue, 0, 5)
-		errorAttrs = append(errorAttrs,
+	if err != nil && !errors.Is(err, io.EOF) {
+		errorAttrs := []attribute.KeyValue{
 			attribute.String("rpc.system.name", "grpc"),
-			attribute.String("rpc.method", logicalMethod),
-			attribute.String("server.address", stripPort(target)),
+			attribute.String(storageOperationAttr, logicalMethod),
+			attribute.String("server.address", host),
 			attribute.String("error.type", errorType),
-		)
-		cm.errors.Add(ctx, 1, metric.WithAttributes(injectAPIMethod(ctx, errorAttrs)...))
+		}
+		cm.errors.Add(ctx, 1, metric.WithAttributes(errorAttrs...))
 	}
 
 	// For unary calls, record TTFB equal to the total attempt latency.
 	isStreaming := methodName == "ReadObject" || methodName == "WriteObject" || methodName == "BidiReadObject" || methodName == "BidiWriteObject"
 	if !isStreaming {
-		ttfbAttrs := []attribute.KeyValue{attribute.String("rpc.system.name", "grpc"), attribute.String("rpc.method", logicalMethod), attribute.String("server.address", stripPort(target))}
-		cm.ttfb.Record(ctx, duration, metric.WithAttributes(injectAPIMethod(ctx, ttfbAttrs)...))
+		ttfbAttrs := []attribute.KeyValue{
+			attribute.String("rpc.system.name", "grpc"),
+			attribute.String(storageOperationAttr, logicalMethod),
+			attribute.String("server.address", host),
+		}
+		cm.ttfb.Record(ctx, duration, metric.WithAttributes(ttfbAttrs...))
 	}
 }
 
@@ -914,12 +910,11 @@ func (cm *clientMetrics) recordHTTP(ctx context.Context, req *http.Request, resp
 		attribute.String("http.request.method", req.Method),
 		attribute.String("url.template", urlTemplate),
 		attribute.Int64("http.response.status_code", statusCode),
-		attribute.Int64("rpc.response.status_code", statusCode),
 		attribute.String("server.address", stripPort(req.URL.Host)),
 		attribute.String("error.type", errorType),
 	}
 
-	cm.httpClientRequestDuration.Record(ctx, duration, metric.WithAttributes(injectAPIMethod(ctx, attrs)...))
+	cm.httpClientRequestDuration.Record(ctx, duration, metric.WithAttributes(attrs...))
 }
 
 // computeURLTemplate extracts a parameterized template path for a given GCS HTTP request URL path.
@@ -992,25 +987,23 @@ type metricsRoundTripper struct {
 }
 
 func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
-	state := metricsStateFromContext(req.Context())
-	var logicalMethod string
-	if state != nil {
-		logicalMethod = state.method
-	} else {
-		logicalMethod = "Unknown"
-	}
+	logicalMethod := operationName(req.Context(), "Unknown")
 
 	var decrementActiveRequests bool
+	var host string
 	var netAttrs, rpcAttrs metric.MeasurementOption
 	if rt.metrics != nil {
-		host := stripPort(req.URL.Host)
+		host = stripPort(req.URL.Host)
+		if state := metricsStateFromContext(req.Context()); state != nil {
+			state.setTarget(req.URL.Host)
+		}
 		netAttrs = metric.WithAttributes(
 			attribute.String("rpc.system.name", "http"),
 			attribute.String("server.address", host),
 		)
 		if rt.metrics.activeRequests != nil || rt.metrics.serverDuration != nil {
 			rpcAttrs = metric.WithAttributes(
-				attribute.String("rpc.method", logicalMethod),
+				attribute.String(storageOperationAttr, logicalMethod),
 				attribute.String("rpc.system.name", "http"),
 				attribute.String("server.address", host),
 			)
@@ -1080,42 +1073,40 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 	errorType := refineCancelled(req.Context(), computeErrorType(err, true, statusCode))
 
 	if rt.metrics != nil {
-		state := metricsStateFromContext(req.Context())
-		if state != nil {
-			state.setTarget(req.URL.Host)
-		}
 		// Record attempt.
-		attemptAttrs := make([]attribute.KeyValue, 0, 4)
-		attemptAttrs = append(attemptAttrs,
+		attemptAttrs := []attribute.KeyValue{
 			attribute.String("rpc.system.name", "http"),
-			attribute.String("rpc.method", logicalMethod),
+			attribute.String(storageOperationAttr, logicalMethod),
 			attribute.Int64("http.response.status_code", statusCode),
-			attribute.String("server.address", stripPort(req.URL.Host)),
+			attribute.String("server.address", host),
 			attribute.String("error.type", errorType),
-		)
-		rt.metrics.attempts.Add(req.Context(), 1, metric.WithAttributes(injectAPIMethod(req.Context(), attemptAttrs)...))
+		}
+		rt.metrics.attempts.Add(req.Context(), 1, metric.WithAttributes(attemptAttrs...))
 
 		// Record error if failed.
 		if err != nil || (resp != nil && resp.StatusCode >= 400) {
-			errorAttrs := make([]attribute.KeyValue, 0, 4)
-			errorAttrs = append(errorAttrs,
+			errorAttrs := []attribute.KeyValue{
 				attribute.String("rpc.system.name", "http"),
-				attribute.String("rpc.method", logicalMethod),
-				attribute.String("server.address", stripPort(req.URL.Host)),
+				attribute.String(storageOperationAttr, logicalMethod),
+				attribute.String("server.address", host),
 				attribute.String("error.type", errorType),
-			)
-			rt.metrics.errors.Add(req.Context(), 1, metric.WithAttributes(injectAPIMethod(req.Context(), errorAttrs)...))
+			}
+			rt.metrics.errors.Add(req.Context(), 1, metric.WithAttributes(errorAttrs...))
 		}
 
-		rt.metrics.recordHTTPServerMetrics(req.Context(), resp, logicalMethod, stripPort(req.URL.Host), errorType, rpcAttrs)
+		rt.metrics.recordHTTPServerMetrics(req.Context(), resp, logicalMethod, host, errorType, rpcAttrs)
 
 		// Record TTFB.
 		isDownload := req.Method == "GET" && req.URL.Query().Get("alt") == "media"
 		isResumableInit := req.Method == "POST" && strings.Contains(req.URL.Path, "/upload/") && req.URL.Query().Get("uploadType") == "resumable"
 		if !isDownload || isResumableInit {
 			duration := time.Since(startTime).Seconds()
-			ttfbAttrs := []attribute.KeyValue{attribute.String("rpc.system.name", "http"), attribute.String("rpc.method", logicalMethod), attribute.String("server.address", stripPort(req.URL.Host))}
-			rt.metrics.ttfb.Record(req.Context(), duration, metric.WithAttributes(injectAPIMethod(req.Context(), ttfbAttrs)...))
+			ttfbAttrs := []attribute.KeyValue{
+				attribute.String("rpc.system.name", "http"),
+				attribute.String(storageOperationAttr, logicalMethod),
+				attribute.String("server.address", host),
+			}
+			rt.metrics.ttfb.Record(req.Context(), duration, metric.WithAttributes(ttfbAttrs...))
 		}
 	}
 
@@ -1160,12 +1151,12 @@ type wrappedResponseBody struct {
 func (w *wrappedResponseBody) Read(p []byte) (n int, err error) {
 	if w.isDownload && w.metrics != nil && w.firstRead.CompareAndSwap(false, true) {
 		duration := time.Since(w.startTime).Seconds()
-		state := metricsStateFromContext(w.req.Context())
-		logicalMethod := "ReadObject"
-		if state != nil {
-			logicalMethod = state.method
-		}
-		w.metrics.ttfb.Record(w.req.Context(), duration, metric.WithAttributes(attribute.String("rpc.system.name", "http"), attribute.String("rpc.method", logicalMethod), attribute.String("server.address", stripPort(w.req.URL.Host))))
+		logicalMethod := operationName(w.req.Context(), "ReadObject")
+		w.metrics.ttfb.Record(w.req.Context(), duration, metric.WithAttributes(
+			attribute.String("rpc.system.name", "http"),
+			attribute.String(storageOperationAttr, logicalMethod),
+			attribute.String("server.address", stripPort(w.req.URL.Host)),
+		))
 	}
 	n, err = w.ReadCloser.Read(p)
 	if err != nil {
@@ -1186,15 +1177,9 @@ func (w *wrappedResponseBody) record(err error) {
 		w.metrics.recordHTTP(w.req.Context(), w.req, w.resp, duration, err)
 
 		if w.metrics.activeRequests != nil {
-			state := metricsStateFromContext(w.req.Context())
-			var logicalMethod string
-			if state != nil {
-				logicalMethod = state.method
-			} else {
-				logicalMethod = "Unknown"
-			}
+			logicalMethod := operationName(w.req.Context(), "Unknown")
 			w.metrics.activeRequests.Add(w.req.Context(), -1, metric.WithAttributes(
-				attribute.String("rpc.method", logicalMethod),
+				attribute.String(storageOperationAttr, logicalMethod),
 				attribute.String("rpc.system.name", "http"),
 				attribute.String("server.address", stripPort(w.req.URL.Host)),
 			))
@@ -1204,9 +1189,24 @@ func (w *wrappedResponseBody) record(err error) {
 
 func getLogicalMethod(method string) string {
 	if idx := strings.LastIndex(method, "/"); idx != -1 {
-		return method[idx+1:]
+		method = method[idx+1:]
+	}
+	switch method {
+	case "BidiReadObject":
+		return "ReadObject"
+	case "BidiWriteObject", "StartResumableWrite", "QueryWriteStatus", "CancelResumableWrite":
+		return "WriteObject"
 	}
 	return method
+}
+
+// operationName returns the logical operation for ctx, falling back to the
+// operation derived from fallback.
+func operationName(ctx context.Context, fallback string) string {
+	if state := metricsStateFromContext(ctx); state != nil && state.method != "" {
+		return state.method
+	}
+	return getLogicalMethod(fallback)
 }
 
 // uploadIDHeader is set on every HTTP and gRPC response served by Cloud
@@ -1253,7 +1253,7 @@ func isPreServerErrorType(errorType string) bool {
 // attempt that is positively known not to have reached a Cloud Storage server.
 func (cm *clientMetrics) recordUnreached(ctx context.Context, system, method, host, errType string) {
 	cm.serverUnreached.Add(ctx, 1, metric.WithAttributes(
-		attribute.String("rpc.method", method),
+		attribute.String(storageOperationAttr, method),
 		attribute.String("rpc.system.name", system),
 		attribute.String("server.address", host),
 		attribute.String("error.type", errType),
@@ -1355,17 +1355,21 @@ func (cm *clientMetrics) recordServerMetrics(ctx context.Context, headerMD, trai
 // metricsInterceptors returns gRPC client interceptors.
 func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.StreamClientInterceptor) {
 	unary := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-		logicalMethod := getLogicalMethod(method)
+		logicalMethod := operationName(ctx, method)
 
 		target := ""
 		if cc != nil {
 			target = cc.Target()
 		}
+		if state := metricsStateFromContext(ctx); state != nil {
+			state.setTarget(target)
+			state.setRPCMethod(fullGRPCMethodName(method))
+		}
 
 		var rpcAttrs metric.MeasurementOption
 		if cm.activeRequests != nil || cm.serverDuration != nil {
 			rpcAttrs = metric.WithAttributes(
-				attribute.String("rpc.method", logicalMethod),
+				attribute.String(storageOperationAttr, logicalMethod),
 				attribute.String("rpc.system.name", "grpc"),
 				attribute.String("server.address", stripPort(target)),
 			)
@@ -1391,17 +1395,21 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 	}
 
 	stream := func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-		logicalMethod := getLogicalMethod(method)
+		logicalMethod := operationName(ctx, method)
 
 		target := ""
 		if cc != nil {
 			target = cc.Target()
 		}
+		if state := metricsStateFromContext(ctx); state != nil {
+			state.setTarget(target)
+			state.setRPCMethod(fullGRPCMethodName(method))
+		}
 
 		var rpcAttrs metric.MeasurementOption
 		if cm.activeRequests != nil || cm.serverDuration != nil {
 			rpcAttrs = metric.WithAttributes(
-				attribute.String("rpc.method", logicalMethod),
+				attribute.String(storageOperationAttr, logicalMethod),
 				attribute.String("rpc.system.name", "grpc"),
 				attribute.String("server.address", stripPort(target)),
 			)
@@ -1478,12 +1486,12 @@ func (w *wrappedClientStream) record(err error) {
 		duration := time.Since(w.startTime).Seconds()
 		w.metrics.recordRPC(w.ctx, w.method, w.target, duration, err)
 
-		logicalMethod := getLogicalMethod(w.method)
+		logicalMethod := operationName(w.ctx, w.method)
 
 		var rpcAttrs metric.MeasurementOption
 		if w.metrics.activeRequests != nil || w.metrics.serverDuration != nil {
 			rpcAttrs = metric.WithAttributes(
-				attribute.String("rpc.method", logicalMethod),
+				attribute.String(storageOperationAttr, logicalMethod),
 				attribute.String("rpc.system.name", "grpc"),
 				attribute.String("server.address", stripPort(w.target)),
 			)
@@ -1504,18 +1512,17 @@ func (w *wrappedClientStream) recordTTFB(m interface{}) {
 	if w.recordedTTFB.Load() {
 		return
 	}
-	methodName := getLogicalMethod(w.method)
 
 	// The first response from the server, whether it contains metadata,
 	// persisted size, or actual content, indicates TTFB.
 	if w.recordedTTFB.CompareAndSwap(false, true) {
 		duration := time.Since(w.startTime).Seconds()
-		state := metricsStateFromContext(w.ctx)
-		logicalMethod := methodName
-		if state != nil {
-			logicalMethod = state.method
-		}
-		w.metrics.ttfb.Record(w.ctx, duration, metric.WithAttributes(attribute.String("rpc.system.name", "grpc"), attribute.String("rpc.method", logicalMethod), attribute.String("server.address", stripPort(w.target))))
+		logicalMethod := operationName(w.ctx, w.method)
+		w.metrics.ttfb.Record(w.ctx, duration, metric.WithAttributes(
+			attribute.String("rpc.system.name", "grpc"),
+			attribute.String(storageOperationAttr, logicalMethod),
+			attribute.String("server.address", stripPort(w.target)),
+		))
 	}
 }
 
@@ -1523,15 +1530,57 @@ type metricsKey struct{}
 
 type apiMethodKey struct{}
 
-func injectAPIMethod(ctx context.Context, attrs []attribute.KeyValue) []attribute.KeyValue {
-	if apiMethod, ok := ctx.Value(apiMethodKey{}).(string); ok {
-		return append(attrs, attribute.String("gcp.client.method", apiMethod))
+// withAPIMethod records the outermost public SDK entrypoint name in ctx if one
+// has not already been recorded.
+func withAPIMethod(ctx context.Context, name string) context.Context {
+	if ctx.Value(apiMethodKey{}) == nil {
+		return context.WithValue(ctx, apiMethodKey{}, name)
 	}
-	return attrs
+	return ctx
+}
+
+// apiMethodNames maps legacy span names used on public API calls to the
+// exported Type.Method names reported in gcp.client.method.
+var apiMethodNames = map[string]string{
+	"Object.Writer":                     "Object.NewWriter",
+	"Object.WriterFromAppendableObject": "Object.NewWriterFromAppendableObject",
+	"Object.Reader":                     "Object.NewRangeReader",
+	"Object.MultiRangeDownloader":       "Object.NewMultiRangeDownloader",
+	"storage.IAM.Get":                   "IAM.Policy",
+	"storage.IAM.Set":                   "IAM.SetPolicy",
+	"storage.IAM.Test":                  "IAM.TestPermissions",
+}
+
+// defaultClientMethods maps logical operations whose public entrypoints do not
+// open an operation trace span to their exported Type.Method names.
+var defaultClientMethods = map[string]string{
+	"GetServiceAccount":         "Client.ServiceAccount",
+	"ListBuckets":               "Client.Buckets",
+	"LockBucketRetentionPolicy": "Bucket.LockRetentionPolicy",
+	"ListObjects":               "Bucket.Objects",
+	"RestoreObject":             "Object.Restore",
+	"MoveObject":                "Object.Move",
+	"GetHMACKey":                "HMACKey.Get",
+	"DeleteHMACKey":             "HMACKey.Delete",
+	"UpdateHMACKey":             "HMACKey.Update",
+	"CreateHMACKey":             "Client.CreateHMACKey",
+	"ListHMACKeys":              "Client.ListHMACKeys",
+}
+
+func injectAPIMethod(ctx context.Context, operation string, attrs []attribute.KeyValue) []attribute.KeyValue {
+	apiMethod, _ := ctx.Value(apiMethodKey{}).(string)
+	if mapped, ok := apiMethodNames[apiMethod]; ok {
+		apiMethod = mapped
+	} else if apiMethod == "" {
+		apiMethod = defaultClientMethods[operation]
+	}
+	attrs = append(attrs, attribute.String("gcp.client.method", apiMethod))
+	return slices.Clip(attrs)
 }
 
 type metricsState struct {
 	target      atomic.Pointer[string]
+	rpcMethod   atomic.Pointer[string]
 	networkPath atomic.Int32
 	method      string
 	startTime   time.Time
@@ -1580,6 +1629,36 @@ func (s *metricsState) getNetworkPath() string {
 	default:
 		return networkPathUnknown
 	}
+}
+
+// setRPCMethod records the last underlying gRPC method executed by the operation.
+func (s *metricsState) setRPCMethod(m string) {
+	if s == nil {
+		return
+	}
+	s.rpcMethod.Store(&m)
+}
+
+// getRPCMethod returns the last gRPC method executed by the operation, falling
+// back to a v2-qualified name when no gRPC call ran (e.g. on HTTP).
+func (s *metricsState) getRPCMethod() string {
+	if s == nil {
+		return ""
+	}
+	if p := s.rpcMethod.Load(); p != nil && *p != "" {
+		return *p
+	}
+	return fullGRPCMethodName(s.method)
+}
+
+// bodySizeAttrs returns the attributes shared by the request and response
+// body size metrics for the given logical operation.
+func (s *metricsState) bodySizeAttrs(ctx context.Context, operation string) []attribute.KeyValue {
+	return injectAPIMethod(ctx, operation, []attribute.KeyValue{
+		attribute.String("rpc.system.name", s.getSystemName()),
+		attribute.String(storageOperationAttr, operation),
+		attribute.String("server.address", stripPort(s.getTarget())),
+	})
 }
 
 func (s *metricsState) getSystemName() string {
@@ -1640,15 +1719,16 @@ func (cm *clientMetrics) startOperation(ctx context.Context, method string, isHT
 			duration := time.Since(state.startTime).Seconds()
 			errorType := computeErrorType(err, isHTTP, 0)
 
-			attrs := []attribute.KeyValue{
+			opAttrs := injectAPIMethod(ctx, method, []attribute.KeyValue{
 				attribute.String("rpc.system.name", state.getSystemName()),
-				attribute.String("rpc.method", method),
+				attribute.String(storageOperationAttr, method),
 				attribute.String("server.address", stripPort(state.getTarget())),
 				attribute.String("error.type", errorType),
-			}
-			opts := metric.WithAttributes(injectAPIMethod(ctx, attrs)...)
-			cm.duration.Record(ctx, duration, opts)
-			cm.operations.Add(ctx, 1, opts)
+			})
+			cm.operations.Add(ctx, 1, metric.WithAttributes(opAttrs...))
+
+			durAttrs := append(opAttrs, attribute.String("rpc.method", state.getRPCMethod()))
+			cm.duration.Record(ctx, duration, metric.WithAttributes(durAttrs...))
 		})
 	}
 	state.record = record
@@ -2209,14 +2289,7 @@ func (cm *clientMetrics) recordStallDuration(ctx context.Context, duration time.
 		return
 	}
 	state := metricsStateFromContext(ctx)
-	operation := method
-	if state != nil && state.method != "" {
-		operation = state.method
-	} else if method == rpcStartResumableWrite || method == rpcQueryWriteStatus || method == rpcBidiWriteObject {
-		operation = "WriteObject"
-	} else if method == rpcBidiReadObject {
-		operation = "ReadObject"
-	}
+	operation := operationName(ctx, method)
 	rpcMethod := fullGRPCMethodName(method)
 	networkPath := networkPathCloud
 	if systemName == "grpc" {
