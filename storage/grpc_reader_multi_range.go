@@ -1049,6 +1049,11 @@ func (m *multiRangeDownloaderManager) processSessionResult(result mrdSessionResu
 			m.readSpec.ReadHandle.Handle = handle
 		}
 	}
+	// Pin the generation so that reconnects and new streams read the same
+	// object version.
+	if m.readSpec.Generation == 0 {
+		m.readSpec.Generation = resp.GetMetadata().GetGeneration()
+	}
 	m.attrsOnce.Do(func() {
 		defer close(m.attrsReady)
 		if meta := resp.GetMetadata(); meta != nil {

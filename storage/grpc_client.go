@@ -1520,6 +1520,10 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	msg := res.decoder.msg
 	obj := msg.GetMetadata()
 	handle := ReadHandle(msg.GetReadHandle().GetHandle())
+	// Pin the generation so that reopens keep reading the same object version.
+	if spec.Generation == 0 {
+		spec.Generation = obj.GetGeneration()
+	}
 
 	// This is the size of the entire object, even if only a range was requested.
 	// Object size can be out of date in the case of unfinalized objects.

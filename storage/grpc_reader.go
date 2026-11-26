@@ -195,6 +195,10 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 	// object metadata.
 	msg := res.decoder.msg
 	obj := msg.GetMetadata()
+	// Pin the generation so that reopens keep reading the same object version.
+	if req.Generation == 0 {
+		req.Generation = obj.GetGeneration()
+	}
 	// This is the size of the entire object, even if only a range was requested.
 	size := obj.GetSize()
 	var chunkCRC uint32
