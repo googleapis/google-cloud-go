@@ -3626,3 +3626,61 @@ func TestGRPCResumableBidiWriteBufferSender_AdaptiveStreamRotation(t *testing.T)
 		assertReceivedOffsets(t, srv, []int64{0, 100, 100, 200, 300})
 	})
 }
+
+// takeoverFirstMessageServer records the first request of each BidiWriteObject
+// stream and acknowledges it with a persisted size so takeover can complete.
+type takeoverFirstMessageServer struct {
+	storagepb.UnimplementedStorageServer
+
+	mu    sync.Mutex
+	first *storagepb.BidiWriteObjectRequest
+}
+
+func (s *takeoverFirstMessageServer) BidiWriteObject(stream storagepb.Storage_BidiWriteObjectServer) error {
+	req, err := stream.Recv()
+	if err != nil {
+		return err
+	}
+	s.mu.Lock()
+	s.first = req
+	s.mu.Unlock()
+	if err := stream.Send(&storagepb.BidiWriteObjectResponse{
+		WriteStatus: &storagepb.BidiWriteObjectResponse_PersistedSize{PersistedSize: 0},
+	}); err != nil {
+		return err
+	}
+	<-stream.Context().Done()
+	return stream.Context().Err()
+}
+
+func TestNewWriterFromAppendableObject_SendsEncryptionKey(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		key  []byte
+	}{
+		{name: "with key", key: []byte("0123456789abcdef0123456789abcdef")},
+		{name: "without key"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			srv := &takeoverFirstMessageServer{}
+			client := newBufconnGRPCClient(t, srv)
+			ctx, cancel := context.WithCancel(t.Context())
+			defer cancel()
+
+			obj := client.Bucket("b").Object("obj").Generation(1)
+			if tc.key != nil {
+				obj = obj.Key(tc.key)
+			}
+			if _, _, err := obj.NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{}); err != nil {
+				t.Fatalf("NewWriterFromAppendableObject: %v", err)
+			}
+
+			srv.mu.Lock()
+			got := srv.first.GetCommonObjectRequestParams()
+			srv.mu.Unlock()
+			if want := toProtoCommonObjectRequestParams(tc.key); !proto.Equal(got, want) {
+				t.Errorf("takeover first message CommonObjectRequestParams = %v, want %v", got, want)
+			}
+		})
+	}
+}
