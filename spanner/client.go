@@ -582,7 +582,7 @@ func newTransportPoolConfig(config ClientConfig, hasNumChannelsConfig bool, mp m
 		NumChannels:          config.NumChannels,
 		HasNumChannelsConfig: hasNumChannelsConfig,
 		Compression:          config.Compression,
-		EnableDirectAccess:   config.EnableDirectAccess,
+		DirectPathMode:       transport.ResolveDirectPathMode(config.EnableDirectAccess),
 		AugmentError:         augmentErrorWithRequestID,
 		MeterProvider:        mp,
 		UnaryInterceptors:    addNativeMetricsInterceptor(),

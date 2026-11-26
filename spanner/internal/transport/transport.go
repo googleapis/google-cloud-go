@@ -13,7 +13,8 @@
 // limitations under the License.
 
 // Package transport provides internal gRPC connection pool, GAPIC client,
-// and DirectPath/fallback primitives shared across Spanner packages.
+// DirectPath/fallback, and DynamicChannelPool primitives shared across Spanner
+// packages.
 package transport
 
 import (
@@ -57,9 +58,9 @@ const (
 	DefaultNumChannels = 4
 )
 
-// stripEndpointScheme removes a single leading http://, https://, or passthrough:///
+// StripEndpointScheme removes a single leading http://, https://, or passthrough:///
 // prefix from endpoint, matching the historical client.go emulator scheme stripping.
-func stripEndpointScheme(endpoint string) string {
+func StripEndpointScheme(endpoint string) string {
 	for _, prefix := range []string{"http://", "https://", "passthrough:///"} {
 		if after, ok := strings.CutPrefix(endpoint, prefix); ok {
 			return after
@@ -68,16 +69,73 @@ func stripEndpointScheme(endpoint string) string {
 	return endpoint
 }
 
-// EmulatorClientOptions returns the ClientOptions needed to connect to a Spanner
-// emulator endpoint.
-func EmulatorClientOptions(emulatorAddr string) []option.ClientOption {
-	schemeRemoved := stripEndpointScheme(emulatorAddr)
+// PlainTextClientOptions returns the ClientOptions needed to connect to a plaintext
+// gRPC endpoint without authentication (insecure transport credentials, no auth,
+// and dial settings validation skipped). Callers supply option.WithEndpoint separately.
+func PlainTextClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("passthrough:///" + schemeRemoved),
 		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 		option.WithoutAuthentication(),
 		internaloption.SkipDialSettingsValidation(),
 	}
+}
+
+// EmulatorClientOptions returns the ClientOptions needed to connect to a Spanner
+// emulator endpoint.
+func EmulatorClientOptions(emulatorAddr string) []option.ClientOption {
+	return append(
+		[]option.ClientOption{option.WithEndpoint("passthrough:///" + StripEndpointScheme(emulatorAddr))},
+		PlainTextClientOptions()...,
+	)
+}
+
+// DirectPathMode controls whether DirectPath gRPC dial options are enabled on a PoolConfig.
+type DirectPathMode int
+
+const (
+	// DirectPathDefault resolves GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS (false when unset).
+	DirectPathDefault DirectPathMode = iota
+	// DirectPathEnabled unconditionally enables DirectPath.
+	DirectPathEnabled
+	// DirectPathDisabled unconditionally disables DirectPath, ignoring GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS.
+	DirectPathDisabled
+)
+
+// String returns the human-readable name of m.
+func (m DirectPathMode) String() string {
+	switch m {
+	case DirectPathDefault:
+		return "DirectPathDefault"
+	case DirectPathEnabled:
+		return "DirectPathEnabled"
+	case DirectPathDisabled:
+		return "DirectPathDisabled"
+	default:
+		return fmt.Sprintf("DirectPathMode(%d)", int(m))
+	}
+}
+
+func (m DirectPathMode) enabled() bool {
+	switch m {
+	case DirectPathDefault:
+		return ResolveDirectPathEnabled(false)
+	case DirectPathEnabled:
+		return true
+	case DirectPathDisabled:
+		return false
+	default:
+		return false
+	}
+}
+
+// ResolveDirectPathMode resolves configEnableDirectAccess together with the
+// GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS environment variable into an explicit
+// DirectPathEnabled or DirectPathDisabled mode.
+func ResolveDirectPathMode(configEnableDirectAccess bool) DirectPathMode {
+	if ResolveDirectPathEnabled(configEnableDirectAccess) {
+		return DirectPathEnabled
+	}
+	return DirectPathDisabled
 }
 
 // ResolveDirectPathEnabled resolves whether DirectPath is enabled by checking the
@@ -124,7 +182,7 @@ func DefaultClientOptions(
 func defaultClientOptions(
 	numChannels int,
 	compression string,
-	directPath bool,
+	enableDirectPath bool,
 	unaryInterceptors []grpc.UnaryClientInterceptor,
 	streamInterceptors []grpc.StreamClientInterceptor,
 	userOpts ...option.ClientOption,
@@ -144,7 +202,7 @@ func defaultClientOptions(
 		option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{Time: 120 * time.Second})),
 	)
 
-	if directPath {
+	if enableDirectPath {
 		clientDefaultOpts = append(clientDefaultOpts, internaloption.AllowNonDefaultServiceAccount(true))
 		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
 		if disableBoundToken, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_DISABLE_DIRECT_ACCESS_BOUND_TOKEN")); !disableBoundToken {
@@ -191,8 +249,10 @@ type PoolConfig struct {
 	HasNumChannelsConfig bool
 	// Compression enables request compression when set to "gzip".
 	Compression string
-	// EnableDirectAccess enables DirectPath unless overridden by GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS.
-	EnableDirectAccess bool
+	// DirectPathMode controls DirectPath dial options (DirectPathDefault resolves
+	// GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS; DirectPathEnabled and DirectPathDisabled
+	// override the environment variable unconditionally).
+	DirectPathMode DirectPathMode
 	// AugmentError optionally attaches x-goog-spanner-request-id to non-EOF RPC
 	// errors. May be nil (headers are still injected without wrapping errors).
 	AugmentError requestid.ErrorAugmenter
@@ -210,7 +270,7 @@ type PoolConfig struct {
 // userOpts, and x-goog-spanner-request-id interceptors for cfg.
 func (cfg PoolConfig) ClientOptions(userOpts ...option.ClientOption) []option.ClientOption {
 	opts := WithRequestIDInterceptors(cfg.AugmentError, userOpts...)
-	return DefaultClientOptions(cfg.NumChannels, cfg.Compression, cfg.EnableDirectAccess, cfg.UnaryInterceptors, cfg.StreamInterceptors, opts...)
+	return defaultClientOptions(cfg.NumChannels, cfg.Compression, cfg.DirectPathMode.enabled(), cfg.UnaryInterceptors, cfg.StreamInterceptors, opts...)
 }
 
 // CloudPathClientOptions is ClientOptions without the DirectPath options that
@@ -274,14 +334,30 @@ func (fw *FallbackPool) Close() error {
 	return err2
 }
 
+const defaultGCPFallbackPeriod = 3 * time.Minute
+
 // CreateFallbackConnPool dials a DirectPath primary pool and a CloudPath fallback pool
 // wrapped in a FallbackPool, returning the pool and the resolved primary ClientOptions
 // (cfg.ClientOptions(userOpts...)) for reuse by routed endpoint clients.
+// ctx applies only to initial connection dialing; background GCPFallback monitoring
+// remains active until Close is called.
 func CreateFallbackConnPool(
 	ctx context.Context,
 	cfg PoolConfig,
 	userOpts ...option.ClientOption,
 ) (gtransport.ConnPool, []option.ClientOption, error) {
+	return createFallbackConnPool(ctx, cfg, defaultGCPFallbackPeriod, userOpts...)
+}
+
+func createFallbackConnPool(
+	ctx context.Context,
+	cfg PoolConfig,
+	fallbackPeriod time.Duration,
+	userOpts ...option.ClientOption,
+) (gtransport.ConnPool, []option.ClientOption, error) {
+	if fallbackPeriod <= 0 {
+		fallbackPeriod = defaultGCPFallbackPeriod
+	}
 	allOpts := cfg.ClientOptions(userOpts...)
 	primaryConn, err := gtransport.DialPool(ctx, allOpts...)
 	if err != nil {
@@ -307,12 +383,12 @@ func CreateFallbackConnPool(
 	fbOpts.EnableFallback = true
 	fbOpts.ErrorRateThreshold = 1
 	fbOpts.MinFailedCalls = 1
-	fbOpts.Period = time.Minute * 3
+	fbOpts.Period = fallbackPeriod
 	if cfg.MeterProvider != nil {
 		fbOpts.MeterProvider = cfg.MeterProvider
 	}
 
-	gcpFallback, err := grpcgcp.NewGCPFallback(ctx, primaryConn, fallbackConn, fbOpts)
+	gcpFallback, err := grpcgcp.NewGCPFallback(context.Background(), primaryConn, fallbackConn, fbOpts)
 	if err != nil {
 		primaryConn.Close()
 		fallbackConn.Close()

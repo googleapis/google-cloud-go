@@ -54,7 +54,9 @@ const dcpRefsClosed = math.MinInt64 / 2
 var DCPDrainIdleFloor = 15 * time.Second
 
 var (
-	defaultDCPNoEntriesErr     = status.Error(codes.Unavailable, "spanner_dcp: no available channels")
+	// ErrDCPNoEntries is the default Unavailable error returned when a DynamicChannelPool
+	// or DCPResolver has no available channels.
+	ErrDCPNoEntries            = status.Error(codes.Unavailable, "spanner_dcp: no available channels")
 	defaultDCPPrimeNotReadyErr = status.Error(codes.FailedPrecondition, "spanner_dcp: cannot prime channel before multiplexed session is available")
 )
 
@@ -235,7 +237,7 @@ type DCPHooks[C DCPClient] struct {
 	// entries are created. When nil (or returning nil), metrics are disabled.
 	InitMetrics func(p *DynamicChannelPool[C]) DCPMetricsRecorder
 	// NoEntriesErr overrides the Unavailable error returned when no active entries
-	// can be picked. When nil, a default codes.Unavailable status error is returned.
+	// can be picked. When nil, ErrDCPNoEntries is returned.
 	NoEntriesErr error
 	// PrimeNotReadyErr overrides the FailedPrecondition error used when priming is
 	// attempted before SetPrimeSession. When nil, a default status error is used.
@@ -248,6 +250,9 @@ type DCPHooks[C DCPClient] struct {
 	// OnCallStart optionally runs when a call starts on an entry of a
 	// non-fixed pool, with the entry's in-flight call count including it.
 	OnCallStart func(ctx context.Context, load int32)
+	// PrimeRetryBaseDelay optionally overrides the base exponential backoff delay
+	// between failed channel-priming attempts. When <= 0, defaults to 100ms.
+	PrimeRetryBaseDelay time.Duration
 }
 
 // DynamicChannelPool owns the copy-on-write slice of DCP entries and the
@@ -267,14 +272,15 @@ type DynamicChannelPool[C DCPClient] struct {
 	cancel context.CancelFunc
 	logger *log.Logger
 
-	Dial             func(context.Context) (gtransport.ConnPool, error)
-	newEntryClient   func(ctx context.Context, e *DCPEntry[C]) error
-	primeRPC         func(ctx context.Context, e *DCPEntry[C], sessionID string) error
-	noEntriesErr     error
-	primeNotReadyErr error
-	onClose          func()
-	penaltyEpoch     func() uint64
-	onCallStart      func(ctx context.Context, load int32)
+	Dial                func(context.Context) (gtransport.ConnPool, error)
+	newEntryClient      func(ctx context.Context, e *DCPEntry[C]) error
+	primeRPC            func(ctx context.Context, e *DCPEntry[C], sessionID string) error
+	noEntriesErr        error
+	primeNotReadyErr    error
+	onClose             func()
+	penaltyEpoch        func() uint64
+	onCallStart         func(ctx context.Context, load int32)
+	primeRetryBaseDelay time.Duration
 
 	rrIndex          atomic.Uint64
 	nextID           atomic.Uint64
@@ -320,7 +326,9 @@ type DCPEntry[C DCPClient] struct {
 	Refs          atomic.Int64 // RPCs keeping the channel open; negative once closed
 }
 
-// NewDynamicChannelPool creates the initial channel set and starts scale workers.
+// NewDynamicChannelPool creates the initial channel set and starts background scale
+// workers. ctx applies only to initial channel creation; background workers and pool
+// operations remain active until Close is called.
 func NewDynamicChannelPool[C DCPClient](
 	ctx context.Context,
 	cfg DCPConfig,
@@ -334,7 +342,7 @@ func NewDynamicChannelPool[C DCPClient](
 		return nil, err
 	}
 	p := newEmptyDCP[C](cfg, hooks)
-	p.Ctx, p.cancel = context.WithCancel(ctx)
+	p.Ctx, p.cancel = context.WithCancel(context.Background())
 	p.ScaleUpSignal = make(chan struct{}, 1)
 	p.done = make(chan struct{})
 	if err := p.createInitialEntries(ctx); err != nil {
@@ -419,6 +427,7 @@ func newEmptyDCP[C DCPClient](cfg DCPConfig, hooks DCPHooks[C]) *DynamicChannelP
 		onClose:             hooks.OnClose,
 		penaltyEpoch:        hooks.PenaltyEpoch,
 		onCallStart:         hooks.OnCallStart,
+		primeRetryBaseDelay: hooks.PrimeRetryBaseDelay,
 		DrainIdleFloor:      DCPDrainIdleFloor,
 	}
 }
@@ -457,7 +466,7 @@ func (p *DynamicChannelPool[C]) noEntriesError() error {
 	if p != nil && p.noEntriesErr != nil {
 		return p.noEntriesErr
 	}
-	return defaultDCPNoEntriesErr
+	return ErrDCPNoEntries
 }
 
 func (p *DynamicChannelPool[C]) primeNotReadyError() error {
@@ -652,7 +661,7 @@ func (p *DynamicChannelPool[C]) prime(ctx context.Context, e *DCPEntry[C]) error
 			return nil
 		}
 		if i < p.Cfg.DCPPrimeMaxAttempts-1 {
-			timer := time.NewTimer(time.Duration(100*(1<<i)) * time.Millisecond)
+			timer := time.NewTimer(p.primeRetryDelay(i))
 			select {
 			case <-ctx.Done():
 				timer.Stop()
@@ -662,6 +671,19 @@ func (p *DynamicChannelPool[C]) prime(ctx context.Context, e *DCPEntry[C]) error
 		}
 	}
 	return last
+}
+
+func (p *DynamicChannelPool[C]) primeRetryDelay(attempt int) time.Duration {
+	base := p.primeRetryBaseDelay
+	if base <= 0 {
+		base = 100 * time.Millisecond
+	}
+	shift := min(max(attempt, 0), 10)
+	mult := time.Duration(1 << shift)
+	if base > time.Duration(math.MaxInt64)/mult {
+		return time.Duration(math.MaxInt64)
+	}
+	return base * mult
 }
 
 // Pick selects an active entry according to the configured selection strategy.

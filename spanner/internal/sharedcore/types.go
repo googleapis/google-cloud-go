@@ -19,6 +19,7 @@ package sharedcore
 import (
 	"unsafe"
 
+	"cloud.google.com/go/spanner/internal/transport"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -65,53 +66,83 @@ type SpannerValue struct {
 }
 
 // DynamicChannelPoolConfig configures opt-in dynamic gRPC channel pooling,
-// mirroring spanner.DynamicChannelPoolConfig. Zero values use DefaultDynamicChannelPoolConfig
-// when Enabled is true.
-type DynamicChannelPoolConfig struct {
-	Enabled           bool
-	InitialChannels   int
-	MinChannels       int
-	MaxChannels       int
-	MaxRPCPerChannel  float64
-	MinRPCPerChannel  float64
-	SelectionStrategy int // 0 = DCPPowerOfTwoLeastBusy, 1 = DCPRoundRobin
-}
+// aliasing transport.DCPConfig. Zero values use transport.DefaultDCPConfig
+// when DCPEnabled is true.
+type DynamicChannelPoolConfig = transport.DCPConfig
 
-// ClientConfig configures a Service client pool.
+// DCPSelectionStrategy controls how a DynamicChannelPool chooses an active channel.
+type DCPSelectionStrategy = transport.DCPSelectionStrategy
+
+// ClientConfig configures a shared core gRPC client transport and connection pool.
 type ClientConfig struct {
-	Endpoint                 string
-	UniverseDomain           string
-	RootCAPEM                string
-	NumChannels              int
-	Compression              string
-	EnableDirectAccess       bool
-	UserAgent                string
-	PlainText                bool
-	DisableBuiltInAuth       bool
+	// Endpoint overrides the default Spanner gRPC endpoint (e.g. "localhost:9010" or "spanner.googleapis.com:443").
+	Endpoint string
+	// UniverseDomain overrides the default universe domain when dialing a non-plaintext endpoint.
+	UniverseDomain string
+	// NumChannels sets the fixed/fallback pool size when > 0. When <= 0, transport.DefaultNumChannels (4)
+	// is used. Ignored when DynamicChannelPoolConfig.DCPEnabled is active (use DCPInitialChannels/DCPMinChannels/DCPMaxChannels).
+	NumChannels int
+	// Compression enables request/response compression when set to "gzip" (overrides any per-call default compressor).
+	Compression string
+	// EnableDirectAccess enables DirectPath when allowed by credentials and environment variables.
+	EnableDirectAccess bool
+	// UserAgent sets an optional product/version token appended to x-goog-api-client after "gccl/<go-ver>".
+	// Must use "name/version" format; tokens without "/" are ignored.
+	UserAgent string
+	// PlainText dials without TLS or authentication. Requires a non-empty Endpoint or SPANNER_EMULATOR_HOST.
+	PlainText bool
+	// DisableBuiltInAuth omits default Google credentials (for host bindings supplying per-RPC auth headers).
+	// On non-plaintext endpoints, DisableBuiltInAuth disables DirectPath and dynamic channel pooling
+	// (falling back to a fixed pool) because background DCP channel priming cannot attach host auth headers.
+	DisableBuiltInAuth bool
+	// DynamicChannelPoolConfig configures opt-in dynamic gRPC channel pooling.
 	DynamicChannelPoolConfig DynamicChannelPoolConfig
-	// LogFunc is an optional callback for transport log messages. Must be safe for concurrent calls.
+	// LogFunc is an optional callback for transport warning messages (emitted with level "WARN").
+	// Must be safe for concurrent calls.
 	LogFunc func(level string, message string)
 }
 
-// RetrySettings configures per-RPC timeout and retry backoff parameters in milliseconds.
+// RetrySettings configures total stream timeout and retry backoff parameters in milliseconds
+// for ExecuteStreamingSql.
+//
+// Timeout modes controlled by (HasTimeout, TimeoutMs):
+//   - HasTimeout == false: uses the caller context deadline if present; otherwise applies
+//     the 60-minute GAPIC default streaming deadline.
+//   - HasTimeout == true && TimeoutMs == 0: explicitly disables any default deadline
+//     (context.WithCancel with no timeout added, e.g. when a host caller passes timeout: Infinity/None).
+//   - HasTimeout == true && TimeoutMs > 0: applies an explicit total deadline of TimeoutMs milliseconds.
+//   - HasTimeout == true && TimeoutMs < 0: fails immediately with codes.DeadlineExceeded.
+//
+// Per-attempt timeout settings and custom retryable error codes are intentionally omitted
+// for ExecuteStreamingSql because a single stream deadline spans all resume_token resumption
+// attempts (matching spanner.resumableStreamDecoder), and retryable status codes follow
+// Spanner's stream-resumption rules (codes.Unavailable, known transient codes.Internal
+// transport/RST_STREAM errors, and codes.ResourceExhausted when accompanied by RetryInfo
+// or location-aware routing).
 type RetrySettings struct {
-	// TimeoutMs is the per-RPC deadline in milliseconds when HasTimeout is true.
+	// TimeoutMs is the total stream deadline in milliseconds when HasTimeout is true
+	// (0 with HasTimeout == true disables the default deadline; < 0 fails with DeadlineExceeded).
 	TimeoutMs int64
-	// HasTimeout indicates whether TimeoutMs should be applied as a deadline.
+	// HasTimeout indicates whether TimeoutMs was explicitly specified by the caller.
 	HasTimeout bool
-	// UntimedRetryBudgetMs bounds total retry elapsed time in milliseconds when HasTimeout is false (defaults to 60,000 ms when <= 0).
+	// UntimedRetryBudgetMs optionally bounds consecutive retry elapsed time in milliseconds
+	// when HasTimeout is false. When <= 0 (the default), no retry-budget cap is applied
+	// and retryable interruptions continue until the context deadline.
 	UntimedRetryBudgetMs int64
-	// InitialRetryDelayMs is the initial retry backoff delay in milliseconds (defaults to 200 ms when <= 0).
+	// InitialRetryDelayMs is the initial retry backoff delay in milliseconds
+	// (defaults to 20 ms from spanner.DefaultRetryBackoff when <= 0).
 	InitialRetryDelayMs int64
-	// MaxRetryDelayMs is the maximum retry backoff delay in milliseconds (defaults to 32,000 ms when <= 0).
+	// MaxRetryDelayMs is the maximum retry backoff delay in milliseconds
+	// (defaults to 32,000 ms from spanner.DefaultRetryBackoff when <= 0).
 	MaxRetryDelayMs int64
-	// RetryDelayMultiplier is the exponential backoff multiplier (defaults to 1.3 when <= 0).
+	// RetryDelayMultiplier is the exponential backoff multiplier
+	// (defaults to 1.3 from spanner.DefaultRetryBackoff when <= 0).
 	RetryDelayMultiplier float64
 }
 
 // StreamBatchConfig configures row batching, chunk checkpointing, and arena buffer pooling.
 type StreamBatchConfig struct {
-	// BatchRowSize is the target number of rows per StreamBatch callback (defaults to 64 when <= 0).
+	// BatchRowSize is the target number of rows per StreamBatch callback (defaults to 128 when <= 0).
 	BatchRowSize int
 	// FlushOnChunkBoundary flushes accumulated complete rows at the end of each PartialResultSet chunk.
 	FlushOnChunkBoundary bool
@@ -196,7 +227,6 @@ var (
 // When StreamBatchConfig.ReuseArenaBuffers is true, Cells and ArenaBytes alias pooled
 // scratch buffers and are only valid until the onBatch callback returns.
 type StreamBatch struct {
-	Rows                [][]SpannerValue
 	Cells               []PackedCell
 	ArenaBytes          []byte
 	NumRows             int

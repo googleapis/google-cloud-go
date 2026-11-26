@@ -18,14 +18,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"net"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal/requestid"
+	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/metric/noop"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
@@ -71,6 +75,22 @@ func (s *headerCapturingSpannerServer) ExecuteSql(ctx context.Context, _ *spanne
 	return &spannerpb.ResultSet{}, nil
 }
 
+func startTestSpannerServer(t *testing.T, impl spannerpb.SpannerServer, opts ...grpc.ServerOption) string {
+	t.Helper()
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("net.Listen failed: %v", err)
+	}
+	srv := grpc.NewServer(opts...)
+	spannerpb.RegisterSpannerServer(srv, impl)
+	go func() { _ = srv.Serve(lis) }()
+	t.Cleanup(func() {
+		srv.Stop()
+		_ = lis.Close()
+	})
+	return lis.Addr().String()
+}
+
 func TestStripEndpointSchemeAndEmulatorClientOptions(t *testing.T) {
 	cases := []struct {
 		in   string
@@ -87,8 +107,8 @@ func TestStripEndpointSchemeAndEmulatorClientOptions(t *testing.T) {
 		{"", ""},
 	}
 	for _, tc := range cases {
-		if got := stripEndpointScheme(tc.in); got != tc.want {
-			t.Errorf("stripEndpointScheme(%q) = %q, want %q", tc.in, got, tc.want)
+		if got := StripEndpointScheme(tc.in); got != tc.want {
+			t.Errorf("StripEndpointScheme(%q) = %q, want %q", tc.in, got, tc.want)
 		}
 	}
 
@@ -168,7 +188,7 @@ func TestCloudPathClientOptionsHaveNoDirectPathOptions(t *testing.T) {
 		{env: "true", configured: true},
 	} {
 		t.Setenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS", tc.env)
-		cfg := PoolConfig{NumChannels: 1, Compression: gzip.Name, EnableDirectAccess: tc.configured}
+		cfg := PoolConfig{NumChannels: 1, Compression: gzip.Name, DirectPathMode: ResolveDirectPathMode(tc.configured)}
 		userOpts := []option.ClientOption{option.WithUserAgent("caller-ua/1.0")}
 		direct := cfg.ClientOptions(userOpts...)
 		if got := directPathOptionNames(direct); len(got) != 4 {
@@ -202,21 +222,11 @@ func TestDefaultClientOptionsPrecedenceAndNonMutation(t *testing.T) {
 
 	// Verify runtime precedence: userOpts override DefaultClientOptions' numChannels and
 	// user-agent, while compression=="gzip" is appended after userOpts and overrides them.
-	lis, err := net.Listen("tcp", "127.0.0.1:0")
-	if err != nil {
-		t.Fatalf("failed to listen: %v", err)
-	}
 	capturer := &headerCapturingSpannerServer{}
-	srv := grpc.NewServer(grpc.StatsHandler(capturer))
-	spannerpb.RegisterSpannerServer(srv, capturer)
-	go func() { _ = srv.Serve(lis) }()
-	defer func() {
-		srv.Stop()
-		_ = lis.Close()
-	}()
+	addr := startTestSpannerServer(t, capturer, grpc.StatsHandler(capturer))
 
 	userOpts := append(
-		EmulatorClientOptions(lis.Addr().String()),
+		EmulatorClientOptions(addr),
 		option.WithGRPCConnectionPool(3),
 		option.WithUserAgent("caller-override-ua/9.9"),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.UseCompressor("identity"))),
@@ -251,20 +261,8 @@ func TestDefaultClientOptionsPrecedenceAndNonMutation(t *testing.T) {
 }
 
 func TestDialStaticPoolFallbackPoolAndRequestIDInjection(t *testing.T) {
-	lis, err := net.Listen("tcp", "127.0.0.1:0")
-	if err != nil {
-		t.Fatalf("failed to listen: %v", err)
-	}
 	capturer := &headerCapturingSpannerServer{}
-	srv := grpc.NewServer(grpc.StatsHandler(capturer))
-	spannerpb.RegisterSpannerServer(srv, capturer)
-	go func() { _ = srv.Serve(lis) }()
-	defer func() {
-		srv.Stop()
-		_ = lis.Close()
-	}()
-
-	emuOpts := EmulatorClientOptions(lis.Addr().String())
+	emuOpts := EmulatorClientOptions(startTestSpannerServer(t, capturer, grpc.StatsHandler(capturer)))
 	if _, _, err := DialStaticPool(
 		context.Background(),
 		PoolConfig{
@@ -373,5 +371,342 @@ func TestDialStaticPoolFallbackPoolAndRequestIDInjection(t *testing.T) {
 	// delegates to FallbackPool.Close().
 	if err := fbRaw.Close(); err != nil {
 		t.Fatalf("fbRaw.Close() (delegating to FallbackPool.Close()) failed: %v", err)
+	}
+}
+
+func TestPlainTextClientOptions(t *testing.T) {
+	t.Parallel()
+	addr := startTestSpannerServer(t, &headerCapturingSpannerServer{})
+
+	combined := append([]option.ClientOption{option.WithEndpoint("passthrough:///" + addr)}, PlainTextClientOptions()...)
+	pool, err := gtransport.DialPool(context.Background(), DefaultClientOptions(1, "", false, nil, nil, combined...)...)
+	if err != nil {
+		t.Fatalf("DialPool failed: %v", err)
+	}
+	defer pool.Close()
+	if got := pool.Conn().Target(); got != "passthrough:///"+addr {
+		t.Fatalf("conn target = %q, want %q", got, "passthrough:///"+addr)
+	}
+	raw, err := NewGAPICClient(context.Background(), "", gtransport.WithConnPool(pool))
+	if err != nil {
+		t.Fatalf("NewGAPICClient failed: %v", err)
+	}
+	defer raw.Close()
+	if _, err := raw.ExecuteSql(context.Background(), &spannerpb.ExecuteSqlRequest{Sql: "SELECT 1"}); err != nil {
+		t.Fatalf("ExecuteSql failed: %v", err)
+	}
+}
+
+func TestEmulatorClientOptions(t *testing.T) {
+	t.Parallel()
+	addr := startTestSpannerServer(t, &headerCapturingSpannerServer{})
+
+	opts := EmulatorClientOptions("http://" + addr)
+	pool, err := gtransport.DialPool(context.Background(), DefaultClientOptions(1, "", false, nil, nil, opts...)...)
+	if err != nil {
+		t.Fatalf("DialPool failed: %v", err)
+	}
+	defer pool.Close()
+	if got := pool.Conn().Target(); got != "passthrough:///"+addr {
+		t.Fatalf("conn target = %q, want %q", got, "passthrough:///"+addr)
+	}
+}
+
+func TestPoolConfig_DirectPathMode(t *testing.T) {
+	for _, tc := range []struct {
+		mode DirectPathMode
+		want string
+	}{
+		{DirectPathDefault, "DirectPathDefault"},
+		{DirectPathEnabled, "DirectPathEnabled"},
+		{DirectPathDisabled, "DirectPathDisabled"},
+		{DirectPathMode(99), "DirectPathMode(99)"},
+	} {
+		if got := tc.mode.String(); got != tc.want {
+			t.Fatalf("DirectPathMode(%d).String() = %q, want %q", int(tc.mode), got, tc.want)
+		}
+	}
+
+	hasDirectPathOpt := func(opts []option.ClientOption) bool {
+		for _, o := range opts {
+			desc := fmt.Sprintf("%T", o)
+			if strings.Contains(desc, "DirectPath") || strings.Contains(desc, "HardBound") || strings.Contains(desc, "NonDefaultServiceAccount") {
+				return true
+			}
+		}
+		return false
+	}
+
+	cases := []struct {
+		name   string
+		mode   DirectPathMode
+		envVal string
+		want   bool
+	}{
+		{"Default/env=unset", DirectPathDefault, "", false},
+		{"Default/env=true", DirectPathDefault, "true", true},
+		{"Enabled/env=false", DirectPathEnabled, "false", true},
+		{"Enabled/env=true", DirectPathEnabled, "true", true},
+		{"Disabled/env=false", DirectPathDisabled, "false", false},
+		{"Disabled/env=true", DirectPathDisabled, "true", false},
+		{"Unknown/env=true", DirectPathMode(99), "true", false},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS", tc.envVal)
+			opts := (PoolConfig{NumChannels: 1, DirectPathMode: tc.mode}).ClientOptions()
+			if got := hasDirectPathOpt(opts); got != tc.want {
+				t.Fatalf("DirectPathMode=%v env=%q: hasDirectPathOpt=%v, want %v", tc.mode, tc.envVal, got, tc.want)
+			}
+		})
+	}
+
+	resolveCases := []struct {
+		name   string
+		cfg    bool
+		envVal string
+		want   DirectPathMode
+	}{
+		{"cfg=false/env=unset", false, "", DirectPathDisabled},
+		{"cfg=true/env=unset", true, "", DirectPathEnabled},
+		{"cfg=false/env=true", false, "true", DirectPathEnabled},
+		{"cfg=true/env=false", true, "false", DirectPathDisabled},
+	}
+	for _, tc := range resolveCases {
+		t.Run("ResolveDirectPathMode/"+tc.name, func(t *testing.T) {
+			t.Setenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS", tc.envVal)
+			if got := ResolveDirectPathMode(tc.cfg); got != tc.want {
+				t.Fatalf("ResolveDirectPathMode(%v) env=%q = %v, want %v", tc.cfg, tc.envVal, got, tc.want)
+			}
+		})
+	}
+}
+
+type streamingHeaderServer struct {
+	spannerpb.UnimplementedSpannerServer
+}
+
+func (s *streamingHeaderServer) ExecuteSql(context.Context, *spannerpb.ExecuteSqlRequest) (*spannerpb.ResultSet, error) {
+	return &spannerpb.ResultSet{}, nil
+}
+
+func (s *streamingHeaderServer) ExecuteStreamingSql(req *spannerpb.ExecuteSqlRequest, stream spannerpb.Spanner_ExecuteStreamingSqlServer) error {
+	if err := grpc.SendHeader(stream.Context(), metadata.Pairs("server-timing", "gfet4t7; dur=1.5")); err != nil {
+		return err
+	}
+	return stream.Send(&spannerpb.PartialResultSet{Last: true})
+}
+
+func TestExecuteStreamingSQL_CachesHeaderAndPropagatesError(t *testing.T) {
+	t.Parallel()
+	addr := startTestSpannerServer(t, &streamingHeaderServer{})
+
+	pool, err := gtransport.DialPool(context.Background(), DefaultClientOptions(1, "", false, nil, nil, EmulatorClientOptions(addr)...)...)
+	if err != nil {
+		t.Fatalf("DialPool failed: %v", err)
+	}
+	defer pool.Close()
+
+	raw, err := NewGAPICClient(context.Background(), "", gtransport.WithConnPool(pool))
+	if err != nil {
+		t.Fatalf("NewGAPICClient failed: %v", err)
+	}
+	defer raw.Close()
+
+	stream, err := ExecuteStreamingSQL(context.Background(), raw, &spannerpb.ExecuteSqlRequest{Sql: "SELECT 1"})
+	if err != nil {
+		t.Fatalf("ExecuteStreamingSQL failed: %v", err)
+	}
+
+	md1, err := stream.Header()
+	if err != nil {
+		t.Fatalf("first Header() failed: %v", err)
+	}
+	md2, err := stream.Header()
+	if err != nil {
+		t.Fatalf("second Header() failed: %v", err)
+	}
+	if w, g := []string{"gfet4t7; dur=1.5"}, md1.Get("server-timing"); len(g) != 1 || g[0] != w[0] || len(md2.Get("server-timing")) != 1 || md2.Get("server-timing")[0] != w[0] {
+		t.Fatalf("server-timing header mismatch:\n Want: %v\n  Got: md1=%v md2=%v", w, md1.Get("server-timing"), md2.Get("server-timing"))
+	}
+	if _, err := stream.Recv(); err != nil {
+		t.Fatalf("Recv() failed: %v", err)
+	}
+	if _, err := stream.Recv(); err != io.EOF {
+		t.Fatalf("drain Recv() mismatch:\n Want: %v\n  Got: %v", io.EOF, err)
+	}
+
+	canceledCtx, cancel := context.WithCancel(context.Background())
+	cancel()
+	if _, err := ExecuteStreamingSQL(canceledCtx, raw, &spannerpb.ExecuteSqlRequest{Sql: "SELECT 1"}); err == nil {
+		t.Fatal("expected error from ExecuteStreamingSQL with canceled context")
+	}
+}
+
+func TestDefaultClientOptions_InterceptorsAndPoolSizeMismatchError(t *testing.T) {
+	t.Parallel()
+	addr := startTestSpannerServer(t, &streamingHeaderServer{})
+
+	var unaryCalls, streamCalls atomic.Int32
+	unaryInterceptor := func(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+		unaryCalls.Add(1)
+		return invoker(ctx, method, req, reply, cc, opts...)
+	}
+	streamInterceptor := func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+		streamCalls.Add(1)
+		return streamer(ctx, desc, cc, method, opts...)
+	}
+
+	opts := DefaultClientOptions(
+		1,
+		"",
+		false,
+		[]grpc.UnaryClientInterceptor{unaryInterceptor},
+		[]grpc.StreamClientInterceptor{streamInterceptor},
+		EmulatorClientOptions(addr)...,
+	)
+	pool, err := gtransport.DialPool(context.Background(), opts...)
+	if err != nil {
+		t.Fatalf("DialPool failed: %v", err)
+	}
+	defer pool.Close()
+
+	raw, err := NewGAPICClient(context.Background(), "", gtransport.WithConnPool(pool))
+	if err != nil {
+		t.Fatalf("NewGAPICClient failed: %v", err)
+	}
+	defer raw.Close()
+
+	if _, err := raw.ExecuteSql(context.Background(), &spannerpb.ExecuteSqlRequest{Sql: "SELECT 1"}); err != nil {
+		t.Fatalf("ExecuteSql failed: %v", err)
+	}
+	st, err := raw.ExecuteStreamingSql(context.Background(), &spannerpb.ExecuteSqlRequest{Sql: "SELECT 1"})
+	if err != nil {
+		t.Fatalf("ExecuteStreamingSql failed: %v", err)
+	}
+	if _, err := st.Recv(); err != nil {
+		t.Fatalf("Recv failed: %v", err)
+	}
+	if _, err := st.Recv(); err != io.EOF {
+		t.Fatalf("drain Recv mismatch:\n Want: %v\n  Got: %v", io.EOF, err)
+	}
+
+	if w, g := int32(1), unaryCalls.Load(); w != g {
+		t.Fatalf("unary interceptor count mismatch:\n Want: %d\n  Got: %d", w, g)
+	}
+	if w, g := int32(1), streamCalls.Load(); w != g {
+		t.Fatalf("stream interceptor count mismatch:\n Want: %d\n  Got: %d", w, g)
+	}
+
+	mismatchErr := &PoolSizeMismatchError{Msg: "pool size mismatch"}
+	if w, g := "pool size mismatch", mismatchErr.Error(); w != g {
+		t.Fatalf("PoolSizeMismatchError.Error mismatch:\n Want: %q\n  Got: %q", w, g)
+	}
+}
+
+type fallbackRateCheckSpy struct {
+	noop.MeterProvider
+	afterCancel      atomic.Bool
+	postCancelCtxErr chan error
+}
+
+type fallbackSpyMeter struct {
+	noop.Meter
+	spy *fallbackRateCheckSpy
+}
+
+type fallbackSpyErrorRatioGauge struct {
+	noop.Float64Gauge
+	spy *fallbackRateCheckSpy
+}
+
+func (p *fallbackRateCheckSpy) Meter(string, ...metric.MeterOption) metric.Meter {
+	return &fallbackSpyMeter{Meter: noop.Meter{}, spy: p}
+}
+
+func (m *fallbackSpyMeter) Float64Gauge(name string, opts ...metric.Float64GaugeOption) (metric.Float64Gauge, error) {
+	if name != "eef.error_ratio" {
+		return m.Meter.Float64Gauge(name, opts...)
+	}
+	return &fallbackSpyErrorRatioGauge{Float64Gauge: noop.Float64Gauge{}, spy: m.spy}, nil
+}
+
+func (g *fallbackSpyErrorRatioGauge) Record(ctx context.Context, val float64, opts ...metric.RecordOption) {
+	if g.spy.afterCancel.Load() {
+		select {
+		case g.spy.postCancelCtxErr <- ctx.Err():
+		default:
+		}
+	}
+}
+
+func TestCreateFallbackConnPool_StartupContextOnly(t *testing.T) {
+	t.Parallel()
+	emuOpts := EmulatorClientOptions(startTestSpannerServer(t, &headerCapturingSpannerServer{}))
+
+	// Non-blocking dial on a pre-canceled context preserves DialStaticPool / spanner.NewClient parity.
+	preCanceled, cancelPre := context.WithCancel(context.Background())
+	cancelPre()
+	prePool, _, err := CreateFallbackConnPool(preCanceled, PoolConfig{NumChannels: 1, DirectPathMode: DirectPathDisabled}, emuOpts...)
+	if err != nil {
+		t.Fatalf("non-blocking CreateFallbackConnPool(preCanceled) failed: %v", err)
+	}
+	_ = prePool.Close()
+
+	// Canceling startup context after construction must NOT stop GCPFallback's background rateCheck loop.
+	spy := &fallbackRateCheckSpy{postCancelCtxErr: make(chan error, 8)}
+	startupCtx, cancelStartup := context.WithCancel(context.Background())
+	pool, _, err := createFallbackConnPool(
+		startupCtx,
+		PoolConfig{
+			NumChannels:          2,
+			HasNumChannelsConfig: true,
+			DirectPathMode:       DirectPathDisabled,
+			MeterProvider:        spy,
+		},
+		2*time.Millisecond,
+		emuOpts...,
+	)
+	if err != nil {
+		cancelStartup()
+		t.Fatalf("createFallbackConnPool failed: %v", err)
+	}
+	cancelStartup()
+	spy.afterCancel.Store(true)
+	defer func() {
+		spy.afterCancel.Store(false)
+		_ = pool.Close()
+	}()
+
+	// Each rateCheck() tick records eef.error_ratio twice (primary and fallback) using gcpFallback.ctx.
+	// Observing 4 post-cancel records (>= 2 full ticks) with ctx.Err() == nil proves rateCheck()
+	// remains alive after startupCtx is canceled.
+	for i := 0; i < 4; i++ {
+		select {
+		case recCtxErr := <-spy.postCancelCtxErr:
+			if recCtxErr != nil {
+				t.Fatalf("post-cancel rateCheck record %d observed canceled fallback ctx: %v", i, recCtxErr)
+			}
+		case <-time.After(2 * time.Second):
+			t.Fatalf("timed out waiting for post-cancel GCPFallback rateCheck tick (record %d/4)", i)
+		}
+	}
+	spy.afterCancel.Store(false)
+
+	fbPool, ok := pool.(*FallbackPool)
+	if !ok {
+		t.Fatalf("expected *FallbackPool, got %T", pool)
+	}
+	if fbPool.PrimaryConn() == nil || fbPool.FallbackConn() == nil {
+		t.Fatalf("expected non-nil primary and fallback pools")
+	}
+
+	raw, err := NewGAPICClient(context.Background(), "", gtransport.WithConnPool(pool))
+	if err != nil {
+		t.Fatalf("NewGAPICClient failed: %v", err)
+	}
+	defer raw.Close()
+	if _, err := raw.ExecuteSql(context.Background(), &spannerpb.ExecuteSqlRequest{Sql: "SELECT 1"}); err != nil {
+		t.Fatalf("ExecuteSql after startup ctx cancel failed: %v", err)
 	}
 }

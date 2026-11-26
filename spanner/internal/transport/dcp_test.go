@@ -17,6 +17,7 @@ package transport
 import (
 	"context"
 	"errors"
+	"math"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -59,6 +60,7 @@ func (p *fakeDCPConnPool) NewStream(ctx context.Context, desc *grpc.StreamDesc, 
 }
 
 func TestNormalizeDCPConfig(t *testing.T) {
+	t.Parallel()
 	cfg, err := NormalizeDCPConfig(DCPConfig{DCPEnabled: true})
 	if err != nil {
 		t.Fatalf("NormalizeDCPConfig default failed: %v", err)
@@ -98,6 +100,7 @@ func TestNormalizeDCPConfig(t *testing.T) {
 }
 
 func TestNewDynamicChannelPool_RejectsInvalidHooks(t *testing.T) {
+	t.Parallel()
 	validDial := func(context.Context) (gtransport.ConnPool, error) { return &fakeDCPConnPool{}, nil }
 	validNewEntry := func(_ context.Context, e *DCPEntry[*fakeDCPClient]) error {
 		c := &fakeDCPClient{}
@@ -152,6 +155,7 @@ func TestNewDynamicChannelPool_RejectsInvalidHooks(t *testing.T) {
 }
 
 func TestDynamicChannelPool_SentinelsRoundRobinPenaltyAndResolver(t *testing.T) {
+	t.Parallel()
 	t.Run("zero-value pool fallback error sentinels", func(t *testing.T) {
 		var uninitPool DynamicChannelPool[*fakeDCPClient]
 		if err := uninitPool.prime(context.Background(), &DCPEntry[*fakeDCPClient]{}); status.Code(err) != codes.FailedPrecondition {
@@ -296,6 +300,7 @@ func (f *fakeFixedUnderlyingPool) NewStream(context.Context, *grpc.StreamDesc, s
 }
 
 func TestNewFixedChannelPool(t *testing.T) {
+	t.Parallel()
 	t.Run("rejects nil underlying or nil NewEntryClient", func(t *testing.T) {
 		if _, err := NewFixedChannelPool[*fakeDCPClient](context.Background(), nil, DCPHooks[*fakeDCPClient]{
 			NewEntryClient: func(context.Context, *DCPEntry[*fakeDCPClient]) error { return nil },
@@ -731,5 +736,175 @@ func TestDynamicChannelPoolOnCallStartConcurrent(t *testing.T) {
 	}
 	if got, want := maxLoad.Load(), int32(goroutines/len(entries)); got < 1 || got > want {
 		t.Fatalf("OnCallStart max load mismatch:\n Got: %d\nWant: 1..%d", got, want)
+	}
+}
+
+func TestNewDynamicChannelPool_StartupContextOnly(t *testing.T) {
+	t.Parallel()
+
+	newEntry := func(_ context.Context, e *DCPEntry[*fakeDCPClient]) error {
+		c := &fakeDCPClient{}
+		e.Delegate = c
+		e.Client = c
+		return nil
+	}
+	noopPrime := func(context.Context, *DCPEntry[*fakeDCPClient], string) error { return nil }
+
+	// 1. Pre-canceled context forwarded to Dial aborts startup cleanly.
+	preCanceled, cancelPre := context.WithCancel(context.Background())
+	cancelPre()
+	var preDials atomic.Int32
+	if _, err := NewDynamicChannelPool[*fakeDCPClient](
+		preCanceled,
+		DCPConfig{DCPEnabled: true, DCPInitialChannels: 2, DCPMinChannels: 1, DCPMaxChannels: 2},
+		DCPHooks[*fakeDCPClient]{
+			Dial: func(dialCtx context.Context) (gtransport.ConnPool, error) {
+				preDials.Add(1)
+				if err := dialCtx.Err(); err != nil {
+					return nil, err
+				}
+				return &fakeDCPConnPool{}, nil
+			},
+			NewEntryClient: newEntry,
+			PrimeRPC:       noopPrime,
+		},
+	); !errors.Is(err, context.Canceled) {
+		t.Fatalf("pre-canceled NewDynamicChannelPool err = %v, want context.Canceled", err)
+	}
+	if got := preDials.Load(); got != 1 {
+		t.Fatalf("pre-canceled Dial calls = %d, want 1", got)
+	}
+
+	// 2. Context canceled mid-startup closes already-created entries when a subsequent Dial fails.
+	midCtx, cancelMid := context.WithCancel(context.Background())
+	firstPool := &fakeDCPConnPool{}
+	var midDials atomic.Int32
+	if _, err := NewDynamicChannelPool[*fakeDCPClient](
+		midCtx,
+		DCPConfig{DCPEnabled: true, DCPInitialChannels: 2, DCPMinChannels: 1, DCPMaxChannels: 2},
+		DCPHooks[*fakeDCPClient]{
+			Dial: func(dialCtx context.Context) (gtransport.ConnPool, error) {
+				if err := dialCtx.Err(); err != nil {
+					return nil, err
+				}
+				if midDials.Add(1) == 1 {
+					cancelMid()
+					return firstPool, nil
+				}
+				return &fakeDCPConnPool{}, nil
+			},
+			NewEntryClient: newEntry,
+			PrimeRPC:       noopPrime,
+		},
+	); !errors.Is(err, context.Canceled) {
+		t.Fatalf("mid-startup canceled NewDynamicChannelPool err = %v, want context.Canceled", err)
+	}
+	if got := firstPool.closes.Load(); got != 1 {
+		t.Fatalf("already-created entry pool closes = %d, want 1", got)
+	}
+
+	// 3. Non-blocking Dial on a pre-canceled context preserves spanner.NewClient parity
+	// in both NewFixedChannelPool and NewDynamicChannelPool while keeping pool.Ctx live.
+	fixedPre, err := NewFixedChannelPool[*fakeDCPClient](
+		preCanceled,
+		&fakeFixedUnderlyingPool{conns: []*grpc.ClientConn{new(grpc.ClientConn)}},
+		DCPHooks[*fakeDCPClient]{NewEntryClient: newEntry},
+	)
+	if err != nil {
+		t.Fatalf("NewFixedChannelPool(preCanceled) failed: %v", err)
+	}
+	_ = fixedPre.Close()
+
+	// 4. Canceling startup context after construction does not cancel pool.Ctx until Close.
+	startupCtx, cancelStartup := context.WithCancel(context.Background())
+	pool, err := NewDynamicChannelPool[*fakeDCPClient](
+		startupCtx,
+		DCPConfig{DCPEnabled: true, DCPInitialChannels: 1, DCPMinChannels: 1, DCPMaxChannels: 2},
+		DCPHooks[*fakeDCPClient]{
+			Dial:           func(context.Context) (gtransport.ConnPool, error) { return &fakeDCPConnPool{}, nil },
+			NewEntryClient: newEntry,
+			PrimeRPC:       noopPrime,
+		},
+	)
+	if err != nil {
+		cancelStartup()
+		t.Fatalf("NewDynamicChannelPool failed: %v", err)
+	}
+	cancelStartup()
+	if pool.Ctx.Err() != nil {
+		_ = pool.Close()
+		t.Fatalf("pool.Ctx canceled by startup ctx: %v", pool.Ctx.Err())
+	}
+	if err := pool.Close(); err != nil {
+		t.Fatalf("pool.Close failed: %v", err)
+	}
+	if !errors.Is(pool.Ctx.Err(), context.Canceled) {
+		t.Fatalf("pool.Ctx.Err() after Close = %v, want context.Canceled", pool.Ctx.Err())
+	}
+}
+
+func TestDynamicChannelPool_PrimeRetryBaseDelay(t *testing.T) {
+	t.Parallel()
+
+	defaultPool := &DynamicChannelPool[*fakeDCPClient]{}
+	if got := defaultPool.primeRetryDelay(0); got != 100*time.Millisecond {
+		t.Fatalf("default primeRetryDelay(0) = %v, want 100ms", got)
+	}
+	if got := defaultPool.primeRetryDelay(-1); got != 100*time.Millisecond {
+		t.Fatalf("default primeRetryDelay(-1) = %v, want 100ms", got)
+	}
+	if got := defaultPool.primeRetryDelay(20); got != 100*time.Millisecond*(1<<10) {
+		t.Fatalf("clamped primeRetryDelay(20) = %v, want %v", got, 100*time.Millisecond*(1<<10))
+	}
+
+	overflowPool := &DynamicChannelPool[*fakeDCPClient]{primeRetryBaseDelay: time.Duration(math.MaxInt64 / 2)}
+	if got := overflowPool.primeRetryDelay(3); got != time.Duration(math.MaxInt64) {
+		t.Fatalf("overflow primeRetryDelay(3) = %v, want MaxInt64", got)
+	}
+
+	var attempts atomic.Int32
+	wantErr := status.Error(codes.Internal, "prime failed")
+	pool, err := NewDynamicChannelPool[*fakeDCPClient](
+		context.Background(),
+		DCPConfig{
+			DCPEnabled:          true,
+			DCPInitialChannels:  1,
+			DCPMinChannels:      1,
+			DCPMaxChannels:      2,
+			DCPPrimeMaxAttempts: 8,
+			DCPPrimeTimeout:     time.Second,
+		},
+		DCPHooks[*fakeDCPClient]{
+			Dial: func(context.Context) (gtransport.ConnPool, error) { return &fakeDCPConnPool{}, nil },
+			NewEntryClient: func(_ context.Context, e *DCPEntry[*fakeDCPClient]) error {
+				c := &fakeDCPClient{}
+				e.Delegate = c
+				e.Client = c
+				return nil
+			},
+			PrimeRPC: func(context.Context, *DCPEntry[*fakeDCPClient], string) error {
+				attempts.Add(1)
+				return wantErr
+			},
+			PrimeRetryBaseDelay: time.Nanosecond,
+		},
+	)
+	if err != nil {
+		t.Fatalf("NewDynamicChannelPool failed: %v", err)
+	}
+	defer pool.Close()
+
+	if got := pool.primeRetryDelay(0); got != time.Nanosecond {
+		t.Fatalf("pool.primeRetryDelay(0) = %v, want 1ns", got)
+	}
+	// With 8 attempts, default 100ms base backoff would sleep 12.7s and exceed this 1s deadline.
+	primeCtx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	pool.SetPrimeSession("projects/p/instances/i/databases/d/sessions/s1")
+	if err := pool.prime(primeCtx, pool.GetEntries()[0]); !errors.Is(err, wantErr) {
+		t.Fatalf("prime error = %v, want %v", err, wantErr)
+	}
+	if got := attempts.Load(); got != 8 {
+		t.Fatalf("prime attempts = %d, want 8", got)
 	}
 }
