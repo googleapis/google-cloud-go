@@ -42,11 +42,15 @@ import (
 	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp/multiendpoint"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
@@ -70,11 +74,20 @@ func setupMockedTestServerWithConfig(t *testing.T, config ClientConfig) (server 
 	return setupMockedTestServerWithConfigAndClientOptions(t, config, []option.ClientOption{})
 }
 
+func setupAuthenticatedMockedTestServerWithConfig(t *testing.T, config ClientConfig) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
+	t.Helper()
+	return setupMockedTestServerWithConfigAndAuth(t, config, []option.ClientOption{}, nil, true)
+}
+
 func setupMockedTestServerWithConfigAndClientOptions(t *testing.T, config ClientConfig, clientOptions []option.ClientOption) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
 	return setupMockedTestServerWithConfigAndGCPMultiendpointPool(t, config, clientOptions, nil)
 }
 
 func setupMockedTestServerWithConfigAndGCPMultiendpointPool(t *testing.T, config ClientConfig, clientOptions []option.ClientOption, poolCfg *grpc_gcp.ChannelPoolConfig) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
+	return setupMockedTestServerWithConfigAndAuth(t, config, clientOptions, poolCfg, false)
+}
+
+func setupMockedTestServerWithConfigAndAuth(t *testing.T, config ClientConfig, clientOptions []option.ClientOption, poolCfg *grpc_gcp.ChannelPoolConfig, authenticated bool) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
 	grpcHeaderChecker := &itestutil.HeadersEnforcer{
 		OnFailure: t.Fatalf,
 		Checkers: []*itestutil.HeaderChecker{
@@ -124,6 +137,17 @@ func setupMockedTestServerWithConfigAndGCPMultiendpointPool(t *testing.T, config
 	}
 	clientOptions = append(clientOptions, grpcHeaderChecker.CallOptions()...)
 	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
+	if authenticated {
+		creds := &google.Credentials{
+			ProjectID:   "[PROJECT]",
+			TokenSource: oauth2.StaticTokenSource(&oauth2.Token{AccessToken: "test-token"}),
+		}
+		opts = []option.ClientOption{
+			option.WithEndpoint(server.ServerAddress),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+			option.WithCredentials(creds),
+		}
+	}
 	opts = append(opts, clientOptions...)
 	ctx := context.Background()
 	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]")
@@ -856,14 +880,14 @@ func newLocationAwareQueryStreamHarness(t *testing.T) (*locationAwareQueryStream
 	waitForLocationAwareEndpointHealthy(t, client, replicaHarness.ReplicaAddresses[1])
 
 	return &locationAwareQueryStreamHarness{
-			client:         client,
-			replicaHarness: replicaHarness,
-			leaderAddress:  replicaHarness.ReplicaAddresses[0],
-			replicaAddress: replicaHarness.ReplicaAddresses[1],
-		}, func() {
-			client.Close()
-			teardownReplicas()
-		}
+		client:         client,
+		replicaHarness: replicaHarness,
+		leaderAddress:  replicaHarness.ReplicaAddresses[0],
+		replicaAddress: replicaHarness.ReplicaAddresses[1],
+	}, func() {
+		client.Close()
+		teardownReplicas()
+	}
 }
 
 func (h *locationAwareQueryStreamHarness) query(ctx context.Context) *RowIterator {
@@ -942,14 +966,14 @@ func newLocationAwareReadStreamHarness(t *testing.T) (*locationAwareReadStreamHa
 	waitForLocationAwareEndpointHealthy(t, client, replicaHarness.ReplicaAddresses[1])
 
 	return &locationAwareReadStreamHarness{
-			client:         client,
-			replicaHarness: replicaHarness,
-			leaderAddress:  replicaHarness.ReplicaAddresses[0],
-			replicaAddress: replicaHarness.ReplicaAddresses[1],
-		}, func() {
-			client.Close()
-			teardownReplicas()
-		}
+		client:         client,
+		replicaHarness: replicaHarness,
+		leaderAddress:  replicaHarness.ReplicaAddresses[0],
+		replicaAddress: replicaHarness.ReplicaAddresses[1],
+	}, func() {
+		client.Close()
+		teardownReplicas()
+	}
 }
 
 func (h *locationAwareReadStreamHarness) read(ctx context.Context) *RowIterator {

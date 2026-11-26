@@ -190,7 +190,9 @@ configures the older Spanner metrics surface and does not enable this built-in
 client-metrics export.
 
 On Spanner Omni, the Cloud Monitoring export is unavailable and always off.
-Use `ClientMetricsProvider` to export client metrics from an Omni client.
+Use `ClientMetricsProvider` to export client metrics from an Omni client. Cloud
+Monitoring export is also disabled when the client is created with
+`option.WithoutAuthentication()`; `ClientMetricsProvider` is unaffected.
 
 ## Experimental faster decoding with the `spanner_vtproto` build tag
 
