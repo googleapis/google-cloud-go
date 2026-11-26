@@ -29,6 +29,7 @@ import (
 	"os"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -39,7 +40,6 @@ import (
 	"github.com/google/uuid"
 
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -53,6 +53,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/mem"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/stats"
@@ -338,7 +339,7 @@ func TestHTTPMetricsRecording(t *testing.T) {
 				dp := hist.DataPoints[0]
 
 				assertExactAttrKeys(t, m.Name, dp.Attributes,
-					"error.type", "http.request.method", "http.response.status_code", "rpc.system.name", "server.address", "url.template")
+					"error.type", "http.request.method", "http.response.status_code", "network.path", "rpc.system.name", "server.address", "url.template")
 				if got := getHistAttr(dp, "rpc.system.name"); got != "http" {
 					t.Errorf("expected rpc.system.name http, got %q", got)
 				}
@@ -354,6 +355,9 @@ func TestHTTPMetricsRecording(t *testing.T) {
 				if got := getHistAttr(dp, "error.type"); got != "OK" {
 					t.Errorf("expected error.type OK, got %q", got)
 				}
+				if got := getHistAttr(dp, "network.path"); got != networkPathCloud {
+					t.Errorf("http.client.request.duration network.path = %q, want %q", got, networkPathCloud)
+				}
 			}
 
 			if m.Name == "gcp.storage.client.attempts" {
@@ -366,9 +370,12 @@ func TestHTTPMetricsRecording(t *testing.T) {
 					t.Fatalf("expected 1 attempts datapoint, got %d", len(sum.DataPoints))
 				}
 				assertExactAttrKeys(t, m.Name, sum.DataPoints[0].Attributes,
-					"error.type", "gcp.storage.operation", "http.response.status_code", "rpc.system.name", "server.address")
+					"error.type", "gcp.storage.operation", "http.response.status_code", "network.path", "rpc.system.name", "server.address")
 				if got := getAttr(sum.DataPoints[0], "gcp.storage.operation"); got != "Unknown" {
 					t.Errorf("attempts gcp.storage.operation = %q, want Unknown", got)
+				}
+				if got := getAttr(sum.DataPoints[0], "network.path"); got != networkPathCloud {
+					t.Errorf("attempts network.path = %q, want %q", got, networkPathCloud)
 				}
 			}
 
@@ -377,12 +384,15 @@ func TestHTTPMetricsRecording(t *testing.T) {
 				hist, ok := m.Data.(metricdata.Histogram[float64])
 				if ok && len(hist.DataPoints) > 0 {
 					assertExactAttrKeys(t, m.Name, hist.DataPoints[0].Attributes,
-						"gcp.storage.operation", "rpc.system.name", "server.address")
+						"gcp.storage.operation", "network.path", "rpc.system.name", "server.address")
 					if hist.DataPoints[0].Sum != 0.15 {
 						t.Errorf("expected server.duration 0.15s, got %v", hist.DataPoints[0].Sum)
 					}
 					if got := getHistAttr(hist.DataPoints[0], "gcp.storage.operation"); got != "Unknown" {
 						t.Errorf("server.duration gcp.storage.operation = %q, want Unknown", got)
+					}
+					if got := getHistAttr(hist.DataPoints[0], "network.path"); got != networkPathCloud {
+						t.Errorf("server.duration network.path = %q, want %q", got, networkPathCloud)
 					}
 				} else {
 					t.Errorf("expected server.duration datapoints")
@@ -396,7 +406,30 @@ func TestHTTPMetricsRecording(t *testing.T) {
 					t.Fatalf("ttfb: got %T (len=%d), want 1 Histogram datapoint", m.Data, len(hist.DataPoints))
 				}
 				assertExactAttrKeys(t, m.Name, hist.DataPoints[0].Attributes,
-					"gcp.storage.operation", "rpc.system.name", "server.address")
+					"gcp.storage.operation", "network.path", "rpc.system.name", "server.address")
+				if got := getHistAttr(hist.DataPoints[0], "network.path"); got != networkPathCloud {
+					t.Errorf("ttfb network.path = %q, want %q", got, networkPathCloud)
+				}
+			}
+
+			if m.Name == "gcp.storage.client.network.tcp.connect.duration" {
+				hist, ok := m.Data.(metricdata.Histogram[float64])
+				if !ok || len(hist.DataPoints) == 0 {
+					t.Fatalf("tcp.connect.duration: got %T (len=%d), want Histogram datapoints", m.Data, len(hist.DataPoints))
+				}
+				assertExactAttrKeys(t, m.Name, hist.DataPoints[0].Attributes,
+					"network.path", "rpc.system.name", "server.address")
+				if got := getHistAttr(hist.DataPoints[0], "network.path"); got != networkPathCloud {
+					t.Errorf("tcp.connect.duration network.path = %q, want %q", got, networkPathCloud)
+				}
+			}
+
+			if m.Name == "gcp.storage.client.network.dns.lookup.duration" {
+				hist, ok := m.Data.(metricdata.Histogram[float64])
+				if ok && len(hist.DataPoints) > 0 {
+					assertExactAttrKeys(t, m.Name, hist.DataPoints[0].Attributes,
+						"rpc.system.name", "server.address")
+				}
 			}
 
 			if m.Name == "gcp.storage.client.request.active" {
@@ -433,6 +466,8 @@ func TestHTTPMetricsRecording(t *testing.T) {
 
 type mockClientStream struct {
 	grpc.ClientStream
+	ctx     context.Context
+	sendErr error
 	recvErr error
 }
 
@@ -441,7 +476,7 @@ func (m *mockClientStream) RecvMsg(msg interface{}) error {
 }
 
 func (m *mockClientStream) SendMsg(msg interface{}) error {
-	return nil
+	return m.sendErr
 }
 
 func (m *mockClientStream) Header() (metadata.MD, error) {
@@ -453,6 +488,9 @@ func (m *mockClientStream) Trailer() metadata.MD {
 }
 
 func (m *mockClientStream) Context() context.Context {
+	if m.ctx != nil {
+		return m.ctx
+	}
 	return context.Background()
 }
 
@@ -475,7 +513,15 @@ func TestGRPCMetricsRecording(t *testing.T) {
 
 	unaryInt, streamInt := metricsInterceptors(cm)
 
+	dpPeer := &peer.Peer{Addr: &net.TCPAddr{IP: net.ParseIP("34.126.0.10"), Port: 443}}
+	cpPeerCtx := peer.NewContext(ctx, &peer.Peer{Addr: &net.TCPAddr{IP: net.ParseIP("142.250.1.1"), Port: 443}})
+
 	invoker := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
+		for _, o := range opts {
+			if p, ok := o.(grpc.PeerCallOption); ok {
+				*p.PeerAddr = *dpPeer
+			}
+		}
 		return status.Error(codes.NotFound, "not found")
 	}
 
@@ -486,7 +532,7 @@ func TestGRPCMetricsRecording(t *testing.T) {
 
 	// Test Server-Streaming call (ReadObject).
 	streamer := func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-		return &mockClientStream{recvErr: io.EOF}, nil
+		return &mockClientStream{ctx: cpPeerCtx, recvErr: io.EOF}, nil
 	}
 
 	descRead := &grpc.StreamDesc{
@@ -505,7 +551,7 @@ func TestGRPCMetricsRecording(t *testing.T) {
 
 	// Test Client-Streaming call (WriteObject).
 	streamerWrite := func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-		return &mockClientStream{recvErr: nil}, nil
+		return &mockClientStream{ctx: cpPeerCtx, recvErr: nil}, nil
 	}
 
 	descWrite := &grpc.StreamDesc{
@@ -528,7 +574,7 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		ClientStreams: true,
 	}
 	streamerBidi := func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-		return &mockClientStream{recvErr: nil}, nil
+		return &mockClientStream{ctx: cpPeerCtx, recvErr: nil}, nil
 	}
 	clientStreamBidi, err := streamInt(ctx, descBidi, nil, "/google.storage.v2.Storage/BidiWriteObject", streamerBidi)
 	if err != nil {
@@ -561,7 +607,7 @@ func TestGRPCMetricsRecording(t *testing.T) {
 				}
 				for _, dp := range hist.DataPoints {
 					assertExactAttrKeys(t, m.Name, dp.Attributes,
-						"error.type", "rpc.method", "rpc.response.status_code", "rpc.system.name", "server.address")
+						"error.type", "network.path", "rpc.method", "rpc.response.status_code", "rpc.system.name", "server.address")
 					rpcDps[getHistAttr(dp, "rpc.method")] = dp
 				}
 
@@ -578,7 +624,7 @@ func TestGRPCMetricsRecording(t *testing.T) {
 				statusByOp := make(map[string]string)
 				for _, dp := range sum.DataPoints {
 					assertExactAttrKeys(t, m.Name, dp.Attributes,
-						"error.type", "gcp.storage.operation", "rpc.response.status_code", "rpc.system.name", "server.address")
+						"error.type", "gcp.storage.operation", "network.path", "rpc.response.status_code", "rpc.system.name", "server.address")
 					op := getAttr(dp, "gcp.storage.operation")
 					ops[op] += dp.Value
 					statusByOp[op] = getAttr(dp, "rpc.response.status_code")
@@ -600,7 +646,7 @@ func TestGRPCMetricsRecording(t *testing.T) {
 					t.Fatalf("expected 1 errors datapoint, got %d", len(sum.DataPoints))
 				}
 				assertExactAttrKeys(t, m.Name, sum.DataPoints[0].Attributes,
-					"error.type", "gcp.storage.operation", "rpc.system.name", "server.address")
+					"error.type", "gcp.storage.operation", "network.path", "rpc.system.name", "server.address")
 				if got := getAttr(sum.DataPoints[0], "gcp.storage.operation"); got != "GetObject" {
 					t.Errorf("errors gcp.storage.operation = %q, want GetObject", got)
 				}
@@ -612,7 +658,7 @@ func TestGRPCMetricsRecording(t *testing.T) {
 					foundVal := false
 					for _, dp := range hist.DataPoints {
 						assertExactAttrKeys(t, m.Name, dp.Attributes,
-							"gcp.storage.operation", "rpc.system.name", "server.address")
+							"gcp.storage.operation", "network.path", "rpc.system.name", "server.address")
 						if dp.Sum == 0.12 {
 							foundVal = true
 						}
@@ -635,7 +681,10 @@ func TestGRPCMetricsRecording(t *testing.T) {
 				}
 				for _, dp := range hist.DataPoints {
 					assertExactAttrKeys(t, m.Name, dp.Attributes,
-						"gcp.storage.operation", "rpc.system.name", "server.address")
+						"gcp.storage.operation", "network.path", "rpc.system.name", "server.address")
+					if got := getHistAttr(dp, "network.path"); got != networkPathCloud {
+						t.Errorf("ttfb network.path = %q, want %q", got, networkPathCloud)
+					}
 				}
 
 			case "gcp.storage.client.request.active":
@@ -674,11 +723,12 @@ func TestGRPCMetricsRecording(t *testing.T) {
 	for _, tc := range []struct {
 		method     string
 		wantStatus string
+		wantPath   string
 	}{
-		{method: "google.storage.v2.Storage/GetObject", wantStatus: "NOT_FOUND"},
-		{method: "google.storage.v2.Storage/ReadObject", wantStatus: "OK"},
-		{method: "google.storage.v2.Storage/WriteObject", wantStatus: "OK"},
-		{method: "google.storage.v2.Storage/BidiWriteObject", wantStatus: "OK"},
+		{method: "google.storage.v2.Storage/GetObject", wantStatus: "NOT_FOUND", wantPath: networkPathDirect},
+		{method: "google.storage.v2.Storage/ReadObject", wantStatus: "OK", wantPath: networkPathCloud},
+		{method: "google.storage.v2.Storage/WriteObject", wantStatus: "OK", wantPath: networkPathCloud},
+		{method: "google.storage.v2.Storage/BidiWriteObject", wantStatus: "OK", wantPath: networkPathCloud},
 	} {
 		dp, ok := rpcDps[tc.method]
 		if !ok {
@@ -696,6 +746,9 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		}
 		if got := getHistAttr(dp, "error.type"); got != tc.wantStatus {
 			t.Errorf("%s error.type = %q, want %q", tc.method, got, tc.wantStatus)
+		}
+		if got := getHistAttr(dp, "network.path"); got != tc.wantPath {
+			t.Errorf("%s network.path = %q, want %q", tc.method, got, tc.wantPath)
 		}
 	}
 }
@@ -1131,7 +1184,7 @@ func TestRecordTTFB_MetadataOnly(t *testing.T) {
 						if len(hist.DataPoints) == 1 {
 							foundTTFB = true
 							assertExactAttrKeys(t, m.Name, hist.DataPoints[0].Attributes,
-								"gcp.storage.operation", "rpc.system.name", "server.address")
+								"gcp.storage.operation", "network.path", "rpc.system.name", "server.address")
 							if got := getHistAttr(hist.DataPoints[0], "gcp.storage.operation"); got != "ReadObject" {
 								t.Errorf("ttfb gcp.storage.operation = %q, want ReadObject", got)
 							}
@@ -1953,6 +2006,9 @@ func TestExecuteWithReadStallTimeout_RecordsTimeoutMetric(t *testing.T) {
 				if got := getAttr(dps[0], "error.type"); got != "TIMEOUT" {
 					t.Errorf("%s error.type = %q, want TIMEOUT", m.Name, got)
 				}
+				if got := getAttr(dps[0], "network.path"); got != networkPathCloud {
+					t.Errorf("%s network.path = %q, want %q", m.Name, got, networkPathCloud)
+				}
 			case "http.client.request.duration":
 				seen[m.Name] = true
 				dps := m.Data.(metricdata.Histogram[float64]).DataPoints
@@ -2037,16 +2093,108 @@ func TestGRPCMetricsStatsHandler(t *testing.T) {
 		t.Fatalf("initMetrics: %v", err)
 	}
 
-	h := &grpcMetricsStatsHandler{metrics: cm}
+	var dialTimes sync.Map
+	localAddr := &net.TCPAddr{IP: net.IPv4(127, 0, 0, 1), Port: 50000}
+	remoteAddr := &net.TCPAddr{IP: net.IPv4(34, 126, 10, 53), Port: 443}
+	dialTimes.Store(localAddr.String(), dialInfo{
+		doneTime:   time.Now().Add(-5 * time.Millisecond),
+		host:       "storage.googleapis.com",
+		remoteAddr: remoteAddr,
+	})
 
-	// Mock TagRPC
-	info := &stats.RPCTagInfo{FullMethodName: "/google.storage.v2.Storage/ReadObject"}
-	ctx = h.TagRPC(ctx, info)
+	h := &grpcMetricsStatsHandler{metrics: cm, dialTimes: &dialTimes}
+	connCtx := h.TagConn(ctx, &stats.ConnTagInfo{LocalAddr: localAddr, RemoteAddr: remoteAddr})
+	if _, ok := dialTimes.Load(localAddr.String()); ok {
+		t.Errorf("expected TagConn to delete dialTimes entry")
+	}
+	h.HandleConn(connCtx, &stats.ConnBegin{})
 
-	// Mock InPayload
-	h.HandleRPC(ctx, &stats.InPayload{WireLength: 1024})
-	// Mock OutPayload
-	h.HandleRPC(ctx, &stats.OutPayload{WireLength: 512})
+	var rm metricdata.ResourceMetrics
+	if err := mr.Collect(ctx, &rm); err != nil {
+		t.Fatalf("Collect: %v", err)
+	}
+	var foundTLS bool
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			if m.Name == "gcp.storage.client.network.tls.handshake.duration" {
+				foundTLS = true
+				dps := m.Data.(metricdata.Histogram[float64]).DataPoints
+				if len(dps) != 1 {
+					t.Fatalf("tls.handshake.duration datapoints = %d, want 1", len(dps))
+				}
+				assertExactAttrKeys(t, m.Name, dps[0].Attributes,
+					"network.path", "rpc.system.name", "server.address")
+				if got := getHistAttr(dps[0], "network.path"); got != networkPathDirect {
+					t.Errorf("tls.handshake.duration network.path = %q, want %q", got, networkPathDirect)
+				}
+			}
+		}
+	}
+	if !foundTLS {
+		t.Errorf("expected gcp.storage.client.network.tls.handshake.duration to be recorded")
+	}
+}
+
+func TestCountingConn(t *testing.T) {
+	ctx := context.Background()
+	mr := sdkmetric.NewManualReader()
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+	defer provider.Shutdown(ctx)
+
+	cfg := storageConfig{
+		enableOtelMetrics:      true,
+		enableOtelDebugMetrics: true,
+		meterProvider:          provider,
+	}
+
+	cm, _, err := initMetrics(ctx, "project-id", &cfg)
+	if err != nil {
+		t.Fatalf("initMetrics: %v", err)
+	}
+
+	// Test countingConn records socket-level gcp.storage.client.network.io with
+	// network.path and invokes onClose once to clean up dialTimes.
+	c1, c2 := net.Pipe()
+	defer c2.Close()
+
+	var dialTimes sync.Map
+	dialTimes.Store("local-1", dialInfo{doneTime: time.Now(), host: "storage.googleapis.com"})
+	var closeCalls int
+	cc := newCountingConn(c1, cm.networkIO, "storage.googleapis.com", networkPathDirect, func() {
+		closeCalls++
+		dialTimes.Delete("local-1")
+	})
+
+	done := make(chan error, 1)
+	go func() {
+		buf := make([]byte, 16)
+		if _, err := cc.Read(buf); err != nil {
+			done <- err
+			return
+		}
+		_, err := cc.Write([]byte("ping"))
+		done <- err
+	}()
+	if _, err := c2.Write([]byte("0123456789abcdef")); err != nil {
+		t.Fatalf("pipe write: %v", err)
+	}
+	reply := make([]byte, 4)
+	if _, err := io.ReadFull(c2, reply); err != nil {
+		t.Fatalf("pipe read: %v", err)
+	}
+	if err := <-done; err != nil {
+		t.Fatalf("countingConn I/O: %v", err)
+	}
+	if err := cc.Close(); err != nil {
+		t.Fatalf("countingConn.Close: %v", err)
+	}
+	_ = cc.Close()
+	if closeCalls != 1 {
+		t.Errorf("onClose called %d times, want 1", closeCalls)
+	}
+	if _, ok := dialTimes.Load("local-1"); ok {
+		t.Errorf("expected countingConn.Close to delete dialTimes entry")
+	}
 
 	var rm metricdata.ResourceMetrics
 	if err := mr.Collect(ctx, &rm); err != nil {
@@ -2056,28 +2204,30 @@ func TestGRPCMetricsStatsHandler(t *testing.T) {
 	var ingress, egress int64
 	for _, sm := range rm.ScopeMetrics {
 		for _, m := range sm.Metrics {
-			if m.Name == "gcp.storage.client.network.bytes.received" {
+			if m.Name == "gcp.storage.client.network.io" {
 				sum := m.Data.(metricdata.Sum[int64])
-				ingress = sum.DataPoints[0].Value
-				if getAttr(sum.DataPoints[0], "rpc.method") != "ReadObject" {
-					t.Errorf("expected rpc.method ReadObject")
-				}
-			}
-			if m.Name == "gcp.storage.client.network.bytes.sent" {
-				sum := m.Data.(metricdata.Sum[int64])
-				egress = sum.DataPoints[0].Value
-				if getAttr(sum.DataPoints[0], "rpc.method") != "ReadObject" {
-					t.Errorf("expected rpc.method ReadObject")
+				for _, dp := range sum.DataPoints {
+					assertExactAttrKeys(t, m.Name, dp.Attributes,
+						"network.io.direction", "network.path", "rpc.system.name", "server.address")
+					if got := getAttr(dp, "network.path"); got != networkPathDirect {
+						t.Errorf("network.path = %q, want %q", got, networkPathDirect)
+					}
+					switch getAttr(dp, "network.io.direction") {
+					case networkIOReceive:
+						ingress += dp.Value
+					case networkIOTransmit:
+						egress += dp.Value
+					}
 				}
 			}
 		}
 	}
 
-	if ingress != 1024 {
-		t.Errorf("expected ingress 1024, got %v", ingress)
+	if ingress != 16 {
+		t.Errorf("expected ingress 16, got %v", ingress)
 	}
-	if egress != 512 {
-		t.Errorf("expected egress 512, got %v", egress)
+	if egress != 4 {
+		t.Errorf("expected egress 4, got %v", egress)
 	}
 }
 
@@ -2384,7 +2534,7 @@ func TestRecordStallDuration_BidiWriteObject(t *testing.T) {
 			name: "gRPC BidiWriteObject with DirectPath OutHeader",
 			run: func(ctx context.Context, cm *clientMetrics) {
 				dpCtx, _ := cm.startOperation(ctx, "WriteObject", false)
-				(&grpcMetricsStatsHandler{metrics: cm, host: "storage.googleapis.com"}).HandleRPC(dpCtx, &stats.OutHeader{RemoteAddr: dpAddr})
+				(&grpcMetricsStatsHandler{metrics: cm}).HandleRPC(dpCtx, &stats.OutHeader{RemoteAddr: dpAddr})
 				cm.recordStallDuration(dpCtx, 2*time.Second, rpcBidiWriteObject, "grpc", "storage.googleapis.com")
 			},
 			wantSystem: "grpc", wantOperation: "WriteObject", wantMethod: "google.storage.v2.Storage/BidiWriteObject", wantPath: "directpath", wantSum: 2.0,
@@ -2393,7 +2543,7 @@ func TestRecordStallDuration_BidiWriteObject(t *testing.T) {
 			name: "gRPC StartResumableWrite with CloudPath OutHeader",
 			run: func(ctx context.Context, cm *clientMetrics) {
 				cpCtx, _ := cm.startOperation(ctx, "WriteObject", false)
-				(&grpcMetricsStatsHandler{metrics: cm, host: "storage.googleapis.com"}).HandleRPC(cpCtx, &stats.OutHeader{RemoteAddr: cpAddr})
+				(&grpcMetricsStatsHandler{metrics: cm}).HandleRPC(cpCtx, &stats.OutHeader{RemoteAddr: cpAddr})
 				cm.recordStallDuration(cpCtx, 1500*time.Millisecond, rpcStartResumableWrite, "grpc", "storage.googleapis.com")
 			},
 			wantSystem: "grpc", wantOperation: "WriteObject", wantMethod: "google.storage.v2.Storage/StartResumableWrite", wantPath: "cloudpath", wantSum: 1.5,
@@ -2571,6 +2721,38 @@ func TestGRPCNetworkMetricsDialOptions_DNSLookup(t *testing.T) {
 			t.Errorf("%s = %q, want %q", k, got, want)
 		}
 	}
+
+	var rm metricdata.ResourceMetrics
+	if err := mr.Collect(ctx, &rm); err != nil {
+		t.Fatalf("Collect: %v", err)
+	}
+	var foundTCP, foundIO bool
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			switch m.Name {
+			case "gcp.storage.client.network.tcp.connect.duration":
+				foundTCP = true
+				for _, tdp := range m.Data.(metricdata.Histogram[float64]).DataPoints {
+					if got := getHistAttr(tdp, "network.path"); got != networkPathCloud {
+						t.Errorf("tcp.connect.duration network.path = %q, want %q", got, networkPathCloud)
+					}
+				}
+			case "gcp.storage.client.network.io":
+				foundIO = true
+				for _, idp := range m.Data.(metricdata.Sum[int64]).DataPoints {
+					if got := getAttr(idp, "network.path"); got != networkPathCloud {
+						t.Errorf("network.io network.path = %q, want %q", got, networkPathCloud)
+					}
+				}
+			}
+		}
+	}
+	if !foundTCP {
+		t.Errorf("expected gcp.storage.client.network.tcp.connect.duration to be recorded")
+	}
+	if !foundIO {
+		t.Errorf("expected gcp.storage.client.network.io to be recorded through dialer")
+	}
 }
 
 func TestKeepFilteredResourceAttribute(t *testing.T) {
@@ -2665,37 +2847,34 @@ func TestRecordServerMetrics(t *testing.T) {
 	trailerWithStats := metadata.Pairs("grpc-server-stats-bin", string(statsBuf[:]))
 	dpPeer := &peer.Peer{Addr: &net.TCPAddr{IP: net.ParseIP("34.126.0.10"), Port: 443}}
 	cpPeer := &peer.Peer{Addr: &net.TCPAddr{IP: net.ParseIP("142.250.1.1"), Port: 443}}
-	rpcAttrs := metric.WithAttributes(
-		attribute.String("gcp.storage.operation", "GetObject"),
-		attribute.String("rpc.system.name", "grpc"),
-		attribute.String("server.address", "storage.googleapis.com"),
-	)
 
 	httpRespWithUploadID := &http.Response{Header: make(http.Header)}
 	httpRespWithUploadID.Header.Set(uploadIDHeader, "upload-123")
 	httpRespWithUploadID.Header.Set("X-Goog-Gfe-Service-Time", "bad-float")
 
 	for _, tc := range []struct {
-		name          string
-		debug         bool
-		run           func(ctx context.Context, cm *clientMetrics)
-		wantUnreached int64
-		wantDuration  float64
+		name            string
+		debug           bool
+		run             func(ctx context.Context, cm *clientMetrics)
+		wantUnreached   int64
+		wantDuration    float64
+		wantNetworkPath string
 	}{
 		{
 			name:  "DirectPath with grpc-server-stats-bin",
 			debug: true,
 			run: func(ctx context.Context, cm *clientMetrics) {
-				cm.recordServerMetrics(ctx, nil, trailerWithStats, nil, "GetObject", "storage.googleapis.com", rpcAttrs, dpPeer)
+				cm.recordServerMetrics(ctx, nil, trailerWithStats, nil, "GetObject", "storage.googleapis.com", dpPeer)
 			},
-			wantUnreached: 0,
-			wantDuration:  0.042,
+			wantUnreached:   0,
+			wantDuration:    0.042,
+			wantNetworkPath: networkPathDirect,
 		},
 		{
 			name:  "DirectPath success without headers",
 			debug: true,
 			run: func(ctx context.Context, cm *clientMetrics) {
-				cm.recordServerMetrics(ctx, nil, nil, nil, "GetObject", "storage.googleapis.com", rpcAttrs, dpPeer)
+				cm.recordServerMetrics(ctx, nil, nil, nil, "GetObject", "storage.googleapis.com", dpPeer)
 			},
 			wantUnreached: 0,
 		},
@@ -2703,15 +2882,16 @@ func TestRecordServerMetrics(t *testing.T) {
 			name:  "DirectPath pre-response connection error",
 			debug: true,
 			run: func(ctx context.Context, cm *clientMetrics) {
-				cm.recordServerMetrics(ctx, nil, nil, errors.New("connection refused"), "GetObject", "storage.googleapis.com", rpcAttrs, dpPeer)
+				cm.recordServerMetrics(ctx, nil, nil, errors.New("connection refused"), "GetObject", "storage.googleapis.com", dpPeer)
 			},
-			wantUnreached: 1,
+			wantUnreached:   1,
+			wantNetworkPath: networkPathDirect,
 		},
 		{
 			name:  "DirectPath ambiguous client timeout",
 			debug: true,
 			run: func(ctx context.Context, cm *clientMetrics) {
-				cm.recordServerMetrics(ctx, nil, nil, status.Error(codes.DeadlineExceeded, "context deadline exceeded"), "GetObject", "storage.googleapis.com", rpcAttrs, dpPeer)
+				cm.recordServerMetrics(ctx, nil, nil, status.Error(codes.DeadlineExceeded, "context deadline exceeded"), "GetObject", "storage.googleapis.com", dpPeer)
 			},
 			wantUnreached: 0,
 		},
@@ -2719,7 +2899,7 @@ func TestRecordServerMetrics(t *testing.T) {
 			name:  "DirectPath unavailable without metadata skipped as ambiguous",
 			debug: true,
 			run: func(ctx context.Context, cm *clientMetrics) {
-				cm.recordServerMetrics(ctx, nil, nil, status.Error(codes.Unavailable, "transport is closing"), "GetObject", "storage.googleapis.com", rpcAttrs, dpPeer)
+				cm.recordServerMetrics(ctx, nil, nil, status.Error(codes.Unavailable, "transport is closing"), "GetObject", "storage.googleapis.com", dpPeer)
 			},
 			wantUnreached: 0,
 		},
@@ -2727,7 +2907,7 @@ func TestRecordServerMetrics(t *testing.T) {
 			name:  "CloudPath ambiguous client timeout",
 			debug: true,
 			run: func(ctx context.Context, cm *clientMetrics) {
-				cm.recordServerMetrics(ctx, nil, nil, status.Error(codes.DeadlineExceeded, "context deadline exceeded"), "GetObject", "storage.googleapis.com", rpcAttrs, cpPeer)
+				cm.recordServerMetrics(ctx, nil, nil, status.Error(codes.DeadlineExceeded, "context deadline exceeded"), "GetObject", "storage.googleapis.com", cpPeer)
 			},
 			wantUnreached: 0,
 		},
@@ -2735,7 +2915,7 @@ func TestRecordServerMetrics(t *testing.T) {
 			name:  "CloudPath service deadline exceeded",
 			debug: true,
 			run: func(ctx context.Context, cm *clientMetrics) {
-				cm.recordServerMetrics(ctx, nil, nil, status.Error(codes.DeadlineExceeded, "Deadline exceeded."), "GetObject", "storage.googleapis.com", rpcAttrs, cpPeer)
+				cm.recordServerMetrics(ctx, nil, nil, status.Error(codes.DeadlineExceeded, "Deadline exceeded."), "GetObject", "storage.googleapis.com", cpPeer)
 			},
 			wantUnreached: 0,
 		},
@@ -2743,7 +2923,7 @@ func TestRecordServerMetrics(t *testing.T) {
 			name:  "CloudPath with upload ID and malformed GFE/stats headers",
 			debug: true,
 			run: func(ctx context.Context, cm *clientMetrics) {
-				cm.recordServerMetrics(ctx, metadata.Pairs(uploadIDHeader, "abc", "x-goog-gfe-service-time", "not-a-number"), metadata.Pairs("grpc-server-stats-bin", "short"), nil, "GetObject", "storage.googleapis.com", rpcAttrs, cpPeer)
+				cm.recordServerMetrics(ctx, metadata.Pairs(uploadIDHeader, "abc", "x-goog-gfe-service-time", "not-a-number"), metadata.Pairs("grpc-server-stats-bin", "short"), nil, "GetObject", "storage.googleapis.com", cpPeer)
 			},
 			wantUnreached: 0,
 		},
@@ -2751,15 +2931,25 @@ func TestRecordServerMetrics(t *testing.T) {
 			name:  "CloudPath failure without headers",
 			debug: true,
 			run: func(ctx context.Context, cm *clientMetrics) {
-				cm.recordServerMetrics(ctx, nil, nil, errors.New("connection refused"), "GetObject", "storage.googleapis.com", rpcAttrs, cpPeer)
+				cm.recordServerMetrics(ctx, nil, nil, errors.New("connection refused"), "GetObject", "storage.googleapis.com", cpPeer)
 			},
-			wantUnreached: 1,
+			wantUnreached:   1,
+			wantNetworkPath: networkPathCloud,
+		},
+		{
+			name:  "Nil peer failure without headers",
+			debug: true,
+			run: func(ctx context.Context, cm *clientMetrics) {
+				cm.recordServerMetrics(ctx, nil, nil, errors.New("connection refused"), "GetObject", "storage.googleapis.com", nil)
+			},
+			wantUnreached:   1,
+			wantNetworkPath: networkPathUnknown,
 		},
 		{
 			name:  "HTTP with upload ID and malformed GFE header",
 			debug: true,
 			run: func(ctx context.Context, cm *clientMetrics) {
-				cm.recordHTTPServerMetrics(ctx, httpRespWithUploadID, "GetObject", "storage.googleapis.com", "OK", rpcAttrs)
+				cm.recordHTTPServerMetrics(ctx, httpRespWithUploadID, "GetObject", "storage.googleapis.com", "OK")
 			},
 			wantUnreached: 0,
 		},
@@ -2767,31 +2957,34 @@ func TestRecordServerMetrics(t *testing.T) {
 			name:  "HTTP response without headers and debug off",
 			debug: false,
 			run: func(ctx context.Context, cm *clientMetrics) {
-				cm.recordHTTPServerMetrics(ctx, &http.Response{Header: make(http.Header)}, "GetObject", "storage.googleapis.com", "UNAVAILABLE", nil)
+				cm.recordHTTPServerMetrics(ctx, &http.Response{Header: make(http.Header)}, "GetObject", "storage.googleapis.com", "UNAVAILABLE")
 			},
-			wantUnreached: 1,
+			wantUnreached:   1,
+			wantNetworkPath: networkPathCloud,
 		},
 		{
 			name:  "HTTP 504 response without GFE headers",
 			debug: true,
 			run: func(ctx context.Context, cm *clientMetrics) {
-				cm.recordHTTPServerMetrics(ctx, &http.Response{StatusCode: http.StatusGatewayTimeout, Header: make(http.Header)}, "GetObject", "storage.googleapis.com", "DEADLINE_EXCEEDED", rpcAttrs)
+				cm.recordHTTPServerMetrics(ctx, &http.Response{StatusCode: http.StatusGatewayTimeout, Header: make(http.Header)}, "GetObject", "storage.googleapis.com", "DEADLINE_EXCEEDED")
 			},
-			wantUnreached: 1,
+			wantUnreached:   1,
+			wantNetworkPath: networkPathCloud,
 		},
 		{
 			name:  "HTTP nil response connection error",
 			debug: true,
 			run: func(ctx context.Context, cm *clientMetrics) {
-				cm.recordHTTPServerMetrics(ctx, nil, "GetObject", "storage.googleapis.com", "CONNECTION_ERROR", rpcAttrs)
+				cm.recordHTTPServerMetrics(ctx, nil, "GetObject", "storage.googleapis.com", "CONNECTION_ERROR")
 			},
-			wantUnreached: 1,
+			wantUnreached:   1,
+			wantNetworkPath: networkPathCloud,
 		},
 		{
 			name:  "HTTP nil response ambiguous client cancel",
 			debug: true,
 			run: func(ctx context.Context, cm *clientMetrics) {
-				cm.recordHTTPServerMetrics(ctx, nil, "GetObject", "storage.googleapis.com", "CANCELLED", rpcAttrs)
+				cm.recordHTTPServerMetrics(ctx, nil, "GetObject", "storage.googleapis.com", "CANCELLED")
 			},
 			wantUnreached: 0,
 		},
@@ -2823,15 +3016,27 @@ func TestRecordServerMetrics(t *testing.T) {
 				for _, m := range sm.Metrics {
 					if m.Name == "gcp.storage.client.server.unreached" {
 						for _, dp := range m.Data.(metricdata.Sum[int64]).DataPoints {
-							assertExactAttrKeys(t, m.Name, dp.Attributes,
-								"error.type", "gcp.storage.operation", "rpc.system.name", "server.address")
 							gotUnreached += dp.Value
+							assertExactAttrKeys(t, m.Name, dp.Attributes,
+								"error.type", "gcp.storage.operation", "network.path", "rpc.system.name", "server.address")
+							if tc.wantNetworkPath != "" {
+								if got := getAttr(dp, "network.path"); got != tc.wantNetworkPath {
+									t.Errorf("server.unreached network.path = %q, want %q", got, tc.wantNetworkPath)
+								}
+							}
 						}
 					}
 					if m.Name == "gcp.storage.client.server.duration" {
 						for _, dp := range m.Data.(metricdata.Histogram[float64]).DataPoints {
 							gotDurationCount += dp.Count
 							gotDuration += dp.Sum
+							assertExactAttrKeys(t, m.Name, dp.Attributes,
+								"gcp.storage.operation", "network.path", "rpc.system.name", "server.address")
+							if tc.wantNetworkPath != "" {
+								if got := getHistAttr(dp, "network.path"); got != tc.wantNetworkPath {
+									t.Errorf("server.duration network.path = %q, want %q", got, tc.wantNetworkPath)
+								}
+							}
 						}
 					}
 				}
@@ -3055,5 +3260,229 @@ func TestNewClient_PreservesDefaultHTTPMonitoringOptions(t *testing.T) {
 	defer func() { _ = customHC.Close() }()
 	if _, wrapped := customHC.tc.(*metricsStorageClient); wrapped {
 		t.Error("expected default OTel metrics to be skipped when caller supplies option.WithHTTPClient")
+	}
+}
+
+func TestMetricsState_RecordBodySizeZeroAndOnce(t *testing.T) {
+	mr := sdkmetric.NewManualReader()
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+	defer provider.Shutdown(context.Background())
+	cfg := storageConfig{enableOtelMetrics: true, meterProvider: provider}
+	cm, _, err := initMetrics(context.Background(), "test-proj", &cfg)
+	if err != nil {
+		t.Fatalf("initMetrics: %v", err)
+	}
+
+	ctx := withAPIMethod(context.Background(), "Object.NewWriter")
+	ctx, _ = cm.startOperation(ctx, "WriteObject", false)
+	state := metricsStateFromContext(ctx)
+
+	// Errors must not record body size, leaving the once-guard open for success.
+	state.recordRequestBodySize(ctx, "WriteObject", 0, errors.New("boom"))
+	// 0 B success records once; duplicate calls are ignored.
+	state.recordRequestBodySize(ctx, "WriteObject", 0, nil)
+	state.recordRequestBodySize(ctx, "WriteObject", 0, nil)
+
+	// Exercise real 0 B Reader.Close() and double-Close() wiring.
+	rCtx := withAPIMethod(context.Background(), "Object.NewReader")
+	rCtx, _ = cm.startOperation(rCtx, "ReadObject", false)
+	rdr := &Reader{
+		ctx:          rCtx,
+		reader:       io.NopCloser(bytes.NewReader(nil)),
+		metricsState: metricsStateFromContext(rCtx),
+	}
+	if err := rdr.Close(); err != nil {
+		t.Fatalf("Reader.Close: %v", err)
+	}
+	_ = rdr.Close()
+
+	// Exercise real 0 B Writer.markClosed() and double-close wiring.
+	wCtx := withAPIMethod(context.Background(), "Object.NewWriter")
+	wCtx, _ = cm.startOperation(wCtx, "WriteObject", false)
+	wr := &Writer{ctx: wCtx}
+	if err := wr.markClosed(nil); err != nil {
+		t.Fatalf("Writer.markClosed: %v", err)
+	}
+	_ = wr.markClosed(nil)
+
+	var rm metricdata.ResourceMetrics
+	if err := mr.Collect(ctx, &rm); err != nil {
+		t.Fatalf("Collect: %v", err)
+	}
+	var reqCount, respCount uint64
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			switch m.Name {
+			case "gcp.storage.client.request.body.size":
+				for _, dp := range m.Data.(metricdata.Histogram[int64]).DataPoints {
+					reqCount += dp.Count
+					if dp.Sum != 0 {
+						t.Errorf("request.body.size sum = %d, want 0", dp.Sum)
+					}
+				}
+			case "gcp.storage.client.response.body.size":
+				for _, dp := range m.Data.(metricdata.Histogram[int64]).DataPoints {
+					respCount += dp.Count
+					if dp.Sum != 0 {
+						t.Errorf("response.body.size sum = %d, want 0", dp.Sum)
+					}
+				}
+			}
+		}
+	}
+	if reqCount != 2 {
+		t.Errorf("request.body.size count = %d, want 2", reqCount)
+	}
+	if respCount != 1 {
+		t.Errorf("response.body.size count = %d, want 1", respCount)
+	}
+}
+
+func TestWrappedClientStream_SendMsgEOFDoesNotRecordOK(t *testing.T) {
+	mr := sdkmetric.NewManualReader()
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+	defer provider.Shutdown(context.Background())
+	cfg := storageConfig{enableOtelMetrics: true, enableOtelDebugMetrics: true, meterProvider: provider}
+	cm, _, err := initMetrics(context.Background(), "test-proj", &cfg)
+	if err != nil {
+		t.Fatalf("initMetrics: %v", err)
+	}
+
+	_, streamInt := metricsInterceptors(cm)
+	mock := &mockClientStream{
+		sendErr: io.EOF,
+		recvErr: status.Error(codes.NotFound, "object not found"),
+	}
+	cs, err := streamInt(context.Background(), &grpc.StreamDesc{ClientStreams: true, ServerStreams: true}, nil, "/google.storage.v2.Storage/BidiReadObject",
+		func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+			return mock, nil
+		})
+	if err != nil {
+		t.Fatalf("streamInt: %v", err)
+	}
+	if err := cs.SendMsg(&storagepb.BidiReadObjectRequest{}); !errors.Is(err, io.EOF) {
+		t.Fatalf("SendMsg err = %v, want io.EOF", err)
+	}
+	if err := cs.RecvMsg(&storagepb.BidiReadObjectResponse{}); status.Code(err) != codes.NotFound {
+		t.Fatalf("RecvMsg err = %v, want NotFound", err)
+	}
+
+	// Server-streaming RPC (ClientStreams: false) returns immediately on SendMsg
+	// io.EOF without calling RecvMsg, so SendMsg must record to avoid leaking activeRequests.
+	ss, err := streamInt(context.Background(), &grpc.StreamDesc{ClientStreams: false, ServerStreams: true}, nil, "/google.storage.v2.Storage/ReadObject",
+		func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+			return &mockClientStream{sendErr: io.EOF}, nil
+		})
+	if err != nil {
+		t.Fatalf("streamInt (server-streaming): %v", err)
+	}
+	if err := ss.SendMsg(&storagepb.ReadObjectRequest{}); !errors.Is(err, io.EOF) {
+		t.Fatalf("server-streaming SendMsg err = %v, want io.EOF", err)
+	}
+
+	var rm metricdata.ResourceMetrics
+	if err := mr.Collect(context.Background(), &rm); err != nil {
+		t.Fatalf("Collect: %v", err)
+	}
+	var errCount, activeSum, notFoundAttempts int64
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			switch m.Name {
+			case "gcp.storage.client.attempts":
+				for _, dp := range m.Data.(metricdata.Sum[int64]).DataPoints {
+					if getAttr(dp, "error.type") == "NOT_FOUND" {
+						notFoundAttempts += dp.Value
+					}
+				}
+			case "gcp.storage.client.errors":
+				for _, dp := range m.Data.(metricdata.Sum[int64]).DataPoints {
+					errCount += dp.Value
+					if got := getAttr(dp, "error.type"); got != "NOT_FOUND" {
+						t.Errorf("errors error.type = %q, want NOT_FOUND", got)
+					}
+				}
+			case "gcp.storage.client.request.active":
+				for _, dp := range m.Data.(metricdata.Sum[int64]).DataPoints {
+					activeSum += dp.Value
+				}
+			}
+		}
+	}
+	if notFoundAttempts != 1 {
+		t.Errorf("NOT_FOUND attempts = %d, want 1", notFoundAttempts)
+	}
+	if errCount != 1 {
+		t.Errorf("errors count = %d, want 1", errCount)
+	}
+	if activeSum != 0 {
+		t.Errorf("request.active net = %d, want 0", activeSum)
+	}
+}
+
+type stringAddr string
+
+func (a stringAddr) Network() string { return "tcp" }
+func (a stringAddr) String() string  { return string(a) }
+
+func TestNetworkPathOfAddr(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		addr net.Addr
+		want string
+	}{
+		{name: "nil addr", addr: nil, want: networkPathUnknown},
+		{name: "tcp ipv4 directpath", addr: &net.TCPAddr{IP: net.IPv4(34, 126, 10, 53), Port: 443}, want: networkPathDirect},
+		{name: "tcp ipv4-mapped ipv6 directpath", addr: &net.TCPAddr{IP: net.ParseIP("::ffff:34.126.1.1"), Port: 443}, want: networkPathDirect},
+		{name: "tcp ipv6 directpath", addr: &net.TCPAddr{IP: net.ParseIP("2001:4860:8040::1"), Port: 443}, want: networkPathDirect},
+		{name: "tcp cloudpath", addr: &net.TCPAddr{IP: net.IPv4(74, 125, 126, 207), Port: 443}, want: networkPathCloud},
+		{name: "non-tcp directpath", addr: stringAddr("34.126.0.1:443"), want: networkPathDirect},
+		{name: "non-tcp cloudpath", addr: stringAddr("storage.googleapis.com:443"), want: networkPathCloud},
+	} {
+		if got := networkPathOfAddr(tc.addr); got != tc.want {
+			t.Errorf("%s: networkPathOfAddr(%v) = %q, want %q", tc.name, tc.addr, got, tc.want)
+		}
+	}
+}
+
+type multiRecvMockStream struct {
+	mockClientStream
+	calls   int
+	wantErr error
+}
+
+func (m *multiRecvMockStream) RecvMsg(msg interface{}) error {
+	m.calls++
+	if m.calls <= 2 {
+		if bufs, ok := msg.(*mem.BufferSlice); ok {
+			b := []byte("chunk")
+			*bufs = append(*bufs, mem.NewBuffer(&b, nil))
+		}
+		return nil
+	}
+	return m.wantErr
+}
+
+func TestDrainStreamSendEOF(t *testing.T) {
+	wantErr := status.Error(codes.FailedPrecondition, "generation mismatch")
+	if err := drainStreamSendEOF(&mockClientStream{recvErr: wantErr}, io.EOF, &storagepb.BidiReadObjectResponse{}); !errors.Is(err, wantErr) {
+		t.Errorf("drainStreamSendEOF(io.EOF) = %v, want %v", err, wantErr)
+	}
+	otherErr := errors.New("broken pipe")
+	if err := drainStreamSendEOF(&mockClientStream{recvErr: wantErr}, otherErr, &storagepb.BidiReadObjectResponse{}); !errors.Is(err, otherErr) {
+		t.Errorf("drainStreamSendEOF(non-EOF) = %v, want %v", err, otherErr)
+	}
+	if err := drainStreamSendEOF(nil, io.EOF, &storagepb.BidiReadObjectResponse{}); !errors.Is(err, io.EOF) {
+		t.Errorf("drainStreamSendEOF(nil stream) = %v, want io.EOF", err)
+	}
+	var bufs mem.BufferSlice
+	ms := &multiRecvMockStream{wantErr: wantErr}
+	if err := drainStreamSendEOF(ms, io.EOF, &bufs); !errors.Is(err, wantErr) {
+		t.Errorf("drainStreamSendEOF(multi-msg) = %v, want %v", err, wantErr)
+	}
+	if ms.calls != 3 {
+		t.Errorf("RecvMsg calls = %d, want 3", ms.calls)
+	}
+	if len(bufs) != 0 {
+		t.Errorf("expected BufferSlice to be freed/cleared, got len=%d", len(bufs))
 	}
 }

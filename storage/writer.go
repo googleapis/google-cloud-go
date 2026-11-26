@@ -24,8 +24,6 @@ import (
 	"sync/atomic"
 	"time"
 	"unicode/utf8"
-
-	"go.opentelemetry.io/otel/metric"
 )
 
 // Interface internalWriter wraps low-level implementations which may vary
@@ -465,9 +463,7 @@ func (w *Writer) markClosed(err error) error {
 	w.mu.Unlock()
 
 	if state := metricsStateFromContext(w.ctx); state != nil {
-		if state.metrics != nil && total > 0 {
-			state.metrics.requestBodySize.Record(w.ctx, total, metric.WithAttributes(state.bodySizeAttrs(w.ctx, "WriteObject")...))
-		}
+		state.recordRequestBodySize(w.ctx, "WriteObject", total, closingErr)
 		if state.record != nil {
 			state.record(closingErr)
 		}
