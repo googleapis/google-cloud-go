@@ -1163,6 +1163,7 @@ func (m *multiRangeDownloaderManager) handleStreamEnd(result mrdSessionResult, s
 	} else if m.settings.retry != nil && m.settings.retry.runShouldRetry(err, nil) {
 		m.ensureSession(m.ctx, stream)
 	} else {
+		err = formatObjectErr(err)
 		m.failStream(stream, err)
 		if len(m.streams) == 0 && !m.streamCreating {
 			err := fmt.Errorf("no streams available. Last observed error: %w", err)
