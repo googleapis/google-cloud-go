@@ -143,6 +143,7 @@ type clientMetrics struct {
 	responseBodySize          metric.Int64Histogram
 	ttfb                      metric.Float64Histogram
 	errors                    metric.Int64Counter
+	retries                   metric.Int64Counter
 	activeRequests            metric.Int64UpDownCounter
 	serverUnreached           metric.Int64Counter
 	dnsLookupDuration         metric.Float64Histogram
@@ -490,6 +491,15 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		return nil, nil, err
 	}
 
+	retries, err := stdMeter.Int64Counter(
+		"gcp.storage.client.retries",
+		metric.WithDescription("Number of GCS client retry attempts"),
+		metric.WithUnit("{retry}"),
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	serverUnreached, err := stdMeter.Int64Counter(
 		"gcp.storage.client.server.unreached",
 		metric.WithDescription("Number of GCS requests that did not reach a Cloud Storage server"),
@@ -593,6 +603,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		responseBodySize:          responseBodySize,
 		ttfb:                      ttfb,
 		errors:                    errors,
+		retries:                   retries,
 		activeRequests:            activeRequests,
 		serverUnreached:           serverUnreached,
 		dnsLookupDuration:         dnsLookupDuration,
@@ -920,11 +931,12 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, d
 		}
 		cm.errors.Add(ctx, 1, metric.WithAttributes(errorAttrs...))
 	}
+	cm.recordRetry(ctx, "grpc", logicalMethod, host, path, grpcRetryInfo(ctx), errorType)
 
 	return errorType
 }
 
-func (cm *clientMetrics) recordHTTP(ctx context.Context, req *http.Request, resp *http.Response, duration float64, err error) {
+func (cm *clientMetrics) recordHTTP(ctx context.Context, req *http.Request, resp *http.Response, duration float64, err error) string {
 	statusCode := int64(0)
 	if resp != nil {
 		statusCode = int64(resp.StatusCode)
@@ -944,6 +956,7 @@ func (cm *clientMetrics) recordHTTP(ctx context.Context, req *http.Request, resp
 	}
 
 	cm.httpClientRequestDuration.Record(ctx, duration, metric.WithAttributes(attrs...))
+	return errorType
 }
 
 // computeURLTemplate extracts a parameterized template path for a given GCS HTTP request URL path.
@@ -1151,6 +1164,7 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 			}
 			rt.metrics.errors.Add(req.Context(), 1, metric.WithAttributes(errorAttrs...))
 		}
+		rt.metrics.recordRetry(req.Context(), "http", logicalMethod, host, networkPathCloud, parseRetryInfo(req.Header.Values(xGoogHeaderKey)), errorType)
 
 		rt.metrics.recordHTTPServerMetrics(req.Context(), resp, logicalMethod, host, errorType)
 
@@ -1257,7 +1271,10 @@ func (w *wrappedResponseBody) Close() error {
 func (w *wrappedResponseBody) record(err error) {
 	if w.recorded.CompareAndSwap(false, true) {
 		duration := time.Since(w.startTime).Seconds()
-		w.metrics.recordHTTP(w.req.Context(), w.req, w.resp, duration, err)
+		errorType := w.metrics.recordHTTP(w.req.Context(), w.req, w.resp, duration, err)
+		if err != nil && !errors.Is(err, io.EOF) {
+			metricsStateFromContext(w.req.Context()).retryState().recordFailure(parseRetryInfo(w.req.Header.Values(xGoogHeaderKey)), errorType)
+		}
 
 		if w.metrics.activeRequests != nil {
 			logicalMethod := operationName(w.req.Context(), "Unknown")
@@ -1760,6 +1777,14 @@ type metricsState struct {
 	metrics          *clientMetrics
 	isHTTP           bool
 	record           func(error)
+	retryTracker     retryTracker
+}
+
+func (s *metricsState) retryState() *retryTracker {
+	if s == nil {
+		return nil
+	}
+	return &s.retryTracker
 }
 
 func (s *metricsState) recordRequestBodySize(ctx context.Context, operation string, total int64, err error) {

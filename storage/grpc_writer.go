@@ -32,6 +32,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
@@ -1751,6 +1752,11 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 						// re-attach to the upload session on a fresh stream.
 						if err := cur.closeAndWait(); err != nil {
 							return err
+						}
+						if state := metricsStateFromContext(ctx); state != nil && state.metrics != nil {
+							p, _ := peer.FromContext(cur.st.Context())
+							target := stripPort(state.getTarget())
+							state.metrics.recordRetryReason(ctx, "grpc", "WriteObject", target, networkPathOfPeer(p), "SLOW_STREAM")
 						}
 						next, err := openStream()
 						if err != nil {

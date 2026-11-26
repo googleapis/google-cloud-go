@@ -2388,6 +2388,7 @@ func TestNewClient_DebugMetricsOnly(t *testing.T) {
 		"gcp.client.request.duration":           true,
 		"gcp.storage.client.operations":         true,
 		"gcp.storage.client.attempts":           true,
+		"gcp.storage.client.retries":            true,
 		"gcp.storage.client.errors":             true,
 		"gcp.storage.client.ttfb":               true,
 		"gcp.storage.client.request.body.size":  true,
@@ -3070,6 +3071,7 @@ func TestMetricUnits(t *testing.T) {
 	}
 	cm.operations.Add(ctx, 1)
 	cm.attempts.Add(ctx, 1)
+	cm.retries.Add(ctx, 1)
 	cm.errors.Add(ctx, 1)
 	cm.serverUnreached.Add(ctx, 1)
 	cm.activeRequests.Add(ctx, 1)
@@ -3087,6 +3089,7 @@ func TestMetricUnits(t *testing.T) {
 	for name, wantUnit := range map[string]string{
 		"gcp.storage.client.operations":       "{operation}",
 		"gcp.storage.client.attempts":         "{attempt}",
+		"gcp.storage.client.retries":          "{retry}",
 		"gcp.storage.client.errors":           "{error}",
 		"gcp.storage.client.server.unreached": "{request}",
 		"gcp.storage.client.request.active":   "{request}",
