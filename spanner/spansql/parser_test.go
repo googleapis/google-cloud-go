@@ -541,6 +541,7 @@ func TestParseExpr(t *testing.T) {
 		{`TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 MINUTE)`, Func{Name: "TIMESTAMP_SUB", Args: []Expr{Func{Name: "CURRENT_TIMESTAMP"}, IntervalExpr{Expr: IntegerLiteral(1), DatePart: "MINUTE"}}}},
 		{`GET_NEXT_SEQUENCE_VALUE(SEQUENCE MySequence)`, Func{Name: "GET_NEXT_SEQUENCE_VALUE", Args: []Expr{SequenceExpr{Name: ID("MySequence")}}}},
 		{`GET_INTERNAL_SEQUENCE_STATE(SEQUENCE MySequence)`, Func{Name: "GET_INTERNAL_SEQUENCE_STATE", Args: []Expr{SequenceExpr{Name: ID("MySequence")}}}},
+		{`NEW_UUID()`, Func{Name: "NEW_UUID"}},
 
 		// Aggregate Functions
 		{`COUNT(*)`, Func{Name: "COUNT", Args: []Expr{Star}}},
@@ -2662,6 +2663,27 @@ func TestParseDDL(t *testing.T) {
 							{
 								Name:     "id",
 								Type:     Type{Base: UUID},
+								Position: line(1),
+							},
+						},
+						PrimaryKey: []KeyPart{{Column: "id"}},
+						Position:   line(1),
+					},
+				},
+			},
+		},
+		{
+			`CREATE TABLE tname (id UUID DEFAULT (NEW_UUID())) PRIMARY KEY (id)`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateTable{
+						Name: "tname",
+						Columns: []ColumnDef{
+							{
+								Name:     "id",
+								Type:     Type{Base: UUID},
+								Default:  Func{Name: "NEW_UUID"},
 								Position: line(1),
 							},
 						},
