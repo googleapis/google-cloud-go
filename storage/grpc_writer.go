@@ -2043,6 +2043,8 @@ func (s *gRPCAppendTakeoverBidiWriteBufferSender) connect(ctx context.Context, c
 	go s.handleStream(stream, cs, firstSend)
 }
 
+// ensureFirstMessageAppendObjectSpec converts a WriteObjectSpec first message
+// into an AppendObjectSpec. s.mu must be held.
 func (s *gRPCAppendBidiWriteBufferSender) ensureFirstMessageAppendObjectSpec() {
 	if s.firstMessage.GetWriteObjectSpec() != nil {
 		w := s.firstMessage.GetWriteObjectSpec()
@@ -2094,15 +2096,7 @@ func (s *gRPCAppendBidiWriteBufferSender) maybeHandleRedirectionError(err error)
 				if e.WriteHandle != nil {
 					// If we get back a write handle, we should use it. We can only use it
 					// on an append object spec.
-					s.mu.Lock()
-					s.ensureFirstMessageAppendObjectSpec()
-					s.firstMessage.GetAppendObjectSpec().WriteHandle = e.WriteHandle
-					// Generation is meant to only come with the WriteHandle, so ignore it
-					// otherwise.
-					if e.Generation != nil {
-						s.firstMessage.GetAppendObjectSpec().Generation = e.GetGeneration()
-					}
-					s.mu.Unlock()
+					s.setWriteHandle(e.WriteHandle, e.Generation)
 				}
 
 				s.routingToken = e.RoutingToken
@@ -2111,6 +2105,20 @@ func (s *gRPCAppendBidiWriteBufferSender) maybeHandleRedirectionError(err error)
 		}
 	}
 	return err
+}
+
+// setWriteHandle stores a write handle, and its generation if set, in the
+// first message's AppendObjectSpec.
+func (s *gRPCAppendBidiWriteBufferSender) setWriteHandle(h *storagepb.BidiWriteHandle, gen *int64) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.ensureFirstMessageAppendObjectSpec()
+	s.firstMessage.GetAppendObjectSpec().WriteHandle = h
+	// Generation is meant to only come with the WriteHandle, so ignore it
+	// otherwise.
+	if gen != nil {
+		s.firstMessage.GetAppendObjectSpec().Generation = *gen
+	}
 }
 
 func (s *gRPCAppendBidiWriteBufferSender) send(stream storagepb.Storage_BidiWriteObjectClient, buf []byte, offset int64, flush, finishWrite, sendFirstMessage bool) error {

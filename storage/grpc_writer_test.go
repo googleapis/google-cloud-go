@@ -1032,10 +1032,9 @@ type discardBidiWriteStream struct {
 
 func (discardBidiWriteStream) Send(*storagepb.BidiWriteObjectRequest) error { return nil }
 
-// TestGRPCAppendWriter_ConcurrentFirstMessageUpdate runs a first-message send
-// alongside each receive-side update, as handleStream's goroutines can. Run
-// with -race to catch unsynchronized access to firstMessage.
-func TestGRPCAppendWriter_ConcurrentFirstMessageUpdate(t *testing.T) {
+// Run with -race to catch unsynchronized firstMessage access between the send
+// and receive goroutines.
+func TestGRPCAppendBidiWriteBufferSender_ConcurrentFirstMessageUpdate(t *testing.T) {
 	handle := &storagepb.BidiWriteHandle{Handle: []byte("handle-1")}
 	redirect, err := status.New(codes.Aborted, "redirect").WithDetails(&storagepb.BidiWriteObjectRedirectedError{
 		RoutingToken: proto.String("token"),
@@ -1059,7 +1058,11 @@ func TestGRPCAppendWriter_ConcurrentFirstMessageUpdate(t *testing.T) {
 		{
 			name: "redirect error with write handle",
 			update: func(s *gRPCAppendBidiWriteBufferSender) {
-				s.maybeHandleRedirectionError(redirect.Err())
+				err := s.maybeHandleRedirectionError(redirect.Err())
+				var rerr bidiWriteObjectRedirectionError
+				if !errors.As(err, &rerr) {
+					t.Errorf("maybeHandleRedirectionError() = %v, want bidiWriteObjectRedirectionError", err)
+				}
 			},
 		},
 	} {
@@ -1089,8 +1092,8 @@ func TestGRPCAppendWriter_ConcurrentFirstMessageUpdate(t *testing.T) {
 			}()
 			wg.Wait()
 
-			if !s.canResumeSession() {
-				t.Errorf("canResumeSession() = false after receiving a write handle, want true")
+			if got := s.firstMessage.GetAppendObjectSpec().GetWriteHandle(); !proto.Equal(got, handle) {
+				t.Errorf("firstMessage write handle = %v, want %v", got, handle)
 			}
 		})
 	}
