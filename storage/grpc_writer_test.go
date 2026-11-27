@@ -1115,6 +1115,13 @@ func TestGRPCWriter_SessionRecoveryRetries(t *testing.T) {
 			wantErr:      false,
 		},
 		{
+			name:         "RetryNever_NotAppend_DoesNotRetryRedirect",
+			policy:       RetryNever,
+			firstErr:     redirectErr,
+			wantAttempts: 1,
+			wantErr:      true,
+		},
+		{
 			name:         "MaxAttempts1_Append_RetriesRedirect",
 			policy:       RetryAlways,
 			append:       true,
