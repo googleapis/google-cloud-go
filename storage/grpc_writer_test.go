@@ -613,6 +613,7 @@ func TestGRPCWriter_ChunkRetryDeadline_TimeoutResetOnProgress(t *testing.T) {
 		bufBaseOffset: 0,
 		bufUnsentIdx:  100,
 		bufFlushedIdx: 0,
+		maxSentOffset: 100,
 		buf:           make([]byte, 100),
 		sendableUnits: 1,
 		writeQuantum:  100,
@@ -1329,6 +1330,7 @@ func TestGRPCWriter_ChunkRetryDeadline_NoResetOnUnchangedOffsetAfterPartialShift
 		settings:         &settings{},
 		bufBaseOffset:    0,
 		bufUnsentIdx:     100,
+		maxSentOffset:    100,
 		awaitingFirstAck: true,
 		buf:              make([]byte, 100),
 		sendableUnits:    2,
@@ -1767,6 +1769,7 @@ func TestGRPCWriter_AwaitingFirstAck(t *testing.T) {
 	// Strict progress past the confirmed offset is still recorded.
 	w.buf = w.buf[:50]
 	w.bufUnsentIdx = 50
+	w.maxSentOffset = 50
 	w.handleCompletion(gRPCBidiWriteCompletion{flushOffset: 50})
 	if !w.budget.consumeProgress() {
 		t.Fatal("expected progress after the confirmed offset advanced 0 -> 50")
@@ -3058,6 +3061,9 @@ type adaptiveRotationStorageServer struct {
 	// client half-closes stream n.
 	halfCloseErr map[int]error
 
+	// queryStatusExtra is added to the persisted size QueryWriteStatus reports.
+	queryStatusExtra int64
+
 	mu               sync.Mutex
 	startCalls       int
 	queryStatusCalls int
@@ -3081,7 +3087,7 @@ func (s *adaptiveRotationStorageServer) QueryWriteStatus(ctx context.Context, re
 	s.queryStatusCalls++
 	return &storagepb.QueryWriteStatusResponse{
 		WriteStatus: &storagepb.QueryWriteStatusResponse_PersistedSize{
-			PersistedSize: s.persistedSize,
+			PersistedSize: s.persistedSize + s.queryStatusExtra,
 		},
 	}, nil
 }
@@ -3625,4 +3631,199 @@ func TestGRPCResumableBidiWriteBufferSender_AdaptiveStreamRotation(t *testing.T)
 		assertRotationCalls(t, srv, 1, 2)
 		assertReceivedOffsets(t, srv, []int64{0, 100, 100, 200, 300})
 	})
+}
+
+// flushAckingSender returns a sender that acks every flush with the offset
+// just past its data plus extra.
+func flushAckingSender(extra int64) *funcSender {
+	return &funcSender{connectFn: func(ctx context.Context, cs gRPCBufSenderChans) error {
+		for {
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			case r, ok := <-cs.requests:
+				if !ok {
+					return nil
+				}
+				if r.requestAck {
+					select {
+					case cs.requestAcks <- struct{}{}:
+					case <-ctx.Done():
+						return ctx.Err()
+					}
+					continue
+				}
+				if !r.flush {
+					continue
+				}
+				select {
+				case cs.completions <- gRPCBidiWriteCompletion{flushOffset: r.offset + int64(len(r.buf)) + extra}:
+				case <-ctx.Done():
+					return ctx.Err()
+				}
+			}
+		}
+	}}
+}
+
+// newPersistedSizeTestWriter returns a writer with 100-byte chunks that
+// records the last size it reports in *gotSize.
+func newPersistedSizeTestWriter(sender gRPCBidiWriteBufferSender, gotSize *int64) *gRPCWriter {
+	return &gRPCWriter{
+		preRunCtx:           context.Background(),
+		streamSender:        sender,
+		settings:            &settings{},
+		chunkSize:           100,
+		writeQuantum:        100,
+		lastSegmentStart:    100,
+		sendableUnits:       1,
+		awaitingFirstAck:    true,
+		disableAutoChecksum: true,
+		writesChan:          make(chan gRPCWriterCommand, 1),
+		donec:               make(chan struct{}),
+		setSize:             func(n int64) { *gotSize = n },
+		progress:            func(int64) {},
+		setObj:              func(*ObjectAttrs) {},
+	}
+}
+
+// runPersistedSizeTestWriter runs app against w's write loop and returns the
+// write loop's error.
+func runPersistedSizeTestWriter(w *gRPCWriter, app func()) error {
+	appDone := make(chan struct{})
+	go func() {
+		defer close(appDone)
+		app()
+		w.CloseWithError(nil)
+	}()
+	err := attemptWriteLoop(context.Background(), w)
+	w.streamResult = err
+	close(w.donec)
+	<-appDone
+	return err
+}
+
+func TestGRPCWriter_PersistedSizeBeyondSentData(t *testing.T) {
+	tests := []struct {
+		name  string
+		write int
+		// flush calls Flush after the write.
+		flush bool
+		// extra is added to the offset reported for every flush.
+		extra   int64
+		wantErr bool
+	}{
+		// Spans several chunks so the write is sent from the caller's buffer.
+		{name: "acks match sent data", write: 250},
+		// The flush sends the 50-byte tail that is still in w.buf.
+		{name: "flush after partial chunk", write: 150, flush: true},
+		{name: "flush ack beyond sent data", write: 250, extra: 1000, wantErr: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var gotSize int64
+			w := newPersistedSizeTestWriter(flushAckingSender(tt.extra), &gotSize)
+			var flushOffset int64
+			var flushErr error
+			err := runPersistedSizeTestWriter(w, func() {
+				w.Write(make([]byte, tt.write))
+				if tt.flush {
+					flushOffset, flushErr = w.Flush()
+				}
+			})
+
+			if tt.wantErr {
+				if !errors.Is(err, errPersistedSizeTooLarge) {
+					t.Errorf("writeLoop() = %v, want %v", err, errPersistedSizeTooLarge)
+				}
+				return
+			}
+			if err != nil {
+				t.Errorf("writeLoop() = %v, want nil", err)
+			}
+			if tt.flush && (flushOffset != int64(tt.write) || flushErr != nil) {
+				t.Errorf("Flush() = (%d, %v), want (%d, nil)", flushOffset, flushErr, tt.write)
+			}
+			if gotSize != int64(tt.write) {
+				t.Errorf("final size = %d, want %d", gotSize, tt.write)
+			}
+		})
+	}
+
+	t.Run("resume status beyond sent data", func(t *testing.T) {
+		srv := &adaptiveRotationStorageServer{
+			stallStreamAt:    map[int]int64{1: 200}, // Ack chunk 1, then stall on chunk 2.
+			queryStatusExtra: 1000,
+		}
+		err := runRotationUpload(t, srv, rotationUploadOpts{
+			chunkTransferTimeout: 500 * time.Millisecond,
+			chunks:               3,
+			waitPerChunk:         true,
+		})
+		if !errors.Is(err, errPersistedSizeTooLarge) {
+			t.Errorf("upload error = %v, want %v", err, errPersistedSizeTooLarge)
+		}
+		assertRotationCalls(t, srv, 1, 2)
+	})
+}
+
+// takeoverTestSender reports a takeover offset through the writer's real
+// takeover handler before connecting, like the append takeover sender does.
+type takeoverTestSender struct {
+	*funcSender
+	reportTakeover func()
+}
+
+func (s *takeoverTestSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
+	s.reportTakeover()
+	s.funcSender.connect(ctx, cs, opts...)
+}
+
+func TestGRPCWriter_TakeoverPersistedSize(t *testing.T) {
+	tests := []struct {
+		name         string
+		takeoverSize int64
+		// extra is added to the offset reported for every flush.
+		extra   int64
+		wantErr bool
+	}{
+		{name: "acks after takeover offset", takeoverSize: 500},
+		{name: "ack beyond takeover offset plus sent data", takeoverSize: 500, extra: 1000, wantErr: true},
+		{name: "negative takeover offset", takeoverSize: -1, wantErr: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var gotSize, gotTakeover int64
+			w := newPersistedSizeTestWriter(nil, &gotSize)
+			w.c = &grpcStorageClient{}
+			w.spec = &storagepb.WriteObjectSpec{}
+			w.append = true
+			w.appendGen = 1
+			w.setTakeoverOffset = func(n int64) { gotTakeover = n }
+			takeover := w.newGRPCAppendTakeoverWriteBufferSender()
+			w.streamSender = &takeoverTestSender{
+				funcSender: flushAckingSender(tt.extra),
+				reportTakeover: func() {
+					takeover.handleTakeoverCompletion(gRPCBidiWriteCompletion{flushOffset: tt.takeoverSize})
+				},
+			}
+			err := runPersistedSizeTestWriter(w, func() { w.Write(make([]byte, 250)) })
+
+			if tt.wantErr {
+				if !errors.Is(err, errPersistedSizeTooLarge) {
+					t.Errorf("writeLoop() = %v, want %v", err, errPersistedSizeTooLarge)
+				}
+				return
+			}
+			if err != nil {
+				t.Errorf("writeLoop() = %v, want nil", err)
+			}
+			if gotTakeover != tt.takeoverSize {
+				t.Errorf("takeover offset = %d, want %d", gotTakeover, tt.takeoverSize)
+			}
+			if want := tt.takeoverSize + 250; gotSize != want {
+				t.Errorf("final size = %d, want %d", gotSize, want)
+			}
+		})
+	}
 }
