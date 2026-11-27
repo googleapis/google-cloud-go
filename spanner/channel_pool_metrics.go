@@ -34,6 +34,7 @@ const (
 	metricLabelKeyLane     = "lane"
 
 	poolModeDynamic = "dynamic"
+	poolModeStatic  = "static"
 
 	channelStateActive   = "active"
 	channelStateDraining = "draining"
@@ -69,6 +70,7 @@ func newChannelPoolBuiltinMetricsConfig(tf *builtinMetricsTracerFactory, isDirec
 type channelPoolBuiltinMetrics struct {
 	logger   *log.Logger
 	meter    metric.Meter
+	poolMode string
 	lanes    [2]string
 	fallback *directPathFallback
 
@@ -77,13 +79,14 @@ type channelPoolBuiltinMetrics struct {
 	channelLoadOpts [2][]metric.RecordOption
 }
 
-func newChannelPoolBuiltinMetrics(logger *log.Logger, cfg channelPoolBuiltinMetricsConfig, fallback *directPathFallback) *channelPoolBuiltinMetrics {
+func newChannelPoolBuiltinMetrics(logger *log.Logger, cfg channelPoolBuiltinMetricsConfig, poolMode string, fallback *directPathFallback) *channelPoolBuiltinMetrics {
 	if cfg.meterProvider == nil {
 		return nil
 	}
 	m := &channelPoolBuiltinMetrics{
 		logger:   logger,
 		meter:    cfg.meterProvider.Meter(builtInMetricsMeterName, metric.WithInstrumentationVersion(internal.Version)),
+		poolMode: poolMode,
 		lanes:    [2]string{cfg.lane, laneCloudPath},
 		fallback: fallback,
 	}
@@ -115,12 +118,12 @@ func (m *channelPoolBuiltinMetrics) registerChannelCount(p *dynamicChannelPool) 
 	var activeAttrs, drainingAttrs [2]metric.ObserveOption
 	for i, lane := range m.lanes {
 		activeAttrs[i] = metric.WithAttributeSet(attribute.NewSet(
-			attribute.String(metricLabelKeyPoolMode, poolModeDynamic),
+			attribute.String(metricLabelKeyPoolMode, m.poolMode),
 			attribute.String(metricLabelKeyState, channelStateActive),
 			attribute.String(metricLabelKeyLane, lane),
 		))
 		drainingAttrs[i] = metric.WithAttributeSet(attribute.NewSet(
-			attribute.String(metricLabelKeyPoolMode, poolModeDynamic),
+			attribute.String(metricLabelKeyPoolMode, m.poolMode),
 			attribute.String(metricLabelKeyState, channelStateDraining),
 			attribute.String(metricLabelKeyLane, lane),
 		))
@@ -156,7 +159,7 @@ func (m *channelPoolBuiltinMetrics) registerChannelLoad() {
 	m.channelLoad = channelLoad
 	for i, lane := range m.lanes {
 		m.channelLoadOpts[i] = []metric.RecordOption{metric.WithAttributeSet(attribute.NewSet(
-			attribute.String(metricLabelKeyPoolMode, poolModeDynamic),
+			attribute.String(metricLabelKeyPoolMode, m.poolMode),
 			attribute.String(metricLabelKeyLane, lane),
 		))}
 	}

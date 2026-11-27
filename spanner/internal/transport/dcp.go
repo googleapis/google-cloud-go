@@ -30,6 +30,7 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -245,8 +246,9 @@ type DCPHooks[C DCPClient] struct {
 	// PenaltyEpoch optionally returns a number. An error does not penalize its
 	// entry if the number changed while the operation was in flight.
 	PenaltyEpoch func() uint64
-	// OnCallStart optionally runs when a call starts on an entry of a
-	// non-fixed pool, with the entry's in-flight call count including it.
+	// OnCallStart optionally runs when a call starts on an entry, with the
+	// entry's in-flight call count including it. A fixed pool counts its
+	// calls only when OnCallStart is set.
 	OnCallStart func(ctx context.Context, load int32)
 }
 
@@ -293,7 +295,7 @@ type DynamicChannelPool[C DCPClient] struct {
 	DrainingCount  atomic.Int64
 	DrainIdleFloor time.Duration // DCPDrainIdleFloor when the pool was created
 
-	fixed      bool                // constant round-robin entries; no scaling, priming, or metrics
+	fixed      bool                // constant round-robin entries; no scaling or priming
 	underlying gtransport.ConnPool // owns a fixed pool's connections
 }
 
@@ -318,6 +320,7 @@ type DCPEntry[C DCPClient] struct {
 	penaltyMu     sync.Mutex   // Serializes rare penalty updates and removal
 	penaltyEpoch  uint64       // Guarded by penaltyMu; epoch of the current penalty
 	Refs          atomic.Int64 // RPCs keeping the channel open; negative once closed
+	countCalls    bool         // Invoke and NewStream count calls; fixed pools with OnCallStart only
 }
 
 // NewDynamicChannelPool creates the initial channel set and starts scale workers.
@@ -351,7 +354,8 @@ func NewDynamicChannelPool[C DCPClient](
 
 // NewFixedChannelPool returns a fixed-mode DynamicChannelPool with one entry
 // per distinct connection in underlying: round-robin selection and no scaling,
-// priming, error penalties, or pool metrics. The pool takes ownership of
+// priming, error penalties, or pool metrics. If hooks.OnCallStart is set, its
+// entries count their in-flight calls for it. The pool takes ownership of
 // underlying and closes it in Close.
 func NewFixedChannelPool[C DCPClient](
 	ctx context.Context,
@@ -440,7 +444,7 @@ func (p *DynamicChannelPool[C]) createInitialEntries(ctx context.Context) error 
 }
 
 // IsFixed reports whether this pool runs in fixed mode (constant round-robin
-// entries with no background scaling, priming, or metrics).
+// entries with no background scaling or priming).
 func (p *DynamicChannelPool[C]) IsFixed() bool {
 	return p != nil && p.fixed
 }
@@ -493,7 +497,7 @@ func (p *DynamicChannelPool[C]) Invoke(ctx context.Context, method string, args,
 		return err
 	}
 	if p.fixed {
-		return e.Pool.Invoke(ctx, method, args, reply, opts...)
+		return e.Invoke(ctx, method, args, reply, opts...)
 	}
 	e.UnaryLoad.Add(1)
 	p.TotalRPCLoad.Add(1)
@@ -518,7 +522,7 @@ func (p *DynamicChannelPool[C]) NewStream(ctx context.Context, desc *grpc.Stream
 		return nil, err
 	}
 	if p.fixed {
-		return e.Pool.NewStream(ctx, desc, method, opts...)
+		return e.NewStream(ctx, desc, method, opts...)
 	}
 	e.StreamLoad.Add(1)
 	p.TotalRPCLoad.Add(1)
@@ -613,7 +617,7 @@ func (p *DynamicChannelPool[C]) newEntry(ctx context.Context, prime bool) (*DCPE
 	if err != nil {
 		return nil, err
 	}
-	e := &DCPEntry[C]{ID: id, Pool: entryPool, Parent: p}
+	e := &DCPEntry[C]{ID: id, Pool: entryPool, Parent: p, countCalls: p.fixed && p.onCallStart != nil}
 	now := time.Now().UnixNano()
 	e.CreatedAt.Store(now)
 	e.LastActivity.Store(now)
@@ -1102,12 +1106,82 @@ func (e *DCPEntry[C]) Close() error { return e.CloseNow() }
 
 // Invoke executes a unary gRPC call on the entry's underlying pool.
 func (e *DCPEntry[C]) Invoke(ctx context.Context, method string, args, reply any, opts ...grpc.CallOption) error {
+	if !e.countCalls {
+		return e.Pool.Invoke(ctx, method, args, reply, opts...)
+	}
+	e.UnaryLoad.Add(1)
+	defer e.UnaryLoad.Add(-1)
+	e.Parent.callStarted(ctx, e)
 	return e.Pool.Invoke(ctx, method, args, reply, opts...)
 }
 
 // NewStream opens a gRPC stream on the entry's underlying pool.
 func (e *DCPEntry[C]) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	return e.Pool.NewStream(ctx, desc, method, opts...)
+	if !e.countCalls {
+		return e.Pool.NewStream(ctx, desc, method, opts...)
+	}
+	e.StreamLoad.Add(1)
+	e.Parent.callStarted(ctx, e)
+	s, err := e.Pool.NewStream(ctx, desc, method, opts...)
+	if err != nil {
+		e.StreamLoad.Add(-1)
+		return nil, err
+	}
+	cs := &dcpCountedStream[C]{ClientStream: s, entry: e}
+	if ctx.Done() != nil {
+		cs.stop = context.AfterFunc(ctx, cs.end)
+	}
+	return cs, nil
+}
+
+// dcpCountedStream releases its entry's stream load once: when a stream
+// method returns an error (io.EOF included), or when the stream's context is
+// done.
+type dcpCountedStream[C DCPClient] struct {
+	grpc.ClientStream
+	entry *DCPEntry[C]
+	ended atomic.Bool
+	stop  func() bool
+}
+
+func (s *dcpCountedStream[C]) end() {
+	if s.ended.CompareAndSwap(false, true) {
+		s.entry.StreamLoad.Add(-1)
+	}
+}
+
+func (s *dcpCountedStream[C]) endOnError(err error) {
+	if err == nil {
+		return
+	}
+	if s.stop != nil {
+		s.stop()
+	}
+	s.end()
+}
+
+func (s *dcpCountedStream[C]) Header() (metadata.MD, error) {
+	md, err := s.ClientStream.Header()
+	s.endOnError(err)
+	return md, err
+}
+
+func (s *dcpCountedStream[C]) SendMsg(m any) error {
+	err := s.ClientStream.SendMsg(m)
+	s.endOnError(err)
+	return err
+}
+
+func (s *dcpCountedStream[C]) RecvMsg(m any) error {
+	err := s.ClientStream.RecvMsg(m)
+	s.endOnError(err)
+	return err
+}
+
+func (s *dcpCountedStream[C]) CloseSend() error {
+	err := s.ClientStream.CloseSend()
+	s.endOnError(err)
+	return err
 }
 
 // borrowedConn is a ConnPool over one connection that it does not close.
