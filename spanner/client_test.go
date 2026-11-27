@@ -74,11 +74,24 @@ func setupMockedTestServerWithConfig(t *testing.T, config ClientConfig) (server 
 	return setupMockedTestServerWithConfigAndClientOptions(t, config, []option.ClientOption{})
 }
 
-func setupAuthenticatedMockedTestServerWithConfig(t *testing.T, config ClientConfig) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
+func authenticatedMockedServerOptions(t *testing.T, server *MockedSpannerInMemTestServer) []option.ClientOption {
 	t.Helper()
 	// The mock server uses insecure transport credentials, which conflict with
 	// the DirectPath credentials bundle when tests run on GCE.
 	t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
+	creds := &google.Credentials{
+		ProjectID:   "[PROJECT]",
+		TokenSource: oauth2.StaticTokenSource(&oauth2.Token{AccessToken: "test-token"}),
+	}
+	return []option.ClientOption{
+		option.WithEndpoint(server.ServerAddress),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		option.WithCredentials(creds),
+	}
+}
+
+func setupAuthenticatedMockedTestServerWithConfig(t *testing.T, config ClientConfig) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
+	t.Helper()
 	return setupMockedTestServerWithConfigAndAuth(t, config, []option.ClientOption{}, nil, true)
 }
 
@@ -141,15 +154,7 @@ func setupMockedTestServerWithConfigAndAuth(t *testing.T, config ClientConfig, c
 	clientOptions = append(clientOptions, grpcHeaderChecker.CallOptions()...)
 	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
 	if authenticated {
-		creds := &google.Credentials{
-			ProjectID:   "[PROJECT]",
-			TokenSource: oauth2.StaticTokenSource(&oauth2.Token{AccessToken: "test-token"}),
-		}
-		opts = []option.ClientOption{
-			option.WithEndpoint(server.ServerAddress),
-			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
-			option.WithCredentials(creds),
-		}
+		opts = authenticatedMockedServerOptions(t, server)
 	}
 	opts = append(opts, clientOptions...)
 	ctx := context.Background()

@@ -412,8 +412,11 @@ func TestFixedChannelPoolConnPoolMethodsLoadAccounting(t *testing.T) {
 				enableChannelPoolBuiltinMetricsForTest(t)
 			}
 			// Use a bare server: these raw RPCs lack headers that setupMockedTestServer checks.
-			_, opts, teardown := NewMockedSpannerInMemTestServer(t)
+			server, opts, teardown := NewMockedSpannerInMemTestServer(t)
 			defer teardown()
+			if tt.builtinMetrics {
+				opts = authenticatedMockedServerOptions(t, server)
+			}
 			client, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", ClientConfig{DisableNativeMetrics: !tt.builtinMetrics, NumChannels: 1}, opts...)
 			if err != nil {
 				t.Fatal(err)
@@ -520,7 +523,11 @@ func TestFixedChannelPoolStreamsLoadAccounting(t *testing.T) {
 			if tt.builtinMetrics {
 				enableChannelPoolBuiltinMetricsForTest(t)
 			}
-			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: !tt.builtinMetrics, NumChannels: 2})
+			setup := setupMockedTestServerWithConfig
+			if tt.builtinMetrics {
+				setup = setupAuthenticatedMockedTestServerWithConfig
+			}
+			server, client, teardown := setup(t, ClientConfig{DisableNativeMetrics: !tt.builtinMetrics, NumChannels: 2})
 			defer teardown()
 			p := fixedPoolOf(t, client)
 			for i, e := range p.GetEntries() {
