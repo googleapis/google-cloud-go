@@ -1287,6 +1287,52 @@ func TestOpenAppendableWriterLeaveUnfinalizedEmulated(t *testing.T) {
 	})
 }
 
+// TestAppendableWriterRedirectEmulated checks that an appendable Writer follows
+// a redirect even with RetryNever or a single attempt.
+func TestAppendableWriterRedirectEmulated(t *testing.T) {
+	transportClientTest(skipHTTP("appends only supported via gRPC"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		if _, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{Name: bucket}, nil); err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		vc := &Client{tc: client}
+		for _, tc := range []struct {
+			name  string
+			retry RetryOption
+		}{
+			{name: "RetryNever", retry: WithPolicy(RetryNever)},
+			{name: "MaxAttempts1", retry: WithMaxAttempts(1)},
+		} {
+			t.Run(tc.name, func(t *testing.T) {
+				testID := createRetryTest(t, client, map[string][]string{
+					"storage.objects.insert": {"redirect-send-token-abc", "redirect-expect-token-abc"},
+				})
+				ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+				defer cancel()
+				ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+
+				obj := vc.Bucket(bucket).Object(tc.name)
+				w := obj.Retryer(tc.retry).NewWriter(ctx)
+				w.Append = true
+				w.FinalizeOnClose = true
+				if _, err := w.Write(randomBytesToWrite); err != nil {
+					t.Fatalf("Writer.Write: %v", err)
+				}
+				if err := w.Close(); err != nil {
+					t.Fatalf("Writer.Close: %v", err)
+				}
+				got, err := readObject(ctx, obj)
+				if err != nil {
+					t.Fatalf("readObject: %v", err)
+				}
+				if !bytes.Equal(got, randomBytesToWrite) {
+					t.Errorf("content mismatch: got %d bytes, want %d bytes", len(got), len(randomBytesToWrite))
+				}
+				checkRetryTestCompleted(t, testID)
+			})
+		}
+	})
+}
+
 func TestWriterFlushEmulated(t *testing.T) {
 	transportClientTest(skipHTTP("appends only supported via gRPC"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test data.

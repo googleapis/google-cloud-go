@@ -269,10 +269,11 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		}
 		w.streamSender = w.pickBufferSender()
 		writerRetry := w.writerRetryConfig()
+		runOpts := append([]runOption{withOperation("WriteObject"), withBucket(w.bucket), withObject(w.attrs.Name), withProgressReset(w.budget.consumeProgress)}, w.redirectRunOptions()...)
 		w.streamResult = checkCanceled(run(w.preRunCtx, func(ctx context.Context) error {
 			w.lastErr = w.writeLoop(ctx)
 			return w.lastErr
-		}, writerRetry, w.settings.idempotent, withOperation("WriteObject"), withBucket(w.bucket), withObject(w.attrs.Name), withProgressReset(w.budget.consumeProgress)))
+		}, writerRetry, w.settings.idempotent, runOpts...))
 		w.setError(w.streamResult)
 		close(w.donec)
 	}()
@@ -2193,18 +2194,9 @@ func (w *gRPCWriter) writerRetryConfig() *retryConfig {
 		newr.backoff = &gax.Backoff{Initial: defaultWriteRetryInitialBackoff}
 	}
 
+	// Redirects on appendable writes are retried by redirectRunOptions, even
+	// with RetryNever.
 	if oldr.policy == RetryNever {
-		if w.append {
-			// The protocol requires us to respect redirection errors even when
-			// RetryNever is configured.
-			newr.policy = RetryAlways
-			newr.shouldRetry = func(err error, retryCtx *RetryContext) bool {
-				if isChunkRetryDeadlineError(err) {
-					return false
-				}
-				return errors.Is(err, bidiWriteObjectRedirectionError{})
-			}
-		}
 		return newr
 	}
 
@@ -2220,9 +2212,6 @@ func (w *gRPCWriter) writerRetryConfig() *retryConfig {
 		if isChunkRetryDeadlineError(err) {
 			return false
 		}
-		if w.append && errors.Is(err, bidiWriteObjectRedirectionError{}) {
-			return true
-		}
 		if oldr.policy == RetryIdempotent && !w.settings.idempotent &&
 			!w.streamSender.canResumeSession() {
 			return false
@@ -2235,6 +2224,23 @@ func (w *gRPCWriter) writerRetryConfig() *retryConfig {
 		return oldr.runShouldRetry(err, retryCtx)
 	}
 	return newr
+}
+
+// redirectRunOptions returns the run options that make appendable writes
+// follow redirects. The protocol requires this even with RetryNever, and
+// redirects do not count toward maxAttempts.
+func (w *gRPCWriter) redirectRunOptions() []runOption {
+	if !w.append {
+		return nil
+	}
+	return []runOption{withAlwaysRetry(isAppendRedirect)}
+}
+
+// isAppendRedirect reports whether err is a redirect to follow. A
+// chunkRetryDeadlineError is not followed even if it wraps a redirect, because
+// the chunk's retry budget is spent.
+func isAppendRedirect(err error) bool {
+	return !isChunkRetryDeadlineError(err) && errors.Is(err, bidiWriteObjectRedirectionError{})
 }
 
 // pickStreamError determines the final error to be reported by prioritizing recvErr.
