@@ -64,11 +64,11 @@ func (r *retryConfig) runShouldRetry(err error, retryCtx *RetryContext) bool {
 
 // runOptions holds optional metadata for retry contexts.
 type runOptions struct {
-	operation      string
-	bucket         string
-	object         string
-	shouldReset    func() bool
-	shouldRetryNow func(error) bool
+	operation         string
+	bucket            string
+	object            string
+	shouldReset       func() bool
+	shouldAlwaysRetry func(error) bool
 }
 
 // runOption configures optional metadata for retry contexts.
@@ -105,16 +105,17 @@ func withProgressReset(fn func() bool) runOption {
 	return func(o *runOptions) { o.shouldReset = fn }
 }
 
-// maxImmediateRetries is the number of consecutive immediate retries that run
-// makes before it backs off between them.
-const maxImmediateRetries = 3
+// maxAlwaysRetriesBeforeBackoff is the number of consecutive retries from
+// withAlwaysRetry that run makes before it backs off between them.
+const maxAlwaysRetriesBeforeBackoff = 3
 
-// withImmediateRetry specifies errors that run always retries, even when the
+// withAlwaysRetry specifies errors that run always retries, even when the
 // retry config disables retries, without counting them toward maxAttempts.
-// The attempt number still counts every call. The first maxImmediateRetries consecutive retries do not wait for backoff.
+// The attempt number still counts every call. The first
+// maxAlwaysRetriesBeforeBackoff consecutive retries do not wait for backoff.
 // It is for errors the client must always follow, such as redirects.
-func withImmediateRetry(fn func(error) bool) runOption {
-	return func(o *runOptions) { o.shouldRetryNow = fn }
+func withAlwaysRetry(fn func(error) bool) runOption {
+	return func(o *runOptions) { o.shouldAlwaysRetry = fn }
 }
 
 // run determines whether a retry is necessary based on the config and
@@ -143,7 +144,7 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 		retry = defaultRetry
 	}
 	retryDisabled := (retry.policy == RetryIdempotent && !isIdempotent) || retry.policy == RetryNever
-	if retryDisabled && options.shouldRetryNow == nil {
+	if retryDisabled && options.shouldAlwaysRetry == nil {
 		ctxWithHeaders := setInvocationHeaders(ctx, invocationID, attempts)
 		return call(withRetryAttempt(ctxWithHeaders, attempts))
 	}
@@ -163,9 +164,9 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 
 	var lastErr error
 	// countedAttempts is the number of calls that count toward maxAttempts.
-	// Unlike attempts, it does not count immediate retries.
+	// Unlike attempts, it does not count retries from withAlwaysRetry.
 	countedAttempts := 1
-	immediateRetries := 0
+	alwaysRetries := 0
 	// backoff sleeps for the next backoff pause. The pause is recorded even if
 	// ctx ended during the sleep so that the trace shows the time spent waiting
 	// before giving up.
@@ -199,22 +200,22 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 			attempts = 1
 			countedAttempts = 1
 			bo = initialBo
-			immediateRetries = 0
+			alwaysRetries = 0
 		}
-		if options.shouldRetryNow != nil && options.shouldRetryNow(lastErr) {
+		if options.shouldAlwaysRetry != nil && options.shouldAlwaysRetry(lastErr) {
 			if ctx.Err() != nil {
 				return lastErr
 			}
 			attempts++
-			immediateRetries++
-			if immediateRetries > maxImmediateRetries {
+			alwaysRetries++
+			if alwaysRetries > maxAlwaysRetriesBeforeBackoff {
 				if err := backoff(); err != nil {
 					return err
 				}
 			}
 			continue
 		}
-		immediateRetries = 0
+		alwaysRetries = 0
 		if retryDisabled {
 			return lastErr
 		}

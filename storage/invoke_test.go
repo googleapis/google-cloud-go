@@ -979,11 +979,11 @@ func TestInvokeWithProgressReset(t *testing.T) {
 	})
 }
 
-func TestInvokeWithImmediateRetry(t *testing.T) {
+func TestInvokeWithAlwaysRetry(t *testing.T) {
 	t.Parallel()
 	errRedirect := errors.New("redirect")
 	errTransient := status.Error(codes.Unavailable, "transient failure")
-	streak := slices.Repeat([]error{errRedirect}, maxImmediateRetries)
+	streak := slices.Repeat([]error{errRedirect}, maxAlwaysRetriesBeforeBackoff)
 	// After a normal retry, the backoff is at most 1ms for the first pause and
 	// up to an hour after that, as in TestInvokeWithProgressReset.
 	growingBackoff := &gax.Backoff{Initial: time.Millisecond, Multiplier: 1e7, Max: time.Hour}
@@ -1035,19 +1035,19 @@ func TestInvokeWithImmediateRetry(t *testing.T) {
 			wantCalls:     2,
 		},
 		{
-			desc:      "backs off after consecutive immediate retries",
-			errs:      append(slices.Repeat([]error{errRedirect}, maxImmediateRetries+1), nil),
+			desc:      "backs off after consecutive retries",
+			errs:      append(slices.Repeat([]error{errRedirect}, maxAlwaysRetriesBeforeBackoff+1), nil),
 			timeout:   200 * time.Millisecond,
 			wantErr:   context.DeadlineExceeded,
-			wantCalls: maxImmediateRetries + 1,
+			wantCalls: maxAlwaysRetriesBeforeBackoff + 1,
 		},
 		{
 			// The redirect that reports progress starts the new streak, so
 			// without the reset the 4th call would back off.
 			desc:       "streak resets on progress",
-			resetAfter: maxImmediateRetries,
-			errs:       append(slices.Repeat([]error{errRedirect}, 2*maxImmediateRetries-1), nil),
-			wantCalls:  2 * maxImmediateRetries,
+			resetAfter: maxAlwaysRetriesBeforeBackoff,
+			errs:       append(slices.Repeat([]error{errRedirect}, 2*maxAlwaysRetriesBeforeBackoff-1), nil),
+			wantCalls:  2 * maxAlwaysRetriesBeforeBackoff,
 			// As in TestInvokeWithProgressReset, the call after progress is
 			// attempt 2.
 			wantAttempts: []int{1, 2, 3, 2, 3, 4},
@@ -1057,7 +1057,7 @@ func TestInvokeWithImmediateRetry(t *testing.T) {
 			maxAttempts: 2,
 			backoff:     growingBackoff,
 			errs:        append(slices.Concat(streak, []error{errTransient}, streak), nil),
-			wantCalls:   2*maxImmediateRetries + 2,
+			wantCalls:   2*maxAlwaysRetriesBeforeBackoff + 2,
 			// The attempt number passes maxAttempts, but only the
 			// errTransient retry counts toward it.
 			wantAttempts: []int{1, 2, 3, 4, 5, 6, 7, 8},
@@ -1095,7 +1095,7 @@ func TestInvokeWithImmediateRetry(t *testing.T) {
 			defer cancel()
 			calls := 0
 			var gotHeaders []string
-			opts := []runOption{withImmediateRetry(func(err error) bool { return errors.Is(err, errRedirect) })}
+			opts := []runOption{withAlwaysRetry(func(err error) bool { return errors.Is(err, errRedirect) })}
 			if tc.resetAfter > 0 {
 				opts = append(opts, withProgressReset(func() bool { return calls == tc.resetAfter }))
 			}

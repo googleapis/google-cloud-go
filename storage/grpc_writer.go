@@ -2233,7 +2233,7 @@ func (w *gRPCWriter) redirectRunOptions() []runOption {
 	if !w.append {
 		return nil
 	}
-	return []runOption{withImmediateRetry(isAppendRedirect)}
+	return []runOption{withAlwaysRetry(isAppendRedirect)}
 }
 
 // isAppendRedirect reports whether err is a redirect to follow. A
