@@ -1,6 +1,18 @@
 # Changes
 
 
+## [1.72.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.71.1...storage/v1.72.0) (2026-11-27)
+
+
+### Features
+
+* **storage:** Align metric attribute schema and status codes ([#20929](https://github.com/googleapis/google-cloud-go/issues/20929)) ([e32da18](https://github.com/googleapis/google-cloud-go/commit/e32da184c115131f062e27a70671a562d979a08d))
+
+
+### Bug Fixes
+
+* **storage:** Measure client-observed ttfb from request completion to first response ([#20938](https://github.com/googleapis/google-cloud-go/issues/20938)) ([a874b02](https://github.com/googleapis/google-cloud-go/commit/a874b0259a7487737cf92c319d60b66f9913ea1a))
+
 ## [1.71.1](https://github.com/googleapis/google-cloud-go/compare/storage/v1.71.0...storage/v1.71.1) (2026-11-25)
 
 
