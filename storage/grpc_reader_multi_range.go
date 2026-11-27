@@ -1294,6 +1294,8 @@ func newBidiReadStreamSession(ctx context.Context, id int, respC chan<- mrdSessi
 
 	if err := s.stream.Send(initialReq); err != nil {
 		s.stream.CloseSend()
+		var resp storagepb.BidiReadObjectResponse
+		err = drainStreamSendEOF(s.stream, err, &resp)
 		cancel()
 		return nil, err
 	}

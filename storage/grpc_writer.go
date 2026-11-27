@@ -32,6 +32,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
@@ -1752,6 +1753,11 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 						if err := cur.closeAndWait(); err != nil {
 							return err
 						}
+						if state := metricsStateFromContext(ctx); state != nil && state.metrics != nil {
+							p, _ := peer.FromContext(cur.st.Context())
+							target := stripPort(state.getTarget())
+							state.metrics.recordRetryReason(ctx, "grpc", "WriteObject", target, networkPathOfPeer(p), "SLOW_STREAM")
+						}
 						next, err := openStream()
 						if err != nil {
 							return err
@@ -2009,7 +2015,8 @@ func (s *gRPCAppendTakeoverBidiWriteBufferSender) connect(ctx context.Context, c
 	firstSend := true
 	if !s.takeoverReported {
 		if err := s.send(stream, nil, 0, false, false, true); err != nil {
-			s.streamErr = err
+			var resp storagepb.BidiWriteObjectResponse
+			s.streamErr = s.maybeHandleRedirectionError(drainStreamSendEOF(stream, err, &resp))
 			close(cs.completions)
 			return
 		}

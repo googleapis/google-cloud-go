@@ -27,7 +27,6 @@ import (
 	"time"
 
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/trace"
 )
 
@@ -419,11 +418,7 @@ func (r *Reader) Close() error {
 	r.mu.Unlock()
 
 	if r.metricsState != nil {
-		if r.metricsState.metrics != nil {
-			if total := atomic.SwapInt64(&r.bytesRead, 0); total > 0 {
-				r.metricsState.metrics.responseBodySize.Record(r.ctx, total, metric.WithAttributes(r.metricsState.bodySizeAttrs(r.ctx, "ReadObject")...))
-			}
-		}
+		r.metricsState.recordResponseBodySize(r.ctx, "ReadObject", atomic.LoadInt64(&r.bytesRead), err)
 		if r.metricsState.record != nil {
 			r.metricsState.record(err)
 		}
@@ -595,11 +590,7 @@ func (mrd *MultiRangeDownloader) Close() error {
 	err := mrd.impl.close(nil)
 	spanCtx := mrd.impl.getSpanCtx()
 	if state := metricsStateFromContext(spanCtx); state != nil {
-		if state.metrics != nil {
-			if total := mrd.impl.getBytesRead(); total > 0 {
-				state.metrics.responseBodySize.Record(spanCtx, total, metric.WithAttributes(state.bodySizeAttrs(spanCtx, "ReadObject")...))
-			}
-		}
+		state.recordResponseBodySize(spanCtx, "ReadObject", mrd.impl.getBytesRead(), err)
 		if state.record != nil {
 			state.record(err)
 		}
