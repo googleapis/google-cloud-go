@@ -30,7 +30,11 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"io"
+	"net"
+	"net/url"
+	"reflect"
 	"strings"
 	"sync"
 
@@ -42,6 +46,7 @@ import (
 	"cloud.google.com/go/bigtable/internal/session"
 	btransport "cloud.google.com/go/bigtable/internal/transport"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	gmetadata "google.golang.org/grpc/metadata"
@@ -91,6 +96,23 @@ var newSessionClient = func(
 	project, instance, appProfile, clientName string,
 	opts ...option.ClientOption,
 ) (session.Client, error) {
+	// Verify credentials universe domain fail-closed before constructing any
+	// metrics exporters, so in-process NewChannel callers on TPC VMs or with
+	// TPC credentials cannot start background GDU monitoring exporters.
+	creds, err := internaloption.AuthCreds(ctx, opts)
+	if err != nil {
+		return nil, err
+	}
+	if creds != nil {
+		ud, err := creds.UniverseDomain(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("accelerator: failed to resolve credentials universe domain: %w", err)
+		}
+		if ud != metrics.DefaultUniverseDomain {
+			return nil, fmt.Errorf("accelerator: not supported for non-default universe domain %q", ud)
+		}
+	}
+
 	// Phase 1 keeps built-in client-side metrics on: a nil MetricsProvider is
 	// what metrics.NewFactory treats as the default Cloud Monitoring exporter.
 	var metricsProvider metrics.MetricsProvider
@@ -105,7 +127,10 @@ var newSessionClient = func(
 	// this instance exists only to read .Enabled, so shut it down immediately.
 	// The accelerator has no separate classic data path that would use a second
 	// factory, and leaving it running would double-export session's metrics.
-	factory, err := metrics.NewFactory(ctx, project, instance, appProfile, clientName, metricsProvider, opts...)
+	// The daemon's metrics exporters always use Application Default
+	// Credentials: caller credentials are scoped to Bigtable data only.
+	exporterOpts := metrics.WithoutCredentialOptions(opts...)
+	factory, err := metrics.NewFactory(ctx, project, instance, appProfile, clientName, metricsProvider, exporterOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -124,7 +149,7 @@ var newSessionClient = func(
 		EnableDirectAccess: true,
 	})
 
-	return session.NewClient(ctx, project, instance, appProfile, clientName, metricsProvider, featureFlags, opts...)
+	return session.NewClient(ctx, project, instance, appProfile, clientName, metricsProvider, featureFlags, exporterOpts, opts...)
 }
 
 // clientKey identifies a distinct (instance, appProfile) session.Client within
@@ -189,12 +214,19 @@ func NewChannel(
 	project, instance, appProfile, clientName string,
 	opts ...option.ClientOption,
 ) (*Channel, error) {
+	if ud := metrics.ResolvedUniverseDomain(opts...); ud != metrics.DefaultUniverseDomain {
+		return nil, fmt.Errorf("accelerator: not supported for non-default universe domain %q", ud)
+	}
+	if ep := resolvedEndpointOverride(opts...); ep != "" && !isAllowedAcceleratorEndpoint(ep) {
+		return nil, fmt.Errorf("accelerator: not supported for non-GDU endpoint %q", ep)
+	}
+
 	// session.NewClient forwards opts straight to gtransport.Dial
 	// without supplying a default endpoint, so without these the dial target
 	// is empty ("received empty target in Build()"). Establish the standard
 	// Bigtable data-plane endpoint, scope, and user agent first, then let the
 	// caller's opts override. Mirrors bigtable.NewClient's use of
-	// btopt.DefaultClientOptions.
+	// btopt.DefaultClientOptions, EnableNewAuthLibrary, and EnableJwtWithScope.
 	defaultOpts, err := btopt.DefaultClientOptions(prodAddr, mtlsProdAddr, DataScope, userAgent)
 	if err != nil {
 		return nil, err
@@ -205,6 +237,7 @@ func NewChannel(
 	// ReadRows responses the client it stands in for accepts.
 	defaultOpts = append(defaultOpts, btopt.MessageSizeOptions()...)
 	opts = append(defaultOpts, opts...)
+	opts = append(opts, internaloption.EnableNewAuthLibrary(), internaloption.EnableJwtWithScope())
 
 	ch := &Channel{
 		ctx:           ctx,
@@ -729,4 +762,99 @@ func validateSingleRowRange(r *v2pb.RowRange) error {
 		return status.Error(codes.Unimplemented, "accelerator: ReadRows RowRange must have equal start and end bounds")
 	}
 	return nil
+}
+
+var endpointOptionType = reflect.TypeOf(option.WithEndpoint(""))
+
+// resolvedEndpointOverride returns the last option.WithEndpoint value in opts,
+// matching google.golang.org/api precedence (where a trailing empty value
+// clears any prior override).
+func resolvedEndpointOverride(opts ...option.ClientOption) string {
+	var ep string
+	for _, opt := range opts {
+		if opt != nil && reflect.TypeOf(opt) == endpointOptionType {
+			ep = reflect.ValueOf(opt).String()
+		}
+	}
+	return ep
+}
+
+// isAllowedAcceleratorEndpoint reports whether ep targets a Google Default
+// Universe (*.googleapis.com) or local loopback endpoint. Accelerator does not
+// support TPC; rejecting non-GDU endpoint overrides prevents --data-endpoint /
+// option.WithEndpoint from bypassing universe-domain checks when
+// WithUniverseDomain and GOOGLE_CLOUD_UNIVERSE_DOMAIN are unset.
+func isAllowedAcceleratorEndpoint(ep string) bool {
+	if ep == "" {
+		return true
+	}
+	if strings.TrimSpace(ep) != ep {
+		return false
+	}
+
+	lowerEp := strings.ToLower(ep)
+	var host string
+	switch {
+	case strings.HasPrefix(lowerEp, "https://") || strings.HasPrefix(lowerEp, "http://"):
+		u, err := url.Parse(ep)
+		if err != nil || u.User != nil || u.RawQuery != "" || u.Fragment != "" || (u.Path != "" && u.Path != "/") {
+			return false
+		}
+		host = u.Hostname()
+	case strings.HasPrefix(lowerEp, "dns:///"):
+		var ok bool
+		host, ok = extractEndpointHost(ep[len("dns:///"):])
+		if !ok {
+			return false
+		}
+	case strings.HasPrefix(lowerEp, "passthrough:///"):
+		var ok bool
+		host, ok = extractEndpointHost(ep[len("passthrough:///"):])
+		if !ok {
+			return false
+		}
+	case strings.Contains(ep, "://"):
+		return false
+	default:
+		var ok bool
+		host, ok = extractEndpointHost(ep)
+		if !ok {
+			return false
+		}
+	}
+
+	h := strings.TrimSuffix(strings.ToLower(host), ".")
+	if h == "" || strings.HasPrefix(h, ".") || strings.Contains(h, "..") || strings.ContainsAny(h, "\\ \t") {
+		return false
+	}
+	if h == "localhost" {
+		return true
+	}
+	if ip := net.ParseIP(h); ip != nil {
+		return ip.IsLoopback()
+	}
+	return h == metrics.DefaultUniverseDomain || strings.HasSuffix(h, "."+metrics.DefaultUniverseDomain)
+}
+
+func extractEndpointHost(addr string) (string, bool) {
+	if addr == "" || strings.ContainsAny(addr, "/?#@") {
+		return "", false
+	}
+	if h, port, err := net.SplitHostPort(addr); err == nil {
+		if h == "" || port == "" {
+			return "", false
+		}
+		return h, true
+	}
+	if strings.HasPrefix(addr, "[") && strings.HasSuffix(addr, "]") {
+		h := addr[1 : len(addr)-1]
+		if net.ParseIP(h) == nil {
+			return "", false
+		}
+		return h, true
+	}
+	if strings.ContainsAny(addr, ":[]") {
+		return "", false
+	}
+	return addr, true
 }

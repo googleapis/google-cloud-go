@@ -25,6 +25,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -32,8 +33,10 @@ import (
 	"syscall"
 	"time"
 
+	"cloud.google.com/go/auth"
+	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/bigtable/internal/accelerator"
-	"golang.org/x/oauth2/google"
+	metrics "cloud.google.com/go/bigtable/internal/metrics"
 	"google.golang.org/api/option"
 )
 
@@ -100,21 +103,21 @@ func main() {
 
 	// Resolve ADC once, using the effective scopes the channel will dial with,
 	// then hand the resolved credentials to both the channel (via
-	// WithCredentials) and the identity resolver below. This avoids a second
-	// FindDefaultCredentials lookup in identity resolution and guarantees the
+	// WithAuthCredentials) and the identity resolver below. This avoids a
+	// second DetectDefault lookup in identity resolution and guarantees the
 	// published principal matches the credentials the channel actually dials.
 	effectiveScopes := scopes
 	if len(effectiveScopes) == 0 {
 		effectiveScopes = []string{accelerator.DataScope}
 	}
-	creds, err := google.FindDefaultCredentials(ctx, effectiveScopes...)
+	creds, err := resolveCredentials(ctx, credentials.DetectDefault, effectiveScopes)
 	if err != nil {
-		log.Fatalf("failed to resolve credentials: %v", err)
+		log.Fatal(err)
 	}
 	// Appended last so it overrides the channel's default credential resolution;
 	// the dial can no longer re-resolve to a different principal than the one we
 	// publish in identity.json.
-	opts = append(opts, option.WithCredentials(creds))
+	opts = append(opts, option.WithAuthCredentials(creds))
 
 	// Pass the composed user agent as the CSM client_name so client-side
 	// metrics are attributed to both the calling client library and the daemon
@@ -176,6 +179,34 @@ func main() {
 	case s := <-sigCh:
 		log.Printf("accelerator: received %s, shutting down...", s)
 	}
+}
+
+// resolveCredentials detects Application Default Credentials with the given
+// scopes (using self-signed JWTs when applicable, matching EnableJwtWithScope)
+// and verifies that they belong to the Google Default Universe. Fails closed if
+// universe-domain resolution errors, times out, or returns a non-GDU domain.
+func resolveCredentials(
+	ctx context.Context,
+	detect func(*credentials.DetectOptions) (*auth.Credentials, error),
+	scopes []string,
+) (*auth.Credentials, error) {
+	creds, err := detect(&credentials.DetectOptions{
+		Scopes:           scopes,
+		UseSelfSignedJWT: true,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to resolve credentials: %w", err)
+	}
+	udCtx, cancel := context.WithTimeout(ctx, identityResolveTimeout)
+	defer cancel()
+	ud, err := creds.UniverseDomain(udCtx)
+	if err != nil {
+		return nil, fmt.Errorf("accelerator: failed to resolve credentials universe domain: %w", err)
+	}
+	if ud != metrics.DefaultUniverseDomain {
+		return nil, fmt.Errorf("accelerator: not supported for non-default universe domain %q", ud)
+	}
+	return creds, nil
 }
 
 // splitScopes parses a comma-separated scopes flag into a trimmed, non-empty

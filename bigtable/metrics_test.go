@@ -163,7 +163,8 @@ func setupFakeServerWithCustomHandler(projectID, instanceID string, cfg ClientCo
 		return nil, nil, fmt.Errorf("failed to dial test server: %w", err)
 	}
 
-	clientOpts := []option.ClientOption{option.WithGRPCConn(conn)}
+	// Built-in metrics need an explicit universe domain when a custom conn is used.
+	clientOpts := []option.ClientOption{option.WithGRPCConn(conn), option.WithUniverseDomain("googleapis.com")}
 
 	ctx := context.Background()
 	client, err := NewClientWithConfig(ctx, projectID, instanceID, cfg, clientOpts...)
@@ -800,48 +801,37 @@ func TestToOtelMetricAttrs(t *testing.T) {
 }
 
 func TestCreateExporterOptionsFiltering(t *testing.T) {
-	endpointOpt := option.WithEndpoint("test.endpoint")
+	universeDomainOpt := option.WithUniverseDomain("tpc.example.test")
 	apiKeyOpt := option.WithAPIKey("test.apikey")
-	audiencesOpt := option.WithAudiences("test.audience")
 
 	inputOpts := []option.ClientOption{
-		endpointOpt,
+		option.WithEndpoint("test.endpoint"),
+		option.WithAudiences("test.audience"),
+		option.WithScopes(Scope),
+		option.WithGRPCConnectionPool(10),
+		universeDomainOpt,
 		apiKeyOpt,
-		audiencesOpt,
 	}
 
 	filteredOpts := metrics.CreateExporterOptions(inputOpts...)
 
-	foundEndpointOpt := false
-	foundAPIKeyOpt := false
-	foundAudiencesOpt := false
-
+	wantTypes := map[reflect.Type]string{
+		reflect.TypeOf(universeDomainOpt): "option.WithUniverseDomain",
+		reflect.TypeOf(apiKeyOpt):         "option.WithAPIKey",
+	}
+	found := make(map[reflect.Type]bool)
 	for _, opt := range filteredOpts {
-		if reflect.TypeOf(opt) == reflect.TypeOf(endpointOpt) {
-			foundEndpointOpt = true
-		}
-		if reflect.TypeOf(opt) == reflect.TypeOf(apiKeyOpt) {
-			foundAPIKeyOpt = true
-		}
-		if reflect.TypeOf(opt) == reflect.TypeOf(audiencesOpt) {
-			foundAudiencesOpt = true
+		found[reflect.TypeOf(opt)] = true
+	}
+
+	for optType, name := range wantTypes {
+		if !found[optType] {
+			t.Errorf("%s was not found in filtered options, but it should have been preserved", name)
 		}
 	}
 
-	if foundEndpointOpt {
-		t.Errorf("option.WithEndpoint was found in filtered options, but it should have been filtered out")
-	}
-
-	if !foundAPIKeyOpt {
-		t.Errorf("option.WithAPIKey was not found in filtered options, but it should have been preserved")
-	}
-
-	if !foundAudiencesOpt {
-		t.Errorf("option.WithAudiences was not found in filtered options, but it should have been preserved")
-	}
-
-	if len(filteredOpts) != 2 {
-		t.Errorf("Expected 2 options to be returned, got %d", len(filteredOpts))
+	if len(filteredOpts) != len(wantTypes) {
+		t.Errorf("Expected %d options to be returned, got %d", len(wantTypes), len(filteredOpts))
 	}
 }
 
@@ -1424,7 +1414,8 @@ func TestExecuteQueryMetrics(t *testing.T) {
 	}
 	defer conn.Close()
 
-	client, err := NewClientWithConfig(ctx, project, instance, ClientConfig{AppProfile: appProfile}, option.WithGRPCConn(conn))
+	// Built-in metrics need an explicit universe domain when a custom conn is used.
+	client, err := NewClientWithConfig(ctx, project, instance, ClientConfig{AppProfile: appProfile}, option.WithGRPCConn(conn), option.WithUniverseDomain("googleapis.com"))
 	if err != nil {
 		t.Fatalf("NewClientWithConfig: %v", err)
 	}

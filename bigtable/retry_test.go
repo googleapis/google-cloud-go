@@ -45,7 +45,8 @@ func setupFakeServer(project, instance string, config ClientConfig, opt ...grpc.
 		return nil, nil, err
 	}
 
-	client, err := NewClientWithConfig(context.Background(), project, instance, config, option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()))
+	// Built-in metrics need an explicit universe domain when a custom conn is used.
+	client, err := NewClientWithConfig(context.Background(), project, instance, config, option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()), option.WithUniverseDomain("googleapis.com"))
 	if err != nil {
 		return nil, nil, err
 	}

@@ -22,8 +22,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"cloud.google.com/go/auth"
 	"cloud.google.com/go/compute/metadata"
-	"golang.org/x/oauth2/google"
 )
 
 // identityFilename is the name of the identity document written alongside the
@@ -70,12 +70,12 @@ func writeIdentity(udsPath, principal, credType string, scopes []string) error {
 // pre-resolved ADC using only local JSON or the link-local GCE metadata server.
 // It returns empty strings with a nil error when no local source exposes an
 // identifier, or a non-nil error if a metadata-server lookup fails.
-func identityFromCreds(ctx context.Context, creds *google.Credentials) (principal, credType string, err error) {
+func identityFromCreds(ctx context.Context, creds *auth.Credentials) (principal, credType string, err error) {
 	if creds == nil {
 		return "", "", nil
 	}
-	if len(creds.JSON) > 0 {
-		p, typ := identityFromCredsJSON(creds.JSON)
+	if rawJSON := creds.JSON(); len(rawJSON) > 0 {
+		p, typ := identityFromCredsJSON(rawJSON)
 		return p, typ, nil
 	}
 	if metadata.OnGCE() {
