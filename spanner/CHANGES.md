@@ -1,5 +1,25 @@
 # Changes
 
+## [1.97.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.96.1...spanner/v1.97.0) (2026-11-27)
+
+
+### Features
+
+* **spanner:** Add built-in channel_count and channel_load metrics for the dynamic channel pool ([#20923](https://github.com/googleapis/google-cloud-go/issues/20923)) ([136e644](https://github.com/googleapis/google-cloud-go/commit/136e644e1102f956c0a19350b8cd8d29a016ca6f))
+* **spanner:** Add built-in channel_count and channel_load metrics for the fixed channel pool ([#20999](https://github.com/googleapis/google-cloud-go/issues/20999)) ([b75d6f7](https://github.com/googleapis/google-cloud-go/commit/b75d6f733a92c14cacc4d0a07edb6238c6e5ee9d))
+* **spanner:** Move DirectPath fallback into the library with paired channel slots ([#20651](https://github.com/googleapis/google-cloud-go/issues/20651)) ([84b31d1](https://github.com/googleapis/google-cloud-go/commit/84b31d12ad7a5fb8917309a938030bdfbb1afe97))
+* **spanner:** Use a fixed-mode dynamic channel pool by default ([#20669](https://github.com/googleapis/google-cloud-go/issues/20669)) ([85fd07b](https://github.com/googleapis/google-cloud-go/commit/85fd07bd7a14625c4bb0c4052acd52de88d894ca))
+* Update API sources and regenerate ([#20728](https://github.com/googleapis/google-cloud-go/issues/20728)) ([ab1da9d](https://github.com/googleapis/google-cloud-go/commit/ab1da9d200416594ae18fa7a2944961f1c92c928))
+
+
+### Bug Fixes
+
+* Adds additional validation for REST RPC requests ([#20753](https://github.com/googleapis/google-cloud-go/issues/20753)) ([7827181](https://github.com/googleapis/google-cloud-go/commit/7827181e7cb653fb69645c538b162b2c7490b0bb))
+* **spanner/spansql:** Limit expression nesting depth to prevent stack overflow ([#20845](https://github.com/googleapis/google-cloud-go/issues/20845)) ([95c2bab](https://github.com/googleapis/google-cloud-go/commit/95c2bab67a52fbe3454c36ca40845d6f0bb5be12))
+* **spanner:** Disable built-in Cloud Monitoring export when WithoutAuthentication is configured ([#21038](https://github.com/googleapis/google-cloud-go/issues/21038)) ([da80413](https://github.com/googleapis/google-cloud-go/commit/da80413f2bcb54c22b094baaf5d9e44e8de59543))
+* **spanner:** Disable default Cloud Monitoring export for custom endpoints ([#21039](https://github.com/googleapis/google-cloud-go/issues/21039)) ([c69da2f](https://github.com/googleapis/google-cloud-go/commit/c69da2f148f45abfed14c77efef407aaab09f45b))
+* **spanner:** Respect universe domain in built-in metrics exporter ([#20953](https://github.com/googleapis/google-cloud-go/issues/20953)) ([0cef765](https://github.com/googleapis/google-cloud-go/commit/0cef765579e87f03f16aa403de3b0bee9a13e491))
+
 ## [1.96.1](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.96.0...spanner/v1.96.1) (2026-10-08)
 
 
