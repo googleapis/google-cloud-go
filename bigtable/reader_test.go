@@ -508,3 +508,40 @@ func ccReset() *btspb.ReadRowsResponse_CellChunk {
 	return &btspb.ReadRowsResponse_CellChunk{
 		RowStatus: &btspb.ReadRowsResponse_CellChunk_ResetRow{ResetRow: true}}
 }
+
+func TestValidateNewRow_MalformedFirstChunkAndEmptyKey(t *testing.T) {
+	tests := []struct {
+		name     string
+		reversed bool
+		chunk    *btspb.ReadRowsResponse_CellChunk
+	}{
+		{
+			name:  "commit_with_positive_value_size",
+			chunk: cc("rk", "fm", "col", 1, "part1", 10, true, nil),
+		},
+		{
+			name:  "non_nil_empty_row_key_forward",
+			chunk: cc("", "fm", "col", 1, "val", 0, true, nil),
+		},
+		{
+			name:     "non_nil_empty_row_key_reverse",
+			reversed: true,
+			chunk:    cc("", "fm", "col", 1, "val", 0, true, nil),
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			var cr *chunkReader
+			if tc.reversed {
+				cr = newReverseChunkReader()
+			} else {
+				cr = newChunkReader()
+			}
+			row, err := cr.Process(tc.chunk)
+			if err == nil {
+				t.Fatalf("Process(%s) = (%v, nil), want error", tc.name, row)
+			}
+		})
+	}
+}
