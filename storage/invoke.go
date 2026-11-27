@@ -64,10 +64,11 @@ func (r *retryConfig) runShouldRetry(err error, retryCtx *RetryContext) bool {
 
 // runOptions holds optional metadata for retry contexts.
 type runOptions struct {
-	operation   string
-	bucket      string
-	object      string
-	shouldReset func() bool
+	operation      string
+	bucket         string
+	object         string
+	shouldReset    func() bool
+	shouldRetryNow func(error) bool
 }
 
 // runOption configures optional metadata for retry contexts.
@@ -104,6 +105,18 @@ func withProgressReset(fn func() bool) runOption {
 	return func(o *runOptions) { o.shouldReset = fn }
 }
 
+// maxImmediateRetries is the number of consecutive immediate retries that run
+// makes before it backs off between them.
+const maxImmediateRetries = 3
+
+// withImmediateRetry specifies errors that run always retries, even when the
+// retry config disables retries, without counting them toward maxAttempts.
+// The attempt number still counts every call. The first maxImmediateRetries consecutive retries do not wait for backoff.
+// It is for errors the client must always follow, such as redirects.
+func withImmediateRetry(fn func(error) bool) runOption {
+	return func(o *runOptions) { o.shouldRetryNow = fn }
+}
+
 // run determines whether a retry is necessary based on the config and
 // idempotency information. It then calls the function with or without retries
 // as appropriate, using the configured settings.
@@ -129,7 +142,8 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 	if retry == nil {
 		retry = defaultRetry
 	}
-	if (retry.policy == RetryIdempotent && !isIdempotent) || retry.policy == RetryNever {
+	retryDisabled := (retry.policy == RetryIdempotent && !isIdempotent) || retry.policy == RetryNever
+	if retryDisabled && options.shouldRetryNow == nil {
 		ctxWithHeaders := setInvocationHeaders(ctx, invocationID, attempts)
 		return call(withRetryAttempt(ctxWithHeaders, attempts))
 	}
@@ -148,6 +162,22 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 	}
 
 	var lastErr error
+	// countedAttempts is the number of calls that count toward maxAttempts.
+	// Unlike attempts, it does not count immediate retries.
+	countedAttempts := 1
+	immediateRetries := 0
+	// backoff sleeps for the next backoff pause. The pause is recorded even if
+	// ctx ended during the sleep so that the trace shows the time spent waiting
+	// before giving up.
+	backoff := func() error {
+		backoffStart := time.Now()
+		ctxErr := gax.Sleep(ctx, bo.Pause())
+		recordRetryBackoff(ctx, backoffStart)
+		if ctxErr != nil {
+			return wrappedCallErr{ctxErr: ctxErr, wrappedErr: lastErr}
+		}
+		return nil
+	}
 	for {
 		if retry.maxRetryDuration != 0 {
 			select {
@@ -167,9 +197,28 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 		}
 		if options.shouldReset != nil && options.shouldReset() {
 			attempts = 1
+			countedAttempts = 1
 			bo = initialBo
+			immediateRetries = 0
 		}
-		if retry.maxAttempts != nil && attempts >= *retry.maxAttempts {
+		if options.shouldRetryNow != nil && options.shouldRetryNow(lastErr) {
+			if ctx.Err() != nil {
+				return lastErr
+			}
+			attempts++
+			immediateRetries++
+			if immediateRetries > maxImmediateRetries {
+				if err := backoff(); err != nil {
+					return err
+				}
+			}
+			continue
+		}
+		immediateRetries = 0
+		if retryDisabled {
+			return lastErr
+		}
+		if retry.maxAttempts != nil && countedAttempts >= *retry.maxAttempts {
 			return fmt.Errorf("storage: retry failed after %v attempts; last error: %w", *retry.maxAttempts, lastErr)
 		}
 
@@ -187,13 +236,9 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 		}
 
 		attempts++
-		backoffStart := time.Now()
-		ctxErr := gax.Sleep(ctx, bo.Pause())
-		// The backoff is recorded even if ctx ended during the sleep so that the
-		// trace shows the time spent waiting before giving up.
-		recordRetryBackoff(ctx, backoffStart)
-		if ctxErr != nil {
-			return wrappedCallErr{ctxErr: ctxErr, wrappedErr: lastErr}
+		countedAttempts++
+		if err := backoff(); err != nil {
+			return err
 		}
 	}
 }

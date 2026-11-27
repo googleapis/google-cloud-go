@@ -23,6 +23,7 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -976,4 +977,156 @@ func TestInvokeWithProgressReset(t *testing.T) {
 			t.Errorf("errors.Is(err, callErr) = false; err: %v", err)
 		}
 	})
+}
+
+func TestInvokeWithImmediateRetry(t *testing.T) {
+	t.Parallel()
+	errRedirect := errors.New("redirect")
+	errTransient := status.Error(codes.Unavailable, "transient failure")
+	streak := slices.Repeat([]error{errRedirect}, maxImmediateRetries)
+	// After a normal retry, the backoff is at most 1ms for the first pause and
+	// up to an hour after that, as in TestInvokeWithProgressReset.
+	growingBackoff := &gax.Backoff{Initial: time.Millisecond, Multiplier: 1e7, Max: time.Hour}
+	for _, tc := range []struct {
+		desc string
+		// policy is RetryAlways if unset.
+		policy RetryPolicy
+		// maxAttempts is 1 if unset.
+		maxAttempts int
+		// backoff is an hour if unset.
+		backoff *gax.Backoff
+		// resetAfter is the call after which withProgressReset reports
+		// progress, if set.
+		resetAfter    int
+		errs          []error
+		timeout       time.Duration
+		cancelOnCall  bool
+		wantErr       error
+		wantErrPrefix string
+		wantCalls     int
+		// wantAttempts is the gccl-attempt-count header of each call, if set.
+		wantAttempts []int
+	}{
+		{
+			desc:         "not counted toward maxAttempts",
+			errs:         []error{errRedirect, errRedirect, nil},
+			wantCalls:    3,
+			wantAttempts: []int{1, 2, 3},
+		},
+		{
+			desc:          "other errors still count",
+			errs:          []error{errRedirect, errTransient},
+			wantErr:       errTransient,
+			wantErrPrefix: "storage: retry failed after 1 attempts",
+			wantCalls:     2,
+		},
+		{
+			desc:      "followed with RetryNever",
+			policy:    RetryNever,
+			errs:      []error{errRedirect, nil},
+			wantCalls: 2,
+		},
+		{
+			desc:          "RetryNever returns other errors as is",
+			policy:        RetryNever,
+			errs:          []error{errRedirect, errTransient},
+			wantErr:       errTransient,
+			wantErrPrefix: "rpc error",
+			wantCalls:     2,
+		},
+		{
+			desc:      "backs off after consecutive immediate retries",
+			errs:      append(slices.Repeat([]error{errRedirect}, maxImmediateRetries+1), nil),
+			timeout:   200 * time.Millisecond,
+			wantErr:   context.DeadlineExceeded,
+			wantCalls: maxImmediateRetries + 1,
+		},
+		{
+			// The redirect that reports progress starts the new streak, so
+			// without the reset the 4th call would back off.
+			desc:       "streak resets on progress",
+			resetAfter: maxImmediateRetries,
+			errs:       append(slices.Repeat([]error{errRedirect}, 2*maxImmediateRetries-1), nil),
+			wantCalls:  2 * maxImmediateRetries,
+			// As in TestInvokeWithProgressReset, the call after progress is
+			// attempt 2.
+			wantAttempts: []int{1, 2, 3, 2, 3, 4},
+		},
+		{
+			desc:        "streak resets after a retryable error",
+			maxAttempts: 2,
+			backoff:     growingBackoff,
+			errs:        append(slices.Concat(streak, []error{errTransient}, streak), nil),
+			wantCalls:   2*maxImmediateRetries + 2,
+			// The attempt number passes maxAttempts, but only the
+			// errTransient retry counts toward it.
+			wantAttempts: []int{1, 2, 3, 4, 5, 6, 7, 8},
+		},
+		{
+			desc:         "stops when the context is done",
+			errs:         []error{errRedirect, nil},
+			cancelOnCall: true,
+			wantErr:      errRedirect,
+			wantCalls:    1,
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			// An hour of backoff makes the test time out if run() backs off
+			// when it should not.
+			retry := &retryConfig{
+				policy:      RetryAlways,
+				maxAttempts: intPointer(1),
+				backoff:     &gax.Backoff{Initial: time.Hour, Max: time.Hour},
+			}
+			if tc.policy != 0 {
+				retry.policy = tc.policy
+			}
+			if tc.maxAttempts != 0 {
+				retry.maxAttempts = intPointer(tc.maxAttempts)
+			}
+			if tc.backoff != nil {
+				retry.backoff = tc.backoff
+			}
+			timeout := tc.timeout
+			if timeout == 0 {
+				timeout = 5 * time.Second
+			}
+			ctx, cancel := context.WithTimeout(context.Background(), timeout)
+			defer cancel()
+			calls := 0
+			var gotHeaders []string
+			opts := []runOption{withImmediateRetry(func(err error) bool { return errors.Is(err, errRedirect) })}
+			if tc.resetAfter > 0 {
+				opts = append(opts, withProgressReset(func() bool { return calls == tc.resetAfter }))
+			}
+			err := run(ctx, func(ctx context.Context) error {
+				calls++
+				gotHeaders = append(gotHeaders, strings.Join(callctx.HeadersFromContext(ctx)["x-goog-api-client"], " "))
+				if tc.cancelOnCall {
+					cancel()
+				}
+				return tc.errs[calls-1]
+			}, retry, true, opts...)
+			if tc.wantErr == nil && err != nil {
+				t.Errorf("run: got %v, want nil", err)
+			}
+			if tc.wantErr != nil && !errors.Is(err, tc.wantErr) {
+				t.Errorf("run: got %v, want %v", err, tc.wantErr)
+			}
+			if tc.wantErrPrefix != "" && (err == nil || !strings.HasPrefix(err.Error(), tc.wantErrPrefix)) {
+				t.Errorf("run: got %v, want an error starting with %q", err, tc.wantErrPrefix)
+			}
+			if calls != tc.wantCalls {
+				t.Errorf("calls: got %d, want %d", calls, tc.wantCalls)
+			}
+			if tc.wantAttempts != nil && len(gotHeaders) != len(tc.wantAttempts) {
+				t.Fatalf("got %d x-goog-api-client headers, want %d", len(gotHeaders), len(tc.wantAttempts))
+			}
+			for i, want := range tc.wantAttempts {
+				if wantCount := fmt.Sprintf("gccl-attempt-count/%d ", want); !strings.Contains(gotHeaders[i]+" ", wantCount) {
+					t.Errorf("call %d header = %q, want substring %q", i+1, gotHeaders[i], wantCount)
+				}
+			}
+		})
+	}
 }

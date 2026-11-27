@@ -269,10 +269,18 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		}
 		w.streamSender = w.pickBufferSender()
 		writerRetry := w.writerRetryConfig()
+		runOpts := []runOption{withOperation("WriteObject"), withBucket(w.bucket), withObject(w.attrs.Name), withProgressReset(w.budget.consumeProgress)}
+		if w.append {
+			// Appendable writes must follow redirects, even when retries are
+			// disabled or maxAttempts is reached.
+			runOpts = append(runOpts, withImmediateRetry(func(err error) bool {
+				return errors.Is(err, bidiWriteObjectRedirectionError{})
+			}))
+		}
 		w.streamResult = checkCanceled(run(w.preRunCtx, func(ctx context.Context) error {
 			w.lastErr = w.writeLoop(ctx)
 			return w.lastErr
-		}, writerRetry, w.settings.idempotent, withOperation("WriteObject"), withBucket(w.bucket), withObject(w.attrs.Name), withProgressReset(w.budget.consumeProgress)))
+		}, writerRetry, w.settings.idempotent, runOpts...))
 		w.setError(w.streamResult)
 		close(w.donec)
 	}()
