@@ -45,6 +45,8 @@ const (
 	directPathDisableEnvVar                   = "GOOGLE_CLOUD_DISABLE_DIRECT_PATH"
 	enableDirectPathXdsOverInterconnectEnvVar = "GOOGLE_CLOUD_ENABLE_DIRECT_PATH_XDS_OVER_INTERCONNECT"
 	directPathInterconnectInfix               = "-direct."
+	defaultGRPCEndpointTemplate               = "storage.UNIVERSE_DOMAIN:443"
+	defaultGRPCMTLSEndpoint                   = "storage.mtls.googleapis.com:443"
 
 	defaultKey             = "default"
 	serviceAccountTokenKey = "instance/service-accounts/default/token"
@@ -55,17 +57,31 @@ var onGCE = metadata.OnGCE
 // directPathDiagnostic evaluates the provided options and environment to determine
 // why gRPC DirectPath (high-throughput VPC routing) is not being utilized.
 func directPathDiagnostic(ctx context.Context, opts ...option.ClientOption) string {
-	if strings.EqualFold(os.Getenv(directPathDisableEnvVar), "true") {
+	if disabled, _ := strconv.ParseBool(os.Getenv(directPathDisableEnvVar)); disabled {
 		return reasonEnvVarDisabled
 	}
 
-	res, err := internaloption.NewUnsafeResolver(opts...)
+	// Supply the same default endpoint options that gapic.NewClient adds so
+	// default NewGRPCClient calls without option.WithEndpoint resolve
+	// storage.<universe>:443 (or the mTLS default) instead of "".
+	resolvedOpts := make([]option.ClientOption, 0, len(opts)+3)
+	resolvedOpts = append(resolvedOpts,
+		internaloption.WithDefaultEndpointTemplate(defaultGRPCEndpointTemplate),
+		internaloption.WithDefaultMTLSEndpoint(defaultGRPCMTLSEndpoint),
+		internaloption.WithDefaultUniverseDomain(defaultUniverseDomain),
+	)
+	resolvedOpts = append(resolvedOpts, opts...)
+	res, err := internaloption.NewUnsafeResolver(resolvedOpts...)
 	if err != nil {
 		return reasonInternalError
 	}
 
 	if !res.ResolvedEnableDirectPath() {
 		return reasonOptionDisabled
+	}
+
+	if res.ResolvedUniverseDomain() != defaultUniverseDomain {
+		return reasonUnsupportedEndpoint
 	}
 
 	endpoint, err := res.ResolvedGRPCEndpoint()

@@ -133,6 +133,7 @@ type grpcStorageClient struct {
 	dpDiag         string
 	metrics        *clientMetrics
 	metricsCleanup func()
+	stopTelemetry  func()
 
 	// bufferPool allocates memory for parallel uploads. It is the pool set
 	// through experimental.WithBufferPool or, if none was set, the SDK's
@@ -287,13 +288,27 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 		s.clientOption = append(s.clientOption,
 			option.WithGRPCDialOption(grpc.WithStatsHandler(attemptStatsHandler{})))
 	}
-	c.dpDiag = directPathDiagnostic(ctx, s.clientOption...)
+	dialStart := time.Now()
 	g, err := gapic.NewClient(ctx, s.clientOption...)
 	if err != nil {
 		return nil, err
 	}
 	configureStreamingTimeouts(g)
 	c.raw = g
+	// Capture a single pooled connection once because g.Connection() advances
+	// the pool's round-robin index on every call. For pool sizes > 1 this
+	// samples index 1; readiness logs still label the sampled connection "[0]"
+	// for cross-SDK consistency.
+	conn := g.Connection()
+	// Start readiness telemetry before directPathDiagnostic so any metadata
+	// server latency during diagnostics does not inflate elapsed_ms.
+	c.stopTelemetry = startClientChannelTelemetry(ctx, s.clientOption, conn, dialStart)
+	// prepareDirectPathMetadata only sends dpDiag when the dialed target does
+	// not start with google-c2p:///. Skipping directPathDiagnostic for C2P
+	// targets avoids unnecessary GCE metadata server requests during startup.
+	if !strings.HasPrefix(conn.Target(), directPathEndpointPrefix) {
+		c.dpDiag = directPathDiagnostic(ctx, s.clientOption...)
+	}
 	return c, nil
 }
 
@@ -408,6 +423,9 @@ func (c *grpcStorageClient) prepareDirectPathMetadata(ctx context.Context, targe
 }
 
 func (c *grpcStorageClient) Close() error {
+	if c.stopTelemetry != nil {
+		c.stopTelemetry()
+	}
 	if c.settings.metricsContext != nil {
 		c.settings.metricsContext.close()
 	}
