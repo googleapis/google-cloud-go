@@ -95,14 +95,22 @@ func setGitCreds(githubName, githubEmail, githubUsername, accessToken string) er
 	if err != nil {
 		return err
 	}
+	return setGitCredsToDir(u.HomeDir, githubName, githubEmail, githubUsername, accessToken)
+}
+
+// setGitCredsToDir is setGitCreds with an explicit home directory, so tests can
+// run hermetically against a temp dir instead of the developer's real home.
+func setGitCredsToDir(homeDir, githubName, githubEmail, githubUsername, accessToken string) error {
 	gitCredentials := []byte(fmt.Sprintf("https://%s:%s@github.com", githubUsername, accessToken))
-	if err := os.WriteFile(path.Join(u.HomeDir, ".git-credentials"), gitCredentials, 0644); err != nil {
+	// The .git-credentials file contains the GitHub PAT in plaintext and must be
+	// owner-only (0600); 0644 leaves the token world-readable on shared hosts.
+	if err := os.WriteFile(path.Join(homeDir, ".git-credentials"), gitCredentials, 0600); err != nil {
 		return err
 	}
 	c := execv.Command("git", "config", "--global", "user.name", githubName)
 	c.Env = []string{
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
-		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
+		fmt.Sprintf("HOME=%s", homeDir),
 	}
 	if err := c.Run(); err != nil {
 		return err
@@ -111,7 +119,7 @@ func setGitCreds(githubName, githubEmail, githubUsername, accessToken string) er
 	c = execv.Command("git", "config", "--global", "user.email", githubEmail)
 	c.Env = []string{
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
-		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
+		fmt.Sprintf("HOME=%s", homeDir),
 	}
 	return c.Run()
 }
