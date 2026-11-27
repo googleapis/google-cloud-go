@@ -99,12 +99,19 @@ func (c *Client) OpenAuthorizedView(table, authorizedView string) TableAPI {
 
 // OpenMaterializedView opens a materialized view. See OpenTable for the
 // diverter routing story.
+//
+// The x-goog-request-params header uses key=name with the parent
+// instance resource (projects/P/instances/I), not table_name — the
+// proto routing annotation for MV-shaped requests extracts
+// {name=projects/*/instances/*} from materialized_view_name
+// (see google.bigtable.v2.Bigtable's ReadRows/SampleRowKeys routing
+// rules, matched by the Java generated stub's RequestParamsBuilder).
 func (c *Client) OpenMaterializedView(materializedView string) TableAPI {
 	classic := &tableImpl{Table{
 		c: c,
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullMaterializedViewName(materializedView),
-			requestParamsHeader, c.reqParamsHeaderValTable(materializedView),
+			requestParamsHeader, c.reqParamsHeaderValInstance(),
 		), c.featureFlagsMD),
 		materializedView: materializedView,
 	}}
