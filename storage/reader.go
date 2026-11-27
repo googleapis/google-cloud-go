@@ -272,6 +272,9 @@ func WithDisableReaderChecksum() ReaderOption {
 //
 // This uses the gRPC-specific bi-directional read API. The option
 // [WithGRPCBidiReads] must be selected in order to use this API.
+//
+// Preconditions set via [ObjectHandle.If] are sent on every stream the
+// downloader opens, including reconnects and additional connections.
 func (o *ObjectHandle) NewMultiRangeDownloader(ctx context.Context, opts ...MRDOption) (mrd *MultiRangeDownloader, err error) {
 	// This span covers the life of the MRD. It is closed via the context
 	// in MultiRangeDownloader.Close.

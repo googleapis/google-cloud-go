@@ -98,9 +98,19 @@ type mrdStallOnOpenServer struct {
 	data          []byte
 	stallStreams  int32
 	redirectFirst bool
-	streams       atomic.Int32
-	mu            sync.Mutex
-	xGoogHeaders  []string
+	// failReadOn makes that stream attempt return Unavailable on its first
+	// read request.
+	failReadOn   int32
+	streams      atomic.Int32
+	mu           sync.Mutex
+	xGoogHeaders []string
+	specs        []*storagepb.BidiReadObjectSpec
+}
+
+func (s *mrdStallOnOpenServer) readSpecs() []*storagepb.BidiReadObjectSpec {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return append([]*storagepb.BidiReadObjectSpec(nil), s.specs...)
 }
 
 func (s *mrdStallOnOpenServer) BidiReadObject(stream storagepb.Storage_BidiReadObjectServer) error {
@@ -111,9 +121,13 @@ func (s *mrdStallOnOpenServer) BidiReadObject(stream storagepb.Storage_BidiReadO
 	s.mu.Unlock()
 
 	attempt := s.streams.Add(1)
-	if _, err := stream.Recv(); err != nil {
+	first, err := stream.Recv()
+	if err != nil {
 		return err
 	}
+	s.mu.Lock()
+	s.specs = append(s.specs, first.GetReadObjectSpec())
+	s.mu.Unlock()
 	if s.redirectFirst && attempt == 1 {
 		st, err := status.New(codes.Aborted, "redirect").WithDetails(&storagepb.BidiReadObjectRedirectedError{
 			RoutingToken: proto.String("token-1"),
@@ -141,6 +155,9 @@ func (s *mrdStallOnOpenServer) BidiReadObject(stream storagepb.Storage_BidiReadO
 		}
 		if err != nil {
 			return err
+		}
+		if attempt == s.failReadOn {
+			return status.Error(codes.Unavailable, "unavailable")
 		}
 		if err := sendBidiReadRanges(stream, s.data, req.GetReadRanges()); err != nil {
 			return err
@@ -203,6 +220,107 @@ func TestMultiRangeDownloaderReadStallTimeout(t *testing.T) {
 	}
 	if !bytes.Equal(buf.Bytes(), data) {
 		t.Errorf("mrd.Add data = %q, want %q", buf.Bytes(), data)
+	}
+}
+
+func TestMultiRangeDownloaderSendsConditions(t *testing.T) {
+	for _, tc := range []struct {
+		name  string
+		gen   int64
+		conds Conditions
+		want  *storagepb.BidiReadObjectSpec
+	}{
+		{
+			name:  "match",
+			gen:   -1,
+			conds: Conditions{GenerationMatch: 5, MetagenerationMatch: 7},
+			want:  &storagepb.BidiReadObjectSpec{IfGenerationMatch: proto.Int64(5), IfMetagenerationMatch: proto.Int64(7)},
+		},
+		{
+			name:  "not match",
+			gen:   -1,
+			conds: Conditions{GenerationNotMatch: 5, MetagenerationNotMatch: 7},
+			want:  &storagepb.BidiReadObjectSpec{IfGenerationNotMatch: proto.Int64(5), IfMetagenerationNotMatch: proto.Int64(7)},
+		},
+		{
+			name:  "does not exist",
+			gen:   -1,
+			conds: Conditions{DoesNotExist: true},
+			want:  &storagepb.BidiReadObjectSpec{IfGenerationMatch: proto.Int64(0)},
+		},
+		{
+			name:  "generation and match",
+			gen:   3,
+			conds: Conditions{GenerationMatch: 3},
+			want:  &storagepb.BidiReadObjectSpec{Generation: 3, IfGenerationMatch: proto.Int64(3)},
+		},
+	} {
+		for _, sc := range []struct {
+			name          string
+			redirectFirst bool
+			failReadOn    int32
+			opts          []MRDOption
+			wantSpecs     int
+		}{
+			// Stream 1 redirects, stream 2 is the redirect retry, and stream 3
+			// is the second connection from WithMinConnections(2).
+			{name: "redirect", redirectFirst: true, opts: []MRDOption{WithMinConnections(2)}, wantSpecs: 3},
+			// Stream 1 fails its first read with Unavailable; stream 2 is the reconnect.
+			{name: "reconnect", failReadOn: 1, wantSpecs: 2},
+		} {
+			t.Run(tc.name+"/"+sc.name, func(t *testing.T) {
+				data := []byte("0123456789abcdef")
+				srv := &mrdStallOnOpenServer{data: data, redirectFirst: sc.redirectFirst, failReadOn: sc.failReadOn}
+				client := newBufconnGRPCClient(t, srv)
+				client.SetRetry(WithBackoff(gax.Backoff{Initial: 10 * time.Millisecond}))
+
+				ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
+				defer cancel()
+
+				obj := client.Bucket("test-bucket").Object("test-object").If(tc.conds)
+				if tc.gen >= 0 {
+					obj = obj.Generation(tc.gen)
+				}
+				mrd, err := obj.NewMultiRangeDownloader(ctx, sc.opts...)
+				if err != nil {
+					t.Fatalf("NewMultiRangeDownloader: %v", err)
+				}
+				// Add triggers a manager event, which opens any extra
+				// connection requested by WithMinConnections.
+				var buf bytes.Buffer
+				var rangeErr error
+				mrd.Add(&buf, 0, int64(len(data)), func(_, _ int64, err error) {
+					rangeErr = err
+				})
+				mrd.Wait()
+				for len(srv.readSpecs()) < sc.wantSpecs && ctx.Err() == nil {
+					time.Sleep(10 * time.Millisecond)
+				}
+				if err := mrd.Close(); err != nil {
+					t.Errorf("mrd.Close() = %v, want nil", err)
+				}
+				if rangeErr != nil {
+					t.Fatalf("mrd.Add callback err = %v, want nil", rangeErr)
+				}
+
+				specs := srv.readSpecs()
+				if len(specs) < sc.wantSpecs {
+					t.Fatalf("len(srv.specs) = %d, want >= %d", len(specs), sc.wantSpecs)
+				}
+				for i, got := range specs {
+					g := &storagepb.BidiReadObjectSpec{
+						Generation:               got.GetGeneration(),
+						IfGenerationMatch:        got.IfGenerationMatch,
+						IfGenerationNotMatch:     got.IfGenerationNotMatch,
+						IfMetagenerationMatch:    got.IfMetagenerationMatch,
+						IfMetagenerationNotMatch: got.IfMetagenerationNotMatch,
+					}
+					if !proto.Equal(g, tc.want) {
+						t.Errorf("stream %d preconditions = %v, want %v", i, g, tc.want)
+					}
+				}
+			})
+		}
 	}
 }
 

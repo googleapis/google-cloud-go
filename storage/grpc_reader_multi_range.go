@@ -154,7 +154,10 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 	}
 	params.defaults()
 
-	readSpec := makeBidiReadObjectSpec(params)
+	readSpec, err := makeBidiReadObjectSpec(params)
+	if err != nil {
+		return nil, err
+	}
 
 	mCtx, cancel := context.WithCancel(ctx)
 
@@ -222,22 +225,22 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 	}
 }
 
-func makeBidiReadObjectSpec(params *newMultiRangeDownloaderParams) *storagepb.BidiReadObjectSpec {
+func makeBidiReadObjectSpec(params *newMultiRangeDownloaderParams) (*storagepb.BidiReadObjectSpec, error) {
 	b := bucketResourceName(globalProjectAlias, params.bucket)
 	readSpec := &storagepb.BidiReadObjectSpec{
 		Bucket:                    b,
 		Object:                    params.object,
 		CommonObjectRequestParams: toProtoCommonObjectRequestParams(params.encryptionKey),
 	}
-	if params.gen >= 0 {
-		readSpec.Generation = params.gen
+	if err := applyCondsProto("grpcStorageClient.NewMultiRangeDownloader", params.gen, params.conds, readSpec); err != nil {
+		return nil, err
 	}
 	if params.handle != nil && len(*params.handle) > 0 {
 		readSpec.ReadHandle = &storagepb.BidiReadHandle{
 			Handle: *params.handle,
 		}
 	}
-	return readSpec
+	return readSpec, nil
 }
 
 func (m *newMultiRangeDownloaderParams) defaults() {
