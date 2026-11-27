@@ -235,14 +235,6 @@ libraries:
       - path: google/cloud/batch/v1
     keep:
       - apiv1/iam_policy_client.go
-  - name: beyondcorp
-    version: 1.11.1
-    apis:
-      - path: google/cloud/beyondcorp/appconnections/v1
-      - path: google/cloud/beyondcorp/appconnectors/v1
-      - path: google/cloud/beyondcorp/appgateways/v1
-      - path: google/cloud/beyondcorp/clientconnectorservices/v1
-      - path: google/cloud/beyondcorp/clientgateways/v1
   - name: biglake
     version: 1.6.1
     apis:
