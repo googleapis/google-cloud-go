@@ -93,6 +93,9 @@ type ReaderObjectAttrs struct {
 // NewReader creates a new Reader to read the contents of the
 // object.
 // ErrObjectNotExist will be returned if the object is not found.
+// With gRPC, if no generation is set, retried reads keep using the generation
+// from the first response, and fail with ErrObjectNotExist if it is replaced
+// or deleted.
 //
 // The caller must call Close on the returned Reader when done reading.
 //
@@ -272,6 +275,10 @@ func WithDisableReaderChecksum() ReaderOption {
 //
 // This uses the gRPC-specific bi-directional read API. The option
 // [WithGRPCBidiReads] must be selected in order to use this API.
+//
+// If no generation is set, all reads use the generation from the first
+// response. If that generation is replaced or deleted, reads fail with
+// ErrObjectNotExist.
 func (o *ObjectHandle) NewMultiRangeDownloader(ctx context.Context, opts ...MRDOption) (mrd *MultiRangeDownloader, err error) {
 	// This span covers the life of the MRD. It is closed via the context
 	// in MultiRangeDownloader.Close.
