@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"hash/fnv"
 	"log"
+	"net"
 	"os"
 	"strconv"
 	"strings"
@@ -34,6 +35,8 @@ import (
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	semconv "go.opentelemetry.io/otel/semconv/v1.24.0"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
+	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/alts"
@@ -220,14 +223,18 @@ var (
 	}
 
 	// GCM exporter should use the same options as Spanner client, resetting any
-	// Spanner-specific Endpoint option so the monitoring client resolves its
-	// default endpoint template (monitoring.UNIVERSE_DOMAIN:443) using the
-	// configured universe domain unless SPANNER_MONITORING_HOST is explicitly set.
-	// Overwritten in tests.
+	// Spanner-specific Endpoint, GRPCConn, and ConnPool options so the monitoring
+	// client resolves its default endpoint template (monitoring.UNIVERSE_DOMAIN:443)
+	// or SPANNER_MONITORING_HOST instead of reusing or closing the Spanner
+	// connection/pool. Overwritten in tests.
 	createExporterOptions = func(spannerOpts ...option.ClientOption) []option.ClientOption {
-		exporterOpts := make([]option.ClientOption, 0, len(spannerOpts)+1)
+		exporterOpts := make([]option.ClientOption, 0, len(spannerOpts)+3)
 		exporterOpts = append(exporterOpts, spannerOpts...)
-		return append(exporterOpts, option.WithEndpoint(os.Getenv("SPANNER_MONITORING_HOST")))
+		return append(exporterOpts,
+			option.WithEndpoint(monitoringHostEnv()),
+			option.WithGRPCConn(nil),
+			gtransport.WithConnPool(nil),
+		)
 	}
 
 	grpcMetricsToEnable = []string{
@@ -249,6 +256,116 @@ var (
 		"grpc.lb.locality",
 	}
 )
+
+// monitoringHostEnv returns the trimmed SPANNER_MONITORING_HOST value so
+// whitespace-only settings are treated as unset across both the endpoint gate
+// and exporter option construction.
+func monitoringHostEnv() string {
+	return strings.TrimSpace(os.Getenv("SPANNER_MONITORING_HOST"))
+}
+
+// isDefaultSpannerEndpoint reports whether endpoint is unset or targets the
+// resolved universe's default Spanner endpoint (spanner.<universe>[:443]).
+// Bare host[:443], https://host[:443][/], and empty-authority dns:///host[:443]
+// forms are accepted; regional endpoints, non-443 ports, other schemes, and
+// malformed inputs fail closed.
+func isDefaultSpannerEndpoint(endpoint, universeDomain string) bool {
+	if endpoint == "" {
+		return true
+	}
+	if universeDomain == "" || strings.TrimSpace(universeDomain) != universeDomain {
+		return false
+	}
+
+	target := endpoint
+	if scheme, rest, hasScheme := strings.Cut(endpoint, "://"); hasScheme {
+		switch strings.ToLower(scheme) {
+		case "https":
+			target = strings.TrimSuffix(rest, "/")
+		case "dns":
+			// Only empty-authority gRPC DNS targets ("dns:///host[:443]") match the default resolver.
+			after, ok := strings.CutPrefix(rest, "/")
+			if !ok {
+				return false
+			}
+			target = after
+		default:
+			return false
+		}
+	}
+	if strings.HasPrefix(target, "[") {
+		return false
+	}
+
+	host := target
+	if strings.Contains(target, ":") {
+		h, port, err := net.SplitHostPort(target)
+		if err != nil || port != "443" {
+			return false
+		}
+		host = h
+	}
+	return strings.EqualFold(host, "spanner."+universeDomain)
+}
+
+// hasCustomConnPool reports whether opts configure a non-nil gtransport.WithConnPool.
+// Because internaloption.UnsafeResolver does not expose DialSettings.GRPCConnPool,
+// it probes gtransport.DialPool with a sentinel WithGRPCConn and SkipDialSettingsValidation:
+// if a custom ConnPool is set (including via wrapped options), DialPool returns it
+// immediately before inspecting GRPCConn; otherwise DialPool returns a singleConnPool
+// wrapping probeConn without dialing any network endpoint.
+func hasCustomConnPool(opts []option.ClientOption) bool {
+	probeConn := new(grpc.ClientConn)
+	probeOpts := make([]option.ClientOption, 0, len(opts)+3)
+	probeOpts = append(probeOpts, opts...)
+	probeOpts = append(probeOpts,
+		option.WithGRPCConn(probeConn),
+		option.WithHTTPClient(nil),
+		internaloption.SkipDialSettingsValidation(),
+	)
+	pool, err := gtransport.DialPool(context.Background(), probeOpts...)
+	if err != nil {
+		return true
+	}
+	return pool == nil || pool.Conn() != probeConn
+}
+
+// shouldEnableDefaultMonitoringExporter reports whether the default Cloud
+// Monitoring exporter should be constructed for opts. Export stays enabled
+// when SPANNER_MONITORING_HOST is set or when no custom gRPC connection or
+// connection pool is supplied and the configured endpoint matches
+// spanner.<universe>[:443].
+func shouldEnableDefaultMonitoringExporter(opts ...option.ClientOption) bool {
+	if monitoringHostEnv() != "" {
+		return true
+	}
+
+	filtered := make([]option.ClientOption, 0, len(opts)+1)
+	for _, opt := range opts {
+		if opt != nil {
+			filtered = append(filtered, opt)
+		}
+	}
+	res, err := internaloption.NewUnsafeResolver(filtered...)
+	if err != nil || res.ResolvedGRPCConnIsCustom() || hasCustomConnPool(filtered) {
+		return false
+	}
+	universeDomain := res.ResolvedUniverseDomain()
+
+	// Caller-only options carry no DefaultEndpointTemplate or DefaultMTLSEndpoint,
+	// so ResolvedGRPCEndpoint returns settings.Endpoint verbatim (or ""). Appending
+	// GDU avoids legacy mTLS universe validation errors on non-GDU clients when no
+	// WithEndpoint override was passed.
+	epRes, err := internaloption.NewUnsafeResolver(append(filtered, option.WithUniverseDomain("googleapis.com"))...)
+	if err != nil {
+		return false
+	}
+	endpoint, err := epRes.ResolvedGRPCEndpoint()
+	if err != nil {
+		return false
+	}
+	return isDefaultSpannerEndpoint(endpoint, universeDomain)
+}
 
 type metricInfo struct {
 	additionalAttrs    []string
@@ -363,21 +480,23 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression str
 
 	var grpcMeterProviders []metric.MeterProvider
 	if metricsProvider == nil {
-		// Create default meter provider
-		mpOptions, exporter, err := builtInMeterProviderOptions(project, compression, tracerFactory.clientAttributes, opts...)
-		if err != nil {
-			return tracerFactory, err
+		if shouldEnableDefaultMonitoringExporter(opts...) {
+			// Create default meter provider
+			mpOptions, exporter, err := builtInMeterProviderOptions(project, compression, tracerFactory.clientAttributes, opts...)
+			if err != nil {
+				return tracerFactory, err
+			}
+			meterProvider := sdkmetric.NewMeterProvider(mpOptions...)
+			tracerFactory.meterProvider = meterProvider
+			tracerFactory.shutdown = func(ctx context.Context) {
+				exporter.stop()
+				meterProvider.Shutdown(ctx)
+			}
+			if err = tracerFactory.addMetricsSink(meterProvider, nativeMetricsPrefix, false); err != nil {
+				return tracerFactory, err
+			}
+			grpcMeterProviders = append(grpcMeterProviders, meterProvider)
 		}
-		meterProvider := sdkmetric.NewMeterProvider(mpOptions...)
-		tracerFactory.meterProvider = meterProvider
-		tracerFactory.shutdown = func(ctx context.Context) {
-			exporter.stop()
-			meterProvider.Shutdown(ctx)
-		}
-		if err = tracerFactory.addMetricsSink(meterProvider, nativeMetricsPrefix, false); err != nil {
-			return tracerFactory, err
-		}
-		grpcMeterProviders = append(grpcMeterProviders, meterProvider)
 	} else {
 		switch metricsProvider.(type) {
 		case noop.MeterProvider:
