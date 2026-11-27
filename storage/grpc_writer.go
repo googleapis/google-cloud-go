@@ -1971,6 +1971,7 @@ func (w *gRPCWriter) newGRPCAppendTakeoverWriteBufferSender() *gRPCAppendTakeove
 				FirstMessage: &storagepb.BidiWriteObjectRequest_AppendObjectSpec{
 					AppendObjectSpec: writeObjectSpecAsAppendObjectSpec(w.spec, w.appendGen),
 				},
+				CommonObjectRequestParams: toProtoCommonObjectRequestParams(w.encryptionKey),
 			},
 			finalizeOnClose:     w.finalizeOnClose,
 			takeoverWriter:      true,

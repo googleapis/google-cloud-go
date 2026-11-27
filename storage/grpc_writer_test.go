@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"crypto/sha256"
 	"errors"
 	"fmt"
 	"io"
@@ -3625,4 +3626,94 @@ func TestGRPCResumableBidiWriteBufferSender_AdaptiveStreamRotation(t *testing.T)
 		assertRotationCalls(t, srv, 1, 2)
 		assertReceivedOffsets(t, srv, []int64{0, 100, 100, 200, 300})
 	})
+}
+
+// takeoverFirstMessageServer records the first request of every
+// BidiWriteObject stream. If redirectFirst is set, it fails the first stream
+// with a redirect error; otherwise it acknowledges with a persisted size so
+// takeover can complete.
+type takeoverFirstMessageServer struct {
+	storagepb.UnimplementedStorageServer
+
+	redirectFirst bool
+
+	mu     sync.Mutex
+	firsts []*storagepb.BidiWriteObjectRequest
+}
+
+func (s *takeoverFirstMessageServer) BidiWriteObject(stream storagepb.Storage_BidiWriteObjectServer) error {
+	req, err := stream.Recv()
+	if err != nil {
+		return err
+	}
+	s.mu.Lock()
+	s.firsts = append(s.firsts, req)
+	n := len(s.firsts)
+	s.mu.Unlock()
+	if s.redirectFirst && n == 1 {
+		st, err := status.New(codes.Aborted, "redirect").WithDetails(&storagepb.BidiWriteObjectRedirectedError{
+			RoutingToken: proto.String("token"),
+		})
+		if err != nil {
+			return err
+		}
+		return st.Err()
+	}
+	if err := stream.Send(&storagepb.BidiWriteObjectResponse{
+		WriteStatus: &storagepb.BidiWriteObjectResponse_PersistedSize{PersistedSize: 0},
+	}); err != nil {
+		return err
+	}
+	<-stream.Context().Done()
+	return stream.Context().Err()
+}
+
+func TestNewWriterFromAppendableObject_SendsEncryptionKey(t *testing.T) {
+	keySHA := sha256.Sum256(testEncryptionKey)
+	withKey := &storagepb.CommonObjectRequestParams{
+		EncryptionAlgorithm:      "AES256",
+		EncryptionKeyBytes:       testEncryptionKey,
+		EncryptionKeySha256Bytes: keySHA[:],
+	}
+	for _, tc := range []struct {
+		name        string
+		key         []byte
+		redirect    bool
+		wantStreams int
+		want        *storagepb.CommonObjectRequestParams
+	}{
+		{name: "with key", key: testEncryptionKey, wantStreams: 1, want: withKey},
+		{name: "without key", wantStreams: 1},
+		{name: "with key after redirect", key: testEncryptionKey, redirect: true, wantStreams: 2, want: withKey},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			srv := &takeoverFirstMessageServer{redirectFirst: tc.redirect}
+			client := newBufconnGRPCClient(t, srv)
+			ctx, cancel := context.WithCancel(t.Context())
+			defer cancel()
+
+			obj := client.Bucket("b").Object("obj").Generation(1)
+			if tc.key != nil {
+				obj = obj.Key(tc.key)
+			}
+			if _, _, err := obj.NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{}); err != nil {
+				t.Fatalf("NewWriterFromAppendableObject() failed: %v", err)
+			}
+
+			srv.mu.Lock()
+			firsts := srv.firsts
+			srv.mu.Unlock()
+			if len(firsts) != tc.wantStreams {
+				t.Fatalf("server saw %d streams, want %d", len(firsts), tc.wantStreams)
+			}
+			for i, req := range firsts {
+				if req.GetAppendObjectSpec() == nil {
+					t.Errorf("stream %d: first message has no AppendObjectSpec: %v", i, req)
+				}
+				if got := req.GetCommonObjectRequestParams(); !proto.Equal(got, tc.want) {
+					t.Errorf("stream %d: first message CommonObjectRequestParams = %v, want %v", i, got, tc.want)
+				}
+			}
+		})
+	}
 }
