@@ -186,18 +186,10 @@ func newDynamicChannelPool(
 		NoEntriesErr:     errDCPNoEntries,
 		PrimeNotReadyErr: errDCPPrimeNotReady,
 	}
-	builtinMetrics := newChannelPoolBuiltinMetrics(sc.logger, builtinMetricsCfg, fallback)
-	if builtinMetrics != nil && builtinMetrics.channelLoad != nil {
-		hooks.OnCallStart = builtinMetrics.recordChannelLoad
-	}
+	builtinMetrics := newChannelPoolBuiltinMetrics(sc.logger, builtinMetricsCfg, poolModeDynamic, fallback)
+	setChannelPoolHooks(&hooks, builtinMetrics, fallback)
 	if fallback != nil {
 		hooks.PenaltyEpoch = func() uint64 { return fallback.current().generation }
-	}
-	if builtinMetrics != nil || fallback != nil {
-		hooks.OnClose = func() {
-			builtinMetrics.close()
-			fallback.close()
-		}
 	}
 	p, err := transport.NewDynamicChannelPool[spannerClient](ctx, tcfg, hooks)
 	if err != nil {
@@ -218,6 +210,7 @@ func newFixedChannelPool(
 	ctx context.Context,
 	sc *sessionClient,
 	underlying gtransport.ConnPool,
+	builtinMetricsCfg channelPoolBuiltinMetricsConfig,
 	fallback *directPathFallback,
 ) (*dynamicChannelPool, error) {
 	hooks := transport.DCPHooks[spannerClient]{
@@ -236,10 +229,28 @@ func newFixedChannelPool(
 		},
 		NoEntriesErr: errDCPNoEntries,
 	}
-	if fallback != nil {
-		hooks.OnClose = fallback.close
+	builtinMetrics := newChannelPoolBuiltinMetrics(sc.logger, builtinMetricsCfg, poolModeStatic, fallback)
+	setChannelPoolHooks(&hooks, builtinMetrics, fallback)
+	p, err := transport.NewFixedChannelPool[spannerClient](ctx, underlying, hooks)
+	if err != nil {
+		return nil, err
 	}
-	return transport.NewFixedChannelPool[spannerClient](ctx, underlying, hooks)
+	builtinMetrics.registerChannelCount(p)
+	return p, nil
+}
+
+// setChannelPoolHooks sets the hooks that record channel_load and close
+// builtinMetrics and fallback with the pool. Both may be nil.
+func setChannelPoolHooks(hooks *transport.DCPHooks[spannerClient], builtinMetrics *channelPoolBuiltinMetrics, fallback *directPathFallback) {
+	if builtinMetrics != nil && builtinMetrics.channelLoad != nil {
+		hooks.OnCallStart = builtinMetrics.recordChannelLoad
+	}
+	if builtinMetrics != nil || fallback != nil {
+		hooks.OnClose = func() {
+			builtinMetrics.close()
+			fallback.close()
+		}
+	}
 }
 
 // TODO: Investigate replacing dcpSpannerClient and transport.DCPConnPoolTrackedStream with

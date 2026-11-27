@@ -364,34 +364,92 @@ func TestFixedChannelPoolPicksWithoutActivityTracking(t *testing.T) {
 	}
 }
 
-func TestFixedChannelPoolConnPoolMethodsSkipLoadAccounting(t *testing.T) {
+// enableChannelPoolBuiltinMetricsForTest turns the built-in channel pool
+// metrics on for clients that do not set DisableNativeMetrics.
+func enableChannelPoolBuiltinMetricsForTest(t *testing.T) {
+	t.Helper()
+	if isEmulatorEnvSet() {
+		t.Skip("built-in metrics are off with the emulator")
+	}
+	t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
+	t.Setenv(disableChannelPoolBuiltinMetricsEnvVar, "")
+	installTestMonitoringExporter(t)
+}
+
+func waitForFixedPoolLoad(t *testing.T, p *dynamicChannelPool, want int32) {
+	t.Helper()
+	deadline := time.Now().Add(5 * time.Second)
+	for {
+		var got int32
+		for _, e := range p.GetEntries() {
+			got += e.RPCLoad()
+		}
+		if got == want {
+			return
+		}
+		if time.Now().After(deadline) {
+			t.Fatalf("fixed pool load mismatch:\n Got: %d\nWant: %d", got, want)
+		}
+		time.Sleep(time.Millisecond)
+	}
+}
+
+// TestFixedChannelPoolConnPoolMethodsLoadAccounting checks that the ConnPool
+// methods count calls only with the built-in channel pool metrics on, and
+// never track activity or signal scale-up.
+func TestFixedChannelPoolConnPoolMethodsLoadAccounting(t *testing.T) {
 	skipDialectRerun(t)
 	isolateChannelPoolEnv(t)
-	// Use a bare server: these raw RPCs lack headers that setupMockedTestServer checks.
-	_, opts, teardown := NewMockedSpannerInMemTestServer(t)
-	defer teardown()
-	client, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", ClientConfig{DisableNativeMetrics: true, NumChannels: 1}, opts...)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer client.Close()
-	p := fixedPoolOf(t, client)
-	e := p.GetEntries()[0]
-	e.LastActivity.Store(0)
-	ctx, cancel := context.WithCancel(context.Background())
-	// More streams than the default DCPMaxRPCPerChannel (25).
-	for i := 0; i < 26; i++ {
-		if _, err := p.NewStream(ctx, &grpc.StreamDesc{ServerStreams: true}, "/google.spanner.v1.Spanner/ExecuteStreamingSql"); err != nil {
-			t.Fatalf("NewStream() failed: %v", err)
-		}
-	}
-	cancel()
-	_ = p.Invoke(context.Background(), "/google.spanner.v1.Spanner/GetSession", &spannerpb.GetSessionRequest{Name: "s"}, &spannerpb.Session{})
-	if load, total := e.RPCLoad(), p.TotalRPCLoad.Load(); load != 0 || total != 0 {
-		t.Fatalf("load after abandoned streams = {entry: %d, pool: %d}, want {0, 0}", load, total)
-	}
-	if got := e.LastActivity.Load(); got != 0 {
-		t.Fatalf("entry activity time = %d, want 0", got)
+	for _, tt := range []struct {
+		name           string
+		builtinMetrics bool
+	}{
+		{name: "built-in metrics off"},
+		{name: "built-in metrics on", builtinMetrics: true},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.builtinMetrics {
+				enableChannelPoolBuiltinMetricsForTest(t)
+			}
+			// Use a bare server: these raw RPCs lack headers that setupMockedTestServer checks.
+			_, opts, teardown := NewMockedSpannerInMemTestServer(t)
+			defer teardown()
+			client, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", ClientConfig{DisableNativeMetrics: !tt.builtinMetrics, NumChannels: 1}, opts...)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer client.Close()
+			p := fixedPoolOf(t, client)
+			e := p.GetEntries()[0]
+			e.LastActivity.Store(0)
+			ctx, cancel := context.WithCancel(context.Background())
+			// More streams than the default DCPMaxRPCPerChannel (25).
+			const streams = 26
+			for i := 0; i < streams; i++ {
+				if _, err := p.NewStream(ctx, &grpc.StreamDesc{ServerStreams: true}, "/google.spanner.v1.Spanner/ExecuteStreamingSql"); err != nil {
+					t.Fatalf("NewStream() failed: %v", err)
+				}
+			}
+			want := int32(0)
+			if tt.builtinMetrics {
+				want = streams
+			}
+			if got := e.StreamLoad.Load(); got != want {
+				t.Fatalf("stream load with open streams = %d, want %d", got, want)
+			}
+			cancel()
+			_ = p.Invoke(context.Background(), "/google.spanner.v1.Spanner/GetSession", &spannerpb.GetSessionRequest{Name: "s"}, &spannerpb.Session{})
+			waitForFixedPoolLoad(t, p, 0)
+			if got := p.TotalRPCLoad.Load(); got != 0 {
+				t.Fatalf("pool load after abandoned streams = %d, want 0", got)
+			}
+			if got := e.LastActivity.Load(); got != 0 {
+				t.Fatalf("entry activity time = %d, want 0", got)
+			}
+			if p.ScaleUpSignal != nil {
+				t.Fatal("fixed pool has a scale-up signal")
+			}
+		})
 	}
 }
 
@@ -445,46 +503,71 @@ func TestFixedChannelPoolRunsNoBackgroundWork(t *testing.T) {
 	}
 }
 
-// TestFixedChannelPoolStreamsSkipLoadAccounting checks that an open query
-// stream adds no load or references to its entry.
-func TestFixedChannelPoolStreamsSkipLoadAccounting(t *testing.T) {
+// TestFixedChannelPoolStreamsLoadAccounting checks that an open query stream
+// adds load to its entry only with the built-in channel pool metrics on, and
+// never adds references.
+func TestFixedChannelPoolStreamsLoadAccounting(t *testing.T) {
 	skipDialectRerun(t)
 	isolateChannelPoolEnv(t)
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, NumChannels: 2})
-	defer teardown()
-	p := fixedPoolOf(t, client)
-	for i, e := range p.GetEntries() {
-		if _, ok := e.Client.(*grpcSpannerClient); !ok {
-			t.Fatalf("entry %d client = %T, want *grpcSpannerClient", i, e.Client)
-		}
-	}
-	// Keep the stream open after its first row.
-	server.TestSpanner.AddPartialResultSetError(SelectFooFromBar, PartialResultSetExecutionTime{
-		ResumeToken:   EncodeResumeToken(2),
-		ExecutionTime: 5 * time.Second,
-	})
-	ro := client.Single()
-	iter := ro.Query(context.Background(), NewStatement(SelectFooFromBar))
-	defer iter.Stop()
-	if _, err := iter.Next(); err != nil {
-		t.Fatal(err)
-	}
-	if _, ok := ro.sh.getClient().(*grpcSpannerClient); !ok {
-		t.Fatalf("session handle client = %T, want *grpcSpannerClient", ro.sh.getClient())
-	}
-	for i, e := range p.GetEntries() {
-		if load, refs := e.StreamLoad.Load(), e.Refs.Load(); load != 0 || refs != 0 {
-			t.Fatalf("entry %d with an open stream: stream load %d, references %d, want 0 and 0", i, load, refs)
-		}
-	}
-	if got := p.TotalRPCLoad.Load(); got != 0 {
-		t.Fatalf("pool load with an open stream = %d, want 0", got)
-	}
-	iter.Stop()
-	for i, e := range p.GetEntries() {
-		if refs := e.Refs.Load(); refs != 0 {
-			t.Fatalf("entry %d references after Stop = %d, want 0", i, refs)
-		}
+	for _, tt := range []struct {
+		name           string
+		builtinMetrics bool
+	}{
+		{name: "built-in metrics off"},
+		{name: "built-in metrics on", builtinMetrics: true},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.builtinMetrics {
+				enableChannelPoolBuiltinMetricsForTest(t)
+			}
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: !tt.builtinMetrics, NumChannels: 2})
+			defer teardown()
+			p := fixedPoolOf(t, client)
+			for i, e := range p.GetEntries() {
+				if _, ok := e.Client.(*grpcSpannerClient); !ok {
+					t.Fatalf("entry %d client = %T, want *grpcSpannerClient", i, e.Client)
+				}
+			}
+			waitForFixedPoolLoad(t, p, 0)
+			// Keep the stream open after its first row.
+			server.TestSpanner.AddPartialResultSetError(SelectFooFromBar, PartialResultSetExecutionTime{
+				ResumeToken:   EncodeResumeToken(2),
+				ExecutionTime: 5 * time.Second,
+			})
+			ro := client.Single()
+			iter := ro.Query(context.Background(), NewStatement(SelectFooFromBar))
+			defer iter.Stop()
+			if _, err := iter.Next(); err != nil {
+				t.Fatal(err)
+			}
+			if _, ok := ro.sh.getClient().(*grpcSpannerClient); !ok {
+				t.Fatalf("session handle client = %T, want *grpcSpannerClient", ro.sh.getClient())
+			}
+			var load int32
+			for i, e := range p.GetEntries() {
+				load += e.StreamLoad.Load()
+				if refs := e.Refs.Load(); refs != 0 {
+					t.Fatalf("entry %d with an open stream: references %d, want 0", i, refs)
+				}
+			}
+			want := int32(0)
+			if tt.builtinMetrics {
+				want = 1
+			}
+			if load != want {
+				t.Fatalf("stream load with an open stream = %d, want %d", load, want)
+			}
+			if got := p.TotalRPCLoad.Load(); got != 0 {
+				t.Fatalf("pool load with an open stream = %d, want 0", got)
+			}
+			iter.Stop()
+			waitForFixedPoolLoad(t, p, 0)
+			for i, e := range p.GetEntries() {
+				if refs := e.Refs.Load(); refs != 0 {
+					t.Fatalf("entry %d references after Stop = %d, want 0", i, refs)
+				}
+			}
+		})
 	}
 }
 
@@ -588,7 +671,7 @@ func TestFixedChannelPoolClosesDialedPoolOnce(t *testing.T) {
 	underlying := &closeCountingConnPool{ConnPool: dialed}
 	database := "projects/p/instances/i/databases/d"
 	sc := newSessionClient(nil, database, "", nil, "", false, metadata.Pairs(resourcePrefixHeader, database), 0, nil, nil)
-	p, err := newFixedChannelPool(context.Background(), sc, underlying, nil)
+	p, err := newFixedChannelPool(context.Background(), sc, underlying, channelPoolBuiltinMetricsConfig{}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -656,7 +656,8 @@ func createFixedConnPool(
 	})
 	sc := newSessionClient(nil, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
 	sc.metricsTracerFactory = metricsTracerFactory
-	pool, err := newFixedChannelPool(ctx, sc, dialedPool, fallback)
+	builtinMetricsCfg := newChannelPoolBuiltinMetricsConfig(metricsTracerFactory, transport.ResolveDirectPathEnabled(config.EnableDirectAccess))
+	pool, err := newFixedChannelPool(ctx, sc, dialedPool, builtinMetricsCfg, fallback)
 	if err != nil {
 		fallback.close()
 		dialedPool.Close()
@@ -748,7 +749,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	if disableNativeMetrics, _ := strconv.ParseBool(os.Getenv("SPANNER_DISABLE_BUILTIN_METRICS")); disableNativeMetrics {
 		config.DisableNativeMetrics = true
 	}
-	if config.DisableNativeMetrics || config.Type == OMNI || config.IsExperimentalHost || emulatorEnabled {
+	if config.DisableNativeMetrics || config.Type == OMNI || config.IsExperimentalHost || emulatorEnabled || (gme != nil && monitoringHostEnv() == "") {
 		// Do not emit native metrics when the Cloud Monitoring sink is unavailable or disabled.
 		metricsProvider = noop.NewMeterProvider()
 	} else {
@@ -1009,6 +1010,10 @@ func NewMultiEndpointClient(ctx context.Context, database string, gmeCfg *grpcgc
 // ChannelPool config in the GRPCgcpConfig.
 //
 // The GCPMultiEndpoint returned can be used to update the endpoints in runtime.
+//
+// Default Cloud Monitoring built-in metrics export is disabled for multi-endpoint
+// clients unless SPANNER_MONITORING_HOST is set. Caller-configured
+// ClientConfig.ClientMetricsProvider export remains enabled.
 //
 // A valid database name has the
 // form projects/PROJECT_ID/instances/INSTANCE_ID/databases/DATABASE_ID.
