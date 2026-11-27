@@ -2009,7 +2009,8 @@ func (s *gRPCAppendTakeoverBidiWriteBufferSender) connect(ctx context.Context, c
 	firstSend := true
 	if !s.takeoverReported {
 		if err := s.send(stream, nil, 0, false, false, true); err != nil {
-			s.streamErr = err
+			var resp storagepb.BidiWriteObjectResponse
+			s.streamErr = s.maybeHandleRedirectionError(drainStreamSendEOF(stream, err, &resp))
 			close(cs.completions)
 			return
 		}

@@ -1435,7 +1435,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 					return err
 				}
 				if err := stream.Send(req); err != nil {
-					return err
+					return drainStreamSendEOF(stream, err, &databufs)
 				}
 				// Oneshot reads can close the client->server side immediately.
 				if err := stream.CloseSend(); err != nil {

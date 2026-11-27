@@ -56,6 +56,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/mem"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/stats"
@@ -63,12 +64,15 @@ import (
 )
 
 const (
-	customMetricPrefix   = "custom.googleapis.com/"
-	storageOperationAttr = "gcp.storage.operation"
-	networkPathAttr      = "network.path"
-	networkPathDirect    = "directpath"
-	networkPathCloud     = "cloudpath"
-	networkPathUnknown   = "unknown"
+	customMetricPrefix     = "custom.googleapis.com/"
+	storageOperationAttr   = "gcp.storage.operation"
+	networkPathAttr        = "network.path"
+	networkPathDirect      = "directpath"
+	networkPathCloud       = "cloudpath"
+	networkPathUnknown     = "unknown"
+	networkIODirectionAttr = "network.io.direction"
+	networkIOReceive       = "receive"
+	networkIOTransmit      = "transmit"
 )
 
 func parseHostIP(addr string) netip.Addr {
@@ -84,14 +88,47 @@ func isDirectPathAddr(addr string) bool {
 	return directPathIPv4Range.Contains(ip) || directPathIPv6Range.Contains(ip)
 }
 
-func networkPathOfPeer(p *peer.Peer) string {
-	if p == nil || p.Addr == nil {
+func networkPathOfAddr(addr net.Addr) string {
+	if addr == nil {
 		return networkPathUnknown
 	}
-	if isDirectPathPeer(p) {
+	var ip netip.Addr
+	if tcp, ok := addr.(*net.TCPAddr); ok {
+		ip, _ = netip.AddrFromSlice(tcp.IP)
+		ip = ip.Unmap()
+	} else {
+		ip = parseHostIP(addr.String())
+	}
+	if directPathIPv4Range.Contains(ip) || directPathIPv6Range.Contains(ip) {
 		return networkPathDirect
 	}
 	return networkPathCloud
+}
+
+func networkPathOfPeer(p *peer.Peer) string {
+	if p == nil {
+		return networkPathUnknown
+	}
+	return networkPathOfAddr(p.Addr)
+}
+
+// drainStreamSendEOF drains RecvMsg in a loop until a non-nil error when Send
+// returns io.EOF so the caller and stream metrics observe the real gRPC status
+// rather than raw io.EOF.
+func drainStreamSendEOF(stream grpc.ClientStream, err error, resp any) error {
+	if !errors.Is(err, io.EOF) || stream == nil {
+		return err
+	}
+	for {
+		recvErr := stream.RecvMsg(resp)
+		if bufs, ok := resp.(*mem.BufferSlice); ok {
+			bufs.Free()
+			*bufs = nil
+		}
+		if recvErr != nil {
+			return recvErr
+		}
+	}
 }
 
 // clientMetrics contains the OpenTelemetry metric instruments to record client-side metrics.
@@ -113,8 +150,7 @@ type clientMetrics struct {
 	tlsHandshakeDuration      metric.Float64Histogram
 	serverDuration            metric.Float64Histogram
 	credentialRefreshDuration metric.Float64Histogram
-	networkBytesSent          metric.Int64Counter
-	networkBytesReceived      metric.Int64Counter
+	networkIO                 metric.Int64Counter
 	stallDuration             metric.Float64Histogram
 }
 
@@ -470,23 +506,13 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 	var serverDuration metric.Float64Histogram
 	var credentialRefreshDuration metric.Float64Histogram
 
-	var networkBytesSent metric.Int64Counter
-	var networkBytesReceived metric.Int64Counter
+	var networkIO metric.Int64Counter
 	var stallDuration metric.Float64Histogram
 
 	if isOtelDebugMetricsEnabled(config) {
-		networkBytesSent, err = meter.Int64Counter(
-			"gcp.storage.client.network.bytes.sent",
-			metric.WithDescription("Total physical bytes sent over the wire socket (gRPC only)"),
-			metric.WithUnit("By"),
-		)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		networkBytesReceived, err = meter.Int64Counter(
-			"gcp.storage.client.network.bytes.received",
-			metric.WithDescription("Total physical bytes received over the wire socket (gRPC only)"),
+		networkIO, err = meter.Int64Counter(
+			"gcp.storage.client.network.io",
+			metric.WithDescription("Total bytes transmitted or received at the socket layer"),
 			metric.WithUnit("By"),
 		)
 		if err != nil {
@@ -574,8 +600,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		tlsHandshakeDuration:      tlsHandshakeDuration,
 		serverDuration:            serverDuration,
 		credentialRefreshDuration: credentialRefreshDuration,
-		networkBytesSent:          networkBytesSent,
-		networkBytesReceived:      networkBytesReceived,
+		networkIO:                 networkIO,
 		stallDuration:             stallDuration,
 	}
 
@@ -838,7 +863,7 @@ func mapHTTPStatusCode(code int) string {
 	}
 }
 
-func (cm *clientMetrics) recordTTFB(ctx context.Context, system, op, host string, seconds float64) {
+func (cm *clientMetrics) recordTTFB(ctx context.Context, system, op, host, networkPath string, seconds float64) {
 	if cm == nil || cm.ttfb == nil {
 		return
 	}
@@ -846,25 +871,27 @@ func (cm *clientMetrics) recordTTFB(ctx context.Context, system, op, host string
 		attribute.String("rpc.system.name", system),
 		attribute.String(storageOperationAttr, op),
 		attribute.String("server.address", stripPort(host)),
+		attribute.String(networkPathAttr, networkPath),
 	))
 }
 
-func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, duration float64, err error) string {
+func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, duration float64, err error, p *peer.Peer) string {
 	code := codes.OK
 	if err != nil && !errors.Is(err, io.EOF) {
 		code = status.Code(err)
 	}
 	statusStr := grpcCodeToString(code)
 	rpcMethod := fullGRPCMethodName(method)
-
 	errorType := refineCancelled(ctx, computeErrorType(err, false, int64(code)))
 	host := stripPort(target)
+	path := networkPathOfPeer(p)
 
 	attrs := []attribute.KeyValue{
 		attribute.String("rpc.system.name", "grpc"),
 		attribute.String("rpc.method", rpcMethod),
 		attribute.String("rpc.response.status_code", statusStr),
 		attribute.String("server.address", host),
+		attribute.String(networkPathAttr, path),
 		attribute.String("error.type", errorType),
 	}
 
@@ -877,6 +904,7 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, d
 		attribute.String(storageOperationAttr, logicalMethod),
 		attribute.String("rpc.response.status_code", statusStr),
 		attribute.String("server.address", host),
+		attribute.String(networkPathAttr, path),
 		attribute.String("error.type", errorType),
 	}
 	cm.attempts.Add(ctx, 1, metric.WithAttributes(attemptAttrs...))
@@ -887,6 +915,7 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, d
 			attribute.String("rpc.system.name", "grpc"),
 			attribute.String(storageOperationAttr, logicalMethod),
 			attribute.String("server.address", host),
+			attribute.String(networkPathAttr, path),
 			attribute.String("error.type", errorType),
 		}
 		cm.errors.Add(ctx, 1, metric.WithAttributes(errorAttrs...))
@@ -910,6 +939,7 @@ func (cm *clientMetrics) recordHTTP(ctx context.Context, req *http.Request, resp
 		attribute.String("url.template", urlTemplate),
 		attribute.Int64("http.response.status_code", statusCode),
 		attribute.String("server.address", stripPort(req.URL.Host)),
+		attribute.String(networkPathAttr, networkPathCloud),
 		attribute.String("error.type", errorType),
 	}
 
@@ -990,31 +1020,25 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 
 	var decrementActiveRequests bool
 	var host string
-	var netAttrs, rpcAttrs metric.MeasurementOption
+	var activeAttrs metric.MeasurementOption
 	if rt.metrics != nil {
 		host = stripPort(req.URL.Host)
 		if state := metricsStateFromContext(req.Context()); state != nil {
 			state.setTarget(req.URL.Host)
 		}
-		netAttrs = metric.WithAttributes(
-			attribute.String("rpc.system.name", "http"),
-			attribute.String("server.address", host),
-		)
-		if rt.metrics.activeRequests != nil || rt.metrics.serverDuration != nil {
-			rpcAttrs = metric.WithAttributes(
+		if rt.metrics.activeRequests != nil {
+			activeAttrs = metric.WithAttributes(
 				attribute.String(storageOperationAttr, logicalMethod),
 				attribute.String("rpc.system.name", "http"),
 				attribute.String("server.address", host),
 			)
-		}
-		if rt.metrics.activeRequests != nil {
-			rt.metrics.activeRequests.Add(req.Context(), 1, rpcAttrs)
+			rt.metrics.activeRequests.Add(req.Context(), 1, activeAttrs)
 			decrementActiveRequests = true
 		}
 	}
 	defer func() {
 		if decrementActiveRequests && rt.metrics != nil && rt.metrics.activeRequests != nil {
-			rt.metrics.activeRequests.Add(req.Context(), -1, rpcAttrs)
+			rt.metrics.activeRequests.Add(req.Context(), -1, activeAttrs)
 		}
 	}()
 
@@ -1047,6 +1071,15 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 			},
 		}
 		if rt.metrics.dnsLookupDuration != nil || rt.metrics.tcpConnectDuration != nil || rt.metrics.tlsHandshakeDuration != nil {
+			dnsAttrs := metric.WithAttributes(
+				attribute.String("rpc.system.name", "http"),
+				attribute.String("server.address", host),
+			)
+			connAttrs := metric.WithAttributes(
+				attribute.String("rpc.system.name", "http"),
+				attribute.String("server.address", host),
+				attribute.String(networkPathAttr, networkPathCloud),
+			)
 			trace.DNSStart = func(info httptrace.DNSStartInfo) {
 				dnsStart = time.Now()
 			}
@@ -1055,7 +1088,7 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 					start := dnsStart
 					if !start.IsZero() {
 						duration := time.Since(start).Seconds()
-						rt.metrics.dnsLookupDuration.Record(req.Context(), duration, netAttrs)
+						rt.metrics.dnsLookupDuration.Record(req.Context(), duration, dnsAttrs)
 					}
 				}
 			}
@@ -1066,7 +1099,7 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 				if err == nil && rt.metrics.tcpConnectDuration != nil {
 					if startV, ok := tcpStarts.LoadAndDelete(addr); ok {
 						duration := time.Since(startV.(time.Time)).Seconds()
-						rt.metrics.tcpConnectDuration.Record(req.Context(), duration, netAttrs)
+						rt.metrics.tcpConnectDuration.Record(req.Context(), duration, connAttrs)
 					}
 				}
 			}
@@ -1078,7 +1111,7 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 					start := tlsStart
 					if !start.IsZero() {
 						duration := time.Since(start).Seconds()
-						rt.metrics.tlsHandshakeDuration.Record(req.Context(), duration, netAttrs)
+						rt.metrics.tlsHandshakeDuration.Record(req.Context(), duration, connAttrs)
 					}
 				}
 			}
@@ -1102,6 +1135,7 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 			attribute.String(storageOperationAttr, logicalMethod),
 			attribute.Int64("http.response.status_code", statusCode),
 			attribute.String("server.address", host),
+			attribute.String(networkPathAttr, networkPathCloud),
 			attribute.String("error.type", errorType),
 		}
 		rt.metrics.attempts.Add(req.Context(), 1, metric.WithAttributes(attemptAttrs...))
@@ -1112,12 +1146,13 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 				attribute.String("rpc.system.name", "http"),
 				attribute.String(storageOperationAttr, logicalMethod),
 				attribute.String("server.address", host),
+				attribute.String(networkPathAttr, networkPathCloud),
 				attribute.String("error.type", errorType),
 			}
 			rt.metrics.errors.Add(req.Context(), 1, metric.WithAttributes(errorAttrs...))
 		}
 
-		rt.metrics.recordHTTPServerMetrics(req.Context(), resp, logicalMethod, host, errorType, rpcAttrs)
+		rt.metrics.recordHTTPServerMetrics(req.Context(), resp, logicalMethod, host, errorType)
 
 		// Record TTFB only when a server response was received. For object
 		// payload uploads, measure from WroteRequest to GotFirstResponseByte so
@@ -1150,7 +1185,7 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 				// WroteRequest runs in a deferred call on the transport's write
 				// goroutine and can be stamped just after GotFirstResponseByte.
 				ttfbSeconds := max(end.Sub(start).Seconds(), 0)
-				rt.metrics.recordTTFB(req.Context(), "http", logicalMethod, host, ttfbSeconds)
+				rt.metrics.recordTTFB(req.Context(), "http", logicalMethod, host, networkPathCloud, ttfbSeconds)
 			}
 		}
 	}
@@ -1267,20 +1302,6 @@ var (
 	directPathIPv6Range = netip.MustParsePrefix("2001:4860:8040::/42")
 )
 
-func isDirectPathPeer(p *peer.Peer) bool {
-	if p == nil || p.Addr == nil {
-		return false
-	}
-	var ip netip.Addr
-	if tcp, ok := p.Addr.(*net.TCPAddr); ok {
-		ip, _ = netip.AddrFromSlice(tcp.IP)
-	} else {
-		ip, _ = netip.ParseAddr(stripPort(p.Addr.String()))
-	}
-	ip = ip.Unmap()
-	return directPathIPv4Range.Contains(ip) || directPathIPv6Range.Contains(ip)
-}
-
 func isAmbiguousClientAbort(errorType string) bool {
 	switch errorType {
 	case "CANCELLED", "TIMEOUT", "DEADLINE_EXCEEDED":
@@ -1299,16 +1320,17 @@ func isPreServerErrorType(errorType string) bool {
 
 // recordUnreached increments gcp.storage.client.server.unreached for an
 // attempt that is positively known not to have reached a Cloud Storage server.
-func (cm *clientMetrics) recordUnreached(ctx context.Context, system, method, host, errType string) {
+func (cm *clientMetrics) recordUnreached(ctx context.Context, system, method, host, networkPath, errType string) {
 	cm.serverUnreached.Add(ctx, 1, metric.WithAttributes(
 		attribute.String(storageOperationAttr, method),
 		attribute.String("rpc.system.name", system),
 		attribute.String("server.address", host),
+		attribute.String(networkPathAttr, networkPath),
 		attribute.String("error.type", errType),
 	))
 }
 
-func (cm *clientMetrics) recordHTTPServerMetrics(ctx context.Context, resp *http.Response, logicalMethod, host, errorType string, rpcAttrs metric.MeasurementOption) {
+func (cm *clientMetrics) recordHTTPServerMetrics(ctx context.Context, resp *http.Response, logicalMethod, host, errorType string) {
 	if cm.serverUnreached == nil {
 		return
 	}
@@ -1322,12 +1344,17 @@ func (cm *clientMetrics) recordHTTPServerMetrics(ctx context.Context, resp *http
 		if resp == nil && isAmbiguousClientAbort(errorType) {
 			return
 		}
-		cm.recordUnreached(ctx, "http", logicalMethod, host, errorType)
+		cm.recordUnreached(ctx, "http", logicalMethod, host, networkPathCloud, errorType)
 		return
 	}
 	if cm.serverDuration != nil && gfeTime != "" {
 		if ms, err := strconv.ParseFloat(gfeTime, 64); err == nil {
-			cm.serverDuration.Record(ctx, ms/1000.0, rpcAttrs)
+			cm.serverDuration.Record(ctx, ms/1000.0, metric.WithAttributes(
+				attribute.String(storageOperationAttr, logicalMethod),
+				attribute.String("rpc.system.name", "http"),
+				attribute.String("server.address", host),
+				attribute.String(networkPathAttr, networkPathCloud),
+			))
 		}
 	}
 }
@@ -1347,7 +1374,7 @@ func grpcServerElapsed(md metadata.MD) (time.Duration, bool) {
 	return time.Duration(binary.LittleEndian.Uint64(b[2:])), true
 }
 
-func (cm *clientMetrics) recordServerMetrics(ctx context.Context, headerMD, trailerMD metadata.MD, err error, logicalMethod, target string, rpcAttrs metric.MeasurementOption, p *peer.Peer) {
+func (cm *clientMetrics) recordServerMetrics(ctx context.Context, headerMD, trailerMD metadata.MD, err error, logicalMethod, target string, p *peer.Peer) {
 	if cm.serverUnreached == nil {
 		return
 	}
@@ -1369,8 +1396,10 @@ func (cm *clientMetrics) recordServerMetrics(ctx context.Context, headerMD, trai
 		}
 	}
 
+	host := stripPort(target)
+	path := networkPathOfPeer(p)
 	hasGFEUploadID := len(headerMD.Get(uploadIDHeader)) > 0 || len(trailerMD.Get(uploadIDHeader)) > 0
-	directPath := isDirectPathPeer(p)
+	directPath := path == networkPathDirect
 	var reached bool
 	if directPath {
 		reached = ok || len(headerMD) > 0 || len(trailerMD) > 0 || err == nil || errors.Is(err, io.EOF)
@@ -1392,11 +1421,16 @@ func (cm *clientMetrics) recordServerMetrics(ctx context.Context, headerMD, trai
 		} else if isAmbiguousClientAbort(errType) {
 			return
 		}
-		cm.recordUnreached(ctx, "grpc", logicalMethod, stripPort(target), errType)
+		cm.recordUnreached(ctx, "grpc", logicalMethod, host, path, errType)
 		return
 	}
 	if ok && cm.serverDuration != nil {
-		cm.serverDuration.Record(ctx, seconds, rpcAttrs)
+		cm.serverDuration.Record(ctx, seconds, metric.WithAttributes(
+			attribute.String(storageOperationAttr, logicalMethod),
+			attribute.String("rpc.system.name", "grpc"),
+			attribute.String("server.address", host),
+			attribute.String(networkPathAttr, path),
+		))
 	}
 }
 
@@ -1415,15 +1449,12 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 		}
 
 		var rpcAttrs metric.MeasurementOption
-		if cm.activeRequests != nil || cm.serverDuration != nil {
+		if cm.activeRequests != nil {
 			rpcAttrs = metric.WithAttributes(
 				attribute.String(storageOperationAttr, logicalMethod),
 				attribute.String("rpc.system.name", "grpc"),
 				attribute.String("server.address", stripPort(target)),
 			)
-		}
-
-		if cm.activeRequests != nil {
 			cm.activeRequests.Add(ctx, 1, rpcAttrs)
 			defer cm.activeRequests.Add(ctx, -1, rpcAttrs)
 		}
@@ -1435,17 +1466,17 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 		startTime := time.Now()
 		err := invoker(ctx, method, req, reply, cc, opts...)
 
-		cm.recordServerMetrics(ctx, headerMD, trailerMD, err, logicalMethod, target, rpcAttrs, &p)
+		cm.recordServerMetrics(ctx, headerMD, trailerMD, err, logicalMethod, target, &p)
 
 		responded := err == nil || len(headerMD) > 0 || len(trailerMD) > 0
 		duration := time.Since(startTime).Seconds()
-		errorType := cm.recordRPC(ctx, method, target, duration, err)
+		errorType := cm.recordRPC(ctx, method, target, duration, err, &p)
 		// For unary calls that received a server response, record TTFB equal to
 		// the attempt latency. Calls that failed with a transport, auth, timeout,
 		// or cancel error after response headers arrived are skipped because their
 		// duration reflects time to failure rather than first response.
 		if responded && !isPreServerErrorType(errorType) && errorType != "TIMEOUT" && errorType != "CANCELLED" {
-			cm.recordTTFB(ctx, "grpc", logicalMethod, target, duration)
+			cm.recordTTFB(ctx, "grpc", logicalMethod, target, networkPathOfPeer(&p), duration)
 		}
 		return err
 	}
@@ -1463,14 +1494,12 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 		}
 
 		var rpcAttrs metric.MeasurementOption
-		if cm.activeRequests != nil || cm.serverDuration != nil {
+		if cm.activeRequests != nil {
 			rpcAttrs = metric.WithAttributes(
 				attribute.String(storageOperationAttr, logicalMethod),
 				attribute.String("rpc.system.name", "grpc"),
 				attribute.String("server.address", stripPort(target)),
 			)
-		}
-		if cm.activeRequests != nil {
 			cm.activeRequests.Add(ctx, 1, rpcAttrs)
 		}
 
@@ -1481,9 +1510,9 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 			if cm.activeRequests != nil {
 				cm.activeRequests.Add(ctx, -1, rpcAttrs)
 			}
-			cm.recordServerMetrics(ctx, nil, nil, err, logicalMethod, target, rpcAttrs, nil)
+			cm.recordServerMetrics(ctx, nil, nil, err, logicalMethod, target, nil)
 			duration := time.Since(startTime).Seconds()
-			cm.recordRPC(ctx, method, target, duration, err)
+			cm.recordRPC(ctx, method, target, duration, err, nil)
 			return nil, err
 		}
 
@@ -1595,7 +1624,11 @@ func (w *wrappedClientStream) SendMsg(m interface{}) error {
 	} else {
 		err = w.ClientStream.SendMsg(m)
 	}
-	if err != nil {
+	// For client/bidi streams, SendMsg returns io.EOF when the server closes the
+	// stream and the real status is returned by RecvMsg. For server-streaming
+	// RPCs (!w.clientStreams), generated stubs return immediately on SendMsg error
+	// without calling RecvMsg, so record immediately to avoid leaking activeRequests.
+	if err != nil && (!errors.Is(err, io.EOF) || !w.clientStreams) {
 		w.record(err)
 	}
 	return err
@@ -1610,27 +1643,26 @@ func (w *wrappedClientStream) CloseSend() error {
 func (w *wrappedClientStream) record(err error) {
 	if w.recorded.CompareAndSwap(false, true) {
 		duration := time.Since(w.startTime).Seconds()
-		w.metrics.recordRPC(w.ctx, w.method, w.target, duration, err)
+		var p *peer.Peer
+		var headerMD, trailerMD metadata.MD
+		if w.ClientStream != nil {
+			p, _ = peer.FromContext(w.ClientStream.Context())
+			headerMD, _ = w.ClientStream.Header()
+			trailerMD = w.ClientStream.Trailer()
+		}
+		w.metrics.recordRPC(w.ctx, w.method, w.target, duration, err, p)
 
 		logicalMethod := operationName(w.ctx, w.method)
 
-		var rpcAttrs metric.MeasurementOption
-		if w.metrics.activeRequests != nil || w.metrics.serverDuration != nil {
-			rpcAttrs = metric.WithAttributes(
+		if w.metrics.activeRequests != nil {
+			w.metrics.activeRequests.Add(w.ctx, -1, metric.WithAttributes(
 				attribute.String(storageOperationAttr, logicalMethod),
 				attribute.String("rpc.system.name", "grpc"),
 				attribute.String("server.address", stripPort(w.target)),
-			)
+			))
 		}
 
-		if w.metrics.activeRequests != nil {
-			w.metrics.activeRequests.Add(w.ctx, -1, rpcAttrs)
-		}
-
-		headerMD, _ := w.ClientStream.Header()
-		trailerMD := w.ClientStream.Trailer()
-		p, _ := peer.FromContext(w.ClientStream.Context())
-		w.metrics.recordServerMetrics(w.ctx, headerMD, trailerMD, err, logicalMethod, w.target, rpcAttrs, p)
+		w.metrics.recordServerMetrics(w.ctx, headerMD, trailerMD, err, logicalMethod, w.target, p)
 	}
 }
 
@@ -1658,7 +1690,11 @@ func (w *wrappedClientStream) maybeRecordTTFB() {
 		}
 		duration := time.Since(start).Seconds()
 		logicalMethod := operationName(w.ctx, w.method)
-		w.metrics.recordTTFB(w.ctx, "grpc", logicalMethod, w.target, duration)
+		var p *peer.Peer
+		if w.ClientStream != nil {
+			p, _ = peer.FromContext(w.ClientStream.Context())
+		}
+		w.metrics.recordTTFB(w.ctx, "grpc", logicalMethod, w.target, networkPathOfPeer(p), duration)
 	}
 }
 
@@ -1715,14 +1751,36 @@ func injectAPIMethod(ctx context.Context, operation string, attrs []attribute.Ke
 }
 
 type metricsState struct {
-	target      atomic.Pointer[string]
-	rpcMethod   atomic.Pointer[string]
-	networkPath atomic.Int32
-	method      string
-	startTime   time.Time
-	metrics     *clientMetrics
-	isHTTP      bool
-	record      func(error)
+	target           atomic.Pointer[string]
+	rpcMethod        atomic.Pointer[string]
+	networkPath      atomic.Int32
+	bodySizeRecorded atomic.Bool
+	method           string
+	startTime        time.Time
+	metrics          *clientMetrics
+	isHTTP           bool
+	record           func(error)
+}
+
+func (s *metricsState) recordRequestBodySize(ctx context.Context, operation string, total int64, err error) {
+	if s == nil || s.metrics == nil {
+		return
+	}
+	s.recordBodySize(ctx, s.metrics.requestBodySize, operation, total, err)
+}
+
+func (s *metricsState) recordResponseBodySize(ctx context.Context, operation string, total int64, err error) {
+	if s == nil || s.metrics == nil {
+		return
+	}
+	s.recordBodySize(ctx, s.metrics.responseBodySize, operation, total, err)
+}
+
+func (s *metricsState) recordBodySize(ctx context.Context, hist metric.Int64Histogram, operation string, total int64, err error) {
+	if s == nil || s.metrics == nil || hist == nil || err != nil || total < 0 || !s.bodySizeRecorded.CompareAndSwap(false, true) {
+		return
+	}
+	hist.Record(ctx, total, metric.WithAttributes(s.bodySizeAttrs(ctx, operation)...))
 }
 
 func (s *metricsState) setTarget(t string) {
@@ -2175,57 +2233,30 @@ func (mc *metricsStorageClient) fetchBucketMetadata(ctx context.Context, bucket 
 }
 
 type dialInfo struct {
-	doneTime time.Time
-	host     string
+	doneTime   time.Time
+	host       string
+	remoteAddr net.Addr
 }
 
 type dialDoneContextKey struct{}
 
-// grpcMetricsStatsHandler implements stats.Handler to capture TLS handshake duration.
+// grpcMetricsStatsHandler implements stats.Handler to capture TLS handshake duration
+// and record the resolved remote network path for gRPC attempts.
 type grpcMetricsStatsHandler struct {
 	metrics   *clientMetrics
 	dialTimes *sync.Map
-	host      string
 }
 
-type contextKeyRPCTag struct{}
-
-func (h *grpcMetricsStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
-	method := info.FullMethodName
-	if idx := strings.LastIndex(method, "/"); idx != -1 {
-		method = method[idx+1:]
-	}
-	return context.WithValue(ctx, contextKeyRPCTag{}, method)
+func (h *grpcMetricsStatsHandler) TagRPC(ctx context.Context, _ *stats.RPCTagInfo) context.Context {
+	return ctx
 }
+
 func (h *grpcMetricsStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
-	if h.metrics == nil {
-		return
-	}
-	method := ""
-	if v := ctx.Value(contextKeyRPCTag{}); v != nil {
-		method = v.(string)
-	}
-	attrs := metric.WithAttributes(
-		attribute.String("rpc.system.name", "grpc"),
-		attribute.String("rpc.method", method),
-		attribute.String("server.address", h.host),
-	)
-
-	switch st := s.(type) {
-	case *stats.OutHeader:
-		if st.RemoteAddr != nil {
-			metricsStateFromContext(ctx).setNetworkPath(networkPathOfPeer(&peer.Peer{Addr: st.RemoteAddr}))
-		}
-	case *stats.InPayload:
-		if h.metrics.networkBytesReceived != nil {
-			h.metrics.networkBytesReceived.Add(ctx, int64(st.WireLength), attrs)
-		}
-	case *stats.OutPayload:
-		if h.metrics.networkBytesSent != nil {
-			h.metrics.networkBytesSent.Add(ctx, int64(st.WireLength), attrs)
-		}
+	if st, ok := s.(*stats.OutHeader); ok && st.RemoteAddr != nil {
+		metricsStateFromContext(ctx).setNetworkPath(networkPathOfAddr(st.RemoteAddr))
 	}
 }
+
 func (h *grpcMetricsStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo) context.Context {
 	if info.LocalAddr != nil && h.dialTimes != nil {
 		if val, ok := h.dialTimes.LoadAndDelete(info.LocalAddr.String()); ok {
@@ -2234,6 +2265,7 @@ func (h *grpcMetricsStatsHandler) TagConn(ctx context.Context, info *stats.ConnT
 	}
 	return ctx
 }
+
 func (h *grpcMetricsStatsHandler) HandleConn(ctx context.Context, s stats.ConnStats) {
 	if _, ok := s.(*stats.ConnBegin); ok {
 		if val := ctx.Value(dialDoneContextKey{}); val != nil {
@@ -2243,10 +2275,71 @@ func (h *grpcMetricsStatsHandler) HandleConn(ctx context.Context, s stats.ConnSt
 				h.metrics.tlsHandshakeDuration.Record(context.Background(), duration, metric.WithAttributes(
 					attribute.String("rpc.system.name", "grpc"),
 					attribute.String("server.address", info.host),
+					attribute.String(networkPathAttr, networkPathOfAddr(info.remoteAddr)),
 				))
 			}
 		}
 	}
+}
+
+// countingConn wraps net.Conn below TLS to record socket-level wire bytes in
+// gcp.storage.client.network.io and invoke onClose once when the socket closes
+// so failed handshakes clean up dialTimes.
+type countingConn struct {
+	net.Conn
+	io        metric.Int64Counter
+	receive   metric.MeasurementOption
+	transmit  metric.MeasurementOption
+	closeOnce sync.Once
+	onClose   func()
+}
+
+func newCountingConn(c net.Conn, io metric.Int64Counter, host, path string, onClose func()) *countingConn {
+	var receive, transmit metric.MeasurementOption
+	if io != nil {
+		receive = metric.WithAttributes(
+			attribute.String("rpc.system.name", "grpc"),
+			attribute.String("server.address", host),
+			attribute.String(networkPathAttr, path),
+			attribute.String(networkIODirectionAttr, networkIOReceive),
+		)
+		transmit = metric.WithAttributes(
+			attribute.String("rpc.system.name", "grpc"),
+			attribute.String("server.address", host),
+			attribute.String(networkPathAttr, path),
+			attribute.String(networkIODirectionAttr, networkIOTransmit),
+		)
+	}
+	return &countingConn{
+		Conn:     c,
+		io:       io,
+		receive:  receive,
+		transmit: transmit,
+		onClose:  onClose,
+	}
+}
+
+func (c *countingConn) Read(b []byte) (int, error) {
+	n, err := c.Conn.Read(b)
+	if n > 0 && c.io != nil {
+		c.io.Add(context.Background(), int64(n), c.receive)
+	}
+	return n, err
+}
+
+func (c *countingConn) Write(b []byte) (int, error) {
+	n, err := c.Conn.Write(b)
+	if n > 0 && c.io != nil {
+		c.io.Add(context.Background(), int64(n), c.transmit)
+	}
+	return n, err
+}
+
+func (c *countingConn) Close() error {
+	if c.onClose != nil {
+		c.closeOnce.Do(c.onClose)
+	}
+	return c.Conn.Close()
 }
 
 var (
@@ -2257,7 +2350,8 @@ var (
 	dnsNow = time.Now
 )
 
-// grpcNetworkMetricsDialOptions returns dial options that instrument DNS, TCP and TLS handshake metrics.
+// grpcNetworkMetricsDialOptions returns dial options that instrument DNS, TCP,
+// TLS handshake, and socket-level network.io metrics.
 func grpcNetworkMetricsDialOptions(host string, metrics *clientMetrics) []option.ClientOption {
 	dialOpts := grpcNetworkMetricsRawDialOptions(host, metrics)
 	if len(dialOpts) == 0 {
@@ -2271,7 +2365,7 @@ func grpcNetworkMetricsDialOptions(host string, metrics *clientMetrics) []option
 }
 
 func grpcNetworkMetricsRawDialOptions(host string, metrics *clientMetrics) []grpc.DialOption {
-	if metrics == nil || (metrics.dnsLookupDuration == nil && metrics.tcpConnectDuration == nil && metrics.tlsHandshakeDuration == nil && metrics.networkBytesSent == nil && metrics.networkBytesReceived == nil) {
+	if metrics == nil || (metrics.dnsLookupDuration == nil && metrics.tcpConnectDuration == nil && metrics.tlsHandshakeDuration == nil && metrics.networkIO == nil) {
 		return nil
 	}
 	cleanHost := stripPort(host)
@@ -2303,24 +2397,29 @@ func grpcNetworkMetricsRawDialOptions(host string, metrics *clientMetrics) []grp
 			}
 		}
 
-		var netAttrs metric.MeasurementOption
-		if metrics.tcpConnectDuration != nil {
-			netAttrs = metric.WithAttributes(
-				attribute.String("rpc.system.name", "grpc"),
-				attribute.String("server.address", cleanHost),
-			)
-		}
-
 		tcpStart := time.Now()
 		var d net.Dialer
 		conn, err := d.DialContext(ctx, "tcp", addr)
-		if err == nil {
+		if err == nil && conn != nil {
+			path := networkPathOfAddr(conn.RemoteAddr())
 			if metrics.tcpConnectDuration != nil {
 				tcpDuration := time.Since(tcpStart).Seconds()
-				metrics.tcpConnectDuration.Record(ctx, tcpDuration, netAttrs)
+				metrics.tcpConnectDuration.Record(ctx, tcpDuration, metric.WithAttributes(
+					attribute.String("rpc.system.name", "grpc"),
+					attribute.String("server.address", cleanHost),
+					attribute.String(networkPathAttr, path),
+				))
 			}
-			if conn != nil && metrics.tlsHandshakeDuration != nil {
-				dialTimes.Store(conn.LocalAddr().String(), dialInfo{doneTime: time.Now(), host: cleanHost})
+			var onClose func()
+			if metrics.tlsHandshakeDuration != nil {
+				localAddr := conn.LocalAddr().String()
+				dialTimes.Store(localAddr, dialInfo{doneTime: time.Now(), host: cleanHost, remoteAddr: conn.RemoteAddr()})
+				onClose = func() {
+					dialTimes.Delete(localAddr)
+				}
+			}
+			if metrics.networkIO != nil || onClose != nil {
+				conn = newCountingConn(conn, metrics.networkIO, cleanHost, path, onClose)
 			}
 		}
 
@@ -2330,7 +2429,6 @@ func grpcNetworkMetricsRawDialOptions(host string, metrics *clientMetrics) []grp
 	sh := &grpcMetricsStatsHandler{
 		metrics:   metrics,
 		dialTimes: &dialTimes,
-		host:      cleanHost,
 	}
 
 	return []grpc.DialOption{
