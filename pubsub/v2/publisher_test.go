@@ -93,6 +93,40 @@ func TestPublishTimeout(t *testing.T) {
 	}
 }
 
+func TestPublishZeroTimeoutUsesDefault(t *testing.T) {
+	defer func(d time.Duration) { DefaultPublishSettings.Timeout = d }(DefaultPublishSettings.Timeout)
+	DefaultPublishSettings.Timeout = 2 * time.Second
+
+	ctx := context.Background()
+	serv, err := testutil.NewServer()
+	if err != nil {
+		t.Fatal(err)
+	}
+	pubsubpb.RegisterPublisherServer(serv.Gsrv, &alwaysFailPublish{})
+	serv.Start()
+	conn, err := grpc.Dial(serv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	c, err := NewClient(ctx, "projectID", option.WithGRPCConn(conn))
+	if err != nil {
+		t.Fatal(err)
+	}
+	publisher := c.Publisher("t")
+	publisher.PublishSettings = PublishSettings{CountThreshold: 1}
+	r := publisher.Publish(ctx, &Message{})
+	defer publisher.Stop()
+	select {
+	case <-r.Ready():
+		_, err = r.Get(ctx)
+		if !errors.Is(err, context.DeadlineExceeded) {
+			t.Fatalf("got %v, want context.DeadlineExceeded", err)
+		}
+	case <-time.After(10 * time.Second):
+		t.Fatal("publish with zero Timeout did not stop retrying")
+	}
+}
+
 type alwaysFailPublish struct {
 	pubsubpb.PublisherServer
 }
