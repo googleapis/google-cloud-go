@@ -681,38 +681,142 @@ func TestMetricsInterceptorWithoutTracer(t *testing.T) {
 }
 
 func TestClientMetricsCustomEndpointPreservesClientMetricsProvider(t *testing.T) {
-	t.Setenv("SPANNER_EMULATOR_HOST", "")
-	t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
-	t.Setenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS", "false")
-	testExporter := installTestMonitoringExporter(t)
-	// Clear SPANNER_MONITORING_HOST after installing the hook so the custom
-	// localhost Spanner endpoint from setupMockedTestServerWithConfig disables
-	// default Cloud Monitoring export while keeping ClientMetricsProvider active.
-	t.Setenv("SPANNER_MONITORING_HOST", "")
+	t.Run("unauthenticated localhost custom endpoint", func(t *testing.T) {
+		t.Setenv("SPANNER_EMULATOR_HOST", "")
+		t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
+		t.Setenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS", "false")
+		testExporter := installTestMonitoringExporter(t)
+		// Clear SPANNER_MONITORING_HOST after installing the hook so the custom
+		// localhost Spanner endpoint from setupMockedTestServerWithConfig disables
+		// default Cloud Monitoring export while keeping ClientMetricsProvider active.
+		t.Setenv("SPANNER_MONITORING_HOST", "")
 
-	reader, provider := newTestMeterProvider()
-	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		ClientMetricsProvider: provider,
+		reader, provider := newTestMeterProvider()
+		defer provider.Shutdown(context.Background())
+		_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+			ClientMetricsProvider: provider,
+		})
+		defer teardown()
+
+		if testExporter.createOptionsCalls != 0 {
+			t.Fatalf("native monitoring exporter constructed %d times for custom endpoint without SPANNER_MONITORING_HOST", testExporter.createOptionsCalls)
+		}
+		if !client.metricsTracerFactory.enabled || len(client.metricsTracerFactory.sinks) != 1 {
+			t.Fatalf("custom endpoint sinks = %d, enabled = %v, want 1 enabled sink", len(client.metricsTracerFactory.sinks), client.metricsTracerFactory.enabled)
+		}
+		if client.metricsTracerFactory.meterProvider != nil {
+			t.Fatal("native meterProvider was initialized for custom endpoint without SPANNER_MONITORING_HOST")
+		}
+
+		if _, err := client.Single().ReadRow(context.Background(), "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"}); err != nil {
+			t.Fatalf("ReadRow() failed: %v", err)
+		}
+		rm := collectTestMetrics(t, reader)
+		requireOperationCountAttrs(t, rm, clientMetricsPrefix)
+		requireTestMetric(t, rm, clientMetricsPrefix+"grpc/client/attempt/started")
+		if _, ok := findTestMetric(rm, nativeMetricsPrefix+metricNameOperationCount); ok {
+			t.Fatalf("custom provider contains reserved metric %q", nativeMetricsPrefix+metricNameOperationCount)
+		}
 	})
-	defer teardown()
 
-	if testExporter.createOptionsCalls != 0 {
-		t.Fatalf("native monitoring exporter constructed %d times for custom endpoint without SPANNER_MONITORING_HOST", testExporter.createOptionsCalls)
-	}
-	if !client.metricsTracerFactory.enabled || len(client.metricsTracerFactory.sinks) != 1 {
-		t.Fatalf("custom endpoint sinks = %d, enabled = %v, want 1 enabled sink", len(client.metricsTracerFactory.sinks), client.metricsTracerFactory.enabled)
-	}
-	if client.metricsTracerFactory.meterProvider != nil {
-		t.Fatal("native meterProvider was initialized for custom endpoint without SPANNER_MONITORING_HOST")
-	}
+	t.Run("authenticated custom endpoint", func(t *testing.T) {
+		const customSpannerAddr = "psc-spanner.internal:443"
+		const defaultMonitoringAddr = "monitoring.googleapis.com:443"
+		h := newBuiltinMetricsE2EHarness(t, "googleapis.com", []string{customSpannerAddr}, []string{defaultMonitoringAddr}, "auth-custom-token")
+		t.Setenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS", "false")
 
-	if _, err := client.Single().ReadRow(context.Background(), "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"}); err != nil {
-		t.Fatalf("ReadRow() failed: %v", err)
-	}
-	rm := collectTestMetrics(t, reader)
-	requireOperationCountAttrs(t, rm, clientMetricsPrefix)
-	requireTestMetric(t, rm, clientMetricsPrefix+"grpc/client/attempt/started")
-	if _, ok := findTestMetric(rm, nativeMetricsPrefix+metricNameOperationCount); ok {
-		t.Fatalf("custom provider contains reserved metric %q", nativeMetricsPrefix+metricNameOperationCount)
-	}
+		reader, provider := newTestMeterProvider()
+		defer provider.Shutdown(context.Background())
+
+		ctx := context.Background()
+		opts := append(h.baseClientOpts(), option.WithEndpoint(customSpannerAddr))
+		client, err := NewClientWithConfig(ctx, "projects/test-project/instances/test-instance/databases/test-db", ClientConfig{
+			NumChannels:           1,
+			ClientMetricsProvider: provider,
+		}, opts...)
+		if err != nil {
+			t.Fatalf("NewClientWithConfig() failed: %v", err)
+		}
+
+		if !client.metricsTracerFactory.enabled || len(client.metricsTracerFactory.sinks) != 1 {
+			client.Close()
+			t.Fatalf("authenticated custom endpoint sinks = %d, enabled = %v, want 1 enabled sink", len(client.metricsTracerFactory.sinks), client.metricsTracerFactory.enabled)
+		}
+		if client.metricsTracerFactory.meterProvider != nil {
+			client.Close()
+			t.Fatal("native meterProvider was initialized for authenticated custom endpoint without SPANNER_MONITORING_HOST")
+		}
+
+		runMetricsE2EQueryAndClose(t, ctx, client)
+
+		if got := h.dialCount(defaultMonitoringAddr); got != 0 {
+			t.Errorf("dialed %q %d times, want 0", defaultMonitoringAddr, got)
+		}
+		if got := h.unexpectedDials(); len(got) != 0 {
+			t.Errorf("unexpected dialed endpoints: %v", got)
+		}
+		if reqs := h.monitoringServer.CreateServiceTimeSeriesRequests(); len(reqs) != 0 {
+			t.Errorf("received %d CreateServiceTimeSeries requests, want 0", len(reqs))
+		}
+
+		rm := collectTestMetrics(t, reader)
+		requireTestMetric(t, rm, clientMetricsPrefix+metricNameOperationCount)
+		requireTestMetric(t, rm, clientMetricsPrefix+"grpc/client/attempt/started")
+		if _, ok := findTestMetric(rm, nativeMetricsPrefix+metricNameOperationCount); ok {
+			t.Fatalf("custom provider contains reserved metric %q", nativeMetricsPrefix+metricNameOperationCount)
+		}
+	})
+
+	t.Run("custom WithGRPCConn", func(t *testing.T) {
+		const defaultMonitoringAddr = "monitoring.googleapis.com:443"
+		h := newBuiltinMetricsE2EHarness(t, "googleapis.com", nil, []string{defaultMonitoringAddr}, "conn-custom-token")
+		t.Setenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS", "false")
+
+		conn, err := grpc.NewClient(
+			h.spannerServer.ServerAddress,
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+			grpc.WithChainUnaryInterceptor(addNativeMetricsInterceptor()...),
+			grpc.WithChainStreamInterceptor(addStreamNativeMetricsInterceptor()...),
+		)
+		if err != nil {
+			t.Fatalf("grpc.NewClient() failed: %v", err)
+		}
+		defer conn.Close()
+
+		reader, provider := newTestMeterProvider()
+		defer provider.Shutdown(context.Background())
+
+		ctx := context.Background()
+		client, err := NewClientWithConfig(ctx, "projects/test-project/instances/test-instance/databases/test-db", ClientConfig{
+			NumChannels:           1,
+			ClientMetricsProvider: provider,
+		}, option.WithGRPCConn(conn))
+		if err != nil {
+			t.Fatalf("NewClientWithConfig() failed: %v", err)
+		}
+
+		if !client.metricsTracerFactory.enabled || len(client.metricsTracerFactory.sinks) != 1 {
+			client.Close()
+			t.Fatalf("WithGRPCConn sinks = %d, enabled = %v, want 1 enabled sink", len(client.metricsTracerFactory.sinks), client.metricsTracerFactory.enabled)
+		}
+		if client.metricsTracerFactory.meterProvider != nil {
+			client.Close()
+			t.Fatal("native meterProvider was initialized for WithGRPCConn without SPANNER_MONITORING_HOST")
+		}
+
+		runMetricsE2EQueryAndClose(t, ctx, client)
+
+		if got := h.dialCount(defaultMonitoringAddr); got != 0 {
+			t.Errorf("dialed %q %d times, want 0", defaultMonitoringAddr, got)
+		}
+		if reqs := h.monitoringServer.CreateServiceTimeSeriesRequests(); len(reqs) != 0 {
+			t.Errorf("received %d CreateServiceTimeSeries requests, want 0", len(reqs))
+		}
+
+		rm := collectTestMetrics(t, reader)
+		requireTestMetric(t, rm, clientMetricsPrefix+metricNameOperationCount)
+		if _, ok := findTestMetric(rm, nativeMetricsPrefix+metricNameOperationCount); ok {
+			t.Fatalf("custom provider contains reserved metric %q", nativeMetricsPrefix+metricNameOperationCount)
+		}
+	})
 }

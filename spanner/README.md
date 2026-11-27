@@ -122,7 +122,7 @@ Cloud Spanner client supports [client-side metrics](https://cloud.google.com/spa
 Client-side metrics are measured from the time a request leaves your application to the time your application receives the response.
 In contrast, server-side metrics are measured from the time Spanner receives a request until the last byte of data is sent to the client.
 
-These metrics are enabled by default when connecting to the default Spanner endpoint (`spanner.<universe>[:443]`). Default Cloud Monitoring export is automatically disabled when connecting to a custom non-default endpoint (including regional endpoints), using a custom pre-dialed connection (`option.WithGRPCConn`), or using a multi-endpoint client (`NewMultiEndpointClient` / `NewMultiEndpointClientWithConfig`), unless `SPANNER_MONITORING_HOST` is explicitly set. Caller-configured `ClientMetricsProvider` export remains enabled in all of these cases.
+These metrics are enabled by default when connecting to the default Spanner endpoint (`spanner.<universe>[:443]`). Default Cloud Monitoring export is automatically disabled when connecting to a custom non-default endpoint (including regional endpoints), using a custom pre-dialed connection or pool (`option.WithGRPCConn`, `gtransport.WithConnPool`), or using a multi-endpoint client (`NewMultiEndpointClient` / `NewMultiEndpointClientWithConfig`), unless `SPANNER_MONITORING_HOST` is explicitly set. Caller-configured `ClientMetricsProvider` export remains enabled in all of these cases.
 
 You can also opt out of Cloud Monitoring client-side metrics with the following code:
 

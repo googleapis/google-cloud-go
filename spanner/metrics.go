@@ -36,6 +36,7 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.24.0"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
+	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/alts"
@@ -222,14 +223,18 @@ var (
 	}
 
 	// GCM exporter should use the same options as Spanner client, resetting any
-	// Spanner-specific Endpoint option so the monitoring client resolves its
-	// default endpoint template (monitoring.UNIVERSE_DOMAIN:443) using the
-	// configured universe domain unless SPANNER_MONITORING_HOST is explicitly set.
-	// Overwritten in tests.
+	// Spanner-specific Endpoint, GRPCConn, and ConnPool options so the monitoring
+	// client resolves its default endpoint template (monitoring.UNIVERSE_DOMAIN:443)
+	// or SPANNER_MONITORING_HOST instead of reusing or closing the Spanner
+	// connection/pool. Overwritten in tests.
 	createExporterOptions = func(spannerOpts ...option.ClientOption) []option.ClientOption {
-		exporterOpts := make([]option.ClientOption, 0, len(spannerOpts)+1)
+		exporterOpts := make([]option.ClientOption, 0, len(spannerOpts)+3)
 		exporterOpts = append(exporterOpts, spannerOpts...)
-		return append(exporterOpts, option.WithEndpoint(monitoringHostEnv()))
+		return append(exporterOpts,
+			option.WithEndpoint(monitoringHostEnv()),
+			option.WithGRPCConn(nil),
+			gtransport.WithConnPool(nil),
+		)
 	}
 
 	grpcMetricsToEnable = []string{
@@ -303,10 +308,33 @@ func isDefaultSpannerEndpoint(endpoint, universeDomain string) bool {
 	return strings.EqualFold(host, "spanner."+universeDomain)
 }
 
+// hasCustomConnPool reports whether opts configure a non-nil gtransport.WithConnPool.
+// Because internaloption.UnsafeResolver does not expose DialSettings.GRPCConnPool,
+// it probes gtransport.DialPool with a sentinel WithGRPCConn and SkipDialSettingsValidation:
+// if a custom ConnPool is set (including via wrapped options), DialPool returns it
+// immediately before inspecting GRPCConn; otherwise DialPool returns a singleConnPool
+// wrapping probeConn without dialing any network endpoint.
+func hasCustomConnPool(opts []option.ClientOption) bool {
+	probeConn := new(grpc.ClientConn)
+	probeOpts := make([]option.ClientOption, 0, len(opts)+3)
+	probeOpts = append(probeOpts, opts...)
+	probeOpts = append(probeOpts,
+		option.WithGRPCConn(probeConn),
+		option.WithHTTPClient(nil),
+		internaloption.SkipDialSettingsValidation(),
+	)
+	pool, err := gtransport.DialPool(context.Background(), probeOpts...)
+	if err != nil {
+		return true
+	}
+	return pool == nil || pool.Conn() != probeConn
+}
+
 // shouldEnableDefaultMonitoringExporter reports whether the default Cloud
 // Monitoring exporter should be constructed for opts. Export stays enabled
-// when SPANNER_MONITORING_HOST is set or when no custom gRPC connection is
-// supplied and the configured endpoint matches spanner.<universe>[:443].
+// when SPANNER_MONITORING_HOST is set or when no custom gRPC connection or
+// connection pool is supplied and the configured endpoint matches
+// spanner.<universe>[:443].
 func shouldEnableDefaultMonitoringExporter(opts ...option.ClientOption) bool {
 	if monitoringHostEnv() != "" {
 		return true
@@ -319,7 +347,7 @@ func shouldEnableDefaultMonitoringExporter(opts ...option.ClientOption) bool {
 		}
 	}
 	res, err := internaloption.NewUnsafeResolver(filtered...)
-	if err != nil || res.ResolvedGRPCConnIsCustom() {
+	if err != nil || res.ResolvedGRPCConnIsCustom() || hasCustomConnPool(filtered) {
 		return false
 	}
 	universeDomain := res.ResolvedUniverseDomain()
