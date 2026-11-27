@@ -1132,6 +1132,7 @@ func TestMonitoringExporterUniverseDomainMismatch(t *testing.T) {
 }
 
 func TestIsWithoutAuthentication(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name string
 		opts []option.ClientOption
@@ -1162,11 +1163,58 @@ func TestIsWithoutAuthentication(t *testing.T) {
 			},
 			want: true,
 		},
+		{
+			name: "nil option element",
+			opts: []option.ClientOption{nil},
+			want: false,
+		},
+		{
+			name: "token source option",
+			opts: []option.ClientOption{
+				option.WithTokenSource(oauth2.StaticTokenSource(&oauth2.Token{AccessToken: "test-token"})),
+			},
+			want: false,
+		},
+		{
+			name: "API key option",
+			opts: []option.ClientOption{
+				option.WithAPIKey("test-api-key"),
+			},
+			want: false,
+		},
+		{
+			name: "custom GRPCConn option",
+			opts: []option.ClientOption{
+				option.WithGRPCConn(new(grpc.ClientConn)),
+			},
+			want: false,
+		},
+		{
+			name: "WithoutAuthentication alongside nil option",
+			opts: []option.ClientOption{
+				nil,
+				option.WithoutAuthentication(),
+			},
+			want: true,
+		},
+		{
+			name: "conflicting WithoutAuthentication and WithCredentials",
+			opts: []option.ClientOption{
+				option.WithoutAuthentication(),
+				option.WithCredentials(&google.Credentials{ProjectID: "test-project"}),
+			},
+			want: true,
+		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := isWithoutAuthentication(tc.opts); got != tc.want {
+			t.Parallel()
+			got, err := isWithoutAuthentication(tc.opts)
+			if err != nil {
+				t.Fatalf("isWithoutAuthentication() returned unexpected error: %v", err)
+			}
+			if got != tc.want {
 				t.Errorf("isWithoutAuthentication() = %v, want %v", got, tc.want)
 			}
 		})
@@ -1180,311 +1228,432 @@ func TestBuiltinMetricsDisabledForUnauthenticatedClients(t *testing.T) {
 	detectClientLocation = func(context.Context) string { return "global" }
 	defer func() { detectClientLocation = origDetectClientLocation }()
 
-	t.Run("WithoutAuthentication with SPANNER_MONITORING_HOST and gRPC metrics", func(t *testing.T) {
-		t.Setenv("SPANNER_EMULATOR_HOST", "")
-		t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
-		t.Setenv("SPANNER_MONITORING_HOST", "custom-monitoring.local:443")
-		t.Setenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS", "false")
-		t.Setenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS", "true")
-		t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
-
-		testExporter := installTestMonitoringExporter(t)
-		_, opts, teardownServer := NewMockedSpannerInMemTestServer(t)
-		defer teardownServer()
-
-		ctx := context.Background()
-		client, err := NewClientWithConfig(ctx, dbName, ClientConfig{
-			NumChannels:        1,
-			EnableDirectAccess: true,
-		}, opts...)
-		if err != nil {
-			t.Fatalf("NewClientWithConfig() failed: %v", err)
-		}
-
-		if testExporter.createOptionsCalls != 0 {
-			client.Close()
-			t.Fatalf("createExporterOptions call count = %d, want 0", testExporter.createOptionsCalls)
-		}
-		if client.metricsTracerFactory.enabled {
-			client.Close()
-			t.Fatal("metricsTracerFactory.enabled = true, want false")
-		}
-		if client.metricsTracerFactory.meterProvider != nil {
-			client.Close()
-			t.Fatal("metricsTracerFactory.meterProvider != nil, want nil")
-		}
-		if len(client.metricsTracerFactory.sinks) != 0 {
-			client.Close()
-			t.Fatalf("len(metricsTracerFactory.sinks) = %d, want 0", len(client.metricsTracerFactory.sinks))
-		}
-		if len(client.metricsTracerFactory.clientOpts) != 0 {
-			client.Close()
-			t.Fatalf("len(metricsTracerFactory.clientOpts) = %d, want 0", len(client.metricsTracerFactory.clientOpts))
-		}
-
-		iter := client.Single().Query(ctx, NewStatement(SelectFooFromBar))
-		if err := iter.Do(func(*Row) error { return nil }); err != nil {
-			client.Close()
-			t.Fatalf("Query() failed: %v", err)
-		}
-		client.Close()
-
-		if got := len(testExporter.server.CreateServiceTimeSeriesRequests()); got != 0 {
-			t.Fatalf("CreateServiceTimeSeries request count = %d, want 0", got)
-		}
-	})
-
-	t.Run("wrapped WithoutAuthentication", func(t *testing.T) {
-		t.Setenv("SPANNER_EMULATOR_HOST", "")
-		t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
-		t.Setenv("SPANNER_MONITORING_HOST", "custom-monitoring.local:443")
-		t.Setenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS", "false")
-		t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
-
-		testExporter := installTestMonitoringExporter(t)
-		server, _, teardownServer := NewMockedSpannerInMemTestServer(t)
-		defer teardownServer()
-
-		ctx := context.Background()
-		client, err := NewClientWithConfig(ctx, dbName, ClientConfig{NumChannels: 1},
-			option.WithEndpoint(server.ServerAddress),
-			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
-			wrappedEndpointOption{option.WithoutAuthentication()},
-		)
-		if err != nil {
-			t.Fatalf("NewClientWithConfig() failed: %v", err)
-		}
-		defer client.Close()
-
-		if testExporter.createOptionsCalls != 0 {
-			t.Fatalf("createExporterOptions call count = %d, want 0", testExporter.createOptionsCalls)
-		}
-		if client.metricsTracerFactory.enabled {
-			t.Fatal("metricsTracerFactory.enabled = true, want false")
-		}
-		if client.metricsTracerFactory.meterProvider != nil {
-			t.Fatal("metricsTracerFactory.meterProvider != nil, want nil")
-		}
-		if len(client.metricsTracerFactory.clientOpts) != 0 {
-			t.Fatalf("len(metricsTracerFactory.clientOpts) = %d, want 0", len(client.metricsTracerFactory.clientOpts))
-		}
-	})
-
-	t.Run("SPANNER_EMULATOR_HOST with SPANNER_MONITORING_HOST", func(t *testing.T) {
-		server, _, teardownServer := NewMockedSpannerInMemTestServer(t)
-		defer teardownServer()
-
-		t.Setenv("SPANNER_EMULATOR_HOST", server.ServerAddress)
-		t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
-		t.Setenv("SPANNER_MONITORING_HOST", "custom-monitoring.local:443")
-		t.Setenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS", "false")
-
-		testExporter := installTestMonitoringExporter(t)
-		ctx := context.Background()
-		client, err := NewClientWithConfig(ctx, dbName, ClientConfig{
-			NumChannels:        1,
-			EnableDirectAccess: true,
-		})
-		if err != nil {
-			t.Fatalf("NewClientWithConfig() failed: %v", err)
-		}
-
-		if testExporter.createOptionsCalls != 0 {
-			client.Close()
-			t.Fatalf("createExporterOptions call count = %d, want 0", testExporter.createOptionsCalls)
-		}
-		if client.metricsTracerFactory.enabled {
-			client.Close()
-			t.Fatal("metricsTracerFactory.enabled = true, want false")
-		}
-		if client.metricsTracerFactory.meterProvider != nil {
-			client.Close()
-			t.Fatal("metricsTracerFactory.meterProvider != nil, want nil")
-		}
-		if len(client.metricsTracerFactory.clientOpts) != 0 {
-			client.Close()
-			t.Fatalf("len(metricsTracerFactory.clientOpts) = %d, want 0", len(client.metricsTracerFactory.clientOpts))
-		}
-
-		iter := client.Single().Query(ctx, NewStatement(SelectFooFromBar))
-		if err := iter.Do(func(*Row) error { return nil }); err != nil {
-			client.Close()
-			t.Fatalf("Query() failed: %v", err)
-		}
-		client.Close()
-
-		if got := len(testExporter.server.CreateServiceTimeSeriesRequests()); got != 0 {
-			t.Fatalf("CreateServiceTimeSeries request count = %d, want 0", got)
-		}
-	})
-
-	t.Run("NewMultiEndpointClientWithConfig WithoutAuthentication", func(t *testing.T) {
-		t.Setenv("SPANNER_EMULATOR_HOST", "")
-		t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
-		t.Setenv("SPANNER_MONITORING_HOST", "custom-monitoring.local:443")
-		t.Setenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS", "false")
-		t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
-
-		testExporter := installTestMonitoringExporter(t)
-		server, opts, teardownServer := NewMockedSpannerInMemTestServer(t)
-		defer teardownServer()
-
-		gmeCfg := &grpcgcp.GCPMultiEndpointOptions{
-			MultiEndpoints: map[string]*multiendpoint.MultiEndpointOptions{
-				"default": {
-					Endpoints: []string{server.ServerAddress},
-				},
+	tests := []struct {
+		name            string
+		emulator        bool
+		directAccessEnv bool
+		newClient       func(ctx context.Context, serverAddr string, opts []option.ClientOption) (*Client, error)
+	}{
+		{
+			name:            "WithoutAuthentication with SPANNER_MONITORING_HOST and gRPC metrics",
+			directAccessEnv: true,
+			newClient: func(ctx context.Context, _ string, opts []option.ClientOption) (*Client, error) {
+				return NewClientWithConfig(ctx, dbName, ClientConfig{
+					NumChannels:        1,
+					EnableDirectAccess: true,
+				}, opts...)
 			},
-			Default: "default",
-		}
-		ctx := context.Background()
-		client, _, err := NewMultiEndpointClientWithConfig(ctx, dbName, ClientConfig{}, gmeCfg, opts...)
-		if err != nil {
-			t.Fatalf("NewMultiEndpointClientWithConfig() failed: %v", err)
-		}
+		},
+		{
+			name: "wrapped WithoutAuthentication",
+			newClient: func(ctx context.Context, serverAddr string, _ []option.ClientOption) (*Client, error) {
+				return NewClientWithConfig(ctx, dbName, ClientConfig{NumChannels: 1},
+					option.WithEndpoint(serverAddr),
+					option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+					wrappedEndpointOption{option.WithoutAuthentication()},
+				)
+			},
+		},
+		{
+			name:     "SPANNER_EMULATOR_HOST with SPANNER_MONITORING_HOST",
+			emulator: true,
+			newClient: func(ctx context.Context, _ string, _ []option.ClientOption) (*Client, error) {
+				return NewClientWithConfig(ctx, dbName, ClientConfig{
+					NumChannels:        1,
+					EnableDirectAccess: true,
+				})
+			},
+		},
+		{
+			name: "NewMultiEndpointClientWithConfig WithoutAuthentication",
+			newClient: func(ctx context.Context, serverAddr string, opts []option.ClientOption) (*Client, error) {
+				gmeCfg := &grpcgcp.GCPMultiEndpointOptions{
+					MultiEndpoints: map[string]*multiendpoint.MultiEndpointOptions{
+						"default": {
+							Endpoints: []string{serverAddr},
+						},
+					},
+					Default: "default",
+				}
+				client, _, err := NewMultiEndpointClientWithConfig(ctx, dbName, ClientConfig{}, gmeCfg, opts...)
+				return client, err
+			},
+		},
+	}
 
-		if testExporter.createOptionsCalls != 0 {
-			client.Close()
-			t.Fatalf("createExporterOptions call count = %d, want 0", testExporter.createOptionsCalls)
-		}
-		if client.metricsTracerFactory.enabled {
-			client.Close()
-			t.Fatal("metricsTracerFactory.enabled = true, want false")
-		}
-		if client.metricsTracerFactory.meterProvider != nil {
-			client.Close()
-			t.Fatal("metricsTracerFactory.meterProvider != nil, want nil")
-		}
-		if len(client.metricsTracerFactory.clientOpts) != 0 {
-			client.Close()
-			t.Fatalf("len(metricsTracerFactory.clientOpts) = %d, want 0", len(client.metricsTracerFactory.clientOpts))
-		}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			server, opts, teardownServer := NewMockedSpannerInMemTestServer(t)
+			defer teardownServer()
 
-		iter := client.Single().Query(ctx, NewStatement(SelectFooFromBar))
-		if err := iter.Do(func(*Row) error { return nil }); err != nil {
-			client.Close()
-			t.Fatalf("Query() failed: %v", err)
-		}
-		client.Close()
+			if tc.emulator {
+				t.Setenv("SPANNER_EMULATOR_HOST", server.ServerAddress)
+			} else {
+				t.Setenv("SPANNER_EMULATOR_HOST", "")
+				t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
+			}
+			t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
+			t.Setenv("SPANNER_MONITORING_HOST", "custom-monitoring.local:443")
+			t.Setenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS", "false")
+			if tc.directAccessEnv {
+				t.Setenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS", "true")
+			}
 
-		if got := len(testExporter.server.CreateServiceTimeSeriesRequests()); got != 0 {
-			t.Fatalf("CreateServiceTimeSeries request count = %d, want 0", got)
-		}
-	})
+			testExporter := installTestMonitoringExporter(t)
+			ctx := context.Background()
+			client, err := tc.newClient(ctx, server.ServerAddress, opts)
+			if err != nil {
+				t.Fatalf("client creation failed: %v", err)
+			}
+			closed := false
+			closeClient := func() {
+				if !closed {
+					closed = true
+					client.Close()
+				}
+			}
+			defer closeClient()
 
-	t.Run("WithoutAuthentication preserves ClientMetricsProvider", func(t *testing.T) {
-		t.Setenv("SPANNER_EMULATOR_HOST", "")
-		t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
-		t.Setenv("SPANNER_MONITORING_HOST", "custom-monitoring.local:443")
-		t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
+			if testExporter.createOptionsCalls != 0 {
+				t.Fatalf("createExporterOptions call count = %d, want 0", testExporter.createOptionsCalls)
+			}
+			if client.metricsTracerFactory.enabled {
+				t.Fatal("metricsTracerFactory.enabled = true, want false")
+			}
+			if client.metricsTracerFactory.meterProvider != nil {
+				t.Fatal("metricsTracerFactory.meterProvider != nil, want nil")
+			}
+			if len(client.metricsTracerFactory.sinks) != 0 {
+				t.Fatalf("len(metricsTracerFactory.sinks) = %d, want 0", len(client.metricsTracerFactory.sinks))
+			}
+			if len(client.metricsTracerFactory.clientOpts) != 0 {
+				t.Fatalf("len(metricsTracerFactory.clientOpts) = %d, want 0", len(client.metricsTracerFactory.clientOpts))
+			}
 
-		testExporter := installTestMonitoringExporter(t)
-		reader, provider := newTestMeterProvider()
-		defer provider.Shutdown(context.Background())
+			iter := client.Single().Query(ctx, NewStatement(SelectFooFromBar))
+			if err := iter.Do(func(*Row) error { return nil }); err != nil {
+				t.Fatalf("Query() failed: %v", err)
+			}
+			closeClient()
 
-		_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-			ClientMetricsProvider: provider,
+			if got := len(testExporter.server.CreateServiceTimeSeriesRequests()); got != 0 {
+				t.Fatalf("CreateServiceTimeSeries request count = %d, want 0", got)
+			}
 		})
-		defer teardown()
+	}
+}
 
-		if testExporter.createOptionsCalls != 0 {
-			t.Fatalf("createExporterOptions call count = %d, want 0", testExporter.createOptionsCalls)
-		}
-		if !client.metricsTracerFactory.enabled {
-			t.Fatal("metricsTracerFactory.enabled = false, want true for caller-owned ClientMetricsProvider")
-		}
-		if client.metricsTracerFactory.meterProvider != nil {
-			t.Fatal("metricsTracerFactory.meterProvider != nil, want nil for native sink")
-		}
-		if len(client.metricsTracerFactory.sinks) != 1 {
-			t.Fatalf("len(metricsTracerFactory.sinks) = %d, want 1", len(client.metricsTracerFactory.sinks))
-		}
+func TestBuiltinMetricsWithoutAuthenticationPreservesClientAndGRPCMetrics(t *testing.T) {
+	origDetectClientLocation := detectClientLocation
+	detectClientLocation = func(context.Context) string { return "global" }
+	defer func() { detectClientLocation = origDetectClientLocation }()
 
-		if _, err := client.Single().ReadRow(context.Background(), "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"}); err != nil {
-			t.Fatalf("ReadRow() failed: %v", err)
-		}
-		requireOperationCountAttrs(t, collectTestMetrics(t, reader), clientMetricsPrefix)
-		client.Close()
+	isolateChannelPoolEnv(t)
+	t.Setenv("SPANNER_EMULATOR_HOST", "")
+	t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
+	t.Setenv("SPANNER_MONITORING_HOST", "custom-monitoring.local:443")
+	t.Setenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS", "false")
+	t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
+	t.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_LOG_CLIENT_OPTIONS", "true")
 
-		if got := len(testExporter.server.CreateServiceTimeSeriesRequests()); got != 0 {
-			t.Fatalf("CreateServiceTimeSeries request count = %d, want 0", got)
-		}
+	testExporter := installTestMonitoringExporter(t)
+	reader, provider := newTestMeterProvider()
+	defer provider.Shutdown(context.Background())
+
+	var logBuf bytes.Buffer
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		ClientMetricsProvider: provider,
+		Logger:                log.New(&logBuf, "", 0),
 	})
-
-	t.Run("conflicting WithoutAuthentication and WithCredentials", func(t *testing.T) {
-		t.Setenv("SPANNER_EMULATOR_HOST", "")
-		t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
-		t.Setenv("SPANNER_MONITORING_HOST", "")
-
-		testExporter := installTestMonitoringExporter(t)
-		creds := &google.Credentials{
-			ProjectID:   "test-project",
-			TokenSource: oauth2.StaticTokenSource(&oauth2.Token{AccessToken: "test-token"}),
+	tornDown := false
+	teardownOnce := func() {
+		if !tornDown {
+			tornDown = true
+			teardown()
 		}
-		client, err := NewClientWithConfig(context.Background(), dbName, ClientConfig{NumChannels: 1},
-			option.WithoutAuthentication(),
-			option.WithCredentials(creds),
-		)
-		if err == nil {
-			client.Close()
-			t.Fatal("NewClientWithConfig() succeeded, want conflicting auth error")
-		}
-		if testExporter.createOptionsCalls != 0 {
-			t.Fatalf("createExporterOptions call count = %d, want 0", testExporter.createOptionsCalls)
-		}
-	})
+	}
+	defer teardownOnce()
 
-	t.Run("log client options reports disabled", func(t *testing.T) {
-		t.Setenv("SPANNER_EMULATOR_HOST", "")
-		t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
-		t.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_LOG_CLIENT_OPTIONS", "true")
-		t.Setenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS", "false")
-		t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
+	if w, g := 0, testExporter.createOptionsCalls; w != g {
+		t.Fatalf("createExporterOptions call count mismatch:\n Want: %v\n  Got: %v", w, g)
+	}
+	if !client.metricsTracerFactory.enabled {
+		t.Fatal("metricsTracerFactory.enabled = false, want true for caller-owned ClientMetricsProvider")
+	}
+	if client.metricsTracerFactory.meterProvider != nil {
+		t.Fatal("metricsTracerFactory.meterProvider != nil, want nil for native sink")
+	}
+	if len(client.metricsTracerFactory.sinks) != 1 {
+		t.Fatalf("len(metricsTracerFactory.sinks) = %d, want 1", len(client.metricsTracerFactory.sinks))
+	}
+	if _, err := client.Single().ReadRow(context.Background(), "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"}); err != nil {
+		t.Fatalf("ReadRow() failed: %v", err)
+	}
 
-		_, opts, teardownServer := NewMockedSpannerInMemTestServer(t)
-		defer teardownServer()
+	rm := collectTestMetrics(t, reader)
+	requireOperationCountAttrs(t, rm, clientMetricsPrefix)
+	requireTestMetric(t, rm, clientMetricsPrefix+"grpc/client/attempt/started")
+	if _, ok := findTestMetric(rm, nativeMetricsPrefix+metricNameOperationCount); ok {
+		t.Fatalf("ClientMetricsProvider received reserved native metric %q", nativeMetricsPrefix+metricNameOperationCount)
+	}
 
-		var logBuf bytes.Buffer
-		client, err := NewClientWithConfig(context.Background(), dbName, ClientConfig{
-			NumChannels:        1,
-			EnableDirectAccess: true,
-			Logger:             log.New(&logBuf, "", 0),
-		}, opts...)
-		if err != nil {
-			t.Fatalf("NewClientWithConfig() failed: %v", err)
-		}
-		client.Close()
+	teardownOnce()
 
-		logged := logBuf.String()
-		if !strings.Contains(logged, "Built-in metrics enabled: false") {
-			t.Errorf("client options log missing %q:\n%s", "Built-in metrics enabled: false", logged)
-		}
-		if !strings.Contains(logged, "gRPC metrics enabled: false") {
-			t.Errorf("client options log missing %q:\n%s", "gRPC metrics enabled: false", logged)
-		}
-	})
+	logged := logBuf.String()
+	if !strings.Contains(logged, "Built-in metrics enabled: false") {
+		t.Errorf("client options log missing %q:\n%s", "Built-in metrics enabled: false", logged)
+	}
+	if !strings.Contains(logged, "gRPC metrics enabled: true") {
+		t.Errorf("client options log missing %q:\n%s", "gRPC metrics enabled: true", logged)
+	}
+	if w, g := 0, len(testExporter.server.CreateServiceTimeSeriesRequests()); w != g {
+		t.Fatalf("CreateServiceTimeSeries request count mismatch:\n Want: %v\n  Got: %v", w, g)
+	}
+}
 
-	t.Run("log client options reports enabled for authenticated client", func(t *testing.T) {
-		t.Setenv("SPANNER_EMULATOR_HOST", "")
-		t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
-		t.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_LOG_CLIENT_OPTIONS", "true")
-		t.Setenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS", "false")
-		t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
+func TestBuiltinMetricsDisabledForUnauthenticatedChannelPoolsAndFallback(t *testing.T) {
+	const dbName = "projects/[PROJECT]/instances/[INSTANCE]/databases/[DATABASE]"
 
-		installTestMonitoringExporter(t)
-		var logBuf bytes.Buffer
-		_, _, teardown := setupAuthenticatedMockedTestServerWithConfig(t, ClientConfig{
-			Logger: log.New(&logBuf, "", 0),
+	origDetectClientLocation := detectClientLocation
+	detectClientLocation = func(context.Context) string { return "global" }
+	defer func() { detectClientLocation = origDetectClientLocation }()
+
+	tests := []struct {
+		name       string
+		dcpEnabled bool
+	}{
+		{
+			name:       "fixed pool with DirectPath fallback",
+			dcpEnabled: false,
+		},
+		{
+			name:       "dynamic channel pool with DirectPath fallback",
+			dcpEnabled: true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isolateChannelPoolEnv(t)
+			t.Setenv("SPANNER_EMULATOR_HOST", "")
+			t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
+			t.Setenv("SPANNER_MONITORING_HOST", "custom-monitoring.local:443")
+			t.Setenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS", "false")
+			t.Setenv(directAccessEnv, "true")
+			t.Setenv(gcpFallbackEnv, "true")
+			t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
+
+			testExporter := installTestMonitoringExporter(t)
+			_, opts, teardownServer := NewMockedSpannerInMemTestServer(t)
+			defer teardownServer()
+
+			cfg := ClientConfig{
+				NumChannels:        1,
+				EnableDirectAccess: true,
+			}
+			if tc.dcpEnabled {
+				cfg.NumChannels = 0
+				cfg.DynamicChannelPoolConfig = testDCPConfig(2, 1, 4)
+			}
+
+			ctx := context.Background()
+			client, err := NewClientWithConfig(ctx, dbName, cfg, opts...)
+			if err != nil {
+				t.Fatalf("NewClientWithConfig() failed: %v", err)
+			}
+			closed := false
+			closeClient := func() {
+				if !closed {
+					closed = true
+					client.Close()
+				}
+			}
+			defer closeClient()
+
+			if w, g := 0, testExporter.createOptionsCalls; w != g {
+				t.Fatalf("createExporterOptions call count mismatch:\n Want: %v\n  Got: %v", w, g)
+			}
+			if w, g := false, client.metricsTracerFactory.enabled; w != g {
+				t.Fatalf("metricsTracerFactory.enabled mismatch:\n Want: %v\n  Got: %v", w, g)
+			}
+			if client.metricsTracerFactory.meterProvider != nil {
+				t.Fatalf("metricsTracerFactory.meterProvider mismatch:\n Want: <nil>\n  Got: %v", client.metricsTracerFactory.meterProvider)
+			}
+			if w, g := 0, len(client.metricsTracerFactory.clientOpts); w != g {
+				t.Fatalf("len(metricsTracerFactory.clientOpts) mismatch:\n Want: %v\n  Got: %v", w, g)
+			}
+			fb := poolFallback(client.sc.dynamicPool)
+			if fb == nil {
+				t.Fatal("poolFallback(client.sc.dynamicPool) = nil, want non-nil fallback")
+			}
+			if fb.metrics != nil {
+				t.Fatalf("directPathFallback.metrics mismatch:\n Want: <nil>\n  Got: %v", fb.metrics)
+			}
+
+			iter := client.Single().Query(ctx, NewStatement(SelectFooFromBar))
+			if err := iter.Do(func(*Row) error { return nil }); err != nil {
+				t.Fatalf("Query() failed: %v", err)
+			}
+			closeClient()
+
+			if w, g := 0, len(testExporter.server.CreateServiceTimeSeriesRequests()); w != g {
+				t.Fatalf("CreateServiceTimeSeries request count mismatch:\n Want: %v\n  Got: %v", w, g)
+			}
 		})
-		// Close before reading so no background goroutine writes to logBuf concurrently.
-		teardown()
+	}
+}
 
-		logged := logBuf.String()
-		if !strings.Contains(logged, "Built-in metrics enabled: true") {
-			t.Errorf("client options log missing %q:\n%s", "Built-in metrics enabled: true", logged)
+func TestBuiltinMetricsWithoutAuthenticationEndToEndNoMonitoringDial(t *testing.T) {
+	const dbName = "projects/[PROJECT]/instances/[INSTANCE]/databases/[DATABASE]"
+	const spannerAddr = "spanner.example.test:443"
+
+	origDetectClientLocation := detectClientLocation
+	detectClientLocation = func(context.Context) string { return "global" }
+	defer func() { detectClientLocation = origDetectClientLocation }()
+
+	isolateChannelPoolEnv(t)
+	t.Setenv("SPANNER_EMULATOR_HOST", "")
+	t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
+	t.Setenv("SPANNER_MONITORING_HOST", "custom-monitoring.local:443")
+	t.Setenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS", "false")
+	t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
+
+	spannerServer, _, teardownSpanner := NewMockedSpannerInMemTestServer(t)
+	defer teardownSpanner()
+
+	var mu sync.Mutex
+	var unexpectedAddrs []string
+	dialer := func(ctx context.Context, addr string) (net.Conn, error) {
+		if addr == spannerAddr {
+			return (&net.Dialer{}).DialContext(ctx, "tcp", spannerServer.ServerAddress)
 		}
-		if !strings.Contains(logged, "gRPC metrics enabled: true") {
-			t.Errorf("client options log missing %q:\n%s", "gRPC metrics enabled: true", logged)
-		}
-	})
+		mu.Lock()
+		unexpectedAddrs = append(unexpectedAddrs, addr)
+		mu.Unlock()
+		return nil, fmt.Errorf("unexpected dial to %q", addr)
+	}
+
+	ctx := context.Background()
+	client, err := NewClientWithConfig(ctx, dbName, ClientConfig{NumChannels: 1},
+		option.WithoutAuthentication(),
+		option.WithEndpoint(spannerAddr),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		option.WithGRPCDialOption(grpc.WithResolvers(staticDNSResolverBuilder{})),
+		option.WithGRPCDialOption(grpc.WithContextDialer(dialer)),
+	)
+	if err != nil {
+		t.Fatalf("NewClientWithConfig() failed: %v", err)
+	}
+
+	iter := client.Single().Query(ctx, NewStatement(SelectFooFromBar))
+	if err := iter.Do(func(*Row) error { return nil }); err != nil {
+		client.Close()
+		t.Fatalf("Query() failed: %v", err)
+	}
+	client.Close()
+
+	mu.Lock()
+	gotUnexpected := append([]string(nil), unexpectedAddrs...)
+	mu.Unlock()
+	if w, g := 0, len(gotUnexpected); w != g {
+		t.Fatalf("unexpected dialed endpoints:\n Want: %v\n  Got: %v (%v)", w, g, gotUnexpected)
+	}
+}
+
+func TestBuiltinMetricsConflictingWithoutAuthenticationAndCredentials(t *testing.T) {
+	const dbName = "projects/[PROJECT]/instances/[INSTANCE]/databases/[DATABASE]"
+
+	origDetectClientLocation := detectClientLocation
+	detectClientLocation = func(context.Context) string { return "global" }
+	defer func() { detectClientLocation = origDetectClientLocation }()
+
+	t.Setenv("SPANNER_EMULATOR_HOST", "")
+	t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
+	t.Setenv("SPANNER_MONITORING_HOST", "")
+
+	testExporter := installTestMonitoringExporter(t)
+	creds := &google.Credentials{
+		ProjectID:   "test-project",
+		TokenSource: oauth2.StaticTokenSource(&oauth2.Token{AccessToken: "test-token"}),
+	}
+	client, err := NewClientWithConfig(context.Background(), dbName, ClientConfig{NumChannels: 1},
+		option.WithoutAuthentication(),
+		option.WithCredentials(creds),
+	)
+	if err == nil {
+		client.Close()
+		t.Fatal("NewClientWithConfig() succeeded, want conflicting auth error")
+	}
+	if testExporter.createOptionsCalls != 0 {
+		t.Fatalf("createExporterOptions call count = %d, want 0", testExporter.createOptionsCalls)
+	}
+}
+
+func TestBuiltinMetricsLogClientOptions(t *testing.T) {
+	const dbName = "projects/[PROJECT]/instances/[INSTANCE]/databases/[DATABASE]"
+
+	origDetectClientLocation := detectClientLocation
+	detectClientLocation = func(context.Context) string { return "global" }
+	defer func() { detectClientLocation = origDetectClientLocation }()
+
+	tests := []struct {
+		name          string
+		authenticated bool
+		wantBuiltin   string
+		wantGRPC      string
+	}{
+		{
+			name:          "unauthenticated client reports disabled",
+			authenticated: false,
+			wantBuiltin:   "Built-in metrics enabled: false",
+			wantGRPC:      "gRPC metrics enabled: false",
+		},
+		{
+			name:          "authenticated client reports enabled",
+			authenticated: true,
+			wantBuiltin:   "Built-in metrics enabled: true",
+			wantGRPC:      "gRPC metrics enabled: true",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv("SPANNER_EMULATOR_HOST", "")
+			t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
+			t.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_LOG_CLIENT_OPTIONS", "true")
+			t.Setenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS", "false")
+			t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
+
+			var logBuf bytes.Buffer
+			if tc.authenticated {
+				installTestMonitoringExporter(t)
+				_, _, teardown := setupAuthenticatedMockedTestServerWithConfig(t, ClientConfig{
+					Logger: log.New(&logBuf, "", 0),
+				})
+				// Close before reading so no background goroutine writes to logBuf concurrently.
+				teardown()
+			} else {
+				_, opts, teardownServer := NewMockedSpannerInMemTestServer(t)
+				defer teardownServer()
+
+				client, err := NewClientWithConfig(context.Background(), dbName, ClientConfig{
+					NumChannels:        1,
+					EnableDirectAccess: true,
+					Logger:             log.New(&logBuf, "", 0),
+				}, opts...)
+				if err != nil {
+					t.Fatalf("NewClientWithConfig() failed: %v", err)
+				}
+				client.Close()
+			}
+
+			logged := logBuf.String()
+			if !strings.Contains(logged, tc.wantBuiltin) {
+				t.Errorf("client options log missing %q:\n%s", tc.wantBuiltin, logged)
+			}
+			if !strings.Contains(logged, tc.wantGRPC) {
+				t.Errorf("client options log missing %q:\n%s", tc.wantGRPC, logged)
+			}
+		})
+	}
 }

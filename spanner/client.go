@@ -544,9 +544,19 @@ func isSpannerEmulatorEnabled() bool {
 
 // isWithoutAuthentication reports whether opts explicitly disable
 // authentication via option.WithoutAuthentication.
-func isWithoutAuthentication(opts []option.ClientOption) bool {
-	r, _ := internaloption.NewUnsafeResolver(opts...)
-	return r.ResolvedWithoutAuthentication()
+func isWithoutAuthentication(opts []option.ClientOption) (bool, error) {
+	nonNilOpts := make([]option.ClientOption, 0, len(opts))
+	for _, opt := range opts {
+		if opt != nil {
+			nonNilOpts = append(nonNilOpts, opt)
+		}
+	}
+	r, err := internaloption.NewUnsafeResolver(nonNilOpts...)
+	if err != nil {
+		// Propagate resolver errors in case future internaloption versions validate options here.
+		return false, err
+	}
+	return r.ResolvedWithoutAuthentication(), nil
 }
 
 func createDCPConnPool(
@@ -738,9 +748,17 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	if disableNativeMetrics, _ := strconv.ParseBool(os.Getenv("SPANNER_DISABLE_BUILTIN_METRICS")); disableNativeMetrics {
 		config.DisableNativeMetrics = true
 	}
-	if config.DisableNativeMetrics || config.Type == OMNI || config.IsExperimentalHost || emulatorEnabled || isWithoutAuthentication(opts) {
+	if config.DisableNativeMetrics || config.Type == OMNI || config.IsExperimentalHost || emulatorEnabled {
 		// Do not emit native metrics when the Cloud Monitoring sink is unavailable or disabled.
 		metricsProvider = noop.NewMeterProvider()
+	} else {
+		withoutAuth, err := isWithoutAuthentication(opts)
+		if err != nil {
+			return nil, err
+		}
+		if withoutAuth {
+			metricsProvider = noop.NewMeterProvider()
+		}
 	}
 	clientMetricsProvider := config.ClientMetricsProvider
 	if emulatorEnabled {
