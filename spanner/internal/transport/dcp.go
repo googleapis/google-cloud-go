@@ -295,7 +295,7 @@ type DynamicChannelPool[C DCPClient] struct {
 	DrainingCount  atomic.Int64
 	DrainIdleFloor time.Duration // DCPDrainIdleFloor when the pool was created
 
-	fixed      bool                // constant round-robin entries; no scaling, priming, or metrics
+	fixed      bool                // constant round-robin entries; no scaling or priming
 	underlying gtransport.ConnPool // owns a fixed pool's connections
 }
 
@@ -444,7 +444,7 @@ func (p *DynamicChannelPool[C]) createInitialEntries(ctx context.Context) error 
 }
 
 // IsFixed reports whether this pool runs in fixed mode (constant round-robin
-// entries with no background scaling, priming, or metrics).
+// entries with no background scaling or priming).
 func (p *DynamicChannelPool[C]) IsFixed() bool {
 	return p != nil && p.fixed
 }
@@ -1111,7 +1111,7 @@ func (e *DCPEntry[C]) Invoke(ctx context.Context, method string, args, reply any
 	}
 	e.UnaryLoad.Add(1)
 	defer e.UnaryLoad.Add(-1)
-	e.Parent.onCallStart(ctx, e.RPCLoad())
+	e.Parent.callStarted(ctx, e)
 	return e.Pool.Invoke(ctx, method, args, reply, opts...)
 }
 
@@ -1121,7 +1121,7 @@ func (e *DCPEntry[C]) NewStream(ctx context.Context, desc *grpc.StreamDesc, meth
 		return e.Pool.NewStream(ctx, desc, method, opts...)
 	}
 	e.StreamLoad.Add(1)
-	e.Parent.onCallStart(ctx, e.RPCLoad())
+	e.Parent.callStarted(ctx, e)
 	s, err := e.Pool.NewStream(ctx, desc, method, opts...)
 	if err != nil {
 		e.StreamLoad.Add(-1)
