@@ -39,7 +39,6 @@ import (
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/storage/internal"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
-	mexporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
 	"github.com/google/uuid"
 	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel/attribute"
@@ -213,26 +212,29 @@ func endpointHost(ep string) string {
 
 // newMetricsGCMExporter creates a Google Cloud Monitoring exporter.
 func newMetricsGCMExporter(ctx context.Context, projectID string, monitoringOpts ...option.ClientOption) (sdkmetric.Exporter, error) {
-	exporter, err := mexporter.New(
-		mexporter.WithProjectID(projectID),
-		mexporter.WithMetricDescriptorTypeFormatter(func(m metricdata.Metrics) string {
+	exporter, err := newMonitoringExporter(ctx, &monitoringExporterOptions{
+		projectID: projectID,
+		metricDescriptorTypeFormatter: func(m metricdata.Metrics) string {
 			return formatMetricWithPrefix(m, customMetricPrefix)
-		}),
-		// The OTel GCP exporter drops resource attributes that don't map to the
-		// target MonitoredResource (currently generic_node). WithFilteredResourceAttributes
-		// keeps an allowlist of attributes (see keepFilteredResourceAttribute) as metric
+		},
+		// The GCM exporter drops resource attributes that don't map to the target
+		// MonitoredResource (currently generic_node). resourceAttributeFilter keeps
+		// an allowlist of attributes (see keepFilteredResourceAttribute) as metric
 		// labels and drops the rest to stay under the Cloud Monitoring label limit.
 		//
 		// TODO: When storage_client node is allowlisted in Monarch
 		// (google3/configs/monitoring/cloud_pulse_monarch/storage/storage_client.proto),
-		// we should uncomment the following options to export to the custom resource:
-		// mexporter.WithCreateServiceTimeSeries(),
-		// mexporter.WithMonitoredResourceDescription("storage.googleapis.com/Client", []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"}),
-		mexporter.WithFilteredResourceAttributes(func(kv attribute.KeyValue) bool {
+		// enable service time series on storage.googleapis.com/Client and remove the
+		// legacy CreateTimeSeries / CreateMetricDescriptor / mapDefaultMonitoredResource
+		// helpers in monitoring_exporter.go:
+		// createServiceTimeSeries: true,
+		// monitoredResourceType:   monitoredResourceName,
+		// monitoredResourceLabels: []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"},
+		resourceAttributeFilter: func(kv attribute.KeyValue) bool {
 			return keepFilteredResourceAttribute(string(kv.Key))
-		}),
-		mexporter.WithMonitoringClientOptions(monitoringOpts...),
-	)
+		},
+		monitoringClientOptions: monitoringOpts,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("storage: creating GCM exporter: %w", err)
 	}
@@ -265,6 +267,41 @@ func metricBaseLabels() []attribute.KeyValue {
 	}
 }
 
+// sharedCustomExporter serializes Export/ForceFlush across readers and makes
+// Shutdown a no-op so caller-supplied experimental.WithMetricExporter instances
+// remain caller-owned and safe to share between gRPC and GCS PeriodicReaders.
+type sharedCustomExporter struct {
+	sdkmetric.Exporter
+	mu sync.Mutex
+}
+
+func (s *sharedCustomExporter) Export(ctx context.Context, rm *metricdata.ResourceMetrics) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.Exporter.Export(ctx, rm)
+}
+
+func (s *sharedCustomExporter) ForceFlush(ctx context.Context) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.Exporter.ForceFlush(ctx)
+}
+
+func (s *sharedCustomExporter) Shutdown(context.Context) error {
+	return nil
+}
+
+func wrapCustomExporter(exp *sdkmetric.Exporter) *sdkmetric.Exporter {
+	if exp == nil || *exp == nil {
+		return nil
+	}
+	if _, ok := (*exp).(*sharedCustomExporter); ok {
+		return exp
+	}
+	wrapped := sdkmetric.Exporter(&sharedCustomExporter{Exporter: *exp})
+	return &wrapped
+}
+
 // initMetrics initializes clientMetrics with a meter provider and registered exporter.
 func initMetrics(ctx context.Context, projectID string, config *storageConfig) (*clientMetrics, func(), error) {
 	var provider *sdkmetric.MeterProvider
@@ -282,8 +319,8 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		}
 
 		var exporter sdkmetric.Exporter
-		if config.metricExporter != nil {
-			exporter = *config.metricExporter
+		if wrapped := wrapCustomExporter(config.metricExporter); wrapped != nil {
+			exporter = *wrapped
 		} else {
 			if projectID == "" {
 				if p, ok := res.Set().Value("cloud.account.id"); ok {

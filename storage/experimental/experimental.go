@@ -40,7 +40,9 @@ func WithMetricInterval(metricInterval time.Duration) option.ClientOption {
 
 // WithMetricExporter provides a [option.ClientOption] that may be passed to [storage.NewGRPCClient].
 // Set an alternate client-side metric Exporter to emit metrics through.
-// Must implement [metric.Exporter]. This option is ignored if WithMeterProvider is also set.
+// Must implement [metric.Exporter]. The caller retains ownership of the exporter
+// lifecycle (Client.Close flushes metrics without shutting down the exporter).
+// This option is ignored if WithMeterProvider is also set.
 func WithMetricExporter(ex *metric.Exporter) option.ClientOption {
 	return internal.WithMetricExporter.(func(*metric.Exporter) option.ClientOption)(ex)
 }
