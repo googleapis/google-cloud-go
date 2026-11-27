@@ -88,7 +88,8 @@ export.
 
 On Spanner Omni, the Cloud Monitoring export is unavailable and is always off.
 Set [ClientConfig.ClientMetricsProvider] to export client metrics from an Omni
-client.
+client. Cloud Monitoring export is also disabled when the client is created with
+option.WithoutAuthentication(); ClientMetricsProvider is unaffected.
 
 To use an emulator with this library, you can set the SPANNER_EMULATOR_HOST
 environment variable to the address at which your emulator is running. This will

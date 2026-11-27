@@ -40,6 +40,7 @@ import (
 	otrace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -388,6 +389,8 @@ type ClientConfig struct {
 
 	// DisableNativeMetrics disables the native Cloud Monitoring export. It does
 	// not affect the caller-owned export configured by ClientMetricsProvider.
+	// Cloud Monitoring export is also disabled when the client is created with
+	// option.WithoutAuthentication(); ClientMetricsProvider is unaffected.
 	//
 	// Default: false
 	DisableNativeMetrics bool
@@ -537,6 +540,23 @@ func isDCPEnabledForConfig(config ClientConfig, gme *grpcgcp.GCPMultiEndpoint) b
 // isSpannerEmulatorEnabled is the shared metrics gate for emulator clients.
 func isSpannerEmulatorEnabled() bool {
 	return os.Getenv("SPANNER_EMULATOR_HOST") != ""
+}
+
+// isWithoutAuthentication reports whether opts explicitly disable
+// authentication via option.WithoutAuthentication.
+func isWithoutAuthentication(opts []option.ClientOption) (bool, error) {
+	nonNilOpts := make([]option.ClientOption, 0, len(opts))
+	for _, opt := range opts {
+		if opt != nil {
+			nonNilOpts = append(nonNilOpts, opt)
+		}
+	}
+	r, err := internaloption.NewUnsafeResolver(nonNilOpts...)
+	if err != nil {
+		// Propagate resolver errors in case future internaloption versions validate options here.
+		return false, err
+	}
+	return r.ResolvedWithoutAuthentication(), nil
 }
 
 func createDCPConnPool(
@@ -732,6 +752,14 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	if config.DisableNativeMetrics || config.Type == OMNI || config.IsExperimentalHost || emulatorEnabled || (gme != nil && monitoringHostEnv() == "") {
 		// Do not emit native metrics when the Cloud Monitoring sink is unavailable or disabled.
 		metricsProvider = noop.NewMeterProvider()
+	} else {
+		withoutAuth, err := isWithoutAuthentication(opts)
+		if err != nil {
+			return nil, err
+		}
+		if withoutAuth {
+			metricsProvider = noop.NewMeterProvider()
+		}
 	}
 	clientMetricsProvider := config.ClientMetricsProvider
 	if emulatorEnabled {
@@ -914,7 +942,7 @@ gRPC metrics enabled: %v
 Multiplexed session enabled: true
 -----------------------------`,
 			projectID, config.NumChannels, !config.DisableRouteToLeader, isDirectPathEnabled,
-			config.EnableEndToEndTracing, !config.DisableNativeMetrics, isGRPCBuiltInMetricsEnabled)
+			config.EnableEndToEndTracing, metricsTracerFactory.meterProvider != nil, len(metricsTracerFactory.clientOpts) > 0)
 	}
 	if strings.EqualFold(os.Getenv("SPANNER_DISABLE_AUTO_TAGGING"), "true") {
 		config.EnableAutoTagging = false

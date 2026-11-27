@@ -137,6 +137,7 @@ defer client.Close()
 ```
 
 You can also disable these metrics by setting `SPANNER_DISABLE_BUILTIN_METRICS` to `true`.
+Exporting client-side metrics to Cloud Monitoring is also automatically disabled when the client is created with `option.WithoutAuthentication()`.
 
 When the dynamic channel pool is enabled, the client also exports the number of
 active and draining channels in the pool, and the number of calls in flight on
@@ -185,11 +186,12 @@ DirectPath. AFE latency instruments are included only when AFE server timing is
 enabled.
 
 This caller-owned export is independent of the Cloud Monitoring export.
-`DisableNativeMetrics` and `SPANNER_DISABLE_BUILTIN_METRICS` control only Cloud
-Monitoring, so both sinks can be enabled together. Neither sink records metrics
-when the client targets the Spanner emulator. `OpenTelemetryMeterProvider`
-configures the older Spanner metrics surface and does not enable this built-in
-client-metrics export.
+`DisableNativeMetrics`, `SPANNER_DISABLE_BUILTIN_METRICS`, and
+`option.WithoutAuthentication()` affect only Cloud Monitoring; they do not
+disable `ClientMetricsProvider`, and both sinks can be enabled together when
+authenticated. Neither sink records metrics when the client targets the Spanner
+emulator. `OpenTelemetryMeterProvider` configures the older Spanner metrics
+surface and does not enable this built-in client-metrics export.
 
 On Spanner Omni, the Cloud Monitoring export is unavailable and always off.
 Use `ClientMetricsProvider` to export client metrics from an Omni client.

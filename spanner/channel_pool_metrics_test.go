@@ -626,7 +626,7 @@ func TestChannelPoolBuiltinMetricsExportedToCloudMonitoring(t *testing.T) {
 				cfg.DCPScaleDownCheckInterval = time.Hour
 				config.DynamicChannelPoolConfig = cfg
 			}
-			server, client, teardown := setupMockedTestServerWithConfig(t, config)
+			server, client, teardown := setupAuthenticatedMockedTestServerWithConfig(t, config)
 			defer teardown()
 			if got := client.sc.dynamicPool != nil && !client.sc.dynamicPool.IsFixed(); got != tt.dcp {
 				t.Fatalf("dynamic pool enabled mismatch:\n Got: %v\nWant: %v", got, tt.dcp)
@@ -680,7 +680,7 @@ func TestChannelPoolBuiltinMetricsNotSentToCustomerMeterProviders(t *testing.T) 
 	clientMetricsReader, clientMetricsMP := newDCPManualReader()
 	cfg := testDCPConfig(2, 1, 4)
 	cfg.DCPScaleDownCheckInterval = time.Hour
-	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+	server, client, teardown := setupAuthenticatedMockedTestServerWithConfig(t, ClientConfig{
 		DynamicChannelPoolConfig:   cfg,
 		OpenTelemetryMeterProvider: dcpMP,
 		ClientMetricsProvider:      clientMetricsMP,

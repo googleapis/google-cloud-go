@@ -303,7 +303,7 @@ func TestClientMetricsBothSinksThroughClient(t *testing.T) {
 	t.Setenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS", "false")
 	testExporter := installTestMonitoringExporter(t)
 	reader, provider := newTestMeterProvider()
-	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ClientMetricsProvider: provider})
+	_, client, teardown := setupAuthenticatedMockedTestServerWithConfig(t, ClientConfig{ClientMetricsProvider: provider})
 	defer teardown()
 
 	before := collectTestMetrics(t, reader)
