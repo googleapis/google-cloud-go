@@ -1035,6 +1035,7 @@ func TestGRPCWriter_SessionRecoveryRetries(t *testing.T) {
 		idempotent   bool
 		append       bool
 		canResume    bool
+		maxAttempts  int
 		firstErr     error
 		wantAttempts int
 		wantErr      bool
@@ -1113,6 +1114,25 @@ func TestGRPCWriter_SessionRecoveryRetries(t *testing.T) {
 			wantAttempts: 2,
 			wantErr:      false,
 		},
+		{
+			name:         "MaxAttempts1_Append_RetriesRedirect",
+			policy:       RetryAlways,
+			append:       true,
+			maxAttempts:  1,
+			firstErr:     redirectErr,
+			wantAttempts: 2,
+			wantErr:      false,
+		},
+		{
+			name:         "RetryNever_Append_MaxAttempts1_DoesNotRetryTransient",
+			policy:       RetryNever,
+			append:       true,
+			canResume:    true,
+			maxAttempts:  1,
+			firstErr:     transientErr,
+			wantAttempts: 1,
+			wantErr:      true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -1133,6 +1153,9 @@ func TestGRPCWriter_SessionRecoveryRetries(t *testing.T) {
 					},
 				},
 			}
+			if tt.maxAttempts != 0 {
+				w.settings.retry.maxAttempts = &tt.maxAttempts
+			}
 
 			calls := 0
 			err := run(context.Background(), func(ctx context.Context) error {
@@ -1141,10 +1164,15 @@ func TestGRPCWriter_SessionRecoveryRetries(t *testing.T) {
 					return tt.firstErr
 				}
 				return nil
-			}, w.writerRetryConfig(), w.settings.idempotent, withOperation("WriteObject"))
+			}, w.writerRetryConfig(), w.settings.idempotent, append([]runOption{withOperation("WriteObject")}, w.redirectRunOptions()...)...)
 
 			if (err != nil) != tt.wantErr {
 				t.Fatalf("run() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			// Errors that are not retried are returned as is, not wrapped in
+			// "retry failed after N attempts".
+			if tt.wantErr && err != tt.firstErr {
+				t.Errorf("run() error = %v, want %v", err, tt.firstErr)
 			}
 			if calls != tt.wantAttempts {
 				t.Fatalf("got %d attempts, want %d", calls, tt.wantAttempts)
@@ -1584,8 +1612,7 @@ func TestGRPCWriter_ChunkRetryDeadlineError_IsTerminal(t *testing.T) {
 		t.Errorf("status.Code(err) = %v, want %v (wrapped status must stay visible)", got, codes.Unavailable)
 	}
 
-	// The guard must hold for every writerRetryConfig shape, including the
-	// append + RetryNever path that otherwise retries redirections.
+	// The guard must hold for every writerRetryConfig shape.
 	t.Run("shouldRetry refuses deadline errors under every policy", func(t *testing.T) {
 		for _, tc := range []struct {
 			name    string
@@ -1595,7 +1622,6 @@ func TestGRPCWriter_ChunkRetryDeadlineError_IsTerminal(t *testing.T) {
 		}{
 			{"RetryAlways wrapping Unavailable", RetryAlways, false, transientErr},
 			{"RetryIdempotent wrapping Unavailable", RetryIdempotent, false, transientErr},
-			{"RetryNever append wrapping redirection", RetryNever, true, bidiWriteObjectRedirectionError{}},
 			{"RetryAlways append wrapping redirection", RetryAlways, true, bidiWriteObjectRedirectionError{}},
 		} {
 			t.Run(tc.name, func(t *testing.T) {
@@ -1620,6 +1646,17 @@ func TestGRPCWriter_ChunkRetryDeadlineError_IsTerminal(t *testing.T) {
 					t.Errorf("shouldRetry(%v) = false, want true; the guard should only affect deadline errors", tc.wrapped)
 				}
 			})
+		}
+	})
+
+	t.Run("redirects are not followed after a deadline error", func(t *testing.T) {
+		redirect := bidiWriteObjectRedirectionError{}
+		if !isAppendRedirect(redirect) {
+			t.Errorf("isAppendRedirect(%v) = false, want true", redirect)
+		}
+		err := &chunkRetryDeadlineError{deadline: deadline, attempts: 3, err: redirect}
+		if isAppendRedirect(err) {
+			t.Errorf("isAppendRedirect(%v) = true, want false", err)
 		}
 	})
 
