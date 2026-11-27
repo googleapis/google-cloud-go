@@ -374,6 +374,9 @@ func (p *sessionManager) finishMultiplexedSessionCreation(creation *multiplexedS
 				if p.sc.dynamicPool != nil {
 					p.sc.dynamicPool.SetPrimeSession(s.id)
 				}
+				if p.sc.directPathFallback != nil {
+					p.sc.directPathFallback.setProbeSession(s.id)
+				}
 				p.recordStat(context.Background(), OpenSessionCount, int64(1), tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
 				p.recordStat(context.Background(), SessionsCount, 1, tagNumSessions, tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
 			}

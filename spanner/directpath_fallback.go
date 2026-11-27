@@ -18,20 +18,29 @@ import (
 	"context"
 	"errors"
 	"log"
+	"maps"
+	"math/rand/v2"
+	"os"
 	"reflect"
 	"slices"
+	"strconv"
 	"sync"
 	"sync/atomic"
 	"time"
 
+	"cloud.google.com/go/spanner/internal"
 	"cloud.google.com/go/spanner/internal/transport"
 	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp"
+	"github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/alts"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 )
 
@@ -45,11 +54,45 @@ const (
 	// Channel names of the eef.* metrics, as grpc-gcp-go reports them.
 	directPathFallbackPrimaryChannelName  = "primary"
 	directPathFallbackFallbackChannelName = "fallback"
+
+	directPathFallbackRecoveryEnv              = "GOOGLE_SPANNER_EXPERIMENTAL_GCP_FALLBACK_RECOVERY"
+	directPathRecoveryProbeNotDirectPathReason = "NOT_DIRECTPATH"
 )
 
 // directPathFallbackPeriod is the length of one error-rate window. Tests
 // lower it before creating clients.
 var directPathFallbackPeriod = 3 * time.Minute
+
+// Recovery probing defaults; tests override before creating clients.
+var (
+	defaultDirectPathRecoveryConfig = directPathFallbackRecoveryConfig{
+		probeInterval:       1 * time.Minute,
+		probeRPCTimeout:     10 * time.Second,
+		minRecoveryProbes:   10,
+		minRecoveryDuration: 10 * time.Minute,
+		probeJitter: func(d time.Duration) time.Duration {
+			if maxJitter := d / 4; maxJitter > 0 {
+				return rand.N(maxJitter)
+			}
+			return 0
+		},
+	}
+	// isDirectPathPeerFn verifies fail-closed that a probe RPC used DirectPath ALTS.
+	// DirectPath-over-Interconnect negotiates TLS rather than ALTS, so probes
+	// intentionally fail closed with NOT_DIRECTPATH and stay on CloudPath.
+	isDirectPathPeerFn = func(p *peer.Peer) bool {
+		if p == nil {
+			return false
+		}
+		_, isALTS := p.AuthInfo.(alts.AuthInfo)
+		return isALTS
+	}
+)
+
+func isDirectPathFallbackRecoveryEnabled() bool {
+	enabled, _ := strconv.ParseBool(os.Getenv(directPathFallbackRecoveryEnv))
+	return enabled
+}
 
 // dialDirectPathFallbackCloudPath dials CloudPath connections. Tests replace
 // it before creating clients.
@@ -85,15 +128,17 @@ type fallbackWindowResult struct {
 }
 
 // directPathFallback is the DirectPath to CloudPath switch shared by every
-// channelSlot of a channel pool. The switch is one way.
+// channelSlot of a channel pool. By default the switch is one way; when
+// recovery.enabled is true, slots independently probe DirectPath and recover.
 type directPathFallback struct {
 	window  atomic.Pointer[fallbackWindow] // the only routing and counting state
-	closeMu sync.Mutex                     // serializes window closes
+	closeMu sync.Mutex                     // serializes window closes and recovery resets
+	period  time.Duration
 
 	// dialCloud dials one connection; errNoCloudPath if the client has none.
 	dialCloud func(context.Context) (gtransport.ConnPool, error)
 
-	// ctx bounds CloudPath dials and the window loop.
+	// ctx bounds CloudPath dials, recovery probes, and the window loop.
 	ctx    context.Context
 	cancel context.CancelFunc
 	done   chan struct{}
@@ -103,48 +148,84 @@ type directPathFallback struct {
 
 	hooksMu  sync.Mutex
 	onSwitch []func()
+
+	// Recovery configuration and state.
+	recovery            directPathFallbackRecoveryConfig
+	probeSession        atomic.Value // string
+	probingDisabled     atomic.Bool
+	recoveryVerifiedGen atomic.Uint64
+	// Guarded by closeMu; tracks the single canary slot testing an unverified
+	// post-recovery generation so another slot can take over if it closes.
+	recoveryCanaryGen  uint64
+	recoveryCanarySlot *channelSlot
+
+	slotsMu sync.Mutex
+	slots   map[*channelSlot]struct{}
+}
+
+type directPathFallbackRecoveryConfig struct {
+	probeMD             metadata.MD
+	enabled             bool
+	probeInterval       time.Duration
+	probeRPCTimeout     time.Duration
+	minRecoveryProbes   int
+	minRecoveryDuration time.Duration
+	probeJitter         func(time.Duration) time.Duration
 }
 
 // newDirectPathFallback returns the fallback state of a pool on DirectPath
 // and starts closing a window every period. The caller must call close. No
 // eef.* metrics are recorded if mp is nil or counter creation fails.
-func newDirectPathFallback(mp metric.MeterProvider, logger *log.Logger, dialCloud func(context.Context) (gtransport.ConnPool, error), period time.Duration) *directPathFallback {
-	metrics, err := newDirectPathFallbackMetrics(mp)
+func newDirectPathFallback(mp metric.MeterProvider, logger *log.Logger, dialCloud func(context.Context) (gtransport.ConnPool, error), period time.Duration, recovery directPathFallbackRecoveryConfig) *directPathFallback {
+	metrics, err := newDirectPathFallbackMetrics(mp, recovery.enabled)
 	if err != nil {
 		logf(logger, "spanner: DirectPath fallback metrics are disabled: %v", err)
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	f := &directPathFallback{
+		period:    period,
 		dialCloud: dialCloud,
 		ctx:       ctx,
 		cancel:    cancel,
 		done:      make(chan struct{}),
 		metrics:   metrics,
 		logger:    logger,
+		recovery:  recovery,
+	}
+	if recovery.enabled {
+		f.slots = make(map[*channelSlot]struct{})
 	}
 	f.window.Store(&fallbackWindow{start: time.Now()})
-	go f.run(period)
+	go f.run()
 	return f
 }
 
-func (f *directPathFallback) run(period time.Duration) {
+func (f *directPathFallback) run() {
 	defer close(f.done)
-	t := time.NewTicker(period)
+	t := time.NewTimer(f.period)
 	defer t.Stop()
 	for {
 		select {
 		case <-f.ctx.Done():
 			return
 		case now := <-t.C:
-			if f.closeWindow(now).switched {
+			if f.recovery.enabled {
+				// Give a freshly re-armed post-recovery window a full period before closing.
+				if wait := f.current().start.Add(f.period).Sub(now); wait > 0 {
+					t.Reset(min(wait, f.period))
+					continue
+				}
+			}
+			if f.closeWindow(now).switched && !f.recovery.enabled {
 				return
 			}
+			t.Reset(f.period)
 		}
 	}
 }
 
-// close stops the window loop and cancels pending CloudPath dials. It is a
-// no-op on a nil receiver.
+// close stops the window loop and cancels pending CloudPath dials and probes.
+// It is a no-op on a nil receiver.
 func (f *directPathFallback) close() {
 	if f == nil {
 		return
@@ -157,23 +238,138 @@ func (f *directPathFallback) current() *fallbackWindow {
 	return f.window.Load()
 }
 
+func (f *directPathFallback) setProbeSession(sessionID string) {
+	if f != nil && f.recovery.enabled && sessionID != "" {
+		f.probeSession.Store(sessionID)
+	}
+}
+
+func (f *directPathFallback) registerSlot(s *channelSlot) {
+	if f == nil || !f.recovery.enabled {
+		return
+	}
+	f.slotsMu.Lock()
+	f.slots[s] = struct{}{}
+	f.slotsMu.Unlock()
+
+	if w := f.current(); w.fallback {
+		s.enterFallback(w.generation)
+	} else if w.generation > 1 && s.inFallback.Load() {
+		s.enterFallback(w.generation - 1)
+	}
+}
+
+func (f *directPathFallback) unregisterSlot(s *channelSlot) {
+	if f == nil || !f.recovery.enabled {
+		return
+	}
+	f.slotsMu.Lock()
+	delete(f.slots, s)
+	f.slotsMu.Unlock()
+
+	f.closeMu.Lock()
+	if f.recoveryCanarySlot == s {
+		f.recoveryCanaryGen = 0
+		f.recoveryCanarySlot = nil
+	}
+	f.closeMu.Unlock()
+}
+
+// tryRecoverSlot resets the shared window out of fallback on the first slot
+// recovery for fallbackGen. Once the first slot recovers as a canary, remaining
+// slots stay on CloudPath until at least one non-fallback DirectPath RPC
+// succeeds in the post-recovery generation. Returns allowed=false if a newer
+// fallback cycle started or the post-recovery generation is still unverified.
+// Callers may hold channelSlot.mu (closeMu is a leaf lock).
+func (f *directPathFallback) tryRecoverSlot(s *channelSlot, fallbackGen uint64) (allowed, reset bool) {
+	f.closeMu.Lock()
+	defer f.closeMu.Unlock()
+	w := f.window.Load()
+	if w.fallback {
+		if w.generation != fallbackGen {
+			return false, false
+		}
+		nextGen := w.generation + 1
+		f.window.Store(&fallbackWindow{
+			generation: nextGen,
+			fallback:   false,
+			start:      time.Now(),
+		})
+		f.recoveryCanaryGen = nextGen
+		f.recoveryCanarySlot = s
+		return true, true
+	}
+	if w.generation != fallbackGen+1 {
+		return false, false
+	}
+	if f.recoveryVerifiedGen.Load() >= w.generation {
+		return true, false
+	}
+	if f.recoveryCanaryGen == w.generation {
+		return false, false
+	}
+	// The previous canary slot closed before any DirectPath RPC succeeded;
+	// promote this slot to test the post-recovery generation.
+	f.recoveryCanaryGen = w.generation
+	f.recoveryCanarySlot = s
+	return true, false
+}
+
+func (f *directPathFallback) finishSlotRecovery(reset bool) {
+	if reset {
+		logf(f.logger, "spanner: DirectPath slot recovered; re-arming DirectPath fallback evaluation")
+		f.metrics.recordFallback(f.ctx, true)
+		f.runSwitchHooks()
+		return
+	}
+	logf(f.logger, "spanner: DirectPath slot recovered")
+}
+
 func (f *directPathFallback) addSwitchHook(fn func()) {
 	f.hooksMu.Lock()
 	defer f.hooksMu.Unlock()
 	f.onSwitch = append(f.onSwitch, fn)
 }
 
+func (f *directPathFallback) runSwitchHooks() {
+	f.hooksMu.Lock()
+	hooks := append([]func(){}, f.onSwitch...)
+	f.hooksMu.Unlock()
+	for _, fn := range hooks {
+		fn()
+	}
+}
+
 var errNoCloudPath = errors.New("spanner: the client's connection pool is supplied by its options and has no separate CloudPath")
+
+// newDirectPathProbeMetadata builds static headers for recovery GetSession probes.
+func newDirectPathProbeMetadata(database string, disableRouteToLeader bool) metadata.MD {
+	md := metadata.MD{}
+	if database != "" {
+		md.Set(resourcePrefixHeader, database)
+	}
+	if !disableRouteToLeader {
+		md.Set(routeToLeaderHeader, "true")
+	}
+	md.Set("x-goog-api-client", gax.XGoogHeader("gl-go", gax.GoVersion, "gccl", internal.Version))
+	return md
+}
 
 // newPoolFallback returns the fallback state of a channel pool that dials
 // with opts. It returns nil if fallback is off, or if opts supply the client's
 // gRPC connection, which has no CloudPath to fall back to.
-func newPoolFallback(enabled bool, cfg transport.PoolConfig, logger *log.Logger, opts []option.ClientOption, isDirect func(gtransport.ConnPool) bool) *directPathFallback {
+func newPoolFallback(enabled bool, database string, clientCfg ClientConfig, cfg transport.PoolConfig, opts []option.ClientOption, isDirect func(gtransport.ConnPool) bool) *directPathFallback {
 	if !enabled || suppliesGRPCConn(opts) {
 		return nil
 	}
 	dialCloud := newCloudPathDialer(cfg, opts, isDirect)
-	return newDirectPathFallback(cfg.MeterProvider, logger, dialCloud, directPathFallbackPeriod)
+	var recovery directPathFallbackRecoveryConfig
+	if isDirectPathFallbackRecoveryEnabled() {
+		recovery = defaultDirectPathRecoveryConfig
+		recovery.enabled = true
+		recovery.probeMD = newDirectPathProbeMetadata(database, clientCfg.DisableRouteToLeader)
+	}
+	return newDirectPathFallback(cfg.MeterProvider, clientCfg.Logger, dialCloud, directPathFallbackPeriod, recovery)
 }
 
 func suppliesGRPCConn(opts []option.ClientOption) bool {
@@ -200,25 +396,25 @@ func newCloudPathDialer(cfg transport.PoolConfig, opts []option.ClientOption, is
 	}
 }
 
-// dialCloudPath dials a CloudPath connection and gives up after timeout so a
-// blocking dial cannot hold up pool scale-up.
-func (f *directPathFallback) dialCloudPath(ctx context.Context, timeout time.Duration) (gtransport.ConnPool, error) {
-	// The connection keeps dialCtx, so ctx must only bound the dial itself.
+// dialWithBoundCtx dials a connection using a context derived from f.ctx (so
+// credentials that retain the dial context for token refreshes stay valid until
+// the connection closes), bounding only the dial itself by ctx and timeout.
+func (f *directPathFallback) dialWithBoundCtx(ctx context.Context, timeout time.Duration, dial func(context.Context) (gtransport.ConnPool, error), timeoutErr error) (gtransport.ConnPool, error) {
 	dialCtx, cancel := context.WithCancel(f.ctx)
 	stop := context.AfterFunc(ctx, cancel)
 	timer := time.AfterFunc(timeout, cancel)
-	cloud, err := f.dialCloud(dialCtx)
+	conn, err := dial(dialCtx)
 	timedOut, callerDone := !timer.Stop(), !stop()
 	if err == nil && !timedOut && !callerDone {
-		return cloudPathConn{ConnPool: cloud, cancel: cancel}, nil
+		return scopedConn{ConnPool: conn, cancel: cancel}, nil
 	}
 	cancel()
 	if err == nil {
-		cloud.Close()
+		conn.Close()
 	}
 	switch {
 	case timedOut:
-		return nil, spannerErrorf(codes.DeadlineExceeded, "spanner: CloudPath dial did not complete within %v", timeout)
+		return nil, timeoutErr
 	case callerDone:
 		return nil, ctx.Err()
 	}
@@ -244,10 +440,11 @@ func sameConnPool(a, b gtransport.ConnPool) bool {
 // caller cancelled.
 var errStreamStoppedByReader = errors.New("spanner: the stream's reader stopped it")
 
-// recordAttempt records the outcome of an attempt that was sent under w with
-// ctx. An attempt the caller cancelled says nothing about the path, so it is
-// not counted and not reported in eef.call_status.
-func (f *directPathFallback) recordAttempt(ctx context.Context, w *fallbackWindow, err error) {
+// recordSlotAttempt records an attempt's outcome over CloudPath (usedFallback=true) or DirectPath.
+// An attempt the caller cancelled says nothing about the path, so it is not counted and not
+// reported in eef.call_status. Explicit usedFallback keeps unrecovered CloudPath calls out of
+// DirectPath error-rate accounting.
+func (f *directPathFallback) recordSlotAttempt(ctx context.Context, w *fallbackWindow, usedFallback bool, err error) {
 	if ctx.Value(fallbackAccountingOffKey{}) != nil {
 		return
 	}
@@ -255,8 +452,8 @@ func (f *directPathFallback) recordAttempt(ctx context.Context, w *fallbackWindo
 	if code == codes.Canceled && errors.Is(ctx.Err(), context.Canceled) {
 		return
 	}
-	f.metrics.recordCall(ctx, w.fallback, code)
-	if !w.fallback {
+	f.metrics.recordCall(ctx, usedFallback, code)
+	if !usedFallback {
 		f.record(w.generation, isDirectPathFallbackFailure(code))
 	}
 }
@@ -283,6 +480,9 @@ func (f *directPathFallback) record(gen uint64, failed bool) {
 			return
 		}
 		if w.outcomes.Add(delta)&fallbackWindowSealed == 0 {
+			if !failed && gen > 0 {
+				f.markGenerationVerified(gen)
+			}
 			return
 		}
 		// The window was sealed first, so its decision did not see this
@@ -294,11 +494,23 @@ func (f *directPathFallback) record(gen uint64, failed bool) {
 	}
 }
 
+func (f *directPathFallback) markGenerationVerified(gen uint64) {
+	for {
+		cur := f.recoveryVerifiedGen.Load()
+		if cur >= gen {
+			return
+		}
+		if f.recoveryVerifiedGen.CompareAndSwap(cur, gen) {
+			return
+		}
+	}
+}
+
 // closeWindow ends the current window and decides whether the pool falls back.
 func (f *directPathFallback) closeWindow(now time.Time) fallbackWindowResult {
 	f.closeMu.Lock()
 	w := f.window.Load()
-	if w.fallback {
+	if w.fallback || (f.recovery.enabled && now.Before(w.start)) {
 		f.closeMu.Unlock()
 		return fallbackWindowResult{}
 	}
@@ -308,21 +520,30 @@ func (f *directPathFallback) closeWindow(now time.Time) fallbackWindowResult {
 	if switched {
 		next.generation++
 		next.fallback = true
+		f.recoveryCanaryGen = 0
+		f.recoveryCanarySlot = nil
 	}
 	f.window.Store(next)
 	f.closeMu.Unlock()
 
 	if switched {
 		logf(f.logger, "spanner: every DirectPath call in the last %v failed (%d failures); switching to CloudPath", now.Sub(w.start).Round(time.Second), failures)
-		f.metrics.recordFallback(f.ctx)
-		f.hooksMu.Lock()
-		hooks := append([]func(){}, f.onSwitch...)
-		f.hooksMu.Unlock()
-		for _, fn := range hooks {
-			fn()
-		}
+		f.notifyFallback(next.generation)
 	}
 	return fallbackWindowResult{failures: failures, successes: successes, switched: switched}
+}
+
+func (f *directPathFallback) notifyFallback(gen uint64) {
+	f.metrics.recordFallback(f.ctx, false)
+	f.runSwitchHooks()
+	if f.recovery.enabled {
+		f.slotsMu.Lock()
+		slots := slices.Collect(maps.Keys(f.slots))
+		f.slotsMu.Unlock()
+		for _, s := range slots {
+			s.enterFallback(gen)
+		}
+	}
 }
 
 func shouldFallBackToCloudPath(failures, successes uint64) bool {
@@ -351,11 +572,12 @@ type directPathFallbackMetrics struct {
 	fallbackCount metric.Int64Counter
 	callStatus    metric.Int64Counter
 	// callAttrs caches the call_status attributes by [fallback][code].
-	callAttrs  [2][codes.Unauthenticated + 1]metric.AddOption
-	switchAttr metric.AddOption
+	callAttrs    [2][codes.Unauthenticated + 1]metric.AddOption
+	switchAttr   metric.AddOption
+	recoveryAttr metric.AddOption
 }
 
-func newDirectPathFallbackMetrics(mp metric.MeterProvider) (*directPathFallbackMetrics, error) {
+func newDirectPathFallbackMetrics(mp metric.MeterProvider, recoveryEnabled bool) (*directPathFallbackMetrics, error) {
 	if mp == nil {
 		return nil, nil
 	}
@@ -383,6 +605,12 @@ func newDirectPathFallbackMetrics(mp metric.MeterProvider) (*directPathFallbackM
 			attribute.String(metricLabelKeyFromChannelName, directPathFallbackPrimaryChannelName),
 			attribute.String(metricLabelKeyToChannelName, directPathFallbackFallbackChannelName),
 		)),
+	}
+	if recoveryEnabled {
+		m.recoveryAttr = metric.WithAttributeSet(attribute.NewSet(
+			attribute.String(metricLabelKeyFromChannelName, directPathFallbackFallbackChannelName),
+			attribute.String(metricLabelKeyToChannelName, directPathFallbackPrimaryChannelName),
+		))
 	}
 	for i, name := range []string{directPathFallbackPrimaryChannelName, directPathFallbackFallbackChannelName} {
 		for c := range m.callAttrs[i] {
@@ -416,9 +644,16 @@ func (m *directPathFallbackMetrics) recordCall(ctx context.Context, fallback boo
 	m.callStatus.Add(ctx, 1, callStatusAttr(name, code))
 }
 
-func (m *directPathFallbackMetrics) recordFallback(ctx context.Context) {
+func (m *directPathFallbackMetrics) recordFallback(ctx context.Context, recovery bool) {
 	if m == nil {
 		return
 	}
-	m.fallbackCount.Add(ctx, 1, m.switchAttr)
+	attr := m.switchAttr
+	if recovery {
+		if m.recoveryAttr == nil {
+			return
+		}
+		attr = m.recoveryAttr
+	}
+	m.fallbackCount.Add(ctx, 1, attr)
 }

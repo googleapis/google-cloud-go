@@ -562,7 +562,7 @@ func createDCPConnPool(
 		}
 		return pool, err
 	}
-	fallback := newPoolFallback(directPathFallbackEnabled, dcpPoolCfg, config.Logger, userOpts, func(pool gtransport.ConnPool) bool {
+	fallback := newPoolFallback(directPathFallbackEnabled, database, config, dcpPoolCfg, userOpts, func(pool gtransport.ConnPool) bool {
 		first := firstDialed.Load()
 		return first != nil && sameConnPool(pool, *first)
 	})
@@ -574,6 +574,7 @@ func createDCPConnPool(
 	}
 	sc.connPool = dcp
 	sc.dynamicPool = dcp
+	sc.directPathFallback = fallback
 	return dcp, sc, nil
 }
 
@@ -631,7 +632,7 @@ func createFixedConnPool(
 		dialedPool.Close()
 		return nil, nil, nil, spannerError(codes.InvalidArgument, "gRPC connection pool has no connections")
 	}
-	fallback := newPoolFallback(directPathFallbackEnabled, fixedPoolCfg, config.Logger, opts, func(pool gtransport.ConnPool) bool {
+	fallback := newPoolFallback(directPathFallbackEnabled, database, config, fixedPoolCfg, opts, func(pool gtransport.ConnPool) bool {
 		return sameConnPool(pool, dialedPool)
 	})
 	sc := newSessionClient(nil, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
@@ -645,6 +646,7 @@ func createFixedConnPool(
 	}
 	sc.connPool = pool
 	sc.dynamicPool = pool
+	sc.directPathFallback = fallback
 	return pool, sc, allOpts, nil
 }
 

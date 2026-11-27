@@ -43,7 +43,7 @@ func newTestDirectPathFallback(t *testing.T) *directPathFallback {
 
 func newTestDirectPathFallbackWithMetrics(t *testing.T, mp metric.MeterProvider) *directPathFallback {
 	t.Helper()
-	f := newDirectPathFallback(mp, log.New(io.Discard, "", 0), nil, time.Hour)
+	f := newDirectPathFallback(mp, log.New(io.Discard, "", 0), nil, time.Hour, directPathFallbackRecoveryConfig{})
 	t.Cleanup(f.close)
 	return f
 }
@@ -218,7 +218,7 @@ func (f *directPathFallback) closeWindowForTest(now time.Time) fallbackWindowRes
 
 func TestDirectPathFallbackLoopSwitchesAndStops(t *testing.T) {
 	skipDialectRerun(t)
-	f := newDirectPathFallback(nil, log.New(io.Discard, "", 0), nil, 5*time.Millisecond)
+	f := newDirectPathFallback(nil, log.New(io.Discard, "", 0), nil, 5*time.Millisecond, directPathFallbackRecoveryConfig{})
 	t.Cleanup(f.close)
 	var hookCalls int
 	var mu sync.Mutex
@@ -306,7 +306,7 @@ func TestDirectPathFallbackWithoutMetricsWhenACounterCannotBeCreated(t *testing.
 		t.Run(counter, func(t *testing.T) {
 			logger := &lockedBuffer{}
 			mp := &failingDCPMeterProvider{meter: &failingDCPMeter{failCounterName: counter}}
-			f := newDirectPathFallback(mp, log.New(logger, "", 0), nil, time.Hour)
+			f := newDirectPathFallback(mp, log.New(logger, "", 0), nil, time.Hour, directPathFallbackRecoveryConfig{})
 			t.Cleanup(f.close)
 			if got, want := logger.String(), "spanner: DirectPath fallback metrics are disabled: test counter registration failure"; !strings.Contains(got, want) {
 				t.Fatalf("log = %q, want it to contain %q", got, want)
@@ -448,4 +448,8 @@ func TestDirectPathFallbackCountsHungAttemptInTheWindowItEnds(t *testing.T) {
 	if res := f.closeWindow(time.Now()); !res.switched {
 		t.Fatalf("hung attempt did not count in the window it ended in: %+v", res)
 	}
+}
+
+func (f *directPathFallback) recordAttempt(ctx context.Context, w *fallbackWindow, err error) {
+	f.recordSlotAttempt(ctx, w, w.fallback, err)
 }

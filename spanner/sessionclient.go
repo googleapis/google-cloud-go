@@ -100,6 +100,7 @@ type sessionClient struct {
 
 	connPool             gtransport.ConnPool
 	dynamicPool          *dynamicChannelPool
+	directPathFallback   *directPathFallback
 	database             string
 	id                   string
 	userAgent            string

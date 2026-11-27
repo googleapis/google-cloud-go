@@ -465,7 +465,7 @@ func (p failingClosePool) Close() error { return p.err }
 func TestChannelSlotConnWithoutDirectSide(t *testing.T) {
 	skipDialectRerun(t)
 	f := newTestDirectPathFallback(t)
-	slot := newCloudPathSlot(&closeCountingPool{}, f)
+	slot := newCloudPathSlot(&closeCountingPool{}, f, nil, 0)
 	defer slot.Close()
 	if got := slot.Conn(); got != nil {
 		t.Fatalf("Conn() of a slot without a direct side = %v, want nil", got)
@@ -591,7 +591,7 @@ func TestDialChannelSlot(t *testing.T) {
 			if slot.fallback != f {
 				t.Fatalf("slot fallback = %p, want %p", slot.fallback, f)
 			}
-			if got := slot.direct != nil; got != tt.wantDirect {
+			if got := slot.direct.Load() != nil; got != tt.wantDirect {
 				t.Fatalf("slot has a direct side = %v, want %v", got, tt.wantDirect)
 			}
 			if got := slot.cloud.Load() != nil; got != tt.wantCloud {

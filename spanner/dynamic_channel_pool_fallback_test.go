@@ -548,7 +548,7 @@ func TestDCPDrainAndFallbackKeepTransactionOnEntry(t *testing.T) {
 		}
 	}
 	slot := bound.Pool.(*channelSlot)
-	direct, cloudConn := slot.direct.Conn(), slot.cloud.Load().Conn()
+	direct, cloudConn := slot.direct.Load().Conn(), slot.cloud.Load().Conn()
 	if !bound.CloseIfIdle(0) {
 		t.Fatal("drained entry did not close")
 	}
@@ -610,7 +610,7 @@ func TestDCPEntryAfterSwitchDialsOnlyCloudPath(t *testing.T) {
 		t.Fatalf("CloudPath priming queries = %d, want %d", got, want)
 	}
 	slot := e.Pool.(*channelSlot)
-	if slot.direct != nil {
+	if slot.direct.Load() != nil {
 		t.Fatal("entry created after the switch has a direct connection")
 	}
 	conn := slot.Conn()
@@ -672,8 +672,8 @@ func TestDCPEntryAfterSwitchWithCallerSuppliedPool(t *testing.T) {
 	if e == nil {
 		t.Fatal("scale-up after the switch added no entry")
 	}
-	if slot := e.Pool.(*channelSlot); !sameConnPool(slot.direct, userPool) {
-		t.Fatalf("entry direct side = %T, want the caller's pool", slot.direct)
+	if d := e.Pool.(*channelSlot).direct.Load(); d == nil || !sameConnPool(d.ConnPool, userPool) {
+		t.Fatalf("entry direct side = %v, want the caller's pool", d)
 	}
 	if got := paths.direct.count(executeSQLMethod); got == 0 {
 		t.Fatal("the entry was not primed over the caller's pool")
