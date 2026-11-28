@@ -154,7 +154,10 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 	}
 	params.defaults()
 
-	readSpec := makeBidiReadObjectSpec(params)
+	readSpec, err := makeBidiReadObjectSpec(params)
+	if err != nil {
+		return nil, err
+	}
 
 	mCtx, cancel := context.WithCancel(ctx)
 
@@ -222,22 +225,22 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 	}
 }
 
-func makeBidiReadObjectSpec(params *newMultiRangeDownloaderParams) *storagepb.BidiReadObjectSpec {
+func makeBidiReadObjectSpec(params *newMultiRangeDownloaderParams) (*storagepb.BidiReadObjectSpec, error) {
 	b := bucketResourceName(globalProjectAlias, params.bucket)
 	readSpec := &storagepb.BidiReadObjectSpec{
 		Bucket:                    b,
 		Object:                    params.object,
 		CommonObjectRequestParams: toProtoCommonObjectRequestParams(params.encryptionKey),
 	}
-	if params.gen >= 0 {
-		readSpec.Generation = params.gen
+	if err := applyCondsProto("NewMultiRangeDownloader", params.gen, params.conds, readSpec); err != nil {
+		return nil, err
 	}
 	if params.handle != nil && len(*params.handle) > 0 {
 		readSpec.ReadHandle = &storagepb.BidiReadHandle{
 			Handle: *params.handle,
 		}
 	}
-	return readSpec
+	return readSpec, nil
 }
 
 func (m *newMultiRangeDownloaderParams) defaults() {
@@ -948,6 +951,9 @@ func (m *multiRangeDownloaderManager) handleAddStreamCmd(ctx context.Context, cm
 	}
 	m.streams[cmd.id] = cmd.stream
 	if cmd.spec != nil {
+		if cmd.spec.Generation == 0 && m.readSpec.Generation != 0 {
+			cmd.spec.Generation = m.readSpec.Generation
+		}
 		m.readSpec = cmd.spec
 	}
 	m.streamCreating = false
@@ -986,6 +992,9 @@ func (m *multiRangeDownloaderManager) handleReconnectStreamCmd(ctx context.Conte
 
 	stream.session = cmd.session
 	if cmd.spec != nil {
+		if cmd.spec.Generation == 0 && m.readSpec.Generation != 0 {
+			cmd.spec.Generation = m.readSpec.Generation
+		}
 		m.readSpec = cmd.spec
 	}
 
@@ -1055,6 +1064,11 @@ func (m *multiRangeDownloaderManager) processSessionResult(result mrdSessionResu
 			obj := newObjectFromProto(meta)
 			attrs := readerAttrsFromObject(obj)
 			m.attrs = &attrs
+			// Pin the generation discovered on the initial session so additional
+			// streams and reconnects cannot silently read a newer generation.
+			if m.readSpec.Generation == 0 && attrs.Generation != 0 {
+				m.readSpec.Generation = attrs.Generation
+			}
 			for _, stream := range m.streams {
 				for _, req := range stream.pendingRanges {
 					if req.offset < 0 {

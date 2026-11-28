@@ -256,3 +256,278 @@ func TestMultiRangeDownloaderReadStallExhaustsMaxAttempts(t *testing.T) {
 		t.Errorf("srv.streams.Load() = %d, want 2", got)
 	}
 }
+
+func TestMakeBidiReadObjectSpecAppliesConditions(t *testing.T) {
+	t.Parallel()
+
+	params := &newMultiRangeDownloaderParams{
+		bucket: "my-bucket",
+		object: "my-object",
+		gen:    defaultGen,
+		conds: &Conditions{
+			GenerationMatch:     42,
+			MetagenerationMatch: 7,
+		},
+	}
+	spec, err := makeBidiReadObjectSpec(params)
+	if err != nil {
+		t.Fatalf("makeBidiReadObjectSpec: %v", err)
+	}
+	if spec.IfGenerationMatch == nil || *spec.IfGenerationMatch != 42 {
+		t.Errorf("IfGenerationMatch = %v, want 42", spec.IfGenerationMatch)
+	}
+	if spec.IfMetagenerationMatch == nil || *spec.IfMetagenerationMatch != 7 {
+		t.Errorf("IfMetagenerationMatch = %v, want 7", spec.IfMetagenerationMatch)
+	}
+
+	// Conflicting conditions must return an error.
+	badParams := &newMultiRangeDownloaderParams{
+		bucket: "my-bucket",
+		object: "my-object",
+		gen:    defaultGen,
+		conds: &Conditions{
+			GenerationMatch:    42,
+			GenerationNotMatch: 99,
+		},
+	}
+	if _, err := makeBidiReadObjectSpec(badParams); err == nil {
+		t.Fatal("makeBidiReadObjectSpec with conflicting conditions: got nil error, want error")
+	}
+}
+
+type genPinningStorageServer struct {
+	storagepb.UnimplementedStorageServer
+	mu               sync.Mutex
+	readGens         []int64
+	bidiGens         []int64
+	bidiIfGenMatches []*int64
+	data             []byte
+	generation       int64
+	failFirstAfter   int
+}
+
+func (s *genPinningStorageServer) ReadObject(req *storagepb.ReadObjectRequest, stream storagepb.Storage_ReadObjectServer) error {
+	s.mu.Lock()
+	s.readGens = append(s.readGens, req.GetGeneration())
+	attempt := len(s.readGens)
+	s.mu.Unlock()
+
+	start := int(req.GetReadOffset())
+	end := len(s.data)
+	if attempt == 1 && s.failFirstAfter > 0 && start+s.failFirstAfter < end {
+		end = start + s.failFirstAfter
+	}
+	chunk := s.data[start:end]
+	crc := crc32.Checksum(chunk, crc32cTable)
+	if err := stream.Send(&storagepb.ReadObjectResponse{
+		Metadata: &storagepb.Object{
+			Bucket:     req.GetBucket(),
+			Name:       req.GetObject(),
+			Generation: s.generation,
+			Size:       int64(len(s.data)),
+		},
+		ChecksummedData: &storagepb.ChecksummedData{Content: chunk, Crc32C: &crc},
+	}); err != nil {
+		return err
+	}
+	if attempt == 1 && s.failFirstAfter > 0 {
+		return status.Error(codes.Unavailable, "transient read break")
+	}
+	return nil
+}
+
+func (s *genPinningStorageServer) BidiReadObject(stream storagepb.Storage_BidiReadObjectServer) error {
+	req, err := stream.Recv()
+	if err != nil {
+		return err
+	}
+	spec := req.GetReadObjectSpec()
+	s.mu.Lock()
+	s.bidiGens = append(s.bidiGens, spec.GetGeneration())
+	s.bidiIfGenMatches = append(s.bidiIfGenMatches, spec.IfGenerationMatch)
+	attempt := len(s.bidiGens)
+	s.mu.Unlock()
+
+	if len(req.GetReadRanges()) > 0 && attempt == 1 && s.failFirstAfter > 0 {
+		rr := req.GetReadRanges()[0]
+		chunk := s.data[rr.GetReadOffset() : rr.GetReadOffset()+int64(s.failFirstAfter)]
+		crc := crc32.Checksum(chunk, crc32cTable)
+		if err := stream.Send(&storagepb.BidiReadObjectResponse{
+			Metadata: &storagepb.Object{
+				Bucket:     spec.GetBucket(),
+				Name:       spec.GetObject(),
+				Generation: s.generation,
+				Size:       int64(len(s.data)),
+			},
+			ObjectDataRanges: []*storagepb.ObjectRangeData{{
+				ChecksummedData: &storagepb.ChecksummedData{Content: chunk, Crc32C: &crc},
+				ReadRange:       &storagepb.ReadRange{ReadOffset: rr.GetReadOffset(), ReadLength: int64(len(chunk)), ReadId: rr.GetReadId()},
+				RangeEnd:        false,
+			}},
+		}); err != nil {
+			return err
+		}
+		return status.Error(codes.Unavailable, "transient bidi read break")
+	}
+
+	if err := stream.Send(&storagepb.BidiReadObjectResponse{
+		Metadata: &storagepb.Object{
+			Bucket:     spec.GetBucket(),
+			Name:       spec.GetObject(),
+			Generation: s.generation,
+			Size:       int64(len(s.data)),
+		},
+		ReadHandle: &storagepb.BidiReadHandle{Handle: []byte("h")},
+	}); err != nil {
+		return err
+	}
+	if len(req.GetReadRanges()) > 0 {
+		if err := sendBidiReadRanges(stream, s.data, req.GetReadRanges()); err != nil {
+			return err
+		}
+	}
+	for {
+		next, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		if err := sendBidiReadRanges(stream, s.data, next.GetReadRanges()); err != nil {
+			return err
+		}
+	}
+}
+
+func TestGRPCReadObjectReopenPinsGeneration(t *testing.T) {
+	t.Parallel()
+
+	srv := &genPinningStorageServer{
+		data:           []byte("0123456789abcdef"),
+		generation:     777,
+		failFirstAfter: 6,
+	}
+	lis := bufconn.Listen(1 << 20)
+	s := grpc.NewServer()
+	storagepb.RegisterStorageServer(s, srv)
+	go s.Serve(lis)
+	t.Cleanup(s.Stop)
+
+	dialer := func(ctx context.Context, _ string) (net.Conn, error) {
+		return lis.DialContext(ctx)
+	}
+	client, err := NewGRPCClient(t.Context(),
+		option.WithEndpoint("passthrough:///bufconn"),
+		option.WithGRPCDialOption(grpc.WithContextDialer(dialer)),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		option.WithoutAuthentication(),
+		internaloption.EnableDirectPath(false),
+		WithDisabledClientMetrics(),
+	)
+	if err != nil {
+		t.Fatalf("NewGRPCClient: %v", err)
+	}
+	t.Cleanup(func() { _ = client.Close() })
+	client.SetRetry(WithBackoff(gax.Backoff{Initial: time.Millisecond}))
+
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
+	defer cancel()
+
+	r, err := client.Bucket("b").Object("o").NewReader(ctx)
+	if err != nil {
+		t.Fatalf("NewReader: %v", err)
+	}
+	got, err := io.ReadAll(r)
+	if err != nil {
+		t.Fatalf("io.ReadAll: %v", err)
+	}
+	_ = r.Close()
+	if !bytes.Equal(got, srv.data) {
+		t.Fatalf("read = %q, want %q", got, srv.data)
+	}
+
+	srv.mu.Lock()
+	gens := slices.Clone(srv.readGens)
+	srv.mu.Unlock()
+	if len(gens) < 2 {
+		t.Fatalf("expected at least 2 ReadObject calls, got %v", gens)
+	}
+	if gens[0] != 0 || gens[1] != 777 {
+		t.Errorf("ReadObject generations = %v, want [0, 777]", gens)
+	}
+}
+
+func TestGRPCBidiReadObjectReopenPinsGeneration(t *testing.T) {
+	t.Parallel()
+
+	srv := &genPinningStorageServer{
+		data:           []byte("0123456789abcdef"),
+		generation:     888,
+		failFirstAfter: 6,
+	}
+	client := newBufconnGRPCClient(t, srv)
+	client.SetRetry(WithBackoff(gax.Backoff{Initial: time.Millisecond}))
+
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
+	defer cancel()
+
+	r, err := client.Bucket("b").Object("o").NewReader(ctx)
+	if err != nil {
+		t.Fatalf("NewReader: %v", err)
+	}
+	got, err := io.ReadAll(r)
+	if err != nil {
+		t.Fatalf("io.ReadAll: %v", err)
+	}
+	_ = r.Close()
+	if !bytes.Equal(got, srv.data) {
+		t.Fatalf("read = %q, want %q", got, srv.data)
+	}
+
+	srv.mu.Lock()
+	gens := slices.Clone(srv.bidiGens)
+	srv.mu.Unlock()
+	if len(gens) < 2 {
+		t.Fatalf("expected at least 2 BidiReadObject calls, got %v", gens)
+	}
+	if gens[0] != 0 || gens[1] != 888 {
+		t.Errorf("BidiReadObject generations = %v, want [0, 888]", gens)
+	}
+}
+
+func TestMultiRangeDownloaderPinsGenerationAndSendsConditions(t *testing.T) {
+	t.Parallel()
+
+	srv := &genPinningStorageServer{
+		data:       []byte("0123456789abcdef"),
+		generation: 999,
+	}
+	client := newBufconnGRPCClient(t, srv)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
+	defer cancel()
+
+	mrd, err := client.Bucket("b").Object("o").If(Conditions{GenerationMatch: 999}).NewMultiRangeDownloader(ctx, WithMinConnections(2))
+	if err != nil {
+		t.Fatalf("NewMultiRangeDownloader: %v", err)
+	}
+	var buf bytes.Buffer
+	mrd.Add(&buf, 0, int64(len(srv.data)), nil)
+	mrd.Wait()
+	if err := mrd.Close(); err != nil {
+		t.Fatalf("mrd.Close: %v", err)
+	}
+
+	srv.mu.Lock()
+	gens := slices.Clone(srv.bidiGens)
+	ifMatches := slices.Clone(srv.bidiIfGenMatches)
+	srv.mu.Unlock()
+
+	if len(ifMatches) == 0 || ifMatches[0] == nil || *ifMatches[0] != 999 {
+		t.Errorf("initial IfGenerationMatch = %v, want 999", ifMatches)
+	}
+	// Additional streams opened after metadata arrives should carry pinned generation 999.
+	if len(gens) >= 2 && gens[1] != 999 {
+		t.Errorf("second MRD stream generation = %d, want 999 (all: %v)", gens[1], gens)
+	}
+}
