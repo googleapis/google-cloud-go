@@ -2729,6 +2729,95 @@ func TestParseDDL(t *testing.T) {
 	}
 }
 
+func TestParseCreateQueue(t *testing.T) {
+	const ddl = `CREATE QUEUE IF NOT EXISTS UserTasks (
+  UserId INT64 NOT NULL,
+  ShardId INT64 AS (ABS(UserId)) STORED HIDDEN,
+  CreatedAt TIMESTAMP HIDDEN OPTIONS (allow_commit_timestamp = TRUE),
+  UpdatedAt TIMESTAMP OPTIONS (allow_commit_timestamp = NULL),
+  Payload JSON NOT NULL HIDDEN
+) PRIMARY KEY (UserId, ShardId DESC, CreatedAt, UpdatedAt),
+  INTERLEAVE IN PARENT Users ON DELETE CASCADE,
+  ROW DELETION POLICY (OLDER_THAN (CreatedAt, INTERVAL 30 DAY)),
+  OPTIONS (disable_delivery = true, receive_mode = 'pull', locality_group = 'QueueStorage', disable_send = false)`
+
+	stmt, err := ParseDDLStmt(ddl)
+	if err != nil {
+		t.Fatal(err)
+	}
+	stmt.clearOffset()
+
+	want := testCreateQueue()
+	if !reflect.DeepEqual(stmt, want) {
+		t.Fatalf("ParseDDLStmt produced\n%#v\nwant\n%#v", stmt, want)
+	}
+
+	schema, err := ParseDDL("schema.sql", "CREATE TABLE Users (UserId INT64 NOT NULL) PRIMARY KEY (UserId);\n"+ddl+";")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(schema.List) != 2 {
+		t.Fatalf("got %d statements, want 2", len(schema.List))
+	}
+	if got, ok := schema.List[1].(*CreateQueue); !ok || got.Name != "UserTasks" || got.Pos().Line != 2 {
+		t.Errorf("unexpected queue in schema: %#v", schema.List[1])
+	}
+}
+
+func TestParseCreateQueuePayload(t *testing.T) {
+	ddl := "CREATE QUEUE Tasks (Id INT64, PAYLOAD example.Task NOT NULL) PRIMARY KEY (Id)"
+	stmt, err := ParseDDLStmt(ddl)
+	if err != nil {
+		t.Fatal(err)
+	}
+	column := stmt.(*CreateQueue).Columns[1]
+	if got, want := column.Type, (Type{Base: Proto, ProtoRef: "example.Task"}); got != want {
+		t.Errorf("payload type = %#v, want %#v", got, want)
+	}
+}
+
+func TestParseCreateQueueInvalid(t *testing.T) {
+	const prefix = "CREATE QUEUE UserTasks (UserId INT64, Payload BYTES(MAX) NOT NULL)"
+	const ddl = prefix + " PRIMARY KEY (UserId)"
+	for _, tc := range []struct {
+		name string
+		ddl  string
+		want string
+	}{
+		{"missing payload", "CREATE QUEUE UserTasks (UserId INT64) PRIMARY KEY (UserId)", "requires a Payload column"},
+		{"nullable payload", "CREATE QUEUE UserTasks (UserId INT64, Payload JSON) PRIMARY KEY (UserId)", "must be NOT NULL"},
+		{"invalid payload type", "CREATE QUEUE UserTasks (UserId INT64, Payload ARRAY<JSON> NOT NULL) PRIMARY KEY (UserId)", "cannot be an array"},
+		{"proto without type name", "CREATE QUEUE UserTasks (UserId INT64, Payload PROTO NOT NULL) PRIMARY KEY (UserId)", "requires a proto type name"},
+		{"duplicate payload", "CREATE QUEUE UserTasks (UserId INT64, Payload JSON NOT NULL, payload JSON NOT NULL) PRIMARY KEY (UserId)", "duplicate queue Payload column"},
+		{"duplicate column", "CREATE QUEUE UserTasks (UserId INT64, userid INT64, Payload JSON NOT NULL) PRIMARY KEY (UserId)", "duplicate queue column"},
+		{"invalid column type", "CREATE QUEUE UserTasks (UserId 123, Payload JSON NOT NULL) PRIMARY KEY (UserId)", "want type name"},
+		{"generated column without stored", "CREATE QUEUE UserTasks (UserId INT64 AS (1) HIDDEN, Payload JSON NOT NULL) PRIMARY KEY (UserId)", "expecting \"STORED\""},
+		{"no primary key", prefix, "EOF"},
+		{"empty primary key", prefix + " PRIMARY KEY ()", "requires at least one column"},
+		{"unclosed primary key", prefix + " PRIMARY KEY (UserId", "unexpected EOF, want \")\""},
+		{"payload in primary key", prefix + " PRIMARY KEY (UserId, Payload)", "Payload column cannot be part of the primary key"},
+		{"nonpayload outside primary key", "CREATE QUEUE UserTasks (UserId INT64, Extra STRING(MAX), Payload JSON NOT NULL) PRIMARY KEY (UserId)", "must include every non-Payload column"},
+		{"unknown primary key column", prefix + " PRIMARY KEY (UserId, Unknown)", "unknown or duplicate queue primary key column"},
+		{"duplicate primary key column", prefix + " PRIMARY KEY (UserId, UserId)", "unknown or duplicate queue primary key column"},
+		{"missing interleave table", ddl + ", INTERLEAVE IN PARENT", "EOF"},
+		{"empty options", ddl + ", OPTIONS ()", "expected at least one queue option"},
+		{"unclosed options", ddl + ", OPTIONS (disable_send = false", "unexpected EOF, want \")\""},
+		{"unknown option", ddl + ", OPTIONS (enabled = true)", "unknown queue option"},
+		{"wrong option type", ddl + ", OPTIONS (disable_send = 'true')", "want true or false"},
+		{"wrong receive mode type", ddl + ", OPTIONS (receive_mode = true)", "want string literal"},
+		{"duplicate option", ddl + ", OPTIONS (disable_send = true, DISABLE_SEND = false)", "duplicate queue option"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if _, err := ParseDDLStmt(tc.ddl); err == nil || !strings.Contains(err.Error(), tc.want) {
+				t.Errorf("ParseDDLStmt(%q) error = %v, want %q", tc.ddl, err, tc.want)
+			}
+			if _, err := ParseDDL("schema.sql", tc.ddl); err == nil || !strings.Contains(err.Error(), tc.want) {
+				t.Errorf("ParseDDL(%q) error = %v, want %q", tc.ddl, err, tc.want)
+			}
+		})
+	}
+}
+
 func TestParseDML(t *testing.T) {
 	tests := []struct {
 		in   string
@@ -2842,6 +2931,54 @@ func tableByName(t *testing.T, ddl *DDL, name ID) *CreateTable {
 	}
 	t.Fatalf("no table with name %q", name)
 	panic("unreachable")
+}
+
+func TestParseDDLUnclosedPrimaryKey(t *testing.T) {
+	const prefix = "CREATE TABLE T (Id INT64) PRIMARY KEY ("
+	for _, suffix := range []string{"", "Id", "Id,"} {
+		in := prefix + suffix + "\n"
+		if _, err := ParseDDL("schema.sql", in); err == nil || !strings.Contains(err.Error(), "schema.sql:2: unexpected EOF, want \")\"") {
+			t.Errorf("ParseDDL(%q) error = %v, want a positioned EOF error", in, err)
+		}
+		if _, err := ParseDDLStmt(in); err == nil || !strings.Contains(err.Error(), "-:2: unexpected EOF, want \")\"") {
+			t.Errorf("ParseDDLStmt(%q) error = %v, want a positioned EOF error", in, err)
+		}
+	}
+}
+
+func TestParseInvalidTypeToken(t *testing.T) {
+	for _, in := range []string{
+		"CREATE TABLE T (A 123) PRIMARY KEY (A)",
+		"CREATE TABLE T (A ARRAY<123>) PRIMARY KEY (A)",
+		"ALTER TABLE T ADD COLUMN A 123",
+	} {
+		if _, err := ParseDDLStmt(in); err == nil || !strings.Contains(err.Error(), "want type name") {
+			t.Errorf("ParseDDLStmt(%q) error = %v, want invalid type error", in, err)
+		}
+	}
+
+	const query = "SELECT CAST(1 AS 123)"
+	if _, err := ParseQuery(query); err == nil || !strings.Contains(err.Error(), "want type name") {
+		t.Errorf("ParseQuery(%q) error = %v, want invalid type error", query, err)
+	}
+}
+
+func TestParseColumnOptionsCaseInsensitive(t *testing.T) {
+	for _, test := range []struct {
+		in, want string
+	}{
+		{"CREATE TABLE T (At TIMESTAMP OPTIONS (allow_commit_timestamp = TRUE)) PRIMARY KEY (At)", "OPTIONS (allow_commit_timestamp = true)"},
+		{"ALTER TABLE T ALTER COLUMN At SET OPTIONS (ALLOW_COMMIT_TIMESTAMP = NuLl)", "OPTIONS (allow_commit_timestamp = null)"},
+	} {
+		stmt, err := ParseDDLStmt(test.in)
+		if err != nil {
+			t.Errorf("ParseDDLStmt(%q): %v", test.in, err)
+			continue
+		}
+		if got := stmt.SQL(); !strings.Contains(got, test.want) {
+			t.Errorf("ParseDDLStmt(%q).SQL() = %q, want %q", test.in, got, test.want)
+		}
+	}
 }
 
 func TestParseFailures(t *testing.T) {

@@ -36,6 +36,69 @@ func intAddr(i int) *int {
 	return &i
 }
 
+func testCreateQueue() *CreateQueue {
+	cascade := CascadeOnDelete
+	return &CreateQueue{
+		Name:        "UserTasks",
+		IfNotExists: true,
+		Columns: []QueueColumnDef{
+			{Name: "UserId", Type: Type{Base: Int64}, NotNull: true, Position: Position{Line: 2}},
+			{
+				Name: "ShardId", Type: Type{Base: Int64}, Hidden: true, Position: Position{Line: 3},
+				Generated: Func{Name: "ABS", Args: []Expr{ID("UserId")}},
+			},
+			{
+				Name: "CreatedAt", Type: Type{Base: Timestamp}, Hidden: true, Position: Position{Line: 4},
+				Options: ColumnOptions{AllowCommitTimestamp: boolAddr(true)},
+			},
+			{
+				Name: "UpdatedAt", Type: Type{Base: Timestamp}, Position: Position{Line: 5},
+				Options: ColumnOptions{AllowCommitTimestamp: boolAddr(false)},
+			},
+			{Name: "Payload", Type: Type{Base: JSON}, NotNull: true, Hidden: true, Position: Position{Line: 6}},
+		},
+		PrimaryKey:        []KeyPart{{Column: "UserId"}, {Column: "ShardId", Desc: true}, {Column: "CreatedAt"}, {Column: "UpdatedAt"}},
+		Interleave:        &QueueInterleave{Table: "Users", InParent: true, OnDelete: &cascade},
+		RowDeletionPolicy: &RowDeletionPolicy{Column: "CreatedAt", NumDays: 30},
+		Options: QueueOptions{
+			ReceiveMode: stringAddr("pull"), DisableSend: boolAddr(false), DisableDelivery: boolAddr(true), LocalityGroup: stringAddr("QueueStorage"),
+		},
+		Position: Position{Line: 1},
+	}
+}
+
+func TestCreateQueueInterleave(t *testing.T) {
+	const prefix = "CREATE QUEUE UserTasks (UserId INT64 NOT NULL, payload BYTES(MAX) NOT NULL) PRIMARY KEY (UserId)"
+	noAction := NoActionOnDelete
+	for _, tc := range []struct {
+		clause string
+		want   *QueueInterleave
+	}{
+		{"", nil},
+		{", INTERLEAVE IN Users", &QueueInterleave{Table: "Users"}},
+		{", INTERLEAVE IN `Parent`", &QueueInterleave{Table: "Parent"}},
+		{", INTERLEAVE IN PARENT Users ON DELETE NO ACTION", &QueueInterleave{Table: "Users", InParent: true, OnDelete: &noAction}},
+	} {
+		t.Run(tc.clause, func(t *testing.T) {
+			stmt, err := ParseDDLStmt(prefix + tc.clause)
+			if err != nil {
+				t.Fatal(err)
+			}
+			sql := stmt.SQL()
+			reparsed, err := ParseDDLStmt(sql)
+			if err != nil {
+				t.Fatalf("ParseDDLStmt(%q): %v", sql, err)
+			}
+			for _, result := range []DDLStmt{stmt, reparsed} {
+				got, ok := result.(*CreateQueue)
+				if !ok || !reflect.DeepEqual(got.Interleave, tc.want) {
+					t.Errorf("got statement %#v, want interleave %#v", result, tc.want)
+				}
+			}
+		})
+	}
+}
+
 func TestSQL(t *testing.T) {
 	reparseDDL := func(s string) (interface{}, error) {
 		ddl, err := ParseDDLStmt(s)
@@ -75,6 +138,20 @@ func TestSQL(t *testing.T) {
 		sql     string
 		reparse func(string) (interface{}, error)
 	}{
+		{
+			testCreateQueue(),
+			`CREATE QUEUE IF NOT EXISTS UserTasks (
+  UserId INT64 NOT NULL,
+  ShardId INT64 AS (ABS(UserId)) STORED HIDDEN,
+  CreatedAt TIMESTAMP HIDDEN OPTIONS (allow_commit_timestamp = true),
+  UpdatedAt TIMESTAMP OPTIONS (allow_commit_timestamp = null),
+  Payload JSON NOT NULL HIDDEN
+) PRIMARY KEY(UserId, ShardId DESC, CreatedAt, UpdatedAt),
+  INTERLEAVE IN PARENT Users ON DELETE CASCADE,
+  ROW DELETION POLICY ( OLDER_THAN ( CreatedAt, INTERVAL 30 DAY )),
+  OPTIONS (receive_mode = "pull", disable_send = false, disable_delivery = true, locality_group = "QueueStorage")`,
+			reparseDDL,
+		},
 		{
 			&CreateTable{
 				Name: "Ta",

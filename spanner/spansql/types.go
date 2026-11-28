@@ -60,6 +60,60 @@ func (ct *CreateTable) clearOffset() {
 	ct.Position.Offset = 0
 }
 
+// CreateQueue represents a CREATE QUEUE statement.
+// https://docs.cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#create-queue
+type CreateQueue struct {
+	Name              ID
+	IfNotExists       bool
+	Columns           []QueueColumnDef
+	PrimaryKey        []KeyPart
+	Interleave        *QueueInterleave
+	RowDeletionPolicy *RowDeletionPolicy
+	Options           QueueOptions
+
+	Position Position // position of the "CREATE" token
+}
+
+func (cq *CreateQueue) String() string { return fmt.Sprintf("%#v", cq) }
+func (*CreateQueue) isDDLStmt()        {}
+func (cq *CreateQueue) Pos() Position  { return cq.Position }
+func (cq *CreateQueue) clearOffset() {
+	for i := range cq.Columns {
+		cq.Columns[i].clearOffset()
+	}
+	cq.Position.Offset = 0
+}
+
+// QueueColumnDef represents a column definition in a CREATE QUEUE statement.
+type QueueColumnDef struct {
+	Name      ID
+	Type      Type
+	NotNull   bool
+	Generated Expr
+	Hidden    bool
+	Options   ColumnOptions
+
+	Position Position // position of the column name
+}
+
+func (cd QueueColumnDef) Pos() Position { return cd.Position }
+func (cd *QueueColumnDef) clearOffset() { cd.Position.Offset = 0 }
+
+// QueueInterleave represents an INTERLEAVE IN or INTERLEAVE IN PARENT clause.
+type QueueInterleave struct {
+	Table    ID
+	InParent bool
+	OnDelete *OnDelete
+}
+
+// QueueOptions represents the OPTIONS clause of a CREATE QUEUE statement.
+type QueueOptions struct {
+	ReceiveMode     *string
+	DisableSend     *bool
+	DisableDelivery *bool
+	LocalityGroup   *string
+}
+
 // TableConstraint represents a constraint on a table.
 type TableConstraint struct {
 	Name       ID // may be empty
@@ -528,8 +582,7 @@ type ColumnDef struct {
 func (cd ColumnDef) Pos() Position { return cd.Position }
 func (cd *ColumnDef) clearOffset() { cd.Position.Offset = 0 }
 
-// ColumnOptions represents options on a column as part of a
-// CREATE TABLE or ALTER TABLE statement.
+// ColumnOptions represents options on a table or queue column.
 type ColumnOptions struct {
 	// AllowCommitTimestamp represents a column OPTIONS.
 	// `true` if query is `OPTIONS (allow_commit_timestamp = true)`

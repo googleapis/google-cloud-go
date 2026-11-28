@@ -1007,6 +1007,9 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 	if p.sniff("CREATE", "TABLE") {
 		ct, err := p.parseCreateTable()
 		return ct, err
+	} else if p.sniff("CREATE", "QUEUE") {
+		cq, err := p.parseCreateQueue()
+		return cq, err
 	} else if p.sniff("CREATE", "INDEX") || p.sniff("CREATE", "UNIQUE", "INDEX") || p.sniff("CREATE", "NULL_FILTERED", "INDEX") || p.sniff("CREATE", "UNIQUE", "NULL_FILTERED", "INDEX") {
 		ci, err := p.parseCreateIndex()
 		return ci, err
@@ -1263,6 +1266,218 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 	}
 
 	return ct, nil
+}
+
+func (p *parser) parseCreateQueue() (*CreateQueue, *parseError) {
+	debugf("parseCreateQueue: %v", p)
+
+	if err := p.expect("CREATE"); err != nil {
+		return nil, err
+	}
+	cq := &CreateQueue{Position: p.Pos()}
+	if err := p.expect("QUEUE"); err != nil {
+		return nil, err
+	}
+	cq.IfNotExists = p.eat("IF", "NOT", "EXISTS")
+	var err *parseError
+	cq.Name, err = p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return nil, err
+	}
+
+	var hasPayload bool
+	keyColumns := make(map[string]ID)
+	err = p.parseCommaList("(", ")", func(p *parser) *parseError {
+		col, err := p.parseQueueColumnDef()
+		if err != nil {
+			return err
+		}
+		if isQueuePayloadColumn(col.Name) {
+			if hasPayload {
+				return p.errorf("duplicate queue Payload column")
+			}
+			hasPayload = true
+		} else {
+			name := strings.ToLower(string(col.Name))
+			if _, ok := keyColumns[name]; ok {
+				return p.errorf("duplicate queue column %q", col.Name)
+			}
+			keyColumns[name] = col.Name
+		}
+		cq.Columns = append(cq.Columns, col)
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	if !hasPayload || len(keyColumns) == 0 {
+		return nil, p.errorf("a queue requires a Payload column and at least one key column")
+	}
+
+	if err := p.expect("PRIMARY", "KEY"); err != nil {
+		return nil, err
+	}
+	cq.PrimaryKey, err = p.parseKeyPartList()
+	if err != nil {
+		return nil, err
+	}
+	if len(cq.PrimaryKey) == 0 {
+		return nil, p.errorf("a queue primary key requires at least one column")
+	}
+	for _, key := range cq.PrimaryKey {
+		if isQueuePayloadColumn(key.Column) {
+			return nil, p.errorf("queue Payload column cannot be part of the primary key")
+		}
+		name := strings.ToLower(string(key.Column))
+		if col, ok := keyColumns[name]; !ok || col != key.Column {
+			return nil, p.errorf("unknown or duplicate queue primary key column %q", key.Column)
+		}
+		delete(keyColumns, name)
+	}
+	if len(keyColumns) != 0 {
+		return nil, p.errorf("queue primary key must include every non-Payload column")
+	}
+
+	if p.eat(",", "INTERLEAVE", "IN") {
+		il := &QueueInterleave{InParent: p.eat("PARENT")}
+		il.Table, err = p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+		if p.eat("ON", "DELETE") {
+			action, err := p.parseOnDelete()
+			if err != nil {
+				return nil, err
+			}
+			il.OnDelete = &action
+		}
+		cq.Interleave = il
+	}
+	if p.eat(",", "ROW", "DELETION", "POLICY") {
+		rdp, err := p.parseRowDeletionPolicy()
+		if err != nil {
+			return nil, err
+		}
+		cq.RowDeletionPolicy = &rdp
+	}
+	if p.eat(",", "OPTIONS") {
+		cq.Options, err = p.parseQueueOptions()
+		if err != nil {
+			return nil, err
+		}
+	}
+	return cq, nil
+}
+
+func (p *parser) parseQueueColumnDef() (QueueColumnDef, *parseError) {
+	name, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return QueueColumnDef{}, err
+	}
+	col := QueueColumnDef{Name: name, Position: p.Pos()}
+	col.Type, err = p.parseType()
+	if err != nil {
+		return QueueColumnDef{}, err
+	}
+
+	if col.Type.Base == Proto && col.Type.ProtoRef == "" {
+		return QueueColumnDef{}, p.errorf("queue PROTO column requires a proto type name")
+	}
+
+	col.NotNull = p.eat("NOT", "NULL")
+	if isQueuePayloadColumn(name) {
+		if !col.NotNull {
+			return QueueColumnDef{}, p.errorf("queue Payload column must be NOT NULL")
+		}
+		if col.Type.Array {
+			return QueueColumnDef{}, p.errorf("queue Payload column cannot be an array")
+		}
+		switch col.Type.Base {
+		case Bytes, String, JSON, Proto:
+		default:
+			return QueueColumnDef{}, p.errorf("invalid queue Payload type %s", col.Type.SQL())
+		}
+	} else if p.eat("AS", "(") {
+		col.Generated, err = p.parseExpr()
+		if err != nil {
+			return QueueColumnDef{}, err
+		}
+		if err := p.expect(")", "STORED"); err != nil {
+			return QueueColumnDef{}, err
+		}
+	}
+	col.Hidden = p.eat("HIDDEN")
+	if p.sniff("OPTIONS") {
+		col.Options, err = p.parseColumnOptions()
+		if err != nil {
+			return QueueColumnDef{}, err
+		}
+	}
+	return col, nil
+}
+
+func isQueuePayloadColumn(name ID) bool {
+	return strings.EqualFold(string(name), "Payload")
+}
+
+func (p *parser) parseQueueOptions() (QueueOptions, *parseError) {
+	var opts QueueOptions
+	seen := make(map[string]bool)
+	err := p.parseCommaList("(", ")", func(p *parser) *parseError {
+		tok := p.next()
+		if tok.err != nil {
+			return tok.err
+		}
+		if tok.typ != unquotedID {
+			return p.errorf("expected queue option name, got %q", tok.value)
+		}
+		name := strings.ToLower(tok.value)
+		if seen[name] {
+			return p.errorf("duplicate queue option %q", name)
+		}
+		seen[name] = true
+		if err := p.expect("="); err != nil {
+			return err
+		}
+
+		switch name {
+		case "receive_mode", "locality_group":
+			lit, err := p.parseStringLit()
+			if err != nil {
+				return err
+			}
+			value := string(lit)
+			if name == "receive_mode" {
+				opts.ReceiveMode = &value
+			} else {
+				opts.LocalityGroup = &value
+			}
+		case "disable_send", "disable_delivery":
+			tok := p.next()
+			if tok.err != nil {
+				return tok.err
+			}
+			value := tok.caseEqual("TRUE")
+			if !value && !tok.caseEqual("FALSE") {
+				return p.errorf("invalid queue option %q: got %q, want true or false", name, tok.value)
+			}
+			if name == "disable_send" {
+				opts.DisableSend = &value
+			} else {
+				opts.DisableDelivery = &value
+			}
+		default:
+			return p.errorf("unknown queue option %q", name)
+		}
+		return nil
+	})
+	if err != nil {
+		return QueueOptions{}, err
+	}
+	if len(seen) == 0 {
+		return QueueOptions{}, p.errorf("expected at least one queue option")
+	}
+	return opts, nil
 }
 
 func (p *parser) sniffTableConstraint() bool {
@@ -2424,8 +2639,6 @@ func (p *parser) parseColumnOptions() (ColumnOptions, *parseError) {
 		return ColumnOptions{}, err
 	}
 
-	// TODO: Figure out if column options are case insensitive.
-	// We ignore case for the key (because it is easier) but not the value.
 	var co ColumnOptions
 	if p.eat("allow_commit_timestamp", "=") {
 		tok := p.next()
@@ -2433,10 +2646,10 @@ func (p *parser) parseColumnOptions() (ColumnOptions, *parseError) {
 			return ColumnOptions{}, tok.err
 		}
 		allowCommitTimestamp := new(bool)
-		switch tok.value {
-		case "true":
+		switch {
+		case tok.caseEqual("true"):
 			*allowCommitTimestamp = true
-		case "null":
+		case tok.caseEqual("null"):
 			*allowCommitTimestamp = false
 		default:
 			return ColumnOptions{}, p.errorf("got %q, want true or null", tok.value)
@@ -3567,6 +3780,7 @@ func (p *parser) parseBaseOrParameterizedType(withParam bool) (Type, *parseError
 		t.ProtoRef = pbTypeName
 		t.Base = Proto
 	default:
+		return Type{}, p.errorf("got %q, want type name", tok.value)
 	}
 	if withParam && (t.Base == String || t.Base == Bytes) {
 		if err := p.expect("("); err != nil {
@@ -5330,20 +5544,20 @@ func (p *parser) parseCommaList(bra, ket string, f func(*parser) *parseError) *p
 	if err := p.expect(bra); err != nil {
 		return err
 	}
+	var err *parseError
 	for {
 		if p.eat(ket) {
 			return nil
 		}
 
-		err := f(p)
-		if err != nil {
-			return err
+		if err = f(p); err != nil {
+			break
 		}
 
 		// ket or "," should be next.
 		tok := p.next()
-		if tok.err != nil {
-			return err
+		if err = tok.err; err != nil {
+			break
 		}
 		if tok.value == ket {
 			return nil
@@ -5353,6 +5567,11 @@ func (p *parser) parseCommaList(bra, ket string, f func(*parser) *parseError) *p
 			return p.errorf(`got %q, want %q or ","`, tok.value, ket)
 		}
 	}
+	if err == eof {
+		p.cur.line, p.cur.offset = p.line, p.offset
+		return p.errorf("unexpected EOF, want %q", ket)
+	}
+	return err
 }
 
 // parseCommaListWithEnds parses a comma-separated list to expected ends,
