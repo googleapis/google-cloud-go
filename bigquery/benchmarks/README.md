@@ -34,7 +34,7 @@ go run bench.go \
   --tag=experiment:special_environment_thing
 ```
 
-Or, a more realistic invocation using shell substitions:
+Or, a more realistic invocation using shell substitutions:
 ```
 go run bench.go \
   --reruns=5 \

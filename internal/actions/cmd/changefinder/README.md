@@ -9,10 +9,10 @@ The available flags are as follows:
  * `-dir=[absolute path]`: The directory to diff, defaults to current working
  directory. 
  * `-q`: Enables quiet mode with no logging. In the event of an error while in
- quiet mode, all logs that were surpressed are dumped with the error. Defaults
+ quiet mode, all logs that were suppressed are dumped with the error. Defaults
  to `false` (i.e. "verbose").
  * `-format=[plain|github|commit]`: The `stdout` output format. Default is `plain`.
- * `-gh-var=[variable name]`: The variabe name to set output for in `github`
+ * `-gh-var=[variable name]`: The variable name to set output for in `github`
  format mode. Defaults to `submodules`.
  * `-base=[ref name]`: The base ref to compare `HEAD` to. Default is
  `origin/main`.
