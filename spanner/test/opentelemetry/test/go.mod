@@ -4,6 +4,7 @@ go 1.26.0
 
 replace (
 	cloud.google.com/go => ../../../../
+	cloud.google.com/go/civil => ../../../../civil
 	cloud.google.com/go/spanner => ../../..
 )
 
@@ -23,6 +24,7 @@ require (
 	cloud.google.com/go v0.123.0 // indirect
 	cloud.google.com/go/auth v0.24.4 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.3.1 // indirect
+	cloud.google.com/go/civil v0.0.0-00010101000000-000000000000 // indirect
 	cloud.google.com/go/compute/metadata v0.10.0 // indirect
 	cloud.google.com/go/iam v1.15.1 // indirect
 	cloud.google.com/go/longrunning v1.5.0 // indirect
