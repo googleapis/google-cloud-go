@@ -82,7 +82,7 @@ func NewMockedSpannerInMemTestServerWithAddr(t *testing.T, addr string, sopt ...
 	return mockedServer, opts, func() {
 		mockedServer.TestSpanner.Stop()
 		mockedServer.TestInstanceAdmin.Stop()
-		mockedServer.server.Stop()
+		mockedServer.server.GracefulStop()
 	}
 }
 
