@@ -88,8 +88,12 @@ func injectActiveSession(t testing.TB, p *SessionPoolImpl, name string, createdA
 	stream := newFakeStream()
 	sh := newSessionHandle(nil, createdAt)
 	s := NewSession(name, stream, SessionHooks{
-		OnStart:   p.onStart,
-		OnActive:  func(_ *Session) { p.onActive(sh) },
+		OnStart:  p.onStart,
+		OnActive: func(_ *Session) { p.onActive(sh) },
+		OnSlotDrained: func() {
+			p.sl.ReleaseToPool(sh)
+			p.signalFree()
+		},
 		OnClosing: func(_ *Session) { p.onClosing(sh) },
 		OnClose:   func(_ *Session, err error) { p.onClose(sh, err) },
 	}, SessionTypeTable)
@@ -113,8 +117,12 @@ func injectStartingSession(t testing.TB, p *SessionPoolImpl, name string) *Sessi
 	stream := newFakeStream()
 	sh := newSessionHandle(nil, time.Now())
 	s := NewSession(name, stream, SessionHooks{
-		OnStart:   p.onStart,
-		OnActive:  func(_ *Session) { p.onActive(sh) },
+		OnStart:  p.onStart,
+		OnActive: func(_ *Session) { p.onActive(sh) },
+		OnSlotDrained: func() {
+			p.sl.ReleaseToPool(sh)
+			p.signalFree()
+		},
 		OnClosing: func(_ *Session) { p.onClosing(sh) },
 		OnClose:   func(_ *Session, err error) { p.onClose(sh, err) },
 	}, SessionTypeTable)
@@ -1043,4 +1051,93 @@ func TestCheckoutSession_NoLostWakeupOnConcurrentSessionReady(t *testing.T) {
 			t.Fatalf("iter %d: CheckoutSession hung (lost wakeup)", i)
 		}
 	}
+}
+
+type failingEncodeDesc struct {
+	VRpcDescriptor
+}
+
+func (d failingEncodeDesc) Encode(interface{}) ([]byte, error) {
+	return nil, errors.New("encode boom")
+}
+
+func TestSessionPool_Invoke_SlotConservationOnPreClaimFailureAndCallerCancel(t *testing.T) {
+	p := newTestPool(t, 1, 2)
+
+	stream := newFakeStream()
+	t.Cleanup(stream.Close)
+	sh := newSessionHandle(nil, time.Now())
+	s := NewSession("s-slot", stream, SessionHooks{
+		OnStart:  p.onStart,
+		OnActive: func(_ *Session) { p.onActive(sh) },
+		OnSlotDrained: func() {
+			p.sl.ReleaseToPool(sh)
+			p.signalFree()
+		},
+		OnClosing: func(_ *Session) { p.onClosing(sh) },
+		OnClose:   func(_ *Session, err error) { p.onClose(sh, err) },
+	}, SessionTypeTable)
+	sh.session = s
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	if err := s.Start(ctx, &spb.OpenSessionRequest{ProtocolVersion: 1}); err != nil {
+		t.Fatalf("Start: %v", err)
+	}
+	stream.recv <- recvOp{resp: &spb.SessionResponse{
+		Payload: &spb.SessionResponse_OpenSession{OpenSession: &spb.OpenSessionResponse{}},
+	}}
+	waitFor(t, time.Second, func() bool { return p.sl.ReadyCount() == 1 }, "session active")
+
+	// 1. Pre-claim Encode error must return the checked-out handle to the pool
+	// rather than permanently leaking its idle slot.
+	if _, err := p.Invoke(context.Background(), failingEncodeDesc{newRoundTripDesc()}, "bad"); err == nil {
+		t.Fatal("Invoke with failing Encode succeeded, want error")
+	}
+	if afes := p.sl.ReadyAfes(); len(afes) != 1 || afes[0].IdleCount != 1 {
+		t.Fatalf("ReadyAfes after Encode error = %+v, want 1 AFE with IdleCount=1", afes)
+	}
+
+	// 2. Caller ctx cancellation leaves the wire slot occupied until the server
+	// responds; Stats().InUseCount must continue reporting 1 in-use session
+	// until routeVRPCFrame drains the wire slot.
+	sentRPC := make(chan int64, 1)
+	stream.sendFn = func(req *spb.SessionRequest) error {
+		if vrpc := req.GetVirtualRpc(); vrpc != nil {
+			sentRPC <- vrpc.GetRpcId()
+		}
+		return nil
+	}
+	callCtx, callCancel := context.WithCancel(context.Background())
+	invokeDone := make(chan error, 1)
+	go func() {
+		_, err := p.Invoke(callCtx, newRoundTripDesc(), "slow")
+		invokeDone <- err
+	}()
+
+	rpcID := <-sentRPC
+	callCancel()
+	if err := <-invokeDone; !errors.Is(err, context.Canceled) {
+		t.Fatalf("Invoke after caller cancel err = %v, want context.Canceled", err)
+	}
+
+	if got := p.Stats().InUseCount; got != 1 {
+		t.Fatalf("Stats().InUseCount while wire slot still active = %d, want 1", got)
+	}
+	if snap := p.PoolSnapshot(); snap.InUseCount != 1 {
+		t.Fatalf("PoolSnapshot().InUseCount while wire slot still active = %d, want 1", snap.InUseCount)
+	}
+
+	// Deliver the late server response so routeVRPCFrame drains the wire slot.
+	stream.recv <- recvOp{resp: &spb.SessionResponse{
+		Payload: &spb.SessionResponse_VirtualRpc{
+			VirtualRpc: &spb.VirtualRpcResponse{
+				RpcId:   rpcID,
+				Payload: []byte("late-ok"),
+			},
+		},
+	}}
+	waitFor(t, time.Second, func() bool {
+		afes := p.sl.ReadyAfes()
+		return len(afes) == 1 && afes[0].IdleCount == 1 && p.Stats().InUseCount == 0
+	}, "wire slot drained and handle returned to idle pool")
 }
