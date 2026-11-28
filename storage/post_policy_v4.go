@@ -212,7 +212,7 @@ func (clr *contentLengthRangeCondition) MarshalJSON() ([]byte, error) {
 	return json.Marshal([]interface{}{"content-length-range", clr.start, clr.end})
 }
 func (clr *contentLengthRangeCondition) isEmpty() bool {
-	return clr.start == 0 && clr.end == 0
+	return false
 }
 
 type singleValueCondition struct {
@@ -251,6 +251,9 @@ func conditionStatusCodeOnSuccess(statusCode int) PostPolicyV4Condition {
 func GenerateSignedPostPolicyV4(bucket, object string, opts *PostPolicyV4Options) (*PostPolicyV4, error) {
 	if bucket == "" {
 		return nil, errors.New("storage: bucket must be non-empty")
+	}
+	if strings.Contains(bucket, "/") {
+		return nil, errors.New("storage: bucket must not contain '/'")
 	}
 	now := utcNow()
 	if err := validatePostPolicyV4Options(opts, now); err != nil {

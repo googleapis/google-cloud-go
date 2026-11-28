@@ -1030,7 +1030,7 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 		Scheme:  c.scheme,
 		Host:    c.xmlHost,
 		Path:    fmt.Sprintf("/%s/%s", params.bucket, params.object),
-		RawPath: fmt.Sprintf("/%s/%s", params.bucket, url.PathEscape(params.object)),
+		RawPath: fmt.Sprintf("/%s/%s", url.PathEscape(params.bucket), url.PathEscape(params.object)),
 	}
 	verb := "GET"
 	if params.length == 0 {

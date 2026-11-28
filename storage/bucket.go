@@ -139,6 +139,7 @@ func (b *BucketHandle) Object(name string) *ObjectHandle {
 			c:           b.c,
 			bucket:      b.name,
 			object:      name,
+			isObject:    true,
 			userProject: b.userProject,
 			retry:       retry,
 		},
