@@ -9,7 +9,6 @@ require (
 	cloud.google.com/go/longrunning v1.5.0
 	cloud.google.com/go/monitoring v1.32.1
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.63.0
-	github.com/envoyproxy/go-control-plane/envoy v1.40.0
 	github.com/google/btree v1.1.3
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
@@ -39,6 +38,7 @@ require (
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.63.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cncf/xds/go v0.0.0-20260202195803-dba9d589def2 // indirect
+	github.com/envoyproxy/go-control-plane/envoy v1.40.0 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.3.3 // indirect
 	github.com/felixge/httpsnoop v1.1.0 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.6 // indirect

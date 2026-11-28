@@ -119,9 +119,9 @@ var newSessionClient = func(
 	// when they disagree).
 	featureFlags := btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
 		ClientSideMetricsEnabled: metricsEnabled,
-		// Advertise direct access, matching the classic client's default
-		// (isDirectAccessEnabled → !DisableDirectAccess, i.e. true).
-		EnableDirectAccess: true,
+		// Advertise direct access in GCU ("googleapis.com"), matching the
+		// classic client's default.
+		EnableDirectAccess: btransport.IsGCUEndpoint(opts...),
 	})
 
 	return session.NewClient(ctx, project, instance, appProfile, clientName, metricsProvider, featureFlags, opts...)

@@ -176,12 +176,14 @@ func CreateBigtableChannelPool(
 		WithChannelPrimer(primer),
 	}
 
-	// Pluggable Direct Access strategy: the classic channel pool factory uses
-	// a PingAndWarm probe; when the env/config disables Direct Access we still
-	// wire a "disabled" checker so the direct_access/compatible metric keeps
-	// surfacing the off state with reason=manually_disabled. The future
-	// session pool factory will swap in a GetClientConfiguration-based checker.
-	if isDirectAccessEnabled(config) {
+	// Pluggable Direct Access strategy: Direct Access only exists in the GCU
+	// ("googleapis.com") universe, so non-GCU endpoints skip the compatibility
+	// checker entirely. Within GCU, the classic channel pool factory uses a
+	// PingAndWarm probe when enabled, or wires the disabled checker so the
+	// direct_access/compatible metric surfaces reason=manually_disabled.
+	if !IsGCUEndpoint(o...) {
+		poolOpts = append(poolOpts, WithDirectAccessChecker(NewNoopDirectAccessChecker()))
+	} else if isDirectAccessEnabled(config) {
 		directAccessDialerOptions := make([]option.ClientOption, len(o))
 		copy(directAccessDialerOptions, o)
 		directAccessDialerOptions = append(directAccessDialerOptions, directAccessOptions...)

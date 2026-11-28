@@ -455,9 +455,12 @@ func NewClient(
 		return btransport.NewBigtableConn(grpcConn), nil
 	}
 
-	// See b/588877681.
+	// Direct Access is only supported in the GCU ("googleapis.com") universe;
+	// non-GCU endpoints skip the compatibility checker entirely. See b/588877681.
 	var directAccessChecker btransport.DirectAccessChecker
-	if featureFlagsProto.GetDirectAccessRequested() {
+	if !btransport.IsGCUEndpoint(opts...) {
+		directAccessChecker = btransport.NewNoopDirectAccessChecker()
+	} else if featureFlagsProto.GetDirectAccessRequested() {
 		directAccessChecker = btransport.NewSessionClientDirectAccessChecker(
 			daDial, fullInstance, appProfile, configMD,
 			factory.OtelMeterProvider, nil,
