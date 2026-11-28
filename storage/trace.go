@@ -79,6 +79,9 @@ const (
 	uploadChunkNumberAttr = "gcp.storage.upload.chunk.number"
 	payloadOffsetAttr     = "gcp.storage.payload.offset"
 	payloadSizeBytesAttr  = "gcp.storage.payload.size_bytes"
+	// retryAttemptNumberAttr is the attempt number of a transport attempt
+	// span, matching the gccl-attempt-count value sent with the attempt.
+	retryAttemptNumberAttr = "gcp.client.retry.attempt_number"
 )
 
 // rpcSystemNameKey is the OTel semantic convention attribute key for the RPC
@@ -128,30 +131,69 @@ func startSpanWithObject(ctx context.Context, client *Client, bucket, object, na
 	if client != nil && client.rpcSystem.Valid() {
 		opts = append(opts, trace.WithAttributes(client.rpcSystem))
 	}
-	if client != nil && client.bucketMetadataCache != nil && bucket != "" {
-		ctx = context.WithValue(ctx, cacheContextKey, client.bucketMetadataCache)
-		ctx = context.WithValue(ctx, bucketContextKey, bucket)
+	if client != nil {
 		isBucket := strings.HasPrefix(name, "Bucket.") || strings.HasPrefix(name, "ACL.") || strings.HasPrefix(name, "storage.IAM.")
-		ctx = context.WithValue(ctx, isBucketContextKey, isBucket)
-
-		cache := client.bucketMetadataCache
-		meta, hit := cache.get(bucket)
-		if !hit {
-			placeholder := bucketMetadata{
-				resource:    fmt.Sprintf("projects/_/buckets/%s", bucket),
-				location:    "global",
-				placeholder: true,
-			}
-			cache.put(bucket, placeholder)
-			cache.fetchBackground(ctx, bucket)
-			meta = placeholder
-		}
-		attrs := []attribute.KeyValue{
-			attribute.String("gcp.resource.destination.id", destinationResourceName(meta.resource)),
-			attribute.String("gcp.resource.destination.location", meta.location),
-		}
-		ctx = contextWithTraceAttributes(ctx, attrs)
+		ctx = contextWithBucketMetadata(ctx, client.bucketMetadataCache, bucket, isBucket)
 	}
+	return startSpan(ctx, name, opts...)
+}
+
+// contextWithBucketMetadata returns ctx carrying cache, bucket and isBucket,
+// which endSpan uses to evict the bucket on a not-found error, and the
+// gcp.resource.destination.id and gcp.resource.destination.location
+// attributes of bucket, which startSpan and the transport attempt spans
+// record. A bucket missing from cache gets placeholder metadata while its
+// metadata is fetched in the background.
+func contextWithBucketMetadata(ctx context.Context, cache *bucketMetadataCache, bucket string, isBucket bool) context.Context {
+	if cache == nil || bucket == "" {
+		return ctx
+	}
+	ctx = context.WithValue(ctx, cacheContextKey, cache)
+	ctx = context.WithValue(ctx, bucketContextKey, bucket)
+	ctx = context.WithValue(ctx, isBucketContextKey, isBucket)
+
+	meta, hit := cache.get(bucket)
+	if !hit {
+		placeholder := bucketMetadata{
+			resource:    fmt.Sprintf("projects/_/buckets/%s", bucket),
+			location:    "global",
+			placeholder: true,
+		}
+		cache.put(bucket, placeholder)
+		cache.fetchBackground(contextWithoutMetrics(ctx), bucket)
+		meta = placeholder
+	}
+	attrs := []attribute.KeyValue{
+		attribute.String("gcp.resource.destination.id", destinationResourceName(meta.resource)),
+		attribute.String("gcp.resource.destination.location", meta.location),
+	}
+	return contextWithTraceAttributes(ctx, attrs)
+}
+
+// contextWithListObjectsCache returns ctx carrying cache, from which
+// startObjectsListCallSpan resolves the bucket's destination attributes for
+// each page of Bucket.Objects.
+func contextWithListObjectsCache(ctx context.Context, cache *bucketMetadataCache) context.Context {
+	if !isOTelTracingDevEnabled() || cache == nil {
+		return ctx
+	}
+	return context.WithValue(ctx, cacheContextKey, cache)
+}
+
+// startObjectsListCallSpan starts the span of one page of Bucket.Objects.
+// Bucket.Objects has no operation span, so gcp.storage.uri and, when ctx
+// carries the bucket metadata cache, the bucket's destination attributes are
+// recorded on each per-page span. The cache is read for every page, so pages
+// listed after the background metadata fetch completes carry the resolved
+// metadata instead of the placeholder. As for other bucket operations, a
+// not-found error on a page evicts the bucket from the cache.
+func startObjectsListCallSpan(ctx context.Context, bucket, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
+	if isOTelTracingDevEnabled() {
+		if cache, ok := ctx.Value(cacheContextKey).(*bucketMetadataCache); ok {
+			ctx = contextWithBucketMetadata(ctx, cache, bucket, true)
+		}
+	}
+	opts = append(opts, withStorageURI(bucket, ""))
 	return startSpan(ctx, name, opts...)
 }
 
@@ -331,10 +373,14 @@ func recordRetryBackoff(ctx context.Context, start time.Time) {
 // is about to make.
 type retryAttemptKey struct{}
 
-// retryAttempt describes an attempt made by run.
+// retryAttempt describes an attempt made by run. It is read by
+// attemptStatsHandler for gRPC attempt spans and by trackingTransport for HTTP
+// attempt spans.
 type retryAttempt struct {
 	// number is the attempt number, matching the gccl-attempt-count value sent
 	// to the service. It restarts at 1 when run is given withProgressReset.
+	// attemptStatsHandler (gRPC) and trackingTransport (HTTP) record it as
+	// gcp.client.retry.attempt_number.
 	number int
 	// parentCtx is the context passed to run, whose active span is the
 	// operation span.
@@ -346,7 +392,8 @@ type retryAttempt struct {
 }
 
 // withRetryAttempt returns ctx annotated with the given attempt number so that
-// attemptStatsHandler can record it on the gRPC attempt span.
+// attemptStatsHandler (gRPC) and trackingTransport (HTTP) can record it on the
+// transport attempt span.
 func withRetryAttempt(ctx context.Context, attempt int) context.Context {
 	if !isOTelTracingDevEnabled() {
 		return ctx
@@ -358,9 +405,10 @@ func withRetryAttempt(ctx context.Context, attempt int) context.Context {
 	})
 }
 
-// attemptStatsHandler records gcp.client.retry.attempt_number and the payload
-// offset and size on the transport's gRPC attempt span, and Storage.UploadChunk
-// spans for resumable BidiWriteObject streams.
+// attemptStatsHandler records gcp.client.retry.attempt_number, the bucket's
+// destination attributes, and the payload offset and size on the transport's
+// gRPC attempt span, and Storage.UploadChunk spans for resumable
+// BidiWriteObject streams.
 type attemptStatsHandler struct{}
 
 // payloadAttempt tracks the object bytes sent or received on one gRPC stream.
@@ -377,6 +425,19 @@ func isAttemptSpan(span trace.Span, parent trace.SpanContext) bool {
 	return span.IsRecording() && span.SpanContext().SpanID() != parent.SpanID()
 }
 
+// setAttemptSpanAttributes sets gcp.client.retry.attempt_number, when
+// attempt is positive, and the bucket's gcp.resource.destination.id and
+// gcp.resource.destination.location attributes, when ctx carries them, on the
+// transport attempt span.
+func setAttemptSpanAttributes(ctx context.Context, span trace.Span, attempt int) {
+	if attempt > 0 {
+		span.SetAttributes(attribute.Int(retryAttemptNumberAttr, attempt))
+	}
+	if attrs, ok := traceAttributesFromContext(ctx); ok {
+		span.SetAttributes(attrs...)
+	}
+}
+
 // TagRPC implements stats.Handler.
 func (attemptStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
 	attempt, ok := ctx.Value(retryAttemptKey{}).(retryAttempt)
@@ -387,7 +448,7 @@ func (attemptStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) c
 	// disabled), the span in ctx is the operation span and is not tagged.
 	span := trace.SpanFromContext(ctx)
 	if isAttemptSpan(span, attempt.parent) {
-		span.SetAttributes(attribute.Int("gcp.client.retry.attempt_number", attempt.number))
+		setAttemptSpanAttributes(ctx, span, attempt.number)
 		ctx = context.WithValue(ctx, payloadAttemptKey, &payloadAttempt{span: span})
 	}
 	if chunkSize, ok := ctx.Value(uploadChunkSizeKey).(int64); ok && chunkSize > 0 &&
@@ -876,6 +937,58 @@ func httpAttemptSpan(ctx context.Context, resp *http.Response) (trace.Span, bool
 		return nil, false
 	}
 	return span, true
+}
+
+// recordHTTPAttemptAttributes sets the bucket's destination attributes, when
+// ctx carries them, and gcp.client.retry.attempt_number on the otelhttp attempt
+// span of resp. ctx is the context of req as sent to the transport; its span
+// is the parent of the attempt span.
+//
+// The attempt number of a request made by run comes from run. Uploads are
+// retried by the googleapi media uploader instead, so their attempt number is
+// read from the gccl-attempt-count token that the uploader sends in the
+// X-Goog-Api-Client header. A resumable session request sent without retries
+// carries no such token and stays unnumbered.
+//
+// An attempt that fails without a response is not tagged, because otelhttp
+// has already ended its span. Tagging it would need a hook in otelhttp that
+// runs when the attempt span starts.
+func recordHTTPAttemptAttributes(ctx context.Context, req *http.Request, resp *http.Response) {
+	span, ok := httpAttemptSpan(ctx, resp)
+	if !ok {
+		return
+	}
+	var number int
+	if attempt, ok := ctx.Value(retryAttemptKey{}).(retryAttempt); ok {
+		number = attempt.number
+	} else {
+		number = attemptCountFromHeader(req.Header)
+	}
+	// A zero attempt number, for a request with no known attempt, is not
+	// recorded.
+	setAttemptSpanAttributes(ctx, span, number)
+}
+
+// attemptCountTokenPrefix prefixes the attempt number in the
+// X-Goog-Api-Client header.
+const attemptCountTokenPrefix = "gccl-attempt-count/"
+
+// attemptCountFromHeader returns the attempt number in the gccl-attempt-count
+// token of the X-Goog-Api-Client header of h, or 0 if there is no valid one.
+func attemptCountFromHeader(h http.Header) int {
+	for _, v := range h.Values("X-Goog-Api-Client") {
+		for _, tok := range strings.Fields(v) {
+			s, ok := strings.CutPrefix(tok, attemptCountTokenPrefix)
+			if !ok {
+				continue
+			}
+			if n, err := strconv.Atoi(s); err == nil && n >= 1 {
+				return n
+			}
+			return 0
+		}
+	}
+	return 0
 }
 
 // setPayloadAttributes sets the payload offset and, unless size is negative
