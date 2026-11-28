@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
+	"math"
 	"math/rand"
 	"reflect"
 	"strings"
@@ -41,6 +42,7 @@ import (
 	"google.golang.org/grpc/mem"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/protoadapt"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -1312,5 +1314,321 @@ func TestNewGRPCStorageClient_AuthTracingWithoutAuthentication(t *testing.T) {
 
 	if got := len(authCredentialsOptions(client.settings.clientOption)); got != 0 {
 		t.Errorf("got %d WithAuthCredentials options, want 0 with WithoutAuthentication", got)
+	}
+}
+
+func TestDefaultGRPCOptions_EmulatorEnvAndCustomEndpoint(t *testing.T) {
+	hasGRPCDialOpt := func(opts []option.ClientOption) bool {
+		wantType := reflect.TypeOf(option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())))
+		for _, o := range opts {
+			if reflect.TypeOf(o) == wantType {
+				return true
+			}
+		}
+		return false
+	}
+
+	t.Run("emulator_http_uses_insecure", func(t *testing.T) {
+		t.Setenv("STORAGE_EMULATOR_HOST_GRPC", "http://localhost:9000")
+		opts := defaultGRPCOptions(nil)
+		res, err := internaloption.NewUnsafeResolver(opts...)
+		if err != nil {
+			t.Fatalf("NewUnsafeResolver: %v", err)
+		}
+		if ep, err := res.ResolvedGRPCEndpoint(); err != nil || ep != "localhost:9000" {
+			t.Errorf("ResolvedGRPCEndpoint = (%q, %v), want (%q, nil)", ep, err, "localhost:9000")
+		}
+		if !res.ResolvedWithoutAuthentication() {
+			t.Error("ResolvedWithoutAuthentication = false, want true")
+		}
+		if !hasGRPCDialOpt(opts) {
+			t.Error("expected insecure gRPC dial option for http:// emulator host")
+		}
+	})
+
+	t.Run("emulator_https_preserves_tls", func(t *testing.T) {
+		t.Setenv("STORAGE_EMULATOR_HOST_GRPC", "https://emulator.example.com:443")
+		opts := defaultGRPCOptions(nil)
+		res, err := internaloption.NewUnsafeResolver(opts...)
+		if err != nil {
+			t.Fatalf("NewUnsafeResolver: %v", err)
+		}
+		if ep, err := res.ResolvedGRPCEndpoint(); err != nil || ep != "emulator.example.com:443" {
+			t.Errorf("ResolvedGRPCEndpoint = (%q, %v), want (%q, nil)", ep, err, "emulator.example.com:443")
+		}
+		if hasGRPCDialOpt(opts) {
+			t.Error("unexpected insecure gRPC dial option for https:// emulator host")
+		}
+	})
+
+	t.Run("custom_endpoint_overrides_emulator_env", func(t *testing.T) {
+		t.Setenv("STORAGE_EMULATOR_HOST_GRPC", "http://localhost:9000")
+		userOpts := []option.ClientOption{option.WithEndpoint("custom.example.com:443")}
+		defaults := defaultGRPCOptions(userOpts)
+		combined := append(defaults, userOpts...)
+		res, err := internaloption.NewUnsafeResolver(combined...)
+		if err != nil {
+			t.Fatalf("NewUnsafeResolver: %v", err)
+		}
+		if ep, err := res.ResolvedGRPCEndpoint(); err != nil || ep != "custom.example.com:443" {
+			t.Errorf("ResolvedGRPCEndpoint = (%q, %v), want (%q, nil)", ep, err, "custom.example.com:443")
+		}
+		if res.ResolvedWithoutAuthentication() {
+			t.Error("ResolvedWithoutAuthentication = true, want false when custom endpoint is set")
+		}
+		if hasGRPCDialOpt(defaults) {
+			t.Error("unexpected insecure gRPC dial option when custom endpoint is set")
+		}
+	})
+
+	t.Run("custom_grpc_conn_overrides_emulator_env", func(t *testing.T) {
+		t.Setenv("STORAGE_EMULATOR_HOST_GRPC", "http://localhost:9000")
+		userOpts := []option.ClientOption{option.WithGRPCConn(&grpc.ClientConn{})}
+		defaults := defaultGRPCOptions(userOpts)
+		combined := append(defaults, userOpts...)
+		res, err := internaloption.NewUnsafeResolver(combined...)
+		if err != nil {
+			t.Fatalf("NewUnsafeResolver: %v", err)
+		}
+		if res.ResolvedWithoutAuthentication() {
+			t.Error("ResolvedWithoutAuthentication = true, want false when custom gRPC conn is set")
+		}
+		if hasGRPCDialOpt(defaults) {
+			t.Error("unexpected insecure gRPC dial option when custom gRPC conn is set")
+		}
+	})
+}
+
+func TestReadDecoders_MalformedPayloadsReturnError(t *testing.T) {
+	// Helper to build a length-delimited field with an arbitrary (possibly invalid) length varint.
+	appendRawLenField := func(b []byte, num protowire.Number, length uint64, payload []byte) []byte {
+		b = protowire.AppendTag(b, num, protowire.BytesType)
+		b = protowire.AppendVarint(b, length)
+		return append(b, payload...)
+	}
+
+	bidiCases := []struct {
+		name    string
+		wire    []byte
+		wantErr string
+	}{
+		{
+			name:    "overflow_object_range_data_length",
+			wire:    appendRawLenField(nil, objectRangeDataField, math.MaxUint64, []byte{1, 2}),
+			wantErr: "ObjectRangeData length exceeds remaining data",
+		},
+		{
+			name: "truncated_checksummed_data_in_object_range_data",
+			wire: func() []byte {
+				inner := appendRawLenField(nil, checksummedDataField, 100, []byte{1, 2})
+				return appendRawLenField(nil, objectRangeDataField, uint64(len(inner)), inner)
+			}(),
+			wantErr: "ChecksummedData length exceeds ObjectRangeData",
+		},
+		{
+			name: "truncated_content_bytes",
+			wire: func() []byte {
+				content := appendRawLenField(nil, checksummedDataContentField, 100, []byte("abc"))
+				cd := appendRawLenField(nil, checksummedDataField, uint64(len(content)), content)
+				return appendRawLenField(nil, objectRangeDataField, uint64(len(cd)), cd)
+			}(),
+			wantErr: "invalid BidiReadObjectResponse.ChecksummedData.Content",
+		},
+		{
+			name:    "overflow_metadata_bytes_copy",
+			wire:    appendRawLenField(nil, metadataField, math.MaxUint64, []byte{1}),
+			wantErr: "invalid BidiReadObjectResponse.Metadata",
+		},
+		{
+			name:    "truncated_metadata_bytes_copy",
+			wire:    appendRawLenField(nil, metadataField, 50, []byte("short")),
+			wantErr: "invalid BidiReadObjectResponse.Metadata",
+		},
+		{
+			name: "checksummed_data_overruns_submessage_into_trailing_bytes",
+			wire: func() []byte {
+				// Content claims 6 bytes while ChecksummedData submessage is only 4 bytes;
+				// trailing bytes exist in the outer buffer so databufs.Len() check alone would pass.
+				content := appendRawLenField(nil, checksummedDataContentField, 6, []byte("ab"))
+				cd := appendRawLenField(nil, checksummedDataField, uint64(len(content)), content)
+				ord := appendRawLenField(nil, objectRangeDataField, uint64(len(cd)), cd)
+				return append(ord, []byte("trailing")...)
+			}(),
+			wantErr: "ChecksummedData field exceeded submessage boundary",
+		},
+		{
+			name: "object_range_data_overruns_submessage_into_trailing_bytes",
+			wire: func() []byte {
+				// ReadRange claims 6 bytes while ObjectRangeData submessage is only 4 bytes;
+				// trailing bytes exist in the outer buffer so databufs.Len() check alone would pass.
+				rr := appendRawLenField(nil, readRangeField, 6, []byte{0x18, 0x01})
+				ord := appendRawLenField(nil, objectRangeDataField, uint64(len(rr)), rr)
+				return append(ord, []byte{0x18, 0x02, 0x18, 0x03, 0x18, 0x04}...)
+			}(),
+			wantErr: "ObjectRangeData field exceeded submessage boundary",
+		},
+	}
+
+	for _, tc := range bidiCases {
+		t.Run("bidi/"+tc.name, func(t *testing.T) {
+			dec := &readResponseDecoder{databufs: mem.BufferSlice{mem.SliceBuffer(tc.wire)}}
+			err := dec.readFullObjectResponse()
+			if err == nil {
+				t.Fatalf("readFullObjectResponse() = nil, want error containing %q", tc.wantErr)
+			}
+			if !strings.Contains(err.Error(), tc.wantErr) {
+				t.Errorf("readFullObjectResponse() error = %q, want substring %q", err.Error(), tc.wantErr)
+			}
+		})
+	}
+
+	readObjCases := []struct {
+		name    string
+		wire    []byte
+		wantErr string
+	}{
+		{
+			name:    "overflow_checksummed_data_length",
+			wire:    appendRawLenField(nil, checksummedDataFieldReadObject, math.MaxUint64, []byte{1, 2}),
+			wantErr: "ChecksummedData length exceeds remaining data",
+		},
+		{
+			name: "truncated_content_bytes",
+			wire: func() []byte {
+				content := appendRawLenField(nil, checksummedDataContentFieldReadObject, 100, []byte("abc"))
+				return appendRawLenField(nil, checksummedDataFieldReadObject, uint64(len(content)), content)
+			}(),
+			wantErr: "invalid ReadObjectResponse.ChecksummedData.Content",
+		},
+		{
+			name:    "overflow_metadata_bytes_copy",
+			wire:    appendRawLenField(nil, metadataFieldReadObject, math.MaxUint64, []byte{1}),
+			wantErr: "invalid ReadObjectResponse.Metadata",
+		},
+		{
+			name:    "truncated_metadata_bytes_copy",
+			wire:    appendRawLenField(nil, metadataFieldReadObject, 50, []byte("short")),
+			wantErr: "invalid ReadObjectResponse.Metadata",
+		},
+		{
+			name: "checksummed_data_overruns_submessage_into_trailing_bytes",
+			wire: func() []byte {
+				content := appendRawLenField(nil, checksummedDataContentFieldReadObject, 6, []byte("ab"))
+				cd := appendRawLenField(nil, checksummedDataFieldReadObject, uint64(len(content)), content)
+				return append(cd, []byte("trailing")...)
+			}(),
+			wantErr: "ChecksummedData field exceeded submessage boundary",
+		},
+	}
+
+	for _, tc := range readObjCases {
+		t.Run("read_object/"+tc.name, func(t *testing.T) {
+			dec := &readObjectResponseDecoder{databufs: mem.BufferSlice{mem.SliceBuffer(tc.wire)}}
+			err := dec.readFullObjectResponse()
+			if err == nil {
+				t.Fatalf("readFullObjectResponse() = nil, want error containing %q", tc.wantErr)
+			}
+			if !strings.Contains(err.Error(), tc.wantErr) {
+				t.Errorf("readFullObjectResponse() error = %q, want substring %q", err.Error(), tc.wantErr)
+			}
+		})
+	}
+
+	t.Run("bidi/unknown_field_in_object_range_data_skipped", func(t *testing.T) {
+		var ord []byte
+		ord = protowire.AppendTag(ord, 99, protowire.VarintType)
+		ord = protowire.AppendVarint(ord, 42)
+		var rr []byte
+		rr = protowire.AppendTag(rr, 3, protowire.VarintType)
+		rr = protowire.AppendVarint(rr, defaultReadID)
+		ord = protowire.AppendTag(ord, readRangeField, protowire.BytesType)
+		ord = protowire.AppendBytes(ord, rr)
+		var wire []byte
+		wire = protowire.AppendTag(wire, objectRangeDataField, protowire.BytesType)
+		wire = protowire.AppendBytes(wire, ord)
+
+		dec := &readResponseDecoder{databufs: mem.BufferSlice{mem.SliceBuffer(wire)}}
+		if err := dec.readFullObjectResponse(); err != nil {
+			t.Fatalf("readFullObjectResponse() err = %v, want nil", err)
+		}
+	})
+}
+
+func TestReadResponseDecoder_DuplicateReadIDReturnsError(t *testing.T) {
+	tests := []struct {
+		name string
+		resp *storagepb.BidiReadObjectResponse
+	}{
+		{
+			name: "both_with_content",
+			resp: &storagepb.BidiReadObjectResponse{
+				ObjectDataRanges: []*storagepb.ObjectRangeData{
+					{
+						ReadRange:       &storagepb.ReadRange{ReadId: defaultReadID},
+						ChecksummedData: &storagepb.ChecksummedData{Content: []byte("first")},
+					},
+					{
+						ReadRange:       &storagepb.ReadRange{ReadId: defaultReadID},
+						ChecksummedData: &storagepb.ChecksummedData{Content: []byte("second")},
+					},
+				},
+			},
+		},
+		{
+			name: "second_without_content",
+			resp: &storagepb.BidiReadObjectResponse{
+				ObjectDataRanges: []*storagepb.ObjectRangeData{
+					{
+						ReadRange:       &storagepb.ReadRange{ReadId: defaultReadID},
+						ChecksummedData: &storagepb.ChecksummedData{Content: []byte("first")},
+					},
+					{
+						ReadRange: &storagepb.ReadRange{ReadId: defaultReadID},
+						RangeEnd:  true,
+					},
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			wire, err := proto.Marshal(tc.resp)
+			if err != nil {
+				t.Fatalf("proto.Marshal: %v", err)
+			}
+			dec := &readResponseDecoder{databufs: mem.BufferSlice{mem.SliceBuffer(wire)}}
+			err = dec.readFullObjectResponse()
+			if err == nil {
+				t.Fatal("readFullObjectResponse() = nil, want duplicate read_id error")
+			}
+			if !strings.Contains(err.Error(), "duplicate read_id") {
+				t.Errorf("readFullObjectResponse() error = %q, want substring %q", err.Error(), "duplicate read_id")
+			}
+		})
+	}
+}
+
+func TestChunkCRCForReadID(t *testing.T) {
+	crc1 := uint32(111)
+	crc2 := uint32(222)
+	msg := &storagepb.BidiReadObjectResponse{
+		ObjectDataRanges: []*storagepb.ObjectRangeData{
+			{
+				ReadRange:       &storagepb.ReadRange{ReadId: 2},
+				ChecksummedData: &storagepb.ChecksummedData{Crc32C: &crc2},
+			},
+			{
+				ReadRange:       &storagepb.ReadRange{ReadId: defaultReadID},
+				ChecksummedData: &storagepb.ChecksummedData{Crc32C: &crc1},
+			},
+		},
+	}
+	got, ok := chunkCRCForReadID(msg, defaultReadID)
+	if !ok || got != crc1 {
+		t.Fatalf("chunkCRCForReadID = (%d, %v), want (%d, true)", got, ok, crc1)
+	}
+	if _, ok := chunkCRCForReadID(msg, 99); ok {
+		t.Fatal("chunkCRCForReadID(99) = true, want false")
 	}
 }

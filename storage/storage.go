@@ -749,6 +749,9 @@ func v4SanitizeHeaders(hdrs []string) []string {
 // If initializing a Storage Client, instead use the Bucket.SignedURL method
 // which uses the Client's credentials to handle authentication.
 func SignedURL(bucket, object string, opts *SignedURLOptions) (string, error) {
+	if opts != nil {
+		opts = opts.clone()
+	}
 	now := utcNow()
 	if err := validateOptions(opts, now); err != nil {
 		return "", err
