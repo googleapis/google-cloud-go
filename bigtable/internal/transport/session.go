@@ -227,10 +227,23 @@ type Session struct {
 	// pool surfaces this on consecutive-failure breaker trips so operators
 	// see the underlying server rejection instead of only the sentinel.
 	closeErr atomic.Pointer[error]
+
+	// cancelStream cancels the per-session gRPC stream context (when
+	// provided via WithSessionStreamCancel) so ForceClose and terminal
+	// teardown unblock a stuck stream.Recv() in readLoop without tearing
+	// down sibling sessions.
+	cancelStream context.CancelFunc
 }
 
 // SessionOption configures a Session at construction time.
 type SessionOption func(*Session)
+
+// WithSessionStreamCancel registers the cancel func for the session's
+// underlying bidi gRPC stream context so ForceClose and terminal close
+// release stream resources and unblock Recv().
+func WithSessionStreamCancel(cancel context.CancelFunc) SessionOption {
+	return func(s *Session) { s.cancelStream = cancel }
+}
 
 // WithSessionDebugEnabled toggles the session's debug-recorder gate.
 // When false (the zero-value default when the option is omitted),

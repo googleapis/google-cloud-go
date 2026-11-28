@@ -658,3 +658,55 @@ func TestHooks_FiredInSpecOrder(t *testing.T) {
 		t.Errorf("hook order = %v, want %v", got, want)
 	}
 }
+
+func TestStart_UnimplementedPreservesCodeAndCloseErr(t *testing.T) {
+	unimpl := status.Error(codes.Unimplemented, "OpenSession not implemented")
+	stream := newFakeStream()
+	stream.sendFn = func(*spb.SessionRequest) error { return unimpl }
+
+	s := NewSession("unimpl-start", stream, SessionHooks{}, SessionTypeTable)
+	err := s.Start(context.Background(), &spb.OpenSessionRequest{})
+	if err == nil {
+		t.Fatal("Start succeeded, want error")
+	}
+	if got := status.Code(err); got != codes.Unimplemented {
+		t.Errorf("status.Code(err) = %v, want %v", got, codes.Unimplemented)
+	}
+	if !errors.Is(s.closeError(), unimpl) {
+		t.Errorf("closeError() = %v, want errors.Is(_, unimpl)", s.closeError())
+	}
+}
+
+func TestForceClose_CancelsStreamContextAndUnblocksWaitGoroutines(t *testing.T) {
+	streamCtx, streamCancel := context.WithCancel(context.Background())
+	stream := newFakeStream().bindCtx(streamCtx)
+
+	s := NewSession("force-close-cancel", stream, SessionHooks{}, SessionTypeTable,
+		WithSessionStreamCancel(streamCancel))
+	if err := s.Start(context.Background(), &spb.OpenSessionRequest{}); err != nil {
+		t.Fatalf("Start: %v", err)
+	}
+	stream.recv <- recvOp{resp: &spb.SessionResponse{
+		Payload: &spb.SessionResponse_OpenSession{OpenSession: &spb.OpenSessionResponse{}},
+	}}
+	waitFor(t, time.Second, func() bool { return s.State() == StateReady }, "StateReady")
+
+	s.ForceClose(&spb.CloseSessionRequest{
+		Reason:      spb.CloseSessionRequest_CLOSE_SESSION_REASON_MISSED_HEARTBEAT,
+		Description: "heartbeat missed",
+	})
+
+	done := make(chan struct{})
+	go func() {
+		s.WaitGoroutines()
+		close(done)
+	}()
+	select {
+	case <-done:
+	case <-time.After(time.Second):
+		t.Fatal("WaitGoroutines hung after ForceClose — stream context was not cancelled")
+	}
+	if s.closeError() == nil {
+		t.Error("closeError() = nil after ForceClose with MISSED_HEARTBEAT, want non-nil cause")
+	}
+}

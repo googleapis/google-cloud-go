@@ -25,6 +25,7 @@ import (
 
 	spb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	btmetrics "cloud.google.com/go/bigtable/internal/metrics"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -45,24 +46,17 @@ func (s *Session) Start(ctx context.Context, req *spb.OpenSessionRequest) error 
 		Payload: &spb.SessionRequest_OpenSession{OpenSession: req},
 	}
 	if err := s.Send(openReq); err != nil {
+		s.setCloseErr(err)
 		s.ForceClose(&spb.CloseSessionRequest{
 			Reason:      spb.CloseSessionRequest_CLOSE_SESSION_REASON_ERROR,
 			Description: "failed to send open session request",
 		})
-		// Wrap as codes.Unavailable so retry plumbing (status.Code +
-		// RetryingVRpc's idempotency-independent retry for pre-wire
-		// failures) treats a failed OpenSession send the same as any
-		// other transport-side loss. errors.Is still resolves the
-		// underlying send error via sessionErr.Unwrap.
-		//
-		// TODO(sushanb): distinguish Unimplemented from generic
-		// transport failure so the client can fall back to the unary
-		// (non-session) path when the server rejects OpenSession
-		// with codes.Unimplemented. Today every Send failure — network
-		// drop, backpressure, Unimplemented — is folded into
-		// Unavailable, which retries indefinitely against a server
-		// that will never accept the RPC. Follow-up when the fallback
-		// path lands.
+		if status.Code(err) == codes.Unimplemented {
+			return &sessionErr{
+				st:    status.Newf(codes.Unimplemented, "session OpenSession request failed: %v", err),
+				cause: err,
+			}
+		}
 		return unavailable(err, "session OpenSession request failed: %v", err)
 	}
 
@@ -112,13 +106,20 @@ func (s *Session) ForceClose(req *spb.CloseSessionRequest) {
 	s.notifyClosing()
 
 	s.setCloseReason(closeReasonLabel(req))
+	cause := closeReasonToCause(req)
+	if s.closeError() == nil && cause != nil {
+		s.setCloseErr(cause)
+	}
 	desc := "session force closed"
 	if req != nil && req.Description != "" {
 		desc = "session force closed: " + req.Description
 	}
-	s.cancelActiveRPCs(unavailable(closeReasonToCause(req), "%s", desc))
+	s.cancelActiveRPCs(unavailable(cause, "%s", desc))
 	s.signalQuiescent()
-	s.notifyClosed(nil)
+	if s.cancelStream != nil {
+		s.cancelStream()
+	}
+	s.notifyClosed(s.closeError())
 }
 
 // notifyClosing fires hooks.onClosing exactly once over the lifetime of a
@@ -145,6 +146,9 @@ func (s *Session) notifyClosing() {
 // always holds.
 func (s *Session) notifyClosed(streamErr error) {
 	s.closeOnce.Do(func() {
+		if s.cancelStream != nil {
+			s.cancelStream()
+		}
 		s.notifyClosing()
 		s.tracer.recordClose(
 			context.Background(),
