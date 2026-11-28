@@ -437,6 +437,17 @@ type builtinMetricsTracerFactory struct {
 	meterProvider metric.MeterProvider
 }
 
+// isNoopMeterProvider reports whether mp is OpenTelemetry's no-op meter
+// provider (either value or pointer form).
+func isNoopMeterProvider(mp metric.MeterProvider) bool {
+	switch mp.(type) {
+	case noop.MeterProvider, *noop.MeterProvider:
+		return true
+	default:
+		return false
+	}
+}
+
 func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression string, isAFEBuiltInMetricEnabled, isEnableGRPCBuiltInMetrics bool, metricsProvider, clientMetricsProvider metric.MeterProvider, opts ...option.ClientOption) (tracerFactory *builtinMetricsTracerFactory, err error) {
 	clientUID, err := generateClientUID()
 	if err != nil {
@@ -445,6 +456,22 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression str
 	project, instance, database, err := parseDatabaseName(dbpath)
 	if err != nil {
 		return nil, err
+	}
+
+	emulatorEnabled := isSpannerEmulatorEnabled()
+	useDefaultMonitoringExporter := !emulatorEnabled && metricsProvider == nil && shouldEnableDefaultMonitoringExporter(opts...)
+	// Non-nil, non-noop metricsProvider is only injected by unit tests;
+	// newClientWithConfig only passes nil (use default exporter) or
+	// noop.NewMeterProvider() (native export disabled).
+	useNativeMetricsProvider := !emulatorEnabled && metricsProvider != nil && !isNoopMeterProvider(metricsProvider)
+	useClientMetricsProvider := !emulatorEnabled && clientMetricsProvider != nil && !isNoopMeterProvider(clientMetricsProvider)
+
+	// Avoid probing the GCP metadata server when no built-in metrics sink will
+	// export the location attribute; otherwise resolve it once before building
+	// the immutable clientAttributes slice shared with exporters.
+	clientLocation := defaultClientLocation
+	if useDefaultMonitoringExporter || useNativeMetricsProvider || useClientMetricsProvider {
+		clientLocation = detectClientLocation(ctx)
 	}
 
 	tracerFactory = &builtinMetricsTracerFactory{
@@ -458,7 +485,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression str
 			attribute.String(monitoredResLabelKeyClientHash, generateClientHash(clientUID)),
 			// Skipping instance config until we have a way to get it
 			attribute.String(monitoredResLabelKeyInstanceConfig, "unknown"),
-			attribute.String(monitoredResLabelKeyLocation, detectClientLocation(ctx)),
+			attribute.String(monitoredResLabelKeyLocation, clientLocation),
 		},
 		shutdown: func(ctx context.Context) {},
 	}
@@ -474,52 +501,40 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression str
 	tracerFactory.isAFEBuiltInMetricEnabled = isAFEBuiltInMetricEnabled
 	tracerFactory.isDirectPathEnabled = false
 	tracerFactory.enabled = false
-	if isSpannerEmulatorEnabled() {
+	if emulatorEnabled {
 		return tracerFactory, nil
 	}
 
 	var grpcMeterProviders []metric.MeterProvider
-	if metricsProvider == nil {
-		if shouldEnableDefaultMonitoringExporter(opts...) {
-			// Create default meter provider
-			mpOptions, exporter, err := builtInMeterProviderOptions(project, compression, tracerFactory.clientAttributes, opts...)
-			if err != nil {
-				return tracerFactory, err
-			}
-			meterProvider := sdkmetric.NewMeterProvider(mpOptions...)
-			tracerFactory.meterProvider = meterProvider
-			tracerFactory.shutdown = func(ctx context.Context) {
-				exporter.stop()
-				meterProvider.Shutdown(ctx)
-			}
-			if err = tracerFactory.addMetricsSink(meterProvider, nativeMetricsPrefix, false); err != nil {
-				return tracerFactory, err
-			}
-			grpcMeterProviders = append(grpcMeterProviders, meterProvider)
+	if useDefaultMonitoringExporter {
+		// Create default meter provider
+		mpOptions, exporter, err := builtInMeterProviderOptions(project, compression, tracerFactory.clientAttributes, opts...)
+		if err != nil {
+			return tracerFactory, err
 		}
-	} else {
-		switch metricsProvider.(type) {
-		case noop.MeterProvider:
-			// Native Cloud Monitoring export is disabled.
-		default:
-			tracerFactory.meterProvider = metricsProvider
-			if err = tracerFactory.addMetricsSink(metricsProvider, nativeMetricsPrefix, false); err != nil {
-				return tracerFactory, err
-			}
-			grpcMeterProviders = append(grpcMeterProviders, metricsProvider)
+		meterProvider := sdkmetric.NewMeterProvider(mpOptions...)
+		tracerFactory.meterProvider = meterProvider
+		tracerFactory.shutdown = func(ctx context.Context) {
+			exporter.stop()
+			meterProvider.Shutdown(ctx)
 		}
+		if err = tracerFactory.addMetricsSink(meterProvider, nativeMetricsPrefix, false); err != nil {
+			return tracerFactory, err
+		}
+		grpcMeterProviders = append(grpcMeterProviders, meterProvider)
+	} else if useNativeMetricsProvider {
+		tracerFactory.meterProvider = metricsProvider
+		if err = tracerFactory.addMetricsSink(metricsProvider, nativeMetricsPrefix, false); err != nil {
+			return tracerFactory, err
+		}
+		grpcMeterProviders = append(grpcMeterProviders, metricsProvider)
 	}
 
-	if clientMetricsProvider != nil {
-		switch clientMetricsProvider.(type) {
-		case noop.MeterProvider:
-			// A no-op provider is equivalent to leaving ClientMetricsProvider nil.
-		default:
-			if err = tracerFactory.addMetricsSink(clientMetricsProvider, clientMetricsPrefix, true); err != nil {
-				return tracerFactory, err
-			}
-			grpcMeterProviders = append(grpcMeterProviders, clientMetricsProvider)
+	if useClientMetricsProvider {
+		if err = tracerFactory.addMetricsSink(clientMetricsProvider, clientMetricsPrefix, true); err != nil {
+			return tracerFactory, err
 		}
+		grpcMeterProviders = append(grpcMeterProviders, clientMetricsProvider)
 	}
 
 	if isEnableGRPCBuiltInMetrics && len(grpcMeterProviders) > 0 {

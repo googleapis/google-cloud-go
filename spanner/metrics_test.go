@@ -35,6 +35,10 @@ import (
 	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp/multiendpoint"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.opentelemetry.io/otel/attribute"
+	otelmetric "go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/metric/noop"
+	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
+	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
@@ -2557,4 +2561,762 @@ func TestBuiltinMetricsLogClientOptions(t *testing.T) {
 			}
 		})
 	}
+}
+
+func clientLocationAttribute(t *testing.T, attrs []attribute.KeyValue) string {
+	t.Helper()
+	for _, attr := range attrs {
+		if attr.Key == monitoredResLabelKeyLocation {
+			return attr.Value.AsString()
+		}
+	}
+	t.Fatalf("clientAttributes missing %q: %+v", monitoredResLabelKeyLocation, attrs)
+	return ""
+}
+
+func installCountingClientLocationStub(t *testing.T, location string) *int {
+	t.Helper()
+	calls := 0
+	orig := detectClientLocation
+	detectClientLocation = func(context.Context) string {
+		calls++
+		return location
+	}
+	t.Cleanup(func() { detectClientLocation = orig })
+	return &calls
+}
+
+func clearBuiltinMetricsEnv(t *testing.T) {
+	t.Helper()
+	t.Setenv("SPANNER_EMULATOR_HOST", "")
+	t.Setenv("SPANNER_MONITORING_HOST", "")
+	t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", "")
+}
+
+// TestIsNoopMeterProvider verifies that isNoopMeterProvider matches value,
+// pointer, and typed-nil OpenTelemetry no-op meter providers, while returning
+// false for nil, active SDK providers, and custom structs embedding noop.MeterProvider.
+func TestIsNoopMeterProvider(t *testing.T) {
+	sdkProvider := sdkmetric.NewMeterProvider()
+	t.Cleanup(func() { sdkProvider.Shutdown(context.Background()) })
+
+	var typedNilNoop *noop.MeterProvider
+	tests := []struct {
+		name     string
+		provider otelmetric.MeterProvider
+		want     bool
+	}{
+		{name: "nil", provider: nil, want: false},
+		{name: "value noop", provider: noop.NewMeterProvider(), want: true},
+		{name: "pointer noop", provider: &noop.MeterProvider{}, want: true},
+		{name: "typed nil pointer noop", provider: typedNilNoop, want: true},
+		{name: "sdk meter provider", provider: sdkProvider, want: false},
+		{name: "struct embedding noop", provider: failingInstrumentMeterProvider{}, want: false},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := isNoopMeterProvider(tc.provider); got != tc.want {
+				t.Fatalf("isNoopMeterProvider(%T) = %v, want %v", tc.provider, got, tc.want)
+			}
+		})
+	}
+}
+
+type embeddedNoopActiveMeterProvider struct {
+	noop.MeterProvider
+	delegate otelmetric.MeterProvider
+}
+
+func (p embeddedNoopActiveMeterProvider) Meter(name string, opts ...otelmetric.MeterOption) otelmetric.Meter {
+	return p.delegate.Meter(name, opts...)
+}
+
+// TestNewBuiltinMetricsTracerFactoryDetectClientLocation tests the factory-level
+// detectClientLocation gate across disabled sinks, active sinks, emulator mode,
+// custom endpoints/connections, and invalid database paths.
+func TestNewBuiltinMetricsTracerFactoryDetectClientLocation(t *testing.T) {
+	const (
+		validDB          = "projects/[PROJECT]/instances/[INSTANCE]/databases/[DATABASE]"
+		detectedLocation = "us-central1"
+	)
+
+	var typedNilNoop *noop.MeterProvider
+
+	// Location must not be probed when both native and client providers are
+	// disabled (nil or any value/pointer/typed-nil noop variant).
+	t.Run("disabled_noop_providers", func(t *testing.T) {
+		tests := []struct {
+			name                  string
+			metricsProvider       otelmetric.MeterProvider
+			clientMetricsProvider otelmetric.MeterProvider
+		}{
+			{name: "value noop native, nil client", metricsProvider: noop.NewMeterProvider(), clientMetricsProvider: nil},
+			{name: "value noop native, value noop client", metricsProvider: noop.NewMeterProvider(), clientMetricsProvider: noop.NewMeterProvider()},
+			{name: "value noop native, pointer noop client", metricsProvider: noop.NewMeterProvider(), clientMetricsProvider: &noop.MeterProvider{}},
+			{name: "value noop native, typed nil noop client", metricsProvider: noop.NewMeterProvider(), clientMetricsProvider: typedNilNoop},
+			{name: "pointer noop native, nil client", metricsProvider: &noop.MeterProvider{}, clientMetricsProvider: nil},
+			{name: "typed nil noop native, nil client", metricsProvider: typedNilNoop, clientMetricsProvider: nil},
+		}
+
+		for _, tc := range tests {
+			t.Run(tc.name, func(t *testing.T) {
+				clearBuiltinMetricsEnv(t)
+				calls := installCountingClientLocationStub(t, detectedLocation)
+				// Convert nil-pointer panics from unmatched typed-nil noop providers
+				// into a test failure so sibling subtests still execute.
+				defer func() {
+					if r := recover(); r != nil {
+						t.Errorf("newBuiltinMetricsTracerFactory() panicked: %v", r)
+					}
+				}()
+
+				factory, err := newBuiltinMetricsTracerFactory(
+					context.Background(), validDB, "identity", false, false,
+					tc.metricsProvider, tc.clientMetricsProvider,
+				)
+				if err != nil {
+					t.Fatalf("newBuiltinMetricsTracerFactory() failed: %v", err)
+				}
+				t.Cleanup(func() { factory.shutdown(context.Background()) })
+
+				if *calls != 0 {
+					t.Errorf("detectClientLocation call count = %d, want 0", *calls)
+				}
+				if got := clientLocationAttribute(t, factory.clientAttributes); got != defaultClientLocation {
+					t.Errorf("location attribute = %q, want %q", got, defaultClientLocation)
+				}
+				if factory.enabled {
+					t.Error("factory.enabled = true, want false")
+				}
+			})
+		}
+	})
+
+	// Location must not be probed when metricsProvider is nil and the default
+	// monitoring exporter is gated off by a custom endpoint, whitespace-only
+	// SPANNER_MONITORING_HOST, WithGRPCConn, or WithConnPool.
+	t.Run("disabled_custom_endpoint_and_conn", func(t *testing.T) {
+		tests := []struct {
+			name                  string
+			monitoringHostEnv     string
+			opts                  []option.ClientOption
+			clientMetricsProvider otelmetric.MeterProvider
+		}{
+			{
+				name: "custom regional endpoint, nil client",
+				opts: []option.ClientOption{option.WithEndpoint("spanner.us-central1.rep.googleapis.com:443")},
+			},
+			{
+				name:              "custom regional endpoint with whitespace SPANNER_MONITORING_HOST",
+				monitoringHostEnv: "   ",
+				opts:              []option.ClientOption{option.WithEndpoint("spanner.us-central1.rep.googleapis.com:443")},
+			},
+			{
+				name:                  "custom regional endpoint, noop client",
+				opts:                  []option.ClientOption{option.WithEndpoint("spanner.us-central1.rep.googleapis.com:443")},
+				clientMetricsProvider: noop.NewMeterProvider(),
+			},
+			{
+				name: "custom GRPCConn, nil client",
+				opts: []option.ClientOption{option.WithGRPCConn(new(grpc.ClientConn))},
+			},
+			{
+				name: "custom ConnPool, nil client",
+				opts: []option.ClientOption{gtransport.WithConnPool(&trackingConnPool{ClientConn: new(grpc.ClientConn)})},
+			},
+		}
+
+		for _, tc := range tests {
+			t.Run(tc.name, func(t *testing.T) {
+				clearBuiltinMetricsEnv(t)
+				if tc.monitoringHostEnv != "" {
+					t.Setenv("SPANNER_MONITORING_HOST", tc.monitoringHostEnv)
+				}
+				calls := installCountingClientLocationStub(t, detectedLocation)
+
+				factory, err := newBuiltinMetricsTracerFactory(
+					context.Background(), validDB, "identity", false, false,
+					nil, tc.clientMetricsProvider, tc.opts...,
+				)
+				if err != nil {
+					t.Fatalf("newBuiltinMetricsTracerFactory() failed: %v", err)
+				}
+				t.Cleanup(func() { factory.shutdown(context.Background()) })
+
+				if *calls != 0 {
+					t.Errorf("detectClientLocation call count = %d, want 0", *calls)
+				}
+				if got := clientLocationAttribute(t, factory.clientAttributes); got != defaultClientLocation {
+					t.Errorf("location attribute = %q, want %q", got, defaultClientLocation)
+				}
+				if factory.enabled {
+					t.Error("factory.enabled = true, want false")
+				}
+			})
+		}
+	})
+
+	// Emulator mode disables all three built-in sink paths, so detectClientLocation
+	// must be skipped even when SPANNER_MONITORING_HOST or active providers are set.
+	t.Run("disabled_emulator", func(t *testing.T) {
+		tests := []struct {
+			name               string
+			withMonitoringHost bool
+			withNativeProvider bool
+			withClientProvider bool
+		}{
+			{name: "emulator with SPANNER_MONITORING_HOST", withMonitoringHost: true},
+			{name: "emulator with active native metricsProvider", withNativeProvider: true},
+			{name: "emulator with active clientMetricsProvider", withClientProvider: true},
+		}
+
+		for _, tc := range tests {
+			t.Run(tc.name, func(t *testing.T) {
+				clearBuiltinMetricsEnv(t)
+				t.Setenv("SPANNER_EMULATOR_HOST", "localhost:9010")
+				calls := installCountingClientLocationStub(t, detectedLocation)
+
+				if tc.withMonitoringHost {
+					installTestMonitoringExporter(t)
+				}
+				var nativeProvider otelmetric.MeterProvider
+				if tc.withNativeProvider {
+					_, p := newTestMeterProvider()
+					t.Cleanup(func() { p.Shutdown(context.Background()) })
+					nativeProvider = p
+				}
+				var clientProvider otelmetric.MeterProvider
+				if tc.withClientProvider {
+					_, p := newTestMeterProvider()
+					t.Cleanup(func() { p.Shutdown(context.Background()) })
+					clientProvider = p
+				}
+
+				factory, err := newBuiltinMetricsTracerFactory(
+					context.Background(), validDB, "identity", false, false,
+					nativeProvider, clientProvider,
+				)
+				if err != nil {
+					t.Fatalf("newBuiltinMetricsTracerFactory() failed: %v", err)
+				}
+				t.Cleanup(func() { factory.shutdown(context.Background()) })
+
+				if *calls != 0 {
+					t.Errorf("detectClientLocation call count = %d, want 0", *calls)
+				}
+				if got := clientLocationAttribute(t, factory.clientAttributes); got != defaultClientLocation {
+					t.Errorf("location attribute = %q, want %q", got, defaultClientLocation)
+				}
+				if factory.enabled {
+					t.Error("factory.enabled = true, want false")
+				}
+			})
+		}
+	})
+
+	// Native Cloud Monitoring export and custom active native providers (including
+	// structs embedding noop.MeterProvider) must still probe detectClientLocation once.
+	t.Run("enabled_native_default_or_custom", func(t *testing.T) {
+		t.Run("default monitoring exporter", func(t *testing.T) {
+			clearBuiltinMetricsEnv(t)
+			installTestMonitoringExporter(t)
+			calls := installCountingClientLocationStub(t, detectedLocation)
+
+			factory, err := newBuiltinMetricsTracerFactory(
+				context.Background(), validDB, "identity", false, false,
+				nil, nil,
+			)
+			if err != nil {
+				t.Fatalf("newBuiltinMetricsTracerFactory() failed: %v", err)
+			}
+			t.Cleanup(func() { factory.shutdown(context.Background()) })
+
+			if *calls != 1 {
+				t.Errorf("detectClientLocation call count = %d, want 1", *calls)
+			}
+			if got := clientLocationAttribute(t, factory.clientAttributes); got != detectedLocation {
+				t.Errorf("location attribute = %q, want %q", got, detectedLocation)
+			}
+			if !factory.enabled {
+				t.Error("factory.enabled = false, want true")
+			}
+		})
+
+		t.Run("custom active metricsProvider", func(t *testing.T) {
+			clearBuiltinMetricsEnv(t)
+			calls := installCountingClientLocationStub(t, detectedLocation)
+			_, nativeProvider := newTestMeterProvider()
+			t.Cleanup(func() { nativeProvider.Shutdown(context.Background()) })
+
+			factory, err := newBuiltinMetricsTracerFactory(
+				context.Background(), validDB, "identity", false, false,
+				nativeProvider, nil,
+			)
+			if err != nil {
+				t.Fatalf("newBuiltinMetricsTracerFactory() failed: %v", err)
+			}
+			t.Cleanup(func() { factory.shutdown(context.Background()) })
+
+			if *calls != 1 {
+				t.Errorf("detectClientLocation call count = %d, want 1", *calls)
+			}
+			if got := clientLocationAttribute(t, factory.clientAttributes); got != detectedLocation {
+				t.Errorf("location attribute = %q, want %q", got, detectedLocation)
+			}
+			if !factory.enabled {
+				t.Error("factory.enabled = false, want true")
+			}
+		})
+
+		t.Run("struct embedding noop.MeterProvider remains active", func(t *testing.T) {
+			clearBuiltinMetricsEnv(t)
+			calls := installCountingClientLocationStub(t, detectedLocation)
+			_, sdkProvider := newTestMeterProvider()
+			t.Cleanup(func() { sdkProvider.Shutdown(context.Background()) })
+
+			factory, err := newBuiltinMetricsTracerFactory(
+				context.Background(), validDB, "identity", false, false,
+				embeddedNoopActiveMeterProvider{delegate: sdkProvider}, nil,
+			)
+			if err != nil {
+				t.Fatalf("newBuiltinMetricsTracerFactory() failed: %v", err)
+			}
+			t.Cleanup(func() { factory.shutdown(context.Background()) })
+
+			if *calls != 1 {
+				t.Errorf("detectClientLocation call count = %d, want 1", *calls)
+			}
+			if got := clientLocationAttribute(t, factory.clientAttributes); got != detectedLocation {
+				t.Errorf("location attribute = %q, want %q", got, detectedLocation)
+			}
+			if !factory.enabled {
+				t.Error("factory.enabled = false, want true")
+			}
+		})
+	})
+
+	// Active caller-owned clientMetricsProvider (alone, embedded-noop wrapper,
+	// with custom endpoint, or paired with default native export) must probe once
+	// and attach the detected region onto spanner/client/* metric data points.
+	t.Run("enabled_client_provider_or_both", func(t *testing.T) {
+		tests := []struct {
+			name            string
+			useDefault      bool
+			embedNoopClient bool
+			metricsProvider otelmetric.MeterProvider
+			opts            []option.ClientOption
+		}{
+			{
+				name:            "noop native with active client provider",
+				metricsProvider: noop.NewMeterProvider(),
+			},
+			{
+				name:            "noop native with embedded-noop active client provider",
+				embedNoopClient: true,
+				metricsProvider: noop.NewMeterProvider(),
+			},
+			{
+				name:            "custom endpoint nil native with active client provider",
+				metricsProvider: nil,
+				opts:            []option.ClientOption{option.WithEndpoint("spanner.us-central1.rep.googleapis.com:443")},
+			},
+			{
+				name:            "both default native and active client provider",
+				useDefault:      true,
+				metricsProvider: nil,
+			},
+		}
+
+		for _, tc := range tests {
+			t.Run(tc.name, func(t *testing.T) {
+				clearBuiltinMetricsEnv(t)
+				if tc.useDefault {
+					installTestMonitoringExporter(t)
+				}
+				calls := installCountingClientLocationStub(t, detectedLocation)
+				reader, sdkClientProvider := newTestMeterProvider()
+				t.Cleanup(func() { sdkClientProvider.Shutdown(context.Background()) })
+
+				var clientProvider otelmetric.MeterProvider = sdkClientProvider
+				if tc.embedNoopClient {
+					clientProvider = embeddedNoopActiveMeterProvider{delegate: sdkClientProvider}
+				}
+
+				factory, err := newBuiltinMetricsTracerFactory(
+					context.Background(), validDB, "identity", false, false,
+					tc.metricsProvider, clientProvider, tc.opts...,
+				)
+				if err != nil {
+					t.Fatalf("newBuiltinMetricsTracerFactory() failed: %v", err)
+				}
+				t.Cleanup(func() { factory.shutdown(context.Background()) })
+
+				if *calls != 1 {
+					t.Errorf("detectClientLocation call count = %d, want 1", *calls)
+				}
+				if got := clientLocationAttribute(t, factory.clientAttributes); got != detectedLocation {
+					t.Errorf("location attribute = %q, want %q", got, detectedLocation)
+				}
+				if !factory.enabled {
+					t.Error("factory.enabled = false, want true")
+				}
+
+				recordSuccessfulTestOperation(factory)
+				rm := collectTestMetrics(t, reader)
+				m := requireTestMetric(t, rm, clientMetricsPrefix+metricNameOperationCount)
+				sum, ok := m.Data.(metricdata.Sum[int64])
+				if !ok || len(sum.DataPoints) == 0 {
+					t.Fatalf("unexpected operation_count metric data: %+v", m.Data)
+				}
+				gotLoc, ok := sum.DataPoints[0].Attributes.Value(monitoredResLabelKeyLocation)
+				if !ok || gotLoc.AsString() != detectedLocation {
+					t.Errorf("recorded client metric location = %q (present=%v), want %q", gotLoc.AsString(), ok, detectedLocation)
+				}
+			})
+		}
+	})
+
+	// Malformed database paths must fail before running any metadata probe.
+	t.Run("invalid_dbpath", func(t *testing.T) {
+		clearBuiltinMetricsEnv(t)
+		installTestMonitoringExporter(t)
+		calls := installCountingClientLocationStub(t, detectedLocation)
+
+		if _, err := newBuiltinMetricsTracerFactory(context.Background(), "invalid-dbpath", "identity", false, false, nil, nil); err == nil {
+			t.Fatal("newBuiltinMetricsTracerFactory() succeeded for invalid dbpath, want error")
+		}
+		if *calls != 0 {
+			t.Errorf("detectClientLocation call count = %d, want 0", *calls)
+		}
+	})
+}
+
+// TestClientDetectClientLocationWithBuiltinMetricsSinks verifies public client
+// constructors (NewClientWithConfig and NewMultiEndpointClientWithConfig) end-to-end:
+// built-in metrics skip detectClientLocation when all sinks are disabled, and
+// export the detected location whenever ClientMetricsProvider, native export,
+// or both are enabled.
+func TestClientDetectClientLocationWithBuiltinMetricsSinks(t *testing.T) {
+	const (
+		dbName           = "projects/[PROJECT]/instances/[INSTANCE]/databases/[DATABASE]"
+		detectedLocation = "us-central1"
+	)
+
+	// Every client-level disable control must keep metricsTracerFactory disabled
+	// with location="global" and avoid probing detectClientLocation for built-in
+	// metrics (leaving only the single trace-span probe in createOpenTelemetryConfig).
+	t.Run("disabled_sinks_default_to_global", func(t *testing.T) {
+		var typedNilNoop *noop.MeterProvider
+		tests := []struct {
+			name               string
+			authenticated      bool
+			withMonitoringHost bool
+			emulator           bool
+			multiEndpoint      bool
+			disableEnv         string
+			config             ClientConfig
+		}{
+			{
+				name:               "WithoutAuthentication",
+				authenticated:      false,
+				withMonitoringHost: true,
+				config:             ClientConfig{NumChannels: 1},
+			},
+			{
+				name:               "DisableNativeMetrics",
+				authenticated:      true,
+				withMonitoringHost: true,
+				config:             ClientConfig{NumChannels: 1, DisableNativeMetrics: true},
+			},
+			{
+				name:               "DisableNativeMetrics with pointer noop ClientMetricsProvider",
+				authenticated:      true,
+				withMonitoringHost: true,
+				config:             ClientConfig{NumChannels: 1, DisableNativeMetrics: true, ClientMetricsProvider: &noop.MeterProvider{}},
+			},
+			{
+				name:               "DisableNativeMetrics with typed-nil noop ClientMetricsProvider",
+				authenticated:      true,
+				withMonitoringHost: true,
+				config:             ClientConfig{NumChannels: 1, DisableNativeMetrics: true, ClientMetricsProvider: typedNilNoop},
+			},
+			{
+				name:               "SPANNER_DISABLE_BUILTIN_METRICS",
+				authenticated:      true,
+				withMonitoringHost: true,
+				disableEnv:         "true",
+				config:             ClientConfig{NumChannels: 1},
+			},
+			{
+				name:               "OMNI without ClientMetricsProvider",
+				authenticated:      false,
+				withMonitoringHost: true,
+				config:             ClientConfig{NumChannels: 1, Type: OMNI, UsePlainText: true},
+			},
+			{
+				name:               "IsExperimentalHost without ClientMetricsProvider",
+				authenticated:      false,
+				withMonitoringHost: true,
+				config:             ClientConfig{NumChannels: 1, IsExperimentalHost: true},
+			},
+			{
+				name:               "SPANNER_EMULATOR_HOST with SPANNER_MONITORING_HOST and ClientMetricsProvider",
+				authenticated:      false,
+				withMonitoringHost: true,
+				emulator:           true,
+				config:             ClientConfig{NumChannels: 1},
+			},
+			{
+				name:               "multi-endpoint without SPANNER_MONITORING_HOST",
+				authenticated:      true,
+				withMonitoringHost: false,
+				multiEndpoint:      true,
+				config:             ClientConfig{},
+			},
+			{
+				name:               "custom endpoint without SPANNER_MONITORING_HOST",
+				authenticated:      true,
+				withMonitoringHost: false,
+				config:             ClientConfig{NumChannels: 1},
+			},
+		}
+
+		for _, tc := range tests {
+			t.Run(tc.name, func(t *testing.T) {
+				clearBuiltinMetricsEnv(t)
+				t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
+				if tc.withMonitoringHost {
+					installTestMonitoringExporter(t)
+				}
+				if tc.disableEnv != "" {
+					t.Setenv("SPANNER_DISABLE_BUILTIN_METRICS", tc.disableEnv)
+				}
+				calls := installCountingClientLocationStub(t, detectedLocation)
+
+				var client *Client
+				var teardown func()
+				switch {
+				case tc.emulator:
+					server, _, teardownServer := NewMockedSpannerInMemTestServer(t)
+					t.Cleanup(teardownServer)
+					t.Setenv("SPANNER_EMULATOR_HOST", server.ServerAddress)
+					_, clientProvider := newTestMeterProvider()
+					t.Cleanup(func() { clientProvider.Shutdown(context.Background()) })
+					cfg := tc.config
+					cfg.ClientMetricsProvider = clientProvider
+					c, err := NewClientWithConfig(context.Background(), dbName, cfg)
+					if err != nil {
+						t.Fatalf("NewClientWithConfig() failed: %v", err)
+					}
+					client = c
+					teardown = client.Close
+				case tc.multiEndpoint:
+					server, _, teardownServer := NewMockedSpannerInMemTestServer(t)
+					t.Cleanup(teardownServer)
+					gmeCfg := &grpcgcp.GCPMultiEndpointOptions{
+						MultiEndpoints: map[string]*multiendpoint.MultiEndpointOptions{
+							"default": {Endpoints: []string{server.ServerAddress}},
+						},
+						Default: "default",
+					}
+					creds := &google.Credentials{
+						ProjectID:   "[PROJECT]",
+						TokenSource: oauth2.StaticTokenSource(&oauth2.Token{AccessToken: "test-token"}),
+					}
+					c, _, err := NewMultiEndpointClientWithConfig(context.Background(), dbName, tc.config, gmeCfg,
+						option.WithCredentials(creds),
+						option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+					)
+					if err != nil {
+						t.Fatalf("NewMultiEndpointClientWithConfig() failed: %v", err)
+					}
+					client = c
+					teardown = client.Close
+				case tc.authenticated:
+					_, client, teardown = setupAuthenticatedMockedTestServerWithConfig(t, tc.config)
+				default:
+					_, client, teardown = setupMockedTestServerWithConfig(t, tc.config)
+				}
+				t.Cleanup(teardown)
+
+				if client.metricsTracerFactory.enabled {
+					t.Error("metricsTracerFactory.enabled = true, want false")
+				}
+				if got := clientLocationAttribute(t, client.metricsTracerFactory.clientAttributes); got != defaultClientLocation {
+					t.Errorf("metricsTracerFactory location = %q, want %q", got, defaultClientLocation)
+				}
+				// Only createOpenTelemetryConfig (trace spans) calls detectClientLocation.
+				if *calls != 1 {
+					t.Errorf("detectClientLocation call count = %d, want 1 (trace config only)", *calls)
+				}
+			})
+		}
+	})
+
+	// Caller-owned ClientMetricsProvider must retain the detected GCP region on
+	// exported spanner/client/* metrics even when native export is disabled.
+	t.Run("active_client_metrics_provider_retains_detected_location", func(t *testing.T) {
+		tests := []struct {
+			name          string
+			authenticated bool
+			config        ClientConfig
+		}{
+			{
+				name:          "DisableNativeMetrics with ClientMetricsProvider",
+				authenticated: true,
+				config:        ClientConfig{NumChannels: 1, DisableNativeMetrics: true},
+			},
+			{
+				name:          "WithoutAuthentication with ClientMetricsProvider",
+				authenticated: false,
+				config:        ClientConfig{NumChannels: 1},
+			},
+			{
+				name:          "OMNI with ClientMetricsProvider",
+				authenticated: false,
+				config:        ClientConfig{NumChannels: 1, Type: OMNI, UsePlainText: true},
+			},
+		}
+
+		for _, tc := range tests {
+			t.Run(tc.name, func(t *testing.T) {
+				clearBuiltinMetricsEnv(t)
+				t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
+				calls := installCountingClientLocationStub(t, detectedLocation)
+				reader, provider := newTestMeterProvider()
+				t.Cleanup(func() { provider.Shutdown(context.Background()) })
+
+				cfg := tc.config
+				cfg.ClientMetricsProvider = provider
+				var client *Client
+				var teardown func()
+				if tc.authenticated {
+					_, client, teardown = setupAuthenticatedMockedTestServerWithConfig(t, cfg)
+				} else {
+					_, client, teardown = setupMockedTestServerWithConfig(t, cfg)
+				}
+				t.Cleanup(teardown)
+
+				if !client.metricsTracerFactory.enabled {
+					t.Fatal("metricsTracerFactory.enabled = false, want true")
+				}
+				if got := clientLocationAttribute(t, client.metricsTracerFactory.clientAttributes); got != detectedLocation {
+					t.Errorf("metricsTracerFactory location = %q, want %q", got, detectedLocation)
+				}
+				// One call from newBuiltinMetricsTracerFactory + one from createOpenTelemetryConfig.
+				if *calls != 2 {
+					t.Errorf("detectClientLocation call count = %d, want 2", *calls)
+				}
+
+				if _, err := client.Single().ReadRow(context.Background(), "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"}); err != nil {
+					t.Fatalf("ReadRow() failed: %v", err)
+				}
+				rm := collectTestMetrics(t, reader)
+				m := requireTestMetric(t, rm, clientMetricsPrefix+metricNameOperationCount)
+				sum, ok := m.Data.(metricdata.Sum[int64])
+				if !ok || len(sum.DataPoints) == 0 {
+					t.Fatalf("unexpected operation_count data: %+v", m.Data)
+				}
+				foundDetected := false
+				for _, pt := range sum.DataPoints {
+					if v, ok := pt.Attributes.Value(monitoredResLabelKeyLocation); ok && v.AsString() == detectedLocation {
+						foundDetected = true
+						break
+					}
+				}
+				if !foundDetected {
+					t.Errorf("exported %s missing location=%q: %+v", m.Name, detectedLocation, sum.DataPoints)
+				}
+			})
+		}
+	})
+
+	// Default Cloud Monitoring export (alone or paired with ClientMetricsProvider)
+	// must probe detectClientLocation once for built-in metrics and export the
+	// detected region on Cloud Monitoring TimeSeries (and client metrics when set).
+	t.Run("active_native_exporter_retains_detected_location", func(t *testing.T) {
+		tests := []struct {
+			name                      string
+			withClientMetricsProvider bool
+		}{
+			{name: "native exporter only", withClientMetricsProvider: false},
+			{name: "both native exporter and ClientMetricsProvider", withClientMetricsProvider: true},
+		}
+
+		for _, tc := range tests {
+			t.Run(tc.name, func(t *testing.T) {
+				clearBuiltinMetricsEnv(t)
+				t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
+				testExporter := installTestMonitoringExporter(t)
+				calls := installCountingClientLocationStub(t, detectedLocation)
+
+				cfg := ClientConfig{NumChannels: 1}
+				var reader *sdkmetric.ManualReader
+				if tc.withClientMetricsProvider {
+					var provider *sdkmetric.MeterProvider
+					reader, provider = newTestMeterProvider()
+					t.Cleanup(func() { provider.Shutdown(context.Background()) })
+					cfg.ClientMetricsProvider = provider
+				}
+
+				_, client, teardown := setupAuthenticatedMockedTestServerWithConfig(t, cfg)
+				tornDown := false
+				teardownOnce := func() {
+					if !tornDown {
+						tornDown = true
+						teardown()
+					}
+				}
+				t.Cleanup(teardownOnce)
+
+				if !client.metricsTracerFactory.enabled {
+					t.Fatal("metricsTracerFactory.enabled = false, want true")
+				}
+				if got := clientLocationAttribute(t, client.metricsTracerFactory.clientAttributes); got != detectedLocation {
+					t.Errorf("metricsTracerFactory location = %q, want %q", got, detectedLocation)
+				}
+				// One call from newBuiltinMetricsTracerFactory (even with two sinks) + one from createOpenTelemetryConfig.
+				if *calls != 2 {
+					t.Errorf("detectClientLocation call count = %d, want 2", *calls)
+				}
+
+				if _, err := client.Single().ReadRow(context.Background(), "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"}); err != nil {
+					t.Fatalf("ReadRow() failed: %v", err)
+				}
+				if reader != nil {
+					rm := collectTestMetrics(t, reader)
+					m := requireTestMetric(t, rm, clientMetricsPrefix+metricNameOperationCount)
+					sum, ok := m.Data.(metricdata.Sum[int64])
+					if !ok || len(sum.DataPoints) == 0 {
+						t.Fatalf("unexpected operation_count data: %+v", m.Data)
+					}
+					foundClientLoc := false
+					for _, pt := range sum.DataPoints {
+						if v, ok := pt.Attributes.Value(monitoredResLabelKeyLocation); ok && v.AsString() == detectedLocation {
+							foundClientLoc = true
+							break
+						}
+					}
+					if !foundClientLoc {
+						t.Errorf("exported %s missing location=%q: %+v", m.Name, detectedLocation, sum.DataPoints)
+					}
+				}
+				teardownOnce()
+
+				foundLocation := false
+				for _, req := range testExporter.server.CreateServiceTimeSeriesRequests() {
+					for _, ts := range req.GetTimeSeries() {
+						if ts.GetResource().GetLabels()[monitoredResLabelKeyLocation] == detectedLocation {
+							foundLocation = true
+							break
+						}
+					}
+				}
+				if !foundLocation {
+					t.Errorf("exported Cloud Monitoring TimeSeries missing resource label %s=%q", monitoredResLabelKeyLocation, detectedLocation)
+				}
+			})
+		}
+	})
 }
