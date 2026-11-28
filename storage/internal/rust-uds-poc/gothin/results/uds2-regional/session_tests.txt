@@ -1,0 +1,8 @@
+gcs-core-server pid=7970 listening on /tmp/sess.sock
+client init: 33.277682ms (sidecar spawn 20.426126ms, pid 7970, owned=true, how=, session=true)
+1 read with lent token (session=true) -> err=<nil>
+2 read with bogus token -> code=401 err=googleapi: Error 401: the HTTP transport reports a [401] error: Invalid Credentials
+3 client init: 3.963376ms (sidecar spawn 0s, pid 0, owned=false, how=, session=false)
+hijack from pid 7981 -> googleapi: Error 403: session is bound to another process
+4 read after UpdateToken plumbing present -> err=<nil>
+5 token in sidecar environ: false

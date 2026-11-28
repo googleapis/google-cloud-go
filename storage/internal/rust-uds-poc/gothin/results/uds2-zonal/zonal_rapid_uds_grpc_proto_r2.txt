@@ -1,0 +1,8 @@
+gcs-core-server pid=15638 listening on /tmp/gcs-core-0/core.sock
+client init: 25.472832ms (sidecar pid 15638)
+backend=go-uds-grpc bucket=cpriti-zb-central1-b
+backend      sli                          p50       p90       p99       max  cpu s/GiB cpu ms/op  peak MiB
+go-uds-grpc  open                    25.849ms  67.609ms  67.609ms   90.45ms       0.00      4.30        50
+go-uds-grpc  read50x2x4/serial      636.399ms 711.355ms 711.355ms 752.819ms       3.06    299.28       300
+go-uds-grpc  read50x2x4/concurrent  330.002ms 381.223ms 381.223ms 416.451ms       3.24    316.27       371
+go-uds-grpc  random8k                 1.368ms   1.777ms   2.536ms   5.177ms      30.10      0.23       371

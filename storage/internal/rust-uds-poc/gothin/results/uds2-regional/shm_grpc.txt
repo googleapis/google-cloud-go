@@ -1,0 +1,9 @@
+gcs-core-server pid=8563 listening on /tmp/shmg.sock
+client init: 25.627341ms (sidecar spawn 20.938224ms, pid 8563, owned=true, how=, session=false)
+panic: rpc error: code = Unimplemented desc = the service reports an error with code UNIMPLEMENTED described as: Appendable objects are not supported for this request.
+
+goroutine 1 [running]:
+main.shmBench({0x1550780, 0x36751e0}, 0x16b81cd2c9a0)
+	/opt/poc2/gothin/cmd/bench2_uds/main.go:285 +0x4ac
+main.main()
+	/opt/poc2/gothin/cmd/bench2_uds/main.go:118 +0x6b2

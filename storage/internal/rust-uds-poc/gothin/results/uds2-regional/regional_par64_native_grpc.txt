@@ -1,0 +1,6 @@
+backend=go-grpc-cp bucket=cpriti-thickthin-poc-asse1 parallel=64
+backend    style  op      size          p50       p90       max      mean  p50 MiB/s   ffi/op cpu s/GiB  peak MiB
+go-grpc-cp whole  write   16MiB       299ms    3.711s   15.707s    1.593s       53.4      0.0      2.85      3077
+go-grpc-cp whole  read    16MiB       151ms    18.94s   28.519s     3.13s      105.8      0.0      2.85      3077
+go-grpc-cp -      list    -              0s        0s        0s        0s          -      0.0   0.00ms/call   2572  (objects=0)
+max_os_threads_go=11 max_os_threads_sidecar=0

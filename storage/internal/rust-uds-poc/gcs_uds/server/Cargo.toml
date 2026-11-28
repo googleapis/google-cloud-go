@@ -1,0 +1,39 @@
+[package]
+name = "gcs-core-server"
+version = "0.1.0"
+edition = "2024"
+description = "POC: Rust GCS thick client exposed as a gRPC server on a Unix Domain Socket"
+
+[lib]
+name = "storage_grpc_uds"
+path = "src/lib.rs"
+
+[[bin]]
+name = "gcs-core-server"
+path = "src/main.rs"
+
+[dependencies]
+bytes = "1"
+clap = { version = "4", features = ["derive"] }
+futures = "0.3"
+google-cloud-auth = "1"
+google-cloud-gax = "1"
+google-cloud-storage = "1.21.0"
+http = "1.5.0"
+libc = "0.2"
+prost = "0.14"
+tokio = { version = "1", features = ["io-util", "rt-multi-thread", "macros", "net", "signal", "time", "sync"] }
+tokio-stream = { version = "0.1", features = ["net"] }
+tonic = { version = "0.14", default-features = false, features = ["server", "codegen", "router"] }
+tonic-prost = "0.14"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+[build-dependencies]
+tonic-prost-build = "0.14"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+strip = "debuginfo"

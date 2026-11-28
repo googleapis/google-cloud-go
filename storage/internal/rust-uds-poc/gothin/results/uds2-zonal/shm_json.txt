@@ -1,0 +1,9 @@
+gcs-core-server pid=8373 listening on /tmp/shm.sock
+client init: 25.173824ms (sidecar spawn 20.49396ms, pid 8373, owned=true, how=, session=false)
+panic: rpc error: code = Unknown desc = the service reports an error with code UNKNOWN described as: Zonal buckets are incompatible with resumable upload.
+
+goroutine 1 [running]:
+main.shmBench({0x1550780, 0x36751e0}, 0x312f1330000)
+	/opt/poc2/gothin/cmd/bench2_uds/main.go:285 +0x4ac
+main.main()
+	/opt/poc2/gothin/cmd/bench2_uds/main.go:118 +0x6b2

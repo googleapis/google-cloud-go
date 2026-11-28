@@ -1,0 +1,17 @@
+client init: 44.238016ms (sidecar spawn 18.59704ms, pid 5586, owned=true, how=, session=false)
+backend=go-uds-grpc bucket=cpriti-thickthin-poc-zonal-usw1a parallel=1 vcpus=192
+backend    style  op      size          p50       p90       p99       max      mean  p50 MiB/s  agg MiB/s   ffi/op cpu s/GiB   cpu %  peak MiB
+go-uds-grpc whole  write   1MiB        906ms    1.298s    1.298s    1.865s    1.035s        1.1        0.9      3.0     16.58    0.0%       102
+go-uds-grpc whole  read    1MiB       1.125s    1.436s    1.508s    1.682s    1.059s        0.9        0.9      1.0     16.58    0.0%       102
+go-uds-grpc whole  write   16MiB      1.189s    1.416s    1.416s    1.487s    1.215s       13.5       11.4      6.0      3.19    0.0%       177
+go-uds-grpc whole  read    16MiB      1.398s    1.841s    1.851s     1.88s    1.464s       11.4       11.4      1.0      3.19    0.0%       177
+go-uds-grpc whole  write   128MiB     1.791s     2.27s     2.27s    2.286s    1.825s       71.5       29.2     34.0      2.80    0.0%       709
+go-uds-grpc whole  read    128MiB     5.192s    5.544s    6.847s    6.989s    5.241s       24.7       29.2      1.0      2.80    0.0%       709
+go-uds-grpc 32k    write   1MiB        930ms    1.435s    1.435s    1.455s    1.033s        1.1        1.0      3.0     10.41    0.0%       730
+go-uds-grpc 32k    read    1MiB        946ms    1.454s    1.516s    1.647s    1.023s        1.1        1.0      1.0     10.41    0.0%       730
+go-uds-grpc 32k    write   16MiB      1.207s    1.522s    1.522s    1.577s    1.242s       13.3       11.0      7.0      4.16    0.0%       916
+go-uds-grpc 32k    read    16MiB      1.465s    1.926s    1.989s    1.997s     1.52s       10.9       11.0      1.0      4.16    0.0%       916
+go-uds-grpc 32k    write   128MiB     1.574s    2.091s    2.091s    2.151s    1.721s       81.3       30.3   3591.0      2.89    0.0%      1001
+go-uds-grpc 32k    read    128MiB     5.001s    5.558s    5.672s    5.851s    5.054s       25.6       30.3      1.0      2.89    0.0%      1001
+go-uds-grpc -      list    -              0s        0s        0s        0s        0s          -          -      0.0   0.80ms/call    0.5%    980  (objects=0)
+sidecar: rss=335 MiB peak=335 MiB threads=194 | cpu split whole run: go=12.9s sidecar=22.7s

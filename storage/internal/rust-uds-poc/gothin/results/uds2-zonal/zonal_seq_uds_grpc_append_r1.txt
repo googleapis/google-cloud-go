@@ -1,0 +1,14 @@
+gcs-core-server pid=16426 listening on /tmp/gcs-core-0/core.sock
+client init: 24.228425ms (sidecar spawn 20.761495ms, pid 16426, owned=true, how=, session=false)
+backend=go-uds-grpc bucket=cpriti-zb-central1-b parallel=1
+backend    style  op      size          p50       p90       max      mean  p50 MiB/s   ffi/op cpu s/GiB  peak MiB
+go-uds-grpc whole  write   1MiB        107ms     129ms     169ms     113ms        9.3      3.0      5.92        77
+go-uds-grpc whole  read    1MiB         28ms      42ms      59ms      31ms       36.3      1.0      5.92        77
+go-uds-grpc whole  write   16MiB       163ms     190ms     198ms     165ms       98.2     10.0      3.23       196
+go-uds-grpc whole  read    16MiB        81ms     101ms     121ms      84ms      196.6      1.0      3.23       196
+go-uds-grpc whole  write   128MiB      423ms     505ms     517ms     439ms      302.5     66.0      2.94       506
+go-uds-grpc whole  read    128MiB      493ms     595ms     748ms     509ms      259.7      1.0      2.94       506
+go-uds-grpc whole  write   512MiB     1.374s    1.433s    1.469s    1.347s      372.7    258.0      2.96      1531
+go-uds-grpc whole  read    512MiB     1.855s    2.384s    2.808s    1.969s      276.0      1.0      2.96      1531
+go-uds-grpc -      list    -              0s        0s        0s        0s          -      0.0   0.27ms/call   1471  (objects=0)
+sidecar: rss=57 MiB peak=57 MiB threads=9

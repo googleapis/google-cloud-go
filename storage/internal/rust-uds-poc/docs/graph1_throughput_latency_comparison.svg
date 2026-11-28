@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="525" viewBox="0 0 1400 525">
+  <rect width="1400" height="525" fill="#FFFFFF"/>
+  <text x="700" y="30" text-anchor="middle" font-family="sans-serif" font-size="16.5" font-weight="bold" fill="#202124">Graph 1: Native Go vs. udsthin (Go-&gt;UDS-&gt;Rust) — Throughput &amp; Latency Across Workloads 1-6 (c4-standard-192)</text>
+  <line x1="650" y1="55" x2="650" y2="480" stroke="#E0E0E0" stroke-width="1"/>
+  <text x="352.0" y="72" text-anchor="middle" font-family="sans-serif" font-size="13.5" font-weight="bold" fill="#202124">A. Sustained 48-Thread Throughput (MB/s, Higher is Better)</text>
+  <rect x="79" y="86" width="13" height="13" rx="2" fill="#1A73E8"/>
+  <text x="97" y="96" font-family="sans-serif" font-size="11.5" font-weight="600" fill="#3C4043">Native Go SDK</text>
+  <rect x="209" y="86" width="13" height="13" rx="2" fill="#00897B"/>
+  <text x="227" y="96" font-family="sans-serif" font-size="11.5" font-weight="600" fill="#3C4043">udsthin (Go-&gt;UDS-&gt;Rust)</text>
+  <line x1="79" y1="423.0" x2="625" y2="423.0" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="71" y="427.0" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">0</text>
+  <line x1="79" y1="372.2" x2="625" y2="372.2" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="71" y="376.2" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">1,000</text>
+  <line x1="79" y1="321.3" x2="625" y2="321.3" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="71" y="325.3" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">2,000</text>
+  <line x1="79" y1="270.5" x2="625" y2="270.5" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="71" y="274.5" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">3,000</text>
+  <line x1="79" y1="219.7" x2="625" y2="219.7" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="71" y="223.7" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">4,000</text>
+  <line x1="79" y1="168.8" x2="625" y2="168.8" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="71" y="172.8" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">5,000</text>
+  <line x1="79" y1="118.0" x2="625" y2="118.0" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="71" y="122.0" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">6,000</text>
+  <line x1="79" y1="118.0" x2="79" y2="423.0" stroke="#9AA0A6" stroke-width="1.2"/>
+  <line x1="79" y1="423.0" x2="625" y2="423.0" stroke="#9AA0A6" stroke-width="1.2"/>
+  <text x="34" y="270.5" text-anchor="middle" font-family="sans-serif" font-size="11.5" font-weight="bold" fill="#3C4043" transform="rotate(-90 34 270.5)">Throughput (MB/s)</text>
+  <rect x="135.5" y="350.6" width="32.0" height="72.4" rx="2" fill="#1A73E8"/>
+  <text x="151.5" y="335.6" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">1,424.4</text>
+  <text x="151.5" y="346.6" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">MB/s</text>
+  <rect x="172.5" y="351.1" width="32.0" height="71.9" rx="2" fill="#00897B"/>
+  <text x="188.5" y="336.1" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">1,414.5</text>
+  <text x="188.5" y="347.1" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">(-0.7%)</text>
+  <text x="170.0" y="441" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">W4: BidiRead 48t</text>
+  <text x="170.0" y="455" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">Regional us-west1</text>
+  <rect x="317.5" y="349.6" width="32.0" height="73.4" rx="2" fill="#1A73E8"/>
+  <text x="333.5" y="334.6" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">1,443.1</text>
+  <text x="333.5" y="345.6" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">MB/s</text>
+  <rect x="354.5" y="348.3" width="32.0" height="74.7" rx="2" fill="#00897B"/>
+  <text x="370.5" y="333.3" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">1,469.5</text>
+  <text x="370.5" y="344.3" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">(+1.8%)</text>
+  <text x="352.0" y="441" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">W4: BidiRead 48t</text>
+  <text x="352.0" y="455" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">Zonal us-west1-a</text>
+  <rect x="499.5" y="147.1" width="32.0" height="275.9" rx="2" fill="#1A73E8"/>
+  <text x="515.5" y="132.1" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">5,428.1</text>
+  <text x="515.5" y="143.1" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">MB/s</text>
+  <rect x="536.5" y="182.2" width="32.0" height="240.8" rx="2" fill="#00897B"/>
+  <text x="552.5" y="167.2" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">4,736.5</text>
+  <text x="552.5" y="178.2" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">(-12.7%)</text>
+  <text x="534.0" y="441" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">W5: BidiWrite 48t</text>
+  <text x="534.0" y="455" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">Zonal us-west1-a</text>
+  <text x="1045.0" y="72" text-anchor="middle" font-family="sans-serif" font-size="13.5" font-weight="bold" fill="#202124">B. P50 Latency Across Rapid &amp; List Workloads (ms, Lower is Better)</text>
+  <rect x="715" y="86" width="13" height="13" rx="2" fill="#1A73E8"/>
+  <text x="733" y="96" font-family="sans-serif" font-size="11.5" font-weight="600" fill="#3C4043">Native Go SDK</text>
+  <rect x="845" y="86" width="13" height="13" rx="2" fill="#00897B"/>
+  <text x="863" y="96" font-family="sans-serif" font-size="11.5" font-weight="600" fill="#3C4043">udsthin (Go-&gt;UDS-&gt;Rust)</text>
+  <line x1="715" y1="423.0" x2="1375" y2="423.0" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="707" y="427.0" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">0</text>
+  <line x1="715" y1="359.5" x2="1375" y2="359.5" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="707" y="363.5" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">1,000</text>
+  <line x1="715" y1="295.9" x2="1375" y2="295.9" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="707" y="299.9" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">2,000</text>
+  <line x1="715" y1="232.4" x2="1375" y2="232.4" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="707" y="236.4" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">3,000</text>
+  <line x1="715" y1="168.8" x2="1375" y2="168.8" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="707" y="172.8" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">4,000</text>
+  <line x1="715" y1="118.0" x2="1375" y2="118.0" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="707" y="122.0" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">4,800</text>
+  <line x1="715" y1="118.0" x2="715" y2="423.0" stroke="#9AA0A6" stroke-width="1.2"/>
+  <line x1="715" y1="423.0" x2="1375" y2="423.0" stroke="#9AA0A6" stroke-width="1.2"/>
+  <text x="670" y="270.5" text-anchor="middle" font-family="sans-serif" font-size="11.5" font-weight="bold" fill="#3C4043" transform="rotate(-90 670 270.5)">P50 Latency (ms)</text>
+  <rect x="727.6" y="409.8" width="32.0" height="13.2" rx="2" fill="#1A73E8"/>
+  <text x="743.6" y="404.8" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">208.4ms</text>
+  <rect x="764.6" y="409.7" width="32.0" height="13.3" rx="2" fill="#00897B"/>
+  <text x="780.6" y="394.7" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">208.8ms</text>
+  <text x="780.6" y="405.7" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">(+0.2%)</text>
+  <text x="762.1" y="441" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">W1: Open</text>
+  <text x="762.1" y="455" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">(Regional)</text>
+  <rect x="821.9" y="158.0" width="32.0" height="265.0" rx="2" fill="#1A73E8"/>
+  <text x="837.9" y="153.0" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">4.17s</text>
+  <rect x="858.9" y="143.4" width="32.0" height="279.6" rx="2" fill="#00897B"/>
+  <text x="874.9" y="128.4" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">4.40s</text>
+  <text x="874.9" y="139.4" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">(+5.5%)</text>
+  <text x="856.4" y="441" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">W2a: Read50x2x4</text>
+  <text x="856.4" y="455" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">Serial (Reg)</text>
+  <rect x="916.2" y="205.7" width="32.0" height="217.3" rx="2" fill="#1A73E8"/>
+  <text x="932.2" y="200.7" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">3.42s</text>
+  <rect x="953.2" y="208.2" width="32.0" height="214.8" rx="2" fill="#00897B"/>
+  <text x="969.2" y="193.2" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">3.38s</text>
+  <text x="969.2" y="204.2" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">(-1.2%)</text>
+  <text x="950.7" y="441" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">W2b: Read50x2x4</text>
+  <text x="950.7" y="455" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">Conc (Reg)</text>
+  <rect x="1010.5" y="210.1" width="32.0" height="212.9" rx="2" fill="#1A73E8"/>
+  <text x="1026.5" y="205.1" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">3.35s</text>
+  <rect x="1047.5" y="218.4" width="32.0" height="204.6" rx="2" fill="#00897B"/>
+  <text x="1063.5" y="203.4" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">3.22s</text>
+  <text x="1063.5" y="214.4" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">(-3.9%)</text>
+  <text x="1045.0" y="441" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">W2b: Read50x2x4</text>
+  <text x="1045.0" y="455" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">Conc (Zonal)</text>
+  <rect x="1104.8" y="420.5" width="32.0" height="2.5" rx="2" fill="#1A73E8"/>
+  <text x="1120.8" y="415.5" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">38.5ms</text>
+  <rect x="1141.8" y="420.4" width="32.0" height="2.6" rx="2" fill="#00897B"/>
+  <text x="1157.8" y="415.4" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">40.8ms</text>
+  <text x="1139.3" y="441" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">W3: Random8K</text>
+  <text x="1139.3" y="455" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">(Regional)</text>
+  <rect x="1199.1" y="420.5" width="32.0" height="2.5" rx="2" fill="#1A73E8"/>
+  <text x="1215.1" y="415.5" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">35.9ms</text>
+  <rect x="1236.1" y="420.5" width="32.0" height="2.5" rx="2" fill="#00897B"/>
+  <text x="1252.1" y="405.5" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">35.9ms</text>
+  <text x="1252.1" y="416.5" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">(0.0%)</text>
+  <text x="1233.6" y="441" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">W3: Random8K</text>
+  <text x="1233.6" y="455" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">(Zonal)</text>
+  <rect x="1293.4" y="417.5" width="32.0" height="5.5" rx="2" fill="#1A73E8"/>
+  <text x="1309.4" y="412.5" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">87.0ms</text>
+  <rect x="1330.4" y="417.3" width="32.0" height="5.7" rx="2" fill="#00897B"/>
+  <text x="1346.4" y="412.3" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">90.0ms</text>
+  <text x="1327.9" y="441" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">W6: ListObj 100</text>
+  <text x="1327.9" y="455" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">(Reg / Zonal 99ms)</text>
+  <text x="700" y="510" text-anchor="middle" font-family="sans-serif" font-size="11" font-style="italic" fill="#5F6368">All bars compare identical gRPC CloudPath protocols (192 data conns, 1 control conn) on c4-standard-192 (us-central1 -&gt; us-west1 Regional &amp; us-west1-a Zonal).</text>
+</svg>

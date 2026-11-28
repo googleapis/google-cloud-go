@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="525" viewBox="0 0 1400 525">
+  <rect width="1400" height="525" fill="#FFFFFF"/>
+  <text x="700" y="30" text-anchor="middle" font-family="sans-serif" font-size="16.5" font-weight="bold" fill="#202124">Graph 3: Cloud Monitoring CPU Utilization (%) &amp; Peak Memory (%) on c4-standard-192 (Native Go vs. udsthin)</text>
+  <line x1="650" y1="55" x2="650" y2="480" stroke="#E0E0E0" stroke-width="1"/>
+  <text x="352.0" y="72" text-anchor="middle" font-family="sans-serif" font-size="13.5" font-weight="bold" fill="#202124">A. Cloud Monitoring CPU Utilization (%, Lower is Better)</text>
+  <rect x="79" y="86" width="13" height="13" rx="2" fill="#1A73E8"/>
+  <text x="97" y="96" font-family="sans-serif" font-size="11.5" font-weight="600" fill="#3C4043">Native Go SDK</text>
+  <rect x="209" y="86" width="13" height="13" rx="2" fill="#00897B"/>
+  <text x="227" y="96" font-family="sans-serif" font-size="11.5" font-weight="600" fill="#3C4043">udsthin (Go-&gt;UDS-&gt;Rust)</text>
+  <line x1="79" y1="423.0" x2="625" y2="423.0" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="71" y="427.0" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">0%</text>
+  <line x1="79" y1="379.4" x2="625" y2="379.4" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="71" y="383.4" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">1%</text>
+  <line x1="79" y1="335.9" x2="625" y2="335.9" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="71" y="339.9" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">2%</text>
+  <line x1="79" y1="292.3" x2="625" y2="292.3" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="71" y="296.3" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">3%</text>
+  <line x1="79" y1="248.7" x2="625" y2="248.7" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="71" y="252.7" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">4%</text>
+  <line x1="79" y1="205.1" x2="625" y2="205.1" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="71" y="209.1" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">5%</text>
+  <line x1="79" y1="161.6" x2="625" y2="161.6" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="71" y="165.6" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">6%</text>
+  <line x1="79" y1="118.0" x2="625" y2="118.0" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="71" y="122.0" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">7%</text>
+  <line x1="79" y1="118.0" x2="79" y2="423.0" stroke="#9AA0A6" stroke-width="1.2"/>
+  <line x1="79" y1="423.0" x2="625" y2="423.0" stroke="#9AA0A6" stroke-width="1.2"/>
+  <text x="34" y="270.5" text-anchor="middle" font-family="sans-serif" font-size="11.5" font-weight="bold" fill="#3C4043" transform="rotate(-90 34 270.5)">CPU Utilization (%)</text>
+  <rect x="91.1" y="405.1" width="30.9" height="17.9" rx="2" fill="#1A73E8"/>
+  <text x="106.5" y="400.1" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">0.41%</text>
+  <rect x="127.0" y="405.1" width="30.9" height="17.9" rx="2" fill="#00897B"/>
+  <text x="142.5" y="390.1" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">0.41%</text>
+  <text x="142.5" y="401.1" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">(0.0%)</text>
+  <text x="124.5" y="441" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">W1-W3 Rapid</text>
+  <text x="124.5" y="455" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">(Regional)</text>
+  <rect x="182.1" y="417.8" width="30.9" height="5.2" rx="2" fill="#1A73E8"/>
+  <text x="197.5" y="412.8" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">0.12%</text>
+  <rect x="218.0" y="417.8" width="30.9" height="5.2" rx="2" fill="#00897B"/>
+  <text x="233.5" y="402.8" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">0.12%</text>
+  <text x="233.5" y="413.8" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">(0.0%)</text>
+  <text x="215.5" y="441" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">W1-W3 Rapid</text>
+  <text x="215.5" y="455" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">(Zonal)</text>
+  <rect x="273.1" y="297.5" width="30.9" height="125.5" rx="2" fill="#1A73E8"/>
+  <text x="288.5" y="292.5" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">2.88%</text>
+  <rect x="309.0" y="275.3" width="30.9" height="147.7" rx="2" fill="#00897B"/>
+  <text x="324.5" y="260.3" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">3.39%</text>
+  <text x="324.5" y="271.3" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">(+17.7%)</text>
+  <text x="306.5" y="441" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">W4: BidiRead 48t</text>
+  <text x="306.5" y="455" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">(Regional)</text>
+  <rect x="364.1" y="303.2" width="30.9" height="119.8" rx="2" fill="#1A73E8"/>
+  <text x="379.5" y="298.2" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">2.75%</text>
+  <rect x="400.0" y="291.0" width="30.9" height="132.0" rx="2" fill="#00897B"/>
+  <text x="415.5" y="276.0" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">3.03%</text>
+  <text x="415.5" y="287.0" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">(+10.2%)</text>
+  <text x="397.5" y="441" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">W4: BidiRead 48t</text>
+  <text x="397.5" y="455" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">(Zonal)</text>
+  <rect x="455.1" y="219.5" width="30.9" height="203.5" rx="2" fill="#1A73E8"/>
+  <text x="470.5" y="214.5" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">4.67%</text>
+  <rect x="491.0" y="156.8" width="30.9" height="266.2" rx="2" fill="#00897B"/>
+  <text x="506.5" y="141.8" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">6.11%</text>
+  <text x="506.5" y="152.8" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">(+30.8%)</text>
+  <text x="488.5" y="441" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">W5: BidiWrite 48t</text>
+  <text x="488.5" y="455" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">(Zonal)</text>
+  <rect x="546.1" y="417.3" width="30.9" height="5.7" rx="2" fill="#1A73E8"/>
+  <text x="561.5" y="412.3" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">0.13%</text>
+  <rect x="582.0" y="417.3" width="30.9" height="5.7" rx="2" fill="#00897B"/>
+  <text x="597.5" y="402.3" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">0.13%</text>
+  <text x="597.5" y="413.3" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">(0.0%)</text>
+  <text x="579.5" y="441" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">W6: List 100</text>
+  <text x="579.5" y="455" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">(Reg &amp; Zonal)</text>
+  <text x="1045.0" y="72" text-anchor="middle" font-family="sans-serif" font-size="13.5" font-weight="bold" fill="#202124">B. Cloud Monitoring Peak Memory (%, Lower is Better)</text>
+  <rect x="715" y="86" width="13" height="13" rx="2" fill="#1A73E8"/>
+  <text x="733" y="96" font-family="sans-serif" font-size="11.5" font-weight="600" fill="#3C4043">Native Go SDK</text>
+  <rect x="845" y="86" width="13" height="13" rx="2" fill="#00897B"/>
+  <text x="863" y="96" font-family="sans-serif" font-size="11.5" font-weight="600" fill="#3C4043">udsthin (Go-&gt;UDS-&gt;Rust)</text>
+  <line x1="715" y1="423.0" x2="1375" y2="423.0" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="707" y="427.0" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">0%</text>
+  <line x1="715" y1="379.4" x2="1375" y2="379.4" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="707" y="383.4" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">0.5%</text>
+  <line x1="715" y1="335.9" x2="1375" y2="335.9" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="707" y="339.9" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">1.0%</text>
+  <line x1="715" y1="292.3" x2="1375" y2="292.3" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="707" y="296.3" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">1.5%</text>
+  <line x1="715" y1="248.7" x2="1375" y2="248.7" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="707" y="252.7" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">2.0%</text>
+  <line x1="715" y1="205.1" x2="1375" y2="205.1" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="707" y="209.1" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">2.5%</text>
+  <line x1="715" y1="161.6" x2="1375" y2="161.6" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="707" y="165.6" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">3.0%</text>
+  <line x1="715" y1="118.0" x2="1375" y2="118.0" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="707" y="122.0" text-anchor="end" font-family="sans-serif" font-size="10.5" fill="#5F6368">3.5%</text>
+  <line x1="715" y1="118.0" x2="715" y2="423.0" stroke="#9AA0A6" stroke-width="1.2"/>
+  <line x1="715" y1="423.0" x2="1375" y2="423.0" stroke="#9AA0A6" stroke-width="1.2"/>
+  <text x="670" y="270.5" text-anchor="middle" font-family="sans-serif" font-size="11.5" font-weight="bold" fill="#3C4043" transform="rotate(-90 670 270.5)">Peak Memory (%)</text>
+  <rect x="735.5" y="356.8" width="32.0" height="66.2" rx="2" fill="#1A73E8"/>
+  <text x="751.5" y="351.8" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">0.76%</text>
+  <rect x="772.5" y="355.0" width="32.0" height="68.0" rx="2" fill="#00897B"/>
+  <text x="788.5" y="340.0" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">0.78%</text>
+  <text x="788.5" y="351.0" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">(+2.6%)</text>
+  <text x="770.0" y="441" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">W1-W3 Rapid</text>
+  <text x="770.0" y="455" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">(Regional)</text>
+  <rect x="845.5" y="355.9" width="32.0" height="67.1" rx="2" fill="#1A73E8"/>
+  <text x="861.5" y="350.9" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">0.77%</text>
+  <rect x="882.5" y="355.9" width="32.0" height="67.1" rx="2" fill="#00897B"/>
+  <text x="898.5" y="340.9" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">0.77%</text>
+  <text x="898.5" y="351.9" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">(0.0%)</text>
+  <text x="880.0" y="441" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">W1-W3 Rapid</text>
+  <text x="880.0" y="455" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">(Zonal)</text>
+  <rect x="955.5" y="337.6" width="32.0" height="85.4" rx="2" fill="#1A73E8"/>
+  <text x="971.5" y="332.6" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">0.98%</text>
+  <rect x="992.5" y="292.3" width="32.0" height="130.7" rx="2" fill="#00897B"/>
+  <text x="1008.5" y="277.3" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">1.50%</text>
+  <text x="1008.5" y="288.3" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">(+53.1%)</text>
+  <text x="990.0" y="441" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">W4: BidiRead 48t</text>
+  <text x="990.0" y="455" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">(Regional)</text>
+  <rect x="1065.5" y="336.7" width="32.0" height="86.3" rx="2" fill="#1A73E8"/>
+  <text x="1081.5" y="331.7" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">0.99%</text>
+  <rect x="1102.5" y="281.8" width="32.0" height="141.2" rx="2" fill="#00897B"/>
+  <text x="1118.5" y="266.8" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">1.62%</text>
+  <text x="1118.5" y="277.8" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">(+63.6%)</text>
+  <text x="1100.0" y="441" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">W4: BidiRead 48t</text>
+  <text x="1100.0" y="455" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">(Zonal)</text>
+  <rect x="1175.5" y="335.9" width="32.0" height="87.1" rx="2" fill="#1A73E8"/>
+  <text x="1191.5" y="330.9" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">1.00%</text>
+  <rect x="1212.5" y="186.8" width="32.0" height="236.2" rx="2" fill="#E65100"/>
+  <text x="1228.5" y="171.8" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#E65100">2.71%</text>
+  <text x="1228.5" y="182.8" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#E65100">(ReplayBuf*)</text>
+  <text x="1210.0" y="441" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">W5: BidiWrite 48t</text>
+  <text x="1210.0" y="455" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">(Zonal)</text>
+  <rect x="1285.5" y="360.3" width="32.0" height="62.7" rx="2" fill="#1A73E8"/>
+  <text x="1301.5" y="355.3" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#1A73E8">0.72%</text>
+  <rect x="1322.5" y="360.3" width="32.0" height="62.7" rx="2" fill="#00897B"/>
+  <text x="1338.5" y="345.3" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">0.72%</text>
+  <text x="1338.5" y="356.3" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#00897B">(0.0%)</text>
+  <text x="1320.0" y="441" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">W6: List 100</text>
+  <text x="1320.0" y="455" text-anchor="middle" font-family="sans-serif" font-size="9.6" font-weight="600" fill="#202124">(Reg &amp; Zonal)</text>
+  <text x="700" y="510" text-anchor="middle" font-family="sans-serif" font-size="11" font-style="italic" fill="#5F6368">Metrics from compute.googleapis.com/instance/cpu/utilization and agent.googleapis.com/memory/percent_used (state=used, Peak) on c4-standard-192 (720 GiB RAM).</text>
+</svg>
