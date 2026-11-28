@@ -330,7 +330,12 @@ func (b *BucketHandle) defaultSignBytesFunc(email string) func([]byte) ([]byte, 
 	return func(in []byte) ([]byte, error) {
 		ctx := context.Background()
 
-		opts := []option.ClientOption{option.WithHTTPClient(b.c.hc)}
+		var opts []option.ClientOption
+		if b.c.hc != nil {
+			opts = append(opts, option.WithHTTPClient(b.c.hc))
+		} else if b.c.creds != nil {
+			opts = append(opts, option.WithAuthCredentials(b.c.creds))
+		}
 
 		universeDomain := b.c.universeDomain
 		if universeDomain == "" {

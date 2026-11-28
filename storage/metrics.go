@@ -2333,10 +2333,68 @@ func grpcNetworkMetricsRawDialOptions(host string, metrics *clientMetrics) []grp
 		host:      cleanHost,
 	}
 
+	// Installing a custom grpc.WithContextDialer disables gRPC's built-in HTTP
+	// proxy handling, so omit it when a proxy is configured for the target host.
+	if hasProxyForHost(cleanHost) {
+		return []grpc.DialOption{grpc.WithStatsHandler(sh)}
+	}
+
 	return []grpc.DialOption{
 		grpc.WithContextDialer(dialer),
 		grpc.WithStatsHandler(sh),
 	}
+}
+
+func hasProxyForHost(host string) bool {
+	if host == "" {
+		return false
+	}
+	// Check proxy environment variables directly (http.ProxyFromEnvironment
+	// caches env vars via sync.Once) while respecting NO_PROXY / no_proxy.
+	hasProxyEnv := os.Getenv("HTTPS_PROXY") != "" || os.Getenv("https_proxy") != "" || os.Getenv("HTTP_PROXY") != "" || os.Getenv("http_proxy") != ""
+	if hasProxyEnv {
+		noProxy := os.Getenv("NO_PROXY")
+		if noProxy == "" {
+			noProxy = os.Getenv("no_proxy")
+		}
+		if matchesNoProxy(host, noProxy) {
+			return false
+		}
+		return true
+	}
+	u := &url.URL{Scheme: "https", Host: host}
+	proxyURL, err := http.ProxyFromEnvironment(&http.Request{URL: u})
+	return err == nil && proxyURL != nil
+}
+
+func matchesNoProxy(host, noProxy string) bool {
+	if noProxy == "" {
+		return false
+	}
+	h := strings.ToLower(strings.TrimSuffix(stripPort(host), "."))
+	for _, entry := range strings.Split(noProxy, ",") {
+		p := strings.ToLower(strings.TrimSpace(entry))
+		if p == "" {
+			continue
+		}
+		if p == "*" {
+			return true
+		}
+		p = strings.TrimSuffix(stripPort(p), ".")
+		if p == "" {
+			continue
+		}
+		if strings.HasPrefix(p, ".") {
+			if strings.HasSuffix(h, p) || h == p[1:] {
+				return true
+			}
+			continue
+		}
+		if h == p || strings.HasSuffix(h, "."+p) {
+			return true
+		}
+	}
+	return false
 }
 
 // metricsTokenProvider wraps an auth.TokenProvider and records

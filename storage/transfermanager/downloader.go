@@ -429,6 +429,10 @@ func (d *Downloader) downloadWorker() {
 	d.workers.Done()
 }
 
+// maxDownloadShards bounds per-object shard state allocation so an unexpectedly
+// large declared object size cannot trigger unbounded memory allocation.
+const maxDownloadShards = 1 << 20
+
 // startDownload downloads the first shard and schedules subsequent shards
 // if necessary.
 func (d *Downloader) startDownload(input *DownloadObjectInput) {
@@ -451,6 +455,11 @@ func (d *Downloader) startDownload(input *DownloadObjectInput) {
 	}
 
 	numShards := numShards(out.Attrs, input.Range, d.config.partSize)
+	if numShards < 0 || numShards > maxDownloadShards {
+		out.Err = fmt.Errorf("transfermanager: object size %d requires %d shards, exceeding maximum %d", out.Attrs.Size, numShards, maxDownloadShards)
+		d.addResult(input, out)
+		return
+	}
 	input.checkCRC = input.checkCRC && !out.Attrs.Decompressed // do not checksum if the object was decompressed
 
 	if numShards > 1 {

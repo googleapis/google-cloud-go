@@ -129,6 +129,7 @@ type grpcStorageClient struct {
 	raw            *gapic.Client
 	settings       *settings
 	config         *storageConfig
+	creds          *auth.Credentials
 	readStallMgr   *bucketDelayManager
 	dpDiag         string
 	metrics        *clientMetrics
@@ -188,12 +189,10 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 
 	metricsEnabled := isOtelMetricsEnabled(&config) || isOtelDebugMetricsEnabled(&config)
 	tracingEnabled := isOTelTracingDevEnabled()
-	var authCreds *auth.Credentials
-	var googleCreds *google.Credentials
-	var project string
+	authCreds, googleCreds, project := resolveGRPCAuthCredentials(ctx, s)
+	rawAuthCreds := authCreds
 	var exportOK bool
 	if !config.disableClientMetrics || tracingEnabled {
-		authCreds, googleCreds, project = resolveGRPCAuthCredentials(ctx, s)
 		config.monitoringOpts, exportOK = monitoringClientOptions(s.clientOption, authCreds, googleCreds)
 	}
 
@@ -227,7 +226,9 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 						endpoint = ep
 					}
 				}
-				s.clientOption = append(s.clientOption, grpcNetworkMetricsDialOptions(endpoint, clientMetrics)...)
+				// Prepend network metrics dial options so any caller-supplied custom
+				// dialer option applied later takes precedence.
+				s.clientOption = append(grpcNetworkMetricsDialOptions(endpoint, clientMetrics), s.clientOption...)
 			}
 		}
 		if tracingEnabled {
@@ -267,6 +268,7 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 	c := &grpcStorageClient{
 		settings:       s,
 		config:         &config,
+		creds:          rawAuthCreds,
 		metrics:        clientMetrics,
 		metricsCleanup: metricsCleanup,
 		readStallMgr:   bd,
