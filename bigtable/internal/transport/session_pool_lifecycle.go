@@ -443,36 +443,29 @@ func (p *SessionPoolImpl) noteAbnormalCloseIfAny(sh *SessionHandle) {
 	if State(sh.session.prevStateAtClose.Load()) == StateWaitServerClose {
 		return
 	}
+	p.recordAbnormalFailure(sh.session.closeError())
+}
+
+// recordAbnormalFailure increments the consecutive-failure counter, stores
+// the non-nil cause for diagnostic attribution, and drains parked waiters
+// with ErrConsecutiveFailures once the configured threshold is reached.
+func (p *SessionPoolImpl) recordAbnormalFailure(cause error) {
 	recordDebugTag(tagSessionAbnormalClose)
-	s := sh.session
-	if e := s.closeError(); e != nil {
-		p.lastAbnormalCloseErr.Store(&e)
+	if cause != nil {
+		p.lastAbnormalCloseErr.Store(&cause)
 	}
 	n := p.consecutiveFailures.Add(1)
 	threshold := p.consecutiveFailureThreshold.Load()
 	if threshold <= 0 || n < threshold {
 		return
 	}
-	// Snapshot the poison BEFORE the CAS-reset so a concurrent abnormal
-	// close arriving in the reset→drain gap can't swap the "last error"
-	// out from under the waiter drain — trip attribution stays pinned
-	// to the close that actually crossed the threshold.
 	tripErr := p.consecutiveFailureErr()
-	// TODO: reconsider the CAS-reset. Alternative semantics: leave the
-	// counter elevated until a fresh session-open (onActive) clears it,
-	// so a burst of abnormal closes that keeps arriving after a trip
-	// re-drains any newly parked waiters instead of building up a
-	// second budget.
 	if !p.consecutiveFailures.CompareAndSwap(n, 0) {
 		return
 	}
 	woken := p.drainWaitersWithErr(tripErr)
 	if woken > 0 {
 		recordDebugTag(tagSessionPoolConsecutiveFailuresTripped)
-		// Unimplemented-driven trips are handled by the routing layer:
-		// TableShim reads status.Code on consecutiveFailureError
-		// (GRPCStatus inherits the underlying code) and flips its
-		// sticky per-resource breaker. Pool only surfaces the cause.
 	}
 }
 
