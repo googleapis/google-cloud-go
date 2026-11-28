@@ -33,6 +33,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -1241,10 +1242,12 @@ func TestPCUState_Close(t *testing.T) {
 }
 
 type pcuRecordedPartWrite struct {
-	name         string
-	kmsKey       string
-	csekKeyBytes []byte
-	assignedGen  int64
+	name          string
+	kmsKey        string
+	csekKeyBytes  []byte
+	acl           []*storagepb.ObjectAccessControl
+	predefinedACL string
+	assignedGen   int64
 }
 
 type pcuFakeGRPCServer struct {
@@ -1288,10 +1291,12 @@ func (s *pcuFakeGRPCServer) BidiWriteObject(stream storagepb.Storage_BidiWriteOb
 			s.nextGen++
 			gen := s.nextGen
 			rec := pcuRecordedPartWrite{
-				name:         spec.GetResource().GetName(),
-				kmsKey:       spec.GetResource().GetKmsKey(),
-				csekKeyBytes: append([]byte(nil), csek.GetEncryptionKeyBytes()...),
-				assignedGen:  gen,
+				name:          spec.GetResource().GetName(),
+				kmsKey:        spec.GetResource().GetKmsKey(),
+				csekKeyBytes:  append([]byte(nil), csek.GetEncryptionKeyBytes()...),
+				acl:           spec.GetResource().GetAcl(),
+				predefinedACL: spec.GetPredefinedAcl(),
+				assignedGen:   gen,
 			}
 			s.partWrites = append(s.partWrites, rec)
 			s.mu.Unlock()
@@ -1493,4 +1498,118 @@ func TestPCU_MultiLevelComposeEncryptionAndCleanupGenerations(t *testing.T) {
 			t.Errorf("deleteReqs[%d] (%q) Generation = 0, want pinned generation", i, del.GetObject())
 		}
 	}
+}
+
+func TestPCU_PartAndIntermediateACLPropagation(t *testing.T) {
+	wantACL := []ACLRule{{Entity: "user-alice@example.com", Role: RoleReader}}
+
+	t.Run("parts_and_final_compose", func(t *testing.T) {
+		tests := []struct {
+			name          string
+			acl           []ACLRule
+			predefinedACL string
+		}{
+			{
+				name:          "predefined_acl",
+				predefinedACL: "private",
+			},
+			{
+				name: "explicit_acl",
+				acl:  wantACL,
+			},
+		}
+
+		for _, tc := range tests {
+			t.Run(tc.name, func(t *testing.T) {
+				srv := &pcuFakeGRPCServer{nextGen: 2000}
+				client := newBufconnGRPCClient(t, srv)
+
+				w := client.Bucket("my-bucket").Object("acl-dest").NewWriter(t.Context())
+				w.EnableParallelUpload = true
+				w.ParallelUploadConfig = ParallelUploadConfig{PartSize: minPartSize, MaxConcurrency: 2}
+				w.ACL = tc.acl
+				w.PredefinedACL = tc.predefinedACL
+
+				if _, err := w.Write(make([]byte, minPartSize+(1<<20))); err != nil {
+					t.Fatalf("Writer.Write() failed: %v", err)
+				}
+				if err := w.Close(); err != nil {
+					t.Fatalf("Writer.Close() failed: %v", err)
+				}
+
+				srv.mu.Lock()
+				defer srv.mu.Unlock()
+
+				if len(srv.partWrites) != 2 {
+					t.Fatalf("partWrites count = %d, want 2", len(srv.partWrites))
+				}
+				wantProtoACL := toProtoObjectACL(tc.acl)
+				for i, pw := range srv.partWrites {
+					if pw.predefinedACL != tc.predefinedACL {
+						t.Errorf("partWrites[%d].predefinedACL = %q, want %q", i, pw.predefinedACL, tc.predefinedACL)
+					}
+					if diff := cmp.Diff(wantProtoACL, pw.acl, protocmp.Transform()); diff != "" {
+						t.Errorf("partWrites[%d].acl mismatch (-want +got):\n%s", i, diff)
+					}
+				}
+
+				if len(srv.composeReqs) != 1 {
+					t.Fatalf("composeReqs count = %d, want 1", len(srv.composeReqs))
+				}
+				comp := srv.composeReqs[0]
+				if comp.GetDestinationPredefinedAcl() != tc.predefinedACL {
+					t.Errorf("ComposeObjectRequest.DestinationPredefinedAcl = %q, want %q", comp.GetDestinationPredefinedAcl(), tc.predefinedACL)
+				}
+				if diff := cmp.Diff(wantProtoACL, comp.GetDestination().GetAcl(), protocmp.Transform()); diff != "" {
+					t.Errorf("ComposeObjectRequest.Destination.Acl mismatch (-want +got):\n%s", diff)
+				}
+			})
+		}
+	})
+
+	t.Run("intermediate_compose", func(t *testing.T) {
+		var mu sync.Mutex
+		var captured []*Composer
+
+		s := &pcuState{
+			ctx: t.Context(),
+			w: &Writer{
+				o: &ObjectHandle{
+					c:      &Client{},
+					bucket: "my-bucket",
+					object: "acl-multi-level",
+				},
+				ObjectAttrs: ObjectAttrs{
+					ACL:           wantACL,
+					PredefinedACL: "private",
+				},
+			},
+			partMap:         make(map[int]*ObjectHandle, maxComposeComponents+1),
+			intermediateMap: make(map[string]*ObjectHandle),
+			composeFn: func(_ context.Context, c *Composer) (*ObjectAttrs, error) {
+				mu.Lock()
+				captured = append(captured, c)
+				mu.Unlock()
+				return &ObjectAttrs{Name: c.dst.object, Generation: 1}, nil
+			},
+		}
+		for i := 1; i <= maxComposeComponents+1; i++ {
+			s.partMap[i] = &ObjectHandle{bucket: "my-bucket", object: fmt.Sprintf("part-%d", i)}
+		}
+
+		if err := s.composeParts(); err != nil {
+			t.Fatalf("composeParts() failed: %v", err)
+		}
+		if len(captured) != 3 { // 2 intermediate + 1 final
+			t.Fatalf("compose calls = %d, want 3", len(captured))
+		}
+		for i, c := range captured {
+			if c.PredefinedACL != "private" {
+				t.Errorf("compose[%d] (%q) PredefinedACL = %q, want %q", i, c.dst.object, c.PredefinedACL, "private")
+			}
+			if diff := cmp.Diff(wantACL, c.ACL); diff != "" {
+				t.Errorf("compose[%d] (%q) ACL mismatch (-want +got):\n%s", i, c.dst.object, diff)
+			}
+		}
+	})
 }

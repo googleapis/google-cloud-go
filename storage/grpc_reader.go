@@ -357,7 +357,7 @@ func (r *gRPCReadObjectReader) Read(p []byte) (int, error) {
 	// If there is data remaining in the current message, return what was
 	// available to conform to the Reader
 	// interface: https://pkg.go.dev/io#Reader.
-	if !r.currMsg.done {
+	if r.currMsg != nil && !r.currMsg.done {
 		n = r.currMsg.readAndUpdateCRC(p, func(b []byte) {
 			r.updateCRC(b)
 		})
@@ -368,8 +368,10 @@ func (r *gRPCReadObjectReader) Read(p []byte) (int, error) {
 			}
 		}
 		return n, nil
-	} else if err := r.checkAndResetChunkCRC(); err != nil {
-		return 0, err
+	} else if r.currMsg != nil {
+		if err := r.checkAndResetChunkCRC(); err != nil {
+			return 0, err
+		}
 	}
 
 	// Attempt to Recv the next message on the stream.
@@ -445,6 +447,9 @@ func (r *gRPCReadObjectReader) WriteTo(w io.Writer) (int64, error) {
 		})
 		r.seen += int64(written)
 		if err != nil {
+			if !r.currMsg.done {
+				r.currMsg.databufs.Free()
+			}
 			r.currMsg = nil
 			return r.seen - alreadySeen, err
 		}
@@ -494,6 +499,10 @@ func (r *gRPCReadObjectReader) WriteTo(w io.Writer) (int64, error) {
 		})
 		r.seen += int64(written)
 		if err != nil {
+			if !r.currMsg.done {
+				r.currMsg.databufs.Free()
+			}
+			r.currMsg = nil
 			return r.seen - alreadySeen, err
 		}
 		if r.currMsg != nil && r.currMsg.done {
@@ -689,6 +698,11 @@ func (d *readObjectResponseDecoder) readAndUpdateCRC(p []byte, updateCRC func([]
 	if len(d.databufs) == 0 {
 		return 0
 	}
+	if d.dataOffsets.currBuf == d.dataOffsets.endBuf && d.dataOffsets.currOff == d.dataOffsets.endOff {
+		d.done = true
+		d.databufs.Free()
+		return 0
+	}
 	databuf := d.databufs[d.dataOffsets.currBuf]
 	startOff := d.dataOffsets.currOff
 	var b []byte
@@ -701,15 +715,15 @@ func (d *readObjectResponseDecoder) readAndUpdateCRC(p []byte, updateCRC func([]
 	updateCRC(b[:n])
 	d.dataOffsets.currOff += uint64(n)
 
+	// We are at the end of the current buffer.
+	if d.dataOffsets.currBuf != d.dataOffsets.endBuf && d.dataOffsets.currOff == uint64(databuf.Len()) {
+		d.dataOffsets.currOff = 0
+		d.dataOffsets.currBuf++
+	}
 	// We've read all the data from this message. Free the underlying buffers.
 	if d.dataOffsets.currBuf == d.dataOffsets.endBuf && d.dataOffsets.currOff == d.dataOffsets.endOff {
 		d.done = true
 		d.databufs.Free()
-	}
-	// We are at the end of the current buffer
-	if d.dataOffsets.currBuf != d.dataOffsets.endBuf && d.dataOffsets.currOff == uint64(databuf.Len()) {
-		d.dataOffsets.currOff = 0
-		d.dataOffsets.currBuf++
 	}
 	return n
 }
@@ -721,6 +735,11 @@ func (d *readObjectResponseDecoder) writeToAndUpdateCRC(w io.Writer, updateCRC f
 	}
 	var written int64
 	for !d.done {
+		if d.dataOffsets.currBuf == d.dataOffsets.endBuf && d.dataOffsets.currOff == d.dataOffsets.endOff {
+			d.done = true
+			d.databufs.Free()
+			break
+		}
 		databuf := d.databufs[d.dataOffsets.currBuf]
 		startOff := d.dataOffsets.currOff
 		var b []byte
@@ -729,20 +748,16 @@ func (d *readObjectResponseDecoder) writeToAndUpdateCRC(w io.Writer, updateCRC f
 		} else {
 			b = databuf.ReadOnlyData()[startOff:]
 		}
-		var n int
-		// Write all remaining data from the current buffer
+		// Write all remaining data from the current buffer.
 		n, err := w.Write(b)
 		written += int64(n)
 		updateCRC(b[:n])
 		if err != nil {
 			return written, err
 		}
-		d.dataOffsets.currOff = 0
-		// We've read all the data from this message.
-		if d.dataOffsets.currBuf == d.dataOffsets.endBuf {
-			d.done = true
-			d.databufs.Free()
-		} else {
+		d.dataOffsets.currOff += uint64(n)
+		if d.dataOffsets.currBuf != d.dataOffsets.endBuf && d.dataOffsets.currOff == uint64(databuf.Len()) {
+			d.dataOffsets.currOff = 0
 			d.dataOffsets.currBuf++
 		}
 	}
