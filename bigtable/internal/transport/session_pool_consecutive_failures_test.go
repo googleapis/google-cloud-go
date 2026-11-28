@@ -344,6 +344,67 @@ func TestConsecutiveFailures_TripCarriesLastCauseAndGRPCStatus(t *testing.T) {
 	}
 }
 
+// TestConsecutiveFailures_UnimplementedCauseSurfacesToWaiter pins the
+// specific case where the server rejects session RPCs with
+// UNIMPLEMENTED (the "AFE doesn't implement session backend yet"
+// signal). Regression guard for the future TableShim classic-fallback
+// path, which dispatches on status.Code(err) == codes.Unimplemented
+// off the same drain-time consecutiveFailureError wrap that
+// TestConsecutiveFailures_TripCarriesLastCauseAndGRPCStatus already
+// exercises for FailedPrecondition. Both codes flow through the same
+// GRPCStatus() shim (session_pool.go:80-83); this test locks the
+// specific code TableShim will care about so any future refactor
+// that stops preserving it breaks visibly here rather than silently
+// downstream.
+func TestConsecutiveFailures_UnimplementedCauseSurfacesToWaiter(t *testing.T) {
+	p := newTestPool(t, 1, 10)
+	p.consecutiveFailureThreshold.Store(2)
+
+	const wantMsg = "server does not implement session RPCs"
+	serverErr := status.Error(codes.Unimplemented, wantMsg)
+
+	w := &waiter{ready: make(chan struct{})}
+	p.waitersMu.Lock()
+	w.elem = p.waiters.PushBack(w)
+	p.waitersMu.Unlock()
+	p.waitersCount.Add(1)
+
+	done := make(chan error, 1)
+	go func() {
+		<-w.ready
+		p.waitersCount.Add(-1)
+		done <- w.err
+	}()
+
+	// First bump: any transport-loss cause that doesn't trip yet.
+	sh1 := injectStartingSession(t, p, "s1")
+	sh1.session.setCloseErr(status.Error(codes.Unavailable, "boom"))
+	p.onClose(sh1, nil)
+
+	// Second bump: the Unimplemented cause we want propagated to the
+	// waiter.
+	sh2 := injectStartingSession(t, p, "s2")
+	sh2.session.setCloseErr(serverErr)
+	p.onClose(sh2, nil)
+
+	var got error
+	select {
+	case got = <-done:
+	case <-time.After(2 * time.Second):
+		t.Fatal("waiter not woken after trip")
+	}
+
+	if !errors.Is(got, ErrConsecutiveFailures) {
+		t.Fatalf("errors.Is(err, ErrConsecutiveFailures) = false; err = %v", got)
+	}
+	if code := status.Code(got); code != codes.Unimplemented {
+		t.Fatalf("status.Code(err) = %v, want Unimplemented (server-capability signal must survive the consecutiveFailureError wrap so TableShim can dispatch on it); err = %v", code, got)
+	}
+	if !strings.Contains(got.Error(), wantMsg) {
+		t.Fatalf("err text %q missing underlying cause %q", got.Error(), wantMsg)
+	}
+}
+
 func TestConsecutiveFailures_CheckoutSessionReturnsSentinelOnTrip(t *testing.T) {
 	p := newTestPool(t, 1, 10)
 	p.consecutiveFailureThreshold.Store(1)
