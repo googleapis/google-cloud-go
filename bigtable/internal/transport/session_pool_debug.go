@@ -243,10 +243,9 @@ func (p *SessionPoolImpl) recordTimeSeries() {
 	if !p.debugEnabled {
 		return
 	}
-	handles := p.sl.AllHandles()
+	handles, okTotal, errTotal := p.sl.AllHandlesWithRetiredCounts()
 	totalSessions := len(handles)
 	inUse := 0
-	var okTotal, errTotal int64
 	for _, sh := range handles {
 		if sh == nil || sh.session == nil {
 			continue
@@ -269,8 +268,10 @@ func (p *SessionPoolImpl) recordTimeSeries() {
 		prev := p.m.timeSeries[len(p.m.timeSeries)-1]
 		dt := now.Sub(prev.At).Seconds()
 		if dt > 0 {
-			okRate = float64(okTotal-p.m.tsLastOkRpcs) / dt
-			errRate = float64(errTotal-p.m.tsLastErrorRpcs) / dt
+			okDelta := max(okTotal-p.m.tsLastOkRpcs, 0)
+			errDelta := max(errTotal-p.m.tsLastErrorRpcs, 0)
+			okRate = float64(okDelta) / dt
+			errRate = float64(errDelta) / dt
 		}
 	}
 	p.m.tsLastOkRpcs = okTotal
