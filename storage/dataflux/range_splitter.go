@@ -106,6 +106,9 @@ func (rs *rangeSplitter) splitRange(startRange, endRange string, numSplits int) 
 		return nil, fmt.Errorf("start range %q cannot be lexicographically greater than end range %q", startRange, endRange)
 	}
 
+	rs.mu.Lock()
+	defer rs.mu.Unlock()
+
 	rs.addCharsToAlphabet([]rune(startRange))
 	rs.addCharsToAlphabet([]rune(endRange))
 
@@ -207,10 +210,8 @@ func constructAlphabetMap(alphabet []rune) map[rune]int {
 }
 
 // addCharsToAlphabet adds the given chars to the known alphabet. Repeated chars are ignored
-// as alphabet contains unique chars.
+// as alphabet contains unique chars. Caller must hold rs.mu.
 func (rs *rangeSplitter) addCharsToAlphabet(characters []rune) {
-	rs.mu.Lock()         // Acquire the lock
-	defer rs.mu.Unlock() // Release the lock when the function exits
 	allAlphabet := rs.sortedAlphabet
 	newChars := false
 	for _, char := range characters {
@@ -327,9 +328,8 @@ func (rs *rangeSplitter) convertStringRangeToMinimalIntRange(
 }
 
 // charPosition returns the index of the character in the alphabet set.
+// Callers must hold rs.mu.
 func (rs *rangeSplitter) charPosition(ch rune) (int, error) {
-	rs.mu.Lock()         // Acquire the lock
-	defer rs.mu.Unlock() // Release the lock when the function exits
 	if idx, ok := rs.alphabetMap[ch]; ok {
 		return idx, nil
 	}
@@ -338,9 +338,8 @@ func (rs *rangeSplitter) charPosition(ch rune) (int, error) {
 
 // convertRangeStringToArray transforms the range string into a rune slice while
 // verifying the presence of each character in the alphabets.
+// Callers must hold rs.mu.
 func (rs *rangeSplitter) convertRangeStringToArray(rangeString string) ([]rune, error) {
-	rs.mu.Lock()         // Acquire the lock
-	defer rs.mu.Unlock() // Release the lock when the function exits
 	for _, char := range rangeString {
 		if _, exists := rs.alphabetMap[char]; !exists {
 			return nil, fmt.Errorf("character %c in range string %q is not found in the alphabet array", char, rangeString)

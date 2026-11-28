@@ -145,3 +145,52 @@ func TestDownloadBufferParallel(t *testing.T) {
 		t.Errorf("diff got(-) vs. want(+): %v", diff)
 	}
 }
+
+func TestDownloadBufferParallelGrow(t *testing.T) {
+	t.Parallel()
+
+	size := 500
+	buf := &bytes.Buffer{}
+	if _, err := io.CopyN(buf, crand.Reader, int64(size)); err != nil {
+		t.Fatalf("io.CopyN: %v", err)
+	}
+	want := buf.Bytes()
+
+	// Start with an empty buffer so concurrent goroutines all race to grow it.
+	b := NewDownloadBuffer(nil)
+
+	var wg sync.WaitGroup
+	step := 10
+	for i := 0; i < size; i += step {
+		i := i
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			n, err := b.WriteAt(want[i:i+step], int64(i))
+			if err != nil {
+				t.Errorf("b.WriteAt(%d): %v", i, err)
+			}
+			if n != step {
+				t.Errorf("b.WriteAt(%d) = %d, want %d", i, n, step)
+			}
+		}()
+	}
+	wg.Wait()
+
+	if diff := cmp.Diff(b.Bytes(), want); diff != "" {
+		t.Errorf("diff got(-) vs. want(+): %v", diff)
+	}
+}
+
+func TestDownloadBufferNegativeOffset(t *testing.T) {
+	t.Parallel()
+
+	b := NewDownloadBuffer(nil)
+	n, err := b.WriteAt([]byte("abc"), -1)
+	if err == nil {
+		t.Fatal("b.WriteAt with negative offset: got nil error, want error")
+	}
+	if n != 0 {
+		t.Errorf("b.WriteAt with negative offset: got n=%d, want 0", n)
+	}
+}
